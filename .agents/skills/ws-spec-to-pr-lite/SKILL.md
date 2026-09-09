@@ -1,6 +1,6 @@
 ---
 name: ws-spec-to-pr-lite
-version: 0.4.5
+version: 0.4.6
 description: Fast Spec-to-PR (steps 0–5). Plan, implement, commit, review, ship. Trigger for lite/fast delivery.
 disable-model-invocation: true
 invocation_names:

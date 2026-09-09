@@ -216,8 +216,10 @@ function testHubLayoutClassification() {
   const proj = layout.categories?.generatedHostProjections;
   assert(proj, 'hub-layout.json categories contains generatedHostProjections');
   assert(
-    proj?.roots?.includes('.cursor/agents'),
-    'generatedHostProjections includes .cursor/agents'
+    proj?.roots?.includes('.cursor/agents') &&
+      proj?.roots?.includes('.claude/agents') &&
+      proj?.roots?.includes('.agents/projections'),
+    'generatedHostProjections includes .cursor/agents, .claude/agents, .agents/projections'
   );
   assert(
     proj?.sourceControl === 'optional-track-or-ignore',
@@ -430,6 +432,114 @@ function testAutoConfigureIntegration() {
   assert(fs.existsSync(path.join(agentsDir, 'ws-step-00-spec-write.md')), 'Subagent files compiled to .cursor/agents on enable');
 }
 
+// Prefix validation via CLI (traversal / illegal chars exit 1)
+function testPrefixValidation() {
+  console.log('\n--- Test 10: Prefix validation rejects traversal ---');
+  const mockRepo = setupMockRepo(createTmpDir('ws-prefix-test-'), { withCursor: true });
+
+  const bad = runCompiler(['--repo-root', mockRepo, '--prefix', '../../evil', '--json']);
+  assert(bad.status === 1, 'Compiler exits 1 for traversal prefix');
+  const badJson = JSON.parse(bad.stdout || '{}');
+  assert(badJson.ok === false, 'Traversal prefix reports ok: false');
+  assert(/invalid agent prefix/i.test(badJson.error || ''), 'Error names invalid agent prefix');
+
+  const bad2 = runCompiler(['--repo-root', mockRepo, '--prefix', 'Bad_Prefix!', '--json']);
+  assert(bad2.status === 1, 'Compiler exits 1 for illegal prefix chars');
+}
+
+// auto with no host markers falls back to neutral generic (no host dir created)
+function testAutoGenericFallback() {
+  console.log('\n--- Test 11: auto fallback is neutral generic ---');
+  const mockRepo = setupMockRepo(createTmpDir('ws-auto-test-'), { withCursor: false });
+
+  const res = runCompiler(['--repo-root', mockRepo, '--host', 'auto', '--json']);
+  assert(res.status === 0, `auto compile exited 0 (got ${res.status}): ${res.stderr}`);
+  const json = JSON.parse(res.stdout || '{}');
+  assert(json.host === 'generic', `auto with no markers resolves generic (got ${json.host})`);
+  assert(fs.existsSync(path.join(mockRepo, '.agents', 'projections', 'ws-step-00-spec-write.md')), 'generic projection written');
+  assert(!fs.existsSync(path.join(mockRepo, '.cursor')), '.cursor/ not created unrequested');
+}
+
+// Second compile is idempotent (skips identical, check still green)
+function testIdempotentRecompile() {
+  console.log('\n--- Test 12: Idempotent recompile skips identical ---');
+  const mockRepo = setupMockRepo(createTmpDir('ws-idem-test-'), { withCursor: true });
+
+  const first = runCompiler(['--repo-root', mockRepo, '--json']);
+  assert(first.status === 0, 'first compile exits 0');
+  const agentsDir = path.join(mockRepo, '.cursor', 'agents');
+  const target = path.join(agentsDir, 'ws-step-00-spec-write.md');
+  const mtime1 = fs.statSync(target).mtimeMs;
+
+  const second = runCompiler(['--repo-root', mockRepo, '--json']);
+  assert(second.status === 0, 'second compile exits 0');
+  const json2 = JSON.parse(second.stdout || '{}');
+  assert(json2.skippedIdenticalCount === 10, `second run skips 10 identical (got ${json2.skippedIdenticalCount})`);
+  assert(json2.totalAgents === 10, 'totalAgents still 10 on rerun');
+  assert(fs.statSync(target).mtimeMs === mtime1, 'identical file mtime untouched');
+
+  const check = runCompiler(['--repo-root', mockRepo, '--check', '--json']);
+  assert(check.status === 0, 'check passes after idempotent rerun');
+}
+
+// Compiled body: banner stripped, links rewritten, schema + tokens note present,
+// claude dialect omits cursor-only keys
+function testCompiledBodyRewrites() {
+  console.log('\n--- Test 13: Compiled body rewrites (links/banner/schema) ---');
+  const mockRepo = setupMockRepo(createTmpDir('ws-body-test-'), { withCursor: true });
+  const skillFile = path.join(mockRepo, '.agents', 'skills', 'ws-plan-write', 'SKILL.md');
+  fs.writeFileSync(
+    skillFile,
+    '---\nname: ws-plan-write\ndescription: x\n---\n\n> When this skill is loaded, output "ws-plan-write loaded."\n\nSee [entry](../ws-shared/runtime/config-resolution.md) and `{us-dir}/plan.index.json`.\n',
+    'utf8'
+  );
+
+  const res = runCompiler(['--repo-root', mockRepo, '--host', 'cursor', '--json']);
+  assert(res.status === 0, 'compile with enriched skill exits 0');
+  const body = fs.readFileSync(path.join(mockRepo, '.cursor', 'agents', 'ws-step-01-plan-write.md'), 'utf8');
+  assert(!body.includes('When this skill is loaded'), 'load banner stripped from projection');
+  assert(body.includes('](../../.agents/skills/ws-shared/runtime/config-resolution.md)'), 'skill-relative link rewritten to projection-relative');
+  assert(!body.includes('](../ws-shared/'), 'no stale skill-relative links remain');
+  assert(body.includes('## Path tokens (expand before use)'), 'path-tokens note present');
+  assert(body.includes('## Step output contract (mandatory)'), 'step-output schema appended');
+  assert(body.includes('"status": "completed | failed | skipped"'), 'step-output schema fields present');
+
+  const resClaude = runCompiler(['--repo-root', mockRepo, '--host', 'claude', '--json']);
+  assert(resClaude.status === 0, 'claude compile exits 0');
+  const claudeBody = fs.readFileSync(path.join(mockRepo, '.claude', 'agents', 'ws-step-01-plan-write.md'), 'utf8');
+  assert(!claudeBody.includes('disable-model-invocation'), 'claude projection omits cursor-only frontmatter key');
+}
+
+// Clean log labels the actual host dialect
+function testCleanHostLabel() {
+  console.log('\n--- Test 14: Clean log labels actual host ---');
+  const mockRepo = setupMockRepo(createTmpDir('ws-cleanlabel-test-'), { withCursor: true });
+  runCompiler(['--repo-root', mockRepo, '--host', 'claude']);
+
+  const clean = cp.spawnSync(NODE, [COMPILER_SCRIPT, '--repo-root', mockRepo, '--host', 'claude', '--clean'], {
+    encoding: 'utf8',
+  });
+  assert(clean.status === 0, 'claude clean exits 0');
+  assert(/host=claude/.test(clean.stdout || ''), `clean log labels host=claude (got ${(clean.stdout || '').split('\n')[0]})`);
+}
+
+// Existing enabled:true is preserved (not reset to false) without --force
+function testAutoConfigurePreservesEnabled() {
+  console.log('\n--- Test 15: auto_configure preserves enabled:true ---');
+  const mockRepo = setupMockRepo(createTmpDir('ws-preserve-test-'), { withCursor: true, withConfig: true });
+  const configPath = path.join(mockRepo, '.agents', 'skills', 'ws-shared', 'config.json');
+  const base = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  base.defaults = base.defaults || {};
+  base.defaults.specializedSubagents = { enabled: true, targetHost: 'generic', agentPrefix: 'ws' };
+  fs.writeFileSync(configPath, JSON.stringify(base, null, 2), 'utf8');
+
+  const res = runAutoConfigure(['--repo-root', mockRepo, '--section', 'specializedSubagents', '--json']);
+  assert(res.status === 0, 'section rerun exits 0');
+  const updated = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  assert(updated.defaults.specializedSubagents.enabled === true, 'enabled:true preserved without --force');
+  assert(updated.defaults.specializedSubagents.targetHost === 'generic', 'custom targetHost preserved without --force');
+}
+
 // -------------------------------------------------------------
 // Run All Tests
 // -------------------------------------------------------------
@@ -443,6 +553,12 @@ try {
   testRefusalToOverwriteWithoutForce();
   testUnsupportedHostRejection();
   testAutoConfigureIntegration();
+  testPrefixValidation();
+  testAutoGenericFallback();
+  testIdempotentRecompile();
+  testCompiledBodyRewrites();
+  testCleanHostLabel();
+  testAutoConfigurePreservesEnabled();
 } finally {
   cleanup();
 }

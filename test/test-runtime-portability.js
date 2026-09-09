@@ -54,10 +54,19 @@ for (const relative of [
   '.agents/skills/ws-spec-to-pr/SKILL.md',
   '.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md',
   '.agents/skills/ws-spec-to-pr-lite/SKILL.md',
-  '.agents/skills/ws-configure-project/INTERVIEW.md',
 ]) {
   const text = fs.readFileSync(path.join(repoRoot, relative), 'utf8');
   assert.doesNotMatch(text, /\b(?:Cursor|OpenCode|Antigravity)\b/i, `${relative} keeps runtime prose host-neutral`);
+}
+// Compiler-aware exception (0071): ws-configure-project INTERVIEW names the
+// opt-in compiler dialect ids (schema enum source of truth) inside code spans.
+// Brand-product prose stays forbidden; the section keeps disabled-by-default
+// with a neutral auto fallback.
+{
+  const text = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-configure-project/INTERVIEW.md'), 'utf8');
+  assert.doesNotMatch(text, /Cursor IDE|Cursor Editor|OpenCode|Antigravity/i, 'INTERVIEW.md forbids brand-product prose');
+  assert.match(text, /Recommended.*false|disabled/i, 'INTERVIEW.md keeps specialized subagents opt-in (disabled default)');
+  assert.match(text, /host-native|auto/i, 'INTERVIEW.md documents neutral auto fallback');
 }
 // Host-agent environment adapter (0056): neutral capability discovery + tier ladder + gate cadence.
 {

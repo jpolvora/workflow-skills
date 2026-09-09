@@ -45,7 +45,7 @@ Scan consumer **repo root** (not this skill package alone):
 | `memo` or `npx spec-memo` on PATH | `specMemo.cli` → `memo` (Recommended) |
 | CLI missing | Recommend `npm install -g spec-memo` or `specMemo.cli: "npx -y spec-memo"` before enable |
 | Non-empty `preview.dryRunCommand` already set | Keep current (**Recommended** unless `--force`) |
-| Host directory or rules marker detected | Suggest detected host dialect |
+| Host-native agent dir or rules marker detected | Suggest detected compiler dialect (`defaults.specializedSubagents.targetHost`; valid ids `cursor`, `claude`, `generic`, `auto`) |
 | `package.json` scripts named like `preview`, `review:dry`, `pipeline-review`, `code-review:dry`, `*dry-run*review*`, `*review*dry*` | Suggest `npm run <script>` (or `npm run <script> -- …` only if the script docs require args) |
 | Repo `scripts/` / `tools/` files matching `*preview*`, `*pipeline-review*`, `*review*dry*`, `*dry-run*review*` | Suggest `bash <relpath>` / `node <relpath>` / `python <relpath>` per extension ([`tools.md`](../ws-shared/runtime/tools.md) launchers) |
 | Consumer skill under `.agents/skills/` or `{globalSkillsRoot}` with id/name containing `preview`, `pipeline-review`, `dry-run`, or `code-review` (excluding packaged `ws-preview` / `ws-code-review` bodies) | Extract the primary Shell recipe from that `SKILL.md` (first concrete command block); cite skill path as source |
@@ -276,7 +276,7 @@ Configure optional projection of canonical workflow skills into host-native spec
 | Key | Type | Default | Meaning |
 |-----|------|---------|---------|
 | `defaults.specializedSubagents.enabled` | boolean | `false` | When `true`, enables compilation and runtime dispatch to specialized subagents |
-| `defaults.specializedSubagents.targetHost` | string | `"auto"` | Target host dialect (`auto`, detected host, `generic`) |
+| `defaults.specializedSubagents.targetHost` | string | `"auto"` | Compiler target dialect: `cursor`, `claude`, `generic`, or `auto` (detect; schema source of truth) |
 | `defaults.specializedSubagents.agentPrefix` | string | `"ws"` | Filename prefix for generated subagents (e.g. `ws-step-00-...`) |
 
 ### Gates
@@ -284,7 +284,7 @@ Configure optional projection of canonical workflow skills into host-native spec
 1. Gate: **Enable host-native specialized subagents projection?**
    - Options: **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip.
 2. When Yes: Gate: **Select target host dialect?**
-   - Options: **Detected (Recommended)** / `auto` / `generic` / Keep current.
+   - Options: **Detected (from host marker when present, Recommended)** / `auto` / `cursor` / `claude` / `generic` / Keep current. (Full id list; schema enum is source of truth.)
 3. On enable: immediately execute:
    ```bash
    node {skillsRoot}/ws-shared/runtime/scripts/compile_host_subagents.cjs --repo-root {repoRoot}
@@ -298,4 +298,4 @@ Configure optional projection of canonical workflow skills into host-native spec
 - Autoload writes: `defaults.autoload` and `defaults.autoloadTaskLifecycle` in `{sharedDir}/config.json`; `{sharedDir}/autoload.md` (Always-applied paths); repo-root `AGENTS.md` only when enablement is `true` (after user-gate) — installer never creates root `AGENTS.md`. `--set-autoload-task-lifecycle true` does not set `defaults.autoload`.
 - Preview writes: `preview.dryRunCommand` in `{sharedDir}/config.json` only (never commit). Cite inference source in the session summary when Accept inferred.
 - specMemo writes: `specMemo.*` in `{sharedDir}/config.json` only; optional `memo import` / `memo hook install` via `configure_spec_memo.cjs` when user opts in.
-- specializedSubagents writes: `defaults.specializedSubagents.*` in `{sharedDir}/config.json` only; triggers compilation via `compile_host_subagents.cjs` when enabled.
+- specializedSubagents writes: `defaults.specializedSubagents.*` in `{sharedDir}/config.json` only; triggers compilation via `compile_host_subagents.cjs` when enabled. Compiled host projections (`{hostAgentsDir}/`, one dir per dialect) are optional generated output: commit per team policy or add to `.gitignore`; refresh with `--check` / recompile after skill updates.

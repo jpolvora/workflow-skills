@@ -76,16 +76,16 @@ This specification introduces an **opt-in compiler and projection mechanism** th
 - AC2: `ws-configure-project` includes an interactive interview step and `--section specializedSubagents` flag that asks the user whether to enable specialized subagents via a `user-gate` with Option 1 (Recommended) defaulting to `false` (standard portable dispatch).
 - AC3: When `defaults.specializedSubagents.enabled` is `true`, `ws-configure-project` automatically runs `compile_host_subagents.cjs` to materialize the compiled agent projections for the detected or configured host IDE without manual user intervention.
 - AC4: `auto_configure.cjs` supports `--section specializedSubagents` and `--auto` mode, defaulting `defaults.specializedSubagents.enabled` to `false` when missing or unconfigured, preserving existing configuration values.
-- AC5: A dedicated compiler script `node {skillsRoot}/ws-shared/runtime/scripts/compile_host_subagents.cjs` compiles canonical skills into host-specific agent definitions supporting arguments `--repo-root <dir>`, `--host <cursor|claude|generic|auto>`, `--clean`, `--check`, and `--json`.
-- AC6: For Cursor IDE (`targetHost: "cursor"` or detected `.cursor/` workspace), the compiler generates agent definition files under `.cursor/agents/` named `{agentPrefix}-step-{N}-{role}.md` (e.g., `ws-step-00-spec-write.md`, `ws-step-01-plan-write.md`, `ws-step-04-implement-tasks.md`, `ws-step-05-plan-verify.md`, `ws-step-06-code-review.md`, `ws-step-07-testing.md`, `ws-step-08-ship-pr.md`, `ws-step-09-fix-pr.md`).
-- AC7: Every compiled Cursor subagent file contains valid YAML frontmatter specifying `name`, `description`, and mandatory `disable-model-invocation: true`.
+- AC5: A dedicated compiler script `node {skillsRoot}/ws-shared/runtime/scripts/compile_host_subagents.cjs` compiles canonical skills into host-specific agent definitions supporting arguments `--repo-root <dir>`, `--host <cursor|claude|generic|auto>`, `--prefix <name>`, `--clean`, `--check`, `--json`, and `--force`.
+- AC6: For the cursor-family dialect (`targetHost: "cursor"` or detected host marker), the compiler generates agent definition files under the host agent directory named `{agentPrefix}-step-{N}-{role}.md` for all 10 pipeline steps (e.g., `ws-step-00-spec-write.md`, `ws-step-01-plan-write.md`, `ws-step-02-plan-interview.md`, `ws-step-03-plan-to-tasks.md`, `ws-step-04-implement-tasks.md`, `ws-step-05-plan-verify.md`, `ws-step-06-code-review.md`, `ws-step-07-testing.md`, `ws-step-08-ship-pr.md`, `ws-step-09-fix-pr.md`). Other dialects compile to their host-native directory (`.claude/agents/` for `claude`, `.agents/projections/` for `generic`).
+- AC7: Every compiled cursor-dialect subagent file contains valid YAML frontmatter specifying `name`, orchestrator-scoped `description` (role verbs in `name` only, not `description`), and mandatory `disable-model-invocation: true` (cursor dialect only; other dialects use their host-native scoping keys).
 - AC8: The `description` frontmatter field in all compiled subagents explicitly restricts invocation to workflow orchestrator dispatch and excludes general conversational keywords to prevent opportunistic rogue auto-delegation.
 - AC9: The compiled subagent body contains the extracted domain instructions, behavioral invariants, checklists, and the canonical JSON `step-output` schema from the corresponding `ws-*` skill, eliminating the need for the subagent to read `SKILL.md` on boot.
 - AC10: [`host-dispatch.md`](file:///l:/source/workflow-skills/.agents/skills/ws-shared/runtime/host-dispatch.md) Tier 1 dispatch protocol is updated: when `defaults.specializedSubagents.enabled` is `true` and a matching compiled agent exists, `dispatch-agent` delegates to the specialized agent by name; otherwise, it executes via the existing generic subagent prompt.
 - AC11: When `defaults.specializedSubagents.enabled` is `false`, disabled, or unconfigured, `dispatch-agent` operates identically to the baseline implementation, spawning generic subagents with context pointers and dynamic skill reading.
 - AC12: Compiler clean mode (`--clean`) removes compiled subagent files from the target host directory without affecting canonical skills or consumer-owned configuration.
 - AC13: Compiler check mode (`--check`) compares on-disk compiled agent files against canonical skills and exits non-zero if compiled agents are missing, stale, or have drifted from upstream skills.
-- AC14: Compiled host agents are classified in `hub-layout.json` as generated host projections; documentation clarifies that `.cursor/agents/` may either be gitignored or committed to version control per team policy.
+- AC14: Compiled host agents are classified in `hub-layout.json` as generated host projections (one root per dialect); documentation clarifies that compiled projections may either be gitignored or committed to version control per team policy.
 - AC15: Pre-advance validation (`validate_state.cjs --pre-advance <N>`), state recording (`update_state.cjs`), AC ledger tracking (`ac_ledger.cjs`), and quality gates remain mandatory and unchanged regardless of whether specialized subagents are enabled.
 - AC16: When the subagent tool does not support named subagent routing or if dispatching to a named specialized subagent fails, `dispatch-agent` falls back silently to Tier 1 generic dispatch or Tier 3 inline execution without failing the workflow step.
 - AC17: `npm run test`, `ws-check-harness`, and compiler unit tests exit 0, verifying compiler idempotence, syntax validity of generated markdown, and non-regression of default workflow paths.
@@ -134,7 +134,7 @@ This is a projection/compilation enhancement designed to dramatically speed up s
 | Assumption | Chosen default | Rationale | Confirmed |
 |------------|----------------|-----------|-----------|
 | Default enablement state | `defaults.specializedSubagents.enabled: false` | Preserves baseline portable behavior; avoids creating unrequested host files. | y |
-| Target host discovery | `auto` | Autodetects `.cursor/` directory or host capabilities; falls back gracefully. | y |
+| Target host discovery | `auto` | Autodetects host marker files/directories; falls back to neutral `generic` so no host-specific directory is created unrequested. | y |
 | Accidental host invocation guard | `disable-model-invocation: true` | Cursor IDE honors this flag to prevent models from spontaneously triggering subagents outside the orchestrator. | y |
 | File location for Cursor | `.cursor/agents/` | Standard project-level agent path recognized by Cursor IDE. | y |
 | Out-of-tree host requirements | N/A because non-Cursor hosts fall back to generic Tier 1 or Tier 3 dispatch | Only hosts with established agent folder conventions are compiled. | y |
@@ -158,13 +158,13 @@ This is a projection/compilation enhancement designed to dramatically speed up s
 ### Telemetry & Observable Signals
 
 - `compile_host_subagents.cjs` execution logs:
-  - `compiled-host-agents | host=cursor | count=8 | status=ok | ISO`
-  - `clean-host-agents | host=cursor | removed=8 | ISO`
+  - `compiled-host-agents | host=<dialect> | count=10 | status=ok | ISO`
+  - `clean-host-agents | host=<dialect> | removed=10 | ISO`
 - Step telemetry in `{plansDir}/{slug}/telemetry.jsonl`:
   - `specialized-subagent-dispatch | step={N} | agent={agentName} | ISO`
   - `specialized-subagent-fallback | step={N} | reason={missing|disabled|unsupported} | ISO`
 - Automated test command:
-  - `node test/test-specialized-subagents-compiler.cjs`
+  - `node test/test-specialized-subagents-compiler.js`
 
 ### Negative & Failing Test Scenarios
 

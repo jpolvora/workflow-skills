@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.4.5** · 53 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.4.6** · 53 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 ### ws-shared hybrid configuration boundary
 

@@ -35,8 +35,23 @@ const STEP_SKILL_MAP = [
   { step: '09', role: 'fix-pr', skill: 'ws-fix-pr', readonly: false },
 ];
 
+function normalizeNewlines(content) {
+  return content.replace(/\r\n/g, '\n');
+}
+
 function sha256(content) {
   return crypto.createHash('sha256').update(content, 'utf8').digest('hex');
+}
+
+const AGENT_PREFIX_RE = /^[a-z0-9][a-z0-9-]{0,24}$/;
+
+function validateAgentPrefix(prefix) {
+  if (!AGENT_PREFIX_RE.test(prefix || '')) {
+    throw new Error(
+      `invalid agent prefix "${prefix}". Use 1-25 chars: lowercase letters, digits, hyphens; must start alphanumeric (e.g. "ws").`,
+    );
+  }
+  return prefix;
 }
 
 function parseArgs(argv) {
@@ -80,9 +95,9 @@ function resolveHostTarget(repoRoot, requestedHost, config) {
   }
 
   if (hostVal === 'auto') {
-    if (fs.existsSync(path.join(repoRoot, '.cursor'))) return 'cursor';
+    if (fs.existsSync(path.join(repoRoot, '.cursor')) || fs.existsSync(path.join(repoRoot, '.cursorrules'))) return 'cursor';
     if (fs.existsSync(path.join(repoRoot, '.claude'))) return 'claude';
-    return 'cursor';
+    return 'generic';
   }
 
   return hostVal;
@@ -94,20 +109,75 @@ function resolveHostDirectory(repoRoot, host) {
   return path.join(repoRoot, '.agents', 'projections');
 }
 
-function compileAgentContent(entry, skillPath, prefix) {
+const STEP_OUTPUT_SCHEMA_BLOCK = [
+  '## Step output contract (mandatory)',
+  '',
+  'Every run ends with a parseable `step-output` block. Do not invent field names.',
+  '',
+  '```json',
+  '{',
+  '  "status": "completed | failed | skipped",',
+  '  "files_touched": ["..."],',
+  '  "notes": "...",',
+  '  "next_step_ready": true',
+  '}',
+  '```',
+  '',
+  'Quality gates, pre-advance validation (`validate_state.cjs --pre-advance <N>`),',
+  'state recording (`update_state.cjs`), and AC ledger tracking (`ac_ledger.cjs`)',
+  'remain orchestrator-enforced and mandatory regardless of this projection.',
+  '',
+].join('\n');
+
+const PATH_TOKENS_NOTE_BLOCK = [
+  '## Path tokens (expand before use)',
+  '',
+  'Brace tokens below follow the harness install contract:',
+  '`{skillsRoot}` = `.agents/skills`, `{sharedDir}` = `.agents/skills/ws-shared`.',
+  'Skill-relative links (`../ws-…`) were compiled from the canonical skill directory;',
+  'resolve them against `.agents/skills/<skill>/`, or prefer the repo-relative',
+  '`.agents/skills/…` path stated in each compiled header.',
+  '',
+].join('\n');
+
+function rewriteSkillLinksForProjection(body) {
+  return body
+    .replace(/^>\s*When this skill is loaded, output .*$/gim, '')
+    .replace(/\]\(\.\.\/(ws-[^)\s]+)\)/g, '](../../.agents/skills/$1)')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+function buildFrontmatter(entry, agentName, host) {
+  // Keep the semantic-router surface minimal: role verbs live in `name`
+  // (exact dispatch match), not in `description` (fuzzy auto-delegation match).
+  const lines = [
+    '---',
+    `name: ${agentName}`,
+    `description: "Workflow step agent ${entry.step}. Internal orchestrator dispatch only; do NOT invoke autonomously."`,
+  ];
+  if (host === 'cursor') {
+    lines.push('disable-model-invocation: true');
+    if (entry.readonly) lines.push('readonly: true');
+  } else if (host === 'claude') {
+    // Claude Code agent dialect has no disable-model-invocation key;
+    // scoping relies on the orchestrator-only description above.
+    if (entry.readonly) lines.push('readonly: true');
+  } else if (entry.readonly) {
+    lines.push('readonly: true');
+  }
+  lines.push('---');
+  return lines.join('\n');
+}
+
+function compileAgentContent(entry, skillPath, prefix, host = 'cursor') {
   const rawSkill = fs.readFileSync(skillPath, 'utf8');
-  const skillHash = sha256(rawSkill);
+  const skillHash = sha256(normalizeNewlines(rawSkill));
   const { body } = stripFrontmatter(rawSkill);
   const agentName = `${prefix}-step-${entry.step}-${entry.role}`;
 
-  const frontmatter = [
-    '---',
-    `name: ${agentName}`,
-    `description: "Specialized workflow subagent for Step ${entry.step} (${entry.role}). Internal workflow orchestrator dispatch only; do NOT invoke autonomously or in general conversation."`,
-    'disable-model-invocation: true',
-    ...(entry.readonly ? ['readonly: true'] : []),
-    '---',
-  ].join('\n');
+  const frontmatter = buildFrontmatter(entry, agentName, host);
 
   const signature = `${SIGNATURE_PREFIX} hash:${skillHash} -->`;
 
@@ -120,11 +190,16 @@ function compileAgentContent(entry, skillPath, prefix) {
     '',
   ].join('\n');
 
-  const content = `${frontmatter}\n\n${signature}\n\n${header}${body}\n`;
+  const rewrittenBody = rewriteSkillLinksForProjection(body);
+  const content = `${frontmatter}\n\n${signature}\n\n${header}${PATH_TOKENS_NOTE_BLOCK}\n${rewrittenBody}\n\n${STEP_OUTPUT_SCHEMA_BLOCK}`;
   return { filename: `${agentName}.md`, content, skillHash, agentName };
 }
 
-function runClean(targetDir, prefix, jsonMode) {
+function normalizeForCompare(content) {
+  return normalizeNewlines(content).trim();
+}
+
+function runClean(targetDir, prefix, jsonMode, host = 'cursor') {
   const removed = [];
   const skipped = [];
 
@@ -159,7 +234,7 @@ function runClean(targetDir, prefix, jsonMode) {
   if (jsonMode) {
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   } else {
-    process.stdout.write(`clean-host-agents | host=cursor | removed=${removed.length} | ${iso}\n`);
+    process.stdout.write(`clean-host-agents | host=${host} | removed=${removed.length} | ${iso}\n`);
     if (removed.length > 0) {
       process.stdout.write(`Removed ${removed.length} compiled agent file(s) from ${targetDir}\n`);
     } else {
@@ -183,7 +258,7 @@ function runCheck(targetDir, agents, jsonMode) {
     }
     const onDiskText = fs.readFileSync(targetFile, 'utf8');
     const expectedSignature = `hash:${agent.skillHash}`;
-    const contentMatch = onDiskText.trim() === agent.content.trim();
+    const contentMatch = normalizeForCompare(onDiskText) === normalizeForCompare(agent.content);
     if (!onDiskText.includes(SIGNATURE_PREFIX) || !onDiskText.includes(expectedSignature) || !contentMatch) {
       drifting.push(agent.filename);
     } else {
@@ -242,8 +317,16 @@ function runCompile(targetDir, agents, force, host, jsonMode) {
   }
 
   const compiled = [];
+  const skippedIdentical = [];
   for (const agent of agents) {
     const targetFile = path.join(targetDir, agent.filename);
+    if (fs.existsSync(targetFile)) {
+      const existingText = fs.readFileSync(targetFile, 'utf8');
+      if (normalizeForCompare(existingText) === normalizeForCompare(agent.content)) {
+        skippedIdentical.push(agent.filename);
+        continue;
+      }
+    }
     fs.writeFileSync(targetFile, agent.content, 'utf8');
     compiled.push(agent.filename);
   }
@@ -255,8 +338,10 @@ function runCompile(targetDir, agents, force, host, jsonMode) {
     host,
     targetDir,
     count: compiled.length,
-    totalAgents: compiled.length,
+    totalAgents: agents.length,
     compiled,
+    skippedIdentical,
+    skippedIdenticalCount: skippedIdentical.length,
     timestamp: iso,
   };
 
@@ -274,7 +359,7 @@ function main() {
   const options = parseArgs(process.argv);
   if (options.help) {
     process.stdout.write(
-      'Usage: node compile_host_subagents.cjs [--repo-root DIR] [--host <cursor|claude|generic|auto>] [--clean] [--check] [--json] [--force]\n',
+      'Usage: node compile_host_subagents.cjs [--repo-root DIR] [--host <cursor|claude|generic|auto>] [--prefix <name>] [--clean] [--check] [--json] [--force]\n',
     );
     process.exit(0);
   }
@@ -294,16 +379,16 @@ function main() {
 
     const host = resolveHostTarget(repoRoot, options.host, config);
     const targetDir = resolveHostDirectory(repoRoot, host);
-    const prefix = options.prefix || config?.defaults?.specializedSubagents?.agentPrefix || 'ws';
+    const prefix = validateAgentPrefix(options.prefix || config?.defaults?.specializedSubagents?.agentPrefix || 'ws');
 
     if (options.clean) {
-      const exitCode = runClean(targetDir, prefix, options.json);
+      const exitCode = runClean(targetDir, prefix, options.json, host);
       process.exit(exitCode);
     }
 
     const agents = STEP_SKILL_MAP.map((entry) => {
       const skillPath = resolveSkillMdPath(context, entry.skill);
-      return compileAgentContent(entry, skillPath, prefix);
+      return compileAgentContent(entry, skillPath, prefix, host);
     });
 
     if (options.check) {
@@ -337,6 +422,12 @@ module.exports = {
   STEP_SKILL_MAP,
   SUPPORTED_HOSTS,
   SIGNATURE_PREFIX,
+  AGENT_PREFIX_RE,
+  validateAgentPrefix,
+  normalizeNewlines,
+  normalizeForCompare,
+  rewriteSkillLinksForProjection,
+  buildFrontmatter,
   resolveHostTarget,
   resolveHostDirectory,
   compileAgentContent,

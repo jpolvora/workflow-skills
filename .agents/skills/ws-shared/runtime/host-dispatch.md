@@ -105,7 +105,7 @@ Projects can configure and customize subagent dispatch behavior in `.agents/skil
       "enabled": false,
       "_comment_enabled": "When true, compiles and targets host-native specialized subagents",
       "targetHost": "auto",
-      "_comment_targetHost": "Target host dialect: dialect-id | generic | auto",
+      "_comment_targetHost": "Compiler target dialect id (auto detects; generic is the neutral fallback; full id list in schema)",
       "agentPrefix": "ws"
     }
   }

@@ -651,6 +651,15 @@ function mergeAuto(existing, wanted, sources, schema, example, section, force, s
     if (wanted.defaults && wanted.defaults.specializedSubagents) {
       if (existing.defaults === undefined) existing.defaults = {};
       mergeNode(existing.defaults, wanted.defaults, sources, 'specializedSubagents', force, stats, details, 'defaults.specializedSubagents');
+      const commentKey = '_comment_specializedSubagents';
+      if (
+        example && isPlainObject(example.defaults) && isPlainObject(existing.defaults) &&
+        Object.prototype.hasOwnProperty.call(example.defaults, commentKey) &&
+        !Object.prototype.hasOwnProperty.call(existing.defaults, commentKey)
+      ) {
+        existing.defaults[commentKey] = example.defaults[commentKey];
+        stats.commentsAdded += 1;
+      }
     }
     return;
   }
