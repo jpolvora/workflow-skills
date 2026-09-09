@@ -490,7 +490,7 @@ function testCompiledBodyRewrites() {
   const skillFile = path.join(mockRepo, '.agents', 'skills', 'ws-plan-write', 'SKILL.md');
   fs.writeFileSync(
     skillFile,
-    '---\nname: ws-plan-write\ndescription: x\n---\n\n> When this skill is loaded, output "ws-plan-write loaded."\n\nSee [entry](../ws-shared/runtime/config-resolution.md) and `{us-dir}/plan.index.json`.\n',
+    '---\nname: ws-plan-write\ndescription: x\n---\n\n> When this skill is loaded, output "ws-plan-write loaded."\n\nSee [entry](../ws-shared/runtime/config-resolution.md), [template](references/PLAN-TEMPLATE.md), and `{us-dir}/plan.index.json`.\n',
     'utf8'
   );
 
@@ -499,7 +499,9 @@ function testCompiledBodyRewrites() {
   const body = fs.readFileSync(path.join(mockRepo, '.cursor', 'agents', 'ws-step-01-plan-write.md'), 'utf8');
   assert(!body.includes('When this skill is loaded'), 'load banner stripped from projection');
   assert(body.includes('](../../.agents/skills/ws-shared/runtime/config-resolution.md)'), 'skill-relative link rewritten to projection-relative');
+  assert(body.includes('](../../.agents/skills/ws-plan-write/references/PLAN-TEMPLATE.md)'), 'bare sibling link rewritten to canonical skill directory');
   assert(!body.includes('](../ws-shared/'), 'no stale skill-relative links remain');
+  assert(!body.includes('](references/PLAN-TEMPLATE.md)'), 'no stale bare sibling links remain');
   assert(body.includes('## Path tokens (expand before use)'), 'path-tokens note present');
   assert(body.includes('## Step output contract (mandatory)'), 'step-output schema appended');
   assert(body.includes('"status": "completed | failed | skipped"'), 'step-output schema fields present');

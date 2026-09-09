@@ -134,16 +134,18 @@ const PATH_TOKENS_NOTE_BLOCK = [
   '',
   'Brace tokens below follow the harness install contract:',
   '`{skillsRoot}` = `.agents/skills`, `{sharedDir}` = `.agents/skills/ws-shared`.',
-  'Skill-relative links (`../ws-…`) were compiled from the canonical skill directory;',
-  'resolve them against `.agents/skills/<skill>/`, or prefer the repo-relative',
+  'Skill-relative links (`../ws-…`) and sibling links (`references/…`, `*.md`) were compiled',
+  'from the canonical skill directory to point back to `.agents/skills/<skill>/`.',
+  'Resolve them against `.agents/skills/<skill>/`, or prefer the repo-relative',
   '`.agents/skills/…` path stated in each compiled header.',
   '',
 ].join('\n');
 
-function rewriteSkillLinksForProjection(body) {
+function rewriteSkillLinksForProjection(body, skillId) {
   return body
     .replace(/^>\s*When this skill is loaded, output .*$/gim, '')
     .replace(/\]\(\.\.\/(ws-[^)\s]+)\)/g, '](../../.agents/skills/$1)')
+    .replace(/\]\((?!https?:\/\/|mailto:|#|\/|\{|@|\.\.\/)(?:\.\/)?([^)\s]+)\)/g, `](../../.agents/skills/${skillId}/$1)`)
     .replace(/[ \t]+\n/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
@@ -190,7 +192,7 @@ function compileAgentContent(entry, skillPath, prefix, host = 'cursor') {
     '',
   ].join('\n');
 
-  const rewrittenBody = rewriteSkillLinksForProjection(body);
+  const rewrittenBody = rewriteSkillLinksForProjection(body, entry.skill);
   const content = `${frontmatter}\n\n${signature}\n\n${header}${PATH_TOKENS_NOTE_BLOCK}\n${rewrittenBody}\n\n${STEP_OUTPUT_SCHEMA_BLOCK}`;
   return { filename: `${agentName}.md`, content, skillHash, agentName };
 }
