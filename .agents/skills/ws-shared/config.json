@@ -278,7 +278,13 @@
     "plannerModel": "opencode-go/deepseek-v4-pro",
     "executionModel": "composer-2.5",
     "reviewerModel": "cursor-grok-4.6-high",
-    "testingModel": "composer-2.5"
+    "testingModel": "composer-2.5",
+    "specializedSubagents": {
+      "enabled": true,
+      "targetHost": "cursor",
+      "agentPrefix": "ws"
+    },
+    "_comment_specializedSubagents": "Opt-in host projections. enabled true compiles .cursor/agents/ws-step-*.md. Step 5 is product-tree readonly in the prompt; never host Ask-mode readonly."
   },
   "plans": {
     "dir": ".agents/plans",

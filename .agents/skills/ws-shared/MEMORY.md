@@ -6,6 +6,24 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-09-09] Step 5 verifier must not use host readonly
+- **Layer**: `Infrastructure`
+- **Module**: `compile_host_subagents / ws-plan-verify`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/scripts/compile_host_subagents.cjs;.cursor/agents/ws-step-05-plan-verify.md;.agents/skills/ws-shared/runtime/host-dispatch.md`
+- **Scenario / Context**: Compiled `ws-step-05-plan-verify` with host `readonly: true`. The host opened a question-only session, Shell was blocked, tests and `ac_ledger.cjs` could not run, and the orch had to execute Step 5 inline.
+- **DO NOT**: Set host `readonly: true` on the Step 5 specialized subagent, or dispatch the verifier in a question-only session.
+- **INSTEAD DO**: Encode product-tree immutability in the compiled prompt. Allow Shell and `{us-dir}` report/ledger writes. On question-only failure, fall back to generic `generalPurpose`/`shell` or Tier 3 inline.
+
+### [2026-09-09] Mechanical harness 5a is not a full Phases 0-5c walk
+- **Layer**: `Infrastructure`
+- **Module**: `ws-ship-pr / specialized-subagents`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/scripts/compile_host_subagents.cjs;test/test-specialized-subagents-compiler.js`
+- **Scenario / Context**: Pre-ship audit of the host-readonly compiler fix.
+- **DO NOT**: Treat mechanical Phase 5a script exits as a full ws-check-harness Phases 0-5c walk.
+- **INSTEAD DO**: Credit Phase 5a + check_workflows (via npm test) with an explicit caveat; keep auditVerdictsBlockShip as refuted so caveats do not block push.
+
 ### [2026-09-09] Host projection bare sibling link resolution
 - **Layer**: `Harness`
 - **Module**: `ws-shared / compile_host_subagents.cjs`

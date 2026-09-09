@@ -81,7 +81,7 @@ Projects canonical skills (`.agents/skills/ws-*`) into native host agent definit
 - **Host detection & autoconfig:** `ws-configure-project --section specializedSubagents` autodetects Cursor workspaces (`.cursor/`) and compiles projections automatically.
 - **Compiler CLI (`compile_host_subagents.cjs`):** Supports `--repo-root`, `--host <cursor|claude|generic|auto>`, `--prefix`, `--clean`, `--check` (drift detection), `--json`, and `--force`.
 - **Integrity protection:** Signs generated files with `@generated` SHA-256 hashes and non-clobber protection so human-authored custom agents are never overwritten or deleted.
-- **Fail-safe fallback ladder:** `host-dispatch.md` implements Tier 1 (named specialized subagent) → Tier 2 (generic subagent reading `SKILL.md`) → Tier 3 (inline execution), preserving 100% harness portability.
+- **Fail-safe fallback ladder:** `host-dispatch.md` implements Tier 1 (named specialized subagent) → Tier 2 (generic subagent reading `SKILL.md`) → Tier 3 (inline execution), preserving 100% harness portability. Step 5 (`ws-plan-verify`) is product-tree readonly in the compiled prompt; the compiler never emits host `readonly: true` (question-only session blocks Shell).
 
 ---
 

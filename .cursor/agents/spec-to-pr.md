@@ -65,7 +65,7 @@ For each step, follow `STEP-DISPATCH.md`:
 
 - Fresh `dispatch-agent` per step (no resume across steps).
 - Description format: `STP step {N} — {Label}`.
-- Step 5 readonly. Step 4 DAG ≤3 parallel.
+- Step 5 product-tree readonly (never host `readonly`; Shell required). Step 4 DAG ≤3 parallel.
 - Require parseable `step-output` from subagents.
 - After success: state hygiene → checkpoint → Progress Board → summary → transition gate → next dispatch (or auto-advance in `autoMode`).
 
