@@ -88,13 +88,51 @@ write(
   `${JSON.stringify({
     type: 'finish',
     step: 4,
-    skipReason: null,
     packageVersion: 'unknown',
     filesTouched: { created: [], modified: [], deleted: [] },
   })}\n`,
 );
+const markdownSlug = 'markdown-demo';
+const markdownWorkflowDir = path.join(root, '.agents', 'plans', markdownSlug);
+write(
+  path.join(markdownWorkflowDir, 'wf-markdown.state.md'),
+  `---
+stateVersion: 3
+revision: 2
+workflowId: wf-markdown
+slug: ${markdownSlug}
+workflowType: standard
+status: active
+currentStep: 6
+completedSteps:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+skippedSteps:
+  - {step: 2, reason: interview-not-required}
+verificationScore: 9
+stepStatus: {5: completed}
+---
+`,
+);
+for (const artifact of [
+  `step-00-${markdownSlug}.spec.md`,
+  `step-01-${markdownSlug}.plan.md`,
+  `step-03-${markdownSlug}.plan.exec.md`,
+  `step-05-${markdownSlug}.plan.report.md`,
+]) {
+  write(path.join(markdownWorkflowDir, artifact), '');
+}
 const transcripts = path.join(root, 'transcripts');
 write(path.join(transcripts, 'agent.jsonl'), 'ENOENT while loading build_dispatch_context; unsupported model id\n');
+
+const unboundedWatch = run(['--repo-root', root, '--watch', '--json'], root);
+if (unboundedWatch.status === 0 || !unboundedWatch.stderr.includes('--watch requires --iterations <count>')) {
+  throw new Error('monitor did not reject unbounded watch mode');
+}
 
 const result = run([
   '--repo-root',
@@ -118,6 +156,27 @@ if (!codes.has('step-drift')) throw new Error('monitor did not detect Step 5 sco
 if (!codes.has('empty-files-touched')) throw new Error('monitor did not detect empty filesTouched');
 if (!codes.has('hybrid-path-resolution')) throw new Error('monitor did not scan transcript path failures');
 if (!codes.has('model-fallback')) throw new Error('monitor did not scan rejected models');
+const expectedPaths = report.workflows
+  .find((workflow) => workflow.slug === slug)
+  .expectedArtifacts.map((artifact) => artifact.path.replaceAll('\\', '/'));
+if (!expectedPaths.includes(`.agents/plans/${slug}/step-00-${slug}.spec.md`)) {
+  throw new Error('monitor did not report expected artifact paths from repository root');
+}
+if (!expectedPaths.includes(`.agents/plans/${slug}`)) {
+  throw new Error('monitor did not report score gate evidence from repository root');
+}
+const markdownResult = run(['--repo-root', root, '--slug', markdownSlug, '--json'], root);
+if (markdownResult.status !== 0) {
+  throw new Error(markdownResult.stderr || markdownResult.stdout);
+}
+const markdownReport = JSON.parse(markdownResult.stdout);
+const markdownWorkflow = markdownReport.workflows.find((workflow) => workflow.slug === markdownSlug);
+if (!markdownWorkflow || !markdownWorkflow.completedSteps.includes(5)) {
+  throw new Error('monitor did not parse multiline markdown state frontmatter');
+}
+if (markdownWorkflow.findings.some((finding) => finding.code === 'missing-artifact')) {
+  throw new Error('monitor reported false missing artifacts for markdown state');
+}
 if (!fs.existsSync(path.join(root, '.agents/plans/monitor-demo/workflow-monitor.report.md'))) {
   throw new Error('monitor did not write the explicit report path');
 }

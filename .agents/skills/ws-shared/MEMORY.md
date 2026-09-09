@@ -42,6 +42,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Treat mechanical Phase 5a script exits as a full ws-check-harness Phases 0-5c walk.
 - **INSTEAD DO**: Credit Phase 5a + check_workflows (via npm test) with an explicit caveat; keep auditVerdictsBlockShip as refuted so caveats do not block push.
 
+### [2026-09-09] Integrity regeneration follows final skill edits
+- **Layer**: `Release verification`
+- **Module**: `generate-skill-integrity` / package verification`
+- **Severity**: `Medium`
+- **PathPattern**: `bin/skill-integrity.json`; `.agents/skills/ws-*/SKILL.md`
+- **Scenario / Context**: A shipped skill body or documentation edit made after integrity generation causes the full install verification phase to reject the package as stale.
+- **DO NOT**: Start the full test or package verification suite while continuing to edit hashed skill files, or treat a stale manifest as a test defect.
+- **INSTEAD DO**: Finish all hashed skill edits first, run `npm run generate-integrity && npm run verify-integrity`, then run the full verification suite without concurrent source edits.
+
 ### [2026-09-09] Host projection bare sibling link resolution
 - **Layer**: `Harness`
 - **Module**: `ws-shared / compile_host_subagents.cjs`

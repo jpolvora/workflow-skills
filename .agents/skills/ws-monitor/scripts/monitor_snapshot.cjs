@@ -9,6 +9,7 @@ const {
   resolveMinVerifyScore,
   toRepoRelative,
 } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
+const { parseFrontmatter } = require('../../ws-shared/runtime/scripts/workflow_state.cjs');
 
 const MUTATING_STEPS = new Set([0, 1, 2, 3, 4, 6, 7, 8]);
 const DEFAULT_INTERVAL_SECONDS = 10;
@@ -53,32 +54,17 @@ function readJson(file) {
   }
 }
 
-function parseScalar(value) {
-  const raw = String(value).trim();
-  if (raw === '[]') return [];
-  if (raw === '{}') return {};
-  if (raw === 'true') return true;
-  if (raw === 'false') return false;
-  if (raw === 'null' || raw === '~') return null;
-  if (/^-?\d+(?:\.\d+)?$/.test(raw)) return Number(raw);
-  if (raw.startsWith('[') && raw.endsWith(']')) {
-    return raw.slice(1, -1).split(',').map((item) => parseScalar(item)).filter((item) => item !== '');
-  }
-  return raw.replace(/^(['"])(.*)\1$/, '$2');
-}
-
 function readState(file) {
   const jsonFile = file.endsWith('.state.json') ? file : file.replace(/\.state\.md$/, '.state.json');
   const json = readJson(jsonFile);
   if (json) return { state: json, stateFile: jsonFile };
   const markdown = file.endsWith('.state.md') ? file : file.replace(/\.state\.json$/, '.state.md');
   if (!fs.existsSync(markdown)) return { state: null, stateFile: file };
-  const text = fs.readFileSync(markdown, 'utf8').replace(/\r\n?/g, '\n');
-  const match = text.match(/^---\s*\n([\s\S]*?)\n---/);
-  const state = {};
-  for (const line of (match?.[1] || '').split('\n')) {
-    const item = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
-    if (item) state[item[1]] = parseScalar(item[2]);
+  let state = {};
+  try {
+    state = parseFrontmatter(fs.readFileSync(markdown, 'utf8')).data;
+  } catch {
+    // Keep malformed legacy state files observable without aborting the snapshot.
   }
   return { state, stateFile: markdown };
 }
@@ -125,11 +111,11 @@ function isCompleted(state, step) {
     .includes(step);
 }
 
-function expectedArtifacts(state, workflowDir, minVerifyScore) {
+function expectedArtifacts(state, workflowDir, minVerifyScore, repoRoot = workflowDir) {
   const slug = state.slug || state.us || path.basename(workflowDir);
   const expected = [];
   const add = (name, reason) => expected.push({
-    path: toRepoRelative(workflowDir, path.join(workflowDir, name), { allowOutside: true }),
+    path: toRepoRelative(repoRoot, path.join(workflowDir, name), { allowOutside: true }),
     name,
     reason,
     present: fs.existsSync(path.join(workflowDir, name)),
@@ -151,7 +137,7 @@ function expectedArtifacts(state, workflowDir, minVerifyScore) {
   if (Number(state.currentStep) >= 9 || isCompleted(state, 8)) add(`step-08-${slug}.result.md`, 'Step 8 completed');
   if (Number(state.currentStep) > 5 && Number(state.verificationScore) < minVerifyScore) {
     expected.push({
-      path: toRepoRelative(workflowDir, workflowDir, { allowOutside: true }),
+      path: toRepoRelative(repoRoot, workflowDir, { allowOutside: true }),
       name: 'scoreAndRefine',
       reason: `Step 5 score must reach ${minVerifyScore} before Step 6`,
       present: false,
@@ -166,9 +152,9 @@ function addFinding(findings, severity, code, message, evidence = []) {
   findings.push({ severity, code, message, evidence });
 }
 
-function classifyWorkflow(state, workflowDir, telemetry, minVerifyScore) {
+function classifyWorkflow(state, workflowDir, telemetry, minVerifyScore, repoRoot = workflowDir) {
   const findings = [];
-  const missing = expectedArtifacts(state, workflowDir, minVerifyScore).filter((item) => !item.present);
+  const missing = expectedArtifacts(state, workflowDir, minVerifyScore, repoRoot).filter((item) => !item.present);
   for (const artifact of missing) {
     addFinding(findings, 'critical', 'missing-artifact', `${artifact.name} is missing (${artifact.reason})`, [artifact.path]);
   }
@@ -178,7 +164,7 @@ function classifyWorkflow(state, workflowDir, telemetry, minVerifyScore) {
       'critical',
       'step-drift',
       `currentStep is ${state.currentStep} while verificationScore is ${state.verificationScore || 'missing'} below ${minVerifyScore}`,
-      [toRepoRelative(workflowDir, workflowDir, { allowOutside: true })],
+      [toRepoRelative(repoRoot, workflowDir, { allowOutside: true })],
     );
   }
   for (const event of telemetry.events) {
@@ -188,7 +174,7 @@ function classifyWorkflow(state, workflowDir, telemetry, minVerifyScore) {
     if (event.type === 'finish' && event.substep === 'scoreAndRefine') continue;
     const touched = event.filesTouched || {};
     const hasTouched = ['created', 'modified', 'deleted'].some((key) => Array.isArray(touched[key]) && touched[key].length);
-    if (event.type === 'finish' && event.step !== 5 && MUTATING_STEPS.has(Number(event.step)) && event.skipReason === null && !hasTouched) {
+    if (event.type === 'finish' && event.step !== 5 && MUTATING_STEPS.has(Number(event.step)) && event.skipReason == null && !hasTouched) {
       addFinding(findings, 'warning', 'empty-files-touched', `Completed mutating Step ${event.step} reported no filesTouched`, []);
     }
   }
@@ -254,7 +240,7 @@ function snapshot(options) {
     if (options.workflowId && String(state.workflowId) !== String(options.workflowId)) continue;
     const workflowDir = path.dirname(loaded.stateFile);
     const telemetry = readTelemetry(path.join(workflowDir, 'telemetry.jsonl'));
-    const findings = classifyWorkflow(state, workflowDir, telemetry, minVerifyScore);
+    const findings = classifyWorkflow(state, workflowDir, telemetry, minVerifyScore, context.repoRoot);
     workflows.push({
       workflowId: state.workflowId || path.basename(loaded.stateFile, '.state.md'),
       slug: state.slug || state.us || path.basename(workflowDir),
@@ -274,7 +260,7 @@ function snapshot(options) {
         parseErrors: telemetry.errors,
         lastEvent: telemetry.events.at(-1) || null,
       },
-      expectedArtifacts: expectedArtifacts(state, workflowDir, minVerifyScore),
+      expectedArtifacts: expectedArtifacts(state, workflowDir, minVerifyScore, context.repoRoot),
       findings,
     });
   }
@@ -365,6 +351,9 @@ function main() {
   if (options.help) {
     process.stdout.write('Usage: node monitor_snapshot.cjs [--repo-root DIR] [--slug SLUG] [--workflow-id ID] [--transcript-root DIR] [--report FILE] [--json] [--watch --interval SEC --iterations N]\n');
     return;
+  }
+  if (options.watch && options.iterations === undefined) {
+    throw new Error('--watch requires --iterations <count> for a bounded run');
   }
   const iterations = options.watch
     ? (options.iterations === undefined ? 0 : Math.max(1, Number(options.iterations)))
