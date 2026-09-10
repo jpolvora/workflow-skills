@@ -27,6 +27,7 @@ config/credentials
 
 # Backup files
 *.bak_*
+*.bak
 
 # Temporary files & Logs
 *.log

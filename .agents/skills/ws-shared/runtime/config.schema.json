@@ -239,9 +239,13 @@
             "mode": {
               "type": "string",
               "enum": ["auto", "native-tool", "cli-command", "inline-isolated", "antigravity", "cursor", "opencode", "claude"],
-              "default": "auto"
+              "default": "auto",
+              "description": "Host dispatch adapter mode. auto selects native-tool or CLI command per host capabilities; inline-isolated runs without external dispatch."
             },
-            "cliTemplate": { "type": "string" },
+            "cliTemplate": {
+              "type": "string",
+              "description": "Host adapter CLI template string with placeholders (e.g. opencode run --prompt {prompt})."
+            },
             "browserTool": { "type": "string" },
             "stepOverrides": { "type": "object" }
           }

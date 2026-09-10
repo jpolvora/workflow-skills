@@ -153,7 +153,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | Record learning | This file § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) (live `ws-self-learning` only when authoring that skill) |
 | Convergence loop | `ws-goal-loop` |
 | Record ws-changelog | This file § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) (live `ws-changelog` only when authoring that skill) |
-| Fill / update `config.json` | `ws-configure-project` |
+| Fill / update `config.json` | `ws-configure-project` (wizard) · `npm run config:gui` / `Edit-Config.bat` (GUI editor) |
 | Discover/install skills | `find-skills` or `using-superpowers` |
 
 ---
@@ -199,6 +199,7 @@ Managed script calls use explicit launchers; do not rewrite skill scripts for sh
 | Catalog / site | `node bin/build-site.js` (catalog only) · `node bin/build-site.js --check` (read-only verification) · `npm run build-site:bump` (release bump + footer) |
 | Harness benchmark (upstream package root only; never spec-to-pr) | `ws-benchmarks` · `ws-run-benchmark` · `npm run benchmark:static` · `prepare --fixture` · `collect --sandbox` |
 | Installed-skill audit | `node bin/cli.js integrity` · `node bin/cli.js --check` (version + `fullPackageDigest` vs `main`) |
+| Config GUI editor | `npm run config:gui` (WinForms desktop editor) · `node test/test-powershell-config-editor.js` (tests) |
 
 **Never run install/update against this package root.** The installer writes into `.agents/skills/`, which is the upstream SoT here — it would overwrite the skills you are authoring. Always target a scratch directory (or the trees under `test/`), and prefer local `node bin/cli.js` / `./install-skills.sh` over remote `npx` (§ [Consumer CLI](#consumer-cli-install--update--uninstall)).
 
@@ -265,6 +266,7 @@ Print a board after each row (same ✅ / ❌ / ⏭ convention as [`ws-ship-pr/PR
 | 5 | **Installer (npx + bash shim)** | `install-skills.sh` argv/help aligned with `bin/cli.js --help`; consumer docs in `README.md` if UX changed | Shim or npx surface changed |
 | 6 | **Skill dependency graph** | `bin/skill-dependencies.json` (+ `.agents/skills/ws-shared/runtime/skill-dependencies.json` when packaged graph ships) | Skills added/removed/renamed, package membership, or orch dispatch changed |
 | 7 | **Integrity digests** | `npm run generate-integrity` && `npm run verify-integrity` | Any hashed install content changed (`bin/skill-integrity.json` must exit 0 on `--check`) |
+| 7b | **Config GUI sync** | `node test/test-powershell-config-editor.js` | Options, `config.json`, or schema changed → update GUI script |
 | 8 | **Harness audit** | `ws-check-harness` Phases 0–5c → 0 critical | New/changed skills, hubs, routing, links, portability, en-us; Phase 3/4b must cover new skill ids and dependency graph |
 | 9 | **Workflow simulation** | `ws-check-workflows` / `python .agents/skills/ws-check-workflows/scripts/check_workflows.py` | Orchestrator FSM, step dispatch, gates, or simulation docs changed — 0 critical |
 | 10 | **Hub drift** | Sync root `AGENTS.md` + `ws-shared/AGENTS.md` (+ `ws-shared/autoload.md` when the Always-applied set or specs router changed) | Routing tables or skill index changed |

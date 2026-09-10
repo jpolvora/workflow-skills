@@ -121,7 +121,7 @@ npx --yes github:jpolvora/workflow-skills uninstall --skills ws-tdah --global --
 | Installed version | `npx --yes github:jpolvora/workflow-skills --version` |
 | Help | `npx --yes github:jpolvora/workflow-skills --help` |
 
-**After install/update:** ask your agent to run `ws-check-harness` (load `.agents/skills/ws-check-harness/SKILL.md`, Phases 0–5c). Optional: `/ws-configure-project` to fill `ws-shared/config.json`.
+**After install/update:** ask your agent to run `ws-check-harness` (load `.agents/skills/ws-check-harness/SKILL.md`, Phases 0–5c). Optional: `/ws-configure-project` to fill `ws-shared/config.json` via interactive CLI, or launch the desktop GUI editor via `npm run config:gui` (or `.agents\skills\ws-shared\runtime\scripts\Edit-Config.bat` on Windows).
 
 #### Hybrid / global installs
 
@@ -183,6 +183,25 @@ Edit only the consumer-owned entries under `.agents/skills/ws-shared/`. The inst
 | `runtime/` | Managed workflow contracts, schemas, scripts, stacks, and `hub-layout.json`; do not hand-edit in consumers |
 | `templates/` | Managed setup-only seeds such as `config.json.example`, `STACK.md.example`, and `hub.gitignore` |
 | `CHANGELOG.md` | Append-only history (seeded empty; `rules.changelogFile` defaults here) |
+
+### Desktop configuration GUI (Windows)
+
+For visual configuration on Windows, a native Windows Forms desktop editor is included in `ws-shared/runtime/scripts/`:
+
+```bash
+# Launch via npm script shortcut
+npm run config:gui
+
+# Or run the batch launcher directly
+.agents\skills\ws-shared\runtime\scripts\Edit-Config.bat
+```
+
+- **Categorized Sections:** Switch between 7 functional tabs (`Project & SCM`, `Verification & Test`, `Defaults & DAG`, `Subagents & Models`, `Plans & Artifacts`, `Rules & Invariants`, `External Integrations`).
+- **Rich Form Controls:** Checkboxes with descriptions, dropdown selection for enums/providers, browse dialogs for files and folders, numeric spinners with schema-enforced bounds, and multiline array editors.
+- **Adaptive Theming:** Auto-detects Windows system dark/light theme (`AppsUseLightTheme`) with an on-screen theme switcher.
+- **Live Search & Filter:** Instantly filter options across all sections by key, label, or description.
+- **Safe Persistence:** Preserves all `_comment_*` keys and JSON formatting on save, with automatic `.bak` backup generation.
+- **Headless Validation:** Supports `-CheckOnly` mode for automated CI/diagnostic verification without launching a window.
 
 ### Optional root / host configuration
 

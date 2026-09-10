@@ -116,6 +116,8 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for **spec-driven*
 
 Authoring + Before-ship checklist: [`CATALOG.md`](CATALOG.md) § Upstream developer workflow. Consumers: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
 
+**Config schema & GUI synchronization (mandatory):** Whenever changes are made to configuration options, `config.json`, or `config.schema.json` schema definitions/updates, the GUI tool (`.agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1`) MUST be updated to reflect the current configuration state and schema options (control bindings, types, validation ranges, descriptions, and section groupings). Run `node test/test-powershell-config-editor.js` to verify.
+
 **Version bump (mandatory before PR):** When shipping **package content** from this repo, `package.json` `version` (and aligned `packageVersion` in `bin/skill-dependencies.json` + site footer) must be **strictly higher than the version on the PR merge-base** (typically `main` or `develop`) before commit, push, or PR creation. **One patch bump per release PR** — not per commit, review-fix commit, or `ws-goal-fix-pr` round on the same PR. If the branch version is unchanged vs the base, run `npm run build-site:bump`, commit the bump with ship-scope changes, then ship. Catalog-only doc fixes may use `node bin/build-site.js` without a version bump per [`CATALOG.md`](CATALOG.md) Before ship PR rows 2–3. CI on `main` never bumps — bump locally before push.
 
 ### Consumer CLI (install / update / uninstall)

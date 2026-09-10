@@ -1,6 +1,6 @@
 ---
 name: ws-configure-project
-version: 0.4.10
+version: 0.4.11
 description: Project configuration wizard — detects project settings and interviews config.json sections (including preview.dryRunCommand and optional specMemo).
 invocation_names:
   - configure-project

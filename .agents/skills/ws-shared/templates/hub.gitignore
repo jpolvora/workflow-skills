@@ -15,4 +15,6 @@ frontend.md
 installed-skills.json
 skill-integrity-local.json
 host-capabilities.json
+config.json.bak
+*.bak
 memory/**
