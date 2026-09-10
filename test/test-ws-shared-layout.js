@@ -225,10 +225,20 @@ try {
   assert(installedAutoload.includes('](runtime/tools.md)'), 'hub-root autoload rewrites runtime-relative hub links');
   assert(installedAutoload.includes('](../ws-spec-manager/SKILL.md)'), 'hub-root autoload rewrites skill-relative links');
   for (const [name, content] of Object.entries(preserved)) {
-    assert(
-      fs.readFileSync(path.join(legacyShared, name), 'utf8') === content,
-      `migration preserves consumer-owned ${name}`,
-    );
+    if (name === 'config.json') {
+      const cfg = JSON.parse(fs.readFileSync(path.join(legacyShared, name), 'utf8'));
+      assert(cfg.project?.name === 'legacy-consumer', 'migration preserves consumer-owned config.json values');
+      assert(fs.existsSync(path.join(legacyShared, 'config.json.bak')), 'migration creates config.json.bak');
+      assert(
+        fs.readFileSync(path.join(legacyShared, 'config.json.bak'), 'utf8') === content,
+        'config.json.bak matches original pre-update content',
+      );
+    } else {
+      assert(
+        fs.readFileSync(path.join(legacyShared, name), 'utf8') === content,
+        `migration preserves consumer-owned ${name}`,
+      );
+    }
   }
   const secondInstall = cp.spawnSync(
     process.execPath,

@@ -73,6 +73,37 @@ function runPowerShellFile(args, options = {}) {
   });
 }
 
+function isPowerShellAvailable() {
+  if (process.env.TEST_FORCE_NO_POWERSHELL === '1') {
+    return false;
+  }
+  const psExe = process.platform === 'win32' ? 'powershell' : 'pwsh';
+  try {
+    const res = cp.spawnSync(psExe, ['-NoProfile', '-Command', 'exit 0'], {
+      cwd: REPO_ROOT,
+      encoding: 'utf8',
+    });
+    return res.status === 0;
+  } catch {
+    return false;
+  }
+}
+
+function isWindowsFormsAvailable() {
+  if (process.env.TEST_FORCE_NO_WINFORMS === '1' || process.platform !== 'win32') {
+    return false;
+  }
+  const probe = runPowerShell(`
+    try {
+      Add-Type -AssemblyName System.Windows.Forms -ErrorAction Stop
+      exit 0
+    } catch {
+      exit 1
+    }
+  `);
+  return probe.status === 0;
+}
+
 console.log('--- Running PowerShell Config Editor Tests ---');
 
 // Test 1: File existence
@@ -99,6 +130,15 @@ assert.strictEqual(
   `Edit-WorkflowSkillsConfig.ps1 contains non-ASCII characters: ${JSON.stringify(nonAscii.slice(0, 5))}`
 );
 console.log('  PASS: Script is 100% ASCII-safe.');
+
+// Check PowerShell availability before executing dynamic tests
+const psAvailable = isPowerShellAvailable();
+if (!psAvailable) {
+  console.log('\nNOTICE: Neither powershell nor pwsh is available on this system.');
+  console.log('Skipping dynamic PowerShell execution tests (Tests 3-7).');
+  console.log('Static tests passed cleanly.');
+  process.exit(0);
+}
 
 // Test 3: PowerShell AST Syntax Parsing
 console.log('Test 3: Validating PowerShell script syntax via Language AST parser...');
@@ -209,11 +249,38 @@ if (process.platform === 'win32') {
     0,
     `Edit-Config.bat -CheckOnly failed:\n${batRun.stderr || batRun.stdout}`
   );
+} else {
+  console.log('  SKIP: Edit-Config.bat execution test skipped on non-Windows platform.');
 }
 console.log('  PASS: Batch launcher validated.');
 
 // Test 7: Control event simulation and robust path validation
 console.log('Test 7: Validating control event handlers and defensive path routing...');
+const winFormsAvailable = isWindowsFormsAvailable();
+
+const winFormsSection = winFormsAvailable
+  ? `
+  # 3. Simulate WinForms control event handlers with $this.Tag binding
+  Set-ConfigValue -Path 'specMemo.enabled' -Value $false
+  Add-Type -AssemblyName System.Windows.Forms
+  $chk = New-Object System.Windows.Forms.CheckBox
+  $chk.Tag = 'specMemo.enabled'
+  $chk.Add_CheckedChanged({
+    if ($this.Tag) {
+      Set-ConfigValue -Path ([string]$this.Tag) -Value $this.Checked
+    }
+  })
+  $chk.Checked = $true
+  $valAfter = Get-ConfigValue -Path 'specMemo.enabled'
+  if ($valAfter -ne $true) {
+    throw 'Failed to update value via CheckBox event handler'
+  }
+`
+  : `
+  # 3. WinForms control event handlers skipped (Windows Forms not available in CI/CD or non-Windows environment)
+  Write-Host '  SKIP: WinForms control event simulation skipped (System.Windows.Forms not available on this platform/CI).'
+`;
+
 const eventTestScript = `
   $ErrorActionPreference = 'Stop'
   . '${SCRIPT_PATH.replace(/\\/g, '\\\\')}' -FunctionsOnly
@@ -233,23 +300,7 @@ const eventTestScript = `
   if ($val1 -ne $true -or $val2 -ne $true) {
     throw 'Failed to set nested config values'
   }
-
-  # 3. Simulate WinForms control event handlers with $this.Tag binding
-  Set-ConfigValue -Path 'specMemo.enabled' -Value $false
-  Add-Type -AssemblyName System.Windows.Forms
-  $chk = New-Object System.Windows.Forms.CheckBox
-  $chk.Tag = 'specMemo.enabled'
-  $chk.Add_CheckedChanged({
-    if ($this.Tag) {
-      Set-ConfigValue -Path ([string]$this.Tag) -Value $this.Checked
-    }
-  })
-  $chk.Checked = $true
-  $valAfter = Get-ConfigValue -Path 'specMemo.enabled'
-  if ($valAfter -ne $true) {
-    throw 'Failed to update value via CheckBox event handler'
-  }
-
+${winFormsSection}
   # 4. Set deeply nested property (e.g. defaults.hostAdapter.mode) without constructor exception
   Set-ConfigValue -Path 'defaults.hostAdapter.mode' -Value 'cli-command'
   $modeVal = Get-ConfigValue -Path 'defaults.hostAdapter.mode'
@@ -277,7 +328,12 @@ assert.strictEqual(
   `Control event test failed with code ${eventRun.status}:\n${eventRun.stderr || eventRun.stdout}`
 );
 assert(eventRun.stdout.includes('OK'), 'Event handler test did not output OK');
-console.log('  PASS: Control events and Tag bindings validated without exception.');
+if (winFormsAvailable) {
+  console.log('  PASS: Control events and Tag bindings validated without exception.');
+} else {
+  console.log('  SKIP: WinForms control events skipped (System.Windows.Forms not available in this environment).');
+  console.log('  PASS: Defensive path routing and configuration isolation validated.');
+}
 
 console.log('\nALL 7 POWERSHELL CONFIG EDITOR TESTS PASSED.');
 

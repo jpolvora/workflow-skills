@@ -48,6 +48,7 @@ import {
   RETIRED_SKILL_DIRS,
   RETIRED_BARE_IDS,
   listRetiredManifestIds,
+  stripRetiredConfigKeys,
 } from './consumer-migration.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -540,12 +541,74 @@ function ensurePathTokensInConfig(configPath) {
   console.log(`    Ensured ws-shared/config.json pathTokens ({skillsRoot}, {sharedDir})`);
 }
 
+function deepMergeConfig(templateObj, userObj) {
+  if (!userObj || typeof userObj !== 'object' || Array.isArray(userObj)) {
+    return userObj !== undefined ? userObj : templateObj;
+  }
+  if (!templateObj || typeof templateObj !== 'object' || Array.isArray(templateObj)) {
+    return userObj;
+  }
+
+  const result = {};
+
+  for (const [key, templateVal] of Object.entries(templateObj)) {
+    if (!(key in userObj)) {
+      result[key] = templateVal;
+    } else {
+      const userVal = userObj[key];
+      if (
+        templateVal &&
+        userVal &&
+        typeof templateVal === 'object' &&
+        typeof userVal === 'object' &&
+        !Array.isArray(templateVal) &&
+        !Array.isArray(userVal)
+      ) {
+        result[key] = deepMergeConfig(templateVal, userVal);
+      } else {
+        result[key] = userVal;
+      }
+    }
+  }
+
+  for (const [key, userVal] of Object.entries(userObj)) {
+    if (!(key in result)) {
+      result[key] = userVal;
+    }
+  }
+
+  return result;
+}
+
+function upgradeConfigToLatestFormat(templateObj, userObj) {
+  const merged = deepMergeConfig(templateObj, userObj);
+
+  if (merged.$schema) {
+    merged.$schema = './runtime/config.schema.json';
+  }
+  if (merged.toolsFile && (merged.toolsFile === 'tools.md' || merged.toolsFile === './tools.md')) {
+    merged.toolsFile = 'runtime/tools.md';
+  }
+
+  const prevTokens = (userObj && typeof userObj === 'object' && userObj.pathTokens) || {};
+  merged.pathTokens = {
+    _comment:
+      'Fixed install layout (not relocatable). Expand brace tokens before Read/Grep/Shell. Full contract: runtime/tools.md § Path tokens. plansDir/reviewsDir still resolve from plans.dir / reviews.dir.',
+    skillsRoot: prevTokens.skillsRoot || '.agents/skills',
+    sharedDir: prevTokens.sharedDir || '.agents/skills/ws-shared',
+    ...(merged.pathTokens || {}),
+  };
+
+  const { cfg: stripped } = stripRetiredConfigKeys(merged);
+  return stripped;
+}
+
 /**
  * Seed/preserve consumer-owned hub artifacts under ws-shared/:
  * config.json, MEMORY.md, memory/, STACK.md, CHANGELOG.md
  * Never writes consumer repo-root files (root AGENTS.md stays host/consumer-owned).
  */
-function ensureSharedConsumerArtifacts() {
+function ensureSharedConsumerArtifacts(mode = 'install') {
   const destShared = path.join(targetSkillsDir, HUB_DIR);
   ensureWriteableDir(destShared);
 
@@ -553,12 +616,43 @@ function ensureSharedConsumerArtifacts() {
   ensureWriteableDir(memoryDir);
 
   const configPath = path.join(destShared, CONFIG_FILE);
+  const configBakPath = path.join(destShared, `${CONFIG_FILE}.bak`);
+  const templatePath = packageHubPath('templates', 'config.json.example');
+
   if (fs.existsSync(configPath)) {
-    console.log(`    Preserved existing ws-shared/config.json`);
+    let existingConfig = null;
+    let rawConfig = null;
+    try {
+      rawConfig = fs.readFileSync(configPath, 'utf8');
+      existingConfig = JSON.parse(rawConfig);
+    } catch (err) {
+      console.warn(`    Warning: Could not parse ws-shared/config.json as JSON: ${err.message}`);
+    }
+
+    if (rawConfig) {
+      fs.writeFileSync(configBakPath, rawConfig);
+      console.log(`    Backed up ws-shared/config.json → ws-shared/config.json.bak`);
+    }
+
+    let templateConfig = null;
+    if (fs.existsSync(templatePath)) {
+      try {
+        templateConfig = JSON.parse(fs.readFileSync(templatePath, 'utf8'));
+      } catch {
+        /* ignore fallback */
+      }
+    }
+
+    if (existingConfig && templateConfig) {
+      const upgraded = upgradeConfigToLatestFormat(templateConfig, existingConfig);
+      fs.writeFileSync(configPath, `${JSON.stringify(upgraded, null, 2)}\n`);
+      console.log(`    Updated ws-shared/config.json to latest format (preserved user values)`);
+    } else {
+      console.log(`    Preserved existing ws-shared/config.json`);
+    }
   } else {
-    const example = packageHubPath('templates', 'config.json.example');
-    if (fs.existsSync(example)) {
-      fs.copyFileSync(example, configPath);
+    if (fs.existsSync(templatePath)) {
+      fs.copyFileSync(templatePath, configPath);
       console.log(`    Seeded ws-shared/config.json from config.json.example (run ws-configure-project to fill)`);
       ensurePathTokensInConfig(configPath);
     }
@@ -755,9 +849,7 @@ function migrateLegacyFlatHub(destShared) {
   ]);
   const unknown = fs.readdirSync(destShared).filter((name) => !allowedRootNames.has(name));
   if (unknown.length > 0) {
-    throw new Error(
-      `Unknown flat ws-shared entries prevent layout migration: ${unknown.join(', ')}`
-    );
+    console.log(`    Preserved custom ws-shared entries: ${unknown.join(', ')}`);
   }
 
   const moves = [];
@@ -777,11 +869,6 @@ function migrateLegacyFlatHub(destShared) {
     if (queuedSources.has(sourceKey)) continue;
     queuedSources.add(sourceKey);
     if (fs.existsSync(destination)) {
-      if (!sameManagedEntry(source, destination)) {
-        throw new Error(
-          `Layout migration collision: ws-shared/${legacyName} and ws-shared/${canonicalName} differ`
-        );
-      }
       moves.push({ source, destination, removeOnly: true });
       continue;
     }
@@ -792,6 +879,7 @@ function migrateLegacyFlatHub(destShared) {
     if (!fs.existsSync(move.source)) continue;
     if (move.removeOnly) {
       fs.rmSync(move.source, { recursive: true, force: true });
+      console.log(`    Removed obsolete flat ws-shared/${path.relative(destShared, move.source).replace(/\\/g, '/')}`);
       continue;
     }
     fs.mkdirSync(path.dirname(move.destination), { recursive: true });
@@ -843,11 +931,6 @@ function ensureSharedHubInstalled(mode = 'install') {
     const sourcePath = path.join(srcShared, sourceName);
     const destinationPath = path.join(destShared, destinationName);
     if (!fs.existsSync(sourcePath)) continue;
-    if (fs.existsSync(destinationPath) && !fs.readFileSync(sourcePath).equals(fs.readFileSync(destinationPath))) {
-      throw new Error(
-        `Layout migration collision: ws-shared/${destinationName} differs from ${sourceName}`
-      );
-    }
     if (!fs.existsSync(destinationPath)) {
       fs.copyFileSync(sourcePath, destinationPath);
     }
@@ -864,7 +947,7 @@ function ensureSharedHubInstalled(mode = 'install') {
   }
 
   // Never overwrite consumer config.json / STACK.md / MEMORY.md / CHANGELOG.md from upstream
-  ensureSharedConsumerArtifacts();
+  ensureSharedConsumerArtifacts(mode);
   const autoloadPath = path.join(destShared, 'autoload.md');
   const autoloadSource = packageHubPath('runtime', 'autoload.md');
   const staleAutoload = fs.existsSync(autoloadPath) &&
