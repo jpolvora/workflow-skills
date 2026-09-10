@@ -300,7 +300,7 @@ function detectStaleState(state, workflowDir, telemetry, stateFile, repoRoot = w
         }
       });
       const newest = revisions.reduce((a, b) => (b.revision > a.revision ? b : a));
-      if (newest.file !== stateFile && newest.revision >= Number(state.revision || 0)) {
+      if (newest.file !== stateFile && newest.revision > Number(state.revision || 0)) {
         addFinding(
           findings,
           'warning',

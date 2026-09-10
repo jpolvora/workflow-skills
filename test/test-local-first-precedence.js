@@ -146,6 +146,35 @@ else {
   check(report.findings.some((finding) => finding.code === 'stale-state'), 'monitor reports stale-state when telemetry is ahead');
 }
 
+// 8b. Revision-race branch: equal sibling revisions are not newer evidence.
+const raceSibling = path.join(staleDir, 'wf-stale-sibling.state.json');
+const raceState = (revision) => ({ currentStep: 2, revision });
+write(
+  raceSibling,
+  JSON.stringify({ stateVersion: 3, revision: 1, workflowId: 'wf-stale', slug: staleSlug, workflowType: 'standard', status: 'active', currentStep: 2, completedSteps: [0, 1], skippedSteps: [], verificationScore: 9 }),
+);
+const raceEqual = monitor.detectStaleState(
+  raceState(1),
+  staleDir,
+  { events: [], errors: [] },
+  path.join(staleDir, 'wf-stale.state.json'),
+  staleRoot,
+);
+check(!raceEqual.some((finding) => finding.message.includes('newer state evidence')), 'equal sibling revisions report no newer-evidence finding');
+write(
+  raceSibling,
+  JSON.stringify({ stateVersion: 3, revision: 5, workflowId: 'wf-stale', slug: staleSlug, workflowType: 'standard', status: 'active', currentStep: 2, completedSteps: [0, 1], skippedSteps: [], verificationScore: 9 }),
+);
+const raceNewer = monitor.detectStaleState(
+  raceState(1),
+  staleDir,
+  { events: [], errors: [] },
+  path.join(staleDir, 'wf-stale.state.json'),
+  staleRoot,
+);
+check(raceNewer.some((finding) => finding.message.includes('newer state evidence')), 'strictly newer sibling revision still reports newer evidence');
+fs.rmSync(raceSibling);
+
 // 9. Monitor flags branch mismatch without depending on the real checkout.
 const mismatched = monitor.detectContextMismatch({ branch: 'feature-x' }, { branch: 'main', head: 'abc', topLevel: repoRoot }, repoRoot);
 check(mismatched.some((finding) => finding.code === 'context-mismatch'), 'branch mismatch helper reports context-mismatch');
