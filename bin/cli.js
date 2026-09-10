@@ -931,9 +931,10 @@ function ensureSharedHubInstalled(mode = 'install') {
     const sourcePath = path.join(srcShared, sourceName);
     const destinationPath = path.join(destShared, destinationName);
     if (!fs.existsSync(sourcePath)) continue;
-    if (!fs.existsSync(destinationPath)) {
-      fs.copyFileSync(sourcePath, destinationPath);
+    if (CONSUMER_OWNED_HUB_FILES.has(destinationName) && fs.existsSync(destinationPath)) {
+      continue;
     }
+    fs.copyFileSync(sourcePath, destinationPath);
   }
 
   // Drop obsolete lowercase template only when it is a distinct file (case-sensitive FS).
