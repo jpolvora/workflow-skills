@@ -154,7 +154,8 @@ write(
 );
 write(path.join(emptyWorkflowDir, `step-00-${emptySlug}.spec.md`), '');
 const transcripts = path.join(root, 'transcripts');
-write(path.join(transcripts, 'agent.jsonl'), 'ENOENT while loading build_dispatch_context; unsupported model id\n');
+write(path.join(transcripts, 'agent.jsonl'), `wf-monitor ${slug}: ENOENT while loading build_dispatch_context; unsupported model id\n`);
+write(path.join(transcripts, 'unrelated.jsonl'), 'unrelated-history: ENOENT while loading build_dispatch_context; unsupported model id\n');
 
 const unboundedWatch = run(['--repo-root', root, '--watch', '--json'], root);
 if (unboundedWatch.status === 0 || !unboundedWatch.stderr.includes('--watch requires --iterations <count>')) {
@@ -205,6 +206,10 @@ if (!codes.has('step-drift')) throw new Error('monitor did not detect Step 5 sco
 if (!codes.has('empty-files-touched')) throw new Error('monitor did not detect empty filesTouched');
 if (!codes.has('hybrid-path-resolution')) throw new Error('monitor did not scan transcript path failures');
 if (!codes.has('model-fallback')) throw new Error('monitor did not scan rejected models');
+const hybridFindings = report.findings.filter((finding) => finding.code === 'hybrid-path-resolution');
+if (hybridFindings.some((finding) => finding.evidence.some((e) => e.includes('unrelated.jsonl')))) {
+  throw new Error('monitor leaked unrelated transcript finding into scoped report');
+}
 const expectedPaths = report.workflows
   .find((workflow) => workflow.slug === slug)
   .expectedArtifacts.map((artifact) => artifact.path.replaceAll('\\', '/'));
@@ -257,6 +262,40 @@ if (legacyFindings.some((finding) => finding.code === 'empty-files-touched')) {
 }
 if (!fs.existsSync(path.join(root, '.agents/plans/monitor-demo/workflow-monitor.report.md'))) {
   throw new Error('monitor did not write the explicit report path');
+}
+
+const wfFilteredResult = run([
+  '--repo-root',
+  root,
+  '--workflow-id',
+  'wf-markdown',
+  '--transcript-root',
+  transcripts,
+  '--json',
+], root);
+if (wfFilteredResult.status !== 0) {
+  throw new Error(wfFilteredResult.stderr || wfFilteredResult.stdout);
+}
+const wfFilteredReport = JSON.parse(wfFilteredResult.stdout);
+if (wfFilteredReport.findings.some((f) => f.code === 'hybrid-path-resolution')) {
+  throw new Error('monitor reported transcript failure for unrelated workflow-id');
+}
+
+const wfMatchResult = run([
+  '--repo-root',
+  root,
+  '--workflow-id',
+  'wf-monitor',
+  '--transcript-root',
+  transcripts,
+  '--json',
+], root);
+if (wfMatchResult.status !== 0) {
+  throw new Error(wfMatchResult.stderr || wfMatchResult.stdout);
+}
+const wfMatchReport = JSON.parse(wfMatchResult.stdout);
+if (!wfMatchReport.findings.some((f) => f.code === 'hybrid-path-resolution')) {
+  throw new Error('monitor failed to detect transcript failure when filtering by matching workflow-id');
 }
 
 for (const directory of tempRoots) fs.rmSync(directory, { recursive: true, force: true });

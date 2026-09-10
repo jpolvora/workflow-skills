@@ -39,6 +39,7 @@ const RUNTIME_NAMES = [
   /^plan-gate\.md$/,
   /^resolve-[A-Za-z0-9_-]+\.txt$/,
   /^plan\.index\.json$/,
+  /^step(-\d+)?-output\.json$/,
   /\.(cjs|patch|md)$/,
 ];
 
@@ -95,7 +96,9 @@ function readPriorHandoffOutput(state, step) {
   };
 }
 
-function finishFingerprint(state, output) {
+function finishFingerprint(state, output, step) {
+  const rawSummary = String(output?.summary || '');
+  const outputSummary = rawSummary || (step !== undefined ? `Finished step ${step}` : '');
   return JSON.stringify(stableValue({
     currentStep: state.currentStep,
     completedSteps: state.completedSteps,
@@ -108,7 +111,7 @@ function finishFingerprint(state, output) {
     verificationScore: state.verificationScore,
     fableVerdict: state.fableVerdict,
     shipStatus: state.shipStatus,
-    outputSummary: String(output?.summary || ''),
+    outputSummary,
     outputFindings: findingsHistogram(output?.findings),
   }));
 }
@@ -213,14 +216,14 @@ function normalizeHandoffPaths(repoRoot, paths) {
   )];
 }
 
-function writeHandoffFile({ usDir, state, pipeline, step, options, context, output }) {
+function writeHandoffFile({ usDir, state, pipeline, step, options, context, output, fallbackArtifacts = [] }) {
   const schemaPath = path.join(__dirname, '..', 'schemas', 'handoff.schema.json');
   let payload;
   if (options.handoff) {
     payload = JSON.parse(fs.readFileSync(path.resolve(context.repoRoot, options.handoff), 'utf8'));
     payload.artifactPaths = normalizeHandoffPaths(context.repoRoot, payload.artifactPaths || []);
   } else {
-    const { created, modified, deleted } = normalizeFilesTouched(output, options, context.repoRoot);
+    const { created, modified, deleted } = normalizeFilesTouched(output, options, context.repoRoot, fallbackArtifacts);
     const touched = [...new Set([...created, ...modified, ...deleted])];
     payload = {
       step: Number(step),
@@ -559,23 +562,32 @@ function normalizeFileList(repoRoot, value) {
   )];
 }
 
-function normalizeFilesTouched(output, options, repoRoot) {
+function normalizeFilesTouched(output, options, repoRoot, fallbackArtifacts = []) {
   const reported = output?.files_touched ?? output?.filesTouched;
   const source = Array.isArray(reported) ? { created: reported } : (reported || {});
-  return {
-    created: normalizeFileList(
-      repoRoot,
-      options.created !== undefined ? options.created : source.created,
-    ),
-    modified: normalizeFileList(
-      repoRoot,
-      options.modified !== undefined ? options.modified : source.modified,
-    ),
-    deleted: normalizeFileList(
-      repoRoot,
-      options.deleted !== undefined ? options.deleted : source.deleted,
-    ),
-  };
+  const created = normalizeFileList(
+    repoRoot,
+    options.created !== undefined ? options.created : source.created,
+  );
+  const modified = normalizeFileList(
+    repoRoot,
+    options.modified !== undefined ? options.modified : source.modified,
+  );
+  const deleted = normalizeFileList(
+    repoRoot,
+    options.deleted !== undefined ? options.deleted : source.deleted,
+  );
+  if (!created.length && !modified.length && !deleted.length && Array.isArray(fallbackArtifacts) && fallbackArtifacts.length) {
+    const existing = fallbackArtifacts.filter((file) => fs.existsSync(file));
+    if (existing.length) {
+      return {
+        created: normalizeFileList(repoRoot, existing),
+        modified: [],
+        deleted: [],
+      };
+    }
+  }
+  return { created, modified, deleted };
 }
 
 function redactSecrets(value) {
@@ -715,8 +727,30 @@ function tokenCount(options, output, key) {
   return 0;
 }
 
-function readStepOutput(value, context) {
-  if (!value) return {};
+function readStepOutput(value, context, paths, step) {
+  if (!value) {
+    if (paths && paths.usDir && step !== undefined) {
+      const stepPadded = String(step).padStart(2, '0');
+      const candidates = [
+        path.join(paths.usDir, '.runtime', `step-${stepPadded}-output.json`),
+        path.join(paths.usDir, '.runtime', `step-${step}-output.json`),
+        path.join(paths.usDir, `step-${stepPadded}-output.json`),
+        path.join(paths.usDir, `step-${step}-output.json`),
+        path.join(paths.usDir, '.runtime', 'step-output.json'),
+        path.join(paths.usDir, 'step-output.json'),
+      ];
+      for (const candidate of candidates) {
+        if (fs.existsSync(candidate)) {
+          try {
+            return JSON.parse(fs.readFileSync(candidate, 'utf8'));
+          } catch {
+            // continue
+          }
+        }
+      }
+    }
+    return {};
+  }
   const candidate = path.resolve(context.repoRoot, value);
   const raw = fs.existsSync(candidate) ? fs.readFileSync(candidate, 'utf8') : value;
   try {
@@ -1080,7 +1114,10 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   const timestamp = String(options.timestamp || options.finishedAt || options.dispatchedAt || nowIso());
   const paths = statePaths(absoluteState, context);
   const priorHandoffOutput = operation === 'finish' ? readPriorHandoffOutput(loaded.state, step) : null;
-  const priorFingerprint = finishFingerprint(loaded.state, priorHandoffOutput);
+  const priorFingerprint = finishFingerprint(loaded.state, priorHandoffOutput, step);
+  const priorStepTelemetry = (loaded.state.telemetry?.steps || []).find((row) => Number(row.N ?? row.step) === step);
+  const priorFinishDispatchedAt = priorStepTelemetry?.dispatchedAt || null;
+  const wasStepCompletedBeforeUpdate = stepCompleted(loaded.state, step);
   syncAcCountsFromLedger(state, paths.usDir);
   state.stateVersion = STATE_VERSION;
   state.revision = Number(state.revision || 0) + 1;
@@ -1095,6 +1132,9 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   let body = loaded.body;
   let event;
   let finishOutput = {};
+  let fallbackArtifacts = [];
+  let isInternalSubstep = false;
+  let dispatchedAt = null;
 
   if (operation === 'dispatch') {
     if (pipeline === 'standard') {
@@ -1164,13 +1204,13 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     event.dispatchedAt = timestamp;
   } else if (operation === 'finish') {
     const dispatch = state.stepDispatches.find((item) => Number(item.step) === step);
-    const dispatchedAt = String(options.dispatchedAt || dispatchTimestamp(dispatch));
+    dispatchedAt = String(options.dispatchedAt || dispatchTimestamp(dispatch));
     const finishedAt = timestamp;
     const elapsedSec = dispatchedAt ? Math.max(0, Math.floor((Date.parse(finishedAt) - Date.parse(dispatchedAt)) / 1000)) : 0;
     const estimated = !dispatchedAt;
     const status = String(options.status || 'completed');
     if (!['completed', 'failed', 'skipped'].includes(status)) throw new Error('finish status must be completed, failed, or skipped');
-    const isInternalSubstep = options.substep && ['scoreAndRefine', 'reviewFix', 'fixPrPlan', 'fixPrExec'].includes(options.substep);
+    isInternalSubstep = Boolean(options.substep && ['scoreAndRefine', 'reviewFix', 'fixPrPlan', 'fixPrExec'].includes(options.substep));
     let derivedScore = null;
     if (options.verificationScore !== undefined || (pipeline === 'standard' && step === 5 && status === 'completed' && !isInternalSubstep)) {
       const ledgerFile = path.join(paths.usDir, 'ac-ledger.json');
@@ -1238,9 +1278,17 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     state.nextAction = isInternalSubstep
       ? `Resume step ${step} (${options.substep})`
       : status === 'failed' ? `Repair step ${step}` : `Run step ${state.currentStep}`;
-    const output = readStepOutput(options.stepOutput, context);
+    const output = readStepOutput(options.stepOutput, context, paths, step);
     finishOutput = output;
-    const { created, modified, deleted } = normalizeFilesTouched(output, options, context.repoRoot);
+    fallbackArtifacts = finishArtifactNames(state.slug || state.us, step, pipeline)
+      .map((name) => path.join(paths.usDir, name));
+    if (step === 0 && (state.slug || state.us)) {
+      const slug = state.slug || state.us;
+      const specsDir = resolveConfiguredPath(context.repoRoot, context.config?.specs?.dir, '.agents/specs');
+      fallbackArtifacts.push(path.join(specsDir, `${slug}.spec.md`));
+      fallbackArtifacts.push(path.join(paths.usDir, 'ac-ledger.json'));
+    }
+    const { created, modified, deleted } = normalizeFilesTouched(output, options, context.repoRoot, fallbackArtifacts);
     const promptTokens = tokenCount(options, output, 'promptTokens');
     const completionTokens = tokenCount(options, output, 'completionTokens');
     applyFinishTelemetry(state, labels, step, {
@@ -1309,7 +1357,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       .filter(Boolean)
       .sort((a, b) => a.step - b.step);
   }
-  const isIdempotentFinish = operation === 'finish' && Boolean(priorJsonText) && finishFingerprint(state, finishOutput) === priorFingerprint;
+  const isIdempotentFinish = operation === 'finish' && Boolean(priorJsonText) && finishFingerprint(state, finishOutput, step) === priorFingerprint;
   if (isIdempotentFinish) {
     const restored = JSON.parse(priorJsonText);
     Object.keys(state).forEach((key) => {
@@ -1327,6 +1375,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       options,
       context,
       output: finishOutput,
+      fallbackArtifacts,
     });
   }
   if (operation === 'finish') {
@@ -1350,7 +1399,12 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     rawJsonlOut && !isLegacyStepStream ? rawJsonlOut : defaultTelemetry,
   );
 
-  if (!isIdempotentFinish) {
+  const isDuplicateFinish = operation === 'finish' && !isInternalSubstep && wasStepCompletedBeforeUpdate && (
+    (Boolean(dispatchedAt) && priorFinishDispatchedAt === dispatchedAt) ||
+    (!dispatchedAt && Boolean(priorStepTelemetry))
+  );
+
+  if (!isIdempotentFinish && !isDuplicateFinish) {
     appendJsonl(telemetryFile, event);
   }
   atomicWrite(paths.jsonFile, jsonText);

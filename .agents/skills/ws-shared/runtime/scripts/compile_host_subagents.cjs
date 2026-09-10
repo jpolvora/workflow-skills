@@ -120,6 +120,7 @@ const STEP_OUTPUT_SCHEMA_BLOCK = [
   '## Step output contract (mandatory)',
   '',
   'Every run ends with a parseable `step-output` block. Do not invent field names.',
+  'When write access is available under the workflow plan folder, write this JSON object to `{plansDir}/{slug}/.runtime/step-{step}-output.json` (or `{us-dir}/.runtime/step-{step}-output.json`) in addition to emitting the markdown code block.',
   '',
   '```json',
   '{',

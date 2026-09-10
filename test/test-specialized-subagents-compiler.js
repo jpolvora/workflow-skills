@@ -537,6 +537,7 @@ function testCompiledBodyRewrites() {
   assert(body.includes('## Path tokens (expand before use)'), 'path-tokens note present');
   assert(body.includes('## Step output contract (mandatory)'), 'step-output schema appended');
   assert(body.includes('"status": "completed | failed | skipped"'), 'step-output schema fields present');
+  assert(body.includes('.runtime/step-{step}-output.json'), 'step-output schema mentions .runtime step output file');
 
   const resClaude = runCompiler(['--repo-root', mockRepo, '--host', 'claude', '--json']);
   assert(resClaude.status === 0, 'claude compile exits 0');

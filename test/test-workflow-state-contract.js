@@ -877,6 +877,140 @@ acImplemented: 0
   assert.strictEqual(third.status, 0, third.stderr);
   const updatedState = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
   assert.strictEqual(updatedState.handoffs['0'].summary, 'Updated subagent summary', 'non-identical replay updates handoff summary');
+  const finishLinesAfterThird = fs.readFileSync(path.join(idempRoot, '.agents/plans/idemp/telemetry.jsonl'), 'utf8')
+    .trim().split('\n').map(JSON.parse).filter((row) => row.type === 'finish');
+  assert.strictEqual(finishLinesAfterThird.length, 1, 'repeat finish on same dispatch does not duplicate finish telemetry');
+}
+
+// Issue #302: subagent step-output discovery, filesTouched fallback, and runtime allowlist
+{
+  const testRoot = temp('ws-step-output-discovery-');
+  const slug = 'outdisc';
+  const workflowId = 'wf-outdisc';
+  const stateRel = `.agents/plans/${slug}/wf.state.md`;
+  const usDir = path.join(testRoot, '.agents/plans', slug);
+  fs.mkdirSync(path.join(testRoot, '.agents/skills/ws-shared/runtime'), { recursive: true });
+  fs.copyFileSync(
+    path.join(repoRoot, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
+    path.join(testRoot, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
+  );
+  write(path.join(testRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    plans: { dir: '.agents/plans' },
+    specs: { dir: '.agents/specs' },
+    verification: {},
+    defaults: {},
+    fable: { auditVerdictsBlockShip: 'refuted' },
+  }));
+  write(path.join(testRoot, stateRel), `---
+stateVersion: 3
+revision: 0
+workflowId: ${workflowId}
+slug: ${slug}
+workflowType: standard
+status: active
+currentStep: 0
+completedSteps: []
+skippedSteps: []
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+acTotal: 1
+acImplemented: 0
+---
+# State
+`);
+  const jsonlRel = `.agents/plans/${slug}/telemetry.jsonl`;
+  const common = ['--repo-root', testRoot, '--jsonl-out', jsonlRel];
+
+  // 1. Dispatch Step 0
+  assert.strictEqual(run(update, ['dispatch', stateRel, '--step', '0', '--timestamp', '2026-09-09T20:00:00.000Z', ...common]).status, 0);
+
+  // Write a step output file to .runtime/step-00-output.json (simulating subagent write)
+  const runtimeDir = path.join(usDir, '.runtime');
+  fs.mkdirSync(runtimeDir, { recursive: true });
+  write(path.join(runtimeDir, 'step-00-output.json'), JSON.stringify({
+    status: 'completed',
+    files_touched: {
+      created: [`.agents/specs/${slug}.spec.md`, `.agents/plans/${slug}/step-00-${slug}.spec.md`],
+      modified: [],
+      deleted: [],
+    },
+    notes: 'Spec written successfully',
+    next_step_ready: true,
+  }));
+  // Also create the spec files on disk
+  write(path.join(testRoot, `.agents/specs/${slug}.spec.md`), '# Spec');
+  write(path.join(usDir, `step-00-${slug}.spec.md`), '---\nstep: 0\nslug: outdisc\nworkflowId: wf-outdisc\nstatus: completed\nstartedAt: 2026-09-09T20:00:00.000Z\nendedAt: 2026-09-09T20:00:05.000Z\nacRefs: []\n---\n# Step 0');
+
+  // Finish Step 0 WITHOUT --step-output (should auto-discover from .runtime/step-00-output.json)
+  const finishRes = run(update, ['finish', stateRel, '--step', '0', '--timestamp', '2026-09-09T20:00:05.000Z', ...common]);
+  assert.strictEqual(finishRes.status, 0, finishRes.stderr);
+
+  // Validate telemetry has the files_touched from the disk output
+  const events = fs.readFileSync(path.join(testRoot, jsonlRel), 'utf8').trim().split('\n').map(JSON.parse);
+  const finishEvent = events.find((e) => e.type === 'finish' && e.step === 0);
+  assert.ok(finishEvent, 'finish event emitted');
+  assert.deepStrictEqual(finishEvent.filesTouched.created, [
+    `.agents/specs/${slug}.spec.md`,
+    `.agents/plans/${slug}/step-00-${slug}.spec.md`,
+  ], 'filesTouched populated from discovered .runtime/step-00-output.json');
+
+  // Verify .runtime/step-00-output.json passes validate_state without runtime residue error
+  write(path.join(usDir, 'ac-ledger.json'), JSON.stringify({ acceptanceCriteria: [] }));
+  const valRes = run(validate, [stateRel, '--pre-advance', '1', '--repo-root', testRoot]);
+  assert.strictEqual(valRes.status, 0, `validate_state accepts step-output in .runtime: ${valRes.stderr}`);
+
+  // Test 2: Fallback to stamped step artifacts when neither CLI nor disk step-output has files_touched
+  const testRoot2 = temp('ws-artifact-fallback-');
+  const slug2 = 'artfb';
+  const workflowId2 = 'wf-artfb';
+  const stateRel2 = `.agents/plans/${slug2}/wf.state.md`;
+  const usDir2 = path.join(testRoot2, '.agents/plans', slug2);
+  fs.mkdirSync(path.join(testRoot2, '.agents/skills/ws-shared/runtime'), { recursive: true });
+  fs.copyFileSync(
+    path.join(repoRoot, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
+    path.join(testRoot2, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
+  );
+  write(path.join(testRoot2, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    plans: { dir: '.agents/plans' },
+    specs: { dir: '.agents/specs' },
+    verification: {},
+    defaults: {},
+    fable: { auditVerdictsBlockShip: 'refuted' },
+  }));
+  write(path.join(testRoot2, stateRel2), `---
+stateVersion: 3
+revision: 0
+workflowId: ${workflowId2}
+slug: ${slug2}
+workflowType: standard
+status: active
+currentStep: 0
+completedSteps: []
+skippedSteps: []
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+acTotal: 1
+acImplemented: 0
+---
+# State
+`);
+  const jsonlRel2 = `.agents/plans/${slug2}/telemetry.jsonl`;
+  const common2 = ['--repo-root', testRoot2, '--jsonl-out', jsonlRel2];
+
+  // Dispatch Step 0
+  assert.strictEqual(run(update, ['dispatch', stateRel2, '--step', '0', '--timestamp', '2026-09-09T20:00:00.000Z', ...common2]).status, 0);
+
+  // Create step 0 artifacts on disk
+  write(path.join(testRoot2, `.agents/specs/${slug2}.spec.md`), '# Spec');
+  write(path.join(usDir2, `step-00-${slug2}.spec.md`), '---\nstep: 0\nslug: artfb\nworkflowId: wf-artfb\nstatus: completed\nstartedAt: 2026-09-09T20:00:00.000Z\nendedAt: 2026-09-09T20:00:05.000Z\nacRefs: []\n---\n# Step 0');
+
+  // Finish Step 0 with NO step-output passed and NO .runtime file
+  const finishRes2 = run(update, ['finish', stateRel2, '--step', '0', '--timestamp', '2026-09-09T20:00:05.000Z', ...common2]);
+  assert.strictEqual(finishRes2.status, 0, finishRes2.stderr);
+
+  const events2 = fs.readFileSync(path.join(testRoot2, jsonlRel2), 'utf8').trim().split('\n').map(JSON.parse);
+  const finishEvent2 = events2.find((e) => e.type === 'finish' && e.step === 0);
+  assert.ok(finishEvent2, 'finish event emitted');
+  assert.ok(finishEvent2.filesTouched.created.includes(`.agents/plans/${slug2}/step-00-${slug2}.spec.md`), 'filesTouched falls back to stamped step artifact');
+  assert.ok(finishEvent2.filesTouched.created.includes(`.agents/specs/${slug2}.spec.md`), 'filesTouched includes created spec');
 }
 
 // AC6 / NS1 — autoMode + standard + Step 0 only → pre-advance 4 fails (no plan → no code)
