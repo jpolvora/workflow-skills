@@ -91,6 +91,33 @@ function loadJson(file) {
   }
 }
 
+function readConfigStrict(file) {
+  try {
+    return { config: JSON.parse(fs.readFileSync(file, 'utf8')), error: null };
+  } catch (error) {
+    return { config: {}, error: error?.message || String(error) };
+  }
+}
+
+// Local-first precedence matrix shared by orchestrators, step dispatches,
+// generated specialized agents, state/telemetry helpers, and ws-monitor.
+// Order is authoritative: a consumer-local candidate wins whenever it exists.
+// A global fallback is used only when the local candidate is absent, and the
+// selected source must stay observable via configSource / resolved context.
+const PRECEDENCE_MATRIX = [
+  { rank: 1, dimension: 'config', local: '{sharedDir}/config.json', global: '{globalSkillsRoot}/ws-shared/config.json' },
+  { rank: 2, dimension: 'skill-bodies', local: '{skillsRoot}/ws-<id>/SKILL.md', global: '{globalSkillsRoot}/ws-<id>/SKILL.md' },
+  { rank: 3, dimension: 'shared-runtime', local: '{sharedDir}/runtime/*', global: '{globalSkillsRoot}/ws-shared/runtime/*' },
+  { rank: 4, dimension: 'harness', local: '{sharedDir}/AGENTS.md', global: '{globalSkillsRoot}/ws-shared/AGENTS.md' },
+  { rank: 5, dimension: 'specs', local: '{specsDir} (plans.specsDir)', global: 'default .agents/specs' },
+  { rank: 6, dimension: 'plans-state', local: '{plansDir} + telemetry + worktree paths', global: 'default .agents/plans' },
+  { rank: 7, dimension: 'fallback', local: 'local candidate present wins', global: 'global only when local absent; source observable' },
+];
+
+function describePrecedenceMatrix() {
+  return PRECEDENCE_MATRIX.map((row) => ({ ...row }));
+}
+
 function normalizeConfig(config) {
   const normalized = { ...config, fable: { ...(config.fable || {}) } };
   const value = normalized.fable.auditVerdictsBlockShip;
@@ -173,6 +200,29 @@ function resolveConsumerContext({ repoRoot, scriptFile, skillId } = {}) {
       ? [localConfig, localExample, globalConfig, globalExample]
       : [localConfig, localExample];
   const configPath = configCandidates.find((file) => fs.existsSync(file)) || localConfig;
+  // Never silently fall back from a present-but-unreadable local config to a
+  // global candidate. When the local config exists but fails to parse, keep
+  // the local path as the source of record and surface configError with the
+  // candidate paths so callers report instead of observing stale globals.
+  let config = {};
+  let configError = null;
+  const configCandidatesSeen = configCandidates.slice();
+  if (fs.existsSync(localConfig)) {
+    const strict = readConfigStrict(localConfig);
+    if (strict.error) {
+      config = {};
+      configError = `local config unreadable: ${localConfig}: ${strict.error} | candidates: ${configCandidatesSeen.join(', ')}`;
+    } else {
+      try {
+        config = normalizeConfig(strict.config);
+      } catch (error) {
+        config = {};
+        configError = `local config invalid: ${localConfig}: ${error?.message || error} | candidates: ${configCandidatesSeen.join(', ')}`;
+      }
+    }
+  } else {
+    config = normalizeConfig(loadJson(configPath));
+  }
   const runtimeSource = resolveHubSource(
     { sharedDir: hub, globalSkillsRoot, executionScope },
     HUB_RUNTIME_REL,
@@ -192,13 +242,76 @@ function resolveConsumerContext({ repoRoot, scriptFile, skillId } = {}) {
     executionScope,
     runtimeSource,
     templateSource,
-    config: normalizeConfig(loadJson(configPath)),
+    config,
+    configError,
+    configCandidates: configCandidatesSeen,
+    precedenceMatrix: describePrecedenceMatrix(),
   };
 }
 
 function resolveConfiguredPath(repoRoot, value, fallback) {
   const raw = String(value || fallback || '');
   return path.isAbsolute(raw) ? path.resolve(raw) : path.resolve(repoRoot, raw);
+}
+
+// Resolved-context diagnostic shared by entrypoints and ws-monitor. It names
+// exactly which local/global source was selected without requiring the reader
+// to inspect host-private paths.
+function resolveResolvedContext({ repoRoot, scriptFile, skillId, workflowId, slug, branch, statePath, worktreePath } = {}) {
+  const context = resolveConsumerContext({ repoRoot, scriptFile, skillId });
+  const plansDir = resolveConfiguredPath(context.repoRoot, context.config?.plans?.dir, '.agents/plans');
+  const specsDir = resolveConfiguredPath(context.repoRoot, context.config?.plans?.specsDir, '.agents/specs');
+  const template = String(context.config?.plans?.worktreesDir || '.agents/plans/{slug}/worktrees');
+  const resolvedWorktree = worktreePath
+    ? path.resolve(context.repoRoot, worktreePath)
+    : path.resolve(context.repoRoot, template.replace('{slug}', String(slug || context.config?.slug || 'unknown')));
+  let worktreeSource = 'unresolved';
+  try {
+    worktreeSource = fs.existsSync(resolvedWorktree) ? 'project' : 'unresolved';
+  } catch {
+    worktreeSource = 'unresolved';
+  }
+  const skillsSource = inside(context.skillsRoot, context.repoRoot) ? 'project' : 'global';
+  const sharedSource = inside(context.sharedDir, context.repoRoot) ? 'project' : 'global';
+  const runtimeSourceLabel = inside(context.runtimeSource, context.repoRoot) ? 'project' : 'global';
+  return {
+    repoRoot: '.',
+    configPath: toRepoRelative(context.repoRoot, context.configPath, { allowOutside: true }),
+    configSource: context.configSource,
+    configError: context.configError || null,
+    skillsRoot: toRepoRelative(context.repoRoot, context.skillsRoot, { allowOutside: true }),
+    skillsSource,
+    sharedDir: toRepoRelative(context.repoRoot, context.sharedDir, { allowOutside: true }),
+    sharedSource,
+    runtimeSource: toRepoRelative(context.repoRoot, context.runtimeSource, { allowOutside: true }),
+    runtimeSourceLabel,
+    specsDir: toRepoRelative(context.repoRoot, specsDir, { allowOutside: true }),
+    plansDir: toRepoRelative(context.repoRoot, plansDir, { allowOutside: true }),
+    worktreePath: toRepoRelative(context.repoRoot, resolvedWorktree, { allowOutside: true }),
+    worktreeSource,
+    workflowId: workflowId || null,
+    branch: branch || null,
+    statePath: statePath ? toRepoRelative(context.repoRoot, path.resolve(context.repoRoot, statePath), { allowOutside: true }) : null,
+    executionScope: context.executionScope,
+    precedenceMatrix: describePrecedenceMatrix(),
+  };
+}
+
+// Explicit refresh/re-resolve operation. Resolution is uncached per call, so
+// refresh simply re-resolves; it exists so callers can invalidate after a
+// config, branch, worktree, or workflow change without relying on stale state.
+function refreshResolvedContext(options = {}) {
+  return resolveResolvedContext(options);
+}
+
+// True when a previously captured diagnostic no longer matches the current
+// execution context (config path/source, resolved dirs, branch, worktree,
+// workflow, or state path changed). Callers use this to invalidate cached
+// resolution.
+function isResolutionStale(cached, current) {
+  if (!cached || !current) return true;
+  return ['configPath', 'configSource', 'plansDir', 'specsDir', 'branch', 'worktreePath', 'workflowId', 'statePath']
+    .some((key) => String(cached[key] ?? '') !== String(current[key] ?? ''));
 }
 
 function toRepoRelative(repoRoot, value, { allowOutside = false } = {}) {
@@ -288,6 +401,9 @@ module.exports = {
   HUB_CONFIG_EXAMPLE,
   HUB_RUNTIME_REL,
   HUB_TEMPLATES_REL,
+  PRECEDENCE_MATRIX,
+  describePrecedenceMatrix,
+  readConfigStrict,
   inside,
   resolveGlobalSkillsRoot,
   resolveKnownGlobalSkillsRoots,
@@ -297,6 +413,9 @@ module.exports = {
   resolveRepoRoot,
   sharedDir,
   resolveConsumerContext,
+  resolveResolvedContext,
+  refreshResolvedContext,
+  isResolutionStale,
   resolveSkillMdPath,
   resolveConfiguredPath,
   toRepoRelative,

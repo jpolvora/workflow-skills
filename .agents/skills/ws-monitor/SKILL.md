@@ -1,7 +1,7 @@
 ---
 name: ws-monitor
 description: Read-only live observer for active Spec-to-PR workflow runs, telemetry, artifacts, and configured host transcripts.
-version: 0.4.13
+version: 0.4.14
 disable-model-invocation: true
 invocation_names:
   - monitor
@@ -37,7 +37,7 @@ The command observes all workflow folders under the configured `plans.dir` by de
 ## Steps
 
 1. **Resolve** — Load project `{sharedDir}/config.json`, resolve `{plansDir}`, and apply project-local-over-global hub precedence.
-   - Done when: the active plans directory and optional transcript roots are known.
+   - Done when: the active plans directory and optional transcript roots are known, plus `resolvedContext` names the selected local/global source.
 2. **Collect** — Run the snapshot script against state files, telemetry, expected artifacts, and explicitly configured transcript roots.
    - Done when: each selected workflow has a state summary, telemetry summary, artifact status, and classified signals.
 3. **Classify** — Mark findings as `critical`, `warning`, or `info`; distinguish evidence from inference.
@@ -56,6 +56,9 @@ The command observes all workflow folders under the configured `plans.dir` by de
 | `ENOENT` or `build_dispatch_context` in a transcript | Critical | A path or hybrid installation resolution failed |
 | Rejected/unavailable model in a transcript | Warning | Dispatch should fall back to the active session model |
 | `turn_ended` before handoff | Warning | A host turn may have interrupted execution |
+| Telemetry ahead of selected state (`stale-state`) | Critical or warning | The monitor must not report an older step as current without explaining the state-source mismatch |
+| State branch/HEAD/worktree differs from active checkout (`context-mismatch`) | Critical or warning | Orchestrator and monitor resolved different local/global roots, or config changed mid-run |
+| Local config present but unreadable (`config-unreadable`) | Critical | Report candidate paths; never silently fall back to the global hub |
 
 ## Launcher
 
