@@ -1742,4 +1742,45 @@ status: completed
   assert.match(`${failEmpty.stdout}${failEmpty.stderr}`, /plan artifact missing/);
 }
 
+// Mutating step fallback and disk output auto-discovery do NOT run for skipped/failed finishes
+{
+  const skipRoot = temp('ws-state-skip-fallback-');
+  const slug = 'skipfallback';
+  const stateRel = `.agents/plans/${slug}/wf.state.md`;
+  const usDir = path.join(skipRoot, '.agents/plans', slug);
+  fs.mkdirSync(path.join(usDir, '.runtime'), { recursive: true });
+  write(path.join(skipRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    project: { name: 'skipfallback' },
+    defaults: { minVerifyScore: 9 },
+  }));
+  write(path.join(skipRoot, stateRel), `---
+stateVersion: 7
+revision: 0
+workflowId: wf-skipfallback
+slug: ${slug}
+workflowType: standard
+status: active
+currentStep: 2
+completedSteps: [0, 1]
+skippedSteps: []
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+acTotal: 1
+acImplemented: 0
+---
+# State
+`);
+  const skipCommon = ['--repo-root', skipRoot, '--jsonl-out', `.agents/plans/${slug}/telemetry.jsonl`];
+  // Leave stale step output and stale artifact on disk
+  write(path.join(usDir, '.runtime/step-02-output.json'), JSON.stringify({ files_touched: { created: ['stale-step-2.js'] } }));
+  write(path.join(usDir, `step-02-${slug}.plan-interview.md`), 'stale interview content');
+  const res = run(update, ['finish', stateRel, '--step', '2', '--status', 'skipped', '--reason', 'interview-not-required', '--timestamp', '2026-08-21T21:00:00.000Z', ...skipCommon]);
+  assert.strictEqual(res.status, 0, res.stderr);
+  const state = JSON.parse(fs.readFileSync(path.join(skipRoot, `.agents/plans/${slug}/wf.state.json`), 'utf8'));
+  assert.deepStrictEqual(state.workflowManifest.created, [], 'skipped step does not claim stale files in workflowManifest');
+  const telemetry = fs.readFileSync(path.join(skipRoot, `.agents/plans/${slug}/telemetry.jsonl`), 'utf8').trim().split('\n').map(JSON.parse);
+  const finishEvent = telemetry.find((e) => e.type === 'finish' && e.step === 2);
+  assert.ok(finishEvent, 'finish event emitted for skipped step');
+  assert.deepStrictEqual(finishEvent.filesTouched.created, [], 'skipped step filesTouched.created is empty');
+}
+
 console.log('test-workflow-state-contract: ok');

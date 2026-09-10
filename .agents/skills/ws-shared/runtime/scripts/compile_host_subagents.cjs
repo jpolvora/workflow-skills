@@ -403,6 +403,17 @@ function main() {
 
     const host = resolveHostTarget(repoRoot, options.host, config);
     const subConfig = config?.defaults?.specializedSubagents || {};
+    if (subConfig.directory && subConfig.scope) {
+      const normDir = String(subConfig.directory).trim().toLowerCase();
+      const normScope = String(subConfig.scope).trim().toLowerCase();
+      const dirIsUser = normDir === 'userlevel' || normDir === 'user';
+      const scopeIsUser = normScope === 'userlevel' || normScope === 'user';
+      const dirIsProject = normDir === 'projectlevel' || normDir === 'project';
+      const scopeIsProject = normScope === 'projectlevel' || normScope === 'project';
+      if ((dirIsUser && scopeIsProject) || (dirIsProject && scopeIsUser)) {
+        throw new Error(`specializedSubagents.directory ('${subConfig.directory}') and .scope ('${subConfig.scope}') conflict; set only one or ensure they align`);
+      }
+    }
     const dirSetting =
       options.directory ||
       (options.userLevel ? 'userLevel' : null) ||

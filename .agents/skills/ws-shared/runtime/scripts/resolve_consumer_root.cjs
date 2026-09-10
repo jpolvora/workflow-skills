@@ -232,6 +232,17 @@ function resolveSpecializedSubagentsDirectory(repoRoot, host, configOrDir = {}) 
     dirOption = configOrDir;
   } else if (configOrDir && typeof configOrDir === 'object') {
     const cfgSub = configOrDir.defaults?.specializedSubagents || configOrDir.specializedSubagents || configOrDir;
+    if (cfgSub.directory && cfgSub.scope) {
+      const normDir = String(cfgSub.directory).trim().toLowerCase();
+      const normScope = String(cfgSub.scope).trim().toLowerCase();
+      const dirIsUser = normDir === 'userlevel' || normDir === 'user';
+      const scopeIsUser = normScope === 'userlevel' || normScope === 'user';
+      const dirIsProject = normDir === 'projectlevel' || normDir === 'project';
+      const scopeIsProject = normScope === 'projectlevel' || normScope === 'project';
+      if ((dirIsUser && scopeIsProject) || (dirIsProject && scopeIsUser)) {
+        throw new Error(`specializedSubagents.directory ('${cfgSub.directory}') and .scope ('${cfgSub.scope}') conflict; set only one or ensure they align`);
+      }
+    }
     dirOption = cfgSub.directory || cfgSub.scope || 'projectLevel';
   }
 

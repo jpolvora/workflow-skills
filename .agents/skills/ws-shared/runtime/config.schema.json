@@ -276,7 +276,7 @@
               "type": "string",
               "enum": ["projectLevel", "userLevel", "project", "user"],
               "default": "projectLevel",
-              "description": "Location scope for compiled specialized agents: 'projectLevel' (project relative) or 'userLevel' ($HOME)."
+              "description": "Compatibility alias for directory: 'projectLevel' (project relative) or 'userLevel' ($HOME). If both directory and scope are configured, they must not conflict."
             }
           }
         },

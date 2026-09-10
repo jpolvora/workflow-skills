@@ -638,6 +638,28 @@ function testAutoConfigurePreservesDirectory() {
   assert(updated.defaults.specializedSubagents.directory === 'userLevel', 'custom directory:userLevel preserved without --force');
 }
 
+function testDirectoryScopeConflict() {
+  console.log('\n--- Test 19: Conflicting directory and scope rejection ---');
+  const mockRepo = createTmpDir('ws-conflict-repo-');
+  const sharedDir = path.join(mockRepo, '.agents', 'skills', 'ws-shared');
+  fs.mkdirSync(sharedDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(sharedDir, 'config.json'),
+    JSON.stringify({
+      defaults: {
+        specializedSubagents: {
+          enabled: true,
+          directory: 'userLevel',
+          scope: 'projectLevel',
+        },
+      },
+    })
+  );
+  const res = runCompiler(['--repo-root', mockRepo, '--json']);
+  assert(res.status !== 0, 'conflicting directory and scope fails compilation');
+  assert(res.stderr.includes('conflict') || res.stdout.includes('conflict'), 'error message identifies directory and scope conflict');
+}
+
 // -------------------------------------------------------------
 // Run All Tests
 // -------------------------------------------------------------
@@ -660,6 +682,7 @@ try {
   testUserLevelDirectoryCompilation();
   testDynamicProjectRelativeDirectory();
   testAutoConfigurePreservesDirectory();
+  testDirectoryScopeConflict();
 } finally {
   cleanup();
 }

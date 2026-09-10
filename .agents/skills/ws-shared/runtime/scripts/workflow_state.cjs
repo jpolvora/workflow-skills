@@ -1278,11 +1278,14 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     state.nextAction = isInternalSubstep
       ? `Resume step ${step} (${options.substep})`
       : status === 'failed' ? `Repair step ${step}` : `Run step ${state.currentStep}`;
-    const output = readStepOutput(options.stepOutput, context, paths, step);
-    finishOutput = output;
-    fallbackArtifacts = finishArtifactNames(state.slug || state.us, step, pipeline)
-      .map((name) => path.join(paths.usDir, name));
-    if (step === 0 && (state.slug || state.us)) {
+    const output = status === 'completed'
+      ? readStepOutput(options.stepOutput, context, paths, step)
+      : (options.stepOutput ? readStepOutput(options.stepOutput, context, paths, step) : {});
+    finishOutput = status === 'completed' ? output : {};
+    fallbackArtifacts = status === 'completed'
+      ? finishArtifactNames(state.slug || state.us, step, pipeline).map((name) => path.join(paths.usDir, name))
+      : [];
+    if (status === 'completed' && step === 0 && (state.slug || state.us)) {
       const slug = state.slug || state.us;
       const specsDir = resolveConfiguredPath(context.repoRoot, context.config?.specs?.dir, '.agents/specs');
       fallbackArtifacts.push(path.join(specsDir, `${slug}.spec.md`));
