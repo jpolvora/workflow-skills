@@ -753,6 +753,13 @@ child.on('close', async (code) => {
   if (!fs.existsSync(hubConfig + '.bak')) {
     fail('ws-shared/config.json.bak was not created on update');
   }
+  const hubAfter = JSON.parse(fs.readFileSync(hubConfig, 'utf8'));
+  if (hubAfter.toolsFile !== 'runtime/tools.md') {
+    fail('ws-shared/config.json toolsFile not normalized on update');
+  }
+  if (!hubAfter.pathTokens?.sharedDir) {
+    fail('ws-shared/config.json pathTokens not populated on update');
+  }
   ok('config.json preserved across update and ws-shared/config.json backed up to config.json.bak');
 
   if (removedForIncludeNew) {

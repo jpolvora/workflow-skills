@@ -181,7 +181,7 @@ try {
   const legacyShared = path.join(legacyRoot, '.agents', 'skills', 'ws-shared');
   fs.mkdirSync(legacyShared, { recursive: true });
   const preserved = {
-    'config.json': '{"project":{"name":"legacy-consumer"}}\n',
+    'config.json': '{"toolsFile":"tools.md","project":{"name":"legacy-consumer"},"defaults":{"sessionLeases":true}}\n',
     'STACK.md': '# Legacy stack\n',
     'MEMORY.md': '# Legacy memory\n',
     'CHANGELOG.md': '# Legacy changelog\n',
@@ -228,6 +228,10 @@ try {
     if (name === 'config.json') {
       const cfg = JSON.parse(fs.readFileSync(path.join(legacyShared, name), 'utf8'));
       assert(cfg.project?.name === 'legacy-consumer', 'migration preserves consumer-owned config.json values');
+      assert(cfg.toolsFile === 'runtime/tools.md', 'upgrade migrates legacy toolsFile');
+      assert(cfg.$schema === './runtime/config.schema.json', 'upgrade normalizes $schema');
+      assert(Boolean(cfg.pathTokens?.sharedDir), 'upgrade ensures pathTokens');
+      assert(!('sessionLeases' in (cfg.defaults || {})), 'upgrade strips retired defaults keys');
       assert(fs.existsSync(path.join(legacyShared, 'config.json.bak')), 'migration creates config.json.bak');
       assert(
         fs.readFileSync(path.join(legacyShared, 'config.json.bak'), 'utf8') === content,
