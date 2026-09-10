@@ -278,6 +278,7 @@ Configure optional projection of canonical workflow skills into host-native spec
 | `defaults.specializedSubagents.enabled` | boolean | `false` | When `true`, enables compilation and runtime dispatch to specialized subagents |
 | `defaults.specializedSubagents.targetHost` | string | `"auto"` | Compiler target dialect: `cursor`, `claude`, `generic`, or `auto` (detect; schema source of truth) |
 | `defaults.specializedSubagents.agentPrefix` | string | `"ws"` | Filename prefix for generated subagents (e.g. `ws-step-00-...`) |
+| `defaults.specializedSubagents.directory` | string | `"projectLevel"` | Location of compiled agents: `projectLevel` (project-relative) or `userLevel` (`$HOME/.cursor/agents`, etc) |
 
 ### Gates
 

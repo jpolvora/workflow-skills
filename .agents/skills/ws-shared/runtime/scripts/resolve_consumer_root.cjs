@@ -226,6 +226,51 @@ function reportResolved(context) {
   };
 }
 
+function resolveSpecializedSubagentsDirectory(repoRoot, host, configOrDir = {}) {
+  let dirOption = 'projectLevel';
+  if (typeof configOrDir === 'string') {
+    dirOption = configOrDir;
+  } else if (configOrDir && typeof configOrDir === 'object') {
+    const cfgSub = configOrDir.defaults?.specializedSubagents || configOrDir.specializedSubagents || configOrDir;
+    dirOption = cfgSub.directory || cfgSub.scope || 'projectLevel';
+  }
+
+  const raw = String(dirOption || '').trim();
+  const normalized = raw.toLowerCase();
+  const isUserLevel = normalized === 'userlevel' || normalized === 'user';
+  const isProjectLevel = normalized === 'projectlevel' || normalized === 'project';
+
+  const root = path.resolve(repoRoot || process.cwd());
+  const home = os.homedir();
+
+  if (isUserLevel) {
+    if (host === 'cursor') return path.join(home, '.cursor', 'agents');
+    if (host === 'claude') return path.join(home, '.claude', 'agents');
+    return path.join(home, '.agents', 'projections');
+  }
+
+  if (isProjectLevel || !raw) {
+    if (host === 'cursor') return path.join(root, '.cursor', 'agents');
+    if (host === 'claude') return path.join(root, '.claude', 'agents');
+    return path.join(root, '.agents', 'projections');
+  }
+
+  // Explicit custom directory path
+  let custom = raw;
+  if (custom.startsWith('~/') || custom.startsWith('~\\')) {
+    custom = path.join(home, custom.slice(2));
+  } else if (custom.includes('$HOME') || custom.includes('%USERPROFILE%')) {
+    custom = custom.replace(/\$HOME/g, home).replace(/%USERPROFILE%/g, home);
+  }
+
+  if (path.isAbsolute(custom)) {
+    return path.resolve(custom);
+  }
+
+  // Dynamically load from project relative
+  return path.resolve(root, custom);
+}
+
 module.exports = {
   HUB_REL,
   HUB_CONFIG,
@@ -248,4 +293,5 @@ module.exports = {
   normalizeConfig,
   resolveMinVerifyScore,
   resolveMemoryRouting,
+  resolveSpecializedSubagentsDirectory,
 };

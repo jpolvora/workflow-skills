@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "cfb07e4da205ca3909d93f56cf0886b0cd5da067dcb91afcff01081da8d4cb62",
+  "fullPackageDigest": "6d20c4117c1926375827f7512a204a31439fb69e5889c655ed54bef6f1994848",
   "hub": {
     "files": {
       ".gitignore": "95aca4a4bae6399996a76999fb0e2151b635070558d56f55789ec40da30b6876",
@@ -14,11 +14,11 @@
       "runtime/autoload.md": "a4f61313fb4ee3e191c95149521f9693ab1ba089787524749f1ab61d9e98a771",
       "runtime/CATALOG.md": "2f9a70aee1bfa2f3e811eed7a3edfba06e5b7eaa8cbde2d90e0f82abc493e5eb",
       "runtime/config-resolution.md": "1ba9f2f0d20e1d53e1af2c3c051e876afd418a6031a49c0282e311881655a346",
-      "runtime/config.schema.json": "964470203d28cb6e1d43cf80ab7cb65d8e5e07e4d66825f182b0f069975b7fd1",
+      "runtime/config.schema.json": "bc271183459e893e7455a36ef53cc39b6de6d0c0d18d08af5a71d9299c910ada",
       "runtime/CROSS-PLATFORM.md": "71cfbe08a4764c706a85186a3ec8de9dbc59ed0c29f33f66424488dc8fb5e56d",
       "runtime/evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
       "runtime/gates.md": "133d633e904be79aed491c884c106c163ab5ed6a948f8f624bb15152bf09f4e2",
-      "runtime/host-dispatch.md": "cbbd4e3b1f6321368c10d647319ccc774283f7ca5518cb47b183f81d1e2d4fa5",
+      "runtime/host-dispatch.md": "c2c8024ad665ca24d61c9f67b0c048631aa6f117c97b4a6b0b527693c0a77143",
       "runtime/hub-layout.json": "ddc5a803bc5b5455636e6b9730d730667eca10c4b1bf52fdd4029ceecefc4624",
       "runtime/plan-index.schema.json": "36df14cc8d9ba17413c456baf6550662b6218465cdf28d9981d624dac9ab4c7f",
       "runtime/plans-index.schema.json": "7f40795ad30dd6deec567b7eb4f4758177da65b4c5633eebba59d44e989ed585",
@@ -26,13 +26,13 @@
       "runtime/schemas/handoff.schema.json": "aca6b743470cf856d037b7dd661d8ff2a87ef78a43da61c952ef3fce4484334d",
       "runtime/scm-provider-contract.md": "85f2b0eea4e17efd0e25c390593fa4bda36a030fa4125501080515d03fc8c767",
       "runtime/scripts/ac_counts.cjs": "60f38cfd14d7ce914d292027eac808cd0d98ab2ef686b8892e8a125a14d92e63",
-      "runtime/scripts/compile_host_subagents.cjs": "e06e65130ae001c75f8c883fe19a2ec39525d640c172fa9a7299db3fc99378fb",
+      "runtime/scripts/compile_host_subagents.cjs": "26c9456763cb9d246e491dcf9857315a679903d3e93babb87dfec70938d48686",
       "runtime/scripts/extract_frontmatter_field.cjs": "41513cc12a7b7a1af7313b4111b86ca318c6d522351650945295e29c3e1b6a63",
       "runtime/scripts/http_retry.cjs": "5a78b6bc9137a081fc4b5293c1ac60d447d13c29faa8c2a1a3aa779340af7600",
       "runtime/scripts/http_retry.py": "a0f742b2d2116d7da25578cc9f633f607e1fa3175b482df21cfe848965f4a42b",
       "runtime/scripts/ingest_visual_attachments.cjs": "707096a3ce9adffc8d836a40f51b6e6d0ecb7e67f54672ac701571da8490deb9",
       "runtime/scripts/persist_diagnostic.cjs": "336f2bbbd1a00b8a97058628a75e0696e884f632bff519410a9ca2313fcd61d1",
-      "runtime/scripts/resolve_consumer_root.cjs": "01cabe61f089bca61fef8640d68cc5592bcf30487a874a14082891ed3f360c86",
+      "runtime/scripts/resolve_consumer_root.cjs": "1a55577c22c99439e65f38e3076e1d6776324e1f5d4e47bd1536e2bf0ab7c4b7",
       "runtime/scripts/resolve_consumer_root.py": "d58b94df210e3b8faeae8502a10ca59bb04f0c3b7a806a603828e115da81fb5e",
       "runtime/scripts/retired_artifacts.cjs": "512252528056874a8f9effeab5fdc09801cee0a8e8521f41e9f9be0958fd3890",
       "runtime/scripts/scan_stack_invariants.cjs": "f186e197040142066fa7e78b563b11a171c8dc5a62c8026a135457fa82faf5e7",
@@ -50,11 +50,11 @@
       "runtime/tools.md": "922682566314fd05693c0f34c5052fc3e62269b0dc2ab141229203df4df920fe",
       "runtime/workflow-state.schema.json": "9caac0f72cf3239a303bde6f95a23cd9eeb8ba47c635e3ef103cf9a617baf33f",
       "templates/CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
-      "templates/config.json.example": "965a9ac068fbc3ac9e1db02d90fb78a28b57bbd64b1733d9c0451bfb2f3f768d",
+      "templates/config.json.example": "de03efb196668bca8d51907bc9405e8948236bb652582f8d93a059250dab995f",
       "templates/MEMORY.md.template": "5b67274d91cd4507fecd8aa9e3c2ee10d2f7fb90f0d8eb35fb575089bc5664fb",
       "templates/STACK.md.example": "68cff04083447e0f585c48a4e8165cfd02f1d60504f0baced2148579104ad5a8"
     },
-    "skillDigest": "dc4852b5e58ce419a233eb28e1e0e9b2a15b56ca0273f9121d217faff990dc53"
+    "skillDigest": "05ab701840fb2ca4a05155052e70e376988b89b76fc4b7aed824d21e87e2d59b"
   },
   "packageVersion": "0.4.9",
   "skills": {
@@ -134,13 +134,13 @@
     "ws-configure-project": {
       "files": {
         "evals/evals.json": "208c267e350a5896a2033c0a4d2045b33c1842dff770bff9781e76b65831f4fe",
-        "INTERVIEW.md": "416e7dd8727353d08d4e109314e4ee5cec301a200830facf8cf75a26747612c1",
-        "scripts/auto_configure.cjs": "a30dfc5c4e406a47d07b462f0033db7393c7139772f551abf9e617739347bffb",
+        "INTERVIEW.md": "8557b159421bf4ff38cfce48a704b8cc51e7835ccdf6133835f65b5ded9a09a8",
+        "scripts/auto_configure.cjs": "10d81b6d54156759826aed47b5edb8650e0aa04af8ef5b172130d0596cfcdbdf",
         "scripts/configure_autoload.py": "73ba2298e4da79afcfc6db0ed1154937292b3374172b82ee49147b9bb076c0c8",
         "scripts/stack_fingerprint.cjs": "49dc0a8ed8f018871e30152d2d8ff2bc41cfa738b16ee22c70b4361f93f58d33",
         "SKILL.md": "1632ef4a8ac56fcada965dd05a244bf96541ba20e6ee65d5b2e2fde2ddc385f3"
       },
-      "skillDigest": "dd149a79db33267fec75c381cb2687c83f507fbd8209cb227c4990a058e12eb9"
+      "skillDigest": "3c724ab4ed483fb27637de312444684efdae1dec86eb3c1822c99bfe201c8f81"
     },
     "ws-doctor": {
       "files": {

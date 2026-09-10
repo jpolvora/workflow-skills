@@ -282,9 +282,10 @@
     "specializedSubagents": {
       "enabled": true,
       "targetHost": "cursor",
-      "agentPrefix": "ws"
+      "agentPrefix": "ws",
+      "directory": "userLevel"
     },
-    "_comment_specializedSubagents": "Opt-in host projections. enabled true compiles .cursor/agents/ws-step-*.md. Step 5 is product-tree readonly in the prompt; never host Ask-mode readonly."
+    "_comment_specializedSubagents": "Opt-in host projections. enabled true compiles .cursor/agents/ws-step-*.md. directory can be 'userLevel' ($HOME/.cursor/agents, etc) or 'projectLevel' (dynamically loaded from project relative). Step 5 is product-tree readonly in the prompt; never host Ask-mode readonly."
   },
   "plans": {
     "dir": ".agents/plans",

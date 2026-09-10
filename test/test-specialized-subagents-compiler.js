@@ -98,17 +98,19 @@ function cleanup() {
   }
 }
 
-function runCompiler(args, cwd = REPO_ROOT) {
+function runCompiler(args, cwd = REPO_ROOT, env = process.env) {
   return cp.spawnSync(NODE, [COMPILER_SCRIPT, ...args], {
     encoding: 'utf8',
     cwd,
+    env,
   });
 }
 
-function runAutoConfigure(args, cwd = REPO_ROOT) {
+function runAutoConfigure(args, cwd = REPO_ROOT, env = process.env) {
   return cp.spawnSync(NODE, [AUTO_CONFIG_SCRIPT, ...args], {
     encoding: 'utf8',
     cwd,
+    env,
   });
 }
 
@@ -205,6 +207,13 @@ function testSchemaValidation() {
     'specializedSubagents.targetHost enum contains cursor, claude, generic, auto'
   );
   assert(subSchema.properties?.agentPrefix?.type === 'string', 'specializedSubagents.agentPrefix is string');
+  assert(subSchema.properties?.directory?.type === 'string', 'specializedSubagents.directory is string');
+  assert(subSchema.properties?.scope?.type === 'string', 'specializedSubagents.scope is string');
+  assert(Array.isArray(subSchema.properties?.scope?.enum), 'specializedSubagents.scope defines enum');
+  assert(
+    ['projectLevel', 'userLevel', 'project', 'user'].every((s) => subSchema.properties.scope.enum.includes(s)),
+    'specializedSubagents.scope enum contains projectLevel, userLevel, project, user'
+  );
 }
 
 // -------------------------------------------------------------
@@ -565,6 +574,69 @@ function testAutoConfigurePreservesEnabled() {
   assert(updated.defaults.specializedSubagents.targetHost === 'generic', 'custom targetHost preserved without --force');
 }
 
+// Test 16: User-level directory compilation via CLI and config
+function testUserLevelDirectoryCompilation() {
+  console.log('\n--- Test 16: User-level directory compilation (userLevel / $HOME) ---');
+  const mockRepo = setupMockRepo(createTmpDir('ws-userlvl-repo-'), { withCursor: true });
+  const mockHome = createTmpDir('ws-userlvl-home-');
+  const env = { ...process.env, USERPROFILE: mockHome, HOME: mockHome };
+
+  // 1. Via CLI flag --user-level
+  const resFlag = runCompiler(['--repo-root', mockRepo, '--host', 'cursor', '--user-level', '--json'], REPO_ROOT, env);
+  assert(resFlag.status === 0, `user-level CLI compile exited 0 (got ${resFlag.status}): ${resFlag.stderr}`);
+  const userAgentsDir = path.join(mockHome, '.cursor', 'agents');
+  assert(fs.existsSync(path.join(userAgentsDir, 'ws-step-00-spec-write.md')), 'Agent compiled to mockHome/.cursor/agents');
+  const checkRes = runCompiler(['--repo-root', mockRepo, '--host', 'cursor', '--user-level', '--check', '--json'], REPO_ROOT, env);
+  assert(checkRes.status === 0, 'Check passes on userLevel directory');
+
+  // 2. Via config defaults.specializedSubagents.directory = 'userLevel'
+  const mockRepo2 = setupMockRepo(createTmpDir('ws-userlvl-cfg-'), {
+    withCursor: true,
+    withConfig: true,
+    subagentsConfig: { enabled: true, targetHost: 'cursor', agentPrefix: 'ws', directory: 'userLevel' },
+  });
+  const mockHome2 = createTmpDir('ws-userlvl-home2-');
+  const env2 = { ...process.env, USERPROFILE: mockHome2, HOME: mockHome2 };
+  const resCfg = runCompiler(['--repo-root', mockRepo2, '--json'], REPO_ROOT, env2);
+  assert(resCfg.status === 0, `config-driven userLevel compile exited 0 (got ${resCfg.status})`);
+  const userAgentsDir2 = path.join(mockHome2, '.cursor', 'agents');
+  assert(fs.existsSync(path.join(userAgentsDir2, 'ws-step-00-spec-write.md')), 'Agent compiled to mockHome2 from config directory setting');
+}
+
+// Test 17: Dynamic project-relative directory resolution
+function testDynamicProjectRelativeDirectory() {
+  console.log('\n--- Test 17: Dynamic project-relative directory resolution ---');
+  const mockRepo = setupMockRepo(createTmpDir('ws-proj-rel-'), { withCursor: true });
+
+  // 1. Default projectLevel resolves to mockRepo/.cursor/agents
+  const resDefault = runCompiler(['--repo-root', mockRepo, '--project-level', '--json']);
+  assert(resDefault.status === 0, 'project-level compile exits 0');
+  assert(fs.existsSync(path.join(mockRepo, '.cursor', 'agents', 'ws-step-00-spec-write.md')), 'projectLevel resolves to project-relative .cursor/agents');
+
+  // 2. Custom relative path dynamically resolved against project root
+  const resCustom = runCompiler(['--repo-root', mockRepo, '--directory', 'custom-agents-dir', '--json']);
+  assert(resCustom.status === 0, 'custom relative directory compile exits 0');
+  assert(fs.existsSync(path.join(mockRepo, 'custom-agents-dir', 'ws-step-00-spec-write.md')), 'Custom relative directory dynamically resolved against repo root');
+}
+
+// Test 18: auto_configure preserves directory configuration
+function testAutoConfigurePreservesDirectory() {
+  console.log('\n--- Test 18: auto_configure preserves directory setting ---');
+  const mockRepo = setupMockRepo(createTmpDir('ws-dir-preserve-'), { withCursor: true, withConfig: true });
+  const mockHome = createTmpDir('ws-dir-preserve-home-');
+  const env = { ...process.env, USERPROFILE: mockHome, HOME: mockHome };
+  const configPath = path.join(mockRepo, '.agents', 'skills', 'ws-shared', 'config.json');
+  const base = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  base.defaults = base.defaults || {};
+  base.defaults.specializedSubagents = { enabled: true, targetHost: 'cursor', agentPrefix: 'ws', directory: 'userLevel' };
+  fs.writeFileSync(configPath, JSON.stringify(base, null, 2), 'utf8');
+
+  const res = runAutoConfigure(['--repo-root', mockRepo, '--section', 'specializedSubagents', '--json'], REPO_ROOT, env);
+  assert(res.status === 0, 'section rerun exits 0');
+  const updated = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  assert(updated.defaults.specializedSubagents.directory === 'userLevel', 'custom directory:userLevel preserved without --force');
+}
+
 // -------------------------------------------------------------
 // Run All Tests
 // -------------------------------------------------------------
@@ -584,6 +656,9 @@ try {
   testCompiledBodyRewrites();
   testCleanHostLabel();
   testAutoConfigurePreservesEnabled();
+  testUserLevelDirectoryCompilation();
+  testDynamicProjectRelativeDirectory();
+  testAutoConfigurePreservesDirectory();
 } finally {
   cleanup();
 }

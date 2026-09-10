@@ -266,6 +266,17 @@
               "type": "string",
               "default": "ws",
               "description": "Prefix used for generated host subagent names and filenames."
+            },
+            "directory": {
+              "type": "string",
+              "default": "projectLevel",
+              "description": "Location of compiled specialized agents: 'projectLevel' (dynamically resolved relative to project), 'userLevel' (resolved relative to $HOME), or an explicit path."
+            },
+            "scope": {
+              "type": "string",
+              "enum": ["projectLevel", "userLevel", "project", "user"],
+              "default": "projectLevel",
+              "description": "Location scope for compiled specialized agents: 'projectLevel' (project relative) or 'userLevel' ($HOME)."
             }
           }
         },

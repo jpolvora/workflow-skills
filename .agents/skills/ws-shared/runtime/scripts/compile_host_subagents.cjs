@@ -16,6 +16,7 @@ const {
   resolveConsumerContext,
   resolveSkillMdPath,
   toRepoRelative,
+  resolveSpecializedSubagentsDirectory,
 } = require('./resolve_consumer_root.cjs');
 
 const SCRIPT_FILE = __filename;
@@ -63,12 +64,20 @@ function parseArgs(argv) {
     json: false,
     force: false,
     prefix: null,
+    directory: null,
+    scope: null,
+    userLevel: false,
+    projectLevel: false,
   };
   for (let i = 2; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === '--repo-root') options.repoRoot = argv[++i] || null;
     else if (arg === '--host') options.host = argv[++i] || null;
     else if (arg === '--prefix') options.prefix = argv[++i] || null;
+    else if (arg === '--directory') options.directory = argv[++i] || null;
+    else if (arg === '--scope') options.scope = argv[++i] || null;
+    else if (arg === '--user-level') options.userLevel = true;
+    else if (arg === '--project-level') options.projectLevel = true;
     else if (arg === '--clean') options.clean = true;
     else if (arg === '--check') options.check = true;
     else if (arg === '--json') options.json = true;
@@ -103,10 +112,8 @@ function resolveHostTarget(repoRoot, requestedHost, config) {
   return hostVal;
 }
 
-function resolveHostDirectory(repoRoot, host) {
-  if (host === 'cursor') return path.join(repoRoot, '.cursor', 'agents');
-  if (host === 'claude') return path.join(repoRoot, '.claude', 'agents');
-  return path.join(repoRoot, '.agents', 'projections');
+function resolveHostDirectory(repoRoot, host, configOrDir = {}) {
+  return resolveSpecializedSubagentsDirectory(repoRoot, host, configOrDir);
 }
 
 const STEP_OUTPUT_SCHEMA_BLOCK = [
@@ -375,7 +382,7 @@ function main() {
   const options = parseArgs(process.argv);
   if (options.help) {
     process.stdout.write(
-      'Usage: node compile_host_subagents.cjs [--repo-root DIR] [--host <cursor|claude|generic|auto>] [--prefix <name>] [--clean] [--check] [--json] [--force]\n',
+      'Usage: node compile_host_subagents.cjs [--repo-root DIR] [--host <cursor|claude|generic|auto>] [--prefix <name>] [--directory <dir>] [--scope <projectLevel|userLevel>] [--user-level] [--project-level] [--clean] [--check] [--json] [--force]\n',
     );
     process.exit(0);
   }
@@ -394,8 +401,17 @@ function main() {
     }
 
     const host = resolveHostTarget(repoRoot, options.host, config);
-    const targetDir = resolveHostDirectory(repoRoot, host);
-    const prefix = validateAgentPrefix(options.prefix || config?.defaults?.specializedSubagents?.agentPrefix || 'ws');
+    const subConfig = config?.defaults?.specializedSubagents || {};
+    const dirSetting =
+      options.directory ||
+      (options.userLevel ? 'userLevel' : null) ||
+      (options.projectLevel ? 'projectLevel' : null) ||
+      options.scope ||
+      subConfig.directory ||
+      subConfig.scope ||
+      'projectLevel';
+    const targetDir = resolveHostDirectory(repoRoot, host, dirSetting);
+    const prefix = validateAgentPrefix(options.prefix || subConfig?.agentPrefix || 'ws');
 
     if (options.clean) {
       const exitCode = runClean(targetDir, prefix, options.json, host);

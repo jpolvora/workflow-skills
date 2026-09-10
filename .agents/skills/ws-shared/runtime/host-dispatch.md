@@ -47,7 +47,7 @@ Legacy neutral flags (`hasStructuredChoiceTool` / `hasSubagentTool` / `hasBrowse
 
 - **Specialized Named Subagent Dispatch (when enabled):**
   - **Preconditions:** `defaults.specializedSubagents.enabled` is `true`, and the host supports named subagents (e.g. host agent directory projections matching `{prefix}-step-*.md`).
-  - **Resolution:** Resolve the host projection directory from the consumer `{repoRoot}` and configured `targetHost`, then target the step-specific named subagent matching `{prefix}-step-{step}-{role}` (for example, `ws-step-04-implement-tasks`). Never resolve a project projection from the global skill installation.
+  - **Resolution:** Resolve the host projection directory from the configured `directory` (`projectLevel` dynamically resolved relative to `{repoRoot}`, `userLevel` resolved to `$HOME/.cursor/agents`, etc.) and configured `targetHost`, then target the step-specific named subagent matching `{prefix}-step-{step}-{role}` (for example, `ws-step-04-implement-tasks`). Never resolve a project projection from the global skill installation.
   - **Zero-Turn Bootstrap:** Because the specialized subagent definition already contains the complete canonical skill instructions, invariants, and guidelines, the orchestrator prompt omits redundant skill markdown and transmits **discrete context pointers only** (see §5), achieving near-zero token bootstrap overhead.
   - **Fail-safe Fallback:** If the named specialized subagent is unavailable, missing, or errors, dispatch transparently falls back to generic subagent invocation (Tier 1 generic) or inline isolated execution (Tier 3) without failing the workflow run.
 - **Product-tree readonly (Step 5):** `ws-plan-verify` must not edit application product files, but it **must** run Shell (tests, scans, `ac_ledger.cjs`) and write `{us-dir}` reports. Do **not** set host `readonly: true` on `ws-step-05-plan-verify`. That flag maps to a question-only session that blocks Shell. If a host still opens the verifier without Shell, fall back to generic `generalPurpose`/`shell` or Tier 3 inline.
@@ -108,7 +108,9 @@ Projects can configure and customize subagent dispatch behavior in `.agents/skil
       "_comment_enabled": "When true, compiles and targets host-native specialized subagents",
       "targetHost": "auto",
       "_comment_targetHost": "Compiler target dialect id (auto detects; generic is the neutral fallback; full id list in schema)",
-      "agentPrefix": "ws"
+      "agentPrefix": "ws",
+      "directory": "projectLevel",
+      "_comment_directory": "Location of compiled agents: 'projectLevel' (dynamically resolved relative to project) or 'userLevel' ($HOME/.cursor/agents, etc)"
     }
   }
 }
