@@ -298,5 +298,24 @@ if (!wfMatchReport.findings.some((f) => f.code === 'hybrid-path-resolution')) {
   throw new Error('monitor failed to detect transcript failure when filtering by matching workflow-id');
 }
 
+const combinedMismatchResult = run([
+  '--repo-root',
+  root,
+  '--workflow-id',
+  'wf-markdown',
+  '--slug',
+  slug,
+  '--transcript-root',
+  transcripts,
+  '--json',
+], root);
+if (combinedMismatchResult.status !== 0) {
+  throw new Error(combinedMismatchResult.stderr || combinedMismatchResult.stdout);
+}
+const combinedMismatchReport = JSON.parse(combinedMismatchResult.stdout);
+if (combinedMismatchReport.findings.some((f) => f.code === 'hybrid-path-resolution')) {
+  throw new Error('monitor leaked transcript when workflowId and slug did not both match');
+}
+
 for (const directory of tempRoots) fs.rmSync(directory, { recursive: true, force: true });
 console.log('test-ws-monitor: ok');

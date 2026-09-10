@@ -213,9 +213,12 @@ function scanTranscriptRoots(context, roots, filter = {}) {
       continue;
     }
     if (filter && (filter.workflowId || filter.slug)) {
-      const matchesWf = filter.workflowId && (file.includes(filter.workflowId) || text.includes(filter.workflowId));
-      const matchesSlug = filter.slug && (file.includes(filter.slug) || text.includes(filter.slug));
-      if (!matchesWf && !matchesSlug) continue;
+      const matchesWf = Boolean(filter.workflowId && (file.includes(filter.workflowId) || text.includes(filter.workflowId)));
+      const matchesSlug = Boolean(filter.slug && (file.includes(filter.slug) || text.includes(filter.slug)));
+      const pass = filter.workflowId && filter.slug
+        ? (matchesWf && matchesSlug)
+        : (matchesWf || matchesSlug);
+      if (!pass) continue;
     }
     filesScanned += 1;
     const evidence = toRepoRelative(context.repoRoot, file, { allowOutside: true });
