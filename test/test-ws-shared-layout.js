@@ -244,6 +244,7 @@ try {
       );
     }
   }
+  fs.writeFileSync(path.join(legacyShared, '.gitignore'), '# stale gitignore\n', 'utf8');
   const secondInstall = cp.spawnSync(
     process.execPath,
     [path.join(repoRoot, 'bin', 'cli.js'), 'update', '--yes'],
@@ -251,6 +252,10 @@ try {
   );
   assert(secondInstall.status === 0, `${secondInstall.stdout || ''}${secondInstall.stderr || ''}`);
   assert(!fs.existsSync(path.join(legacyShared, 'templates', 'hub.gitignore')), 'migration does not retain alias source');
+  assert(
+    fs.readFileSync(path.join(legacyShared, '.gitignore'), 'utf8').includes('config.json.bak'),
+    'update refreshes managed .gitignore from template alias',
+  );
 
   console.log('test-ws-shared-layout: ok');
 } finally {
