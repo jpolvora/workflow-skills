@@ -1,6 +1,6 @@
 ---
 name: ws-karpathy-guidelines
-version: 0.4.10
+version: 0.4.11
 description: Micro code diff hygiene guidelines — reduces LLM coding mistakes through surgical changes, minimal diff footprints, and surfacing assumptions.
 license: MIT
 invocation_names:

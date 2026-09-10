@@ -31,6 +31,7 @@ const ignoredPatterns = [
   /\.gitignore$/,
   /\.npmignore$/,
   /config\.json$/,
+  /config\.json\.bak$/,
   /(^|[\\/])ws-shared[\\/]STACK\.md$/,
   /(^|[\\/])ws-shared[\\/]stack\.md$/,
   /(^|[\\/])ws-shared[\\/]MEMORY\.md$/,
@@ -1452,7 +1453,7 @@ child.on('close', async (code) => {
     if (!fs.readFileSync(destRootAgents, 'utf8').includes('keep-root-pointer')) {
       fail('Installer must not overwrite consumer root AGENTS.md on update');
     }
-    fs.rmSync(memDir, { recursive: true, force: true });
+    fs.rmSync(memDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
     ok('Update preserves ws-shared consumer data and never rewrites root AGENTS.md');
   }
 

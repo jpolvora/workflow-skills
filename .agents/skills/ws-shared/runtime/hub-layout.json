@@ -64,7 +64,8 @@
         "autoload.md",
         "CHANGELOG.md",
         "MEMORY.md",
-        "memory"
+        "memory",
+        "config.json.bak"
       ],
       "sourceControl": "ignore-by-default"
     },

@@ -412,6 +412,13 @@ const efficiencyFeatureBlock = `  <!-- efficiency-verifiability:start -->
       </div>
       <p class="role-card-desc">Choose step or phase gates, with phase mode capped at five blocking decisions. Adaptive polling uses observed check and thread state while preserving fail-closed verification and review convergence.</p>
     </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">UI</div>
+        <h4 class="role-card-title">Desktop config GUI editor</h4>
+      </div>
+      <p class="role-card-desc">Interactive Windows Forms editor (<code>npm run config:gui</code> / <code>Edit-Config.bat</code>) with auto Dark/Light themes, categorized tabs, live search filter, schema descriptions, and comment-preserving JSON persistence for <code>config.json</code>.</p>
+    </div>
   <!-- efficiency-verifiability:end -->
 `;
 html = html.replace(

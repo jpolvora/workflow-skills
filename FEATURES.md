@@ -236,7 +236,7 @@ Autoload set (loaded every prompt when a project opts in via `{sharedDir}/autolo
 
 ## 10. Configuration surface
 
-Project settings live in consumer-owned `.agents/skills/ws-shared/config.json` (seeded from `templates/config.json.example`, validated by `runtime/config.schema.json`, filled by `ws-configure-project`). Track it when non-secret; keep generated memory/history and installer metadata local. Managed execution content is under `runtime/`, and setup-only seeds are under `templates/`.
+Project settings live in consumer-owned `.agents/skills/ws-shared/config.json` (seeded from `templates/config.json.example`, validated by `runtime/config.schema.json`, filled by `ws-configure-project` or the native desktop GUI editor `npm run config:gui` / `Edit-Config.bat`). Track it when non-secret; keep generated memory/history and installer metadata local. Managed execution content is under `runtime/`, and setup-only seeds are under `templates/`.
 
 | Section | Controls |
 |---------|----------|
