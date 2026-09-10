@@ -186,6 +186,7 @@ export function shouldSkipInstallEntry(name) {
  * hub entries and are pruned during layout migration instead of failing update.
  */
 export function isHubBackupArtifact(name) {
+  if (name === 'config.json.bak') return false;
   return (
     name.startsWith('.tmp-') ||
     /\.bak_/i.test(name) ||

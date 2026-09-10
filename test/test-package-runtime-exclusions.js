@@ -24,4 +24,7 @@ for (const pattern of [
 ]) assert.ok(!files.some((file) => pattern.test(file)), `tarball excludes ${pattern}`);
 assert.ok(files.includes('.agents/skills/ws-spec-to-pr/scripts/update_state.py'), 'frozen Python helper remains packaged');
 assert.ok(files.includes('.agents/skills/ws-spec-to-pr/scripts/update_state.cjs'), 'Node orchestrator surface is packaged');
+assert.ok(files.includes('.agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1'), 'PowerShell desktop config editor is packaged');
+assert.ok(files.includes('.agents/skills/ws-shared/runtime/scripts/Edit-Config.bat'), 'Windows batch config editor launcher is packaged');
 console.log('test-package-runtime-exclusions: ok');
+

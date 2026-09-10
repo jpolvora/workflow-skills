@@ -181,7 +181,7 @@ try {
   const legacyShared = path.join(legacyRoot, '.agents', 'skills', 'ws-shared');
   fs.mkdirSync(legacyShared, { recursive: true });
   const preserved = {
-    'config.json': '{"project":{"name":"legacy-consumer"}}\n',
+    'config.json': '{"toolsFile":"tools.md","project":{"name":"legacy-consumer"},"defaults":{"sessionLeases":true}}\n',
     'STACK.md': '# Legacy stack\n',
     'MEMORY.md': '# Legacy memory\n',
     'CHANGELOG.md': '# Legacy changelog\n',
@@ -225,10 +225,24 @@ try {
   assert(installedAutoload.includes('](runtime/tools.md)'), 'hub-root autoload rewrites runtime-relative hub links');
   assert(installedAutoload.includes('](../ws-spec-manager/SKILL.md)'), 'hub-root autoload rewrites skill-relative links');
   for (const [name, content] of Object.entries(preserved)) {
-    assert(
-      fs.readFileSync(path.join(legacyShared, name), 'utf8') === content,
-      `migration preserves consumer-owned ${name}`,
-    );
+    if (name === 'config.json') {
+      const cfg = JSON.parse(fs.readFileSync(path.join(legacyShared, name), 'utf8'));
+      assert(cfg.project?.name === 'legacy-consumer', 'migration preserves consumer-owned config.json values');
+      assert(cfg.toolsFile === 'runtime/tools.md', 'upgrade migrates legacy toolsFile');
+      assert(cfg.$schema === './runtime/config.schema.json', 'upgrade normalizes $schema');
+      assert(Boolean(cfg.pathTokens?.sharedDir), 'upgrade ensures pathTokens');
+      assert(!('sessionLeases' in (cfg.defaults || {})), 'upgrade strips retired defaults keys');
+      assert(fs.existsSync(path.join(legacyShared, 'config.json.bak')), 'migration creates config.json.bak');
+      assert(
+        fs.readFileSync(path.join(legacyShared, 'config.json.bak'), 'utf8') === content,
+        'config.json.bak matches original pre-update content',
+      );
+    } else {
+      assert(
+        fs.readFileSync(path.join(legacyShared, name), 'utf8') === content,
+        `migration preserves consumer-owned ${name}`,
+      );
+    }
   }
   const secondInstall = cp.spawnSync(
     process.execPath,

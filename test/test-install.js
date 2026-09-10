@@ -749,7 +749,18 @@ child.on('close', async (code) => {
   if (after.project?.name !== 'consumer-marker-project') {
     fail('config.json project.name not preserved on update');
   }
-  ok('config.json preserved across update');
+  const hubConfig = path.join(testSkillsDir, 'ws-shared', 'config.json');
+  if (!fs.existsSync(hubConfig + '.bak')) {
+    fail('ws-shared/config.json.bak was not created on update');
+  }
+  const hubAfter = JSON.parse(fs.readFileSync(hubConfig, 'utf8'));
+  if (hubAfter.toolsFile !== 'runtime/tools.md') {
+    fail('ws-shared/config.json toolsFile not normalized on update');
+  }
+  if (!hubAfter.pathTokens?.sharedDir) {
+    fail('ws-shared/config.json pathTokens not populated on update');
+  }
+  ok('config.json preserved across update and ws-shared/config.json backed up to config.json.bak');
 
   if (removedForIncludeNew) {
     if (!fs.existsSync(path.join(testSkillsDir, removedForIncludeNew))) {
@@ -856,7 +867,9 @@ child.on('close', async (code) => {
     path.join('ws-spec-provider-local', 'scripts', 'register_local_spec.py'),
     path.join('ws-fix-pr', 'scripts', 'fetch_threads.cjs'),
     path.join('ws-fix-pr', 'scripts', 'resolve_thread.cjs'),
-    path.join('ws-fix-pr', 'scripts', 'fix_pr_azure_context.py')
+    path.join('ws-fix-pr', 'scripts', 'fix_pr_azure_context.py'),
+    path.join('ws-shared', 'runtime', 'scripts', 'Edit-WorkflowSkillsConfig.ps1'),
+    path.join('ws-shared', 'runtime', 'scripts', 'Edit-Config.bat')
   ]) {
     if (!fs.existsSync(path.join(testSkillsDir, rel))) {
       fail(`Provider/shim script missing in consumer install: ${rel}`);
