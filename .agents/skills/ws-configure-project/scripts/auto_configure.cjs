@@ -556,6 +556,7 @@ function buildWanted(repoRoot, example, schema) {
   want('defaults.specializedSubagents.enabled', false, 'fallback');
   want('defaults.specializedSubagents.targetHost', detectedSubagentHost, detectedSubagentHost !== 'auto' ? 'detected' : 'fallback');
   want('defaults.specializedSubagents.agentPrefix', 'ws', 'fallback');
+  want('defaults.specializedSubagents.directory', 'projectLevel', 'fallback');
   for (const k of ['includeRefinedPlan', 'includeDeliveryResult', 'includeSpec',
     'includeCheckReport', 'includeCodeReview', 'includeTestingReport']) {
     wantFallback(`defaults.deliveryCommitArtifacts.${k}`);

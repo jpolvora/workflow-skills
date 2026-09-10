@@ -18,6 +18,7 @@ node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs finish \
   {plansDir}/{slug}/{workflow-id}.state.md \
   --step {N} \
   --status {completed|failed|skipped} \
+  --step-output {json_or_file} \
   --verification-score {score} \
   --ship-status {pending|skipped|pushed|pr-open|merged|stopped} \
   --commit {sha} \
@@ -32,7 +33,7 @@ node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs finish \
   --jsonl-out {plansDir}/{slug}/telemetry.jsonl
 ```
 
-`--verification-score {score}` is passed when finishing Step 5 (propagates score from `ac_ledger.cjs score`; auto-derived from `{us-dir}/ac-ledger.json` if omitted). `--jsonl-out` is **mandatory** on every call pointing at `{plansDir}/{slug}/telemetry.jsonl` (single append-only stream for all steps). When quality gates are bypassed, run the `bypass` operation with `--gate` and `--reason`.
+`--step-output {json_or_file}` passes inline JSON or path to `{plansDir}/{slug}/.runtime/step-{N}-output.json`. When omitted, `update_state.cjs finish` auto-discovers `{plansDir}/{slug}/.runtime/step-{N}-output.json` (or `{us-dir}/step-{N}-output.json`) and falls back to stamped step artifacts if `files_touched` is empty on mutating steps. `--verification-score {score}` is passed when finishing Step 5 (propagates score from `ac_ledger.cjs score`; auto-derived from `{us-dir}/ac-ledger.json` if omitted). `--jsonl-out` is **mandatory** on every call pointing at `{plansDir}/{slug}/telemetry.jsonl` (single append-only stream for all steps). When quality gates are bypassed, run the `bypass` operation with `--gate` and `--reason`.
 
 On **close** (standard Step 8 / lite Step 4) `finish --status completed`, the helper sets workflow `status: completed`, `endedAt`, and `shipStatus: pending` unless `--ship-status` is passed. Later ship/fix-pr finishes update `--ship-status` only — they do **not** re-set `status`.
 

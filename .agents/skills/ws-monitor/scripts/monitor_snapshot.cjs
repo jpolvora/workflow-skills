@@ -186,7 +186,7 @@ function classifyWorkflow(state, workflowDir, telemetry, minVerifyScore, repoRoo
   return findings;
 }
 
-function scanTranscriptRoots(context, roots) {
+function scanTranscriptRoots(context, roots, filter = {}) {
   const findings = [];
   const files = [];
   const visit = (directory, depth = 0) => {
@@ -204,6 +204,7 @@ function scanTranscriptRoots(context, roots) {
     }
   };
   for (const root of roots) visit(root);
+  let filesScanned = 0;
   for (const file of files.slice(0, 5000)) {
     let text;
     try {
@@ -211,6 +212,15 @@ function scanTranscriptRoots(context, roots) {
     } catch {
       continue;
     }
+    if (filter && (filter.workflowId || filter.slug)) {
+      const matchesWf = Boolean(filter.workflowId && (file.includes(filter.workflowId) || text.includes(filter.workflowId)));
+      const matchesSlug = Boolean(filter.slug && (file.includes(filter.slug) || text.includes(filter.slug)));
+      const pass = filter.workflowId && filter.slug
+        ? (matchesWf && matchesSlug)
+        : (matchesWf || matchesSlug);
+      if (!pass) continue;
+    }
+    filesScanned += 1;
     const evidence = toRepoRelative(context.repoRoot, file, { allowOutside: true });
     if (/ENOENT|build_dispatch_context/i.test(text)) {
       addFinding(findings, 'critical', 'hybrid-path-resolution', 'Transcript contains a missing-skill or dispatch-context path failure', [evidence]);
@@ -225,7 +235,7 @@ function scanTranscriptRoots(context, roots) {
       addFinding(findings, 'warning', 'generic-dispatch', 'Transcript contains a generic dispatch where a named projection may have been expected', [evidence]);
     }
   }
-  return { filesScanned: Math.min(files.length, 5000), findings };
+  return { filesScanned, findings };
 }
 
 function snapshot(options) {
@@ -273,7 +283,10 @@ function snapshot(options) {
     ...configuredRoots,
     ...options.transcriptRoots,
   ].filter(Boolean).map((root) => path.isAbsolute(root) ? root : path.resolve(context.repoRoot, root)))];
-  const transcript = scanTranscriptRoots(context, transcriptRoots);
+  const transcript = scanTranscriptRoots(context, transcriptRoots, {
+    workflowId: options.workflowId || null,
+    slug: options.slug || null,
+  });
   const findings = [...workflows.flatMap((workflow) => workflow.findings), ...transcript.findings];
   return {
     schemaVersion: 1,
@@ -405,4 +418,5 @@ module.exports = {
   classifyWorkflow,
   markdownReport,
   snapshot,
+  scanTranscriptRoots,
 };
