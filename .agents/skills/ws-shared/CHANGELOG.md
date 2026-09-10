@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-10 13:30] Agent: Muse Spark 1.3 (Cursor)
+- **Prompt**: Fetch all open issues, implement them, bump version, update site/docs, test, commit, push, ship-pr + goal-fix-pr.
+- **Done**: Implemented #308 local-first precedence matrix with resolved-context diagnostics and no-silent-fallback in both resolvers, added stale-state and context-mismatch detection to ws-monitor, added test-local-first-precedence.js coverage, bumped 0.4.13 to 0.4.14 with site rebuild and integrity regen.
+- **Result**: Full npm run test green, verify-integrity OK, leak scan clean. Learning: recorded resolution-stale-dirs trap.
+
 ### [2026-09-09 17:09] Agent: GPT-5.6 Luna
 - **Prompt**: Verify and fix missing-value handling in the `ws-monitor` snapshot CLI.
 - **Done**: Added fail-fast validation for value-taking flags and regression coverage for omitted and flag-like values.

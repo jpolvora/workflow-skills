@@ -3,10 +3,12 @@
 
 const fs = require('fs');
 const path = require('path');
+const { spawnSync } = require('child_process');
 const {
   resolveConsumerContext,
   resolveConfiguredPath,
   resolveMinVerifyScore,
+  resolveResolvedContext,
   toRepoRelative,
 } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 const { parseFrontmatter } = require('../../ws-shared/runtime/scripts/workflow_state.cjs');
@@ -186,6 +188,134 @@ function classifyWorkflow(state, workflowDir, telemetry, minVerifyScore, repoRoo
   return findings;
 }
 
+function getGitContext(repoRoot) {
+  const run = (args) => {
+    try {
+      const result = spawnSync('git', args, { cwd: repoRoot, encoding: 'utf8', timeout: 5000 });
+      if (result.status !== 0) return null;
+      return String(result.stdout || '').trim() || null;
+    } catch {
+      return null;
+    }
+  };
+  return {
+    branch: run(['rev-parse', '--abbrev-ref', 'HEAD']),
+    head: run(['rev-parse', 'HEAD']),
+    topLevel: run(['rev-parse', '--show-toplevel']),
+  };
+}
+
+function detectContextMismatch(state, gitContext, repoRoot = '.') {
+  const findings = [];
+  const stateBranch = state.branch || state.workingBranch || null;
+  if (stateBranch && gitContext?.branch && stateBranch !== gitContext.branch) {
+    addFinding(
+      findings,
+      'critical',
+      'context-mismatch',
+      `state branch ${stateBranch} differs from active branch ${gitContext.branch}`,
+      [toRepoRelative(repoRoot, repoRoot, { allowOutside: true })],
+    );
+  }
+  const stateHead = state.headSha || state.head || null;
+  if (stateHead && gitContext?.head && stateHead !== gitContext.head) {
+    addFinding(
+      findings,
+      'warning',
+      'context-mismatch',
+      'state HEAD differs from active HEAD; the observed state may come from another checkout',
+      [],
+    );
+  }
+  const stateWorktree = state.worktreePath || state.worktree || null;
+  if (stateWorktree && gitContext?.topLevel && path.resolve(stateWorktree) !== path.resolve(gitContext.topLevel)) {
+    addFinding(
+      findings,
+      'warning',
+      'context-mismatch',
+      'state worktree differs from the active checkout; monitor may be reading the main checkout while a worktree is active',
+      [],
+    );
+  }
+  return findings;
+}
+
+function maxTelemetryFinishStep(telemetry) {
+  let max = -1;
+  for (const event of telemetry.events || []) {
+    if (event.type === 'finish' && Number.isFinite(Number(event.step))) {
+      max = Math.max(max, Number(event.step));
+    }
+  }
+  return max;
+}
+
+function detectStaleState(state, workflowDir, telemetry, stateFile, repoRoot = workflowDir) {
+  const findings = [];
+  const currentStep = Number(state.currentStep);
+  const maxFinish = maxTelemetryFinishStep(telemetry);
+  // Telemetry advanced beyond the selected state file: the monitor must not
+  // report the older step as current without a warning.
+  if (Number.isFinite(currentStep) && maxFinish > currentStep) {
+    addFinding(
+      findings,
+      'critical',
+      'stale-state',
+      `telemetry advanced to step ${maxFinish} while state reports step ${currentStep}; selected state file is stale`,
+      [toRepoRelative(repoRoot, stateFile, { allowOutside: true })],
+    );
+  }
+  // State file older than telemetry with advancing events: likely polling a
+  // stale copy after a config/branch/worktree change mid-run.
+  try {
+    const stateMtime = fs.statSync(stateFile).mtimeMs;
+    const telemetryFile = path.join(workflowDir, 'telemetry.jsonl');
+    if (fs.existsSync(telemetryFile)) {
+      const telemetryMtime = fs.statSync(telemetryFile).mtimeMs;
+      if (telemetryMtime > stateMtime + 5000 && maxFinish >= currentStep && telemetry.events.length > 0) {
+        addFinding(
+          findings,
+          'warning',
+          'stale-state',
+          'telemetry is newer than the selected state file; re-resolve before reporting the step as current',
+          [toRepoRelative(repoRoot, telemetryFile, { allowOutside: true })],
+        );
+      }
+    }
+  } catch {
+    // Stat failures stay observable via missing-artifact, not here.
+  }
+  // Newer sibling state evidence in the same workflow dir (revision race).
+  try {
+    const entries = fs.readdirSync(workflowDir, { withFileTypes: true })
+      .filter((entry) => entry.isFile() && entry.name.endsWith('.state.json'))
+      .map((entry) => path.join(workflowDir, entry.name));
+    if (entries.length > 1) {
+      const revisions = entries.map((file) => {
+        try {
+          const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+          return { file, revision: Number(parsed.revision || 0) };
+        } catch {
+          return { file, revision: -1 };
+        }
+      });
+      const newest = revisions.reduce((a, b) => (b.revision > a.revision ? b : a));
+      if (newest.file !== stateFile && newest.revision > Number(state.revision || 0)) {
+        addFinding(
+          findings,
+          'warning',
+          'stale-state',
+          `newer state evidence exists at revision ${newest.revision}; selected file may be stale`,
+          [toRepoRelative(repoRoot, newest.file, { allowOutside: true })],
+        );
+      }
+    }
+  } catch {
+    // Ignore directory scan failures here.
+  }
+  return findings;
+}
+
 function scanTranscriptRoots(context, roots, filter = {}) {
   const findings = [];
   const files = [];
@@ -242,6 +372,23 @@ function snapshot(options) {
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
   const plansDir = resolveConfiguredPath(context.repoRoot, context.config?.plans?.dir, '.agents/plans');
   const minVerifyScore = resolveMinVerifyScore(context.config);
+  const gitContext = getGitContext(context.repoRoot);
+  const resolvedContext = resolveResolvedContext({
+    repoRoot: options.repoRoot,
+    scriptFile: __filename,
+    workflowId: options.workflowId || null,
+    slug: options.slug || null,
+  });
+  const contextFindings = [];
+  if (context.configError) {
+    addFinding(
+      contextFindings,
+      'critical',
+      'config-unreadable',
+      `local config present but unreadable; refusing silent global fallback: ${context.configError}`,
+      [resolvedContext.configPath],
+    );
+  }
   let stateFiles = listStateFiles(plansDir);
   if (options.slug) stateFiles = stateFiles.filter((file) => path.basename(path.dirname(file)) === options.slug);
   const workflows = [];
@@ -253,6 +400,8 @@ function snapshot(options) {
     const workflowDir = path.dirname(loaded.stateFile);
     const telemetry = readTelemetry(path.join(workflowDir, 'telemetry.jsonl'));
     const findings = classifyWorkflow(state, workflowDir, telemetry, minVerifyScore, context.repoRoot);
+    findings.push(...detectStaleState(state, workflowDir, telemetry, loaded.stateFile, context.repoRoot));
+    findings.push(...detectContextMismatch(state, gitContext, context.repoRoot));
     workflows.push({
       workflowId: state.workflowId || path.basename(loaded.stateFile, '.state.md'),
       slug: state.slug || state.us || path.basename(workflowDir),
@@ -287,7 +436,7 @@ function snapshot(options) {
     workflowId: options.workflowId || null,
     slug: options.slug || null,
   });
-  const findings = [...workflows.flatMap((workflow) => workflow.findings), ...transcript.findings];
+  const findings = [...contextFindings, ...workflows.flatMap((workflow) => workflow.findings), ...transcript.findings];
   return {
     schemaVersion: 1,
     generatedAt: new Date().toISOString(),
@@ -296,6 +445,8 @@ function snapshot(options) {
     workflowCount: workflows.length,
     activeCount: workflows.filter((workflow) => ['active', 'blocked', 'in_progress'].includes(workflow.status)).length,
     findings,
+    resolvedContext,
+    gitContext: { branch: gitContext.branch, head: gitContext.head ? `${String(gitContext.head).slice(0, 12)}…` : null },
     transcript: {
       roots: transcriptRoots.map((root) => toRepoRelative(context.repoRoot, root, { allowOutside: true })),
       filesScanned: transcript.filesScanned,
@@ -416,6 +567,10 @@ module.exports = {
   parseArgs,
   expectedArtifacts,
   classifyWorkflow,
+  detectStaleState,
+  detectContextMismatch,
+  getGitContext,
+  maxTelemetryFinishStep,
   markdownReport,
   snapshot,
   scanTranscriptRoots,

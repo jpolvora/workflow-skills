@@ -21,6 +21,23 @@ HUB_CONFIG_EXAMPLE = HUB_REL / "templates" / "config.json.example"
 HUB_RUNTIME = HUB_REL / "runtime"
 HUB_TEMPLATES = HUB_REL / "templates"
 
+# Local-first precedence matrix shared by entrypoints and ws-monitor.
+# A consumer-local candidate wins whenever it exists; global fallback only
+# when the local candidate is absent, with the selected source observable.
+PRECEDENCE_MATRIX = [
+    {"rank": 1, "dimension": "config", "local": "{sharedDir}/config.json", "global": "{globalSkillsRoot}/ws-shared/config.json"},
+    {"rank": 2, "dimension": "skill-bodies", "local": "{skillsRoot}/ws-<id>/SKILL.md", "global": "{globalSkillsRoot}/ws-<id>/SKILL.md"},
+    {"rank": 3, "dimension": "shared-runtime", "local": "{sharedDir}/runtime/*", "global": "{globalSkillsRoot}/ws-shared/runtime/*"},
+    {"rank": 4, "dimension": "harness", "local": "{sharedDir}/AGENTS.md", "global": "{globalSkillsRoot}/ws-shared/AGENTS.md"},
+    {"rank": 5, "dimension": "specs", "local": "{specsDir} (plans.specsDir)", "global": "default .agents/specs"},
+    {"rank": 6, "dimension": "plans-state", "local": "{plansDir} + telemetry + worktree paths", "global": "default .agents/plans"},
+    {"rank": 7, "dimension": "fallback", "local": "local candidate present wins", "global": "global only when local absent; source observable"},
+]
+
+
+def describe_precedence_matrix() -> list[dict]:
+    return [dict(row) for row in PRECEDENCE_MATRIX]
+
 
 def resolve_global_skills_root() -> Path:
     env = os.environ.get("WORKFLOW_SKILLS_GLOBAL_DIR")
@@ -131,12 +148,26 @@ def resolve_config_path(
 
 def load_config(repo_root: Path, global_skills_root: Path | None = None) -> dict:
     config_path = resolve_config_path(repo_root, global_skills_root)
+    local_config = (shared_dir(repo_root.resolve()) / "config.json")
+    if local_config.is_file():
+        # Never silently fall back from a present-but-unreadable local config.
+        try:
+            config = json.loads(local_config.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError) as error:
+            raise ValueError(
+                f"local config unreadable: {local_config}: {error}"
+            ) from error
+        return _normalize_config(config)
     if not config_path.is_file():
-        return {}
+        return {"fable": {"auditVerdictsBlockShip": "refuted"}}
     try:
         config = json.loads(config_path.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
-        return {}
+        return {"fable": {"auditVerdictsBlockShip": "refuted"}}
+    return _normalize_config(config)
+
+
+def _normalize_config(config: dict) -> dict:
     fable = dict(config.get("fable") or {})
     value = fable.get("auditVerdictsBlockShip")
     if value is None or value is True:
@@ -220,6 +251,12 @@ def resolve_consumer_context(
         config_source = "project"
     except ValueError:
         config_source = "global"
+    config_error = None
+    try:
+        config = load_config(root, global_skills_root)
+    except ValueError as error:
+        config = {"fable": {"auditVerdictsBlockShip": "refuted"}}
+        config_error = str(error)
     return {
         "repo_root": root,
         "skills_root": resolve_skills_root(root, skill_id, global_skills_root),
@@ -230,5 +267,60 @@ def resolve_consumer_context(
         "execution_scope": execution_scope,
         "runtime_source": runtime_source,
         "template_source": template_source,
-        "config": load_config(root, global_skills_root),
+        "config": config,
+        "config_error": config_error,
+        "precedence_matrix": describe_precedence_matrix(),
     }
+
+
+def resolve_resolved_context(
+    override=None,
+    *,
+    script_file=None,
+    skill_id=None,
+    workflow_id=None,
+    slug=None,
+    branch=None,
+    state_path=None,
+    worktree_path=None,
+) -> dict:
+    context = resolve_consumer_context(override, script_file=script_file, skill_id=skill_id)
+    root = context["repo_root"]
+    config = context["config"] or {}
+    plans = config.get("plans") or {}
+    plans_dir = str(plans.get("dir") or ".agents/plans")
+    specs_dir = str(plans.get("specsDir") or ".agents/specs")
+    template = str(plans.get("worktreesDir") or ".agents/plans/{slug}/worktrees")
+    resolved_worktree = Path(worktree_path).expanduser() if worktree_path else (root / template.replace("{slug}", str(slug or "unknown")))
+    try:
+        worktree_source = "project" if Path(resolved_worktree).exists() else "unresolved"
+    except OSError:
+        worktree_source = "unresolved"
+    return {
+        "repo_root": ".",
+        "config_path": to_repo_relative(root, context["config_path"], allow_outside=True),
+        "config_source": context["config_source"],
+        "config_error": context.get("config_error"),
+        "skills_source": "project" if _is_relative_to(Path(context["skills_root"]).resolve(), root.resolve()) else "global",
+        "shared_source": "project" if _is_relative_to(Path(context["shared_dir"]).resolve(), root.resolve()) else "global",
+        "specs_dir": specs_dir,
+        "plans_dir": plans_dir,
+        "worktree_path": to_repo_relative(root, resolved_worktree, allow_outside=True),
+        "worktree_source": worktree_source,
+        "workflow_id": workflow_id,
+        "branch": branch,
+        "state_path": to_repo_relative(root, state_path, allow_outside=True) if state_path else None,
+        "execution_scope": context["execution_scope"],
+        "precedence_matrix": describe_precedence_matrix(),
+    }
+
+
+def refresh_resolved_context(*args, **kwargs) -> dict:
+    return resolve_resolved_context(*args, **kwargs)
+
+
+def is_resolution_stale(cached: dict | None, current: dict | None) -> bool:
+    if not cached or not current:
+        return True
+    keys = ("config_path", "config_source", "plans_dir", "specs_dir", "branch", "worktree_path", "workflow_id", "state_path")
+    return any(str(cached.get(key) or "") != str(current.get(key) or "") for key in keys)

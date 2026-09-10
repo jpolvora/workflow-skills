@@ -52,6 +52,52 @@ An agent reading the configured `rules.harness` path succeeds without manual fal
 
 ---
 
+## Local-first precedence matrix (shared contract)
+
+One matrix is shared by orchestrators, step dispatches, generated specialized
+agents, state/telemetry helpers, and `ws-monitor`. A consumer-local candidate
+wins whenever it exists. A global fallback is used only when the local
+candidate is absent, and the selected source stays observable. Resolution must
+not depend on whether the entrypoint script was loaded from the global hub.
+
+| Rank | Dimension | Local wins | Global fallback |
+|------|-----------|------------|-----------------|
+| 1 | Config | `{sharedDir}/config.json` | `{globalSkillsRoot}/ws-shared/config.json` |
+| 2 | Skill bodies and projections | `{skillsRoot}/ws-<id>/SKILL.md` | `{globalSkillsRoot}/ws-<id>/SKILL.md` |
+| 3 | Shared runtime and references | `{sharedDir}/runtime/*` | `{globalSkillsRoot}/ws-shared/runtime/*` |
+| 4 | Harness and rules | `{sharedDir}/AGENTS.md` | `{globalSkillsRoot}/ws-shared/AGENTS.md` |
+| 5 | Specs directory | `{specsDir}` (`plans.specsDir`) | Default `.agents/specs` |
+| 6 | Plans, state, telemetry, worktrees | `{plansDir}` plus workflow state/telemetry/worktree paths | Default `.agents/plans` |
+| 7 | Fallback visibility | Local present always wins | Global only when local absent; source observable |
+
+Script source: `resolve_consumer_root.cjs` (`PRECEDENCE_MATRIX`,
+`describePrecedenceMatrix`) and the Python mirror
+(`PRECEDENCE_MATRIX`, `describe_precedence_matrix`).
+
+### Resolved-context diagnostic
+
+Emit `resolveResolvedContext()` when reporting which source was selected. It
+contains repo root, config path/source, skills root/source, shared
+directory/source, specs directory, plans directory, worktree path/source,
+workflow id, branch, and state path. `ws-monitor` includes this diagnostic as
+`resolvedContext` in every snapshot plus a redacted `gitContext`.
+
+### No silent local-to-global fallback
+
+When a local candidate exists but is stale, malformed, or unreadable, report
+the failure with candidate paths (`config-unreadable`) instead of observing
+the global copy. `resolveConsumerContext` keeps the local path as the source
+of record and sets `configError`.
+
+### Cache invalidation
+
+Resolution is uncached per call. After a config, branch, worktree, or workflow
+change, call `refreshResolvedContext()` (explicit re-resolve) and compare with
+`isResolutionStale(cached, current)` before trusting a previously captured
+diagnostic.
+
+---
+
 ## Path tokens (fixed + configurable)
 
 Load early with `toolsFile` (default `tools.md` § Path tokens).
