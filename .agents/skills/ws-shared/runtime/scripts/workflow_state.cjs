@@ -1151,9 +1151,10 @@ function resolveStepAgentType(step, options, context, state) {
   }
   const hostBinding = state?.hostBinding || capabilities?.binding || (capabilities && typeof capabilities === 'object' ? Object.values(capabilities)[0]?.binding : null);
   const subagentTool = hostBinding?.subagentTool || 'Task';
-  const supportsNamedAgents = hostBinding?.supportsNamedAgents ?? (specSub?.targetHost && !['generic', 'auto'].includes(specSub.targetHost));
+  const supportsNamedAgents = hostBinding?.supportsNamedAgents
+    ?? (specSub?.targetHost ? !['generic', 'auto'].includes(specSub.targetHost) : false);
 
-  if (isEnabled && supportsNamedAgents !== false) {
+  if (isEnabled && supportsNamedAgents === true) {
     let stepNum = Number(step);
     let role = STEP_ROLES[stepNum] || 'step';
     if (options.substep === 'scoreAndRefine' || options.substep === 'reviewFix' || options.substep === 'fixPrExec') {

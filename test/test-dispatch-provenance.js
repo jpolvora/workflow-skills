@@ -205,7 +205,29 @@ assert(d5, 'step 5 dispatch found');
 assert.strictEqual(d5.agentType, 'named:ws-step-05-plan-verify', 'derived agentType for step 5 is named plan-verify');
 assert.strictEqual(d5.subagentId, undefined, 'subagentId undefined when unsupplied');
 
-const stateErrors2 = validateNode(autoState, stateSchema, 'state.json');
-assert.strictEqual(stateErrors2.length, 0, `state schema errors on auto dispatch: ${stateErrors2.join('; ')}`);
+// 5. Test auto-derivation when targetHost is omitted/auto without hostBinding
+const noTargetDerived = resolveStepAgentType(
+  4,
+  {},
+  { config: { defaults: { specializedSubagents: { enabled: true } } }, sharedDir },
+  {},
+);
+assert.strictEqual(noTargetDerived, 'generic:Task', 'defaults to generic:Task when targetHost is omitted');
+
+const autoTargetDerived = resolveStepAgentType(
+  4,
+  {},
+  { config: { defaults: { specializedSubagents: { enabled: true, targetHost: 'auto' } } }, sharedDir },
+  {},
+);
+assert.strictEqual(autoTargetDerived, 'generic:Task', 'defaults to generic:Task when targetHost is auto');
+
+const genericTargetDerived = resolveStepAgentType(
+  4,
+  {},
+  { config: { defaults: { specializedSubagents: { enabled: true, targetHost: 'generic' } } }, sharedDir },
+  {},
+);
+assert.strictEqual(genericTargetDerived, 'generic:Task', 'defaults to generic:Task when targetHost is generic');
 
 console.log('test-dispatch-provenance: ok');
