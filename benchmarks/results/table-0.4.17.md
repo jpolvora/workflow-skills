@@ -1,30 +1,28 @@
 # Harness Benchmark Evolution Report
 
-**Generated:** 2026-09-11T22:37:09.501Z  
-**Scope:** 6 snapshots across versions: 0.3.48  
-**Status:** 6 PASS / 0 FAIL
+**Generated:** 2026-09-11T22:37:09.502Z  
+**Scope:** 5 snapshots across versions: 0.4.17  
+**Status:** 5 PASS / 0 FAIL
 
 ## 1. Version-over-Version Evolution Table
 
 | Version | Commit | Fixture | Mode | Orch | Score | Verify | Exec Time | Tokens | Model | Verdict |
 |---|---|---|---|---|---:|---:|---:|---:|---|:---:|
-| 0.3.48 | `0336535` | fx-config-merge | static | standard | **100** | n/a | n/a | n/a | n/a | ✅ PASS |
-| 0.3.48 | `0336535` | fx-incomplete | static | lite | **71** | n/a | n/a | n/a | n/a | ✅ PASS |
-| 0.3.48 | `0336535` | fx-lite-readme | static | lite | **100** | n/a | n/a | n/a | n/a | ✅ PASS |
-| 0.3.48 | `0336535` | fx-node-helper | static | lite | **100** | n/a | n/a | n/a | n/a | ✅ PASS |
-| 0.3.48 | `0336535` | fx-standard-mock | static | standard | **100** | n/a | n/a | n/a | n/a | ✅ PASS |
-| 0.3.48 | `414b5da` | fx-standard-mock | live | standard | **100** | 10 | n/a | n/a | preset:cursor | ✅ PASS |
+| 0.4.17 | `fa8e293` | fx-config-merge | static | standard | **100** | n/a | n/a | n/a | n/a | ✅ PASS |
+| 0.4.17 | `fa8e293` | fx-incomplete | static | lite | **71** | n/a | n/a | n/a | n/a | ✅ PASS |
+| 0.4.17 | `fa8e293` | fx-lite-readme | static | lite | **100** | n/a | n/a | n/a | n/a | ✅ PASS |
+| 0.4.17 | `fa8e293` | fx-node-helper | static | lite | **100** | n/a | n/a | n/a | n/a | ✅ PASS |
+| 0.4.17 | `fa8e293` | fx-standard-mock | static | standard | **100** | n/a | n/a | n/a | n/a | ✅ PASS |
 
 ## 2. Multi-Dimensional Quality Breakdown
 
 | Version | Fixture | Complete | Verify | Judge | Disc | Eff | Time | Honest | Index |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| 0.3.48 | fx-config-merge | 10 | n/a | n/a | n/a | 10 | n/a | n/a | **100** |
-| 0.3.48 | fx-incomplete | 5 | n/a | n/a | n/a | 10 | n/a | n/a | **71** |
-| 0.3.48 | fx-lite-readme | 10 | n/a | n/a | n/a | 10 | n/a | n/a | **100** |
-| 0.3.48 | fx-node-helper | 10 | n/a | n/a | n/a | 10 | n/a | n/a | **100** |
-| 0.3.48 | fx-standard-mock | 10 | n/a | n/a | n/a | 10 | n/a | n/a | **100** |
-| 0.3.48 | fx-standard-mock | 10 | 10 | 10 | n/a | n/a | n/a | 10 | **100** |
+| 0.4.17 | fx-config-merge | 10 | n/a | n/a | n/a | 10 | n/a | n/a | **100** |
+| 0.4.17 | fx-incomplete | 5 | n/a | n/a | n/a | 10 | n/a | n/a | **71** |
+| 0.4.17 | fx-lite-readme | 10 | n/a | n/a | n/a | 10 | n/a | n/a | **100** |
+| 0.4.17 | fx-node-helper | 10 | n/a | n/a | n/a | 10 | n/a | n/a | **100** |
+| 0.4.17 | fx-standard-mock | 10 | n/a | n/a | n/a | 10 | n/a | n/a | **100** |
 
 ## 3. Metrics Legend & Notes
 

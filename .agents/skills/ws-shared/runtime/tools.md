@@ -88,7 +88,7 @@ Config override: `defaults.hostAdapter.mode` (`auto` default; `native-tool` | `c
 
 | Tool | Action | Native |
 |------|--------|--------|
-| `dispatch-agent` | Spawn subagent for step | Subagent dispatch (host-provided or via [`host-dispatch.md`](host-dispatch.md) fallback ladder); prefer `subagent_type: generalPurpose\|shell`; `description: "STP step {N} — {Label}"` |
+| `dispatch-agent` | Spawn subagent for step | Subagent dispatch (host-provided or via [`host-dispatch.md`](host-dispatch.md) fallback ladder); target `{prefix}-step-{step}-{role}` when specialized subagents are enabled, else prefer `subagent_type: generalPurpose\|shell`; `description: "STP step {N} — {Label}"` |
 | `dispatch-parallel` | Spawn ≤3 concurrent DAG tasks | Subagent dispatch (host-provided) — same worktree, no file overlap |
 | `user-gate` | Ask question | Host structured-choice UI when available (modal tool preferred; blocks until submission); ≥2 options, recommended first; cancelled → HS-1. Markdown fallback when unavailable (see [`gates.md`](gates.md)); log `user-gate-modal` or `user-gate-fallback` |
 | `user-gate-auto` | Auto-select first option | auto-gate table — no user-gate prompt |
