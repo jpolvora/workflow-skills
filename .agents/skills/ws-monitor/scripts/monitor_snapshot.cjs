@@ -115,7 +115,7 @@ function readState(file) {
     const parsed = parseFrontmatter(fs.readFileSync(markdown, 'utf8'));
     state = parsed.data || {};
     if (state.workflowType === 'ws-spec-multi' && (!Array.isArray(state.items) || state.items.length === 0)) {
-      state.items = parseMultiSpecTable(parsed.content || '');
+      state.items = parseMultiSpecTable(parsed.body || parsed.content || '');
     }
   } catch {
     // Keep malformed legacy state files observable without aborting the snapshot.
