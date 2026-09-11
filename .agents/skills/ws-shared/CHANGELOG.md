@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-11 06:35] Agent: Muse Spark 1.3 (Cursor)
+- **Prompt**: bump + /ws-ship-pr + ws-goal-fix-pr (develop residue to main).
+- **Done**: Bumped 0.4.16 to 0.4.17 (91e4c950, 60 files) on user's ce8c6d07 residue commit; prepare board green (suite x2, integrity, harness audit 0 critical, no leaks, fable VERIFIED, review clean); pushed develop; PR #314 converged (0 threads, 3 checks pass, 0 fix rounds) and merged 71277cb2; telemetry aggregate written.
+- **Result**: main at 71277cb2, tree clean. Learning: N/A (no reviewer/CI defects this run).
+
 ### [2026-09-11 06:15] Agent: Muse Spark 1.3 (Cursor)
 - **Prompt**: Delete stray repo-root `nul` file, find who wrote it, and fix the cause.
 - **Done**: Deleted `nul` (2>nul under Git Bash wrote git CRLF warnings to a literal file; mtime 23:57 during us-311 worker). Added CROSS-PLATFORM.md null-device rule 7 (>/dev/null in bash, >NUL only in cmd, $null only in PowerShell); regenerated + verified integrity; recorded a Medium MEMORY trap and compiled index.
