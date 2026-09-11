@@ -102,7 +102,8 @@ function main() {
       // keep fallback identity from slug
     }
   }
-  const fields = artifactStampFields(state, 6, now);
+  // A persisted review round is a finished round: stamp the step result, never workflow status.
+  const fields = artifactStampFields(state, 6, now, 'completed');
   if (fs.existsSync(roundFile)) {
     try {
       const previous = parseFrontmatter(fs.readFileSync(roundFile, 'utf8')).data;
