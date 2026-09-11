@@ -27,6 +27,7 @@ const SKIP_REASONS = new Set([
 ]);
 const SHIP_STATUSES = new Set(['pending', 'skipped', 'pushed', 'pr-open', 'merged', 'stopped']);
 const STEP_FINISH_STATUSES = new Set(['completed', 'failed', 'skipped']);
+const FILE_LIST_FLAGS = new Set(['created', 'modified', 'deleted']);
 const CLOSE_STEP = { standard: 8, lite: 4 };
 const RUNTIME_NAMES = [
   /^started-at\.txt$/,
@@ -623,7 +624,13 @@ function parseArgs(argv) {
         continue;
       }
       if (['json', 'estimated'].includes(key) && (index + 1 >= argv.length || argv[index + 1].startsWith('--'))) options[key] = true;
-      else options[key] = argv[++index];
+      else {
+        const value = argv[++index];
+        if (FILE_LIST_FLAGS.has(key) && options[key] !== undefined) {
+          if (Array.isArray(options[key])) options[key].push(value);
+          else options[key] = [options[key], value];
+        } else options[key] = value;
+      }
     }
   }
   return { positional, options };
@@ -1792,6 +1799,7 @@ module.exports = {
   SCHEMA_VERSION,
   SKIP_REASONS,
   RUNTIME_NAMES,
+  FILE_LIST_FLAGS,
   sha256,
   stateIdentityHash,
   jsonIdentityHash,
