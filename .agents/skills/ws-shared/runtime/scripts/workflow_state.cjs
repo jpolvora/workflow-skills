@@ -26,6 +26,7 @@ const SKIP_REASONS = new Set([
   'fix-pr-not-applicable',
 ]);
 const SHIP_STATUSES = new Set(['pending', 'skipped', 'pushed', 'pr-open', 'merged', 'stopped']);
+const STEP_FINISH_STATUSES = new Set(['completed', 'failed', 'skipped']);
 const CLOSE_STEP = { standard: 8, lite: 4 };
 const RUNTIME_NAMES = [
   /^started-at\.txt$/,
@@ -447,12 +448,19 @@ function upsertArtifactFrontmatter(text, fields) {
   return `---\n${serializeFrontmatter({ ...data, ...fields })}\n---\n${body.replace(/^\n*/, '')}`;
 }
 
-function artifactStampFields(state, step, now) {
+function resolveStepStampStatus(stepFinishStatus) {
+  if (!STEP_FINISH_STATUSES.has(stepFinishStatus)) {
+    throw new Error(`step finish status must be one of: completed, failed, skipped (received: ${String(stepFinishStatus)})`);
+  }
+  return stepFinishStatus;
+}
+
+function artifactStampFields(state, step, now, stepFinishStatus) {
   return {
     step,
     slug: state.slug,
     workflowId: state.workflowId,
-    status: state.status || 'completed',
+    status: resolveStepStampStatus(stepFinishStatus),
     startedAt: state.startedAt || now,
     endedAt: now,
     acRefs: Array.isArray(state.acRefs) ? state.acRefs : [],
@@ -478,10 +486,10 @@ function finishArtifactNames(slug, step, pipeline = 'standard') {
   return names[step] ? [names[step]] : [];
 }
 
-function stampStepArtifact(file, state, step) {
+function stampStepArtifact(file, state, step, stepFinishStatus) {
   if (!file || !fs.existsSync(file)) return false;
   const now = new Date().toISOString();
-  const fields = artifactStampFields(state, step, now);
+  const fields = artifactStampFields(state, step, now, stepFinishStatus);
   try {
     const previous = parseFrontmatter(fs.readFileSync(file, 'utf8')).data;
     if (previous.startedAt) fields.startedAt = previous.startedAt;
@@ -1135,6 +1143,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   let fallbackArtifacts = [];
   let isInternalSubstep = false;
   let dispatchedAt = null;
+  let stepFinishStatus = null;
 
   if (operation === 'dispatch') {
     if (pipeline === 'standard') {
@@ -1210,6 +1219,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     const estimated = !dispatchedAt;
     const status = String(options.status || 'completed');
     if (!['completed', 'failed', 'skipped'].includes(status)) throw new Error('finish status must be completed, failed, or skipped');
+    stepFinishStatus = status;
     isInternalSubstep = Boolean(options.substep && ['scoreAndRefine', 'reviewFix', 'fixPrPlan', 'fixPrExec'].includes(options.substep));
     let derivedScore = null;
     if (options.verificationScore !== undefined || (pipeline === 'standard' && step === 5 && status === 'completed' && !isInternalSubstep)) {
@@ -1415,7 +1425,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   atomicWrite(index.file, `${JSON.stringify(index.index, null, 2)}\n`);
   if (operation === 'finish') {
     for (const artifact of finishArtifactNames(state.slug, step, pipeline)) {
-      stampStepArtifact(path.join(paths.usDir, artifact), state, step);
+      stampStepArtifact(path.join(paths.usDir, artifact), state, step, stepFinishStatus);
     }
   }
   validateSnapshot({ stateFile: absoluteState, indexFile: index.file, context, maxStep, pipeline });
@@ -1797,6 +1807,7 @@ module.exports = {
   artifactMetadata,
   upsertArtifactFrontmatter,
   artifactStampFields,
+  resolveStepStampStatus,
   stampStepArtifact,
   normalizeFilesTouched,
   resolvePackageVersion,

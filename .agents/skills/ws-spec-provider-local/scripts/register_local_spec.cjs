@@ -12,6 +12,7 @@ const {
   parseFrontmatter,
   upsertArtifactFrontmatter,
   artifactStampFields,
+  resolveStepStampStatus,
 } = require('../../ws-shared/runtime/scripts/workflow_state.cjs');
 
 function argsOf(argv) {
@@ -167,7 +168,19 @@ function main() {
       // keep slug fallback
     }
   }
-  const fields = artifactStampFields(state, 0, now);
+  // Provisional stamp until the Step 0 finish re-stamps in-flow: preserve a
+  // finish-established result on re-register, else the defined default.
+  let registerStampStatus = 'completed';
+  if (fs.existsSync(workflowPath)) {
+    try {
+      registerStampStatus = resolveStepStampStatus(
+        parseFrontmatter(fs.readFileSync(workflowPath, 'utf8')).data.status,
+      );
+    } catch {
+      // first stamp or legacy value: keep the defined provisional default
+    }
+  }
+  const fields = artifactStampFields(state, 0, now, registerStampStatus);
   if (fs.existsSync(workflowPath)) {
     try {
       const previous = parseFrontmatter(fs.readFileSync(workflowPath, 'utf8')).data;
