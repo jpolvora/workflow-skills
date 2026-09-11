@@ -1,0 +1,128 @@
+---
+id: 311
+slug: us-311
+title: "Stamp finished step artifacts with the step result, not the overall workflow status"
+source: github
+specDate: 2026-09-10
+issueState: open
+issueUrl: "https://github.com/jpolvora/workflow-skills/issues/311"
+step: 0
+workflowId: us-311-20260911T034559Z
+status: active
+startedAt: "2026-09-11T03:39:39.121Z"
+endedAt: "2026-09-11T03:39:39.121Z"
+acRefs: []
+---
+# Specification — Stamp finished step artifacts with the step result, not the overall workflow status
+
+## Description
+
+Step finish reports persist a `status` frontmatter field that currently mirrors the **overall workflow status** instead of the **step finish result**. The bug locus is `artifactStampFields()` in `.agents/skills/ws-shared/runtime/scripts/workflow_state.cjs` (line 450), which stamps `status: state.status || 'completed'`. The finish flow calls `stampStepArtifact()` (line 1418) after recording the per-step outcome in `state.stepStatus[String(step)]`, but the stamped artifact ignores that per-step value. Because a workflow stays `active` while intermediate steps complete, successful intermediate step artifacts are persisted with `status: active`.
+
+Technical scope and boundaries:
+
+- Fix the stamping path only: artifact `status` must equal the step finish result (`completed`, `failed`, or `skipped`).
+- Source the result from the already-recorded per-step outcome: either pass `stepFinishStatus` into the stamping call or derive it from `state.stepStatus[String(step)]` after the step update. Use exactly one derivation path.
+- `state.status` (overall workflow status) semantics stay unchanged; the state file remains the source of record for workflow-level status.
+- No state schema change, no telemetry schema change, no change to `applyCloseAndShipStatus` close-step transitions.
+- Regression coverage: automated tests for successful, failed, and skipped intermediate step finishes while the overall workflow remains `active`.
+
+## Acceptance Criteria
+
+- AC1: When an intermediate step finishes successfully while the workflow status is `active`, the stamped step artifact frontmatter has `status: completed`.
+- AC2: When an intermediate step finishes with failure while the workflow status is `active`, the stamped step artifact frontmatter has `status: failed`.
+- AC3: When an intermediate step finishes as skipped while the workflow status is `active`, the stamped step artifact frontmatter has `status: skipped`.
+- AC4: The close-step finish path still transitions workflow status exactly as before (no regression to `applyCloseAndShipStatus` behavior); close-step artifacts carry the step result.
+- AC5: The stamped artifact status is sourced from a single derivation path (passed `stepFinishStatus` or `state.stepStatus[String(step)]` read after the step update), implemented in one helper; no second or fallback derivation path exists in the finish flow.
+- AC6: An unknown or missing step-result value is never stamped verbatim into artifact frontmatter (fail closed to a defined default or throw a descriptive error).
+- AC7: Regression tests cover AC1, AC2, and AC3 (intermediate finish under an `active` workflow) in the repo test suite, and `npm run test` exits 0.
+
+## Original Issue Context
+
+Original human-authored issue [jpolvora/workflow-skills#311](https://github.com/jpolvora/workflow-skills/issues/311) (verbatim):
+
+### Problem
+
+Step artifacts are stamped during `finish`, but their `status` is derived from the overall workflow status. A workflow remains `active` while intermediate steps complete, so reports for successful intermediate steps are persisted with `status: active`.
+
+### Reproduction
+
+1. Start a standard workflow.
+2. Finish an intermediate step successfully while the workflow remains active.
+3. Inspect the generated step artifact frontmatter.
+
+### Actual
+
+The artifact reports `status: active`, even though the step finish operation returned `completed` and the state records that step as completed.
+
+### Expected
+
+The artifact status should equal the result of the step finish operation: `completed`, `failed`, or `skipped`. The overall workflow status should remain a separate field or continue to be represented by the state file.
+
+### Suggested fix and regression coverage
+
+Pass the `stepFinishStatus` into artifact stamping, or derive it from `state.stepStatus[String(step)]` after the step update. Add tests for successful, failed, and skipped intermediate steps while the overall workflow is still active.
+
+### Prior Work Sweep
+
+Provider `sweep-prior-work` (`--issue 311`, keywords `stampStepArtifact`, `artifact status`, `step finish status`, files `workflow_state.cjs`):
+
+- PR search for `#311`: PR #238 (feat(us-236): add ws-task-lifecycle and autoload opt-in, MERGED) and PR #223 (feat: harness efficiency 0.3.29 + explain/cleanup/archive skills, MERGED) — keyword/mention matches only, no open PR for issue 311. No exact same-issue open PR; no duplicate risk.
+- `git log` on `.agents/skills/ws-shared/runtime/scripts/workflow_state.cjs`: recent fixes `9cdcef2e` (fix(#304) review threads), `515507f3` (telemetry filesTouched/dedup finish), `e88e9cbb` (Step 5 score auto-derive), `a979b1ea` (fix(#300) review threads), `5db6f9f7` (workflow runtime issues + monitor), `86955346` (hybrid hub + handoff hardening). Related hardening history; none addresses artifact stamp status.
+
+### Design Intent
+
+`git log -S "stampStepArtifact"` on `workflow_state.cjs` returns only `561f86e9` (docs: runtime tools relocation — a path-move commit, no behavioral intent). `status: state.status || 'completed'` in `artifactStampFields` is an accidental gap (field reuse for two meanings), not an intentional constraint. Safe to change artifact stamping without preserving the old mirroring behavior.
+
+## Notes
+
+- `stampStepArtifact()` preserves existing `startedAt`/`endedAt` frontmatter and writes atomically via `atomicWrite` (fd cleanup in place) — keep both behaviors.
+- Idempotent-finish guards (`isIdempotentFinish` around handoff/telemetry writes) are adjacent finish-flow behavior; do not weaken them while threading the step result into stamping.
+- MEMORY-relevant: per-workflow `updatedAt` semantics in `updatePlansIndex` and handoff `artifactPaths` repo-relative normalization are nearby invariants in the same module — the fix must not alter them.
+- Stack rule pack `typescript-node` applies (Node 22 package): closed-enum status values (boundary validation), no floating promises, no path traversal in artifact writes.
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Changing `state.status` workflow-level semantics | Workflow status lifecycle is owned by close/ship transitions; this spec only fixes artifact stamping |
+| Telemetry schema or event payload changes | Finish events already carry step outcome; no new telemetry fields required |
+| Re-stamping historical artifacts on disk | Migration of old `status: active` artifacts is a separate decision, not this bugfix |
+| New workflow states beyond completed/failed/skipped | Closed result enum; no new lifecycle states |
+
+## Assumptions & Open Questions
+
+| Assumption | Chosen default | Rationale | Confirmed |
+|------------|----------------|-----------|-----------|
+| Derivation path (pass-through vs post-update read) | Implementer picks one; single helper | Both options in the issue are equivalent; constraint is singularity (AC5) | y |
+| Default when step result is missing at stamp time | Fail closed (defined default or descriptive throw per AC6) | Mirrors old `|| 'completed'` fallback intent without copying workflow status | y |
+| Input validation, idempotency, auth, concurrency, data lifecycle, external deps | N/A because the fix is a synchronous in-process enum selection inside `finish` with no new inputs, retries, callers, TTL, or network calls | No absent-dimension ACs invented | y |
+
+## Definition of Ready (DoR)
+
+| Readiness Item | Requirement | Verification Method |
+|----------------|-------------|---------------------|
+| Bounded scope | Only stamping path + regression tests change | `git diff --stat` touches `workflow_state.cjs` (or its stamp helper) and test files only |
+| Atomic criteria | AC1–AC7 each have a deterministic pass/fail check | Each AC maps to a named test assertion or file-content check |
+| Failure modes | Unknown/missing step result fails closed (AC6) | Negative test asserts no verbatim unknown value in frontmatter |
+| Observation telemetry | Step artifact frontmatter is the observable signal | Read stamped artifact `status` after `finish` in each scenario |
+| Zero open blockers | No unresolved questions | Assumptions table has no `n` in Confirmed |
+| Stack invariant: closed status enum | Stamped status is one of `completed`, `failed`, `skipped` (or a defined default) | `node .agents/skills/ws-shared/runtime/scripts/scan_stack_invariants.cjs` + test assertions |
+| Stack invariant: async/resource safety | No floating promises; `atomicWrite` fd cleanup preserved | Code review of the diff; `npm run test` green |
+
+## Validation & Observation Notes
+
+### Telemetry & Observable Signals
+
+- Stamped step artifact frontmatter `status:` field (e.g. `step-0X-*.md` under the workflow `{us-dir}`) after `finish`.
+- `state.stepStatus["{step}"]` in `{workflow-id}.state.json` — the per-step source of truth the artifact must match.
+- `state.status` in `{workflow-id}.state.json` — must remain `active` for intermediate finishes (unchanged behavior).
+- Test signal: `npm run test` (config `verification.backendTest`); targeted workflow-state contract tests.
+
+### Negative & Failing Test Scenarios
+
+- NS1: Finish an intermediate step successfully while workflow status is `active`, then read the artifact frontmatter — red before fix (`status: active`), green after (`status: completed`).
+- NS2: Finish an intermediate step as failed while workflow status is `active` — artifact must read `status: failed`, not `active`.
+- NS3: Finish an intermediate step as skipped while workflow status is `active` — artifact must read `status: skipped`, not `active`.
+- NS4: Stamp path receives an unknown or missing step-result value — must fail closed (defined default or descriptive error); the unknown value must never appear verbatim in artifact frontmatter.
+- NS5: Close-step finish — workflow status transition behavior identical to before the change (regression guard for `applyCloseAndShipStatus`).

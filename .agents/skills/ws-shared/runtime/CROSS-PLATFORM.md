@@ -16,6 +16,7 @@ Applies to shipped recipes and temporary scripts on Windows, Linux, and macOS.
 4. Do not paste shell-specific operators into another shell dialect.
 5. Keep each uncertain shell call to one simple invocation.
 6. Never put both `"` and `'` inside a single `python -c` / `node -e` payload (including character classes like `["']`). Prefer a permanent companion script. For YAML frontmatter fields use `node {skillsRoot}/ws-shared/runtime/scripts/extract_frontmatter_field.cjs`.
+7. Discard output with the current shell's null device only: `>/dev/null` in bash (including Git Bash on Windows) — never `>nul`, which creates a literal file named `nul`. Use `>NUL` only in cmd.exe and `$null` only in PowerShell.
 
 ## Managed scripts
 
