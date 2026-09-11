@@ -6,6 +6,33 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-09-11] Never redirect to nul under Git Bash
+- **Layer**: `harness`
+- **Module**: `shell recipes / cross-platform runtime`
+- **Severity**: `Medium`
+- **PathPattern**: `shell snippets in skills, tests, and agent commands; .agents/skills/ws-shared/runtime/CROSS-PLATFORM.md`
+- **Scenario / Context**: A worker shell redirected git stderr with `2>nul` under Git Bash on Windows. Bash has no `NUL` device, so the redirect created a literal 482-byte file named `nul` at the repo root holding git CRLF warnings. The reserved name then breaks normal file reads and `rg` scans and needs extended-length (`//?/`) paths to inspect or delete.
+- **DO NOT**: Use `>nul` / `2>nul` in bash (including Git Bash on Windows), or assume the Windows `NUL` device works outside cmd.exe.
+- **INSTEAD DO**: Discard output with `>/dev/null` in bash; use `>NUL` only in cmd.exe and `$null` only in PowerShell (see `CROSS-PLATFORM.md` Commands and quoting rule 7).
+
+### [2026-09-11] Ledger scoreState must be re-persisted at each pre-advance boundary
+- **Layer**: `Harness`
+- **Module**: `ws-spec-to-pr / ac_ledger score boundaries`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs`; `.agents/plans/*/ac-ledger.json`
+- **Scenario / Context**: `validate_state --pre-advance N` derives the ledger score at boundary `pre-step6` (N=6), `ship` (N>=9), else `step5`, and fails when `scoreState` does not match that boundary (e.g. "ledger scoreState must match derived step5 score" when advancing to 7 with a stale `pre-step6` scoreState).
+- **DO NOT**: Score the ledger once and assume it stays valid across pre-advance gates, or re-run the wrong boundary before the next gate.
+- **INSTEAD DO**: Run `ac_ledger.cjs score --boundary <matching>` immediately before each pre-advance gate (`pre-step6` before 6, `step5` before 7/8, `ship` before 9) and after any link that changes ledger content.
+
+### [2026-09-11] Anchor G2 staging skip-filters to the plans dir
+- **Layer**: `Harness`
+- **Module**: `ws-spec-to-pr / G2-code staging`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-*/SKILL.md`; `.agents/plans/ws-spec-multi/`
+- **Scenario / Context**: A G2 staging skip-list used the unanchored regex `/ws-spec-multi\//` to exclude the multi-spec state dir (`.agents/plans/ws-spec-multi/`) but it also matched the skill package (`.agents/skills/ws-spec-multi/SKILL.md`), silently dropping a version-synced file from the product commit. The committed tree then failed CI `skill-integrity --check` (the manifest had hashed the bumped bytes) while local verify passed.
+- **DO NOT**: Use unanchored substring regexes (`/ws-spec-multi\//`, `/CHANGELOG/`) to exclude foreign paths from staging — skill ids and plan dirs share name fragments.
+- **INSTEAD DO**: Anchor exclusions to the plans dir (e.g. `/^\.agents\/plans\/ws-spec-multi\//`) and diff the staged set against the pre-commit `git status` (every intended `M`/`??` accounted for, zero foreign staged) before committing.
+
 ### [2026-09-10] Resolution-stale checks must compare resolved dirs
 - **Layer**: `Harness`
 - **Module**: `resolve_consumer_root / resolved-context diagnostics`

@@ -1,0 +1,534 @@
+{
+  "schemaVersion": 1,
+  "revision": 31,
+  "workflowId": "us-310-20260911T041227Z",
+  "slug": "us-310",
+  "specPath": ".agents/plans/us-310/step-00-us-310.spec.md",
+  "planIndexPath": ".agents/plans/us-310/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "`finish` with three repeated `--modified` flags retains and normalizes all three paths in the `modified` list surfaced to telemetry (`filesTouched.modified`), `state.workflowManifest.modified`, and the persisted handoff.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L626-L633"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 626,
+          "lineEnd": 633,
+          "sha256": "6792f6b46562f1eb725e43f0c7baeeffc42f5aaac91a98199abb33bf9c971687"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ba9935d6",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T1/NS1 (AC1)",
+          "sourceFile": "test/test-repeated-file-list-flags.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T04:20:20.671Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "fixpr-step9-AC1",
+        "g2-commit-ba9935d6",
+        "impl-step4-AC1"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "`finish` with repeated `--created` flags retains and normalizes every path in the `created` list across telemetry, the workflow manifest, and the persisted handoff.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L626-L633"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 626,
+          "lineEnd": 633,
+          "sha256": "6792f6b46562f1eb725e43f0c7baeeffc42f5aaac91a98199abb33bf9c971687"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ba9935d6",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T2/NS2 (AC2)",
+          "sourceFile": "test/test-repeated-file-list-flags.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T04:20:20.734Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "fixpr-step9-AC2",
+        "g2-commit-ba9935d6",
+        "impl-step4-AC2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "`finish` with repeated `--deleted` flags retains and normalizes every path in the `deleted` list across telemetry, the workflow manifest, and the persisted handoff.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L626-L633"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 626,
+          "lineEnd": 633,
+          "sha256": "6792f6b46562f1eb725e43f0c7baeeffc42f5aaac91a98199abb33bf9c971687"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ba9935d6",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T3/NS3 (AC3)",
+          "sourceFile": "test/test-repeated-file-list-flags.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T04:20:20.795Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "fixpr-step9-AC3",
+        "g2-commit-ba9935d6",
+        "impl-step4-AC3"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "A single flag with a comma-separated value (`--modified \"a,b\"`) still yields both paths (existing form keeps working).",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L626-L633"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 626,
+          "lineEnd": 633,
+          "sha256": "6792f6b46562f1eb725e43f0c7baeeffc42f5aaac91a98199abb33bf9c971687"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ba9935d6",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T4/NS4 (AC4)",
+          "sourceFile": "test/test-repeated-file-list-flags.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T04:20:20.853Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "fixpr-step9-AC4",
+        "g2-commit-ba9935d6",
+        "impl-step4-AC4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "Mixed repeated and comma-separated values for one flag (`--modified \"a,b\" --modified c`) accumulate to all three paths.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L626-L633"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 626,
+          "lineEnd": 633,
+          "sha256": "6792f6b46562f1eb725e43f0c7baeeffc42f5aaac91a98199abb33bf9c971687"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ba9935d6",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T5 (AC5)",
+          "sourceFile": "test/test-repeated-file-list-flags.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T04:20:20.917Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "fixpr-step9-AC5",
+        "g2-commit-ba9935d6",
+        "impl-step4-AC5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "Duplicate paths across repeated flags are deduplicated exactly as today (single entry per unique normalized path).",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L626-L633"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 626,
+          "lineEnd": 633,
+          "sha256": "6792f6b46562f1eb725e43f0c7baeeffc42f5aaac91a98199abb33bf9c971687"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ba9935d6",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T6/NS6 (AC6)",
+          "sourceFile": "test/test-repeated-file-list-flags.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T04:20:20.976Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "fixpr-step9-AC6",
+        "g2-commit-ba9935d6",
+        "impl-step4-AC6"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "Repeated scalar (non-file-list) flags keep last-wins behavior; no other `parseArgs` consumer changes observable behavior.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L30-L30",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L626-L633"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 30,
+          "lineEnd": 30,
+          "sha256": "6792f6b46562f1eb725e43f0c7baeeffc42f5aaac91a98199abb33bf9c971687"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 626,
+          "lineEnd": 633,
+          "sha256": "6792f6b46562f1eb725e43f0c7baeeffc42f5aaac91a98199abb33bf9c971687"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ba9935d6",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T7/NS5 (AC7)",
+          "sourceFile": "test/test-repeated-file-list-flags.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T04:20:21.041Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "fixpr-step9-AC7",
+        "g2-commit-ba9935d6",
+        "impl-step4-AC7"
+      ]
+    },
+    {
+      "id": "AC8",
+      "text": "Regression tests cover AC1–AC7 in the repo test suite, and `npm run test` exits 0.",
+      "status": "Implemented",
+      "evidence": [
+        "test/test-repeated-file-list-flags.js:L1-L12"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": "test/test-repeated-file-list-flags.js",
+          "lineStart": 1,
+          "lineEnd": 12,
+          "sha256": "1b1a5778424dc6a539d1663cb3422c5c2cddbd824bf50c55fa029518d413e0d4"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ba9935d6",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T8 (AC8)",
+          "sourceFile": "test/test-repeated-file-list-flags.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T04:20:21.104Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "fixpr-step9-AC8",
+        "g2-commit-ba9935d6",
+        "impl-step4-AC8"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "NS1: `finish --step 4 --modified one --modified two --modified three` — red before fix (only `three` retained), green after (all three in telemetry, manifest, and handoff).",
+      "tests": [
+        {
+          "name": "T1/NS1 (AC1)",
+          "sourceFile": "test/test-repeated-file-list-flags.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T04:20:26.098Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-step4-NS1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "NS2: Repeated `--created` flags — second and later values must not be dropped.",
+      "tests": [
+        {
+          "name": "T2/NS2 (AC2)",
+          "sourceFile": "test/test-repeated-file-list-flags.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T04:20:26.164Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-step4-NS2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "NS3: Repeated `--deleted` flags — second and later values must not be dropped.",
+      "tests": [
+        {
+          "name": "T3/NS3 (AC3)",
+          "sourceFile": "test/test-repeated-file-list-flags.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T04:20:26.220Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-step4-NS3"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "NS4: Single comma-separated flag (`--modified \"a,b\"`) — must still yield both paths (backward-compat guard; green before and after).",
+      "tests": [
+        {
+          "name": "T4/NS4 (AC4)",
+          "sourceFile": "test/test-repeated-file-list-flags.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T04:20:26.284Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-step4-NS4"
+      ]
+    },
+    {
+      "id": "NS5",
+      "text": "NS5: Repeated scalar flag (e.g. `--step` twice) — last-wins behavior unchanged (no accumulation leak outside the file-list allowlist).",
+      "tests": [
+        {
+          "name": "T7/NS5 (AC7)",
+          "sourceFile": "test/test-repeated-file-list-flags.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T04:20:26.341Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-step4-NS5"
+      ]
+    },
+    {
+      "id": "NS6",
+      "text": "NS6: Duplicate path across repeated flags (`--modified a --modified a`) — single normalized entry (dedup preserved).",
+      "tests": [
+        {
+          "name": "T6/NS6 (AC6)",
+          "sourceFile": "test/test-repeated-file-list-flags.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T04:20:26.405Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-step4-NS6"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "ship",
+    "score": 10,
+    "earnedUnits": 80,
+    "totalUnits": 80,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-11T04:32:07.605Z"
+  }
+}

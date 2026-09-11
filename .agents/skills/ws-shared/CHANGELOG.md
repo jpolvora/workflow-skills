@@ -1,5 +1,25 @@
 # Changelog
 
+### [2026-09-11 06:15] Agent: Muse Spark 1.3 (Cursor)
+- **Prompt**: Delete stray repo-root `nul` file, find who wrote it, and fix the cause.
+- **Done**: Deleted `nul` (2>nul under Git Bash wrote git CRLF warnings to a literal file; mtime 23:57 during us-311 worker). Added CROSS-PLATFORM.md null-device rule 7 (>/dev/null in bash, >NUL only in cmd, $null only in PowerShell); regenerated + verified integrity; recorded a Medium MEMORY trap and compiled index.
+- **Result**: File gone, rg clean, verify-integrity OK, full suite (see below). Learning: recorded nul-redirect trap.
+
+### [2026-09-11 00:35] Agent: Muse Spark 1.3 (Cursor)
+- **Prompt**: /ws-spec-multi full auto sequential on us-311 + us-310 (run ms-20260911T034316Z).
+- **Done**: Both standard workers shipped; master verified convergence (0 threads, checks green) and merged PR #312 (us-311, 1773f599) and PR #313 (us-310, 5cdb7e10) into main with post-merge base sync; run status completed. Resolved a stat-phantom checkout block (work==HEAD==main hashes) via index refresh.
+- **Result**: 2 shipped / 0 skipped / 0 failed; main at 5cdb7e10. Learning: N/A (standard batch execution, no new project knowledge).
+
+### [2026-09-11 00:24] Agent: Muse Spark 1.3 (Cursor)
+- **Prompt**: ws-spec-multi worker [standard] us-310: full auto Spec-to-PR for repeated file-list flags (issue #310).
+- **Done**: Accumulated repeated --created/--modified/--deleted in parseArgs (closed allowlist, scalars last-wins); added test-repeated-file-list-flags.js (T1-T8); ledger score 10/10; sabotage passed; review clean; full suite green; bump 0.4.16 + integrity; G2 ba9935d6 + delivery cae2b8f1.
+- **Result**: Steps 0-8 closed; PR feature/us-310 -> main pending ship. Learning: recorded ledger-score-boundary trap.
+
+### [2026-09-10 23:50] Agent: Muse Spark 1.3 (Cursor)
+- **Prompt**: /ws-spec-from-provider fetch all gh issues, create specs, prepare /ws-spec-multi full auto sequential run.
+- **Done**: Imported open issues #311 (artifact stamp status) and #310 (repeated file-list flags) as agentic specs .agents/specs/0073-us-311.spec.md (7 ACs) and 0074-us-310.spec.md (8 ACs), authoring-validated and registered to step-00 workflow copies; verified both pending for ws-spec-multi.
+- **Result**: 2 imported / 0 skipped / 0 failed. Prepared explicit-path ws-spec-multi command for us-311 + us-310. Learning: N/A (standard implementation, no new project knowledge).
+
 ### [2026-09-10 13:30] Agent: Muse Spark 1.3 (Cursor)
 - **Prompt**: Fetch all open issues, implement them, bump version, update site/docs, test, commit, push, ship-pr + goal-fix-pr.
 - **Done**: Implemented #308 local-first precedence matrix with resolved-context diagnostics and no-silent-fallback in both resolvers, added stale-state and context-mismatch detection to ws-monitor, added test-local-first-precedence.js coverage, bumped 0.4.13 to 0.4.14 with site rebuild and integrity regen.

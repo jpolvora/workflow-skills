@@ -1,0 +1,478 @@
+{
+  "schemaVersion": 1,
+  "revision": 24,
+  "workflowId": "us-311-20260911T034559Z",
+  "slug": "us-311",
+  "specPath": ".agents/plans/us-311/step-00-us-311.spec.md",
+  "planIndexPath": ".agents/plans/us-311/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "When an intermediate step finishes successfully while the workflow status is `active`, the stamped step artifact frontmatter has `status: completed`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L451-L468"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 451,
+          "lineEnd": 468,
+          "sha256": "b2dac51a1ed4d4e27c0c85467b6872f353f5e11056e9adaea25785c4359c039a"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "d2374503",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T1/NS1 (AC1)",
+          "sourceFile": "test/test-artifact-stamp-status.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T03:56:56.130Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "g2-commit-d2374503",
+        "impl-step4-ac1",
+        "verify-step5-sabotage"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "When an intermediate step finishes with failure while the workflow status is `active`, the stamped step artifact frontmatter has `status: failed`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L489-L501"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 489,
+          "lineEnd": 501,
+          "sha256": "b2dac51a1ed4d4e27c0c85467b6872f353f5e11056e9adaea25785c4359c039a"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "d2374503",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T2/NS2 (AC2)",
+          "sourceFile": "test/test-artifact-stamp-status.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T03:56:56.203Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "g2-commit-d2374503",
+        "impl-step4-ac2",
+        "verify-step5-sabotage"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "When an intermediate step finishes as skipped while the workflow status is `active`, the stamped step artifact frontmatter has `status: skipped`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1426-L1430"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1426,
+          "lineEnd": 1430,
+          "sha256": "b2dac51a1ed4d4e27c0c85467b6872f353f5e11056e9adaea25785c4359c039a"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "d2374503",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T3/NS3 (AC3)",
+          "sourceFile": "test/test-artifact-stamp-status.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T03:56:56.268Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "g2-commit-d2374503",
+        "impl-step4-ac3",
+        "verify-step5-sabotage"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "The close-step finish path still transitions workflow status exactly as before (no regression to `applyCloseAndShipStatus` behavior); close-step artifacts carry the step result.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L624-L638"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 624,
+          "lineEnd": 638,
+          "sha256": "b2dac51a1ed4d4e27c0c85467b6872f353f5e11056e9adaea25785c4359c039a"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "d2374503",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T4/NS5 (AC4)",
+          "sourceFile": "test/test-artifact-stamp-status.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T03:56:56.366Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "g2-commit-d2374503",
+        "impl-step4-ac4",
+        "verify-step5-sabotage"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "The stamped artifact status is sourced from a single derivation path (passed `stepFinishStatus` or `state.stepStatus[String(step)]` read after the step update), implemented in one helper; no second or fallback derivation path exists in the finish flow.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1426-L1430"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1426,
+          "lineEnd": 1430,
+          "sha256": "b2dac51a1ed4d4e27c0c85467b6872f353f5e11056e9adaea25785c4359c039a"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "d2374503",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T6 (AC5)",
+          "sourceFile": "test/test-artifact-stamp-status.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T03:56:56.440Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "g2-commit-d2374503",
+        "impl-step4-ac5",
+        "verify-step5-sabotage"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "An unknown or missing step-result value is never stamped verbatim into artifact frontmatter (fail closed to a defined default or throw a descriptive error).",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L451-L456",
+        ".agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs:L170-L183"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 451,
+          "lineEnd": 456,
+          "sha256": "b2dac51a1ed4d4e27c0c85467b6872f353f5e11056e9adaea25785c4359c039a"
+        },
+        {
+          "path": ".agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs",
+          "lineStart": 170,
+          "lineEnd": 183,
+          "sha256": "a09522eaab02ca321f13ab4c494e7ce2820eb65ada2a3d3474b6aa9116945de3"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "d2374503",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T5/NS4 (AC6)",
+          "sourceFile": "test/test-artifact-stamp-status.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T03:56:56.525Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "g2-commit-d2374503",
+        "impl-step4-ac6",
+        "verify-step5-sabotage"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "Regression tests cover AC1, AC2, and AC3 (intermediate finish under an `active` workflow) in the repo test suite, and `npm run test` exits 0.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-code-review/scripts/write_review_round.cjs:L105-L106"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-code-review/scripts/write_review_round.cjs",
+          "lineStart": 105,
+          "lineEnd": 106,
+          "sha256": "5d7814a93b1876aae58520a2e809cd055d984b9a92503c3c55f413de1c3bea17"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "d2374503",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T1-T8 passed",
+          "sourceFile": "test/test-artifact-stamp-status.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T03:56:56.596Z"
+        }
+      ],
+      "verdicts": [
+        {
+          "verdict": "VERIFIED",
+          "evidence": "test/test-artifact-stamp-status.js:L40-L65",
+          "timestamp": "2026-09-11T03:58:13.416Z"
+        }
+      ],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "g2-commit-d2374503",
+        "impl-step4-ac7",
+        "verify-step5-fable",
+        "verify-step5-sabotage"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "NS1: Finish an intermediate step successfully while workflow status is `active`, then read the artifact frontmatter — red before fix (`status: active`), green after (`status: completed`).",
+      "tests": [
+        {
+          "name": "T1/NS1 (AC1)",
+          "sourceFile": "test/test-artifact-stamp-status.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T03:56:56.664Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-step4-NS1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "NS2: Finish an intermediate step as failed while workflow status is `active` — artifact must read `status: failed`, not `active`.",
+      "tests": [
+        {
+          "name": "T2/NS2 (AC2)",
+          "sourceFile": "test/test-artifact-stamp-status.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T03:56:56.728Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-step4-NS2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "NS3: Finish an intermediate step as skipped while workflow status is `active` — artifact must read `status: skipped`, not `active`.",
+      "tests": [
+        {
+          "name": "T3/NS3 (AC3)",
+          "sourceFile": "test/test-artifact-stamp-status.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T03:56:56.793Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-step4-NS3"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "NS4: Stamp path receives an unknown or missing step-result value — must fail closed (defined default or descriptive error); the unknown value must never appear verbatim in artifact frontmatter.",
+      "tests": [
+        {
+          "name": "T5/NS4 (AC6)",
+          "sourceFile": "test/test-artifact-stamp-status.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T03:56:56.890Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-step4-NS4"
+      ]
+    },
+    {
+      "id": "NS5",
+      "text": "NS5: Close-step finish — workflow status transition behavior identical to before the change (regression guard for `applyCloseAndShipStatus`).",
+      "tests": [
+        {
+          "name": "T4/NS5 (AC4)",
+          "sourceFile": "test/test-artifact-stamp-status.js",
+          "phase": "observed",
+          "alias": "backendTest",
+          "exitCode": 0,
+          "timestamp": "2026-09-11T03:56:56.979Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-step4-NS5"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 10,
+    "earnedUnits": 70,
+    "totalUnits": 70,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-11T04:00:35.087Z"
+  }
+}

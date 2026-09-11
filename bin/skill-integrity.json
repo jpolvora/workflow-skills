@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "f1c5f06e2632509b4418575092889cbfcd5d0ca848a88466b9445917a7e9c4a5",
+  "fullPackageDigest": "2bf56f14c5bac0df827cfbf50ce75a031d0b75186670ebe85620ea9846968885",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -15,7 +15,7 @@
       "runtime/CATALOG.md": "2f9a70aee1bfa2f3e811eed7a3edfba06e5b7eaa8cbde2d90e0f82abc493e5eb",
       "runtime/config-resolution.md": "87d81087fcaaa68047b3800ee7358ab74546c73edb2950f3dee3f243b9bcf00c",
       "runtime/config.schema.json": "0e36424f6d0a040b3ad8b1ff452f41f62befad006b9bd9dd8770471d3589987e",
-      "runtime/CROSS-PLATFORM.md": "71cfbe08a4764c706a85186a3ec8de9dbc59ed0c29f33f66424488dc8fb5e56d",
+      "runtime/CROSS-PLATFORM.md": "68cf59d446957bee662ee84327676b6d87ab184b55b87a86710c58ec84057916",
       "runtime/evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
       "runtime/gates.md": "133d633e904be79aed491c884c106c163ab5ed6a948f8f624bb15152bf09f4e2",
       "runtime/host-dispatch.md": "ec29622bff39094b3ecfdb63210263be9355dff8de5dace4165d862e3c058afa",
@@ -56,7 +56,7 @@
       "templates/MEMORY.md.template": "5b67274d91cd4507fecd8aa9e3c2ee10d2f7fb90f0d8eb35fb575089bc5664fb",
       "templates/STACK.md.example": "68cff04083447e0f585c48a4e8165cfd02f1d60504f0baced2148579104ad5a8"
     },
-    "skillDigest": "5c3fd56c491ebb0494d4fbf93685efa3ad05479eb7e2c5ea5505c1a0db219259"
+    "skillDigest": "29fd113862c005e1e6113d2db8a8b236d47e2b0fed95fda86a411e3e2e50055c"
   },
   "packageVersion": "0.4.16",
   "skills": {

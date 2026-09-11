@@ -1,0 +1,138 @@
+---
+id: 310
+slug: us-310
+title: workflow_state.cjs drops earlier values for repeated file-list flags
+source: github
+specDate: 2026-09-10
+issueState: open
+issueUrl: "https://github.com/jpolvora/workflow-skills/issues/310"
+step: 0
+workflowId: us-310-20260911T041227Z
+status: completed
+startedAt: "2026-09-11T03:40:23.016Z"
+endedAt: "2026-09-11T03:40:23.016Z"
+acRefs: []
+---
+# Specification — workflow_state.cjs drops earlier values for repeated file-list flags
+
+## Description
+
+The `workflow_state.cjs` CLI accepts `--created`, `--modified`, and `--deleted` file-list flags, and the normalization layer (`normalizeFileList` → `listArg`, lines 548–591 of `.agents/skills/ws-shared/runtime/scripts/workflow_state.cjs`) already supports multi-value input (arrays via `flatMap`, comma-separated strings via `split(',')`). However, `parseArgs()` (line 597) stores every flag with last-wins assignment (`options[key] = argv[++index]`, line 618), so passing the same file-list flag more than once keeps only the final value.
+
+Technical scope and boundaries:
+
+- Accumulate repeated file-list options (`created`, `modified`, `deleted`) as arrays in `parseArgs()` (or an accumulation step) before they reach `normalizeFilesTouched()`.
+- Scope accumulation to the file-list flags only; scalar flags (e.g. `--step`, `--model`) keep last-wins semantics so no other CLI behavior changes.
+- Preserve existing normalization: dedup (`Set`), backslash-to-slash conversion, repo-relative resolution via `toRepoRelative`, and the comma-separated single-flag form.
+- Downstream consumers (`finish` telemetry `filesTouched`, `state.workflowManifest`, persisted handoff `handoff/step-NN.json`) automatically retain every path once parsing accumulates; no changes to those consumers unless tests prove otherwise.
+- Regression coverage: repeated `--created`, `--modified`, and `--deleted` flags assert every path survives into telemetry, the workflow manifest, and the handoff; comma-separated coverage stays green.
+
+## Acceptance Criteria
+
+- AC1: `finish` with three repeated `--modified` flags retains and normalizes all three paths in the `modified` list surfaced to telemetry (`filesTouched.modified`), `state.workflowManifest.modified`, and the persisted handoff.
+- AC2: `finish` with repeated `--created` flags retains and normalizes every path in the `created` list across telemetry, the workflow manifest, and the persisted handoff.
+- AC3: `finish` with repeated `--deleted` flags retains and normalizes every path in the `deleted` list across telemetry, the workflow manifest, and the persisted handoff.
+- AC4: A single flag with a comma-separated value (`--modified "a,b"`) still yields both paths (existing form keeps working).
+- AC5: Mixed repeated and comma-separated values for one flag (`--modified "a,b" --modified c`) accumulate to all three paths.
+- AC6: Duplicate paths across repeated flags are deduplicated exactly as today (single entry per unique normalized path).
+- AC7: Repeated scalar (non-file-list) flags keep last-wins behavior; no other `parseArgs` consumer changes observable behavior.
+- AC8: Regression tests cover AC1–AC7 in the repo test suite, and `npm run test` exits 0.
+
+## Original Issue Context
+
+Original human-authored issue [jpolvora/workflow-skills#310](https://github.com/jpolvora/workflow-skills/issues/310) (verbatim):
+
+### Problem
+
+The `workflow_state.cjs` CLI accepts `--created`, `--modified`, and `--deleted`, and its normalization layer supports multiple paths. However, passing the same flag more than once keeps only the final value because argument parsing overwrites `options[key]`.
+
+### Reproduction
+
+Run a `finish` operation with multiple repeated file-list flags:
+
+```text
+finish <state-file> --step 4
+  --modified path/to/first-file
+  --modified path/to/second-file
+  --modified path/to/third-file
+```
+
+### Actual
+
+Only `path/to/third-file` is retained in `filesTouched`, the workflow manifest, and the persisted handoff.
+
+### Expected
+
+All three paths should be retained and normalized in the corresponding `modified` list. The same behavior should apply to `created` and `deleted`.
+
+### Suggested fix and regression coverage
+
+Accumulate repeated file-list options as arrays before passing them to the existing normalizer. Add regression tests covering repeated `--created`, `--modified`, and `--deleted` flags, and assert that telemetry, the workflow manifest, and the handoff preserve every path. Keep coverage for the existing comma-separated form.
+
+### Prior Work Sweep
+
+Provider `sweep-prior-work` (`--issue 310`, keywords `repeated flags`, `filesTouched`, `file-list`, `workflow_state`, files `workflow_state.cjs`):
+
+- PR search for `#310`: PR #248 (fix(#247): prune retired session-lease artifacts, MERGED) and PR #223 (harness efficiency 0.3.29 + explain/cleanup/archive skills, MERGED) — mention matches only, no open PR for issue 310. No duplicate risk.
+- `git log` on `.agents/skills/ws-shared/runtime/scripts/workflow_state.cjs`: recent fixes `9cdcef2e` (fix(#304) review threads), `515507f3` (telemetry filesTouched auto-discover/dedup finish), `e88e9cbb` (Step 5 score auto-derive + key-value commit args), `a979b1ea` (fix(#300) review threads), `5db6f9f7` (workflow runtime issues + monitor), `86955346` (hybrid hub + handoff hardening). `515507f3` touched `filesTouched` telemetry but not flag accumulation; none addresses repeated flags.
+
+### Design Intent
+
+`git log -S "options[key] = argv"` on `workflow_state.cjs` returns only `561f86e9` (docs: runtime tools relocation — a path-move commit, no behavioral intent). Last-wins assignment is the generic parser default, not a deliberate choice for file-list flags; the normalizer's array support (`listArg` `flatMap`) shows multi-value input was anticipated downstream. Accumulating file-list flags is an accidental-gap fix, safe to make without preserving last-wins for those three flags.
+
+## Notes
+
+- `listArg` already recurses into arrays and splits comma-separated strings, so the fix is parsing-side only: repeated `created`/`modified`/`deleted` values must arrive as an array (or pre-joined comma string) at `normalizeFilesTouched()`.
+- `normalizeFilesTouched()` prefers `options.*` over subagent-reported `output.files_touched` when defined — accumulated CLI arrays therefore win over reported lists, matching current precedence.
+- `state.workflowManifest` already unions per-finish lists with `Set` + `sort()` (line 1308–1310); no change needed there.
+- MEMORY-relevant: handoff `artifactPaths` repo-relative normalization and idempotent-finish guards live in the same module — the fix must not alter them.
+- Stack rule pack `typescript-node` applies (Node 22 package): CLI boundary values keep flowing through `normalizeFileList` validation (no raw flag values into paths), no floating promises, path handling via existing `toRepoRelative` containment.
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Changing last-wins for scalar flags | Only file-list flags accumulate; scalar CLI semantics stay frozen (AC7) |
+| New file-list flags beyond created/modified/deleted | No new CLI surface; the issue asks for accumulation only |
+| Telemetry/manifest/handoff schema changes | Downstream shapes already carry lists; parsing fix suffices |
+| Re-parsing historical telemetry | No backfill of previously dropped paths |
+
+## Assumptions & Open Questions
+
+| Assumption | Chosen default | Rationale | Confirmed |
+|------------|----------------|-----------|-----------|
+| Accumulation scope | Only `created`, `modified`, `deleted` accumulate; all other repeated flags stay last-wins | Minimal blast radius; matches the issue's "file-list options" wording | y |
+| Accumulation representation | Array of raw values passed to the existing normalizer (or equivalent pre-join) | Reuses `listArg` array + comma handling with zero normalizer changes | y |
+| Ordering of accumulated lists | Normalizer output order (dedup + existing transforms) | No new ordering contract; manifest sorts independently | y |
+| Auth, idempotency, concurrency, data lifecycle, external deps | N/A because the fix is synchronous argv parsing with no new callers, retries, TTL, or network calls | No absent-dimension ACs invented | y |
+
+## Definition of Ready (DoR)
+
+| Readiness Item | Requirement | Verification Method |
+|----------------|-------------|---------------------|
+| Bounded scope | Only flag parsing/accumulation + regression tests change | `git diff --stat` touches `workflow_state.cjs` and test files only |
+| Atomic criteria | AC1–AC8 each have a deterministic pass/fail check | Each AC maps to a named CLI-level or unit assertion |
+| Failure modes | Empty values and duplicates behave as today (filtered/deduped) | AC6 test + `listArg` empty-filter coverage |
+| Observation telemetry | `filesTouched`, `workflowManifest`, handoff JSON show all paths | Assert on `finish` outputs in repeated-flag fixtures |
+| Zero open blockers | No unresolved questions | Assumptions table has no `n` in Confirmed |
+| Stack invariant: boundary validation | Accumulated values still flow through `normalizeFileList`/`toRepoRelative` (no raw values into paths) | Code review of the diff; `scan_stack_invariants.cjs` |
+| Stack invariant: async safety | No floating promises introduced | Code review of the diff; `npm run test` green |
+
+## Validation & Observation Notes
+
+### Telemetry & Observable Signals
+
+- `finish` telemetry record `filesTouched: { created, modified, deleted }` — must list every repeated-flag path.
+- `state.workflowManifest.{created,modified,deleted}` in `{workflow-id}.state.json` — unioned sorted lists including all paths.
+- `handoff/step-NN.json` payload (`filesTouched` / `artifactPaths`) — every path present, repo-relative.
+- `parseArgs` unit-level signal: repeated `--modified a --modified b` yields a multi-value option (array or equivalent), not `b` alone.
+- Test signal: `npm run test` (config `verification.backendTest`); targeted workflow-state contract tests.
+
+### Negative & Failing Test Scenarios
+
+- NS1: `finish --step 4 --modified one --modified two --modified three` — red before fix (only `three` retained), green after (all three in telemetry, manifest, and handoff).
+- NS2: Repeated `--created` flags — second and later values must not be dropped.
+- NS3: Repeated `--deleted` flags — second and later values must not be dropped.
+- NS4: Single comma-separated flag (`--modified "a,b"`) — must still yield both paths (backward-compat guard; green before and after).
+- NS5: Repeated scalar flag (e.g. `--step` twice) — last-wins behavior unchanged (no accumulation leak outside the file-list allowlist).
+- NS6: Duplicate path across repeated flags (`--modified a --modified a`) — single normalized entry (dedup preserved).
