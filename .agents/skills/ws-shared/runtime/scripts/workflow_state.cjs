@@ -696,6 +696,12 @@ function commonEvent(state, pipeline, step, type, timestamp, options, context) {
   if (isNonEmptyModel(options.configuredModel)) {
     event.configuredModel = String(options.configuredModel).trim();
   }
+  if (options.agentType && String(options.agentType).trim()) {
+    event.agentType = String(options.agentType).trim();
+  }
+  if (options.subagentId && String(options.subagentId).trim()) {
+    event.subagentId = String(options.subagentId).trim();
+  }
   return event;
 }
 
@@ -793,6 +799,8 @@ function applyFinishTelemetry(state, labels, step, payload) {
     estimated: payload.estimated,
     model: payload.model,
     filesTouched: payload.filesTouched,
+    agentType: payload.agentType || null,
+    subagentId: payload.subagentId || null,
   };
   telemetry.steps = [...prior.filter((item) => Number(item.N ?? item.step) !== step), row]
     .sort((a, b) => Number(a.N ?? a.step) - Number(b.N ?? b.step));
@@ -1115,6 +1123,56 @@ function resolveRecordedModel(options, context, state, pipeline, step) {
   return resolveRecordedModelDetails(options, context, state, pipeline, step).model;
 }
 
+const STEP_ROLES = {
+  0: 'spec-write',
+  1: 'plan-write',
+  2: 'plan-interview',
+  3: 'plan-to-tasks',
+  4: 'implement-tasks',
+  5: 'plan-verify',
+  6: 'code-review',
+  7: 'testing',
+  8: 'ship-pr',
+  9: 'fix-pr',
+};
+
+function resolveStepAgentType(step, options, context, state) {
+  if (options.agentType && String(options.agentType).trim()) {
+    return String(options.agentType).trim();
+  }
+  const specSub = context.config?.defaults?.specializedSubagents;
+  const isEnabled = specSub?.enabled === true;
+  const capabilityFile = path.join(context.sharedDir, 'host-capabilities.json');
+  let capabilities = null;
+  try {
+    capabilities = readJsonFile(capabilityFile);
+  } catch {
+    // ignore
+  }
+  const hostBinding = state?.hostBinding || capabilities?.binding || (capabilities && typeof capabilities === 'object' ? Object.values(capabilities)[0]?.binding : null);
+  const subagentTool = hostBinding?.subagentTool || 'Task';
+  const supportsNamedAgents = hostBinding?.supportsNamedAgents ?? (specSub?.targetHost && !['generic', 'auto'].includes(specSub.targetHost));
+
+  if (isEnabled && supportsNamedAgents !== false) {
+    let stepNum = Number(step);
+    let role = STEP_ROLES[stepNum] || 'step';
+    if (options.substep === 'scoreAndRefine' || options.substep === 'reviewFix' || options.substep === 'fixPrExec') {
+      stepNum = 4;
+      role = 'implement-tasks';
+    } else if (options.substep === 'fixPrPlan') {
+      stepNum = 6;
+      role = 'code-review';
+    }
+    const stepPadded = String(stepNum).padStart(2, '0');
+    const prefix = specSub?.agentPrefix || 'ws';
+    return `named:${prefix}-step-${stepPadded}-${role}`;
+  }
+  if (hostBinding?.mode === 'inline-isolated' || context.config?.defaults?.hostAdapter?.mode === 'inline-isolated') {
+    return 'inline:session';
+  }
+  return `generic:${subagentTool}`;
+}
+
 function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, options) {
   if (!['dispatch', 'finish', 'bypass'].includes(operation)) throw new Error('operation must be dispatch, finish, or bypass');
   if (options.elapsed !== undefined) throw new Error('--elapsed is not accepted; elapsedSec is derived from timestamps');
@@ -1205,6 +1263,15 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     }
     const modelDetails = resolveRecordedModelDetails(options, context, state, pipeline, step);
     if (modelDetails.configuredModel) dispatch.configuredModel = modelDetails.configuredModel;
+    if (modelDetails.model) dispatch.model = modelDetails.model;
+    const resolvedAgentType = resolveStepAgentType(step, options, context, state);
+    if (resolvedAgentType) {
+      dispatch.agentType = resolvedAgentType;
+      options.agentType = resolvedAgentType;
+    }
+    if (options.subagentId && String(options.subagentId).trim()) {
+      dispatch.subagentId = String(options.subagentId).trim();
+    }
     state.stepDispatches = [...state.stepDispatches.filter((item) => Number(item.step) !== step), dispatch].sort((a, b) => a.step - b.step);
     state.currentModel = modelDetails.model;
     if (modelDetails.configuredModel) {
@@ -1220,6 +1287,10 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     event.dispatchedAt = timestamp;
   } else if (operation === 'finish') {
     const dispatch = state.stepDispatches.find((item) => Number(item.step) === step);
+    if (dispatch) {
+      if (!options.agentType && dispatch.agentType) options.agentType = dispatch.agentType;
+      if (!options.subagentId && dispatch.subagentId) options.subagentId = dispatch.subagentId;
+    }
     dispatchedAt = String(options.dispatchedAt || dispatchTimestamp(dispatch));
     const finishedAt = timestamp;
     const elapsedSec = dispatchedAt ? Math.max(0, Math.floor((Date.parse(finishedAt) - Date.parse(dispatchedAt)) / 1000)) : 0;
@@ -1320,6 +1391,8 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       completionTokens,
       model: state.currentModel,
       filesTouched: { created, modified, deleted },
+      agentType: options.agentType || null,
+      subagentId: options.subagentId || null,
     });
     state.workflowManifest = state.workflowManifest && typeof state.workflowManifest === 'object' ? state.workflowManifest : {};
     for (const key of ['created', 'modified', 'deleted']) {
@@ -1372,6 +1445,9 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
         const row = { step: Number(item.step), dispatchedAt };
         if (item.substep && String(item.substep).trim()) row.substep = String(item.substep).trim();
         if (item.configuredModel && String(item.configuredModel).trim()) row.configuredModel = String(item.configuredModel).trim();
+        if (item.model && String(item.model).trim()) row.model = String(item.model).trim();
+        if (item.agentType && String(item.agentType).trim()) row.agentType = String(item.agentType).trim();
+        if (item.subagentId && String(item.subagentId).trim()) row.subagentId = String(item.subagentId).trim();
         return dispatchedAt ? row : null;
       })
       .filter(Boolean)
@@ -1820,6 +1896,7 @@ module.exports = {
   normalizeFilesTouched,
   resolvePackageVersion,
   resolveDispatchModel,
+  resolveStepAgentType,
   performUpdate,
   resolvePhaseModel,
   validateSnapshot,

@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-11 18:37] Agent: Antigravity
+- **Prompt**: /ws-megabrain fetch gh issues and fix them all with tests, bump version, commit, update website/agents.md/readme.md, push, ship-pr and goal-fix-pr (fixes #315, #316).
+- **Done**: Added dispatch provenance (`agentType`, `subagentId`, `model`) to `stepDispatches[]` and `telemetry.jsonl` in `workflow_state.cjs` with full schema conformance; updated Tier 1 host dispatch docs and orchestrator instructions to explicitly target specialized subagent IDs (`ws-step-*`) when enabled; updated `ws-monitor` to treat embed-inline as healthy when host capability has no named binding and evaluate dispatch provenance without relying on transcripts; added comprehensive automated test `test/test-dispatch-provenance.js` and updated monitor test suite; bumped version to 0.4.18 with site rebuild and integrity regeneration.
+- **Result**: All tests pass, integrity verified, secrets scan clean, harness audit 0 critical. Learning: N/A.
+
 ### [2026-09-11 06:35] Agent: Muse Spark 1.3 (Cursor)
 - **Prompt**: bump + /ws-ship-pr + ws-goal-fix-pr (develop residue to main).
 - **Done**: Bumped 0.4.16 to 0.4.17 (91e4c950, 60 files) on user's ce8c6d07 residue commit; prepare board green (suite x2, integrity, harness audit 0 critical, no leaks, fable VERIFIED, review clean); pushed develop; PR #314 converged (0 threads, 3 checks pass, 0 fix rounds) and merged 71277cb2; telemetry aggregate written.

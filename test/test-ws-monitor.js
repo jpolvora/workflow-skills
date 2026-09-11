@@ -13,7 +13,14 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '..');
 const script = path.join(repoRoot, '.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs');
 const require = createRequire(import.meta.url);
-const { parseArgs, classifyWorkflow } = require(script);
+const {
+  parseArgs,
+  classifyWorkflow,
+  classifyMultiSpecWorkflow,
+  parseMultiSpecTable,
+  queryMemoryVault,
+  resolveCandidateTranscriptRoots,
+} = require(script);
 const tempRoots = [];
 
 function write(file, content) {
@@ -317,5 +324,184 @@ if (combinedMismatchReport.findings.some((f) => f.code === 'hybrid-path-resoluti
   throw new Error('monitor leaked transcript when workflowId and slug did not both match');
 }
 
+// Test dispatch provenance: healthy embed-inline when no named binding
+const healthyGenericFindings = classifyWorkflow(
+  {
+    slug: 'prov-healthy',
+    currentStep: 4,
+    verificationScore: 9,
+    hostBinding: { subagentTool: 'Task', supportsNamedAgents: false },
+    stepDispatches: [{ step: 4, agentType: 'generic:Task' }],
+  },
+  root,
+  { events: [], errors: [] },
+  9,
+  root,
+  { defaults: { specializedSubagents: { enabled: true } } },
+);
+if (healthyGenericFindings.some((f) => f.code === 'generic-dispatch')) {
+  throw new Error('monitor incorrectly flagged generic-dispatch when host lacks named agent binding');
+}
+
+// Test dispatch provenance: warning when named binding exists but generic dispatch used
+const warnGenericFindings = classifyWorkflow(
+  {
+    slug: 'prov-warn',
+    currentStep: 4,
+    verificationScore: 9,
+    hostBinding: { subagentTool: 'Task', supportsNamedAgents: true },
+    stepDispatches: [{ step: 4, agentType: 'generic:Task' }],
+  },
+  root,
+  { events: [], errors: [] },
+  9,
+  root,
+  { defaults: { specializedSubagents: { enabled: true } } },
+);
+if (!warnGenericFindings.some((f) => f.code === 'generic-dispatch')) {
+  throw new Error('monitor failed to flag generic-dispatch when host has named agent binding');
+}
+
+// Test dispatch provenance: healthy when named dispatch is used
+const namedFindings = classifyWorkflow(
+  {
+    slug: 'prov-named',
+    currentStep: 4,
+    verificationScore: 9,
+    hostBinding: { subagentTool: 'Task', supportsNamedAgents: true },
+    stepDispatches: [{ step: 4, agentType: 'named:ws-step-04-implement-tasks' }],
+  },
+  root,
+  { events: [], errors: [] },
+  9,
+  root,
+  { defaults: { specializedSubagents: { enabled: true } } },
+);
+if (namedFindings.some((f) => f.code === 'generic-dispatch')) {
+  throw new Error('monitor incorrectly flagged generic-dispatch when named dispatch was used');
+}
+// Test parseMultiSpecTable helper
+const sampleTable = `
+| # | slug | specPath | flowMode | status | prNumber | prUrl | reason | updatedAt |
+|---|------|----------|----------|--------|----------|-------|--------|-----------|
+| 1 | 01-first | .agents/specs/01.spec.md | lite | shipped | #101 | https://pr/101 | | 2026-09-11T12:00:00Z |
+| 2 | 02-second | .agents/specs/02.spec.md | standard | in_progress | | | | 2026-09-11T12:30:00Z |
+| 3 | 03-third | .agents/specs/03.spec.md | standard | failed | | | build failure | 2026-09-11T12:45:00Z |
+`;
+const parsedItems = parseMultiSpecTable(sampleTable);
+if (parsedItems.length !== 3) {
+  throw new Error(`expected 3 parsed multi-spec items, got ${parsedItems.length}`);
+}
+if (parsedItems[0].slug !== '01-first' || parsedItems[0].status !== 'shipped' || parsedItems[0].prNumber !== '#101') {
+  throw new Error('parseMultiSpecTable parsed item 0 incorrectly');
+}
+if (parsedItems[1].slug !== '02-second' || parsedItems[1].status !== 'in_progress') {
+  throw new Error('parseMultiSpecTable parsed item 1 incorrectly');
+}
+if (parsedItems[2].slug !== '03-third' || parsedItems[2].status !== 'failed' || parsedItems[2].reason !== 'build failure') {
+  throw new Error('parseMultiSpecTable parsed item 2 incorrectly');
+}
+
+// Test classifyMultiSpecWorkflow findings
+const multiSpecFindings = classifyMultiSpecWorkflow(
+  {
+    runId: 'ms-test',
+    status: 'active',
+    items: parsedItems,
+  },
+  'path/to/ms-test.state.md',
+  root,
+);
+if (!multiSpecFindings.some((f) => f.code === 'multi-spec-failed-item' && f.message.includes('03-third'))) {
+  throw new Error('classifyMultiSpecWorkflow failed to flag multi-spec-failed-item');
+}
+
+// Write multi-spec batch state file in root to test end-to-end snapshot discovery
+const multiSpecDir = path.join(root, '.agents', 'plans', 'ws-spec-multi');
+write(
+  path.join(multiSpecDir, 'ms-20260911T120000Z.state.md'),
+  `---
+workflowType: ws-spec-multi
+runId: ms-20260911T120000Z
+status: active
+baseBranch: main
+dryRun: false
+---
+
+# Multi-spec Runner — ms-20260911T120000Z
+
+| # | slug | specPath | flowMode | status | prNumber | prUrl | reason | updatedAt |
+|---|------|----------|----------|--------|----------|-------|--------|-----------|
+| 1 | multi-first | .agents/specs/multi-first.spec.md | lite | shipped | #42 | https://github.com/org/repo/pull/42 | | 2026-09-11T12:00:00Z |
+| 2 | multi-second | .agents/specs/multi-second.spec.md | standard | in_progress | | | | 2026-09-11T12:30:00Z |
+| 3 | multi-third | .agents/specs/multi-third.spec.md | standard | pending | | | | 2026-09-11T12:45:00Z |
+`,
+);
+
+const multiSnapshotResult = run(['--repo-root', root, '--json'], root);
+if (multiSnapshotResult.status !== 0) {
+  throw new Error(multiSnapshotResult.stderr || multiSnapshotResult.stdout);
+}
+const multiReport = JSON.parse(multiSnapshotResult.stdout);
+const msWf = multiReport.workflows.find((w) => w.pipeline === 'ws-spec-multi');
+if (!msWf) {
+  throw new Error('snapshot failed to discover ws-spec-multi batch state file');
+}
+if (!msWf.multiSpec || msWf.multiSpec.itemCount !== 3) {
+  throw new Error(`expected multiSpec with 3 items, got ${JSON.stringify(msWf.multiSpec)}`);
+}
+if (msWf.multiSpec.activeItem?.slug !== 'multi-second') {
+  throw new Error(`expected activeItem to be multi-second, got ${msWf.multiSpec.activeItem?.slug}`);
+}
+if (msWf.multiSpec.shippedCount !== 1 || msWf.multiSpec.pendingCount !== 1) {
+  throw new Error('multiSpec shipped/pending count mismatch');
+}
+
+// Test memory vault query helper
+const memContext = {
+  repoRoot: root,
+  sharedDir: path.join(root, '.agents', 'skills', 'ws-shared'),
+  config: {
+    specMemo: {
+      enableMemoryFiles: true,
+      enableSpecMemoIntegration: false,
+    },
+  },
+};
+write(path.join(memContext.sharedDir, 'memory', 'test-entry.md'), 'Active workflow note for ws-spec run\n');
+const vaultResult = queryMemoryVault(memContext);
+if (!vaultResult.enabled || vaultResult.backend !== 'local-memory-files') {
+  throw new Error(`queryMemoryVault failed to detect local memory backend: ${JSON.stringify(vaultResult)}`);
+}
+if (vaultResult.records.length === 0) {
+  throw new Error('queryMemoryVault failed to scan memory directory');
+}
+
+// Test workspace candidate transcript roots auto-discovery
+const cursorTranscripts = path.join(root, '.cursor', 'transcripts');
+write(path.join(cursorTranscripts, 'session.jsonl'), 'subagent fatal error in step 4\n');
+const candidateRoots = resolveCandidateTranscriptRoots({ repoRoot: root, config: {} });
+if (!candidateRoots.some((r) => r.includes('.cursor'))) {
+  throw new Error('resolveCandidateTranscriptRoots failed to discover workspace .cursor/transcripts');
+}
+
+// Test subagent-error transcript finding
+const subagentErrResult = run([
+  '--repo-root',
+  root,
+  '--transcript-root',
+  cursorTranscripts,
+  '--json',
+], root);
+if (subagentErrResult.status !== 0) {
+  throw new Error(subagentErrResult.stderr || subagentErrResult.stdout);
+}
+const subagentErrReport = JSON.parse(subagentErrResult.stdout);
+if (!subagentErrReport.findings.some((f) => f.code === 'subagent-error')) {
+  throw new Error('monitor failed to detect subagent-error signal in transcript');
+}
+
 for (const directory of tempRoots) fs.rmSync(directory, { recursive: true, force: true });
 console.log('test-ws-monitor: ok');
+
+

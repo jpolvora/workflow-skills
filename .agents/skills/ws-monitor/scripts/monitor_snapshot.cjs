@@ -2,6 +2,7 @@
 'use strict';
 
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
 const {
@@ -9,6 +10,7 @@ const {
   resolveConfiguredPath,
   resolveMinVerifyScore,
   resolveResolvedContext,
+  resolveMemoryRouting,
   toRepoRelative,
 } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 const { parseFrontmatter } = require('../../ws-shared/runtime/scripts/workflow_state.cjs');
@@ -31,6 +33,10 @@ function parseArgs(argv) {
       options.help = true;
       continue;
     }
+    if (token === '--vault') {
+      options.checkVault = true;
+      continue;
+    }
     if (!token.startsWith('--')) throw new Error(`unknown argument: ${token}`);
     const key = token.slice(2).replace(/-([a-z])/g, (_, character) => character.toUpperCase());
     if (key === 'transcriptRoot') {
@@ -38,7 +44,7 @@ function parseArgs(argv) {
       index += 1;
       continue;
     }
-    if (['json', 'watch'].includes(key) && (index + 1 >= argv.length || argv[index + 1].startsWith('--'))) {
+    if (['json', 'watch', 'discoverHostTranscripts', 'checkVault'].includes(key) && (index + 1 >= argv.length || argv[index + 1].startsWith('--'))) {
       options[key] = true;
       continue;
     }
@@ -65,6 +71,39 @@ function isNonEmptyFile(file) {
   }
 }
 
+function parseMultiSpecTable(content) {
+  if (!content) return [];
+  const lines = content.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.startsWith('|') && l.endsWith('|'));
+  if (lines.length < 2) return [];
+  const headerIndex = lines.findIndex((l) => /\|\s*#\s*\|\s*slug\s*\|/i.test(l));
+  if (headerIndex === -1 || headerIndex + 2 > lines.length) return [];
+  const headers = lines[headerIndex]
+    .split('|')
+    .slice(1, -1)
+    .map((h) => h.trim().toLowerCase());
+  const items = [];
+  for (let i = headerIndex + 2; i < lines.length; i += 1) {
+    const cols = lines[i].split('|').slice(1, -1).map((c) => c.trim());
+    if (cols.length === 0 || cols.every((c) => c === '' || c.startsWith('-'))) continue;
+    const item = {};
+    headers.forEach((h, idx) => {
+      const val = cols[idx] !== undefined ? cols[idx] : '';
+      if (h === '#' || h === 'index') item.index = Number(val) || val;
+      else if (h === 'slug') item.slug = val;
+      else if (h === 'specpath') item.specPath = val;
+      else if (h === 'flowmode') item.flowMode = val;
+      else if (h === 'status') item.status = val;
+      else if (h === 'prnumber') item.prNumber = val || null;
+      else if (h === 'prurl') item.prUrl = val || null;
+      else if (h === 'reason') item.reason = val || null;
+      else if (h === 'updatedat') item.updatedAt = val || null;
+      else item[h] = val;
+    });
+    if (item.slug) items.push(item);
+  }
+  return items;
+}
+
 function readState(file) {
   const jsonFile = file.endsWith('.state.json') ? file : file.replace(/\.state\.md$/, '.state.json');
   const json = readJson(jsonFile);
@@ -73,7 +112,11 @@ function readState(file) {
   if (!fs.existsSync(markdown)) return { state: null, stateFile: file };
   let state = {};
   try {
-    state = parseFrontmatter(fs.readFileSync(markdown, 'utf8')).data;
+    const parsed = parseFrontmatter(fs.readFileSync(markdown, 'utf8'));
+    state = parsed.data || {};
+    if (state.workflowType === 'ws-spec-multi' && (!Array.isArray(state.items) || state.items.length === 0)) {
+      state.items = parseMultiSpecTable(parsed.content || '');
+    }
   } catch {
     // Keep malformed legacy state files observable without aborting the snapshot.
   }
@@ -82,16 +125,38 @@ function readState(file) {
 
 function listStateFiles(plansDir) {
   if (!fs.existsSync(plansDir)) return [];
-  const directories = fs.readdirSync(plansDir, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => path.join(plansDir, entry.name));
+  let directories;
+  try {
+    directories = fs.readdirSync(plansDir, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => path.join(plansDir, entry.name));
+  } catch {
+    return [];
+  }
   const files = [];
   for (const directory of directories) {
-    const entries = fs.readdirSync(directory, { withFileTypes: true });
-    const json = entries.find((entry) => entry.isFile() && entry.name.endsWith('.state.json'));
-    const markdown = entries.find((entry) => entry.isFile() && entry.name.endsWith('.state.md'));
-    if (json) files.push(path.join(directory, json.name));
-    else if (markdown) files.push(path.join(directory, markdown.name));
+    let entries;
+    try {
+      entries = fs.readdirSync(directory, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+    const jsonFiles = entries
+      .filter((entry) => entry.isFile() && entry.name.endsWith('.state.json'))
+      .map((entry) => entry.name);
+    const mdFiles = entries
+      .filter((entry) => entry.isFile() && entry.name.endsWith('.state.md'))
+      .map((entry) => entry.name);
+
+    for (const jf of jsonFiles) {
+      files.push(path.join(directory, jf));
+    }
+    for (const mf of mdFiles) {
+      const base = mf.slice(0, -('.state.md'.length));
+      if (!jsonFiles.includes(`${base}.state.json`)) {
+        files.push(path.join(directory, mf));
+      }
+    }
   }
   return files;
 }
@@ -155,7 +220,7 @@ function addFinding(findings, severity, code, message, evidence = []) {
   findings.push({ severity, code, message, evidence });
 }
 
-function classifyWorkflow(state, workflowDir, telemetry, minVerifyScore, repoRoot = workflowDir) {
+function classifyWorkflow(state, workflowDir, telemetry, minVerifyScore, repoRoot = workflowDir, config = null) {
   const findings = [];
   const missing = expectedArtifacts(state, workflowDir, minVerifyScore, repoRoot).filter((item) => !item.present);
   for (const artifact of missing) {
@@ -184,6 +249,68 @@ function classifyWorkflow(state, workflowDir, telemetry, minVerifyScore, repoRoo
   }
   for (const error of telemetry.errors) {
     addFinding(findings, 'warning', 'telemetry-parse-error', 'Telemetry contains an unreadable line', [error]);
+  }
+
+  // Check dispatch provenance against specialized subagent expectations (Issues #315 & #316)
+  const specSub = config?.defaults?.specializedSubagents;
+  if (specSub?.enabled === true) {
+    const hostBinding = state.hostBinding;
+    // Host has named agent binding when explicitly verified or configured
+    const hasNamedBinding = hostBinding?.supportsNamedAgents === true ||
+      (hostBinding && hostBinding.namedAgentTool && hostBinding.namedAgentTool !== 'none');
+    // If the host supports named agents, but dispatches fell back to generic:
+    if (hasNamedBinding && Array.isArray(state.stepDispatches)) {
+      for (const dispatch of state.stepDispatches) {
+        if (dispatch.agentType && dispatch.agentType.startsWith('generic:')) {
+          addFinding(
+            findings,
+            'warning',
+            'generic-dispatch',
+            `Step ${dispatch.step} dispatch used generic subagent (${dispatch.agentType}) where named projection was expected`,
+            [toRepoRelative(repoRoot, path.join(workflowDir, `${state.slug || 'workflow'}.state.json`), { allowOutside: true })],
+          );
+        }
+      }
+    }
+  }
+
+  return findings;
+}
+
+function classifyMultiSpecWorkflow(state, stateFile, repoRoot = '.') {
+  const findings = [];
+  const items = Array.isArray(state.items) ? state.items : [];
+  const runStatus = state.status || 'active';
+  const inProgressItems = items.filter((item) => item.status === 'in_progress');
+  const pendingItems = items.filter((item) => item.status === 'pending');
+  const failedItems = items.filter((item) => item.status === 'failed');
+
+  if (runStatus === 'active' && items.length > 0 && inProgressItems.length === 0 && pendingItems.length === 0) {
+    addFinding(
+      findings,
+      'info',
+      'multi-spec-idle',
+      `Multi-spec run ${state.runId || path.basename(stateFile)} is active but has no pending or in_progress specs`,
+      [toRepoRelative(repoRoot, stateFile, { allowOutside: true })],
+    );
+  }
+  for (const item of failedItems) {
+    addFinding(
+      findings,
+      'warning',
+      'multi-spec-failed-item',
+      `Multi-spec spec "${item.slug}" failed (${item.reason || 'unspecified failure'})`,
+      [toRepoRelative(repoRoot, stateFile, { allowOutside: true })],
+    );
+  }
+  if (inProgressItems.length > 1) {
+    addFinding(
+      findings,
+      'warning',
+      'multi-spec-concurrency',
+      `Multi-spec run has multiple in_progress items (${inProgressItems.map((i) => i.slug).join(', ')}); sequential execution expected`,
+      [toRepoRelative(repoRoot, stateFile, { allowOutside: true })],
+    );
   }
   return findings;
 }
@@ -316,6 +443,120 @@ function detectStaleState(state, workflowDir, telemetry, stateFile, repoRoot = w
   return findings;
 }
 
+function queryMemoryVault(context, options = {}) {
+  const result = {
+    enabled: false,
+    backend: 'none',
+    activeWorkflows: [],
+    records: [],
+    findings: [],
+    error: null,
+  };
+  const routing = resolveMemoryRouting(context.config);
+  if (routing.enableSpecMemoIntegration) {
+    result.enabled = true;
+    result.backend = 'spec-memo-vault';
+    const cliRaw = (context.config?.specMemo?.cli || 'memo').trim();
+    const parts = cliRaw.split(/\s+/);
+    const bin = parts[0];
+    const binArgs = parts.slice(1);
+    try {
+      const probe = spawnSync(bin, [...binArgs, 'search', '--kinds', 'state', '--status', 'active', '--cwd', context.repoRoot, '--json'], {
+        encoding: 'utf8',
+        shell: process.platform === 'win32',
+        timeout: 5000,
+      });
+      if (probe.status === 0 && probe.stdout) {
+        try {
+          const parsed = JSON.parse(probe.stdout);
+          const records = Array.isArray(parsed) ? parsed : (parsed.hits || parsed.records || []);
+          result.records = records;
+          for (const rec of records) {
+            result.activeWorkflows.push({
+              id: rec.id,
+              slug: rec.slug || rec.id,
+              title: rec.title || rec.slug || rec.id,
+              status: rec.status || 'active',
+              updatedAt: rec.updatedAt || rec.updated_at || null,
+            });
+          }
+        } catch {
+          // Non-json stdout
+        }
+      } else if (probe.status !== 0 && probe.error) {
+        result.error = probe.error.message;
+      }
+    } catch (err) {
+      result.error = err.message;
+    }
+  } else if (routing.enableMemoryFiles) {
+    result.enabled = true;
+    result.backend = 'local-memory-files';
+    const memoryDir = path.join(context.sharedDir || '', 'memory');
+    if (fs.existsSync(memoryDir)) {
+      try {
+        const entries = fs.readdirSync(memoryDir).filter((f) => f.endsWith('.md'));
+        for (const entry of entries.slice(0, 50)) {
+          const text = fs.readFileSync(path.join(memoryDir, entry), 'utf8');
+          if (/workflow|active|in_progress|ws-spec/i.test(text)) {
+            result.records.push({
+              file: toRepoRelative(context.repoRoot, path.join(memoryDir, entry), { allowOutside: true }),
+            });
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+  }
+  return result;
+}
+
+function resolveCandidateTranscriptRoots(context, explicitRoots = [], options = {}) {
+  const roots = [];
+  if (Array.isArray(context.config?.monitor?.transcriptRoots)) {
+    roots.push(...context.config.monitor.transcriptRoots);
+  }
+  if (Array.isArray(explicitRoots)) {
+    roots.push(...explicitRoots);
+  }
+  // Workspace candidate roots (local to repoRoot)
+  const workspaceCandidates = [
+    path.join(context.repoRoot, '.agents', 'transcripts'),
+    path.join(context.repoRoot, '.cursor', 'transcripts'),
+    path.join(context.repoRoot, '.cursor', 'chats'),
+    path.join(context.repoRoot, '.opencode', 'transcripts'),
+    path.join(context.repoRoot, '.opencode', 'sessions'),
+    path.join(context.repoRoot, '.opencode', 'logs'),
+    path.join(context.repoRoot, '.system_generated', 'logs'),
+  ];
+  for (const candidate of workspaceCandidates) {
+    if (fs.existsSync(candidate)) {
+      roots.push(candidate);
+    }
+  }
+  // Host user-level roots (when explicitly requested or enabled in config)
+  const checkHostRoots = options.discoverHostTranscripts || context.config?.monitor?.discoverHostTranscripts;
+  if (checkHostRoots) {
+    const home = os.homedir();
+    const opencodeUser = path.join(home, '.opencode', 'sessions');
+    if (fs.existsSync(opencodeUser)) roots.push(opencodeUser);
+    const geminiBrain = path.join(home, '.gemini', 'antigravity-ide', 'brain');
+    if (fs.existsSync(geminiBrain)) {
+      try {
+        const convos = fs.readdirSync(geminiBrain, { withFileTypes: true })
+          .filter((d) => d.isDirectory())
+          .map((d) => path.join(geminiBrain, d.name, '.system_generated', 'logs'))
+          .filter((p) => fs.existsSync(p));
+        roots.push(...convos.slice(0, 10));
+      } catch {
+        // ignore
+      }
+    }
+  }
+  return [...new Set(roots.filter(Boolean).map((r) => path.isAbsolute(r) ? r : path.resolve(context.repoRoot, r)))];
+}
+
 function scanTranscriptRoots(context, roots, filter = {}) {
   const findings = [];
   const files = [];
@@ -361,8 +602,24 @@ function scanTranscriptRoots(context, roots, filter = {}) {
     if (/turn[_ -]ended/i.test(text)) {
       addFinding(findings, 'warning', 'turn-ended', 'Transcript contains a turn-ended signal before the workflow handoff', [evidence]);
     }
+    if (/fatal error|unhandled rejection|exception in subagent/i.test(text)) {
+      addFinding(findings, 'warning', 'subagent-error', 'Transcript contains an unhandled error or exception trace', [evidence]);
+    }
     if (/generic.{0,20}(subagent|dispatch)/i.test(text)) {
-      addFinding(findings, 'warning', 'generic-dispatch', 'Transcript contains a generic dispatch where a named projection may have been expected', [evidence]);
+      const specSub = context.config?.defaults?.specializedSubagents;
+      const capabilityFile = path.join(context.sharedDir || '', 'host-capabilities.json');
+      let capabilities = null;
+      try {
+        capabilities = fs.existsSync(capabilityFile) ? JSON.parse(fs.readFileSync(capabilityFile, 'utf8')) : null;
+      } catch {
+        // ignore
+      }
+      const hostBinding = capabilities?.binding || (capabilities && typeof capabilities === 'object' ? Object.values(capabilities)[0]?.binding : null);
+      const hasNamedBinding = hostBinding?.supportsNamedAgents === true ||
+        (hostBinding && hostBinding.namedAgentTool && hostBinding.namedAgentTool !== 'none');
+      if (specSub?.enabled === true && hasNamedBinding) {
+        addFinding(findings, 'warning', 'generic-dispatch', 'Transcript contains a generic dispatch where a named projection was expected', [evidence]);
+      }
     }
   }
   return { filesScanned, findings };
@@ -390,16 +647,75 @@ function snapshot(options) {
     );
   }
   let stateFiles = listStateFiles(plansDir);
-  if (options.slug) stateFiles = stateFiles.filter((file) => path.basename(path.dirname(file)) === options.slug);
+  if (options.slug) {
+    stateFiles = stateFiles.filter((file) => {
+      if (path.basename(path.dirname(file)) === options.slug) return true;
+      const loaded = readState(file);
+      const st = loaded.state;
+      if (!st) return false;
+      if (st.slug === options.slug || st.us === options.slug) return true;
+      if (Array.isArray(st.items) && st.items.some((item) => item.slug === options.slug)) return true;
+      return false;
+    });
+  }
   const workflows = [];
   for (const file of stateFiles) {
     const loaded = readState(file);
     const state = loaded.state;
     if (!state) continue;
-    if (options.workflowId && String(state.workflowId) !== String(options.workflowId)) continue;
+    if (options.workflowId && String(state.workflowId) !== String(options.workflowId) && String(state.runId) !== String(options.workflowId)) {
+      continue;
+    }
     const workflowDir = path.dirname(loaded.stateFile);
+    const isMultiSpec = state.workflowType === 'ws-spec-multi';
+
+    if (isMultiSpec) {
+      const items = Array.isArray(state.items) ? state.items : [];
+      const inProgressItems = items.filter((item) => item.status === 'in_progress');
+      const pendingItems = items.filter((item) => item.status === 'pending');
+      const shippedItems = items.filter((item) => item.status === 'shipped');
+      const failedItems = items.filter((item) => item.status === 'failed');
+      const skippedItems = items.filter((item) => item.status === 'skipped');
+      const findings = classifyMultiSpecWorkflow(state, loaded.stateFile, context.repoRoot);
+      findings.push(...detectContextMismatch(state, gitContext, context.repoRoot));
+      workflows.push({
+        workflowId: state.runId || state.workflowId || path.basename(loaded.stateFile, loaded.stateFile.endsWith('.state.json') ? '.state.json' : '.state.md'),
+        slug: state.slug || 'ws-spec-multi',
+        pipeline: 'ws-spec-multi',
+        status: state.status || 'unknown',
+        currentStep: null,
+        multiSpec: {
+          runId: state.runId || null,
+          baseBranch: state.baseBranch || null,
+          itemCount: items.length,
+          activeItem: inProgressItems[0] || null,
+          pendingCount: pendingItems.length,
+          shippedCount: shippedItems.length,
+          failedCount: failedItems.length,
+          skippedCount: skippedItems.length,
+          items,
+        },
+        completedSteps: [],
+        stepStatus: {},
+        verificationScore: null,
+        minVerifyScore,
+        currentModel: null,
+        configuredModel: null,
+        statePath: toRepoRelative(context.repoRoot, loaded.stateFile, { allowOutside: true }),
+        telemetry: {
+          path: null,
+          eventCount: 0,
+          parseErrors: [],
+          lastEvent: null,
+        },
+        expectedArtifacts: [],
+        findings,
+      });
+      continue;
+    }
+
     const telemetry = readTelemetry(path.join(workflowDir, 'telemetry.jsonl'));
-    const findings = classifyWorkflow(state, workflowDir, telemetry, minVerifyScore, context.repoRoot);
+    const findings = classifyWorkflow(state, workflowDir, telemetry, minVerifyScore, context.repoRoot, context.config);
     findings.push(...detectStaleState(state, workflowDir, telemetry, loaded.stateFile, context.repoRoot));
     findings.push(...detectContextMismatch(state, gitContext, context.repoRoot));
     workflows.push({
@@ -425,18 +741,36 @@ function snapshot(options) {
       findings,
     });
   }
-  const configuredRoots = Array.isArray(context.config?.monitor?.transcriptRoots)
-    ? context.config.monitor.transcriptRoots
-    : [];
-  const transcriptRoots = [...new Set([
-    ...configuredRoots,
-    ...options.transcriptRoots,
-  ].filter(Boolean).map((root) => path.isAbsolute(root) ? root : path.resolve(context.repoRoot, root)))];
+
+  const memoryVault = queryMemoryVault(context, options);
+  if (memoryVault.enabled && memoryVault.activeWorkflows.length > 0) {
+    const diskSlugs = new Set(workflows.map((w) => w.slug));
+    for (const mw of memoryVault.activeWorkflows) {
+      if (mw.slug && !diskSlugs.has(mw.slug) && mw.status === 'active') {
+        addFinding(
+          memoryVault.findings,
+          'info',
+          'vault-unreconciled-workflow',
+          `Memory vault records active workflow "${mw.slug}" but no matching plan state was found on disk`,
+          [],
+        );
+      }
+    }
+  }
+
+  const transcriptRoots = resolveCandidateTranscriptRoots(context, options.transcriptRoots, options);
   const transcript = scanTranscriptRoots(context, transcriptRoots, {
     workflowId: options.workflowId || null,
     slug: options.slug || null,
   });
-  const findings = [...contextFindings, ...workflows.flatMap((workflow) => workflow.findings), ...transcript.findings];
+
+  const findings = [
+    ...contextFindings,
+    ...workflows.flatMap((workflow) => workflow.findings),
+    ...memoryVault.findings,
+    ...transcript.findings,
+  ];
+
   return {
     schemaVersion: 1,
     generatedAt: new Date().toISOString(),
@@ -447,6 +781,12 @@ function snapshot(options) {
     findings,
     resolvedContext,
     gitContext: { branch: gitContext.branch, head: gitContext.head ? `${String(gitContext.head).slice(0, 12)}…` : null },
+    memoryVault: {
+      enabled: memoryVault.enabled,
+      backend: memoryVault.backend,
+      activeWorkflows: memoryVault.activeWorkflows,
+      findings: memoryVault.findings,
+    },
     transcript: {
       roots: transcriptRoots.map((root) => toRepoRelative(context.repoRoot, root, { allowOutside: true })),
       filesScanned: transcript.filesScanned,
@@ -472,9 +812,40 @@ function markdownReport(report) {
       lines.push(`- **${finding.severity.toUpperCase()}** \`${finding.code}\`: ${finding.message}.${evidence}`);
     }
   }
+
+  if (report.memoryVault && report.memoryVault.enabled) {
+    lines.push('', '## Memory Vault', '');
+    lines.push(`- Backend: ${report.memoryVault.backend}`);
+    lines.push(`- Active workflows in vault: ${report.memoryVault.activeWorkflows.length ? report.memoryVault.activeWorkflows.map((w) => w.slug || w.id).join(', ') : 'none'}`);
+  }
+
   lines.push('', '## Workflows', '');
   if (!report.workflows.length) lines.push('No workflow state files found under the configured plans directory.');
   for (const workflow of report.workflows) {
+    if (workflow.pipeline === 'ws-spec-multi' && workflow.multiSpec) {
+      const ms = workflow.multiSpec;
+      lines.push(
+        `### ${workflow.workflowId} (Multi-spec Batch)`,
+        '',
+        `- Status: ${workflow.status}`,
+        `- Pipeline: ${workflow.pipeline}`,
+        `- Base branch: ${ms.baseBranch || 'unspecified'}`,
+        `- Queue progress: ${ms.shippedCount} shipped / ${ms.itemCount} total (${ms.pendingCount} pending, ${ms.failedCount} failed, ${ms.skippedCount} skipped)`,
+        `- Active spec: ${ms.activeItem ? `${ms.activeItem.slug} [${ms.activeItem.flowMode || 'auto'}]` : 'none'}`,
+        `- State: \`${workflow.statePath}\``,
+        '',
+        'Queue items:',
+      );
+      for (const item of ms.items) {
+        const mark = item.status === 'shipped' ? '[x]' : item.status === 'in_progress' ? '[~]' : item.status === 'failed' ? '[!]' : '[ ]';
+        const pr = item.prNumber ? ` (PR ${item.prNumber})` : '';
+        const reason = item.reason ? ` - ${item.reason}` : '';
+        lines.push(`- ${mark} ${item.slug} (${item.status})${pr}${reason}`);
+      }
+      lines.push('');
+      continue;
+    }
+
     lines.push(
       `### ${workflow.workflowId}`,
       '',
@@ -523,7 +894,7 @@ function requirePositiveInteger(value, token) {
 function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help) {
-    process.stdout.write('Usage: node monitor_snapshot.cjs [--repo-root DIR] [--slug SLUG] [--workflow-id ID] [--transcript-root DIR] [--report FILE] [--json] [--watch --interval SEC --iterations N]\n');
+    process.stdout.write('Usage: node monitor_snapshot.cjs [--repo-root DIR] [--slug SLUG] [--workflow-id ID] [--transcript-root DIR] [--discover-host-transcripts] [--vault] [--report FILE] [--json] [--watch --interval SEC --iterations N]\n');
     return;
   }
   if (options.watch && options.iterations === undefined) {
@@ -567,6 +938,10 @@ module.exports = {
   parseArgs,
   expectedArtifacts,
   classifyWorkflow,
+  classifyMultiSpecWorkflow,
+  parseMultiSpecTable,
+  queryMemoryVault,
+  resolveCandidateTranscriptRoots,
   detectStaleState,
   detectContextMismatch,
   getGitContext,

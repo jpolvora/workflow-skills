@@ -1,7 +1,7 @@
 ---
 name: ws-monitor
 description: Read-only live observer for active Spec-to-PR workflow runs, telemetry, artifacts, and configured host transcripts.
-version: 0.4.17
+version: 0.4.18
 disable-model-invocation: true
 invocation_names:
   - monitor
@@ -13,11 +13,12 @@ invocation_names:
 
 > When this skill is loaded, output "ws-monitor loaded."
 
-Observe active `ws-spec-to-pr` and `ws-spec-to-pr-lite` runs without changing product code, workflow state, managed skills, or consumer configuration. The observer diagnoses live execution signals that offline harness checks cannot see.
+Observe active `ws-spec-to-pr` and `ws-spec-to-pr-lite` and `ws-spec-multi` runs without changing product code, workflow state, managed skills, or consumer configuration. The observer diagnoses live execution signals that offline harness checks cannot see.
 
 ## Boundaries
 
 - Read `{plansDir}/{slug}/` state JSON/Markdown, `telemetry.jsonl`, and expected step artifacts.
+- State and telemetry (`stepDispatches` in state files, `telemetry.jsonl`) are the canonical source of truth for dispatch provenance (`subagentId`, `agentType`, `model`). Transcripts are secondary and opt-in.
 - Read transcript roots only when the user configures them through `monitor.transcriptRoots` or `--transcript-root`.
 - Report missing artifacts, state drift, empty telemetry fields, path failures, rejected models, and interrupted turns.
 - Write a Markdown report only when the caller passes `--report`.
@@ -59,6 +60,7 @@ The command observes all workflow folders under the configured `plans.dir` by de
 | Telemetry ahead of selected state (`stale-state`) | Critical or warning | The monitor must not report an older step as current without explaining the state-source mismatch |
 | State branch/HEAD/worktree differs from active checkout (`context-mismatch`) | Critical or warning | Orchestrator and monitor resolved different local/global roots, or config changed mid-run |
 | Local config present but unreadable (`config-unreadable`) | Critical | Report candidate paths; never silently fall back to the global hub |
+| Generic dispatch where named projection was expected (`generic-dispatch`) | Warning | Host supports named subagents but dispatch used generic fallback without explanation (embed-inline is healthy when host lacks named-agent binding) |
 
 ## Launcher
 
