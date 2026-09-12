@@ -3268,4 +3268,88 @@ h1, h2, .font-display {
   .hero-announcement { flex-direction: column; text-align: center; gap: 8px; border-radius: var(--radius-md); }
 }
 
+/* ─── Wiki pages (generated from project wiki dir) ─── */
+.wiki-page {
+  background: var(--bg-body);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  line-height: 1.65;
+  min-height: 100vh;
+  padding: 24px 20px 48px;
+}
+
+.wiki-chrome {
+  max-width: 860px;
+  margin: 0 auto 20px;
+  font-size: 0.9rem;
+}
+
+.wiki-chrome a {
+  color: var(--accent-cyan);
+  text-decoration: none;
+}
+
+.wiki-chrome a:hover,
+.wiki-chrome a:focus-visible {
+  text-decoration: underline;
+}
+
+.wiki-article {
+  max-width: 860px;
+  margin: 0 auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+}
+
+.wiki-article h1,
+.wiki-article h2,
+.wiki-article h3 {
+  color: var(--text-heading);
+  margin: 1.4em 0 0.6em;
+}
+
+.wiki-article h1:first-child {
+  margin-top: 0;
+}
+
+.wiki-article p,
+.wiki-article li {
+  color: var(--text-main);
+}
+
+.wiki-article a {
+  color: var(--accent-cyan);
+}
+
+.wiki-article code {
+  font-family: var(--font-mono);
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  padding: 0.1em 0.35em;
+}
+
+.wiki-article pre {
+  background: var(--code-snippet-bg, var(--bg-input));
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  overflow-x: auto;
+}
+
+.wiki-article pre code {
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.wiki-toc ul {
+  padding-left: 1.25rem;
+}
+
+.wiki-toc li {
+  margin: 0.35em 0;
+}
 

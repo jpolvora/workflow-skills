@@ -5,7 +5,7 @@
 **Audience: humans** (install, overview, contribute).  
 **Agents:** follow [`AGENTS.md`](AGENTS.md) for skill loading, task router, layers, and verification — not this file.
 
-> **Site:** [jpolvora.github.io/workflow-skills](https://jpolvora.github.io/workflow-skills) — interactive skill catalog.
+> **Site:** [jpolvora.github.io/workflow-skills](https://jpolvora.github.io/workflow-skills) — interactive skill catalog plus a [Wiki](https://jpolvora.github.io/workflow-skills/wiki/) generated from the project wiki dir (`.agents/specs/wiki`) on each `node bin/build-site.js` run.
 
 [![npx](https://img.shields.io/badge/npx-github:jpolvora/workflow--skills-blue?logo=npm)](https://github.com/jpolvora/workflow-skills)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-site-success?logo=github)](https://jpolvora.github.io/workflow-skills)

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Living Feature Wiki &amp; Domain Knowledge Base</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body class="wiki-page">
+<nav class="wiki-chrome"><a href="../">Home</a> · <a href="index.html">Wiki</a></nav>
+<article class="wiki-article wiki-toc"><h1>Project Living Feature Wiki &amp; Domain Knowledge Base</h1>
+<h2>System Vision &amp; Overview</h2>
+<p><code>workflow-skills</code> is an LLM-agnostic, host-neutral skill package for spec-driven software delivery. Canonical <code>*.spec.md</code> files are the contract of record; plans, code, reviews, and pull requests are derived from them. Standard and lite orchestrators share one project <code>config.json</code>. Consumer config, STACK, MEMORY, and changelog stay local on install/update.</p>
+<p>Primary use cases from <code>index.PRD</code>: end-to-end Spec-to-PR (standard or lite), sequential multi-spec queues, harness integrity audits, and opt-in adversarial verification.</p>
+<h2>Architectural Boundaries</h2>
+<ul><li>**Harness &amp; install**: Portable skill bodies under <code>.agents/skills/ws-*</code>, installer CLI, integrity hashes, hybrid global vs project-local install. Consumer hub <code>ws-shared/</code> holds config; managed <code>runtime/</code> and <code>templates/</code> are installer-owned.</li><li>**Delivery orchestrators**: <code>ws-spec-to-pr</code> (steps 0–9) and <code>ws-spec-to-pr-lite</code> (steps 0–5); <code>ws-spec-multi</code> classifies each spec and dispatches one pipeline at a time. Isolated <code>workflowType</code>; no cross-resume.</li><li>**SCM providers**: GitHub, Azure DevOps, and local specs implement the same required intents; orchestrators never embed host CLI names.</li><li>**Specs vs plans vs wiki**: Specs are point-in-time contracts. <code>{plansDir}</code> holds run artifacts. <code>index.PRD</code> tracks phases. <code>CHANGELOG.md</code> is chronological history. This wiki is the living domain knowledge base.</li><li>**Quality gates**: Derived verify score (<code>defaults.minVerifyScore</code>, default 9), commit-before-review, adversarial review and fable audit, secrets scan, stack invariant scan.</li><li>**Memory**: Local MEMORY files and/or spec-memo vault (<code>enableMemoryFiles</code> / <code>enableSpecMemoIntegration</code>). <code>ws-spec-memo</code> is setup/bridge; vault runtime is <code>ws-memo</code>.</li></ul>
+<h2>Domain Catalog</h2>
+<p>Living synthesis of specs 0001–0075. Feature subpages use <code>{domain}/{feature}.md</code> and the three required headings.</p>
+<h2>Domain: harness</h2>
+<ul><li><a href="harness/install-and-hub.html">Install &amp; Hub</a>: Packaging, hybrid global/local install, hub layout, naming law, and subagent projection.</li><li><a href="harness/diagnostics-and-benchmarks.html">Diagnostics &amp; Benchmarks</a>: Doctor, harness auditors, benchmarks, cleanup, audit wrapper, and host binding.</li></ul>
+<h2>Domain: delivery</h2>
+<ul><li><a href="delivery/spec-to-pr-pipeline.html">Spec-to-PR Delivery Pipeline</a>: Standard/lite orchestrators, verify bar, commit-before-review, close-before-ship, fix-PR discipline.</li></ul>
+<h2>Domain: providers</h2>
+<ul><li><a href="providers/scm-providers.html">SCM Providers</a>: GitHub, Azure DevOps, and local provider intents with visual-attachment parity.</li></ul>
+<h2>Domain: specs</h2>
+<ul><li><a href="specs/spec-lifecycle.html">Spec Lifecycle</a>: Author, validate, organize, index, list, explain, update, and archive specifications.</li></ul>
+<h2>Domain: quality</h2>
+<ul><li><a href="quality/verification-and-review.html">Verification &amp; Review</a>: Derived verify scores, adversarial review, testing/mutation gates, and fix-PR convergence.</li></ul>
+<h2>Domain: memory</h2>
+<ul><li><a href="memory/knowledge-and-timesheet.html">Knowledge &amp; Timesheet</a>: Memory backends, self-learning traps, changelog, spec-memo bridge, and invoice timing.</li></ul>
+<h2>Domain: engineering</h2>
+<ul><li><a href="engineering/practices-and-tooling.html">Practices &amp; Tooling</a>: Surgical scope, reply shape, investigate loop, Node-only runtime, megabrain, config editor.</li></ul>
+<h2>Domain: documentation</h2>
+<ul><li><a href="documentation/ws-wiki.html">Living Feature Wiki &amp; Domain Knowledge Base</a>: Living project feature wiki and domain knowledge base manager with deterministic link and heading validation.</li><li><a href="documentation/website-and-hub.html">Website &amp; Hub Docs</a>: Static engineering site, doc-sync protocol, and consumer hub documentation split.</li></ul></article>
+</body>
+</html>
