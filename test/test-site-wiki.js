@@ -120,12 +120,44 @@ x
 x
 `,
   );
+  write(
+    path.join(wikiDir, 'documentation', 'alpha.md'),
+    `# Alpha
+
+## Feature Overview
+x
+
+## Business Rules & Logic
+See [sibling](bravo.md) and [home](index.wiki.md).
+
+## Technical Architecture
+x
+`,
+  );
+  write(
+    path.join(wikiDir, 'documentation', 'bravo.md'),
+    `# Bravo
+
+## Feature Overview
+x
+
+## Business Rules & Logic
+x
+
+## Technical Architecture
+x
+`,
+  );
   buildWikiSite({ repoRoot: REPO_ROOT, wikiDir, outDir, check: false });
   const home = read(path.join(outDir, 'index.html'));
+  const alpha = read(path.join(outDir, 'documentation/alpha.html'));
   assert(home.includes('href="harness/target.html#anchor"'), 'md link rewritten to html');
   assert(home.includes('href="https://example.com"'), 'https unchanged');
   assert(home.includes('href="mailto:a@b.com"'), 'mailto unchanged');
   assert(home.includes('href="#section"'), 'hash anchor kept');
+  assert(alpha.includes('href="bravo.html"'), 'depth-2 sibling href is page-relative');
+  assert(!alpha.includes('href="documentation/bravo.html"'), 'depth-2 sibling not wiki-root-relative');
+  assert(alpha.includes('href="../index.html"'), 'bare index.wiki.md from subpage is parent-relative');
 }
 
 function testLandingNavWikiHref() {
@@ -146,6 +178,7 @@ function testWikiChromeLinkHome() {
   const feature = read(path.join(outDir, 'harness/sample.html'));
   assert(home.includes('href="../"'), 'home page links to landing');
   assert(feature.includes('href="../../"'), 'feature page links to landing');
+  assert(feature.includes('href="../index.html"'), 'feature home wiki link is parent-relative');
 }
 
 function testEscapesScriptPayload() {
@@ -239,7 +272,7 @@ function testRendersHeadingsListsCodeLinks() {
 const x = 1;
 \`\`\`
 
-See \`inline\` and [page](harness/sample.md).
+See \`inline\` and [page](harness/sample.md) plus **bold lead**.
 `,
   );
   write(
@@ -263,6 +296,8 @@ x
   assert(html.includes('<pre><code'), 'fence rendered');
   assert(html.includes('<code>inline</code>'), 'inline code rendered');
   assert(html.includes('href="harness/sample.html"'), 'catalog link rendered');
+  assert(html.includes('<strong>bold lead</strong>'), 'strong emphasis rendered');
+  assert(!html.includes('**bold lead**'), 'strong markers not left literal');
 }
 
 function testWikiCssUsesThemeTokens() {

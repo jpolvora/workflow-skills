@@ -118,6 +118,7 @@ function rewriteLink(href, sourceRelKey, wikiDir) {
   }
 
   let targetMd = pathPart;
+  const isRootIndexWiki = /^(?:\.\/)?index\.wiki\.md$/i.test(pathPart);
   if (targetMd.endsWith('index.wiki.md')) {
     targetMd = targetMd.replace(/index\.wiki\.md$/, 'index.html');
   } else if (/\.md$/i.test(targetMd)) {
@@ -129,18 +130,25 @@ function rewriteLink(href, sourceRelKey, wikiDir) {
   const sourceDir = sourceRelKey.includes('/')
     ? path.posix.dirname(sourceRelKey)
     : '';
-  const joined = path.posix.normalize(path.posix.join(sourceDir, targetMd));
-  if (joined.startsWith('..') || joined.includes('/../')) {
+  const joinDir = isRootIndexWiki ? '' : sourceDir;
+  const targetRootRel = path.posix.normalize(path.posix.join(joinDir || '.', targetMd));
+  if (targetRootRel === '..' || targetRootRel.startsWith('../')) {
     return null;
   }
 
   const resolvedSource = path.resolve(wikiDir, sourceRelKey.replace(/\//g, path.sep));
-  const resolvedTarget = path.resolve(path.dirname(resolvedSource), targetMd.replace(/\//g, path.sep));
+  const resolvedTarget = isRootIndexWiki
+    ? path.resolve(wikiDir, 'index.html')
+    : path.resolve(path.dirname(resolvedSource), targetMd.replace(/\//g, path.sep));
   if (!isPathInside(wikiDir, resolvedTarget)) {
     return null;
   }
 
-  return joined + fragment;
+  const sourceOutRel = sourceRelKey
+    .replace(/index\.wiki\.md$/i, 'index.html')
+    .replace(/\.md$/i, '.html');
+  const rel = path.posix.relative(path.posix.dirname(sourceOutRel), targetRootRel);
+  return (rel || path.posix.basename(targetRootRel)) + fragment;
 }
 
 function renderInline(text, sourceRelKey, wikiDir) {
@@ -167,6 +175,13 @@ function renderInline(text, sourceRelKey, wikiDir) {
       continue;
     }
 
+    const strongMatch = text.slice(i).match(/^(\*\*|__)(.+?)\1/);
+    if (strongMatch) {
+      out += `<strong>${escapeHtml(strongMatch[2])}</strong>`;
+      i += strongMatch[0].length;
+      continue;
+    }
+
     const emMatch = text.slice(i).match(/^(\*|_)([^*_]+)\1/);
     if (emMatch) {
       out += `<em>${escapeHtml(emMatch[2])}</em>`;
@@ -174,7 +189,7 @@ function renderInline(text, sourceRelKey, wikiDir) {
       continue;
     }
 
-    const nextSpecial = text.slice(i).search(/[\[`]/);
+    const nextSpecial = text.slice(i).search(/[\[`*_]/);
     if (nextSpecial === -1) {
       out += escapeHtml(text.slice(i));
       break;
