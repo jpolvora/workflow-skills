@@ -14,6 +14,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { rewriteSkillMarkdown } from './skill-frontmatter.js';
+import { buildWikiSite, resolveWikiDir, buildSitemapXml } from './build-wiki-site.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -610,11 +611,50 @@ if (/^(?:<{7}|={7}|>{7})/m.test(html)) {
 }
 const currentHtml = fs.readFileSync(indexPath, 'utf8').replace(/\r\n?/g, '\n');
 const changed = currentHtml !== html;
+if (!shouldCheck && changed) fs.writeFileSync(indexPath, html, 'utf8');
+
+// --- 5.5 Wiki HTML + sitemap ---
+const wikiDir = resolveWikiDir(root);
+const wikiOutDir = path.join(root, 'docs', 'wiki');
+const wikiResult = buildWikiSite({
+  repoRoot: root,
+  wikiDir,
+  outDir: wikiOutDir,
+  check: shouldCheck,
+});
+const staleReasons = [];
 if (shouldCheck && changed) {
-  console.error('docs/index.html is stale; run node bin/build-site.js');
+  staleReasons.push('docs/index.html is stale; run node bin/build-site.js');
+}
+
+if (wikiResult.skipped) {
+  console.log('wiki skipped (no index.wiki.md)');
+} else if (shouldCheck) {
+  staleReasons.push(...wikiResult.staleReasons);
+  console.log(`wiki check: ${wikiResult.pages} page(s)`);
+} else {
+  console.log(`wiki updated: ${wikiResult.pages} page(s) under docs/wiki/`);
+}
+
+const sitemapPath = path.join(root, 'docs', 'sitemap.xml');
+const nextSitemap = buildSitemapXml(wikiResult.skipped ? [] : wikiResult.sitemapLocs);
+const currentSitemap = fs.existsSync(sitemapPath)
+  ? fs.readFileSync(sitemapPath, 'utf8').replace(/\r\n?/g, '\n')
+  : '';
+const sitemapChanged = currentSitemap !== nextSitemap;
+if (shouldCheck && sitemapChanged) {
+  staleReasons.push('docs/sitemap.xml is stale; run node bin/build-site.js');
+}
+if (!shouldCheck && sitemapChanged) {
+  fs.writeFileSync(sitemapPath, nextSitemap, 'utf8');
+}
+
+if (staleReasons.length > 0) {
+  for (const reason of staleReasons) {
+    console.error(reason);
+  }
   process.exit(1);
 }
-if (!shouldCheck && changed) fs.writeFileSync(indexPath, html, 'utf8');
 
 // --- 6. Report ---
 console.log(`${shouldCheck ? 'Site is current' : changed ? 'Site updated' : 'Site unchanged'}: ${totalSkills} skills across ${layerCount} layers`);

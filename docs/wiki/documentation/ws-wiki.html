@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Living Feature Wiki &amp; Domain Knowledge Base (`ws-wiki`)</title>
+<link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+<body class="wiki-page">
+<nav class="wiki-chrome"><a href="../../">Home</a> · <a href="../index.html">Wiki</a></nav>
+<article class="wiki-article wiki-toc"><h1>Living Feature Wiki &amp; Domain Knowledge Base (<code>ws-wiki</code>)</h1>
+<h2>Feature Overview</h2>
+<p><code>ws-wiki</code> provides an authoritative manager for living project feature wikis and domain knowledge bases within the <code>workflow-skills</code> harness. Unlike chronological changelogs (<code>CHANGELOG.md</code>) or point-in-time specifications (<code>*.spec.md</code>), <code>ws-wiki</code> maintains a consolidated, living feature documentation tree at <code>{specsDir}/wiki/</code> organized by bounded context domains.</p>
+<p>Key subcommands include:</p>
+<ul><li><code>/ws-wiki init</code>: Bootstraps initial project taxonomy and <code>index.wiki.md</code>; offers first-time spec sweep when appropriate.</li><li><code>/ws-wiki sweep</code> (aliases <code>first-time</code>, <code>backfill</code>): Walks all top-level <code>NNNN-*.spec.md</code> files in order and overlays living wiki pages from specs plus current code.</li><li><code>/ws-wiki sync [slug]</code>: Synchronizes one delivered feature or git diff to domain subpages (per-diff review gate).</li><li><code>/ws-wiki update [target]</code>: Surgically refines individual feature pages.</li><li><code>/ws-wiki validate</code>: Deterministically validates relative links and 3-section headings.</li></ul>
+<h2>Business Rules &amp; Logic</h2>
+<ul><li><strong>Standard 3-Section Format</strong>: Every feature subpage must contain exactly three standard headings:</li></ul>
+<p>  1. <code>## Feature Overview</code>   2. <code>## Business Rules &amp; Logic</code>   3. <code>## Technical Architecture</code></p>
+<ul><li><strong>Deterministic Link Resolution</strong>: All relative markdown links within <code>index.wiki.md</code> and feature subpages must resolve to existing files on disk. Broken links fail verification with exit code 1.</li><li><strong>Bounded Context Partitioning</strong>: Features are organized under domain subdirectories (e.g. <code>{specsDir}/wiki/{domain}/{feature}.md</code>).</li><li><strong>In-Place Refinement</strong>: Shipped features update and reconcile existing business rules in place rather than appending repetitive change histories.</li><li><strong>Multi-Page Domain Mapping</strong>: Features spanning multiple modules update all touched domain subpages and cross-link dependencies.</li><li><strong>Vibe-Coding Mode</strong>: When no spec exists, business rules and data models are reverse-engineered directly from git diffs and commit messages.</li><li><strong>First-Time Spec Sweep</strong>: After init (or via <code>/ws-wiki sweep</code>), processes every top-level spec in prefix order; later specs supersede earlier wiki rules; current code wins over stale spec ACs. One start gate for the whole run; checkpoint at <code>{wikiDir}/sweep.state.json</code> supports resume.</li><li><strong>Per-Sync Review Gate</strong>: <code>/ws-wiki sync [slug]</code> presents proposed wiki diffs via <code>user-gate</code> before writing; Cancel terminates without modifying files.</li></ul>
+<h2>Technical Architecture</h2>
+<ul><li><strong>CLI &amp; Script Helpers</strong>:</li></ul>
+<p>  - <code>validate_wiki.cjs</code>: Deterministic validator for relative links, index presence, and 3-section headings. Supports <code>--json</code> and <code>--check</code> modes.   - <code>sync_wiki_index.cjs</code>: Idempotent index updater that creates domain sections and bullet links in <code>index.wiki.md</code>.   - <code>list_wiki_sweep_specs.cjs</code>: Lists top-level specs in sweep order (<code>NNNN</code> ascending, then unprefixed); fail-closes on ambiguous dual filenames.</p>
+<ul><li><strong>Configuration</strong>:</li></ul>
+<p>  - Configured via <code>config.json</code> -&gt; <code>plans.wikiDir</code> (schema default: <code>.agents/specs/wiki</code>).</p>
+<ul><li><strong>Lifecycle Hooks</strong>:</li></ul>
+<p>  - Registered as a post-close documentation hook in <code>ws-spec-to-pr</code> (Step 8) and <code>ws-spec-to-pr-lite</code> (Step 4).</p>
+<ul><li><strong>Harness Integration</strong>:</li></ul>
+<p>  - Registered in <code>CATALOG.md</code>, <code>ws-shared/autoload.md</code>, and <code>bin/skill-dependencies.json</code>.</p></article>
+</body>
+</html>
