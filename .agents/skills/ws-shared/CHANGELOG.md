@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-12 10:52] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-wiki then init (refresh taxonomy, keep existing feature links).
+- **Done**: Rewrote `.agents/specs/wiki/index.wiki.md` with harness/delivery/providers/specs/quality/memory/engineering/documentation domains; kept `documentation/ws-wiki.md`.
+- **Result**: `validate_wiki.cjs --check` exit 0 (2 pages). Learning: N/A (standard implementation)
+
 ### [2026-09-11 18:37] Agent: Antigravity
 - **Prompt**: /ws-megabrain fetch gh issues and fix them all with tests, bump version, commit, update website/agents.md/readme.md, push, ship-pr and goal-fix-pr (fixes #315, #316).
 - **Done**: Added dispatch provenance (`agentType`, `subagentId`, `model`) to `stepDispatches[]` and `telemetry.jsonl` in `workflow_state.cjs` with full schema conformance; updated Tier 1 host dispatch docs and orchestrator instructions to explicitly target specialized subagent IDs (`ws-step-*`) when enabled; updated `ws-monitor` to treat embed-inline as healthy when host capability has no named binding and evaluate dispatch provenance without relying on transcripts; added comprehensive automated test `test/test-dispatch-provenance.js` and updated monitor test suite; bumped version to 0.4.18 with site rebuild and integrity regeneration.
