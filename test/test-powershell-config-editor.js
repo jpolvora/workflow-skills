@@ -335,5 +335,37 @@ if (winFormsAvailable) {
   console.log('  PASS: Defensive path routing and configuration isolation validated.');
 }
 
-console.log('\nALL 7 POWERSHELL CONFIG EDITOR TESTS PASSED.');
+console.log('Test 8: Verifying Schema-to-GUI key parity for configured sections...');
+const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, 'utf8'));
+const guiScript = fs.readFileSync(SCRIPT_PATH, 'utf8');
+
+const regex = /-Section\s+['"]([^'"]+)['"]\s+-Key\s+['"]([^'"]+)['"]/g;
+const guiKeys = new Set();
+let match;
+while ((match = regex.exec(guiScript)) !== null) {
+  guiKeys.add(`${match[1]}.${match[2]}`);
+}
+
+// 1. Verify all properties of 'plans' section are bound
+const plansProps = Object.keys(schema.properties.plans?.properties || {});
+assert(plansProps.length > 0, 'Schema plans.properties must not be empty');
+for (const prop of plansProps) {
+  assert(guiKeys.has(`plans.${prop}`), `Missing schema property plans.${prop} in Edit-WorkflowSkillsConfig.ps1`);
+}
+
+// 2. Verify all properties of 'reviews' section are bound
+const reviewsProps = Object.keys(schema.properties.reviews?.properties || {});
+for (const prop of reviewsProps) {
+  assert(guiKeys.has(`reviews.${prop}`), `Missing schema property reviews.${prop} in Edit-WorkflowSkillsConfig.ps1`);
+}
+
+// 3. Verify core defaults properties
+const coreDefaults = ['minVerifyScore', 'enableDag', 'verboseMode'];
+for (const prop of coreDefaults) {
+  assert(guiKeys.has(`defaults.${prop}`), `Missing schema property defaults.${prop} in Edit-WorkflowSkillsConfig.ps1`);
+}
+
+console.log(`  PASS: Schema-to-GUI parity validated (${guiKeys.size} bound keys, all plans/reviews/defaults verified).`);
+
+console.log('\nALL 8 POWERSHELL CONFIG EDITOR TESTS PASSED.');
 

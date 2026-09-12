@@ -86,7 +86,7 @@ jobs:
           bash /tmp/agentic-code-reviewers-run.sh \
             --engine opencode \
             --model opencode-go/muse-spark-1.3-contributor \
-            --variant high \
+            --variant xhigh \
             --gh \
             --pr-id "${{ steps.pr.outputs.number }}" \
             --stack Custom \

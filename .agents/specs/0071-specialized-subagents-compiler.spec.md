@@ -4,6 +4,7 @@ slug: specialized-subagents-compiler
 title: "Optional Compiler and Host Projection for Specialized Workflow Subagents"
 source: local
 specDate: 2026-09-09
+status: completed
 ---
 
 # Specification — Optional Compiler and Host Projection for Specialized Workflow Subagents

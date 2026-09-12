@@ -6,7 +6,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 
 ## Skill catalog (layers)
 
-> **Scope:** 46 workflow + 8 Extra; see [`bin/skill-dependencies.json`](bin/skill-dependencies.json). Routes: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
+> **Scope:** 47 workflow + 8 Extra; see [`bin/skill-dependencies.json`](bin/skill-dependencies.json). Routes: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
 >
 > **Index only.** Load skills per root `AGENTS.md` § Progressive disclosure.
 
@@ -16,13 +16,13 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 |-------|------|-------------|
 | `ws-check-harness` | `.agents/skills/ws-check-harness/SKILL.md` | Harness integrity audit |
 | `ws-check-workflows` | `.agents/skills/ws-check-workflows/SKILL.md` | Deep workflow simulation & validation |
-| `ws-doctor` | `.agents/skills/ws-doctor/SKILL.md` | Install & runtime diagnostics, including hybrid local/global hub resolution |
+| `ws-doctor` | `.agents/skills/ws-doctor/SKILL.md` | Install & runtime diagnostics, hybrid hub resolution |
 | `ws-monitor` | `.agents/skills/ws-monitor/SKILL.md` | Read-only live workflow observer |
 | `ws-write-a-skill` | `.agents/skills/ws-write-a-skill/SKILL.md` | Create/edit/optimize skills (Extra) |
 | `ws-show-harness` | `.agents/skills/ws-show-harness/SKILL.md` | Session harness snapshot (Extra) |
 | `ws-preview` | `.agents/skills/ws-preview/SKILL.md` | Run consumer `preview.dryRunCommand` local dry-run (Extra; `/ws-configure-project --section preview`) |
-| `ws-run-benchmark` | `.agents/skills/ws-run-benchmark/SKILL.md` | Upstream-only fixture compare (Extra; never spec-to-pr) |
-| `ws-benchmarks` | `.agents/skills/ws-benchmarks/SKILL.md` | Benchmark management suite & evolution reporting (Extra; never spec-to-pr) |
+| `ws-run-benchmark` | `.agents/skills/ws-run-benchmark/SKILL.md` | Upstream fixture compare (Extra; never spec-to-pr) |
+| `ws-benchmarks` | `.agents/skills/ws-benchmarks/SKILL.md` | Benchmark suite & evolution reporting (Extra) |
 | `using-superpowers` | `(global)` | Skill discovery |
 
 ### Layer 1 — Engineering standards
@@ -88,6 +88,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | `ws-spec-memo` | `.agents/skills/ws-spec-memo/SKILL.md` | Spec-memo setup/bridge; runtime ops → `ws-memo` |
 | `ws-spec-organizer` | `.agents/skills/ws-spec-organizer/SKILL.md` | Spec path resolution & NNNN organizer |
 | `ws-spec-manager` | `.agents/skills/ws-spec-manager/SKILL.md` | Unified spec router & lifecycle manager |
+| `ws-wiki` | `.agents/skills/ws-wiki/SKILL.md` | Feature wiki & domain knowledge base manager |
 | `ws-task-lifecycle` | `.agents/skills/ws-task-lifecycle/SKILL.md` | Prompt-driven task tracking |
 | `grill-with-docs` | `(global)` | Docs grill |
 | `find-skills` | via `using-superpowers` | Discover/install |
@@ -132,6 +133,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | Auto-update feature specs after code changes | `ws-spec-update` |
 | Resolve spec path / organize board specs | `ws-spec-organizer` |
 | Manage / route all spec operations (unified front door) | `ws-spec-manager` |
+| Living project feature wiki & domain knowledge base | `ws-wiki` |
 | spec-memo vault setup/bridge / import MEMORY / hybrid fallback | `ws-spec-memo` |
 | Runtime spec-memo vault ops (search, upsert, bootstrap, canvas, doctor) | `ws-memo` (external; skip if missing) |
 | Prompt/session tracking / vault activity (MCP prompt) | `ws-session-tracking` (external; skip if missing) |
@@ -143,8 +145,8 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | New skill / skill rewrite | `ws-write-a-skill` |
 | Show active harness | `ws-show-harness` |
 | Pipeline review / local dry-run preview | `ws-preview` |
-| Upstream package-version fixture compare (never spec-to-pr) | `ws-run-benchmark` |
-| Harness benchmark suite & evolution reporting (never spec-to-pr) | `ws-benchmarks` (Extra) |
+| Upstream package fixture compare | `ws-run-benchmark` |
+| Harness benchmark suite & evolution reporting | `ws-benchmarks` (Extra) |
 | Audit harness | `ws-check-harness` |
 | Diagnose skills / doctor the harness | `ws-doctor` |
 | Check workflows | `ws-check-workflows` |
@@ -207,7 +209,7 @@ Managed script calls use explicit launchers; do not rewrite skill scripts for sh
 
 | Review | How |
 |--------|-----|
-| Local code review of the working branch | `ws-code-review` → `/code-review [base=<ref>] [plan=<plan-path>]` (commits `{base}...HEAD`, fix → re-review rounds, max 3) |
+| Local code review of the working branch | `ws-code-review` → `/code-review [base=<ref>]` (commits `{base}...HEAD`, fix → re-review, max 3) |
 | Harness integrity | `ws-check-harness` (Phases 0–5c) → 0 critical |
 | Workflow / FSM simulation | `ws-check-workflows`, or `python .agents/skills/ws-check-workflows/scripts/check_workflows.py` |
 | Secrets / PII scan | `ws-secrets-leak-review` |
@@ -286,7 +288,7 @@ Print a board after each row (same ✅ / ❌ / ⏭ convention as [`ws-ship-pr/PR
 
 ## Local dry-run: agentic code reviewers
 
-Upstream-only verification helper (not part of the portable skill contract). Requires the reviewer’s API key env var. Reviews `develop`…`main` (Custom stack + repo prompt). Active CI: [`.github/workflows/opencode-code-review.yml`](.github/workflows/opencode-code-review.yml) (`opencode` / `opencode-go/muse-spark-1.3-contributor`; `OPENCODE_API_KEY`). Cursor backup [`.github/workflows/cursor-code-review.yml`](.github/workflows/cursor-code-review.yml) is `workflow_dispatch` only. See [`README.md`](README.md) for human-oriented context; Cursor dry-run:
+Upstream-only verification helper. Requires reviewer API key env var. Reviews `develop`…`main` (Custom stack + repo prompt). Active CI: [`.github/workflows/opencode-code-review.yml`](.github/workflows/opencode-code-review.yml). Cursor backup [`.github/workflows/cursor-code-review.yml`](.github/workflows/cursor-code-review.yml) is `workflow_dispatch` only. Cursor dry-run:
 
 ```bash
 # Download to a file first — curl|bash leaves BASH_SOURCE unbound under set -u.

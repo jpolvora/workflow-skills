@@ -127,6 +127,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | spec-memo-setup, /ws-spec-memo, external vault setup, off-repo memory, configure vault, import/migrate MEMORY, vault preflight check, hybrid fallback bootstrap | `ws-spec-memo` |
 | spec-memo search/get/upsert/bootstrap (runtime), /ws-memo, memo vault ops, canvas, doctor | `ws-memo` (external; skip if `SKILL.md` missing) |
 | prompt tracking, session_start/end, vault activity report, /ws-session-tracking, derive_rules from prompts | `ws-session-tracking` (external; skip if `SKILL.md` missing) |
+| living wiki, feature wiki, domain knowledge base, ws-wiki, validate wiki, sync wiki | `ws-wiki` |
 | Spec-to-PR plan-folder timesheet / activity-report {date} | `ws-activity-report` |
 
 ---
@@ -179,6 +180,7 @@ after code changes outside orch
 
 after ship / delivery evidence
     → ws-spec-index sync     → index.PRD checkboxes / Done log
+    → ws-wiki sync           → {wikiDir} living domain pages & index.wiki.md
 
 harvest {plansDir} history (manual)
     → ws-spec-archive        → index.PRD Archive + optional plan-dir cleanup

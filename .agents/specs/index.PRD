@@ -115,38 +115,18 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Remove retired ws-patterns references from hub templates/seeds (`spec: 0052-us-250.spec.md`) — PR #251 MERGED
 - [x] Prune retired skill ids on update + hybrid harness fallback (`spec: 0061-us-272.spec.md`) — PR #273 MERGED
 - [x] Native gate advance options continue same-turn across all step boundaries, markdown fallback yields (issue #280, prompt-driven fix, no spec) — PR #281 MERGED
-- [ ] ws-benchmarks: benchmark commands and evolution report manager (`spec: 0064-ws-benchmarks-skill.spec.md`)
-- [ ] ws-spec-manager: unified specification router and lifecycle manager (`spec: 0065-ws-spec-manager-skill.spec.md`)
+- [x] ws-benchmarks: benchmark commands and evolution report manager (`spec: 0064-ws-benchmarks-skill.spec.md`) — PR #282 MERGED
+- [x] ws-spec-manager: unified specification router and lifecycle manager (`spec: 0065-ws-spec-manager-skill.spec.md`) — PR #282 MERGED
 - [ ] Separate consumer ws-shared hub from upstream root AGENTS.md (`spec: 0066-ws-shared-hub-agents-separation.spec.md`)
 - [x] Reviewer-Aligned Implementation Gates & Pre-PR Defect Prevention (`spec: 0067-reviewer-aligned-implementation-gates.spec.md`)
 - [x] Align hub routing with unpackaged spec-memo companions (not vendor ws-memo) (`spec: 0069-us-288.spec.md`) — PR #289 MERGED
 - [x] Plan Directory Artifacts Consolidation & Minimal Runtime Footprint (`spec: 0068-plan-artifacts-consolidation.spec.md`) — PR #286 MERGED
-- [ ] Separate ws-shared Runtime, Templates, and Consumer Configuration for Hybrid Installs (`spec: 0070-ws-shared-hybrid-config-layout.spec.md`)
-- [ ] Optional Compiler and Host Projection for Specialized Workflow Subagents (`spec: 0071-specialized-subagents-compiler.spec.md`)
-- [ ] PowerShell Windows Forms Config Editor for Workflow Skills (`spec: 0072-powershell-config-editor.spec.md`)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+- [x] Separate ws-shared Runtime, Templates, and Consumer Configuration for Hybrid Installs (`spec: 0070-ws-shared-hybrid-config-layout.spec.md`) — PR #290 MERGED
+- [x] Optional Compiler and Host Projection for Specialized Workflow Subagents (`spec: 0071-specialized-subagents-compiler.spec.md`) — PR #292 MERGED
+- [x] PowerShell Windows Forms Config Editor for Workflow Skills (`spec: 0072-powershell-config-editor.spec.md`) — PR #305 MERGED
+- [x] Stamp finished step artifacts with the step result, not the overall workflow status (`spec: 0073-us-311.spec.md`) — PR #312 MERGED
+- [x] workflow_state.cjs drops earlier values for repeated file-list flags (`spec: 0074-us-310.spec.md`) — PR #313 MERGED
+- [x] ws-wiki: living project feature wiki and domain knowledge base manager (`spec: 0075-ws-wiki.spec.md`) — PR #319
 
 
 ## 8. Next specs
@@ -224,25 +204,21 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 68 | `us-250` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Remove retired ws-patterns references from hub templates/seeds (PR #251) |
 | 69 | `us-272` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Prune retired skill ids on update + hybrid harness fallback (PR #273) |
 
-All Next-specs closed except true todo: `unique-skill-script-runtime`.
+All Next-specs closed except true todo: `unique-skill-script-runtime` and `ws-shared-hub-agents-separation`.
 
-| 70 | `ws-benchmarks-skill` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-benchmarks: benchmark commands and evolution report manager |
-
-| 71 | `ws-spec-manager-skill` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-manager: unified specification router and lifecycle manager |
-
+| 70 | `ws-benchmarks-skill` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-benchmarks: benchmark commands and evolution report manager |
+| 71 | `ws-spec-manager-skill` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-manager: unified specification router and lifecycle manager |
 | 72 | `ws-shared-hub-agents-separation` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Separate consumer ws-shared hub from upstream root AGENTS.md |
-
 | 73 | `reviewer-aligned-implementation-gates` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Reviewer-Aligned Implementation Gates & Pre-PR Defect Prevention |
-
 | 74 | `us-288` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Align hub routing with unpackaged spec-memo companions (not vendor ws-memo) (PR #289) |
-
 | 75 | `plan-artifacts-consolidation` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Plan Directory Artifacts Consolidation & Minimal Runtime Footprint (PR #286) |
+| 76 | `ws-shared-hybrid-config-layout` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Separate ws-shared Runtime, Templates, and Consumer Configuration for Hybrid Installs |
+| 77 | `specialized-subagents-compiler` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Optional Compiler and Host Projection for Specialized Workflow Subagents |
+| 78 | `powershell-config-editor` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | PowerShell Windows Forms Config Editor for Workflow Skills |
+| 79 | `us-311` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Stamp finished step artifacts with the step result, not the overall workflow status |
+| 80 | `us-310` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | workflow_state.cjs drops earlier values for repeated file-list flags |
 
-| 76 | `ws-shared-hybrid-config-layout` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Separate ws-shared Runtime, Templates, and Consumer Configuration for Hybrid Installs |
-
-| 77 | `specialized-subagents-compiler` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Optional Compiler and Host Projection for Specialized Workflow Subagents |
-
-| 78 | `powershell-config-editor` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | PowerShell Windows Forms Config Editor for Workflow Skills |
+| 81 | `ws-wiki` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-wiki: living project feature wiki and domain knowledge base manager (PR #319) |
 
 ## 9. Inbox
 
@@ -322,6 +298,14 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`.
 | 2026-09-06 | `transition-gate-continuation` | Native gate advance options continue same-turn across all step boundaries; markdown fallback yields (issue #280, release 0.3.62) | [PR #281](https://github.com/jpolvora/workflow-skills/pull/281) |
 | 2026-09-07 | `us-288` | Align hub routing with unpackaged spec-memo companions (not vendor ws-memo) | [PR #289](https://github.com/jpolvora/workflow-skills/pull/289) |
 | 2026-09-07 | `plan-artifacts-consolidation` | Plan Directory Artifacts Consolidation & Minimal Runtime Footprint | [PR #286](https://github.com/jpolvora/workflow-skills/pull/286) |
+| 2026-09-06 | `ws-benchmarks-skill` | ws-benchmarks: benchmark commands and evolution report manager | [PR #282](https://github.com/jpolvora/workflow-skills/pull/282) |
+| 2026-09-06 | `ws-spec-manager-skill` | ws-spec-manager: unified specification router and lifecycle manager | [PR #282](https://github.com/jpolvora/workflow-skills/pull/282) |
+| 2026-09-08 | `ws-shared-hybrid-config-layout` | Separate ws-shared Runtime, Templates, and Consumer Configuration for Hybrid Installs | [PR #290](https://github.com/jpolvora/workflow-skills/pull/290) |
+| 2026-09-09 | `specialized-subagents-compiler` | Optional Compiler and Host Projection for Specialized Workflow Subagents | [PR #292](https://github.com/jpolvora/workflow-skills/pull/292) |
+| 2026-09-10 | `powershell-config-editor` | PowerShell Windows Forms Config Editor for Workflow Skills | [PR #305](https://github.com/jpolvora/workflow-skills/pull/305) |
+| 2026-09-11 | `us-311` | Stamp finished step artifacts with the step result, not the overall workflow status | [PR #312](https://github.com/jpolvora/workflow-skills/pull/312) |
+| 2026-09-11 | `us-310` | workflow_state.cjs drops earlier values for repeated file-list flags | [PR #313](https://github.com/jpolvora/workflow-skills/pull/313) |
+| 2026-09-12 | `ws-wiki` | ws-wiki: living project feature wiki and domain knowledge base manager | [PR #319](https://github.com/jpolvora/workflow-skills/pull/319) |
 
 ## 11. Maintenance checklist
 

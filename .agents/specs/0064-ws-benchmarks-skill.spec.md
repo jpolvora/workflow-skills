@@ -4,6 +4,7 @@ slug: ws-benchmarks-skill
 title: "ws-benchmarks: benchmark commands and evolution report manager"
 source: local
 specDate: 2026-09-06
+status: completed
 ---
 
 # Specification — ws-benchmarks: benchmark commands and evolution report manager

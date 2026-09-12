@@ -143,6 +143,7 @@ function track({ specsDir, slug }) {
   }
   const title = readTitle(specPath) || slug;
   let indexText = fs.readFileSync(indexPath, 'utf8');
+  const isCrlf = /\r\n/.test(indexText);
   if (alreadyTracked(indexText, slug)) {
     return { status: 'skipped', reason: 'already tracked', slug, title };
   }
@@ -200,6 +201,12 @@ function track({ specsDir, slug }) {
   }
 
   indexText = insertTableRow(indexText, row);
+
+  if (isCrlf) {
+    indexText = indexText.replace(/\r?\n/g, '\r\n');
+  } else {
+    indexText = indexText.replace(/\r\n/g, '\n');
+  }
 
   fs.writeFileSync(indexPath, indexText, 'utf8');
   return { status: 'tracked', slug, title, row: n };

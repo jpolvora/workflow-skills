@@ -266,7 +266,9 @@ function renderEvolutionMarkdown(rows, options = {}) {
 
 function updateComparisonFiles(repoRoot, options = {}) {
   const baselinesRoot = path.join(repoRoot, 'benchmarks', 'baselines');
-  const resultsRoot = path.join(repoRoot, 'benchmarks', 'results');
+  const resultsRoot = options.resultsDir
+    ? path.resolve(options.resultsDir)
+    : path.join(repoRoot, 'benchmarks', 'results');
   fs.mkdirSync(resultsRoot, { recursive: true });
 
   const baselines = listBaselines(baselinesRoot);
