@@ -133,7 +133,8 @@ Fix is **not** its own `completedSteps` entry — log `review-fix | round={n}/3`
 4. After successful close (even when delivery commit skipped): MEMORY sweep → `ws-changelog`.
 5. Set `status: completed`, `endedAt`, `shipStatus: pending`. `finish --step 8` records step 8; overall workflow `status` is set here, **not** in Step 9.
 6. [`ws-spec-index`](../ws-spec-index/SKILL.md) `sync` with `{slug}` and **implementation** evidence only — do not treat as merged/shipped.
-7. Optional Phase B plan-dir temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md) (close gate option).
+7. [`ws-wiki`](../ws-wiki/SKILL.md) `sync` with `{slug}` to update living domain feature documentation and business rules.
+8. Optional Phase B plan-dir temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md) (close gate option).
 
 When `scoreAndRefine` was executed, generate `step-08-{slug}.second-pass-report.md` comparing Pass 1 vs Pass 2 scores, LOC deltas, simplifications/deletions, quality gains, and test metrics. Include Pass 1 vs Pass 2 comparative summary table in `step-08-{slug}.result.md`.
 
