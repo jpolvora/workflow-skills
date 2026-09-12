@@ -1,6 +1,6 @@
 ---
 name: ws-wiki
-version: 0.4.19
+version: 0.4.20
 disable-model-invocation: true
 description: Living project feature wiki and domain knowledge base manager — initializes, synchronizes, and validates living feature documentation, business rules, and technical architecture.
 invocation_names:
@@ -43,6 +43,7 @@ Existing documents serve distinct roles:
 
 ```text
 /ws-wiki init                   Scan project documentation to bootstrap initial index.wiki.md
+/ws-wiki sweep                  First-time sequential backfill from all top-level specs (aliases: first-time, backfill)
 /ws-wiki sync [slug]            Sync delivered feature or commit diff to living domain wiki pages
 /ws-wiki update [target]        Surgically update an individual feature wiki page
 /ws-wiki validate               Deterministic validation of links and 3-section heading structures
@@ -64,8 +65,50 @@ Bootstrap the living wiki from existing project context:
    - `## Architectural Boundaries`
    - `## Domain Catalog` with empty domain sections or seed placeholders.
 4. **Guard**: If `{wikiDir}/index.wiki.md` already exists, do not overwrite without explicit user confirmation. Defer feature subpages until features are delivered.
+5. **Post-init offer**: After a successful init write or confirmed refresh, present `user-gate`:
+   1. **Run first-time spec sweep (Recommended)** when the wiki has no feature pages or only seed pages
+   2. **Skip (index only)**
+   Cancel → HS-1 STOP. Skip leaves feature pages untouched. On **Run**, invoke § `/ws-wiki sweep` below.
 
-### 2. `/ws-wiki sync [slug]`
+### 2. `/ws-wiki sweep`
+
+First-time (or re-runnable) sequential backfill from every top-level spec of record, in prefix order, overlaying living wiki pages so later specs win.
+
+**Aliases:** `/ws-wiki first-time`, `/ws-wiki backfill`
+
+**Preconditions:** `{wikiDir}/index.wiki.md` must exist. If missing, STOP with a message to run `/ws-wiki init` first. Do not invent an index.
+
+1. **Build queue (deterministic):**
+
+   ```bash
+   node {skillsRoot}/ws-wiki/scripts/list_wiki_sweep_specs.cjs --json [--repo-root .]
+   ```
+
+   Top-level `{specsDir}/*.spec.md` only; `NNNN-*.spec.md` ascending, then unprefixed lexicographically. Excludes `{wikiDir}/**`, `*.context.md`, and nested `step-00-*.spec.md`. Ambiguous dual `{slug}.spec.md` + `NNNN-{slug}.spec.md` → omit slug, record error, continue.
+
+2. **Start gate:** Present `user-gate` once before writing feature pages:
+   1. **Start spec sweep (Recommended)** — shows queue length and first/last file
+   2. **Cancel**
+   Cancel → STOP; write no sweep pages and no checkpoint. **`autoMode`:** take option 1 without prompting.
+
+3. **Checkpoint (resume):** Maintain `{wikiDir}/sweep.state.json` with `status`, `completedFiles` (repo-relative POSIX paths), `lastFile`, `startedAt`, `updatedAt`. `--resume` continues after `lastFile` (skip completed unless `--force`). Successful full run sets `status: completed` or deletes the file. Never stage this checkpoint in product commits.
+
+4. **Sequential overlay (one spec at a time):** For each queued spec not yet completed:
+   - Read the spec of record.
+   - Consult **current** shipped code/docs the spec touches (skills, scripts, tests, hub files).
+   - Map bounded-context domain page(s) under `{wikiDir}/{domain}/{feature}.md`.
+   - Refine pages **in place** (3-section format). Later specs supersede earlier rules. When code contradicts an older spec AC, document **current code**; spec text is provenance only.
+   - Run `sync_wiki_index.cjs` after each successful overlay.
+   - Update checkpoint `lastFile` / `completedFiles`.
+   - Log progress: `{index}/{total} {file}`.
+
+5. **No per-spec Apply/Cancel gate:** Unlike `/ws-wiki sync [slug]`, sweep does not present 0075’s per-diff Apply/Cancel gate for each spec. Mid-run **Pause** is allowed; resume from checkpoint.
+
+6. **`--dry-run`:** Print the ordered queue (and checkpoint summary if present). Write neither wiki pages nor `sweep.state.json`.
+
+7. **Finish:** Run `validate_wiki.cjs --check`. Report processed, skipped (ambiguous/unreadable), pages written, and validate exit code. Empty `{specsDir}` → success with processed `0`.
+
+### 3. `/ws-wiki sync [slug]`
 
 Synchronize shipped code changes to living domain wiki subpages:
 
@@ -89,12 +132,12 @@ Synchronize shipped code changes to living domain wiki subpages:
    - Invoke `sync_wiki_index.cjs` to register/update the feature link and one-line description in `{wikiDir}/index.wiki.md`.
    - Run `validate_wiki.cjs` to verify structural integrity.
 
-### 3. `/ws-wiki update [target]`
+### 4. `/ws-wiki update [target]`
 
 Perform targeted surgical updates on an individual feature page `{domain}/{feature}.md`:
 - Loads target page, updates specific business rules or technical contracts, preserves other sections, and validates upon save.
 
-### 4. `/ws-wiki validate`
+### 5. `/ws-wiki validate`
 
 Run deterministic verification:
 ```bash
@@ -120,6 +163,9 @@ node {skillsRoot}/ws-wiki/scripts/sync_wiki_index.cjs \
   --feature user-management \
   --title "User Management" \
   --description "User onboarding, credential lifecycle, and role assignment."
+
+# List top-level specs in sweep order
+node {skillsRoot}/ws-wiki/scripts/list_wiki_sweep_specs.cjs --json --repo-root .
 ```
 
 ---

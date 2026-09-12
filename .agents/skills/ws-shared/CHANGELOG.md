@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-12 11:15] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-to-pr-lite implement 0076-ws-wiki-spec-sweep full auto, bump version, ws-ship-pr.
+- **Done**: Added `list_wiki_sweep_specs.cjs`, sweep mode in `ws-wiki/SKILL.md`, tests, catalog updates; bumped package to 0.4.20 with integrity regen.
+- **Result**: `test/test-wiki.js` PASS. Learning: N/A (standard implementation)
+
 ### [2026-09-12 11:03] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-spec-write first-time ws-wiki spec sweep after init (sequential NNNN overlay).
 - **Done**: Wrote `.agents/specs/0076-ws-wiki-spec-sweep.spec.md` + companion `.context.md`; authoring validate PASS (18 ACs).
