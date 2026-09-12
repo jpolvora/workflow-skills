@@ -127,6 +127,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Stamp finished step artifacts with the step result, not the overall workflow status (`spec: 0073-us-311.spec.md`) — PR #312 MERGED
 - [x] workflow_state.cjs drops earlier values for repeated file-list flags (`spec: 0074-us-310.spec.md`) — PR #313 MERGED
 - [x] ws-wiki: living project feature wiki and domain knowledge base manager (`spec: 0075-ws-wiki.spec.md`) — PR #319
+- [ ] ws-wiki first-time sequential spec sweep (`spec: 0076-ws-wiki-spec-sweep.spec.md`)
+
 
 
 ## 8. Next specs
@@ -219,6 +221,8 @@ All Next-specs closed except true todo: `unique-skill-script-runtime` and `ws-sh
 | 80 | `us-310` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | workflow_state.cjs drops earlier values for repeated file-list flags |
 
 | 81 | `ws-wiki` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-wiki: living project feature wiki and domain knowledge base manager (PR #319) |
+
+| 82 | `ws-wiki-spec-sweep` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-wiki first-time sequential spec sweep |
 
 ## 9. Inbox
 

@@ -1,7 +1,7 @@
 ---
 name: ws-spec-update
 description: Feature spec updater — updates feature specifications after prompt-driven code changes to prevent spec drift, with optional self-learning memory recording.
-version: 0.4.19
+version: 0.4.20
 invocation_names:
   - spec-update
   - ws-spec-update

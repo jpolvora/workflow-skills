@@ -12,6 +12,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..');
 const VALIDATE = path.join(REPO_ROOT, '.agents/skills/ws-wiki/scripts/validate_wiki.cjs');
 const SYNC = path.join(REPO_ROOT, '.agents/skills/ws-wiki/scripts/sync_wiki_index.cjs');
+const LIST_SWEEP = path.join(REPO_ROOT, '.agents/skills/ws-wiki/scripts/list_wiki_sweep_specs.cjs');
 
 let failures = 0;
 function ok(msg) {
@@ -364,6 +365,63 @@ Missing Business Rules & Logic section!
     const configSkillPath = path.join(REPO_ROOT, '.agents/skills/ws-configure-project/SKILL.md');
     const configSkill = fs.readFileSync(configSkillPath, 'utf8');
     assert(configSkill.includes('plans.wikiDir'), 'ws-configure-project SKILL.md documents plans.wikiDir default');
+  }
+
+  // Test 15: list_wiki_sweep_specs ordering, filters, and CLI guards
+  {
+    const sweepTmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-wiki-sweep-'));
+    try {
+      const specsDir = path.join(sweepTmp, '.agents', 'specs');
+      const wikiDir = path.join(specsDir, 'wiki');
+      fs.mkdirSync(wikiDir, { recursive: true });
+      fs.writeFileSync(path.join(wikiDir, 'index.wiki.md'), '# wiki\n', 'utf8');
+      fs.writeFileSync(path.join(specsDir, '0002-beta.spec.md'), '---\nslug: beta\n---\n', 'utf8');
+      fs.writeFileSync(path.join(specsDir, '0001-alpha.spec.md'), '---\nslug: alpha\n---\n', 'utf8');
+      fs.writeFileSync(path.join(specsDir, 'legacy.spec.md'), '---\nslug: legacy\n---\n', 'utf8');
+      fs.writeFileSync(path.join(specsDir, '0001-legacy.spec.md'), '---\nslug: legacy\n---\n', 'utf8');
+      fs.writeFileSync(path.join(specsDir, '0003-alpha.context.md'), 'context only\n', 'utf8');
+
+      const res = run(LIST_SWEEP, ['--repo-root', sweepTmp, '--json']);
+      assert(res.status === 0, 'list_wiki_sweep_specs exits 0 with ambiguous slug warning');
+      const data = JSON.parse(res.stdout);
+      assert(Array.isArray(data.specs), 'list_wiki_sweep_specs returns specs array');
+      assert(data.specs.length === 2, 'ambiguous legacy slug omitted; alpha and beta remain');
+      assert(data.specs[0].slug === 'alpha' && data.specs[0].prefix === 1, 'NNNN specs sorted ascending');
+      assert(data.specs[1].slug === 'beta' && data.specs[1].prefix === 2, 'second prefixed spec follows');
+      assert(data.errors.some((e) => e.includes('Ambiguous spec of record for "legacy"')), 'dual slug recorded in errors');
+
+      const emptySpecs = path.join(sweepTmp, 'empty-specs');
+      fs.mkdirSync(emptySpecs, { recursive: true });
+      const emptyRes = run(LIST_SWEEP, ['--repo-root', sweepTmp, '--specs-dir', emptySpecs, '--json']);
+      assert(emptyRes.status === 0, 'empty specs dir succeeds with processed 0');
+      const emptyData = JSON.parse(emptyRes.stdout);
+      assert(emptyData.specs.length === 0, 'empty specs dir returns empty queue');
+
+      const helpRes = run(LIST_SWEEP, ['--help']);
+      assert(helpRes.status === 0, '--help exits 0');
+
+      const badFlagRes = run(LIST_SWEEP, ['--not-a-flag']);
+      assert(badFlagRes.status === 2, 'unknown flag exits non-zero');
+
+      const escapeRes = run(LIST_SWEEP, ['--repo-root', sweepTmp, '--specs-dir', '../../outside', '--json']);
+      assert(escapeRes.status === 1, 'specs-dir outside repo root fails closed');
+    } finally {
+      fs.rmSync(sweepTmp, { recursive: true, force: true });
+    }
+  }
+
+  // Test 16: sweep subcommand documented in SKILL and CATALOG
+  {
+    const skillPath = path.join(REPO_ROOT, '.agents/skills/ws-wiki/SKILL.md');
+    const skill = fs.readFileSync(skillPath, 'utf8');
+    assert(skill.includes('/ws-wiki sweep'), 'SKILL documents /ws-wiki sweep');
+    assert(skill.includes('first-time') && skill.includes('backfill'), 'SKILL documents sweep aliases');
+    assert(skill.includes('list_wiki_sweep_specs.cjs'), 'SKILL documents sweep list helper');
+    assert(skill.includes('Post-init offer'), 'SKILL documents post-init sweep gate');
+
+    const catalogPath = path.join(REPO_ROOT, 'CATALOG.md');
+    const catalog = fs.readFileSync(catalogPath, 'utf8');
+    assert(catalog.includes('first-time spec sweep'), 'CATALOG task router mentions first-time spec sweep');
   }
 
 } finally {

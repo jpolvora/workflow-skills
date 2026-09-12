@@ -1,7 +1,7 @@
 ---
 name: ws-monitor
 description: Read-only live observer for active Spec-to-PR and multi-spec workflow runs, memory vault status, telemetry, artifacts, and multi-host transcripts.
-version: 0.4.19
+version: 0.4.20
 disable-model-invocation: true
 invocation_names:
   - monitor
