@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 22,
-  "generatedAt": "2026-09-12T17:16:36Z",
+  "revision": 19,
+  "generatedAt": "2026-09-12T17:32:10Z",
   "workflows": [
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
@@ -605,8 +605,19 @@
       "stateSha256": "818e99163159dc1958471d9483ec36c6d3f804f6ffcd314dd38cf2593a26c9e0",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-09-12T17:16:36Z",
+      "updatedAt": "2026-09-12T16:54:23Z",
       "runPath": ".agents/plans/ws-wiki-code-verify/ws-wiki-code-verify-20260912T160041Z.state.json"
+    },
+    {
+      "workflowId": "ws-wiki-from-code-20260912T171926Z",
+      "slug": "ws-wiki-from-code",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/ws-wiki-from-code/ws-wiki-from-code-20260912T171926Z.state.md",
+      "stateSha256": "6fe9d9a36cd305016975589b2846d2153d8e3348b4fa8f3cd6a7ef94757151d7",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-12T17:32:10Z",
+      "runPath": ".agents/plans/ws-wiki-from-code/ws-wiki-from-code-20260912T171926Z.state.json"
     }
   ]
 }
