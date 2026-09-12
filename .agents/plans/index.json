@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 18,
-  "generatedAt": "2026-09-12T05:05:05Z",
+  "revision": 21,
+  "generatedAt": "2026-09-12T15:56:58Z",
   "workflows": [
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
@@ -541,6 +541,17 @@
       "currentStep": 9,
       "updatedAt": "2026-08-01T16:52:02Z",
       "runPath": ".agents/plans/global-vs-project-skill-installation/us-global-vs-project-skill-installation.archive/us-global-vs-project-skill-installation.state.json"
+    },
+    {
+      "workflowId": "website-wiki-page-20260912T152056Z",
+      "slug": "website-wiki-page",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/website-wiki-page/website-wiki-page-20260912T152056Z.state.md",
+      "stateSha256": "ca69deed0fa7a670b27372d579d67cb69103643b6d4643064498747deee4402b",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-12T15:56:58Z",
+      "runPath": ".agents/plans/website-wiki-page/website-wiki-page-20260912T152056Z.state.json"
     },
     {
       "workflowId": "workflow-bootstrap-feature-branch-20260812T180942Z",

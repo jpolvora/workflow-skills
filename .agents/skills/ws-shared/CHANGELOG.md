@@ -1,5 +1,17 @@
 # Changelog
 
+### [2026-09-12 11:50] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-to-pr @.agents/specs/0077-website-wiki-page.spec.md full auto (Step 9 fix-pr round 1)
+- **Done**: Page-relative wiki hrefs and `**strong**` rendering; regenerated `docs/wiki/`; tests in `test/test-site-wiki.js`.
+- **Result**: Learning: Wiki HTML hrefs must be page-relative; Wiki inline scanner must parse strong before dumping remainder
+
+
+### [2026-09-12 11:42] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-write Phase 2 wiki-vs-code verify; follow-up name plan/updating PHASE 3.
+- **Done**: Wrote `.agents/specs/0078-ws-wiki-code-verify.spec.md` + companion `.context.md`; authoring validate PASS (19 ACs); tracked on index.PRD (row 84).
+- **Result**: Spec of record ready. Learning: N/A (no new project knowledge)
+
+
 ### [2026-09-12 11:40] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-spec-to-pr @.agents/specs/0077-website-wiki-page.spec.md full auto
 - **Done**: Generated docs/wiki HTML from wiki dir on site build; tests, nav, sitemap; G2 commit 499b5125; score 10; clean review.
