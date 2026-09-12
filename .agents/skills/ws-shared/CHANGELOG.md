@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-12 11:03] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-write first-time ws-wiki spec sweep after init (sequential NNNN overlay).
+- **Done**: Wrote `.agents/specs/0076-ws-wiki-spec-sweep.spec.md` + companion `.context.md`; authoring validate PASS (18 ACs).
+- **Result**: Authoring PASS; tracked on index.PRD (row 82). Learning: N/A (standard implementation)
+
 ### [2026-09-12 10:52] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-wiki then init (refresh taxonomy, keep existing feature links).
 - **Done**: Rewrote `.agents/specs/wiki/index.wiki.md` with harness/delivery/providers/specs/quality/memory/engineering/documentation domains; kept `documentation/ws-wiki.md`.
