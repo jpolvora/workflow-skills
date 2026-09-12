@@ -126,7 +126,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] PowerShell Windows Forms Config Editor for Workflow Skills (`spec: 0072-powershell-config-editor.spec.md`) — PR #305 MERGED
 - [x] Stamp finished step artifacts with the step result, not the overall workflow status (`spec: 0073-us-311.spec.md`) — PR #312 MERGED
 - [x] workflow_state.cjs drops earlier values for repeated file-list flags (`spec: 0074-us-310.spec.md`) — PR #313 MERGED
-- [ ] ws-wiki: living project feature wiki and domain knowledge base manager (`spec: 0075-ws-wiki.spec.md`)
+- [x] ws-wiki: living project feature wiki and domain knowledge base manager (`spec: 0075-ws-wiki.spec.md`) — PR #319
 
 
 ## 8. Next specs
@@ -218,7 +218,7 @@ All Next-specs closed except true todo: `unique-skill-script-runtime` and `ws-sh
 | 79 | `us-311` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Stamp finished step artifacts with the step result, not the overall workflow status |
 | 80 | `us-310` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | workflow_state.cjs drops earlier values for repeated file-list flags |
 
-| 81 | `ws-wiki` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-wiki: living project feature wiki and domain knowledge base manager |
+| 81 | `ws-wiki` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-wiki: living project feature wiki and domain knowledge base manager (PR #319) |
 
 ## 9. Inbox
 
@@ -305,6 +305,7 @@ All Next-specs closed except true todo: `unique-skill-script-runtime` and `ws-sh
 | 2026-09-10 | `powershell-config-editor` | PowerShell Windows Forms Config Editor for Workflow Skills | [PR #305](https://github.com/jpolvora/workflow-skills/pull/305) |
 | 2026-09-11 | `us-311` | Stamp finished step artifacts with the step result, not the overall workflow status | [PR #312](https://github.com/jpolvora/workflow-skills/pull/312) |
 | 2026-09-11 | `us-310` | workflow_state.cjs drops earlier values for repeated file-list flags | [PR #313](https://github.com/jpolvora/workflow-skills/pull/313) |
+| 2026-09-12 | `ws-wiki` | ws-wiki: living project feature wiki and domain knowledge base manager | [PR #319](https://github.com/jpolvora/workflow-skills/pull/319) |
 
 ## 11. Maintenance checklist
 
