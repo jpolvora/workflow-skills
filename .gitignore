@@ -60,3 +60,6 @@ check-workflows-report.md
 # Harness benchmark full run reports (upstream maintainer only)
 benchmarks/runs/
 .active-session-id
+
+# Upstream dogfood probe cache (consumer-local gitignored state, never shipped upstream)
+.agents/skills/ws-shared/host-capabilities.json

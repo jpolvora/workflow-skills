@@ -287,7 +287,8 @@
       "ws-configure-project"
     ],
     "ws-wiki": [
-      "ws-configure-project"
+      "ws-configure-project",
+      "ws-spec-write"
     ],
     "ws-run-benchmark": [],
     "ws-benchmarks": []

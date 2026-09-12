@@ -312,7 +312,7 @@ function buildInfoboxHtml(page, title, markdown) {
 
 function buildIndexInfoboxHtml(allPages) {
   const featurePages = allPages ? allPages.filter((p) => p.depth === 2) : [];
-  const domainCount = new Set(featurePages.map((p) => p.relKey.split('/')[0])).size || 8;
+  const domainCount = new Set(featurePages.map((p) => p.relKey.split('/')[0])).size;
   return `<aside class="wiki-infobox" aria-label="Wiki overview">
   <div class="wiki-infobox-header">
     <div class="wiki-infobox-title">Workflow Skills Wiki</div>
