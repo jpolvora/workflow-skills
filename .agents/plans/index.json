@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 21,
-  "generatedAt": "2026-09-12T15:56:58Z",
+  "revision": 22,
+  "generatedAt": "2026-09-12T17:16:36Z",
   "workflows": [
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
@@ -228,7 +228,7 @@
       "slug": "specialized-subagents-compiler",
       "pipeline": "standard",
       "statePath": ".agents/plans/specialized-subagents-compiler/specialized-subagents-compiler-20260909T120930Z.state.md",
-      "stateSha256": "bbc71138ffe9e15b9e83ca4defb6e2e187b2ed22cb6b38ce2f2ff10f769c8533",
+      "stateSha256": "0de22460f60c5669bc8b5d6a71605af0ac993f8be58ff3bc1950e22df95bb662",
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-09-09T13:03:58Z",
@@ -517,7 +517,7 @@
       "stateSha256": "1e4884137f6192c134194f2b3ebbc477fcf54c430ba9b23a2ae7991af9312c37",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-09-11T05:05:00Z",
+      "updatedAt": "2026-09-11T04:55:20Z",
       "runPath": ".agents/plans/us-310/us-310-20260911T041227Z.state.json"
     },
     {
@@ -528,7 +528,7 @@
       "stateSha256": "826bb8af48224fe824e45eb053b07fe2a5625497cc92b055128b39ec48c75060",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-09-11T04:10:31Z",
+      "updatedAt": "2026-09-11T04:07:40Z",
       "runPath": ".agents/plans/us-311/us-311-20260911T034559Z.state.json"
     },
     {
@@ -550,7 +550,7 @@
       "stateSha256": "ca69deed0fa7a670b27372d579d67cb69103643b6d4643064498747deee4402b",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-09-12T15:56:58Z",
+      "updatedAt": "2026-09-12T15:48:52Z",
       "runPath": ".agents/plans/website-wiki-page/website-wiki-page-20260912T152056Z.state.json"
     },
     {
@@ -591,11 +591,22 @@
       "slug": "ws-wiki",
       "pipeline": "standard",
       "statePath": ".agents/plans/ws-wiki/ws-wiki-20260912T043312Z.state.md",
-      "stateSha256": "2f805a0df16ec9f90789ed23877419558c0547c0d7d2cc3177b80b351298e6a5",
+      "stateSha256": "5fb9ab1427912481c6d32ad7fdf99e966cea878fb12ab21e4b0c978f34aafd01",
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-09-12T05:05:05Z",
       "runPath": ".agents/plans/ws-wiki/ws-wiki-20260912T043312Z.state.json"
+    },
+    {
+      "workflowId": "ws-wiki-code-verify-20260912T160041Z",
+      "slug": "ws-wiki-code-verify",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/ws-wiki-code-verify/ws-wiki-code-verify-20260912T160041Z.state.md",
+      "stateSha256": "818e99163159dc1958471d9483ec36c6d3f804f6ffcd314dd38cf2593a26c9e0",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-12T17:16:36Z",
+      "runPath": ".agents/plans/ws-wiki-code-verify/ws-wiki-code-verify-20260912T160041Z.state.json"
     }
   ]
 }

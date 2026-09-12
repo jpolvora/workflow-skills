@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-12 16:48] Agent: opencode-go/muse-spark (Step 8 close ws-wiki-code-verify)
+- **Prompt**: Step 8 Close implementation then Ship for ws-wiki-code-verify (standard, autoMode, fullMode)
+- **Done**: Delivery result + second-pass report; G2-delivery commit 88760ba8 (refined plan only); status completed, shipStatus pending; spec-index/wiki sync (implementation evidence).
+- **Result**: Score 10, clean review, testing passed. Learning: N/A (standard implementation)
+
 ### [2026-09-12 11:50] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-spec-to-pr @.agents/specs/0077-website-wiki-page.spec.md full auto (Step 9 fix-pr round 1)
 - **Done**: Page-relative wiki hrefs and `**strong**` rendering; regenerated `docs/wiki/`; tests in `test/test-site-wiki.js`.

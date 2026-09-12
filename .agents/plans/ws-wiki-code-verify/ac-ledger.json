@@ -1,0 +1,1254 @@
+{
+  "schemaVersion": 1,
+  "revision": 49,
+  "workflowId": "ws-wiki-code-verify-20260912T160041Z",
+  "slug": "ws-wiki-code-verify",
+  "specPath": ".agents/plans/ws-wiki-code-verify/step-00-ws-wiki-code-verify.spec.md",
+  "planIndexPath": ".agents/plans/ws-wiki-code-verify/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "1032437741933ec3fd65bf80ab93d9c4322bbe93733118d7a75503f9656b23f3",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "`ws-wiki/SKILL.md` names Phase 1 as sweep/backfill, Phase 2 as wiki-vs-code statement verify, and Phase 3 as findings plan plus batch apply, and documents `/ws-wiki verify` (aliases `audit`, `check-code`) and `/ws-wiki apply` (aliases `reconcile`, `phase-3`).",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-wiki/SKILL.md:L42-L54"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-wiki/SKILL.md",
+          "lineStart": 42,
+          "lineEnd": 54,
+          "sha256": "3811c2f17bb8c23a9e51d32bc8fa6f897f7b36c28376e21ae205829de513557f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC1: SKILL documents apply aliases",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:23.077Z"
+        },
+        {
+          "name": "AC1: SKILL documents verify aliases",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:23.070Z"
+        },
+        {
+          "name": "AC1: SKILL names Phase 2 as wiki-vs-code statement verify",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:23.069Z"
+        }
+      ],
+      "verdicts": [
+        {
+          "verdict": "VERIFIED",
+          "evidence": ".agents/skills/ws-wiki/scripts/list_wiki_feature_pages.cjs:L50-L58",
+          "timestamp": "2026-09-12T16:26:23.077Z"
+        }
+      ],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-step5-verify-1",
+        "g2-commit-c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "After a successful Phase 1 sweep finish (including empty-queue success), the agent presents a `user-gate` before ending the turn with recommended option Run Phase 2 wiki-vs-code audit versus Skip. Skip writes no verify artifacts. Cancel STOP. `autoMode` takes the recommended option without prompting.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-wiki/SKILL.md:L115-L118"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-wiki/SKILL.md",
+          "lineStart": 115,
+          "lineEnd": 118,
+          "sha256": "3811c2f17bb8c23a9e51d32bc8fa6f897f7b36c28376e21ae205829de513557f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC2: SKILL documents post-sweep Phase 2 offer",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:30:03.637Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-step5-verify-1",
+        "evt-step5-verify-2",
+        "g2-commit-c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "`/ws-wiki verify` without `index.wiki.md` STOP with a message to run `/ws-wiki init` first; it does not invent an index or feature pages.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-wiki/SKILL.md:L161-L167"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-wiki/SKILL.md",
+          "lineStart": 161,
+          "lineEnd": 167,
+          "sha256": "3811c2f17bb8c23a9e51d32bc8fa6f897f7b36c28376e21ae205829de513557f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "NS1: SKILL documents missing-index STOP",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:23.179Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-step5-verify-1",
+        "g2-commit-c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "Helper `.agents/skills/ws-wiki/scripts/list_wiki_feature_pages.cjs` lists repo-relative POSIX paths of `{wikiDir}/**/*.md` excluding `index.wiki.md` and any `*.state.json`; `--json` prints `{ ok, pages: [{ file, domain, feature }], errors }`. Sort is POSIX path lexicographic.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-wiki/scripts/list_wiki_feature_pages.cjs:L74-L139"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-wiki/scripts/list_wiki_feature_pages.cjs",
+          "lineStart": 74,
+          "lineEnd": 139,
+          "sha256": "2687cd9dbdfce28f0f95877466be334bf3a1e31d7318c1c31585c30f4714172e"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC4: SKILL documents verify enumerator usage",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:23.240Z"
+        },
+        {
+          "name": "verify enumerator returns pages array",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:23.239Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-step5-verify-1",
+        "g2-commit-c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "Helper CLI validates `--repo-root` / `--wiki-dir` with directory containment (resolved path stays under repo root); unknown flags and leftover argv tokens are rejected before `readdir`; `--help` exits 0 and is never a filename.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-wiki/scripts/list_wiki_feature_pages.cjs:L11-L48"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-007"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-wiki/scripts/list_wiki_feature_pages.cjs",
+          "lineStart": 11,
+          "lineEnd": 48,
+          "sha256": "2687cd9dbdfce28f0f95877466be334bf3a1e31d7318c1c31585c30f4714172e"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC5: --specs-dir rejected as unknown with exit 2",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:23.299Z"
+        },
+        {
+          "name": "NS3: unknown flag exits 2",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:23.298Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-step5-verify-1",
+        "g2-commit-c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "Phase 2 walks pages in helper order, one page at a time (no parallel writes to the same wiki file). For each page it extracts checkable statements from Business Rules & Logic and Technical Architecture as specified in Description; Feature Overview only when the claim is a testable invariant.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-wiki/SKILL.md:L175-L177"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-wiki/SKILL.md",
+          "lineStart": 175,
+          "lineEnd": 177,
+          "sha256": "3811c2f17bb8c23a9e51d32bc8fa6f897f7b36c28376e21ae205829de513557f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC6: SKILL documents sequential walk in helper order",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:30:09.932Z"
+        },
+        {
+          "name": "pages sorted POSIX lexicographic",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:23.368Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-step5-verify-1",
+        "evt-step5-verify-2",
+        "g2-commit-c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "Each extracted statement is classified `confirmed` | `differs` | `absent` | `inconclusive` with at least one evidence pointer (file path + line or explicit `no match`). Classifications are written to checkpoint before the next page.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-wiki/SKILL.md:L179-L181"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-wiki/SKILL.md",
+          "lineStart": 179,
+          "lineEnd": 181,
+          "sha256": "3811c2f17bb8c23a9e51d32bc8fa6f897f7b36c28376e21ae205829de513557f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC7: SKILL documents four-class classification",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:30:13.458Z"
+        },
+        {
+          "name": "AC7: SKILL requires evidence pointer per statement",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:30:13.459Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-step5-verify-1",
+        "evt-step5-verify-2",
+        "g2-commit-c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4"
+      ]
+    },
+    {
+      "id": "AC8",
+      "text": "During the Phase 2 walk the agent does not present the findings apply plan, does not apply wiki edits, does not run `ws-spec-write`, and does not mutate product source. `--dry-run` on verify prints the page queue (and checkpoint summary if present) and writes neither wiki pages, nor `verify.state.json`, nor specs.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-wiki/SKILL.md:L183-L185"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-wiki/SKILL.md",
+          "lineStart": 183,
+          "lineEnd": 185,
+          "sha256": "3811c2f17bb8c23a9e51d32bc8fa6f897f7b36c28376e21ae205829de513557f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC8: SKILL documents --dry-run purity (no verify.state.json or specs)",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:23.474Z"
+        },
+        {
+          "name": "NS4: page mtime unchanged after queue listing",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:23.475Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-step5-verify-1",
+        "g2-commit-c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4"
+      ]
+    },
+    {
+      "id": "AC9",
+      "text": "After the last Phase 2 page, checkpoint `status` is `audited`. Actionable findings trigger a `user-gate` (recommended Run Phase 3 versus Skip). Skip writes no wiki or spec updates. Cancel STOP. Zero actionable findings skips the gate. `autoMode` takes recommended when the gate is shown.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-wiki/SKILL.md:L187-L190"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-wiki/SKILL.md",
+          "lineStart": 187,
+          "lineEnd": 190,
+          "sha256": "3811c2f17bb8c23a9e51d32bc8fa6f897f7b36c28376e21ae205829de513557f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC9: SKILL documents audited finish",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:30:16.823Z"
+        },
+        {
+          "name": "AC9: SKILL documents zero-actionable skips Phase 3 gate",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:30:16.824Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-step5-verify-1",
+        "evt-step5-verify-2",
+        "g2-commit-c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4"
+      ]
+    },
+    {
+      "id": "AC10",
+      "text": "Phase 3 starts by presenting a findings plan listing every `differs` and `absent` row (wiki path, quoted statement, evidence, proposed wiki edit vs proposed code-change spec). `confirmed` / `inconclusive` counts appear in the summary only.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-wiki/SKILL.md:L200-L200"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-wiki/SKILL.md",
+          "lineStart": 200,
+          "lineEnd": 200,
+          "sha256": "3811c2f17bb8c23a9e51d32bc8fa6f897f7b36c28376e21ae205829de513557f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC10: SKILL documents findings plan rows",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:30:25.368Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-step5-verify-1",
+        "evt-step5-verify-2",
+        "g2-commit-c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4"
+      ]
+    },
+    {
+      "id": "AC11",
+      "text": "For each actionable finding Phase 3 presents a `user-gate` with recommended option Update wiki (code/absence is truth) and option Update code (wiki statement is truth). Host structured choice when `askQuestionTool` is bound; markdown fallback yields the turn. Cancel STOP without applying the un-decided remainder.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-wiki/SKILL.md:L202-L205"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-wiki/SKILL.md",
+          "lineStart": 202,
+          "lineEnd": 205,
+          "sha256": "3811c2f17bb8c23a9e51d32bc8fa6f897f7b36c28376e21ae205829de513557f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC11: SKILL documents truth-gate Update wiki recommended",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:30:28.370Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-step5-verify-1",
+        "evt-step5-verify-2",
+        "g2-commit-c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4"
+      ]
+    },
+    {
+      "id": "AC12",
+      "text": "After Phase 3 decisions are recorded, wiki-directed findings are applied in one batch (in-place 3-section pages, no changelog append). Then `sync_wiki_index.cjs` if catalog lines changed, then `validate_wiki.cjs --check`. Product `.cjs`/skill bodies outside `{wikiDir}` are not edited for those findings.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-wiki/SKILL.md:L207-L208"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-wiki/SKILL.md",
+          "lineStart": 207,
+          "lineEnd": 208,
+          "sha256": "3811c2f17bb8c23a9e51d32bc8fa6f897f7b36c28376e21ae205829de513557f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC12: SKILL documents wiki batch apply",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:30:31.545Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-step5-verify-1",
+        "evt-step5-verify-2",
+        "g2-commit-c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4"
+      ]
+    },
+    {
+      "id": "AC13",
+      "text": "Each code-directed finding produces a standalone `ws-spec-write` (skill `ws-spec-write`, not a `{plansDir}` register) whose description is exactly the template `Update feature {title} to reflect current wiki statement: {statement}` with `{title}` from the wiki page title or index one-liner and `{statement}` the quoted wiki text. Frontmatter `source: local`. Phase 3 does not implement those specs and does not start an orchestrator.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-wiki/SKILL.md:L209-L209"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-wiki/SKILL.md",
+          "lineStart": 209,
+          "lineEnd": 209,
+          "sha256": "3811c2f17bb8c23a9e51d32bc8fa6f897f7b36c28376e21ae205829de513557f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC13: SKILL carries exact code-directed spec template",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:23.756Z"
+        },
+        {
+          "name": "AC13: SKILL pins source local for code-directed specs",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:23.756Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-step5-verify-1",
+        "g2-commit-c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4"
+      ]
+    },
+    {
+      "id": "AC14",
+      "text": "Checkpoint `{wikiDir}/verify.state.json` records `status` (`running` | `audited` | `applying` | `completed`), `completedPages`, `lastFile`, `findings` (id, page, statement, class, evidence, decision), `startedAt`, and `updatedAt`. Agents must not stage this file in product commits.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-wiki/SKILL.md:L181-L181"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-wiki/SKILL.md",
+          "lineStart": 181,
+          "lineEnd": 181,
+          "sha256": "3811c2f17bb8c23a9e51d32bc8fa6f897f7b36c28376e21ae205829de513557f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC14: SKILL documents checkpoint schema",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:23.817Z"
+        },
+        {
+          "name": "AC14: SKILL forbids staging checkpoint in product commits",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:23.817Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-step5-verify-1",
+        "g2-commit-c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4"
+      ]
+    },
+    {
+      "id": "AC15",
+      "text": "`--resume` on verify continues after `lastFile` unless `--force`. `/ws-wiki apply` without `status: audited` (or leftover pending decisions) STOP. Successful Phase 3 apply sets `status: completed` or deletes the file.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-wiki/SKILL.md:L198-L198"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-wiki/SKILL.md",
+          "lineStart": 198,
+          "lineEnd": 198,
+          "sha256": "3811c2f17bb8c23a9e51d32bc8fa6f897f7b36c28376e21ae205829de513557f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC15: SKILL documents --resume continues after lastFile",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:23.884Z"
+        },
+        {
+          "name": "AC15: SKILL documents apply-without-audit STOP",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:23.884Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-step5-verify-1",
+        "g2-commit-c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4"
+      ]
+    },
+    {
+      "id": "AC16",
+      "text": "Empty feature-page wiki (index only) is Phase 2 success: findings `0`, no Phase 3 gate, validate still run if index exists.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-wiki/SKILL.md:L175-L175"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-wiki/SKILL.md",
+          "lineStart": 175,
+          "lineEnd": 175,
+          "sha256": "3811c2f17bb8c23a9e51d32bc8fa6f897f7b36c28376e21ae205829de513557f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC16: empty feature set returns findings 0 shape",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:23.952Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-step5-verify-1",
+        "g2-commit-c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4"
+      ]
+    },
+    {
+      "id": "AC17",
+      "text": "`test/test-wiki.js` (or a sibling `test/test-wiki-verify.js` listed in `package.json` test scripts) covers AC4–AC5, AC8 dry-run, AC15 resume skip and apply-without-audit STOP, empty pages, containment/unknown-flag failures, and SKILL/CATALOG strings for Phase 2 `/ws-wiki verify` and Phase 3 `/ws-wiki apply`.",
+      "status": "Implemented",
+      "evidence": [
+        "test/test-wiki.js:L467-L493"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": "test/test-wiki.js",
+          "lineStart": 467,
+          "lineEnd": 493,
+          "sha256": "3fdabd9296daa94260f66d0f22425673dacfa1e56830c4f774766172597965c6"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "list_wiki_feature_pages exits 0 on populated wiki",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:30:35.225Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-step5-verify-1",
+        "evt-step5-verify-2",
+        "g2-commit-c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4"
+      ]
+    },
+    {
+      "id": "AC18",
+      "text": "`CATALOG.md` task-router / skill row mentions Phase 2 wiki-vs-code verify and Phase 3 plan/apply. No host/IDE product names in skill body, gates, or scripts (portable `user-gate` / `askQuestion` alias only).",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/CATALOG.md:L94-L94",
+        "CATALOG.md:L91-L91"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/CATALOG.md",
+          "lineStart": 94,
+          "lineEnd": 94,
+          "sha256": "8177093de9ce425614ac33cb7756a4ff5422c44370166eded602ab83f157ec61"
+        },
+        {
+          "path": "CATALOG.md",
+          "lineStart": 91,
+          "lineEnd": 91,
+          "sha256": "c50abdc27189b6493216a9297f3f901a41ea92600ba2e812e0e663d9146050fe"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC18: CATALOG mentions Phase 2 wiki-vs-code verify",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:24.075Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-step5-verify-1",
+        "g2-commit-c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4"
+      ]
+    },
+    {
+      "id": "AC19",
+      "text": "Authoring validation for this specification exits 0.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/plans/ws-wiki-code-verify/step-00-ws-wiki-code-verify.spec.md:L134-L146"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-008"
+      ],
+      "files": [
+        {
+          "path": ".agents/plans/ws-wiki-code-verify/step-00-ws-wiki-code-verify.spec.md",
+          "lineStart": 134,
+          "lineEnd": 146,
+          "sha256": "79e2a5e43017262adb549e7429f4ecbde78495efb6d7d821f686a46f09fcab70"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "live hardening spec must pass authoring validation",
+          "sourceFile": "test/test-validate-spec.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:24.134Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-step5-verify-1",
+        "g2-commit-c1260ddfc0e538f317b4abf942edb9fd6bf5d0d4"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Missing `index.wiki.md`: `/ws-wiki verify` STOP; helper may still fail or list nothing; skill must not write feature pages.",
+      "tests": [
+        {
+          "name": "NS1: SKILL documents missing-index STOP",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:24.185Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-step5-verify-1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "`--wiki-dir` resolving outside repo root: helper exit non-zero, no `readdir` of the escaped path.",
+      "tests": [
+        {
+          "name": "NS2: --wiki-dir outside repo root fails closed",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:24.244Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-step5-verify-1"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Unknown argv token / leftover `--help` as path: `--help` exit 0; other dash tokens non-zero (no `ENOENT` on `--help`).",
+      "tests": [
+        {
+          "name": "NS3: unknown flag exits 2",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:24.298Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-step5-verify-1"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "`--dry-run` after a partial checkpoint: no wiki file mtime/content change, no new checkpoint write, no new spec files.",
+      "tests": [
+        {
+          "name": "NS4: page mtime unchanged after queue listing",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:24.364Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-step5-verify-1"
+      ]
+    },
+    {
+      "id": "NS5",
+      "text": "Post-sweep Phase 2 Skip: no `verify.state.json` and no spec-write from that turn.",
+      "tests": [
+        {
+          "name": "NS5: SKILL documents post-sweep Skip writes nothing",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:30:38.378Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-step5-verify-2"
+      ]
+    },
+    {
+      "id": "NS6",
+      "text": "Post-Phase-2 Phase 3 Skip: checkpoint stays `audited`; no wiki edits and no spec-write until `/ws-wiki apply`.",
+      "tests": [
+        {
+          "name": "NS6: SKILL documents post-verify Skip writes nothing",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:30:42.396Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-step5-verify-2"
+      ]
+    },
+    {
+      "id": "NS7",
+      "text": "`/ws-wiki apply` with no audited checkpoint: STOP; no wiki or spec writes.",
+      "tests": [
+        {
+          "name": "AC15: SKILL documents apply-without-audit STOP",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:24.421Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-step5-verify-1"
+      ]
+    },
+    {
+      "id": "NS8",
+      "text": "Truth-gate Cancel after some decisions: wiki batch applies only decided wiki items or applies none until a later `--resume` apply step; undecided findings stay `pending`; no product code edits.",
+      "tests": [
+        {
+          "name": "NS8: SKILL documents pending on truth-gate Cancel",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:30:46.586Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-step5-verify-2"
+      ]
+    },
+    {
+      "id": "NS9",
+      "text": "Path-traversal domain/feature from a malicious wiki filename: writers reject; no write outside `{wikiDir}`.",
+      "tests": [
+        {
+          "name": "NS9: SKILL documents assertContained no-escape writers",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:30:50.046Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-step5-verify-2"
+      ]
+    },
+    {
+      "id": "NS10",
+      "text": "Unauthenticated network calls: N/A because verify does not call SCM HTTP; a regression that adds unauthenticated remote fetch for verify is a failing case (must not ship).",
+      "tests": [
+        {
+          "name": "NS10: verify helper performs no network fetch",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:24.476Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-step5-verify-1"
+      ]
+    },
+    {
+      "id": "NS11",
+      "text": "Stack path-containment / unknown-flag failures on the new helper (same class as sweep enumerator).",
+      "tests": [
+        {
+          "name": "AC5: --specs-dir rejected as unknown with exit 2",
+          "sourceFile": "test/test-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T16:26:24.536Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-step5-verify-1"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 10,
+    "earnedUnits": 190,
+    "totalUnits": 190,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-12T16:39:40.317Z"
+  }
+}

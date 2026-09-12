@@ -1,12 +1,16 @@
 ---
 id: null
 slug: ws-wiki-code-verify
-title: "ws-wiki Phase 2 verify and Phase 3 plan/apply"
+title: ws-wiki Phase 2 verify and Phase 3 plan/apply
 source: local
 specDate: 2026-09-12
 status: completed
+step: 0
+workflowId: ws-wiki-code-verify-20260912T160041Z
+startedAt: "2026-09-12T16:00:41Z"
+endedAt: "2026-09-12T16:07:56.522Z"
+acRefs: []
 ---
-
 # Specification — ws-wiki Phase 2 verify and Phase 3 plan/apply
 
 ## Description

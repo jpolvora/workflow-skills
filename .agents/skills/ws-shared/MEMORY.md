@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-09-12] Wiki infobox counts must stay data-driven
+- **Layer**: `Web`
+- **Module**: `Wiki site builder`
+- **Severity**: `Medium`
+- **PathPattern**: `bin/build-wiki-site.js; test/test-site-wiki.js`
+- **Scenario / Context**: Building `docs/wiki/index.html` infobox from `{wikiDir}` pages. Empty feature set (index-only wiki, AC16 success) must render 0 domains, not a placeholder.
+- **DO NOT**: Fall back with `Set.size || 8` (or any hardcoded domain total) when the feature set is empty; `Set.size` is always numeric and only 0 triggers the fallback, rendering factually wrong totals.
+- **INSTEAD DO**: Use `new Set(...).size` directly for domain counts; rebuild site (`node bin/build-site.js`) and keep `test-doc-sync` green. Cover empty-wiki counts when adding infobox logic.
+
 ### [2026-09-12] Wiki HTML hrefs must be page-relative
 - **Layer**: `Web`
 - **Module**: `Wiki site builder`
@@ -14,6 +23,24 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: Minimal markdown subset for published wiki pages that use `**bold**` lead-ins.
 - **DO NOT**: Match only single `*`/`_` emphasis, or `escapeHtml` the rest of a paragraph when the next special char search omits `*`/`_`. `**text**` then prints as literal asterisks.
 - **INSTEAD DO**: Match `**`/`__` strong before single-marker em, include `*_` in the inline special-char scan, and assert `<strong>` in the wiki renderer tests.
+
+### [2026-09-12] Never commit consumer-local probe cache upstream
+- **Layer**: `harness`
+- **Module**: `ws-shared host binding probe cache`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/host-capabilities.json; .gitignore; bin/install-rules.js`
+- **Scenario / Context**: Host probe upserts `{sharedDir}/host-capabilities.json` during dogfood workflows. A broad stage (`git add -A`) then tracks the per-machine binding (hostId::model, timestamps) in upstream history, polluting every checkout with stale bindings.
+- **DO NOT**: Stage or commit `.agents/skills/ws-shared/host-capabilities.json` upstream, or assume root `.gitignore` already covers it when `templates/hub.gitignore` does.
+- **INSTEAD DO**: `git rm` the tracked file when present, add `.agents/skills/ws-shared/host-capabilities.json` to root `.gitignore` (hub-layout installerMetadata=ignore, spec 0059 AC9 never-shipped-upstream), and stage only workflow `files_touched` in product/fix commits.
+
+### [2026-09-12] Declare direct ws-* dependency edges for invoked skills
+- **Layer**: `harness`
+- **Module**: `skill dependency graph`
+- **Severity**: `Medium`
+- **PathPattern**: `bin/skill-dependencies.json; .agents/skills/ws-shared/runtime/skill-dependencies.json; .agents/skills/ws-*/SKILL.md`
+- **Scenario / Context**: A skill invokes another `ws-*` skill at runtime (e.g. `ws-wiki` Phase 3 invokes standalone `ws-spec-write`) but its direct edge is missing. Orchestrator transitive closure masks the gap, yet selective installs and dependency auto-select leave the runtime invoke missing.
+- **DO NOT**: Rely on transitive closure (e.g. via `ws-spec-to-pr`) when a skill directly invokes another `ws-*`; leave `ws-wiki: [ws-configure-project]` when `SKILL.md` invokes `ws-spec-write`.
+- **INSTEAD DO**: Add the direct edge in both `bin/skill-dependencies.json` and `.agents/skills/ws-shared/runtime/skill-dependencies.json`, run `npm run generate-integrity && npm run verify-integrity`, rebuild site (`node bin/build-site.js`) for dep pills, and keep `test-doc-sync` green.
 
 ### [2026-09-11] Never redirect to nul under Git Bash
 - **Layer**: `harness`
