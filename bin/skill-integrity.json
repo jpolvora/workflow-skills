@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "3119fdb27bb3a8bac7e428c2cb3c53fe24828d57f07423c13394e5bfb9ebb97b",
+  "fullPackageDigest": "94324f3257ae18c78985ae8c79687e773c21d5aea85b9a3efe0e6faec22f2f6a",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -28,7 +28,7 @@
       "runtime/scripts/ac_counts.cjs": "60f38cfd14d7ce914d292027eac808cd0d98ab2ef686b8892e8a125a14d92e63",
       "runtime/scripts/compile_host_subagents.cjs": "52b432a32fe50455c16539be8f08034509f31a06263fdbcd5bc43f0803b93ebb",
       "runtime/scripts/Edit-Config.bat": "ab204e94f425d9cdc279d19ae046c19f65ab7f52212e99852094ea1d479b42a6",
-      "runtime/scripts/Edit-WorkflowSkillsConfig.ps1": "b066ec978aabe78afef97465bc023d92bb561feb57b977783e39947aba6cdce2",
+      "runtime/scripts/Edit-WorkflowSkillsConfig.ps1": "05a6df71f4b1a76cb5fe4305efbb25ccf959b877f77bc2cdfe45b73fd532dc63",
       "runtime/scripts/extract_frontmatter_field.cjs": "41513cc12a7b7a1af7313b4111b86ca318c6d522351650945295e29c3e1b6a63",
       "runtime/scripts/http_retry.cjs": "5a78b6bc9137a081fc4b5293c1ac60d447d13c29faa8c2a1a3aa779340af7600",
       "runtime/scripts/http_retry.py": "a0f742b2d2116d7da25578cc9f633f607e1fa3175b482df21cfe848965f4a42b",
@@ -56,7 +56,7 @@
       "templates/MEMORY.md.template": "5b67274d91cd4507fecd8aa9e3c2ee10d2f7fb90f0d8eb35fb575089bc5664fb",
       "templates/STACK.md.example": "68cff04083447e0f585c48a4e8165cfd02f1d60504f0baced2148579104ad5a8"
     },
-    "skillDigest": "e921c5962ca06ad8e7fd237d9ab410015117ddb0a3fd3f511e081c48527f9b47"
+    "skillDigest": "c6e9d9c200e49c3cabf86067f6e9c9348a355db1b1a2ed9e991bca3029805c44"
   },
   "packageVersion": "0.4.19",
   "skills": {
@@ -140,9 +140,9 @@
         "scripts/auto_configure.cjs": "10d81b6d54156759826aed47b5edb8650e0aa04af8ef5b172130d0596cfcdbdf",
         "scripts/configure_autoload.py": "73ba2298e4da79afcfc6db0ed1154937292b3374172b82ee49147b9bb076c0c8",
         "scripts/stack_fingerprint.cjs": "49dc0a8ed8f018871e30152d2d8ff2bc41cfa738b16ee22c70b4361f93f58d33",
-        "SKILL.md": "928e87aaf3a2e171b2620807bd1c52015b2b439a1f432fe2ac50004b5c79f86e"
+        "SKILL.md": "d660c53ca3a541a4ad2784fbfbb034fceb1dd31f197623b8a8e94e75be8323e3"
       },
-      "skillDigest": "cfbf5f534ea545741ad3281ae1a2e4e7087d3fa79349bd5b9c26131530bdb744"
+      "skillDigest": "062b818e9527d69296e258286661bf1184af50b83ca12da0c80c871b39ea4f21"
     },
     "ws-doctor": {
       "files": {
@@ -575,11 +575,11 @@
     },
     "ws-wiki": {
       "files": {
-        "scripts/sync_wiki_index.cjs": "7a766eef51d26a75a5fd9f76e87aa51278af20176b55d1adc2cf2aeed6ddfa14",
+        "scripts/sync_wiki_index.cjs": "23fc9c78c4e1ae08103e476860c4ccd3c504615ed5417461d1d2aac1b4732b22",
         "scripts/validate_wiki.cjs": "7ead61e90bfaff48de0bd92cd8c8674436c2ee7066716ad82054aa674c26a5d7",
         "SKILL.md": "dd0050f1b3abb01d9e1b01c5b86678992e10c251ff46a33767636902c83338e2"
       },
-      "skillDigest": "1d31e6773902e398187b2a7b19075f196e8cda91828ba4315cf0ecf4842206ed"
+      "skillDigest": "58b767899e57d80509bd4f54c273dd3e23b40eab535d9315ddaa5c9e568b69aa"
     },
     "ws-write-a-skill": {
       "files": {

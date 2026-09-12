@@ -1139,6 +1139,7 @@ function Populate-Sections {
             'plans' {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'plans' -Key 'dir' -LabelText 'Plans Directory ({plansDir})' -Type 'path-folder' -DefaultVal '.agents/plans'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'plans' -Key 'specsDir' -LabelText 'Specs Directory ({specsDir})' -Type 'path-folder' -DefaultVal '.agents/specs'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'plans' -Key 'wikiDir' -LabelText 'Wiki Directory ({wikiDir})' -Type 'path-folder' -DefaultVal '.agents/specs/wiki'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'plans' -Key 'diagnosticsDir' -LabelText 'Diagnostics Directory' -Type 'path-folder' -DefaultVal '.agents/plans/diagnostics'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'plans' -Key 'worktreesDir' -LabelText 'Worktrees Directory Template' -Type 'string' -DefaultVal '.agents/plans/{slug}/worktrees'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'plans' -Key 'useWorktrees' -LabelText 'Use Git Worktrees for Step 4' -Type 'bool' -DefaultVal $false

@@ -68,7 +68,7 @@ function syncWikiIndex(options = {}) {
     return s;
   };
   const title = sanitizeOneLine(options.title, feature).replace(/[\[\]]/g, '');
-  const description = sanitizeOneLine(options.description, 'Living feature documentation and business rules.');
+  const description = sanitizeOneLine(options.description, 'Living feature documentation and business rules.').replace(/[\[\]]/g, '');
   const rawLink = options.file ? String(options.file).trim().replace(/\\/g, '/') : `${domain}/${feature}.md`;
   if (/[\[\]()\n\r]/.test(rawLink)) {
     throw new Error('invalid linkPath: markdown metacharacters not allowed: ' + rawLink);

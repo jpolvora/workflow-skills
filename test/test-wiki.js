@@ -318,9 +318,21 @@ Missing Business Rules & Logic section!
     ]);
     assert(resSanitized.status === 0, 'sync_wiki_index handles title/description with brackets and newlines');
     const idxContent = fs.readFileSync(indexFile, 'utf8');
-    assert(!idxContent.includes('[Evil]'), 'injected link neutralized');
+    assert(!idxContent.includes('[Evil]'), 'injected link neutralized in title');
     assert(idxContent.includes('AB'), 'brackets removed from title');
     assert(idxContent.includes('Multi line description'), 'newlines collapsed in description');
+
+    // sync_wiki_index sanitizes brackets in description
+    const resDescSanitized = run(SYNC, [
+      '--wiki-dir', wikiDir,
+      '--domain', 'identity',
+      '--feature', 'user-management',
+      '--description', 'See [auth](login.md) documentation',
+    ]);
+    assert(resDescSanitized.status === 0, 'sync_wiki_index handles description with brackets');
+    const idxDescContent = fs.readFileSync(indexFile, 'utf8');
+    assert(!idxDescContent.includes('[auth]'), 'injected link neutralized in description');
+    assert(idxDescContent.includes('See auth(login.md) documentation'), 'brackets stripped from description');
 
     // validate_wiki succeeds on sanitized index
     const resValSanitized = run(VALIDATE, ['--wiki-dir', wikiDir, '--json']);
@@ -341,6 +353,17 @@ Missing Business Rules & Logic section!
       `# Project Living Feature Wiki\n\n## Domain: identity\n\n- [User Management](identity/user-management.md): User account onboarding and lifecycle.\n`,
       'utf8',
     );
+  }
+
+  // Test 14: GUI Config Editor & Config Wizard wikiDir synchronization
+  {
+    const guiScriptPath = path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1');
+    const guiScript = fs.readFileSync(guiScriptPath, 'utf8');
+    assert(guiScript.includes("Key 'wikiDir'") && guiScript.includes('.agents/specs/wiki'), 'Edit-WorkflowSkillsConfig.ps1 binds plans.wikiDir');
+
+    const configSkillPath = path.join(REPO_ROOT, '.agents/skills/ws-configure-project/SKILL.md');
+    const configSkill = fs.readFileSync(configSkillPath, 'utf8');
+    assert(configSkill.includes('plans.wikiDir'), 'ws-configure-project SKILL.md documents plans.wikiDir default');
   }
 
 } finally {
