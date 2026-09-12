@@ -88,7 +88,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | `ws-spec-memo` | `.agents/skills/ws-spec-memo/SKILL.md` | Spec-memo setup/bridge; runtime ops → `ws-memo` |
 | `ws-spec-organizer` | `.agents/skills/ws-spec-organizer/SKILL.md` | Spec path resolution & NNNN organizer |
 | `ws-spec-manager` | `.agents/skills/ws-spec-manager/SKILL.md` | Unified spec router & lifecycle manager |
-| `ws-wiki` | `.agents/skills/ws-wiki/SKILL.md` | Feature wiki & domain knowledge base manager (init, sync, sweep) |
+| `ws-wiki` | `.agents/skills/ws-wiki/SKILL.md` | Feature wiki & domain knowledge base manager (init, sync, sweep, Phase 2 wiki-vs-code verify and Phase 3 plan/apply) |
 | `ws-task-lifecycle` | `.agents/skills/ws-task-lifecycle/SKILL.md` | Prompt-driven task tracking |
 | `grill-with-docs` | `(global)` | Docs grill |
 | `find-skills` | via `using-superpowers` | Discover/install |
@@ -133,7 +133,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | Auto-update feature specs after code changes | `ws-spec-update` |
 | Resolve spec path / organize board specs | `ws-spec-organizer` |
 | Manage / route all spec operations (unified front door) | `ws-spec-manager` |
-| Living project feature wiki & domain knowledge base (init, sync, first-time spec sweep) | `ws-wiki` |
+| Living project feature wiki & domain knowledge base (init, sync, first-time spec sweep, Phase 2 wiki-vs-code verify and Phase 3 plan/apply) | `ws-wiki` |
 | spec-memo vault setup/bridge / import MEMORY / hybrid fallback | `ws-spec-memo` |
 | Runtime spec-memo vault ops (search, upsert, bootstrap, canvas, doctor) | `ws-memo` (external; skip if missing) |
 | Prompt/session tracking / vault activity (MCP prompt) | `ws-session-tracking` (external; skip if missing) |
