@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-12 13:35] Agent: composer-2.5 (Step 8 close ws-wiki-from-code)
+- **Prompt**: Step 8 Close implementation then Ship for ws-wiki-from-code (standard, autoMode, fullMode)
+- **Done**: Delivery result; integrity regen + wiki site refresh; G2-delivery refined plan; status completed, shipStatus pending; push + PR to main.
+- **Result**: Score 9, clean review VERIFIED, testing passed. Learning: N/A (standard implementation)
+
 ### [2026-09-12 16:48] Agent: opencode-go/muse-spark (Step 8 close ws-wiki-code-verify)
 - **Prompt**: Step 8 Close implementation then Ship for ws-wiki-code-verify (standard, autoMode, fullMode)
 - **Done**: Delivery result + second-pass report; G2-delivery commit 88760ba8 (refined plan only); status completed, shipStatus pending; spec-index/wiki sync (implementation evidence).
