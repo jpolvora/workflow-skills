@@ -27,11 +27,12 @@ Alternate whole-tree wiki genesis beside Phase 1 sweep. Inspect project structur
 
 2. **Start gate:** Present `user-gate` once before writing feature pages:
    1. **Start merge reconstruction (Recommended)** — shows area count and mode
-   2. **Cancel**
+   2. **Overwrite existing wiki from code** — shown only when feature pages already exist; full replacement of page bodies
+   3. **Cancel**
    Cancel → STOP; write no wiki pages and no `from-code.state.json`. **`autoMode`:** take option 1 without prompting.
 
-3. **Overwrite gate (only when feature pages already exist and operator did not pick merge):** Present a second `user-gate`:
-   1. **Overwrite existing wiki from code**
+3. **Overwrite confirm (only when option 2 was picked and feature pages already exist):** Present a second `user-gate`:
+   1. **Confirm overwrite existing wiki from code**
    2. **Cancel**
    Cancel → STOP. Overwrite without this confirm must not replace existing feature page bodies.
 
