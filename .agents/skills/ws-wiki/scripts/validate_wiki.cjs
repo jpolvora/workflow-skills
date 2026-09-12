@@ -127,7 +127,10 @@ function validateWiki(options = {}) {
     if (!cleanTarget) continue;
 
     const resolvedTarget = path.resolve(path.dirname(indexFile), cleanTarget);
-    if (!fs.existsSync(resolvedTarget)) {
+    const relToWiki = path.relative(path.resolve(wikiDir), resolvedTarget);
+    if (relToWiki.startsWith('..') || path.isAbsolute(relToWiki)) {
+      errors.push(`Link target escapes wiki directory in index.wiki.md: [${link.text}](${link.target})`);
+    } else if (!fs.existsSync(resolvedTarget)) {
       errors.push(`Broken relative link in index.wiki.md: [${link.text}](${link.target}) -> target file not found: ${toRepoRelative(context.repoRoot, resolvedTarget, { allowOutside: true })}`);
     } else {
       indexedTargets.add(path.normalize(resolvedTarget));
@@ -157,7 +160,10 @@ function validateWiki(options = {}) {
       if (!cleanTarget) continue;
 
       const resolvedTarget = path.resolve(path.dirname(pageFile), cleanTarget);
-      if (!fs.existsSync(resolvedTarget)) {
+      const relToWiki = path.relative(path.resolve(wikiDir), resolvedTarget);
+      if (relToWiki.startsWith('..') || path.isAbsolute(relToWiki)) {
+        errors.push(`Link target escapes wiki directory in ${relPage}: [${link.text}](${link.target})`);
+      } else if (!fs.existsSync(resolvedTarget)) {
         errors.push(`Broken relative link in ${relPage}: [${link.text}](${link.target}) -> target file not found: ${toRepoRelative(context.repoRoot, resolvedTarget, { allowOutside: true })}`);
       }
     }

@@ -28,6 +28,10 @@ function parseArgs(argv) {
   return options;
 }
 
+function isSafeSlug(value) {
+  return /^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(String(value || ''));
+}
+
 function normalizeDomain(domain) {
   return String(domain || 'general').trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
 }
@@ -46,8 +50,17 @@ function syncWikiIndex(options = {}) {
 
   const domain = normalizeDomain(options.domain || 'core');
   const feature = String(options.feature || options.slug || '').trim();
-  if (!feature) {
-    throw new Error('--feature or --slug is required');
+  if (!feature || !isSafeSlug(feature)) {
+    throw new Error('invalid --feature slug (use [A-Za-z0-9._-]): ' + feature);
+  }
+
+  if (options.file) {
+    const candidate = String(options.file).trim().replace(/\\/g, '/');
+    const abs = path.resolve(wikiDir, candidate);
+    const rel = path.relative(path.resolve(wikiDir), abs);
+    if (rel.startsWith('..') || path.isAbsolute(rel)) {
+      throw new Error('--file must stay under the wiki directory: ' + candidate);
+    }
   }
 
   const title = options.title ? String(options.title).trim() : feature;

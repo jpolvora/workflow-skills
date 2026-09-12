@@ -243,6 +243,32 @@ Missing Business Rules & Logic section!
     assert(skillContent.includes('ws-shared/config.json') && skillContent.includes('ws-configure-project'), 'NS4: Missing project configuration triggers entry check gate');
   }
 
+  // Test 11: Slug safety and out-of-wiki containment
+  {
+    // sync_wiki_index rejects unsafe/traversal feature slug
+    const resBadSlug = run(SYNC, ['--wiki-dir', wikiDir, '--domain', 'identity', '--feature', '../../bad-slug']);
+    assert(resBadSlug.status !== 0, 'sync_wiki_index rejects unsafe traversal feature slug');
+
+    // sync_wiki_index rejects --file escaping wikiDir
+    const resBadFile = run(SYNC, ['--wiki-dir', wikiDir, '--domain', 'identity', '--feature', 'safe-feature', '--file', '../../escape.md']);
+    assert(resBadFile.status !== 0, 'sync_wiki_index rejects --file escaping wikiDir');
+
+    // validate_wiki flags relative links escaping wikiDir
+    const escapeIndexContent = `# Project Living Feature Wiki\n\n## Domain: identity\n\n- [Escaping](identity/../../escape.md): Outside wiki.\n`;
+    fs.writeFileSync(indexFile, escapeIndexContent, 'utf8');
+    const resValEscape = run(VALIDATE, ['--wiki-dir', wikiDir, '--json']);
+    assert(resValEscape.status === 1, 'validate_wiki fails when link target escapes wiki directory');
+    const dataValEscape = JSON.parse(resValEscape.stdout);
+    assert(dataValEscape.errors.some((e) => e.includes('escapes wiki directory')), 'error mentions link target escapes wiki directory');
+
+    // Restore index
+    fs.writeFileSync(
+      indexFile,
+      `# Project Living Feature Wiki\n\n## Domain: identity\n\n- [User Management](identity/user-management.md): User account onboarding and lifecycle.\n`,
+      'utf8',
+    );
+  }
+
 } finally {
   try {
     fs.rmSync(tmp, { recursive: true, force: true });
