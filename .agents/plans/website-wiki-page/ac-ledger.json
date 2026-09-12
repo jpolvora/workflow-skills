@@ -1,0 +1,1079 @@
+{
+  "schemaVersion": 1,
+  "revision": 59,
+  "workflowId": "website-wiki-page-20260912T152056Z",
+  "slug": "website-wiki-page",
+  "specPath": ".agents/plans/website-wiki-page/step-00-website-wiki-page.spec.md",
+  "planIndexPath": ".agents/plans/website-wiki-page/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0,
+      "skipReason": "baseline-dirty"
+    },
+    {
+      "alias": "buildSiteCheck",
+      "commandHash": "58bb49d5fdabea15c6315c629ba896a1fc04ea835d63c0182c313730ada08fc3",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    },
+    {
+      "alias": "wikiSiteTest",
+      "commandHash": "70f5629229b3e58d2babb90168991faf5a9452c8486994ffbb7626cb975eedcc",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "`node bin/build-site.js` (no `--bump`) writes `docs/wiki/index.html` from `{wikiDir}/index.wiki.md` and one HTML file per wiki markdown page under `docs/wiki/{domain}/{feature}.html` mirroring `{wikiDir}/{domain}/{feature}.md`.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/build-wiki-site.js:L52-L96"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-006",
+        "section-011",
+        "section-013",
+        "section-015",
+        "section-023"
+      ],
+      "files": [
+        {
+          "path": "bin/build-wiki-site.js",
+          "lineStart": 52,
+          "lineEnd": 96,
+          "sha256": "80ff1fd378d1c3154e3483b037fb79db6d6f36e419cc72306304f1144325566b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "499b51256672018459b42fe65fad302727908da3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testEmitsIndexAndFeatureHtml",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:23.127Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-ac1",
+        "evt-step5-AC1",
+        "g2-commit-499b5125"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "Generated wiki HTML is a full HTML5 document (doctype, charset, viewport, title from the page H1 or filename, stylesheet link to `../assets/css/style.css` or a depth-correct relative path to `docs/assets/css/style.css`).",
+      "status": "Implemented",
+      "evidence": [
+        "bin/build-wiki-site.js:L268-L284"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-003",
+        "section-008",
+        "section-011",
+        "section-014",
+        "section-023"
+      ],
+      "files": [
+        {
+          "path": "bin/build-wiki-site.js",
+          "lineStart": 268,
+          "lineEnd": 284,
+          "sha256": "80ff1fd378d1c3154e3483b037fb79db6d6f36e419cc72306304f1144325566b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "499b51256672018459b42fe65fad302727908da3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testHtml5ChromeAndStylesheetDepth",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:23.181Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-ac2",
+        "evt-step5-AC2",
+        "g2-commit-499b5125"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "Relative markdown links to other wiki pages (including `index.wiki.md` and `*.md` with optional `#anchors`) become relative `.html` links that resolve to generated files; external `http(s):` / `mailto:` links stay unchanged; `#` in-page anchors stay.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/build-wiki-site.js:L98-L140"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-003",
+        "section-007",
+        "section-011",
+        "section-014",
+        "section-023"
+      ],
+      "files": [
+        {
+          "path": "bin/build-wiki-site.js",
+          "lineStart": 98,
+          "lineEnd": 140,
+          "sha256": "80ff1fd378d1c3154e3483b037fb79db6d6f36e419cc72306304f1144325566b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "499b51256672018459b42fe65fad302727908da3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testRewritesWikiMarkdownLinks",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:23.228Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-ac3",
+        "evt-step5-AC3",
+        "g2-commit-499b5125"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "`docs/index.html` nav (and matching section-dot nav if present) includes a Wiki entry pointing at `wiki/` (or `wiki/index.html`) that works on GitHub Pages under the `/workflow-skills/` base path.",
+      "status": "Implemented",
+      "evidence": [
+        "docs/index.html:L87-L106"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-011",
+        "section-017",
+        "section-023"
+      ],
+      "files": [
+        {
+          "path": "docs/index.html",
+          "lineStart": 87,
+          "lineEnd": 106,
+          "sha256": "54157011600ccd13dfa335032363632fdaef5be29d60cab81de42954302902a0"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "499b51256672018459b42fe65fad302727908da3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testLandingNavWikiHref",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:23.273Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-ac4",
+        "evt-step5-AC4",
+        "g2-commit-499b5125"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "Each generated wiki page includes a site chrome link back to `../` (landing `docs/index.html`) labeled Wiki or Home so users are not trapped in the wiki tree.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/build-wiki-site.js:L268-L280"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-003",
+        "section-008",
+        "section-011",
+        "section-014",
+        "section-023"
+      ],
+      "files": [
+        {
+          "path": "bin/build-wiki-site.js",
+          "lineStart": 268,
+          "lineEnd": 280,
+          "sha256": "80ff1fd378d1c3154e3483b037fb79db6d6f36e419cc72306304f1144325566b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "499b51256672018459b42fe65fad302727908da3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testWikiChromeLinkHome",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:23.321Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-ac5",
+        "evt-step5-AC5",
+        "g2-commit-499b5125"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "Generated article HTML is escaped so raw wiki markdown cannot inject script tags or event-handler attributes (HTML text nodes / attribute encoding). Inline HTML in wiki markdown is not executed as live script.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/build-wiki-site.js:L17-L24"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-003",
+        "section-007",
+        "section-011",
+        "section-014",
+        "section-023",
+        "section-024"
+      ],
+      "files": [
+        {
+          "path": "bin/build-wiki-site.js",
+          "lineStart": 17,
+          "lineEnd": 24,
+          "sha256": "80ff1fd378d1c3154e3483b037fb79db6d6f36e419cc72306304f1144325566b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "499b51256672018459b42fe65fad302727908da3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testEscapesScriptPayload",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:23.374Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-ac6",
+        "evt-step5-AC6",
+        "g2-commit-499b5125"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "Build reads only files whose resolved path stays inside `{wikiDir}`; `sweep.state.json`, non-markdown files, and paths escaping `{wikiDir}` via `..` are not copied into `docs/wiki/`.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/build-wiki-site.js:L26-L93"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-003",
+        "section-006",
+        "section-011",
+        "section-013",
+        "section-023",
+        "section-024"
+      ],
+      "files": [
+        {
+          "path": "bin/build-wiki-site.js",
+          "lineStart": 26,
+          "lineEnd": 93,
+          "sha256": "80ff1fd378d1c3154e3483b037fb79db6d6f36e419cc72306304f1144325566b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "499b51256672018459b42fe65fad302727908da3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testPathContainment",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:23.420Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-ac7",
+        "evt-step5-AC7",
+        "g2-commit-499b5125"
+      ]
+    },
+    {
+      "id": "AC8",
+      "text": "When `{wikiDir}` exists and contains `index.wiki.md`, a missing or stale `docs/wiki/**` tree makes `node bin/build-site.js --check` exit non-zero with a message that names the wiki output (not only `docs/index.html`).",
+      "status": "Implemented",
+      "evidence": [
+        "bin/build-wiki-site.js:L336-L354"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-003",
+        "section-009",
+        "section-011",
+        "section-015",
+        "section-023"
+      ],
+      "files": [
+        {
+          "path": "bin/build-wiki-site.js",
+          "lineStart": 336,
+          "lineEnd": 354,
+          "sha256": "80ff1fd378d1c3154e3483b037fb79db6d6f36e419cc72306304f1144325566b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "499b51256672018459b42fe65fad302727908da3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testCheckFailsOnStaleWikiHtml",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:23.467Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-ac8",
+        "evt-step5-AC8",
+        "g2-commit-499b5125"
+      ]
+    },
+    {
+      "id": "AC9",
+      "text": "`node bin/build-site.js --check` with a fresh wiki tree (after a non-check build) exits 0 when both landing HTML and wiki HTML match regeneration.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/build-site.js:L616-L657"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-003",
+        "section-009",
+        "section-011",
+        "section-015",
+        "section-023"
+      ],
+      "files": [
+        {
+          "path": "bin/build-site.js",
+          "lineStart": 616,
+          "lineEnd": 657,
+          "sha256": "d4f9a6a11e021a7b71b3fd474da3f3f0a611bbe40bc5d6bad052b9b9472a3d11"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "499b51256672018459b42fe65fad302727908da3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testCheckPassesWhenFresh",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:23.520Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-ac9",
+        "evt-step5-AC9",
+        "g2-commit-499b5125"
+      ]
+    },
+    {
+      "id": "AC10",
+      "text": "`docs/sitemap.xml` includes `https://jpolvora.github.io/workflow-skills/wiki/` (or `.../wiki/index.html`) and one `<loc>` per generated wiki HTML page; `node bin/build-site.js` rewrites that sitemap in the same run as wiki HTML.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/build-wiki-site.js:L318-L388"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-003",
+        "section-009",
+        "section-011",
+        "section-016",
+        "section-023"
+      ],
+      "files": [
+        {
+          "path": "bin/build-wiki-site.js",
+          "lineStart": 318,
+          "lineEnd": 388,
+          "sha256": "80ff1fd378d1c3154e3483b037fb79db6d6f36e419cc72306304f1144325566b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "499b51256672018459b42fe65fad302727908da3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testSitemapListsWikiLocs",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:23.572Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-ac10",
+        "evt-step5-AC10",
+        "g2-commit-499b5125"
+      ]
+    },
+    {
+      "id": "AC11",
+      "text": "Feature wiki pages render headings, lists, fenced code, inline code, and markdown links in a readable article layout; `index.wiki.md` domain catalog remains navigable as a table of contents on the wiki home page.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/build-wiki-site.js:L146-L260"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-003",
+        "section-007",
+        "section-011",
+        "section-014",
+        "section-018",
+        "section-023"
+      ],
+      "files": [
+        {
+          "path": "bin/build-wiki-site.js",
+          "lineStart": 146,
+          "lineEnd": 260,
+          "sha256": "80ff1fd378d1c3154e3483b037fb79db6d6f36e419cc72306304f1144325566b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "499b51256672018459b42fe65fad302727908da3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testRendersHeadingsListsCodeLinks",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:23.619Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-ac11",
+        "evt-step5-AC11",
+        "g2-commit-499b5125"
+      ]
+    },
+    {
+      "id": "AC12",
+      "text": "Wiki pages share the existing dark/light theme tokens (no new neon/glow chrome). Contrast for body text and links remains usable in both themes (target ≥ 4.5:1 for body text).",
+      "status": "Implemented",
+      "evidence": [
+        "docs/assets/css/style.css:L3271-L3354"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-011",
+        "section-018",
+        "section-023",
+        "section-025"
+      ],
+      "files": [
+        {
+          "path": "docs/assets/css/style.css",
+          "lineStart": 3271,
+          "lineEnd": 3354,
+          "sha256": "411acd23c0a236650695a4eda177fbc54fb62eede199fcb09b059d3b0b7d43d4"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "499b51256672018459b42fe65fad302727908da3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testWikiCssUsesThemeTokens",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:23.670Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-ac12",
+        "evt-step5-AC12",
+        "g2-commit-499b5125"
+      ]
+    },
+    {
+      "id": "AC13",
+      "text": "Wiki article content is visible without executing JavaScript (no client-only markdown fetch as the only renderer).",
+      "status": "Implemented",
+      "evidence": [
+        "bin/build-wiki-site.js:L268-L284"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-003",
+        "section-008",
+        "section-011",
+        "section-014",
+        "section-023"
+      ],
+      "files": [
+        {
+          "path": "bin/build-wiki-site.js",
+          "lineStart": 268,
+          "lineEnd": 284,
+          "sha256": "80ff1fd378d1c3154e3483b037fb79db6d6f36e419cc72306304f1144325566b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "499b51256672018459b42fe65fad302727908da3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testContentPresentWithoutJs",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:23.717Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-ac13",
+        "evt-step5-AC13",
+        "g2-commit-499b5125"
+      ]
+    },
+    {
+      "id": "AC14",
+      "text": "Unknown CLI flags on `build-site.js` remain rejected (existing `--bump` / `--check` exclusive usage). Wiki generation does not add a required extra flag for the default update path.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/build-site.js:L23-L29"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-011",
+        "section-013",
+        "section-015",
+        "section-023",
+        "section-024"
+      ],
+      "files": [
+        {
+          "path": "bin/build-site.js",
+          "lineStart": 23,
+          "lineEnd": 29,
+          "sha256": "d4f9a6a11e021a7b71b3fd474da3f3f0a611bbe40bc5d6bad052b9b9472a3d11"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "499b51256672018459b42fe65fad302727908da3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testUnknownFlagsStillUsage",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:23.763Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-ac14",
+        "evt-step5-AC14",
+        "g2-commit-499b5125"
+      ]
+    },
+    {
+      "id": "AC15",
+      "text": "Tests cover AC1, AC3, AC6, AC7, AC8, and AC10: either extend `test/test-doc-sync.js` or add `test/test-site-wiki.js` listed in `package.json` `tests:harness-efficiency` (or the suite `test-doc-sync` already runs). Fixture or temp `{wikiDir}` plus `--check` stale detection must not mutate the tracked wiki without restore.",
+      "status": "Implemented",
+      "evidence": [
+        "package.json:L23-L23"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-011",
+        "section-012",
+        "section-019",
+        "section-023"
+      ],
+      "files": [
+        {
+          "path": "package.json",
+          "lineStart": 23,
+          "lineEnd": 23,
+          "sha256": "a7c379e9ccf1e3ab641f3b46495604e22f7e6368aa24ac756fd5b78c1b5284a2"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "499b51256672018459b42fe65fad302727908da3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testEmitsIndexAndFeatureHtml",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:23.811Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-ac15",
+        "evt-step5-AC15",
+        "g2-commit-499b5125"
+      ]
+    },
+    {
+      "id": "AC16",
+      "text": "`FEATURES.md` (when `tracking.featuresMdEnabled` is not false) and human/site docs (`README.md` site/docs mention, or FAQ/nav copy) state that the published site includes a Wiki page generated from `{wikiDir}`.",
+      "status": "Implemented",
+      "evidence": [
+        "FEATURES.md:L279-L279"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-003",
+        "section-005",
+        "section-011",
+        "section-017",
+        "section-020",
+        "section-023"
+      ],
+      "files": [
+        {
+          "path": "FEATURES.md",
+          "lineStart": 279,
+          "lineEnd": 279,
+          "sha256": "d7599be7e5b51fe44e6ef5467a0f1d5208ee77b77f4acc2c41c81e685c7b4f8a"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "499b51256672018459b42fe65fad302727908da3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testDocsMentionPublishedWiki",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:23.861Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-ac16",
+        "evt-step5-AC16",
+        "g2-commit-499b5125"
+      ]
+    },
+    {
+      "id": "AC17",
+      "text": "Authoring validation for this specification exits 0.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/specs/0077-website-wiki-page.spec.md:L42-L60"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-011",
+        "section-021",
+        "section-023"
+      ],
+      "files": [
+        {
+          "path": ".agents/specs/0077-website-wiki-page.spec.md",
+          "lineStart": 42,
+          "lineEnd": 60,
+          "sha256": "0b6544b574f582c7b0b354fbda2d159dabc05655cb78d4dfabdfd5aa9f4da6c8"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "499b51256672018459b42fe65fad302727908da3",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-validate-spec",
+          "sourceFile": "test/test-validate-spec.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:23.918Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "evt-ac17",
+        "evt-step5-AC17",
+        "g2-commit-499b5125"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Stale `docs/wiki/index.html` after editing `{wikiDir}/index.wiki.md` without rebuild: `--check` exit non-zero.",
+      "tests": [
+        {
+          "name": "testCheckFailsOnStaleWikiHtml",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:23.965Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-ns1",
+        "evt-step5-NS1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Wiki markdown containing `<script>alert(1)</script>`: generated HTML does not include an executable script element from that payload (escaped or stripped).",
+      "tests": [
+        {
+          "name": "testEscapesScriptPayload",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:24.013Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-ns2",
+        "evt-step5-NS2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Relative link `../../package.json` or `../../../etc/passwd` in a wiki page: generator does not write outside `docs/wiki/`; link is dropped or rendered as inert text.",
+      "tests": [
+        {
+          "name": "testPathContainment",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:24.056Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-ns3",
+        "evt-step5-NS3"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "`--specs-dir` / invented wiki-root CLI that resolves outside repo: rejected or ignored; default remains contained `{wikiDir}`.",
+      "tests": [
+        {
+          "name": "testUnknownFlagsStillUsage",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:24.105Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-ns4-ns5",
+        "evt-step5-NS4"
+      ]
+    },
+    {
+      "id": "NS5",
+      "text": "Unknown `node bin/build-site.js --wiki-only-typo`: still exit 1 with Usage (no partial wiki write as a new silent flag).",
+      "tests": [
+        {
+          "name": "testUnknownFlagsStillUsage",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:24.151Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-ns4-ns5",
+        "evt-step5-NS5"
+      ]
+    },
+    {
+      "id": "NS6",
+      "text": "Missing `index.wiki.md`: no crash; skip wiki generation; `--check` does not demand `docs/wiki/` solely for that reason.",
+      "tests": [
+        {
+          "name": "testSkipWhenIndexWikiMissing",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:24.198Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-ns6",
+        "evt-step5-NS6"
+      ]
+    },
+    {
+      "id": "NS7",
+      "text": "Unauthenticated network fetch during build to render wiki: must not ship; renderer is local filesystem only.",
+      "tests": [
+        {
+          "name": "testNoNetworkInWikiBuilder",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:24.245Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-ns7",
+        "evt-step5-NS7"
+      ]
+    },
+    {
+      "id": "NS8",
+      "text": "Floating Promise in async markdown walk: fail review / test if unhandled rejection can occur.",
+      "tests": [
+        {
+          "name": "testWikiBuilderIsSync",
+          "sourceFile": "test/test-site-wiki.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-12T15:34:24.297Z"
+        }
+      ],
+      "linkEventIds": [
+        "evt-ns8",
+        "evt-step5-NS8"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 10,
+    "earnedUnits": 170,
+    "totalUnits": 170,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-12T15:39:18.249Z"
+  }
+}
