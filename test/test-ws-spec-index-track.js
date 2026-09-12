@@ -144,4 +144,23 @@ assert.match(
 const prefixedAgain = run(['--specs-dir', specs, '--slug', 'prefixed-slug']);
 assert.strictEqual(JSON.parse(prefixedAgain.stdout).reason, 'already tracked');
 
+// Test: CRLF line-ending preservation in index.PRD
+const crlfSpecs = path.join(tmp, 'specs-crlf');
+fs.mkdirSync(crlfSpecs);
+fs.writeFileSync(
+  path.join(crlfSpecs, 'index.PRD'),
+  '# Spec Index\r\n\r\n## 7. Feature map by phase\r\n\r\n### Phase 1: Core\r\n\r\n## 8. Next specs\r\n\r\n| # | Spec | Status | Target Phase | Notes |\r\n|---|------|--------|--------------|-------|\r\n\r\nOpen Next-spec: none.\r\n',
+  'utf8',
+);
+fs.writeFileSync(
+  path.join(crlfSpecs, 'crlf-slug.spec.md'),
+  '---\r\ntitle: CRLF Slug\r\nsource: local\r\n---\r\n\r\n# CRLF Spec\r\n',
+  'utf8',
+);
+const crlfRun = run(['--specs-dir', crlfSpecs, '--slug', 'crlf-slug']);
+assert.strictEqual(JSON.parse(crlfRun.stdout).status, 'tracked', 'crlf spec tracked');
+const crlfIdxContent = fs.readFileSync(path.join(crlfSpecs, 'index.PRD'), 'utf8');
+assert.ok(crlfIdxContent.includes('\r\n'), 'index.PRD retains CRLF');
+assert.strictEqual(crlfIdxContent.replace(/\r\n/g, '').includes('\n'), false, 'no bare LF in CRLF index.PRD');
+
 console.log('All ws-spec-index track tests passed');

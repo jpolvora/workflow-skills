@@ -34,10 +34,11 @@ assert.match(evo.stdout, /Multi-Dimensional Quality Breakdown/);
 assert.match(evo.stdout, /0\.3\.48/);
 assert.match(evo.stdout, /0\.3\.61/);
 
-// 5. Script --update-comparison writes evolution & version tables
-const updateRes = run(script, ['--update-comparison']);
+// 5. Script --update-comparison writes evolution & version tables (sandboxed in temp directory)
+const tmpResults = temp('bench-results-');
+const updateRes = run(script, ['--update-comparison', '--results-dir', tmpResults]);
 assert.strictEqual(updateRes.status, 0, updateRes.stderr);
-const evoPath = path.join(repoRoot, 'benchmarks/results/BENCHMARK_EVOLUTION.md');
+const evoPath = path.join(tmpResults, 'BENCHMARK_EVOLUTION.md');
 assert.ok(fs.existsSync(evoPath), 'BENCHMARK_EVOLUTION.md created');
 const evoContent = fs.readFileSync(evoPath, 'utf8');
 assert.match(evoContent, /# Harness Benchmark Evolution Report/);
