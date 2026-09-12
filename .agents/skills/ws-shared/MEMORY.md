@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-09-12] Wiki infobox counts must stay data-driven
+- **Layer**: `Web`
+- **Module**: `Wiki site builder`
+- **Severity**: `Medium`
+- **PathPattern**: `bin/build-wiki-site.js; test/test-site-wiki.js`
+- **Scenario / Context**: Building `docs/wiki/index.html` infobox from `{wikiDir}` pages. Empty feature set (index-only wiki, AC16 success) must render 0 domains, not a placeholder.
+- **DO NOT**: Fall back with `Set.size || 8` (or any hardcoded domain total) when the feature set is empty; `Set.size` is always numeric and only 0 triggers the fallback, rendering factually wrong totals.
+- **INSTEAD DO**: Use `new Set(...).size` directly for domain counts; rebuild site (`node bin/build-site.js`) and keep `test-doc-sync` green. Cover empty-wiki counts when adding infobox logic.
+
 ### [2026-09-12] Wiki HTML hrefs must be page-relative
 - **Layer**: `Web`
 - **Module**: `Wiki site builder`
@@ -14,6 +23,60 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: Minimal markdown subset for published wiki pages that use `**bold**` lead-ins.
 - **DO NOT**: Match only single `*`/`_` emphasis, or `escapeHtml` the rest of a paragraph when the next special char search omits `*`/`_`. `**text**` then prints as literal asterisks.
 - **INSTEAD DO**: Match `**`/`__` strong before single-marker em, include `*_` in the inline special-char scan, and assert `<strong>` in the wiki renderer tests.
+
+### [2026-09-12] Root CATALOG.md must stay under the 24000 B context budget
+- **Layer**: `tests`
+- **Module**: `CATALOG context budget`
+- **Severity**: `Medium`
+- **PathPattern**: `CATALOG.md; test/test-context-budget.js`
+- **Scenario / Context**: A skill-capability description was lengthened in root `CATALOG.md` (e.g. adding `from-code genesis` to the `ws-wiki` rows). Normalized size moved from 23973 B to 24011 B, and CI `npm run test` failed at `test/test-context-budget.js:41` (`root CATALOG.md exceeds 24000 B`). `npm run verify-integrity` still passed because root `CATALOG.md` is not a hashed integrity input, so the regression only surfaced in the test suite.
+- **DO NOT**: Add or expand root `CATALOG.md` prose without checking the CRLF-normalized byte size against the 24000 B cap; do not assume `npm run generate-integrity` covers CATALOG edits.
+- **INSTEAD DO**: Keep CATALOG descriptions terse; after editing, verify `Buffer.byteLength(readFileSync('CATALOG.md','utf8').replace(/\r\n?/g,'\n'))` <= 24000 and run `node test/test-context-budget.js`. When trimming, preserve strings asserted by `test/test-wiki.js` (`first-time spec sweep`, `from-code genesis`, `Phase 2`+`verify`, `Phase 3`+`plan/apply`).
+
+### [2026-09-12] Refresh wiki documentation page when a skill gains subcommands
+- **Layer**: `harness`
+- **Module**: `ws-wiki / docs site`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/specs/wiki/documentation/*.md; docs/wiki/**`
+- **Scenario / Context**: A PR added `/ws-wiki from-code` and `list_wiki_from_code_areas.cjs` to `SKILL.md`, `runtime/CATALOG.md`, and tests, but the published wiki page `.agents/specs/wiki/documentation/ws-wiki.md` still listed only init/sweep/verify/apply/sync/update/validate. Code review flagged it (6/10). `node bin/build-site.js --check` stayed green because the generated HTML matched the stale source.
+- **DO NOT**: Ship a skill subcommand or helper while its `{wikiDir}` documentation page omits it; do not assume `build-site --check` catches documentation drift (it only verifies the HTML matches its source).
+- **INSTEAD DO**: When a skill adds/renames subcommands or helpers, update `{wikiDir}/documentation/<skill>.md` and run `node bin/build-site.js` so `docs/wiki/**` is regenerated in the same change.
+
+### [2026-09-12] Portable skill prose must not cite internal spec numbers
+- **Layer**: `harness`
+- **Module**: `skill portability`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-*/**`
+- **Scenario / Context**: `PHASE-1-SWEEP.md` read "sweep does not present 0075's per-diff Apply/Cancel gate". Spec `0075` is upstream-only history; a consumer cannot resolve it. Code review flagged it on PR 323.
+- **DO NOT**: Reference internal spec/issue/PR numbers or other upstream-only history in shipped skill bodies or companion docs.
+- **INSTEAD DO**: Describe the behavior or gate generically (for example, "a per-diff Apply/Cancel gate like `/ws-wiki sync [slug]`") and keep spec-number provenance in specs or memory, not in portable procedure text.
+
+### [2026-09-12] Never commit consumer-local probe cache upstream
+- **Layer**: `harness`
+- **Module**: `ws-shared host binding probe cache`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/host-capabilities.json; .gitignore; bin/install-rules.js`
+- **Scenario / Context**: Host probe upserts `{sharedDir}/host-capabilities.json` during dogfood workflows. A broad stage (`git add -A`) then tracks the per-machine binding (hostId::model, timestamps) in upstream history, polluting every checkout with stale bindings.
+- **DO NOT**: Stage or commit `.agents/skills/ws-shared/host-capabilities.json` upstream, or assume root `.gitignore` already covers it when `templates/hub.gitignore` does.
+- **INSTEAD DO**: `git rm` the tracked file when present, add `.agents/skills/ws-shared/host-capabilities.json` to root `.gitignore` (hub-layout installerMetadata=ignore, spec 0059 AC9 never-shipped-upstream), and stage only workflow `files_touched` in product/fix commits.
+
+### [2026-09-12] Documented user-gate branches must be reachable
+- **Layer**: `harness`
+- **Module**: `ws-wiki/from-code gate flow`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-wiki/*.md`
+- **Scenario / Context**: Agentic code review scored 6/10 on PR 323. `FROM-CODE.md` documented `mode: overwrite`, but the start gate offered only "Start merge reconstruction" or "Cancel", so the step 3 condition "operator did not pick merge" was unsatisfiable and the overwrite mode was dead. `test/test-wiki.js` only asserts option strings, so the suite stayed green.
+- **DO NOT**: Document a later gate or condition that an earlier gate's option set makes unreachable; do not rely on string-presence tests to prove a branch is reachable.
+- **INSTEAD DO**: For every documented mode/branch, expose an option in the deciding gate that selects it (then use a separate confirm gate for destructive actions), and sweep sibling companions (`INIT.md`, `PHASE-*`) for the same unreachable-gate class before resolving.
+
+### [2026-09-12] Declare direct ws-* dependency edges for invoked skills
+- **Layer**: `harness`
+- **Module**: `skill dependency graph`
+- **Severity**: `Medium`
+- **PathPattern**: `bin/skill-dependencies.json; .agents/skills/ws-shared/runtime/skill-dependencies.json; .agents/skills/ws-*/SKILL.md`
+- **Scenario / Context**: A skill invokes another `ws-*` skill at runtime (e.g. `ws-wiki` Phase 3 invokes standalone `ws-spec-write`) but its direct edge is missing. Orchestrator transitive closure masks the gap, yet selective installs and dependency auto-select leave the runtime invoke missing.
+- **DO NOT**: Rely on transitive closure (e.g. via `ws-spec-to-pr`) when a skill directly invokes another `ws-*`; leave `ws-wiki: [ws-configure-project]` when `SKILL.md` invokes `ws-spec-write`.
+- **INSTEAD DO**: Add the direct edge in both `bin/skill-dependencies.json` and `.agents/skills/ws-shared/runtime/skill-dependencies.json`, run `npm run generate-integrity && npm run verify-integrity`, rebuild site (`node bin/build-site.js`) for dep pills, and keep `test-doc-sync` green.
 
 ### [2026-09-11] Never redirect to nul under Git Bash
 - **Layer**: `harness`
@@ -423,7 +486,7 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **PathPattern**: `**/ws-shared/config.json.example;**/test-models-preset-and-per-step.js`
 - **Scenario / Context**: Filling numeric steps 2–5 in default/cursor presets makes lite resolve planner/reviewer models for implement/review/ship telemetry because resolveStepOverride runs before litePhaseKey.
 - **DO NOT**: Ship a full 0–9 filled steps map for the cursor/default presets when lite shares the same numeric keys with different semantics.
-- **INSTEAD DO**: Fill 0–1 / 6–9 / Fix-PR roles explicitly; leave 2–5 empty so lite falls through (2 execution, 3 reviewer, 4–5 session) while standard still uses phase keys.
+- **INSTEAD DO**: Omit steps maps from presets entirely (lean phase-key bundles; the default preset is all current). Numeric and role overrides belong in top-level stepModels only, so lite keeps its phase fallthrough (2 execution, 3 reviewer, 4-5 session) while standard resolves via phase keys.
 
 ### [2026-08-28] Documented defaults.hostAdapter must live in schema and example
 - **Layer**: `Harness`

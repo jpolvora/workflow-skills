@@ -14,6 +14,8 @@ const VALIDATE = path.join(REPO_ROOT, '.agents/skills/ws-wiki/scripts/validate_w
 const SYNC = path.join(REPO_ROOT, '.agents/skills/ws-wiki/scripts/sync_wiki_index.cjs');
 const LIST_SWEEP = path.join(REPO_ROOT, '.agents/skills/ws-wiki/scripts/list_wiki_sweep_specs.cjs');
 const LIST_VERIFY = path.join(REPO_ROOT, '.agents/skills/ws-wiki/scripts/list_wiki_feature_pages.cjs');
+const LIST_FROM_CODE = path.join(REPO_ROOT, '.agents/skills/ws-wiki/scripts/list_wiki_from_code_areas.cjs');
+const WIKI_SKILL_DIR = path.join(REPO_ROOT, '.agents/skills/ws-wiki');
 
 let failures = 0;
 function ok(msg) {
@@ -252,7 +254,8 @@ Missing Business Rules & Logic section!
   {
     const skillPath = path.join(REPO_ROOT, '.agents/skills/ws-wiki/SKILL.md');
     const skillContent = fs.readFileSync(skillPath, 'utf8');
-    assert(skillContent.includes('user-gate') && skillContent.includes('Cancel') && skillContent.includes('STOP'), 'NS3: Cancel in review gate terminates ws-wiki without modifying files');
+    const syncCompanion = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'SYNC.md'), 'utf8');
+    assert(syncCompanion.includes('user-gate') && syncCompanion.includes('Cancel') && syncCompanion.includes('STOP'), 'NS3: Cancel in review gate terminates ws-wiki without modifying files');
     assert(skillContent.includes('ws-shared/config.json') && skillContent.includes('ws-configure-project'), 'NS4: Missing project configuration triggers entry check gate');
   }
 
@@ -411,18 +414,24 @@ Missing Business Rules & Logic section!
     }
   }
 
-  // Test 16: sweep subcommand documented in SKILL and CATALOG
+  // Test 16: sweep/from-code subcommands documented in SKILL router and CATALOG
   {
     const skillPath = path.join(REPO_ROOT, '.agents/skills/ws-wiki/SKILL.md');
     const skill = fs.readFileSync(skillPath, 'utf8');
+    const initCompanion = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'INIT.md'), 'utf8');
     assert(skill.includes('/ws-wiki sweep'), 'SKILL documents /ws-wiki sweep');
     assert(skill.includes('first-time') && skill.includes('backfill'), 'SKILL documents sweep aliases');
+    assert(skill.includes('/ws-wiki from-code'), 'SKILL documents /ws-wiki from-code');
+    assert(skill.includes('reverse') && skill.includes('reconstruct'), 'SKILL documents from-code aliases');
     assert(skill.includes('list_wiki_sweep_specs.cjs'), 'SKILL documents sweep list helper');
-    assert(skill.includes('Post-init offer'), 'SKILL documents post-init sweep gate');
+    assert(skill.includes('list_wiki_from_code_areas.cjs'), 'SKILL documents from-code area helper');
+    assert(skill.includes('INIT.md') && skill.includes('FROM-CODE.md'), 'SKILL links companion procedures');
+    assert(initCompanion.includes('Post-init offer'), 'INIT.md documents post-init gate');
 
     const catalogPath = path.join(REPO_ROOT, 'CATALOG.md');
     const catalog = fs.readFileSync(catalogPath, 'utf8');
     assert(catalog.includes('first-time spec sweep'), 'CATALOG task router mentions first-time spec sweep');
+    assert(catalog.includes('from-code genesis'), 'CATALOG mentions from-code genesis');
   }
 
   // Test 17: list_wiki_feature_pages order, exclusions, JSON shape (AC4)
@@ -492,17 +501,20 @@ Missing Business Rules & Logic section!
     }
   }
 
-  // Test 19: Phase 2 verify and Phase 3 apply strings in SKILL and CATALOG (AC1, AC18)
+  // Test 19: Phase 2 verify and Phase 3 apply strings in SKILL router and CATALOG (AC1, AC18)
   {
     const skillPath = path.join(REPO_ROOT, '.agents/skills/ws-wiki/SKILL.md');
     const skill = fs.readFileSync(skillPath, 'utf8');
+    const phase2 = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'PHASE-2-VERIFY.md'), 'utf8');
+    const phase3 = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'PHASE-3-APPLY.md'), 'utf8');
     assert(skill.includes('Phase 1') && skill.includes('sweep/backfill'), 'AC1: SKILL names Phase 1 as sweep/backfill');
     assert(skill.includes('Phase 2') && skill.includes('wiki-vs-code'), 'AC1: SKILL names Phase 2 as wiki-vs-code statement verify');
     assert(skill.includes('Phase 3') && skill.includes('findings plan'), 'AC1: SKILL names Phase 3 as findings plan plus batch apply');
     assert(skill.includes('/ws-wiki verify') && skill.includes('audit') && skill.includes('check-code'), 'AC1: SKILL documents verify aliases');
     assert(skill.includes('/ws-wiki apply') && skill.includes('reconcile') && skill.includes('phase-3'), 'AC1: SKILL documents apply aliases');
     assert(skill.includes('list_wiki_feature_pages.cjs'), 'AC4: SKILL documents verify enumerator usage');
-    assert(!/(Cursor|Claude|VS ?Code|Visual Studio|JetBrains|Windsurf|Copilot)/.test(skill), 'AC18: no host product names in skill body');
+    assert(phase2.includes('list_wiki_feature_pages.cjs'), 'PHASE-2-VERIFY documents verify enumerator usage');
+    assert(!/(Cursor|Claude|VS ?Code|Visual Studio|JetBrains|Windsurf|Copilot)/.test(skill), 'AC18: no host product names in skill router');
 
     const catalogPath = path.join(REPO_ROOT, 'CATALOG.md');
     const catalog = fs.readFileSync(catalogPath, 'utf8');
@@ -514,14 +526,24 @@ Missing Business Rules & Logic section!
     assert(runtimeCatalog.includes('Phase 2') && runtimeCatalog.includes('verify'), 'AC18: runtime CATALOG mentions Phase 2 verify');
     assert(runtimeCatalog.includes('Phase 3') && runtimeCatalog.includes('plan/apply'), 'AC18: runtime CATALOG mentions Phase 3 plan/apply');
 
+    const hostPattern = /(Cursor|Claude|VS ?Code|Visual Studio|JetBrains|Windsurf|Copilot)/;
+    for (const name of ['SKILL.md', 'INIT.md', 'FROM-CODE.md', 'PHASE-1-SWEEP.md', 'PHASE-2-VERIFY.md', 'PHASE-3-APPLY.md', 'SYNC.md', 'UPDATE.md']) {
+      const body = fs.readFileSync(path.join(WIKI_SKILL_DIR, name), 'utf8');
+      assert(!hostPattern.test(body), `AC18: no host product names in ${name}`);
+    }
+
     const scriptsDir = path.join(REPO_ROOT, '.agents/skills/ws-wiki/scripts');
     for (const name of fs.readdirSync(scriptsDir)) {
       if (!name.endsWith('.cjs')) continue;
       const body = fs.readFileSync(path.join(scriptsDir, name), 'utf8');
-      assert(!/(Cursor|Claude|VS ?Code|Visual Studio|JetBrains|Windsurf|Copilot)/.test(body), `AC18: no host product names in script ${name}`);
+      assert(!hostPattern.test(body), `AC18: no host product names in script ${name}`);
     }
     const verifyHelper = fs.readFileSync(path.join(scriptsDir, 'list_wiki_feature_pages.cjs'), 'utf8');
     assert(!/fetch\s*\(/.test(verifyHelper) && !/require\(['"]https?/.test(verifyHelper) && !/from\s+['"]https?:/.test(verifyHelper), 'NS10: verify helper performs no network fetch');
+    const fromCodeHelper = fs.readFileSync(path.join(scriptsDir, 'list_wiki_from_code_areas.cjs'), 'utf8');
+    assert(!/fetch\s*\(/.test(fromCodeHelper), 'NS8: from-code helper performs no network fetch');
+    assert(phase3.includes('Update feature {title} to reflect current wiki statement: {statement}'), 'AC13: PHASE-3-APPLY carries exact code-directed spec template');
+    assert(phase3.includes('source: local'), 'AC13: PHASE-3-APPLY pins source local for code-directed specs');
   }
 
   // Test 20: empty pages, dry-run purity, resume and apply STOP prose (AC8, AC15, AC16, NS1, NS4)
@@ -556,29 +578,125 @@ Missing Business Rules & Logic section!
 
     const skillPath = path.join(REPO_ROOT, '.agents/skills/ws-wiki/SKILL.md');
     const skill = fs.readFileSync(skillPath, 'utf8');
-    assert(skill.includes('--dry-run') && skill.includes('verify.state.json'), 'AC8: SKILL documents --dry-run purity (no verify.state.json or specs)');
-    assert(skill.includes('--resume') && skill.includes('lastFile'), 'AC15: SKILL documents --resume continues after lastFile');
-    assert(skill.includes('--force'), 'AC15: SKILL documents --force restart');
-    assert(skill.includes('/ws-wiki apply') && skill.includes('status: audited'), 'AC15: SKILL documents apply-without-audit STOP');
-    assert(skill.includes('status: completed'), 'AC15: SKILL documents completed close');
-    assert(skill.includes('run `/ws-wiki init` first'), 'NS1: SKILL documents missing-index STOP');
-    assert(skill.includes('Update feature {title} to reflect current wiki statement: {statement}'), 'AC13: SKILL carries exact code-directed spec template');
-    assert(skill.includes('source: local'), 'AC13: SKILL pins source local for code-directed specs');
-    assert(skill.includes('verify.state.json') && skill.includes('completedPages'), 'AC14: SKILL documents checkpoint schema');
-    assert(skill.includes('must not stage this file'), 'AC14: SKILL forbids staging checkpoint in product commits');
-    assert(skill.includes('Run Phase 2 wiki-vs-code audit (Recommended)'), 'AC2: SKILL documents post-sweep Phase 2 offer');
-    assert(skill.includes('Walk pages in helper order, one page at a time'), 'AC6: SKILL documents sequential walk in helper order');
-    assert(skill.includes('Classify each statement `confirmed`'), 'AC7: SKILL documents four-class classification');
-    assert(skill.includes('Every statement needs at least one evidence pointer'), 'AC7: SKILL requires evidence pointer per statement');
-    assert(skill.includes('After the last page set checkpoint `status` to `audited`'), 'AC9: SKILL documents audited finish');
-    assert(skill.includes('Zero actionable findings skips the gate'), 'AC9: SKILL documents zero-actionable skips Phase 3 gate');
-    assert(skill.includes('Present every `differs` and `absent` finding'), 'AC10: SKILL documents findings plan rows');
-    assert(skill.includes('Update wiki (Recommended)'), 'AC11: SKILL documents truth-gate Update wiki recommended');
-    assert(skill.includes('Apply scheduled wiki edits in one pass'), 'AC12: SKILL documents wiki batch apply');
-    assert(skill.includes('Skip writes no verify artifacts'), 'NS5: SKILL documents post-sweep Skip writes nothing');
-    assert(skill.includes('Skip writes no wiki or spec updates'), 'NS6: SKILL documents post-verify Skip writes nothing');
-    assert(skill.includes('Undecided findings stay `pending`'), 'NS8: SKILL documents pending on truth-gate Cancel');
-    assert(skill.includes('assertContained') && skill.includes('no write leaves `{wikiDir}`'), 'NS9: SKILL documents assertContained no-escape writers');
+    const sweepCompanion = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'PHASE-1-SWEEP.md'), 'utf8');
+    const verifyCompanion = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'PHASE-2-VERIFY.md'), 'utf8');
+    const applyCompanion = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'PHASE-3-APPLY.md'), 'utf8');
+    const fromCodeCompanion = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'FROM-CODE.md'), 'utf8');
+    assert(skill.includes('run `/ws-wiki init` first'), 'NS1: SKILL router documents missing-index STOP');
+    assert(fromCodeCompanion.includes('run `/ws-wiki init` first'), 'NS1: FROM-CODE documents missing-index STOP');
+    assert(verifyCompanion.includes('--dry-run') && verifyCompanion.includes('verify.state.json'), 'AC8: PHASE-2 documents --dry-run purity (no verify.state.json or specs)');
+    assert(verifyCompanion.includes('--resume') && verifyCompanion.includes('lastFile'), 'AC15: PHASE-2 documents --resume continues after lastFile');
+    assert(verifyCompanion.includes('--force'), 'AC15: PHASE-2 documents --force restart');
+    assert(applyCompanion.includes('/ws-wiki apply') && applyCompanion.includes('status: audited'), 'AC15: PHASE-3 documents apply-without-audit STOP');
+    assert(applyCompanion.includes('status` to `completed'), 'AC15: PHASE-3 documents completed close');
+    assert(verifyCompanion.includes('verify.state.json') && verifyCompanion.includes('completedPages'), 'AC14: PHASE-2 documents checkpoint schema');
+    assert(verifyCompanion.includes('must not stage this file'), 'AC14: PHASE-2 forbids staging checkpoint in product commits');
+    assert(sweepCompanion.includes('Run Phase 2 wiki-vs-code audit (Recommended)'), 'AC2: PHASE-1 documents post-sweep Phase 2 offer');
+    assert(verifyCompanion.includes('Walk pages in helper order, one page at a time'), 'AC6: PHASE-2 documents sequential walk in helper order');
+    assert(verifyCompanion.includes('Classify each statement `confirmed`'), 'AC7: PHASE-2 documents four-class classification');
+    assert(verifyCompanion.includes('Every statement needs at least one evidence pointer'), 'AC7: PHASE-2 requires evidence pointer per statement');
+    assert(verifyCompanion.includes('After the last page set checkpoint `status` to `audited`'), 'AC9: PHASE-2 documents audited finish');
+    assert(verifyCompanion.includes('Zero actionable findings skips the gate'), 'AC9: PHASE-2 documents zero-actionable skips Phase 3 gate');
+    assert(applyCompanion.includes('Present every `differs` and `absent` finding'), 'AC10: PHASE-3 documents findings plan rows');
+    assert(applyCompanion.includes('Update wiki (Recommended)'), 'AC11: PHASE-3 documents truth-gate Update wiki recommended');
+    assert(applyCompanion.includes('Apply scheduled wiki edits in one pass'), 'AC12: PHASE-3 documents wiki batch apply');
+    assert(sweepCompanion.includes('Skip writes no verify artifacts'), 'NS5: PHASE-1 documents post-sweep Skip writes nothing');
+    assert(verifyCompanion.includes('Skip writes no wiki or spec updates'), 'NS6: PHASE-2 documents post-verify Skip writes nothing');
+    assert(applyCompanion.includes('Undecided findings stay `pending`'), 'NS8: PHASE-3 documents pending on truth-gate Cancel');
+    assert(applyCompanion.includes('assertContained') && applyCompanion.includes('no write leaves `{wikiDir}`'), 'NS9: PHASE-3 documents assertContained no-escape writers');
+    assert(fromCodeCompanion.includes('--dry-run') && fromCodeCompanion.includes('from-code.state.json'), 'AC12: FROM-CODE documents dry-run purity');
+    assert(fromCodeCompanion.includes('Start merge reconstruction (Recommended)'), 'AC9: FROM-CODE documents merge start gate');
+    assert(fromCodeCompanion.includes('Overwrite existing wiki from code'), 'NS6: FROM-CODE documents overwrite confirm gate');
+    assert(fromCodeCompanion.includes('do not drop existing Business Rules'), 'NS5: FROM-CODE documents merge preserve rules');
+  }
+
+  // Test 21: list_wiki_from_code_areas ordering, skip-empty, CLI guards, companions (AC6–AC8, AC16)
+  {
+    const companions = ['INIT.md', 'FROM-CODE.md', 'PHASE-1-SWEEP.md', 'PHASE-2-VERIFY.md', 'PHASE-3-APPLY.md', 'SYNC.md', 'UPDATE.md'];
+    for (const name of companions) {
+      assert(fs.existsSync(path.join(WIKI_SKILL_DIR, name)), `AC3: companion ${name} exists`);
+    }
+
+    const res = run(LIST_FROM_CODE, ['--repo-root', REPO_ROOT, '--json']);
+    assert(res.status === 0, 'list_wiki_from_code_areas exits 0 on workflow-skills repo');
+    const data = JSON.parse(res.stdout);
+    assert(data.ok === true, 'from-code helper JSON ok is true');
+    assert(Array.isArray(data.areas), 'from-code helper returns areas array');
+    assert(Array.isArray(data.skipped), 'from-code helper returns skipped array');
+    assert(Array.isArray(data.errors), 'from-code helper returns errors array');
+    const ids = data.areas.map((a) => a.id);
+    const canonical = ['structure', 'frontend', 'backend', 'ci-cd', 'docs', 'domains', 'quality', 'ship', 'git-surface'];
+    const presentCanonical = ids.filter((id) => canonical.includes(id));
+    assert(JSON.stringify(presentCanonical) === JSON.stringify([...presentCanonical].sort((a, b) => canonical.indexOf(a) - canonical.indexOf(b))), 'areas follow canonical id order');
+    const gitSurface = data.areas.find((a) => a.id === 'git-surface');
+    assert(gitSurface && Array.isArray(gitSurface.paths) && gitSurface.paths.length === 0, 'git-surface always in areas with paths: []');
+    assert(!data.skipped.some((row) => row.id === 'git-surface'), 'git-surface never appears in skipped');
+    assert(data.areas.every((a) => typeof a.id === 'string' && typeof a.title === 'string' && Array.isArray(a.paths)), 'area rows carry id/title/paths');
+
+    const emptyFrontendTmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-wiki-fromcode-'));
+    try {
+      const hub = path.join(emptyFrontendTmp, '.agents', 'skills', 'ws-shared');
+      fs.mkdirSync(hub, { recursive: true });
+      fs.writeFileSync(
+        path.join(hub, 'config.json'),
+        JSON.stringify({
+          stack: {
+            frontend: { sourceDir: '' },
+            backend: { srcDir: 'src-missing', testProject: 'tests-missing' },
+          },
+          reviews: { dir: '.agents/reviews-missing' },
+          plans: { wikiDir: '.agents/specs/wiki' },
+        }),
+        'utf8',
+      );
+      fs.writeFileSync(path.join(emptyFrontendTmp, 'README.md'), '# readme\n', 'utf8');
+      const emptyRes = run(LIST_FROM_CODE, ['--repo-root', emptyFrontendTmp, '--json']);
+      assert(emptyRes.status === 0, 'NS7: helper succeeds when frontend has no paths');
+      const emptyData = JSON.parse(emptyRes.stdout);
+      assert(!emptyData.areas.some((a) => a.id === 'frontend'), 'NS7: empty frontend omitted from areas');
+      assert(emptyData.skipped.some((row) => row.id === 'frontend' && row.reason === 'no candidate paths'), 'NS7: empty frontend recorded in skipped');
+
+      const guardTmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-wiki-fromcode-guard-'));
+      try {
+        const hub = path.join(guardTmp, '.agents', 'skills', 'ws-shared');
+        fs.mkdirSync(hub, { recursive: true });
+        fs.writeFileSync(
+          path.join(hub, 'config.json'),
+          JSON.stringify({ reviews: { dir: '../../outside-escape' }, stack: { frontend: { sourceDir: '' }, backend: {} }, plans: {} }),
+          'utf8',
+        );
+        const escapeRes = run(LIST_FROM_CODE, ['--repo-root', guardTmp, '--json']);
+        assert(escapeRes.status === 0, 'NS2: helper exits 0 when escape paths are skipped');
+        const escapeData = JSON.parse(escapeRes.stdout);
+        const allPaths = escapeData.areas.flatMap((a) => a.paths);
+        assert(!allPaths.some((p) => p.includes('outside-escape')), 'NS2: paths escaping repo root are not collected');
+
+        const badFlagRes = run(LIST_FROM_CODE, ['--not-a-flag']);
+        assert(badFlagRes.status === 2, 'NS3: unknown flag exits 2');
+
+        const specsDirRes = run(LIST_FROM_CODE, ['--specs-dir', 'whatever']);
+        assert(specsDirRes.status === 2, 'AC7: --specs-dir rejected as unknown with exit 2');
+
+        const leftoverRes = run(LIST_FROM_CODE, ['stray-token']);
+        assert(leftoverRes.status === 2, 'AC7: leftover positional token rejected');
+
+        const helpRes = run(LIST_FROM_CODE, ['--help']);
+        assert(helpRes.status === 0, 'AC7: --help exits 0');
+        assert(!fs.existsSync(path.join(guardTmp, '--help')), 'AC7: --help is never a filename');
+      } finally {
+        fs.rmSync(guardTmp, { recursive: true, force: true });
+      }
+    } finally {
+      fs.rmSync(emptyFrontendTmp, { recursive: true, force: true });
+    }
+
+    const initCompanion = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'INIT.md'), 'utf8');
+    assert(initCompanion.includes('Run from-code reconstruction (Recommended)'), 'AC14: INIT recommends from-code when zero specs');
+    assert(initCompanion.includes('Run first-time spec sweep (Recommended)'), 'AC14: INIT recommends sweep when specs exist');
+
+    const binDepsPath = path.join(REPO_ROOT, 'bin/skill-dependencies.json');
+    const binDeps = JSON.parse(fs.readFileSync(binDepsPath, 'utf8'));
+    assert(!Object.prototype.hasOwnProperty.call(binDeps.dependencies || {}, 'ws-wiki-from-code'), 'AC1: no ws-wiki-from-code packaged skill');
   }
 
 } finally {

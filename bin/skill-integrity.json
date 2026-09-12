@@ -5,14 +5,14 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "e2cf8f200a6731e5281dbf62aef0583085fcf18856a77cafb4664269cceae818",
+  "fullPackageDigest": "08382d48f22b174a08c7d4b5ce1a3a1d8c9867a3a6eba7ecc6cc3bb6d6cf28a0",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
       "runtime/ac-ledger.schema.json": "5184614c30fa70faf50b69eba272dbeee589497b7fb845f8201818e85c7c6e3b",
       "runtime/AGENTS.md": "a66b44f481e2cad0aeaa5543736335d9b1a4c77d094d404548afed68a0dbec20",
       "runtime/autoload.md": "0c009f0964bc2156c445af47f7eb3f8896e943d343be054801c0c5fae4c2ed39",
-      "runtime/CATALOG.md": "36de13d163049deb9e57d28e8630cc371e9736bc50586baa80ab14830b4b4837",
+      "runtime/CATALOG.md": "787dcaea2a8080cbacc23f86a43e23bdef75d61f8720c730071f9595059347da",
       "runtime/config-resolution.md": "055dcb9d395fb5bf9852a3a59f4237b4e0b7f4b51f8f9825a447103ca2c2baa6",
       "runtime/config.schema.json": "acb39eee6c43f18027655fefb83855d268dd2c3b5dfd78bd48ac86bc8b00a6fb",
       "runtime/CROSS-PLATFORM.md": "68cf59d446957bee662ee84327676b6d87ab184b55b87a86710c58ec84057916",
@@ -52,11 +52,11 @@
       "runtime/tools.md": "a2c4736b9fe63d5a75b1b4d22cca2ed595fc160a1f7f2679cb48ae98c9ab0d05",
       "runtime/workflow-state.schema.json": "46048a0268f17bcd647a5d04734d27b1669fb442e6b373bd78a95a62e3bb5ceb",
       "templates/CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
-      "templates/config.json.example": "f819dbd6efc3b9f4a8828f5be6618887c44d50cb08a88fd14ee0e63f6829034a",
+      "templates/config.json.example": "295c95c87fe2c98c527b76dcda5ccf280d289a1f6da6f476ce5b439ecbefc728",
       "templates/MEMORY.md.template": "5b67274d91cd4507fecd8aa9e3c2ee10d2f7fb90f0d8eb35fb575089bc5664fb",
       "templates/STACK.md.example": "68cff04083447e0f585c48a4e8165cfd02f1d60504f0baced2148579104ad5a8"
     },
-    "skillDigest": "0cf1be67b42bf8f13eb4e6765b660331ddaab0e9c06492621d8d230d384624eb"
+    "skillDigest": "53f433c112cbce32e13d658e947b91b950cccfc57c7fc744ec1cbd4cdfa26d5c"
   },
   "packageVersion": "0.4.21",
   "skills": {
@@ -136,13 +136,13 @@
     "ws-configure-project": {
       "files": {
         "evals/evals.json": "208c267e350a5896a2033c0a4d2045b33c1842dff770bff9781e76b65831f4fe",
-        "INTERVIEW.md": "8557b159421bf4ff38cfce48a704b8cc51e7835ccdf6133835f65b5ded9a09a8",
+        "INTERVIEW.md": "6660e7deae9e765d0414fe841f136f5a0c93aa847d15cc2adad37c7ba12a912a",
         "scripts/auto_configure.cjs": "10d81b6d54156759826aed47b5edb8650e0aa04af8ef5b172130d0596cfcdbdf",
         "scripts/configure_autoload.py": "73ba2298e4da79afcfc6db0ed1154937292b3374172b82ee49147b9bb076c0c8",
         "scripts/stack_fingerprint.cjs": "49dc0a8ed8f018871e30152d2d8ff2bc41cfa738b16ee22c70b4361f93f58d33",
         "SKILL.md": "49c8bdf5bf1585c926e5fbb9f4fbb9f004a2db85765a0ad1957bbfd90fe55f37"
       },
-      "skillDigest": "9a014212fe3f717199438ce47466a9ac2f0ce79c7deab6946d81c8434b330dc5"
+      "skillDigest": "ee68e03c360289c9696fdee3525ff9fb01dde86420739c8b230b236bb7350d22"
     },
     "ws-doctor": {
       "files": {
@@ -575,13 +575,21 @@
     },
     "ws-wiki": {
       "files": {
+        "FROM-CODE.md": "79c844832e218371fda63d64d60eaf83ae3baca937d7b582601c2fdc81a12185",
+        "INIT.md": "f61124dfa3c3fffca6f6ee1f30b54419f8b14eb59dc56e3e5a321889c2636d32",
+        "PHASE-1-SWEEP.md": "ba361ff62ef322d580f0e079b9dcb827909f8bc3993d8bcd77732bd39f27631d",
+        "PHASE-2-VERIFY.md": "9a8f90dfe21fab234254cb2a99da78088864f71ee66e2b278ce1588e0e74be53",
+        "PHASE-3-APPLY.md": "fcc97f810bd96b42f71cf604cdc521670f8678c4f2caf6cb960647fa35048476",
         "scripts/list_wiki_feature_pages.cjs": "2687cd9dbdfce28f0f95877466be334bf3a1e31d7318c1c31585c30f4714172e",
+        "scripts/list_wiki_from_code_areas.cjs": "b0ee8311c344162ad5c9eb3acaf2fb1daa1e685c1228f1e9842ccbf30cfff800",
         "scripts/list_wiki_sweep_specs.cjs": "05e3783a4e3def2303d1d7fbe20a116bb4fa76994931ee7ffb4be875872ca0f4",
         "scripts/sync_wiki_index.cjs": "23fc9c78c4e1ae08103e476860c4ccd3c504615ed5417461d1d2aac1b4732b22",
         "scripts/validate_wiki.cjs": "7ead61e90bfaff48de0bd92cd8c8674436c2ee7066716ad82054aa674c26a5d7",
-        "SKILL.md": "3811c2f17bb8c23a9e51d32bc8fa6f897f7b36c28376e21ae205829de513557f"
+        "SKILL.md": "f034b4860cdbf2ad9e072513a999b04e3c01e7d36d56c52f61f48bea595d24e1",
+        "SYNC.md": "93992b9df56b4b4b0c84eccff04ffd4d454f5be347d7d27fd7f091fd0f7a0406",
+        "UPDATE.md": "8fc17d1e5b67d386c0c6b9e9ed13ea0fb8844950c33ced369faf21912ee12296"
       },
-      "skillDigest": "b07629ef99927511d78795eb01b37c391ef297bd4a86f3b4676688b3e8667c2c"
+      "skillDigest": "b1b35dc7597260d6edfd80451b58a40cdc905968fd9d7375fbfb6787b1049fce"
     },
     "ws-write-a-skill": {
       "files": {

@@ -143,117 +143,38 @@
       "includeCodeReview": false,
       "includeTestingReport": false
     },
-    "_comment_models": "Resolve order when --model is blank: stepModels[role|N] → active preset steps[role|N] → top-level phase key → preset phase key → session. Token \"current\" uses session currentModel (no fallthrough). Empty string falls through. Unknown modelsPreset → preset \"default\" if present, else legacy four keys. Fix-PR roles bypass numeric Step 9: fixPrPlan → reviewerModel; fixPrExec → executionModel. Lite ignores testingModel and all role keys, including fixPrPlan/fixPrExec, while preserving inline plan-before-edit order. Seed default+cursor fill 0–1 / 6–9 / roles; leave 2–5 empty for lite phase fallthrough.",
-    "modelsPreset": "cursor",
+    "_comment_models": "Resolve order when --model is blank: stepModels[role|N] → active preset steps[role|N] → top-level phase key → preset phase key → session. Token \"current\" uses session currentModel (no fallthrough). Empty string falls through. Unknown modelsPreset → preset \"default\" if present, else legacy four keys. Fix-PR roles bypass numeric Step 9: fixPrPlan → reviewerModel; fixPrExec → executionModel. Lite ignores testingModel and all role keys, including fixPrPlan/fixPrExec, while preserving inline plan-before-edit order. Presets are lean phase-key bundles without a steps map; put per-step or per-role overrides in top-level stepModels. The default preset is all current (session-only safe fallback). Switch modelsPreset to a named bundle (cursor, deepseek, opencode, cheap) for host-specific models.",
+    "modelsPreset": "default",
     "modelPresets": {
       "default": {
-        "plannerModel": "cursor-grok-4.6-high",
-        "executionModel": "composer-2.5",
-        "testingModel": "composer-2.5",
-        "reviewerModel": "cursor-grok-4.6-medium",
-        "steps": {
-          "0": "cursor-grok-4.6-high",
-          "1": "cursor-grok-4.6-high",
-          "2": "",
-          "3": "",
-          "4": "",
-          "5": "",
-          "6": "cursor-grok-4.6-medium",
-          "7": "composer-2.5",
-          "8": "current",
-          "9": "current",
-          "dag": "composer-2.5",
-          "scoreAndRefine": "composer-2.5",
-          "reviewFix": "composer-2.5",
-          "fixPrPlan": "cursor-grok-4.6-medium",
-          "fixPrExec": "composer-2.5"
-        }
+        "plannerModel": "current",
+        "executionModel": "current",
+        "testingModel": "current",
+        "reviewerModel": "current"
       },
       "cursor": {
         "plannerModel": "cursor-grok-4.6-high",
         "executionModel": "composer-2.5",
         "testingModel": "composer-2.5",
-        "reviewerModel": "cursor-grok-4.6-medium",
-        "steps": {
-          "0": "cursor-grok-4.6-high",
-          "1": "cursor-grok-4.6-high",
-          "2": "",
-          "3": "",
-          "4": "",
-          "5": "",
-          "6": "cursor-grok-4.6-medium",
-          "7": "composer-2.5",
-          "8": "current",
-          "9": "current",
-          "dag": "composer-2.5",
-          "scoreAndRefine": "composer-2.5",
-          "reviewFix": "composer-2.5",
-          "fixPrPlan": "cursor-grok-4.6-medium",
-          "fixPrExec": "composer-2.5"
-        }
+        "reviewerModel": "cursor-grok-4.6-medium"
       },
       "deepseek": {
         "plannerModel": "opencode-go/deepseek-v4-pro",
         "executionModel": "opencode-go/deepseek-v4-flash",
         "testingModel": "composer-2.5",
-        "reviewerModel": "cursor-grok-4.6-medium",
-        "steps": {
-          "0": "",
-          "1": "",
-          "2": "",
-          "3": "",
-          "4": "",
-          "5": "",
-          "6": "",
-          "7": "",
-          "8": "current",
-          "9": "current",
-          "dag": "opencode-go/deepseek-v4-flash",
-          "scoreAndRefine": "opencode-go/deepseek-v4-flash",
-          "reviewFix": "opencode-go/deepseek-v4-flash"
-        }
+        "reviewerModel": "cursor-grok-4.6-medium"
       },
       "opencode": {
         "plannerModel": "opencode-go/deepseek-v4-pro",
         "executionModel": "opencode-go/deepseek-v4-flash",
         "testingModel": "opencode-go/deepseek-v4-flash",
-        "reviewerModel": "opencode-go/deepseek-v4-pro",
-        "steps": {
-          "0": "",
-          "1": "",
-          "2": "",
-          "3": "",
-          "4": "",
-          "5": "",
-          "6": "",
-          "7": "",
-          "8": "current",
-          "9": "current",
-          "dag": "opencode-go/deepseek-v4-flash",
-          "scoreAndRefine": "opencode-go/deepseek-v4-flash",
-          "reviewFix": "opencode-go/deepseek-v4-flash"
-        }
+        "reviewerModel": "opencode-go/deepseek-v4-pro"
       },
       "cheap": {
         "plannerModel": "composer-2.5",
         "executionModel": "composer-2.5",
         "testingModel": "composer-2.5",
-        "reviewerModel": "composer-2.5",
-        "steps": {
-          "0": "",
-          "1": "",
-          "2": "",
-          "3": "",
-          "4": "",
-          "5": "",
-          "6": "",
-          "7": "",
-          "8": "current",
-          "9": "current",
-          "dag": "composer-2.5",
-          "scoreAndRefine": "composer-2.5",
-          "reviewFix": "composer-2.5"
-        }
+        "reviewerModel": "composer-2.5"
       }
     },
     "stepModels": {
@@ -269,16 +190,18 @@
       "9": "",
       "dag": "",
       "scoreAndRefine": "",
-      "reviewFix": ""
+      "reviewFix": "",
+      "fixPrPlan": "",
+      "fixPrExec": ""
     },
     "_plannerModel": "opencode-go/deepseek-v4-pro",
     "_executionModel": "opencode-go/deepseek-v4-flash",
     "_reviewerModel": "opencode-go/deepseek-v4-pro",
     "_testingModel": "opencode-go/deepseek-v4-flash",
-    "plannerModel": "opencode-go/deepseek-v4-pro",
-    "executionModel": "composer-2.5",
-    "reviewerModel": "cursor-grok-4.6-high",
-    "testingModel": "composer-2.5",
+    "plannerModel": "",
+    "executionModel": "",
+    "reviewerModel": "",
+    "testingModel": "",
     "specializedSubagents": {
       "enabled": true,
       "targetHost": "cursor",

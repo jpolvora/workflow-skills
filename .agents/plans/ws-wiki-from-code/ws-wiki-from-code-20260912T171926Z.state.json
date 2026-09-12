@@ -1,0 +1,1843 @@
+{
+  "acImplemented": 18,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "013431e4282e4ff892b6c80bb2dcf73a17bd5ee2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/CATALOG.md:L94-L94",
+          ".agents/skills/ws-wiki/SKILL.md:L1-L8",
+          "CATALOG.md:L91-L91"
+        ],
+        "files": [
+          {
+            "lineEnd": 94,
+            "lineStart": 94,
+            "path": ".agents/skills/ws-shared/runtime/CATALOG.md",
+            "sha256": "2da46aafbc87353efdee27f05fbce8d9bcc325736115cf047f7e5c5135cc2320"
+          },
+          {
+            "lineEnd": 8,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-wiki/SKILL.md",
+            "sha256": "f034b4860cdbf2ad9e072513a999b04e3c01e7d36d56c52f61f48bea595d24e1"
+          },
+          {
+            "lineEnd": 91,
+            "lineStart": 91,
+            "path": "CATALOG.md",
+            "sha256": "8ad308d27d07c98340bc6e676db8f4b290705d4dc8fc806a43d08e67612a43b7"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "evt-step5-verify-1",
+          "g2-commit-013431e4"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1: no ws-wiki-from-code packaged skill",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:19.494Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1: ws-wiki/SKILL.md exists",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:19.494Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "CATALOG mentions from-code genesis",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:19.495Z"
+          }
+        ],
+        "text": "Feature remains skill id `ws-wiki`. No new packaged skill folder `ws-wiki-from-code`. `CATALOG.md` / runtime catalog rows stay one `ws-wiki` skill and mention from-code genesis.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "013431e4282e4ff892b6c80bb2dcf73a17bd5ee2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/SKILL.md:L42-L71"
+        ],
+        "files": [
+          {
+            "lineEnd": 71,
+            "lineStart": 42,
+            "path": ".agents/skills/ws-wiki/SKILL.md",
+            "sha256": "f034b4860cdbf2ad9e072513a999b04e3c01e7d36d56c52f61f48bea595d24e1"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "evt-step5-verify-1",
+          "g2-commit-013431e4"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2: body outputs load banner \"ws-wiki loaded.\"",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:19.565Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "SKILL links companion procedures",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:19.566Z"
+          }
+        ],
+        "text": "`.agents/skills/ws-wiki/SKILL.md` is a router: subcommand table, aliases, and load-on-demand pointers only. Full procedures live in the companion files named in Description.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "013431e4282e4ff892b6c80bb2dcf73a17bd5ee2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/SKILL.md:L59-L71"
+        ],
+        "files": [
+          {
+            "lineEnd": 71,
+            "lineStart": 59,
+            "path": ".agents/skills/ws-wiki/SKILL.md",
+            "sha256": "f034b4860cdbf2ad9e072513a999b04e3c01e7d36d56c52f61f48bea595d24e1"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "evt-step5-verify-1",
+          "g2-commit-013431e4"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1: SKILL documents apply aliases",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:33.467Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1: SKILL documents verify aliases",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:33.467Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "SKILL documents /ws-wiki from-code",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:33.459Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "SKILL documents /ws-wiki sweep",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:33.466Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "SKILL links companion procedures",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:33.459Z"
+          }
+        ],
+        "text": "Companions `INIT.md`, `FROM-CODE.md`, `PHASE-1-SWEEP.md`, `PHASE-2-VERIFY.md`, `PHASE-3-APPLY.md`, `SYNC.md`, and `UPDATE.md` exist under `.agents/skills/ws-wiki/`. Each is loaded only when that subcommand is invoked. SKILL.md links to them. SKILL.md still names `/ws-wiki sweep`, `/ws-wiki verify` (`audit`, `check-code`), `/ws-wiki apply` (`reconcile`, `phase-3`), `/ws-wiki sync`, and `/ws-wiki from-code` (`reverse`, `reconstruct`).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "013431e4282e4ff892b6c80bb2dcf73a17bd5ee2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/PHASE-1-SWEEP.md:L1-L20",
+          ".agents/skills/ws-wiki/PHASE-2-VERIFY.md:L1-L20",
+          ".agents/skills/ws-wiki/PHASE-3-APPLY.md:L1-L20"
+        ],
+        "files": [
+          {
+            "lineEnd": 20,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-wiki/PHASE-1-SWEEP.md",
+            "sha256": "b41ae1bf9775e881a209855612d51d3b60ad1fcbe58aeac3ddc09cc8db41b968"
+          },
+          {
+            "lineEnd": 20,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-wiki/PHASE-2-VERIFY.md",
+            "sha256": "e5883d29fa51a67476ef2208a29b9159d1ff943a9a457c33cd4b99e2049ccaa0"
+          },
+          {
+            "lineEnd": 20,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-wiki/PHASE-3-APPLY.md",
+            "sha256": "87b1cee4371968fb5c3c75dbec247d38443def459f4811c6967c5ece73b3a2b7"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "evt-step5-verify-1",
+          "g2-commit-013431e4"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC4: SKILL documents verify enumerator usage",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:21.492Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PHASE-2-VERIFY documents verify enumerator usage",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:21.493Z"
+          }
+        ],
+        "text": "Moving 0076/0078 procedures into companions does not change sweep overlay order, current-code bias, verify classification, Phase 3 truth gates, or `ws-spec-write` code-handoff behavior except as this spec adds from-code and the init offer.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "013431e4282e4ff892b6c80bb2dcf73a17bd5ee2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/FROM-CODE.md:L1-L15",
+          ".agents/skills/ws-wiki/SKILL.md:L73-L73"
+        ],
+        "files": [
+          {
+            "lineEnd": 15,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-wiki/FROM-CODE.md",
+            "sha256": "5cfad19e20ec770aa119704e0f2e0982232e3dff7aba3992e0d3a817fbc6955b"
+          },
+          {
+            "lineEnd": 73,
+            "lineStart": 73,
+            "path": ".agents/skills/ws-wiki/SKILL.md",
+            "sha256": "f034b4860cdbf2ad9e072513a999b04e3c01e7d36d56c52f61f48bea595d24e1"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "evt-step5-verify-1",
+          "g2-commit-013431e4"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS1: FROM-CODE documents missing-index STOP",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:21.574Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS1: SKILL router documents missing-index STOP",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:21.573Z"
+          }
+        ],
+        "text": "`/ws-wiki from-code` without `index.wiki.md` STOP with a message to run `/ws-wiki init` first; it does not invent an index or feature pages.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "013431e4282e4ff892b6c80bb2dcf73a17bd5ee2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/scripts/list_wiki_from_code_areas.cjs:L11-L21",
+          ".agents/skills/ws-wiki/scripts/list_wiki_from_code_areas.cjs:L200-L280"
+        ],
+        "files": [
+          {
+            "lineEnd": 21,
+            "lineStart": 11,
+            "path": ".agents/skills/ws-wiki/scripts/list_wiki_from_code_areas.cjs",
+            "sha256": "8e1d8031435713bd2d594aec939455179f9cb2f2c8fcdbbbf688696f353f894f"
+          },
+          {
+            "lineEnd": 280,
+            "lineStart": 200,
+            "path": ".agents/skills/ws-wiki/scripts/list_wiki_from_code_areas.cjs",
+            "sha256": "8e1d8031435713bd2d594aec939455179f9cb2f2c8fcdbbbf688696f353f894f"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "evt-step5-verify-1",
+          "g2-commit-013431e4"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "areas follow canonical id order",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:21.650Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "from-code helper JSON ok is true",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:21.649Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS7: empty frontend recorded in skipped",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:21.650Z"
+          }
+        ],
+        "text": "Helper `.agents/skills/ws-wiki/scripts/list_wiki_from_code_areas.cjs` prints `--json` `{ ok, areas: [{ id, title, paths }], errors }` for the canonical area ids. An area with no existing candidate paths is omitted from `areas` and recorded in `errors` or a `skipped` array (not invented). Sort is the canonical id order in Description.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "013431e4282e4ff892b6c80bb2dcf73a17bd5ee2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/scripts/list_wiki_from_code_areas.cjs:L23-L58",
+          ".agents/skills/ws-wiki/scripts/list_wiki_from_code_areas.cjs:L61-L69"
+        ],
+        "files": [
+          {
+            "lineEnd": 58,
+            "lineStart": 23,
+            "path": ".agents/skills/ws-wiki/scripts/list_wiki_from_code_areas.cjs",
+            "sha256": "8e1d8031435713bd2d594aec939455179f9cb2f2c8fcdbbbf688696f353f894f"
+          },
+          {
+            "lineEnd": 69,
+            "lineStart": 61,
+            "path": ".agents/skills/ws-wiki/scripts/list_wiki_from_code_areas.cjs",
+            "sha256": "8e1d8031435713bd2d594aec939455179f9cb2f2c8fcdbbbf688696f353f894f"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [
+          "evt-step5-verify-1",
+          "g2-commit-013431e4"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC7: --help exits 0",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:21.728Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC7: leftover positional token rejected",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:21.729Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS3: unknown flag exits 2",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:21.728Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS8: from-code helper performs no network fetch",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:21.729Z"
+          }
+        ],
+        "text": "Helper CLI validates `--repo-root` with directory containment (resolved path stays under repo root); unknown flags and leftover argv tokens are rejected before walking the tree; `--help` exits 0 and is never a filename. Helper does not call SCM HTTP.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "013431e4282e4ff892b6c80bb2dcf73a17bd5ee2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/scripts/list_wiki_from_code_areas.cjs:L90-L180"
+        ],
+        "files": [
+          {
+            "lineEnd": 180,
+            "lineStart": 90,
+            "path": ".agents/skills/ws-wiki/scripts/list_wiki_from_code_areas.cjs",
+            "sha256": "8e1d8031435713bd2d594aec939455179f9cb2f2c8fcdbbbf688696f353f894f"
+          }
+        ],
+        "findings": [],
+        "id": "AC8",
+        "linkEventIds": [
+          "evt-step5-verify-1",
+          "g2-commit-013431e4"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "git-surface always in areas with paths: []",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:22.815Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "list_wiki_from_code_areas exits 0 on workflow-skills repo",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:22.816Z"
+          }
+        ],
+        "text": "Candidate paths include `config.json` stack layer / `srcDir` / `sourceDir` values when those directories exist, plus convention hits for CI, docs, tests, and `{reviewsDir}` when configured. `git-surface` contributes no filesystem tree requirement; the agent uses local git commands only as specified (last 20 commits, branch names from `config.project`).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "013431e4282e4ff892b6c80bb2dcf73a17bd5ee2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/FROM-CODE.md:L28-L31"
+        ],
+        "files": [
+          {
+            "lineEnd": 31,
+            "lineStart": 28,
+            "path": ".agents/skills/ws-wiki/FROM-CODE.md",
+            "sha256": "5cfad19e20ec770aa119704e0f2e0982232e3dff7aba3992e0d3a817fbc6955b"
+          }
+        ],
+        "findings": [],
+        "id": "AC9",
+        "linkEventIds": [
+          "evt-step5-verify-1",
+          "g2-commit-013431e4"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC9: FROM-CODE documents merge start gate",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:22.893Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS6: FROM-CODE documents overwrite confirm gate",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:22.894Z"
+          }
+        ],
+        "text": "Start `user-gate` for from-code: recommended Start merge reconstruction vs Cancel. When feature pages already exist, merge is the default; a separate overwrite confirm is required before deleting or replacing existing wiki statements. Cancel STOP writes no `from-code.state.json`. `autoMode` takes merge.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "013431e4282e4ff892b6c80bb2dcf73a17bd5ee2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/FROM-CODE.md:L40-L47"
+        ],
+        "files": [
+          {
+            "lineEnd": 47,
+            "lineStart": 40,
+            "path": ".agents/skills/ws-wiki/FROM-CODE.md",
+            "sha256": "5cfad19e20ec770aa119704e0f2e0982232e3dff7aba3992e0d3a817fbc6955b"
+          }
+        ],
+        "findings": [],
+        "id": "AC10",
+        "linkEventIds": [
+          "evt-step5-verify-1",
+          "g2-commit-013431e4"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS5: FROM-CODE documents merge preserve rules",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:22.975Z"
+          }
+        ],
+        "text": "Sequential walk is one area at a time. Merge mode creates missing domain/feature pages and fills empty 3-section headings from code/docs; it does not drop existing Business Rules or Architecture statements. Overwrite mode (after confirm) may replace page bodies but still writes 3-section pages and then `sync_wiki_index.cjs`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "013431e4282e4ff892b6c80bb2dcf73a17bd5ee2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/FROM-CODE.md:L38-L38"
+        ],
+        "files": [
+          {
+            "lineEnd": 38,
+            "lineStart": 38,
+            "path": ".agents/skills/ws-wiki/FROM-CODE.md",
+            "sha256": "5cfad19e20ec770aa119704e0f2e0982232e3dff7aba3992e0d3a817fbc6955b"
+          }
+        ],
+        "findings": [],
+        "id": "AC11",
+        "linkEventIds": [
+          "evt-step5-verify-1",
+          "g2-commit-013431e4"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC12: FROM-CODE documents dry-run purity",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:23.059Z"
+          }
+        ],
+        "text": "Checkpoint `{wikiDir}/from-code.state.json` records `status` (`running` | `completed`), `completedAreas`, `lastArea`, `mode` (`merge` | `overwrite`), `startedAt`, `updatedAt`. `--resume` continues after `lastArea` unless `--force`. Agents must not stage this file in product commits.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "013431e4282e4ff892b6c80bb2dcf73a17bd5ee2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/FROM-CODE.md:L49-L49"
+        ],
+        "files": [
+          {
+            "lineEnd": 49,
+            "lineStart": 49,
+            "path": ".agents/skills/ws-wiki/FROM-CODE.md",
+            "sha256": "5cfad19e20ec770aa119704e0f2e0982232e3dff7aba3992e0d3a817fbc6955b"
+          }
+        ],
+        "findings": [],
+        "id": "AC12",
+        "linkEventIds": [
+          "evt-step5-verify-1",
+          "g2-commit-013431e4"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC12: FROM-CODE documents dry-run purity",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:24.111Z"
+          }
+        ],
+        "text": "`--dry-run` prints the area queue (and checkpoint summary if present) and writes neither wiki pages nor `from-code.state.json`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "013431e4282e4ff892b6c80bb2dcf73a17bd5ee2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/FROM-CODE.md:L53-L56"
+        ],
+        "files": [
+          {
+            "lineEnd": 56,
+            "lineStart": 53,
+            "path": ".agents/skills/ws-wiki/FROM-CODE.md",
+            "sha256": "5cfad19e20ec770aa119704e0f2e0982232e3dff7aba3992e0d3a817fbc6955b"
+          }
+        ],
+        "findings": [],
+        "id": "AC13",
+        "linkEventIds": [
+          "evt-step5-verify-1",
+          "g2-commit-013431e4"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2: PHASE-1 documents post-sweep Phase 2 offer",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:24.180Z"
+          }
+        ],
+        "text": "After a successful from-code finish, present `user-gate` Run Phase 2 wiki-vs-code audit (Recommended) vs Skip. Skip writes no verify artifacts. Cancel STOP. `autoMode` takes recommended.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "013431e4282e4ff892b6c80bb2dcf73a17bd5ee2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/INIT.md:L14-L25"
+        ],
+        "files": [
+          {
+            "lineEnd": 25,
+            "lineStart": 14,
+            "path": ".agents/skills/ws-wiki/INIT.md",
+            "sha256": "8cf1eb3b26e29120d59940b477628d9dbf33a5e50d9b29cdc23cfce803825b2e"
+          }
+        ],
+        "findings": [],
+        "id": "AC14",
+        "linkEventIds": [
+          "evt-step5-verify-1",
+          "g2-commit-013431e4"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC14: INIT recommends from-code when zero specs",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:24.247Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC14: INIT recommends sweep when specs exist",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:24.248Z"
+          }
+        ],
+        "text": "After successful `init`, if the helper/spec enumerator reports **zero** top-level specs, the init `user-gate` recommends from-code reconstruction; spec sweep remains an option. If one or more specs exist, sweep remains recommended and from-code merge is offered as a non-recommended option.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "013431e4282e4ff892b6c80bb2dcf73a17bd5ee2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/FROM-CODE.md:L51-L51",
+          ".agents/skills/ws-wiki/FROM-CODE.md:L7-L7"
+        ],
+        "files": [
+          {
+            "lineEnd": 7,
+            "lineStart": 7,
+            "path": ".agents/skills/ws-wiki/FROM-CODE.md",
+            "sha256": "5cfad19e20ec770aa119704e0f2e0982232e3dff7aba3992e0d3a817fbc6955b"
+          },
+          {
+            "lineEnd": 51,
+            "lineStart": 51,
+            "path": ".agents/skills/ws-wiki/FROM-CODE.md",
+            "sha256": "5cfad19e20ec770aa119704e0f2e0982232e3dff7aba3992e0d3a817fbc6955b"
+          }
+        ],
+        "findings": [],
+        "id": "AC15",
+        "linkEventIds": [
+          "evt-step5-verify-1",
+          "g2-commit-013431e4"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS8: from-code helper performs no network fetch",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:24.342Z"
+          }
+        ],
+        "text": "From-code does not mutate product source, does not call `ws-spec-write`, and does not register `{plansDir}`. Finish still runs `validate_wiki.cjs --check`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "013431e4282e4ff892b6c80bb2dcf73a17bd5ee2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "test/test-wiki.js:L613-L700"
+        ],
+        "files": [
+          {
+            "lineEnd": 700,
+            "lineStart": 613,
+            "path": "test/test-wiki.js",
+            "sha256": "4d46458c888320e445531b06f91f5501e150fae4ae98422ac1961c653d94fefe"
+          }
+        ],
+        "findings": [],
+        "id": "AC16",
+        "linkEventIds": [
+          "evt-step5-verify-1",
+          "g2-commit-013431e4"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "CATALOG mentions from-code genesis",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:33.545Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "list_wiki_from_code_areas exits 0 on workflow-skills repo",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:33.537Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "SKILL documents from-code area helper",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:33.538Z"
+          }
+        ],
+        "text": "`test/test-wiki.js` (or sibling `test/test-wiki-from-code.js` listed in `package.json` test scripts) covers AC6–AC7, AC12 dry-run, missing-index STOP copy or skill contract test, empty-area skip, containment/unknown-flag failures, companion file presence, and SKILL/CATALOG strings for `/ws-wiki from-code`. Existing sweep/verify SKILL string tests still pass via the router table.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "013431e4282e4ff892b6c80bb2dcf73a17bd5ee2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/FROM-CODE.md:L1-L56",
+          ".agents/skills/ws-wiki/SKILL.md:L1-L120",
+          ".agents/skills/ws-wiki/scripts/list_wiki_from_code_areas.cjs:L1-L359"
+        ],
+        "files": [
+          {
+            "lineEnd": 56,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-wiki/FROM-CODE.md",
+            "sha256": "5cfad19e20ec770aa119704e0f2e0982232e3dff7aba3992e0d3a817fbc6955b"
+          },
+          {
+            "lineEnd": 359,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-wiki/scripts/list_wiki_from_code_areas.cjs",
+            "sha256": "8e1d8031435713bd2d594aec939455179f9cb2f2c8fcdbbbf688696f353f894f"
+          },
+          {
+            "lineEnd": 120,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-wiki/SKILL.md",
+            "sha256": "f034b4860cdbf2ad9e072513a999b04e3c01e7d36d56c52f61f48bea595d24e1"
+          }
+        ],
+        "findings": [],
+        "id": "AC17",
+        "linkEventIds": [
+          "evt-step5-verify-1",
+          "g2-commit-013431e4"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC18: no host product names in skill router",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:50.631Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS8: from-code helper performs no network fetch",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:50.631Z"
+          }
+        ],
+        "text": "No host/IDE product names in skill body, companions, gates, or scripts (portable `user-gate` / `askQuestion` alias only).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "013431e4282e4ff892b6c80bb2dcf73a17bd5ee2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/specs/0079-ws-wiki-from-code.spec.md:L1-L50"
+        ],
+        "files": [
+          {
+            "lineEnd": 50,
+            "lineStart": 1,
+            "path": ".agents/specs/0079-ws-wiki-from-code.spec.md",
+            "sha256": "8b24d528ce0ef0783e6c3e6ef96bd55595ac95dc8233397f2bf44b820cbe3d25"
+          }
+        ],
+        "findings": [],
+        "id": "AC18",
+        "linkEventIds": [
+          "evt-step5-verify-1",
+          "g2-commit-013431e4"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC18: CATALOG mentions Phase 2 wiki-vs-code verify",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:44.066Z"
+          }
+        ],
+        "text": "Authoring validation for this specification exits 0.",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "1032437741933ec3fd65bf80ab93d9c4322bbe93733118d7a75503f9656b23f3",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      },
+      {
+        "alias": "backendTestFull",
+        "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+        "endedAt": null,
+        "exitCode": 1,
+        "skipReason": "baseline-dirty",
+        "startedAt": null
+      },
+      {
+        "alias": "specAuthoring",
+        "commandHash": "e5a9dad13bdb9590840a2c95712c686358f4415214d5720f6c03c25cd4f29422",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      },
+      {
+        "alias": "stackInvariants",
+        "commandHash": "5a4f1673873d31d0b7f239c46a90fe587c7d7e1abe9fcb0f91e9e210246b3dd9",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      }
+    ],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "evt-step5-verify-1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS1: FROM-CODE documents missing-index STOP",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:35.516Z"
+          }
+        ],
+        "text": "Missing `index.wiki.md`: `/ws-wiki from-code` STOP; helper may still list areas; skill must not write feature pages."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "evt-step5-verify-1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS2: paths escaping repo root are not collected",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:35.660Z"
+          }
+        ],
+        "text": "`--repo-root` resolving outside the intended tree: helper exit non-zero, no walk of the escaped path."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "evt-step5-verify-1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC7: --help exits 0",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:35.734Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS3: unknown flag exits 2",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:35.733Z"
+          }
+        ],
+        "text": "Unknown argv token / leftover `--help` as path: `--help` exit 0; other dash tokens non-zero."
+      },
+      {
+        "id": "NS4",
+        "linkEventIds": [
+          "evt-step5-verify-1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC12: FROM-CODE documents dry-run purity",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:35.817Z"
+          }
+        ],
+        "text": "`--dry-run` after a partial checkpoint: no wiki mtime/content change, no new checkpoint write."
+      },
+      {
+        "id": "NS5",
+        "linkEventIds": [
+          "evt-step5-verify-1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS5: FROM-CODE documents merge preserve rules",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:35.881Z"
+          }
+        ],
+        "text": "Merge mode on an existing page that already has a business rule: that rule remains in the file after the run."
+      },
+      {
+        "id": "NS6",
+        "linkEventIds": [
+          "evt-step5-verify-1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS6: FROM-CODE documents overwrite confirm gate",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:35.953Z"
+          }
+        ],
+        "text": "Overwrite without the extra confirm: no existing feature page body replaced."
+      },
+      {
+        "id": "NS7",
+        "linkEventIds": [
+          "evt-step5-verify-1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS7: empty frontend omitted from areas",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:36.022Z"
+          }
+        ],
+        "text": "Empty frontend `sourceDir`: `frontend` omitted from `areas`; run still succeeds."
+      },
+      {
+        "id": "NS8",
+        "linkEventIds": [
+          "evt-step5-verify-1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS8: from-code helper performs no network fetch",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:36.096Z"
+          }
+        ],
+        "text": "Unauthenticated network calls: N/A because from-code does not call SCM HTTP; a regression that adds unauthenticated remote fetch for from-code must not ship."
+      },
+      {
+        "id": "NS9",
+        "linkEventIds": [
+          "evt-step5-verify-1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC7: --specs-dir rejected as unknown with exit 2",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:36.163Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC7: leftover positional token rejected",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T17:25:36.163Z"
+          }
+        ],
+        "text": "Stack path-containment / unknown-flag failures on the new helper (same class as sweep enumerator)."
+      }
+    ],
+    "planIndexPath": null,
+    "revision": 34,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "step5",
+      "computedAt": "2026-09-12T17:30:11.163Z",
+      "earnedUnits": 162,
+      "errors": [],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "missingEvidence": false,
+      "score": 9,
+      "totalUnits": 180
+    },
+    "slug": "ws-wiki-from-code",
+    "specPath": ".agents/plans/ws-wiki-from-code/step-00-ws-wiki-from-code.spec.md",
+    "testingSkip": null,
+    "workflowId": "ws-wiki-from-code-20260912T171926Z"
+  },
+  "acTotal": 18,
+  "autoMode": true,
+  "baseBranch": "main",
+  "baselineCommit": "aad68a7a1a0cd3c4496437722954822dbdfd6201",
+  "branch": "develop",
+  "branchStrategy": "stay",
+  "checkpoints": [],
+  "commits": [
+    {
+      "sha": "013431e4282e4ff892b6c80bb2dcf73a17bd5ee2",
+      "step": 5
+    }
+  ],
+  "completedSteps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "currentModel": "composer-2.5",
+  "currentStep": 9,
+  "dryRun": false,
+  "endedAt": "2026-09-12T17:32:10Z",
+  "execMode": null,
+  "fullMode": true,
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/ws-wiki-from-code/step-00-ws-wiki-from-code.spec.md",
+        ".agents/plans/ws-wiki-from-code/ac-ledger.json",
+        ".agents/plans/ws-wiki-from-code/step-00-ws-wiki-from-code.classify.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "ws-wiki-from-code",
+      "status": "completed",
+      "step": 0,
+      "summary": "Finished step 0",
+      "workflowId": "ws-wiki-from-code-20260912T171926Z",
+      "workflowType": "standard"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/ws-wiki-from-code/step-01-ws-wiki-from-code.plan.md",
+        ".agents/plans/ws-wiki-from-code/.runtime/plan.index.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "ws-wiki-from-code",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "ws-wiki-from-code-20260912T171926Z",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/ws-wiki-from-code/step-02-ws-wiki-from-code.plan-interview.md",
+        ".agents/plans/ws-wiki-from-code/step-02-ws-wiki-from-code.plan.refined.md",
+        ".agents/plans/ws-wiki-from-code/.runtime/plan.index.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "ws-wiki-from-code",
+      "status": "completed",
+      "step": 2,
+      "summary": "Finished step 2",
+      "workflowId": "ws-wiki-from-code-20260912T171926Z",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "ws-wiki-from-code",
+      "status": "skipped",
+      "step": 3,
+      "summary": "Finished step 3",
+      "workflowId": "ws-wiki-from-code-20260912T171926Z",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/skills/ws-wiki/scripts/list_wiki_from_code_areas.cjs",
+        ".agents/skills/ws-wiki/INIT.md",
+        ".agents/skills/ws-wiki/FROM-CODE.md",
+        ".agents/skills/ws-wiki/PHASE-1-SWEEP.md",
+        ".agents/skills/ws-wiki/PHASE-2-VERIFY.md",
+        ".agents/skills/ws-wiki/PHASE-3-APPLY.md",
+        ".agents/skills/ws-wiki/SYNC.md",
+        ".agents/skills/ws-wiki/UPDATE.md",
+        ".agents/skills/ws-wiki/SKILL.md",
+        "CATALOG.md",
+        ".agents/skills/ws-shared/runtime/CATALOG.md",
+        "test/test-wiki.js"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "ws-wiki-from-code",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "ws-wiki-from-code-20260912T171926Z",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/ws-wiki-from-code/step-05-ws-wiki-from-code.plan.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "ws-wiki-from-code",
+      "status": "completed",
+      "step": 5,
+      "summary": "Finished step 5",
+      "workflowId": "ws-wiki-from-code-20260912T171926Z",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/ws-wiki-from-code/step-06-ws-wiki-from-code.review.md",
+        ".agents/plans/ws-wiki-from-code/step-06-ws-wiki-from-code.review.r1.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "ws-wiki-from-code",
+      "status": "completed",
+      "step": 6,
+      "summary": "Finished step 6",
+      "workflowId": "ws-wiki-from-code-20260912T171926Z",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/ws-wiki-from-code/step-07-ws-wiki-from-code.testing.plan.md",
+        ".agents/plans/ws-wiki-from-code/step-07-ws-wiki-from-code.testing.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "ws-wiki-from-code",
+      "status": "completed",
+      "step": 7,
+      "summary": "Finished step 7",
+      "workflowId": "ws-wiki-from-code-20260912T171926Z",
+      "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/ws-wiki-from-code/step-08-ws-wiki-from-code.result.md",
+        "bin/skill-integrity.json",
+        "docs/wiki/documentation/ws-wiki.html",
+        ".agents/plans/ws-wiki-from-code/step-02-ws-wiki-from-code.plan.refined.md",
+        ".agents/skills/ws-shared/CHANGELOG.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "ws-wiki-from-code",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "ws-wiki-from-code-20260912T171926Z",
+      "workflowType": "standard"
+    }
+  },
+  "hostBinding": {
+    "askQuestionTool": "AskQuestion",
+    "browserTool": "cursor-ide-browser",
+    "mode": "auto",
+    "subagentTool": "Task",
+    "supportsNamedAgents": true
+  },
+  "nextAction": "Run step 9",
+  "preExistingDirty": [],
+  "revision": 19,
+  "scoreAndRefine": false,
+  "shipStatus": "pr-open",
+  "skipQualityGates": false,
+  "skipTesting": false,
+  "skipTests": false,
+  "skippedSteps": [
+    {
+      "evidence": "",
+      "reason": "dag-disabled",
+      "step": 3
+    }
+  ],
+  "slug": "ws-wiki-from-code",
+  "specPath": ".agents/plans/ws-wiki-from-code/step-00-ws-wiki-from-code.spec.md",
+  "specSource": "local",
+  "startedAt": "2026-09-12T17:19:26Z",
+  "statePath": ".agents/plans/ws-wiki-from-code/ws-wiki-from-code-20260912T171926Z.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [
+    {
+      "agentType": "named:ws-step-00-spec-write",
+      "dispatchedAt": "2026-09-12T17:19:42Z",
+      "model": "opencode-go/deepseek-v4-pro",
+      "step": 0
+    },
+    {
+      "agentType": "named:ws-step-01-plan-write",
+      "dispatchedAt": "2026-09-12T17:20:39Z",
+      "model": "opencode-go/deepseek-v4-pro",
+      "step": 1
+    },
+    {
+      "agentType": "named:ws-step-02-plan-interview",
+      "dispatchedAt": "2026-09-12T17:22:37Z",
+      "model": "opencode-go/deepseek-v4-pro",
+      "step": 2
+    },
+    {
+      "agentType": "named:ws-step-04-implement-tasks",
+      "dispatchedAt": "2026-09-12T17:24:48Z",
+      "model": "composer-2.5",
+      "step": 4
+    },
+    {
+      "agentType": "named:ws-step-05-plan-verify",
+      "dispatchedAt": "2026-09-12T17:26:05Z",
+      "model": "cursor-grok-4.6-high",
+      "step": 5
+    },
+    {
+      "agentType": "named:ws-step-06-code-review",
+      "dispatchedAt": "2026-09-12T17:28:30Z",
+      "model": "cursor-grok-4.6-high",
+      "step": 6
+    },
+    {
+      "agentType": "named:ws-step-07-testing",
+      "dispatchedAt": "2026-09-12T17:30:15Z",
+      "model": "composer-2.5",
+      "step": 7
+    },
+    {
+      "agentType": "named:ws-step-08-ship-pr",
+      "dispatchedAt": "2026-09-12T17:32:10Z",
+      "model": "composer-2.5",
+      "step": 8
+    }
+  ],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "skipped",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed"
+  },
+  "telemetry": {
+    "loc": {
+      "added": null,
+      "baseline": null,
+      "final": null,
+      "netDelta": null,
+      "removed": null
+    },
+    "steps": [
+      {
+        "N": 0,
+        "agentType": "named:ws-step-00-spec-write",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T17:19:42Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/ws-wiki-from-code/step-00-ws-wiki-from-code.spec.md",
+            ".agents/plans/ws-wiki-from-code/ac-ledger.json",
+            ".agents/plans/ws-wiki-from-code/step-00-ws-wiki-from-code.classify.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T17:19:42Z",
+        "label": "Spec",
+        "model": "opencode-go/deepseek-v4-pro",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 1,
+        "agentType": "named:ws-step-01-plan-write",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T17:20:39Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/ws-wiki-from-code/step-01-ws-wiki-from-code.plan.md",
+            ".agents/plans/ws-wiki-from-code/.runtime/plan.index.json"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T17:20:39Z",
+        "label": "Planning",
+        "model": "opencode-go/deepseek-v4-pro",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": "named:ws-step-02-plan-interview",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T17:22:37Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/ws-wiki-from-code/step-02-ws-wiki-from-code.plan-interview.md",
+            ".agents/plans/ws-wiki-from-code/step-02-ws-wiki-from-code.plan.refined.md"
+          ],
+          "deleted": [],
+          "modified": [
+            ".agents/plans/ws-wiki-from-code/.runtime/plan.index.json"
+          ]
+        },
+        "finishedAt": "2026-09-12T17:22:37Z",
+        "label": "Interview",
+        "model": "opencode-go/deepseek-v4-pro",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T17:22:38Z",
+        "label": "Plan to tasks",
+        "model": "opencode-go/deepseek-v4-pro",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": "named:ws-step-04-implement-tasks",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T17:24:48Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/skills/ws-wiki/scripts/list_wiki_from_code_areas.cjs",
+            ".agents/skills/ws-wiki/INIT.md",
+            ".agents/skills/ws-wiki/FROM-CODE.md",
+            ".agents/skills/ws-wiki/PHASE-1-SWEEP.md",
+            ".agents/skills/ws-wiki/PHASE-2-VERIFY.md",
+            ".agents/skills/ws-wiki/PHASE-3-APPLY.md",
+            ".agents/skills/ws-wiki/SYNC.md",
+            ".agents/skills/ws-wiki/UPDATE.md"
+          ],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-wiki/SKILL.md",
+            "CATALOG.md",
+            ".agents/skills/ws-shared/runtime/CATALOG.md",
+            "test/test-wiki.js"
+          ]
+        },
+        "finishedAt": "2026-09-12T17:24:48Z",
+        "label": "Implement",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": "named:ws-step-05-plan-verify",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T17:26:05Z",
+        "elapsedSec": 9,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/ws-wiki-from-code/step-05-ws-wiki-from-code.plan.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T17:26:14Z",
+        "label": "Verify",
+        "model": "cursor-grok-4.6-high",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 6,
+        "agentType": "named:ws-step-06-code-review",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T17:28:30Z",
+        "elapsedSec": 1,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/ws-wiki-from-code/step-06-ws-wiki-from-code.review.md",
+            ".agents/plans/ws-wiki-from-code/step-06-ws-wiki-from-code.review.r1.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T17:28:31Z",
+        "label": "Code review",
+        "model": "cursor-grok-4.6-high",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 7,
+        "agentType": "named:ws-step-07-testing",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T17:30:15Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/ws-wiki-from-code/step-07-ws-wiki-from-code.testing.plan.md",
+            ".agents/plans/ws-wiki-from-code/step-07-ws-wiki-from-code.testing.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T17:30:15Z",
+        "label": "Testing",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": "named:ws-step-08-ship-pr",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T17:32:10Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/ws-wiki-from-code/step-08-ws-wiki-from-code.result.md"
+          ],
+          "deleted": [],
+          "modified": [
+            "bin/skill-integrity.json",
+            "docs/wiki/documentation/ws-wiki.html",
+            ".agents/plans/ws-wiki-from-code/step-02-ws-wiki-from-code.plan.refined.md",
+            ".agents/skills/ws-shared/CHANGELOG.md"
+          ]
+        },
+        "finishedAt": "2026-09-12T17:32:10Z",
+        "label": "Ship",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 10,
+    "totalTokens": 0,
+    "workflowEndedAt": null,
+    "workflowStartedAt": "2026-09-12T17:19:26Z"
+  },
+  "title": "ws-wiki from-code genesis and progressive-disclosure split",
+  "us": null,
+  "verificationScore": 9,
+  "workflowId": "ws-wiki-from-code-20260912T171926Z",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/ws-wiki-from-code/.runtime/plan.index.json",
+      ".agents/plans/ws-wiki-from-code/ac-ledger.json",
+      ".agents/plans/ws-wiki-from-code/step-00-ws-wiki-from-code.classify.md",
+      ".agents/plans/ws-wiki-from-code/step-00-ws-wiki-from-code.spec.md",
+      ".agents/plans/ws-wiki-from-code/step-01-ws-wiki-from-code.plan.md",
+      ".agents/plans/ws-wiki-from-code/step-02-ws-wiki-from-code.plan-interview.md",
+      ".agents/plans/ws-wiki-from-code/step-02-ws-wiki-from-code.plan.refined.md",
+      ".agents/plans/ws-wiki-from-code/step-05-ws-wiki-from-code.plan.report.md",
+      ".agents/plans/ws-wiki-from-code/step-06-ws-wiki-from-code.review.md",
+      ".agents/plans/ws-wiki-from-code/step-06-ws-wiki-from-code.review.r1.md",
+      ".agents/plans/ws-wiki-from-code/step-07-ws-wiki-from-code.testing.plan.md",
+      ".agents/plans/ws-wiki-from-code/step-07-ws-wiki-from-code.testing.report.md",
+      ".agents/plans/ws-wiki-from-code/step-08-ws-wiki-from-code.result.md",
+      ".agents/skills/ws-wiki/FROM-CODE.md",
+      ".agents/skills/ws-wiki/INIT.md",
+      ".agents/skills/ws-wiki/PHASE-1-SWEEP.md",
+      ".agents/skills/ws-wiki/PHASE-2-VERIFY.md",
+      ".agents/skills/ws-wiki/PHASE-3-APPLY.md",
+      ".agents/skills/ws-wiki/SYNC.md",
+      ".agents/skills/ws-wiki/UPDATE.md",
+      ".agents/skills/ws-wiki/scripts/list_wiki_from_code_areas.cjs"
+    ],
+    "deleted": [],
+    "modified": [
+      ".agents/plans/ws-wiki-from-code/.runtime/plan.index.json",
+      ".agents/plans/ws-wiki-from-code/ac-ledger.json",
+      ".agents/plans/ws-wiki-from-code/step-02-ws-wiki-from-code.plan.refined.md",
+      ".agents/skills/ws-shared/CHANGELOG.md",
+      ".agents/skills/ws-shared/runtime/CATALOG.md",
+      ".agents/skills/ws-wiki/SKILL.md",
+      "CATALOG.md",
+      "bin/skill-integrity.json",
+      "docs/wiki/documentation/ws-wiki.html",
+      "test/test-wiki.js"
+    ]
+  },
+  "workflowType": "standard"
+}
