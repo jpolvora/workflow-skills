@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-12 11:16] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-write dedicated website page rendering current {wikiDir} wiki; rebuild site also refreshes wiki HTML.
+- **Done**: Wrote `.agents/specs/0077-website-wiki-page.spec.md` + companion `.context.md`; authoring validate PASS (17 ACs); tracked on index.PRD (row 83).
+- **Result**: Spec of record ready. Learning: N/A (standard implementation)
+
 ### [2026-09-12 11:15] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-spec-to-pr-lite implement 0076-ws-wiki-spec-sweep full auto, bump version, ws-ship-pr.
 - **Done**: Added `list_wiki_sweep_specs.cjs`, sweep mode in `ws-wiki/SKILL.md`, tests, catalog updates; bumped package to 0.4.20 with integrity regen.
