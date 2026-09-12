@@ -1,0 +1,1678 @@
+{
+  "acImplemented": 17,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "499b51256672018459b42fe65fad302727908da3",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "bin/build-wiki-site.js:L52-L96"
+        ],
+        "files": [
+          {
+            "lineEnd": 96,
+            "lineStart": 52,
+            "path": "bin/build-wiki-site.js",
+            "sha256": "80ff1fd378d1c3154e3483b037fb79db6d6f36e419cc72306304f1144325566b"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "evt-ac1",
+          "evt-step5-AC1",
+          "g2-commit-499b5125"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-006",
+          "section-011",
+          "section-013",
+          "section-015",
+          "section-023"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testEmitsIndexAndFeatureHtml",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:23.127Z"
+          }
+        ],
+        "text": "`node bin/build-site.js` (no `--bump`) writes `docs/wiki/index.html` from `{wikiDir}/index.wiki.md` and one HTML file per wiki markdown page under `docs/wiki/{domain}/{feature}.html` mirroring `{wikiDir}/{domain}/{feature}.md`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "499b51256672018459b42fe65fad302727908da3",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "bin/build-wiki-site.js:L268-L284"
+        ],
+        "files": [
+          {
+            "lineEnd": 284,
+            "lineStart": 268,
+            "path": "bin/build-wiki-site.js",
+            "sha256": "80ff1fd378d1c3154e3483b037fb79db6d6f36e419cc72306304f1144325566b"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "evt-ac2",
+          "evt-step5-AC2",
+          "g2-commit-499b5125"
+        ],
+        "planSections": [
+          "section-003",
+          "section-008",
+          "section-011",
+          "section-014",
+          "section-023"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testHtml5ChromeAndStylesheetDepth",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:23.181Z"
+          }
+        ],
+        "text": "Generated wiki HTML is a full HTML5 document (doctype, charset, viewport, title from the page H1 or filename, stylesheet link to `../assets/css/style.css` or a depth-correct relative path to `docs/assets/css/style.css`).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "499b51256672018459b42fe65fad302727908da3",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "bin/build-wiki-site.js:L98-L140"
+        ],
+        "files": [
+          {
+            "lineEnd": 140,
+            "lineStart": 98,
+            "path": "bin/build-wiki-site.js",
+            "sha256": "80ff1fd378d1c3154e3483b037fb79db6d6f36e419cc72306304f1144325566b"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "evt-ac3",
+          "evt-step5-AC3",
+          "g2-commit-499b5125"
+        ],
+        "planSections": [
+          "section-003",
+          "section-007",
+          "section-011",
+          "section-014",
+          "section-023"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testRewritesWikiMarkdownLinks",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:23.228Z"
+          }
+        ],
+        "text": "Relative markdown links to other wiki pages (including `index.wiki.md` and `*.md` with optional `#anchors`) become relative `.html` links that resolve to generated files; external `http(s):` / `mailto:` links stay unchanged; `#` in-page anchors stay.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "499b51256672018459b42fe65fad302727908da3",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "docs/index.html:L87-L106"
+        ],
+        "files": [
+          {
+            "lineEnd": 106,
+            "lineStart": 87,
+            "path": "docs/index.html",
+            "sha256": "54157011600ccd13dfa335032363632fdaef5be29d60cab81de42954302902a0"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "evt-ac4",
+          "evt-step5-AC4",
+          "g2-commit-499b5125"
+        ],
+        "planSections": [
+          "section-011",
+          "section-017",
+          "section-023"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testLandingNavWikiHref",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:23.273Z"
+          }
+        ],
+        "text": "`docs/index.html` nav (and matching section-dot nav if present) includes a Wiki entry pointing at `wiki/` (or `wiki/index.html`) that works on GitHub Pages under the `/workflow-skills/` base path.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "499b51256672018459b42fe65fad302727908da3",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "bin/build-wiki-site.js:L268-L280"
+        ],
+        "files": [
+          {
+            "lineEnd": 280,
+            "lineStart": 268,
+            "path": "bin/build-wiki-site.js",
+            "sha256": "80ff1fd378d1c3154e3483b037fb79db6d6f36e419cc72306304f1144325566b"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "evt-ac5",
+          "evt-step5-AC5",
+          "g2-commit-499b5125"
+        ],
+        "planSections": [
+          "section-003",
+          "section-008",
+          "section-011",
+          "section-014",
+          "section-023"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testWikiChromeLinkHome",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:23.321Z"
+          }
+        ],
+        "text": "Each generated wiki page includes a site chrome link back to `../` (landing `docs/index.html`) labeled Wiki or Home so users are not trapped in the wiki tree.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "499b51256672018459b42fe65fad302727908da3",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "bin/build-wiki-site.js:L17-L24"
+        ],
+        "files": [
+          {
+            "lineEnd": 24,
+            "lineStart": 17,
+            "path": "bin/build-wiki-site.js",
+            "sha256": "80ff1fd378d1c3154e3483b037fb79db6d6f36e419cc72306304f1144325566b"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "evt-ac6",
+          "evt-step5-AC6",
+          "g2-commit-499b5125"
+        ],
+        "planSections": [
+          "section-003",
+          "section-007",
+          "section-011",
+          "section-014",
+          "section-023",
+          "section-024"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testEscapesScriptPayload",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:23.374Z"
+          }
+        ],
+        "text": "Generated article HTML is escaped so raw wiki markdown cannot inject script tags or event-handler attributes (HTML text nodes / attribute encoding). Inline HTML in wiki markdown is not executed as live script.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "499b51256672018459b42fe65fad302727908da3",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "bin/build-wiki-site.js:L26-L93"
+        ],
+        "files": [
+          {
+            "lineEnd": 93,
+            "lineStart": 26,
+            "path": "bin/build-wiki-site.js",
+            "sha256": "80ff1fd378d1c3154e3483b037fb79db6d6f36e419cc72306304f1144325566b"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [
+          "evt-ac7",
+          "evt-step5-AC7",
+          "g2-commit-499b5125"
+        ],
+        "planSections": [
+          "section-003",
+          "section-006",
+          "section-011",
+          "section-013",
+          "section-023",
+          "section-024"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testPathContainment",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:23.420Z"
+          }
+        ],
+        "text": "Build reads only files whose resolved path stays inside `{wikiDir}`; `sweep.state.json`, non-markdown files, and paths escaping `{wikiDir}` via `..` are not copied into `docs/wiki/`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "499b51256672018459b42fe65fad302727908da3",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "bin/build-wiki-site.js:L336-L354"
+        ],
+        "files": [
+          {
+            "lineEnd": 354,
+            "lineStart": 336,
+            "path": "bin/build-wiki-site.js",
+            "sha256": "80ff1fd378d1c3154e3483b037fb79db6d6f36e419cc72306304f1144325566b"
+          }
+        ],
+        "findings": [],
+        "id": "AC8",
+        "linkEventIds": [
+          "evt-ac8",
+          "evt-step5-AC8",
+          "g2-commit-499b5125"
+        ],
+        "planSections": [
+          "section-003",
+          "section-009",
+          "section-011",
+          "section-015",
+          "section-023"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testCheckFailsOnStaleWikiHtml",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:23.467Z"
+          }
+        ],
+        "text": "When `{wikiDir}` exists and contains `index.wiki.md`, a missing or stale `docs/wiki/**` tree makes `node bin/build-site.js --check` exit non-zero with a message that names the wiki output (not only `docs/index.html`).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "499b51256672018459b42fe65fad302727908da3",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "bin/build-site.js:L616-L657"
+        ],
+        "files": [
+          {
+            "lineEnd": 657,
+            "lineStart": 616,
+            "path": "bin/build-site.js",
+            "sha256": "d4f9a6a11e021a7b71b3fd474da3f3f0a611bbe40bc5d6bad052b9b9472a3d11"
+          }
+        ],
+        "findings": [],
+        "id": "AC9",
+        "linkEventIds": [
+          "evt-ac9",
+          "evt-step5-AC9",
+          "g2-commit-499b5125"
+        ],
+        "planSections": [
+          "section-003",
+          "section-009",
+          "section-011",
+          "section-015",
+          "section-023"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testCheckPassesWhenFresh",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:23.520Z"
+          }
+        ],
+        "text": "`node bin/build-site.js --check` with a fresh wiki tree (after a non-check build) exits 0 when both landing HTML and wiki HTML match regeneration.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "499b51256672018459b42fe65fad302727908da3",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "bin/build-wiki-site.js:L318-L388"
+        ],
+        "files": [
+          {
+            "lineEnd": 388,
+            "lineStart": 318,
+            "path": "bin/build-wiki-site.js",
+            "sha256": "80ff1fd378d1c3154e3483b037fb79db6d6f36e419cc72306304f1144325566b"
+          }
+        ],
+        "findings": [],
+        "id": "AC10",
+        "linkEventIds": [
+          "evt-ac10",
+          "evt-step5-AC10",
+          "g2-commit-499b5125"
+        ],
+        "planSections": [
+          "section-003",
+          "section-009",
+          "section-011",
+          "section-016",
+          "section-023"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testSitemapListsWikiLocs",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:23.572Z"
+          }
+        ],
+        "text": "`docs/sitemap.xml` includes `https://jpolvora.github.io/workflow-skills/wiki/` (or `.../wiki/index.html`) and one `<loc>` per generated wiki HTML page; `node bin/build-site.js` rewrites that sitemap in the same run as wiki HTML.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "499b51256672018459b42fe65fad302727908da3",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "bin/build-wiki-site.js:L146-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 260,
+            "lineStart": 146,
+            "path": "bin/build-wiki-site.js",
+            "sha256": "80ff1fd378d1c3154e3483b037fb79db6d6f36e419cc72306304f1144325566b"
+          }
+        ],
+        "findings": [],
+        "id": "AC11",
+        "linkEventIds": [
+          "evt-ac11",
+          "evt-step5-AC11",
+          "g2-commit-499b5125"
+        ],
+        "planSections": [
+          "section-003",
+          "section-007",
+          "section-011",
+          "section-014",
+          "section-018",
+          "section-023"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testRendersHeadingsListsCodeLinks",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:23.619Z"
+          }
+        ],
+        "text": "Feature wiki pages render headings, lists, fenced code, inline code, and markdown links in a readable article layout; `index.wiki.md` domain catalog remains navigable as a table of contents on the wiki home page.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "499b51256672018459b42fe65fad302727908da3",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "docs/assets/css/style.css:L3271-L3354"
+        ],
+        "files": [
+          {
+            "lineEnd": 3354,
+            "lineStart": 3271,
+            "path": "docs/assets/css/style.css",
+            "sha256": "411acd23c0a236650695a4eda177fbc54fb62eede199fcb09b059d3b0b7d43d4"
+          }
+        ],
+        "findings": [],
+        "id": "AC12",
+        "linkEventIds": [
+          "evt-ac12",
+          "evt-step5-AC12",
+          "g2-commit-499b5125"
+        ],
+        "planSections": [
+          "section-011",
+          "section-018",
+          "section-023",
+          "section-025"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testWikiCssUsesThemeTokens",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:23.670Z"
+          }
+        ],
+        "text": "Wiki pages share the existing dark/light theme tokens (no new neon/glow chrome). Contrast for body text and links remains usable in both themes (target ≥ 4.5:1 for body text).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "499b51256672018459b42fe65fad302727908da3",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "bin/build-wiki-site.js:L268-L284"
+        ],
+        "files": [
+          {
+            "lineEnd": 284,
+            "lineStart": 268,
+            "path": "bin/build-wiki-site.js",
+            "sha256": "80ff1fd378d1c3154e3483b037fb79db6d6f36e419cc72306304f1144325566b"
+          }
+        ],
+        "findings": [],
+        "id": "AC13",
+        "linkEventIds": [
+          "evt-ac13",
+          "evt-step5-AC13",
+          "g2-commit-499b5125"
+        ],
+        "planSections": [
+          "section-003",
+          "section-008",
+          "section-011",
+          "section-014",
+          "section-023"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testContentPresentWithoutJs",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:23.717Z"
+          }
+        ],
+        "text": "Wiki article content is visible without executing JavaScript (no client-only markdown fetch as the only renderer).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "499b51256672018459b42fe65fad302727908da3",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "bin/build-site.js:L23-L29"
+        ],
+        "files": [
+          {
+            "lineEnd": 29,
+            "lineStart": 23,
+            "path": "bin/build-site.js",
+            "sha256": "d4f9a6a11e021a7b71b3fd474da3f3f0a611bbe40bc5d6bad052b9b9472a3d11"
+          }
+        ],
+        "findings": [],
+        "id": "AC14",
+        "linkEventIds": [
+          "evt-ac14",
+          "evt-step5-AC14",
+          "g2-commit-499b5125"
+        ],
+        "planSections": [
+          "section-011",
+          "section-013",
+          "section-015",
+          "section-023",
+          "section-024"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testUnknownFlagsStillUsage",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:23.763Z"
+          }
+        ],
+        "text": "Unknown CLI flags on `build-site.js` remain rejected (existing `--bump` / `--check` exclusive usage). Wiki generation does not add a required extra flag for the default update path.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "499b51256672018459b42fe65fad302727908da3",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "package.json:L23-L23"
+        ],
+        "files": [
+          {
+            "lineEnd": 23,
+            "lineStart": 23,
+            "path": "package.json",
+            "sha256": "a7c379e9ccf1e3ab641f3b46495604e22f7e6368aa24ac756fd5b78c1b5284a2"
+          }
+        ],
+        "findings": [],
+        "id": "AC15",
+        "linkEventIds": [
+          "evt-ac15",
+          "evt-step5-AC15",
+          "g2-commit-499b5125"
+        ],
+        "planSections": [
+          "section-011",
+          "section-012",
+          "section-019",
+          "section-023"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testEmitsIndexAndFeatureHtml",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:23.811Z"
+          }
+        ],
+        "text": "Tests cover AC1, AC3, AC6, AC7, AC8, and AC10: either extend `test/test-doc-sync.js` or add `test/test-site-wiki.js` listed in `package.json` `tests:harness-efficiency` (or the suite `test-doc-sync` already runs). Fixture or temp `{wikiDir}` plus `--check` stale detection must not mutate the tracked wiki without restore.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "499b51256672018459b42fe65fad302727908da3",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "FEATURES.md:L279-L279"
+        ],
+        "files": [
+          {
+            "lineEnd": 279,
+            "lineStart": 279,
+            "path": "FEATURES.md",
+            "sha256": "d7599be7e5b51fe44e6ef5467a0f1d5208ee77b77f4acc2c41c81e685c7b4f8a"
+          }
+        ],
+        "findings": [],
+        "id": "AC16",
+        "linkEventIds": [
+          "evt-ac16",
+          "evt-step5-AC16",
+          "g2-commit-499b5125"
+        ],
+        "planSections": [
+          "section-003",
+          "section-005",
+          "section-011",
+          "section-017",
+          "section-020",
+          "section-023"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testDocsMentionPublishedWiki",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:23.861Z"
+          }
+        ],
+        "text": "`FEATURES.md` (when `tracking.featuresMdEnabled` is not false) and human/site docs (`README.md` site/docs mention, or FAQ/nav copy) state that the published site includes a Wiki page generated from `{wikiDir}`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "499b51256672018459b42fe65fad302727908da3",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/specs/0077-website-wiki-page.spec.md:L42-L60"
+        ],
+        "files": [
+          {
+            "lineEnd": 60,
+            "lineStart": 42,
+            "path": ".agents/specs/0077-website-wiki-page.spec.md",
+            "sha256": "0b6544b574f582c7b0b354fbda2d159dabc05655cb78d4dfabdfd5aa9f4da6c8"
+          }
+        ],
+        "findings": [],
+        "id": "AC17",
+        "linkEventIds": [
+          "evt-ac17",
+          "evt-step5-AC17",
+          "g2-commit-499b5125"
+        ],
+        "planSections": [
+          "section-002",
+          "section-011",
+          "section-021",
+          "section-023"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-validate-spec",
+            "phase": "observed",
+            "sourceFile": "test/test-validate-spec.js",
+            "timestamp": "2026-09-12T15:34:23.918Z"
+          }
+        ],
+        "text": "Authoring validation for this specification exits 0.",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+        "endedAt": null,
+        "exitCode": 0,
+        "skipReason": "baseline-dirty",
+        "startedAt": null
+      },
+      {
+        "alias": "buildSiteCheck",
+        "commandHash": "58bb49d5fdabea15c6315c629ba896a1fc04ea835d63c0182c313730ada08fc3",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      },
+      {
+        "alias": "wikiSiteTest",
+        "commandHash": "70f5629229b3e58d2babb90168991faf5a9452c8486994ffbb7626cb975eedcc",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      }
+    ],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "evt-ns1",
+          "evt-step5-NS1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testCheckFailsOnStaleWikiHtml",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:23.965Z"
+          }
+        ],
+        "text": "Stale `docs/wiki/index.html` after editing `{wikiDir}/index.wiki.md` without rebuild: `--check` exit non-zero."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "evt-ns2",
+          "evt-step5-NS2"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testEscapesScriptPayload",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:24.013Z"
+          }
+        ],
+        "text": "Wiki markdown containing `<script>alert(1)</script>`: generated HTML does not include an executable script element from that payload (escaped or stripped)."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "evt-ns3",
+          "evt-step5-NS3"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testPathContainment",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:24.056Z"
+          }
+        ],
+        "text": "Relative link `../../package.json` or `../../../etc/passwd` in a wiki page: generator does not write outside `docs/wiki/`; link is dropped or rendered as inert text."
+      },
+      {
+        "id": "NS4",
+        "linkEventIds": [
+          "evt-ns4-ns5",
+          "evt-step5-NS4"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testUnknownFlagsStillUsage",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:24.105Z"
+          }
+        ],
+        "text": "`--specs-dir` / invented wiki-root CLI that resolves outside repo: rejected or ignored; default remains contained `{wikiDir}`."
+      },
+      {
+        "id": "NS5",
+        "linkEventIds": [
+          "evt-ns4-ns5",
+          "evt-step5-NS5"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testUnknownFlagsStillUsage",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:24.151Z"
+          }
+        ],
+        "text": "Unknown `node bin/build-site.js --wiki-only-typo`: still exit 1 with Usage (no partial wiki write as a new silent flag)."
+      },
+      {
+        "id": "NS6",
+        "linkEventIds": [
+          "evt-ns6",
+          "evt-step5-NS6"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testSkipWhenIndexWikiMissing",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:24.198Z"
+          }
+        ],
+        "text": "Missing `index.wiki.md`: no crash; skip wiki generation; `--check` does not demand `docs/wiki/` solely for that reason."
+      },
+      {
+        "id": "NS7",
+        "linkEventIds": [
+          "evt-ns7",
+          "evt-step5-NS7"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testNoNetworkInWikiBuilder",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:24.245Z"
+          }
+        ],
+        "text": "Unauthenticated network fetch during build to render wiki: must not ship; renderer is local filesystem only."
+      },
+      {
+        "id": "NS8",
+        "linkEventIds": [
+          "evt-ns8",
+          "evt-step5-NS8"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testWikiBuilderIsSync",
+            "phase": "observed",
+            "sourceFile": "test/test-site-wiki.js",
+            "timestamp": "2026-09-12T15:34:24.297Z"
+          }
+        ],
+        "text": "Floating Promise in async markdown walk: fail review / test if unhandled rejection can occur."
+      }
+    ],
+    "planIndexPath": ".agents/plans/website-wiki-page/.runtime/plan.index.json",
+    "revision": 59,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "step5",
+      "computedAt": "2026-09-12T15:39:18.249Z",
+      "earnedUnits": 170,
+      "errors": [],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "missingEvidence": false,
+      "score": 10,
+      "totalUnits": 170
+    },
+    "slug": "website-wiki-page",
+    "specPath": ".agents/plans/website-wiki-page/step-00-website-wiki-page.spec.md",
+    "testingSkip": null,
+    "workflowId": "website-wiki-page-20260912T152056Z"
+  },
+  "acTotal": 17,
+  "autoMode": true,
+  "baseBranch": "main",
+  "baselineCommit": "a1ea404909fa8d8de94627974de975aa2b888608",
+  "branch": "develop",
+  "branchStrategy": "stay",
+  "completedSteps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "currentModel": "cursor-grok-4.6",
+  "currentStep": 9,
+  "dryRun": false,
+  "endedAt": "2026-09-12T15:42:26Z",
+  "fullMode": true,
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/website-wiki-page/step-00-website-wiki-page.spec.md",
+        ".agents/plans/website-wiki-page/ac-ledger.json",
+        ".agents/plans/website-wiki-page/step-00-website-wiki-page.classify.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "website-wiki-page",
+      "status": "completed",
+      "step": 0,
+      "summary": "Finished step 0",
+      "workflowId": "website-wiki-page-20260912T152056Z",
+      "workflowType": "standard"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/website-wiki-page/step-01-website-wiki-page.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "website-wiki-page",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "website-wiki-page-20260912T152056Z",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/website-wiki-page/step-02-website-wiki-page.plan-interview.md",
+        ".agents/plans/website-wiki-page/step-02-website-wiki-page.plan.refined.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "website-wiki-page",
+      "status": "completed",
+      "step": 2,
+      "summary": "Finished step 2",
+      "workflowId": "website-wiki-page-20260912T152056Z",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "website-wiki-page",
+      "status": "skipped",
+      "step": 3,
+      "summary": "Finished step 3",
+      "workflowId": "website-wiki-page-20260912T152056Z",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [
+        "bin/build-wiki-site.js",
+        "test/test-site-wiki.js",
+        "docs/wiki/index.html",
+        "docs/wiki/delivery/spec-to-pr-pipeline.html",
+        "docs/wiki/documentation/website-and-hub.html",
+        "docs/wiki/documentation/ws-wiki.html",
+        "docs/wiki/engineering/practices-and-tooling.html",
+        "docs/wiki/harness/diagnostics-and-benchmarks.html",
+        "docs/wiki/harness/install-and-hub.html",
+        "docs/wiki/memory/knowledge-and-timesheet.html",
+        "docs/wiki/providers/scm-providers.html",
+        "docs/wiki/quality/verification-and-review.html",
+        "docs/wiki/specs/spec-lifecycle.html",
+        "bin/build-site.js",
+        "docs/index.html",
+        "docs/assets/css/style.css",
+        "docs/sitemap.xml",
+        "FEATURES.md",
+        "README.md",
+        "package.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "website-wiki-page",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "website-wiki-page-20260912T152056Z",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/website-wiki-page/step-05-website-wiki-page.plan.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "website-wiki-page",
+      "status": "completed",
+      "step": 5,
+      "summary": "Finished step 5",
+      "workflowId": "website-wiki-page-20260912T152056Z",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/website-wiki-page/step-06-website-wiki-page.review.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "website-wiki-page",
+      "status": "completed",
+      "step": 6,
+      "summary": "Finished step 6",
+      "workflowId": "website-wiki-page-20260912T152056Z",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/website-wiki-page/step-07-website-wiki-page.testing.plan.md",
+        ".agents/plans/website-wiki-page/step-07-website-wiki-page.testing.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "website-wiki-page",
+      "status": "completed",
+      "step": 7,
+      "summary": "Finished step 7",
+      "workflowId": "website-wiki-page-20260912T152056Z",
+      "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/website-wiki-page/step-08-website-wiki-page.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "website-wiki-page",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "website-wiki-page-20260912T152056Z",
+      "workflowType": "standard"
+    },
+    "9": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "website-wiki-page",
+      "status": "completed",
+      "step": 9,
+      "summary": "Finished step 9",
+      "workflowId": "website-wiki-page-20260912T152056Z",
+      "workflowType": "standard"
+    }
+  },
+  "nextAction": "Run step 9",
+  "revision": 21,
+  "schemaVersion": 1,
+  "scoreAndRefine": false,
+  "shipStatus": "pr-open",
+  "skipQualityGates": false,
+  "skipTesting": false,
+  "skipTests": false,
+  "skippedSteps": [
+    {
+      "evidence": "",
+      "reason": "dag-disabled",
+      "step": 3
+    }
+  ],
+  "slug": "website-wiki-page",
+  "statePath": ".agents/plans/website-wiki-page/website-wiki-page-20260912T152056Z.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [
+    {
+      "agentType": "named:ws-step-00-spec-write",
+      "dispatchedAt": "2026-09-12T15:21:51Z",
+      "model": "cursor-grok-4.6",
+      "step": 0
+    },
+    {
+      "agentType": "named:ws-step-01-plan-write",
+      "configuredModel": "cursor-grok-4.6-high",
+      "dispatchedAt": "2026-09-12T15:22:30Z",
+      "model": "cursor-grok-4.6",
+      "step": 1
+    },
+    {
+      "agentType": "named:ws-step-02-plan-interview",
+      "dispatchedAt": "2026-09-12T15:25:40Z",
+      "model": "cursor-grok-4.6",
+      "step": 2
+    },
+    {
+      "agentType": "inline:session",
+      "dispatchedAt": "2026-09-12T15:29:26Z",
+      "model": "cursor-grok-4.6",
+      "step": 3
+    },
+    {
+      "agentType": "named:ws-step-04-implement-tasks",
+      "dispatchedAt": "2026-09-12T15:29:33Z",
+      "model": "composer-2.5",
+      "step": 4
+    },
+    {
+      "agentType": "named:ws-step-05-plan-verify",
+      "dispatchedAt": "2026-09-12T15:31:58Z",
+      "model": "cursor-grok-4.6-medium",
+      "step": 5
+    },
+    {
+      "agentType": "named:ws-step-06-code-review",
+      "dispatchedAt": "2026-09-12T15:36:13Z",
+      "model": "cursor-grok-4.6-medium",
+      "step": 6
+    },
+    {
+      "agentType": "named:ws-step-07-testing",
+      "dispatchedAt": "2026-09-12T15:39:35Z",
+      "model": "composer-2.5",
+      "step": 7
+    },
+    {
+      "agentType": "inline:session",
+      "dispatchedAt": "2026-09-12T15:41:46Z",
+      "model": "cursor-grok-4.6",
+      "step": 8
+    },
+    {
+      "agentType": "named:ws-step-04-implement-tasks",
+      "dispatchedAt": "2026-09-12T15:48:52Z",
+      "model": "cursor-grok-4.6",
+      "step": 9,
+      "substep": "fixPrExec"
+    }
+  ],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "skipped",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed",
+    "9": "completed"
+  },
+  "telemetry": {
+    "steps": [
+      {
+        "N": 0,
+        "agentType": "named:ws-step-00-spec-write",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T15:21:51Z",
+        "elapsedSec": 15,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/website-wiki-page/step-00-website-wiki-page.spec.md",
+            ".agents/plans/website-wiki-page/ac-ledger.json",
+            ".agents/plans/website-wiki-page/step-00-website-wiki-page.classify.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T15:22:06Z",
+        "label": "Spec",
+        "model": "cursor-grok-4.6",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 1,
+        "agentType": "named:ws-step-01-plan-write",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T15:22:30Z",
+        "elapsedSec": 184,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/website-wiki-page/step-01-website-wiki-page.plan.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T15:25:34Z",
+        "label": "Planning",
+        "model": "cursor-grok-4.6",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": "named:ws-step-02-plan-interview",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T15:25:40Z",
+        "elapsedSec": 226,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/website-wiki-page/step-02-website-wiki-page.plan-interview.md",
+            ".agents/plans/website-wiki-page/step-02-website-wiki-page.plan.refined.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T15:29:26Z",
+        "label": "Interview",
+        "model": "cursor-grok-4.6",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": "inline:session",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T15:29:26Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T15:29:26Z",
+        "label": "Plan to tasks",
+        "model": "cursor-grok-4.6",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": "named:ws-step-04-implement-tasks",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T15:29:33Z",
+        "elapsedSec": 140,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            "bin/build-wiki-site.js",
+            "test/test-site-wiki.js",
+            "docs/wiki/index.html",
+            "docs/wiki/delivery/spec-to-pr-pipeline.html",
+            "docs/wiki/documentation/website-and-hub.html",
+            "docs/wiki/documentation/ws-wiki.html",
+            "docs/wiki/engineering/practices-and-tooling.html",
+            "docs/wiki/harness/diagnostics-and-benchmarks.html",
+            "docs/wiki/harness/install-and-hub.html",
+            "docs/wiki/memory/knowledge-and-timesheet.html",
+            "docs/wiki/providers/scm-providers.html",
+            "docs/wiki/quality/verification-and-review.html",
+            "docs/wiki/specs/spec-lifecycle.html"
+          ],
+          "deleted": [],
+          "modified": [
+            "bin/build-site.js",
+            "docs/index.html",
+            "docs/assets/css/style.css",
+            "docs/sitemap.xml",
+            "FEATURES.md",
+            "README.md",
+            "package.json"
+          ]
+        },
+        "finishedAt": "2026-09-12T15:31:53Z",
+        "label": "Implement",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": "named:ws-step-05-plan-verify",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T15:31:58Z",
+        "elapsedSec": 223,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/website-wiki-page/step-05-website-wiki-page.plan.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T15:35:41Z",
+        "label": "Verify",
+        "model": "cursor-grok-4.6-medium",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 6,
+        "agentType": "named:ws-step-06-code-review",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T15:36:13Z",
+        "elapsedSec": 173,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/website-wiki-page/step-06-website-wiki-page.review.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T15:39:06Z",
+        "label": "Code review",
+        "model": "cursor-grok-4.6-medium",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 7,
+        "agentType": "named:ws-step-07-testing",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T15:39:35Z",
+        "elapsedSec": 104,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/website-wiki-page/step-07-website-wiki-page.testing.plan.md",
+            ".agents/plans/website-wiki-page/step-07-website-wiki-page.testing.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T15:41:19Z",
+        "label": "Testing",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": "inline:session",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T15:41:46Z",
+        "elapsedSec": 40,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/website-wiki-page/step-08-website-wiki-page.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T15:42:26Z",
+        "label": "Ship",
+        "model": "cursor-grok-4.6",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 9,
+        "agentType": "named:ws-step-04-implement-tasks",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T15:48:52Z",
+        "elapsedSec": 486,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T15:56:58Z",
+        "label": "Fix PR",
+        "model": "cursor-grok-4.6",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 1591,
+    "totalTokens": 0
+  },
+  "verificationScore": 10,
+  "workflowId": "website-wiki-page-20260912T152056Z",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/website-wiki-page/ac-ledger.json",
+      ".agents/plans/website-wiki-page/step-00-website-wiki-page.classify.md",
+      ".agents/plans/website-wiki-page/step-00-website-wiki-page.spec.md",
+      ".agents/plans/website-wiki-page/step-01-website-wiki-page.plan.md",
+      ".agents/plans/website-wiki-page/step-02-website-wiki-page.plan-interview.md",
+      ".agents/plans/website-wiki-page/step-02-website-wiki-page.plan.refined.md",
+      ".agents/plans/website-wiki-page/step-05-website-wiki-page.plan.report.md",
+      ".agents/plans/website-wiki-page/step-06-website-wiki-page.review.md",
+      ".agents/plans/website-wiki-page/step-07-website-wiki-page.testing.plan.md",
+      ".agents/plans/website-wiki-page/step-07-website-wiki-page.testing.report.md",
+      ".agents/plans/website-wiki-page/step-08-website-wiki-page.result.md",
+      "bin/build-wiki-site.js",
+      "docs/wiki/delivery/spec-to-pr-pipeline.html",
+      "docs/wiki/documentation/website-and-hub.html",
+      "docs/wiki/documentation/ws-wiki.html",
+      "docs/wiki/engineering/practices-and-tooling.html",
+      "docs/wiki/harness/diagnostics-and-benchmarks.html",
+      "docs/wiki/harness/install-and-hub.html",
+      "docs/wiki/index.html",
+      "docs/wiki/memory/knowledge-and-timesheet.html",
+      "docs/wiki/providers/scm-providers.html",
+      "docs/wiki/quality/verification-and-review.html",
+      "docs/wiki/specs/spec-lifecycle.html",
+      "test/test-site-wiki.js"
+    ],
+    "deleted": [],
+    "modified": [
+      "FEATURES.md",
+      "README.md",
+      "bin/build-site.js",
+      "docs/assets/css/style.css",
+      "docs/index.html",
+      "docs/sitemap.xml",
+      "package.json"
+    ]
+  },
+  "workflowType": "standard"
+}
