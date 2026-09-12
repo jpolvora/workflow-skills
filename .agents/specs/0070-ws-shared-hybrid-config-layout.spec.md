@@ -4,6 +4,7 @@ slug: ws-shared-hybrid-config-layout
 title: "Separate ws-shared Runtime, Templates, and Consumer Configuration for Hybrid Installs"
 source: local
 specDate: 2026-09-08
+status: completed
 ---
 
 # Specification — Separate ws-shared Runtime, Templates, and Consumer Configuration for Hybrid Installs

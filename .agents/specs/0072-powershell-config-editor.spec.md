@@ -4,6 +4,7 @@ slug: powershell-config-editor
 title: "PowerShell Windows Forms Config Editor for Workflow Skills"
 source: local
 specDate: 2026-09-09
+status: completed
 ---
 
 # Specification — PowerShell Windows Forms Config Editor for Workflow Skills

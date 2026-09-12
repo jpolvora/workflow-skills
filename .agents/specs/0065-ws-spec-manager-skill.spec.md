@@ -4,6 +4,7 @@ slug: ws-spec-manager-skill
 title: "ws-spec-manager: unified specification router and lifecycle manager"
 source: local
 specDate: 2026-09-06
+status: completed
 ---
 
 # Specification — ws-spec-manager: unified specification router and lifecycle manager
