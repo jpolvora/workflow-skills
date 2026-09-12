@@ -1,0 +1,1583 @@
+{
+  "acImplemented": 18,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "58ed1a3bce41ba9db002de5dd3864b9b8a1f99d1",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/SKILL.md:L1-L9"
+        ],
+        "files": [
+          {
+            "lineEnd": 9,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-wiki/SKILL.md",
+            "sha256": "6025d273e1767382b4cd6106ec5f92e8bf79b37c55681a1be76017cb30aadca5"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-010",
+          "section-013",
+          "section-018"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1: ws-wiki/SKILL.md exists",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:58:56.290Z"
+          }
+        ],
+        "text": "File `.agents/skills/ws-wiki/SKILL.md` exists with YAML frontmatter specifying name `ws-wiki`, description, invocation names `ws-wiki` and `wiki`, and matching version.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "58ed1a3bce41ba9db002de5dd3864b9b8a1f99d1",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/SKILL.md:L13-L16"
+        ],
+        "files": [
+          {
+            "lineEnd": 16,
+            "lineStart": 13,
+            "path": ".agents/skills/ws-wiki/SKILL.md",
+            "sha256": "6025d273e1767382b4cd6106ec5f92e8bf79b37c55681a1be76017cb30aadca5"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-010",
+          "section-013",
+          "section-018"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2: body outputs load banner \"ws-wiki loaded.\"",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:58:56.290Z"
+          }
+        ],
+        "text": "Body in `ws-wiki/SKILL.md` outputs the load banner `> When this skill is loaded, output \"ws-wiki loaded.\"`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "58ed1a3bce41ba9db002de5dd3864b9b8a1f99d1",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/SKILL.md:L25-L39"
+        ],
+        "files": [
+          {
+            "lineEnd": 39,
+            "lineStart": 25,
+            "path": ".agents/skills/ws-wiki/SKILL.md",
+            "sha256": "6025d273e1767382b4cd6106ec5f92e8bf79b37c55681a1be76017cb30aadca5"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-010",
+          "section-013",
+          "section-018"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "validate_wiki exits 0 on valid wiki structure",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:58:56.290Z"
+          }
+        ],
+        "text": "Subcommand `/ws-wiki init` scans project documentation including `README.md`, `AGENTS.md`, and `index.PRD` to create `{specsDir}/wiki/index.wiki.md`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "58ed1a3bce41ba9db002de5dd3864b9b8a1f99d1",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/SKILL.md:L33-L39"
+        ],
+        "files": [
+          {
+            "lineEnd": 39,
+            "lineStart": 33,
+            "path": ".agents/skills/ws-wiki/SKILL.md",
+            "sha256": "6025d273e1767382b4cd6106ec5f92e8bf79b37c55681a1be76017cb30aadca5"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-010",
+          "section-013",
+          "section-018"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "validate_wiki exits 0 on valid wiki structure",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:58:56.290Z"
+          }
+        ],
+        "text": "Root index file `index.wiki.md` organizes the project overview, system vision, and domain-grouped catalog with relative links to feature pages under domain headings.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "58ed1a3bce41ba9db002de5dd3864b9b8a1f99d1",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/SKILL.md:L55-L67"
+        ],
+        "files": [
+          {
+            "lineEnd": 67,
+            "lineStart": 55,
+            "path": ".agents/skills/ws-wiki/SKILL.md",
+            "sha256": "6025d273e1767382b4cd6106ec5f92e8bf79b37c55681a1be76017cb30aadca5"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-010",
+          "section-013",
+          "section-018"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "validate_wiki exits 0 on valid wiki structure",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:58:56.290Z"
+          }
+        ],
+        "text": "Subcommand `/ws-wiki sync [slug]` analyzes touched files and spec criteria from a delivered feature to propose updates to domain subpages.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "58ed1a3bce41ba9db002de5dd3864b9b8a1f99d1",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/SKILL.md:L68-L91"
+        ],
+        "files": [
+          {
+            "lineEnd": 91,
+            "lineStart": 68,
+            "path": ".agents/skills/ws-wiki/SKILL.md",
+            "sha256": "6025d273e1767382b4cd6106ec5f92e8bf79b37c55681a1be76017cb30aadca5"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-010",
+          "section-013",
+          "section-018"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "sync_wiki_index exits 0 when adding new domain feature",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:58:56.290Z"
+          }
+        ],
+        "text": "Target domain pages are organized in a bounded context hierarchy at `{specsDir}/wiki/{domain}/{feature}.md`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "58ed1a3bce41ba9db002de5dd3864b9b8a1f99d1",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/SKILL.md:L74-L77"
+        ],
+        "files": [
+          {
+            "lineEnd": 77,
+            "lineStart": 74,
+            "path": ".agents/skills/ws-wiki/SKILL.md",
+            "sha256": "6025d273e1767382b4cd6106ec5f92e8bf79b37c55681a1be76017cb30aadca5"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-010",
+          "section-013",
+          "section-018"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "sync_wiki_index exits 0 when adding new domain feature",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:58:56.290Z"
+          }
+        ],
+        "text": "Feature wiki pages adhere to a three-section markdown structure consisting of Feature Overview, Business Rules & Logic, and Technical Architecture.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "58ed1a3bce41ba9db002de5dd3864b9b8a1f99d1",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/SKILL.md:L78-L81"
+        ],
+        "files": [
+          {
+            "lineEnd": 81,
+            "lineStart": 78,
+            "path": ".agents/skills/ws-wiki/SKILL.md",
+            "sha256": "6025d273e1767382b4cd6106ec5f92e8bf79b37c55681a1be76017cb30aadca5"
+          }
+        ],
+        "findings": [],
+        "id": "AC8",
+        "linkEventIds": [],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-010",
+          "section-013",
+          "section-018"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "description updated in place",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:58:56.290Z"
+          }
+        ],
+        "text": "Sync operation supports multi-page mapping to update multiple domain pages and link cross-boundary relationships when a feature spans modules.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "58ed1a3bce41ba9db002de5dd3864b9b8a1f99d1",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/SKILL.md:L75-L78"
+        ],
+        "files": [
+          {
+            "lineEnd": 78,
+            "lineStart": 75,
+            "path": ".agents/skills/ws-wiki/SKILL.md",
+            "sha256": "6025d273e1767382b4cd6106ec5f92e8bf79b37c55681a1be76017cb30aadca5"
+          }
+        ],
+        "findings": [],
+        "id": "AC9",
+        "linkEventIds": [],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-010",
+          "section-013",
+          "section-018"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "sync_wiki_index sets domain correctly",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:58:56.290Z"
+          }
+        ],
+        "text": "In-place refinement updates and reconciles existing business rules rather than appending repetitive historical log entries.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "58ed1a3bce41ba9db002de5dd3864b9b8a1f99d1",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/SKILL.md:L82-L86"
+        ],
+        "files": [
+          {
+            "lineEnd": 86,
+            "lineStart": 82,
+            "path": ".agents/skills/ws-wiki/SKILL.md",
+            "sha256": "6025d273e1767382b4cd6106ec5f92e8bf79b37c55681a1be76017cb30aadca5"
+          }
+        ],
+        "findings": [],
+        "id": "AC10",
+        "linkEventIds": [],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-010",
+          "section-013",
+          "section-018"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS3: Cancel in review gate terminates ws-wiki without modifying files",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:58:56.290Z"
+          }
+        ],
+        "text": "Vibe-coding mode reverse-engineers business rules, validations, and technical changes directly from git diffs and commit messages when no spec exists.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "58ed1a3bce41ba9db002de5dd3864b9b8a1f99d1",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/SKILL.md:L92-L96"
+        ],
+        "files": [
+          {
+            "lineEnd": 96,
+            "lineStart": 92,
+            "path": ".agents/skills/ws-wiki/SKILL.md",
+            "sha256": "6025d273e1767382b4cd6106ec5f92e8bf79b37c55681a1be76017cb30aadca5"
+          }
+        ],
+        "findings": [],
+        "id": "AC11",
+        "linkEventIds": [],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-010",
+          "section-013",
+          "section-018"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "validate_wiki exits 0 on valid wiki structure",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:58:56.290Z"
+          }
+        ],
+        "text": "Proposed wiki diffs are presented to the user through an approval review gate before writing changes to disk.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "58ed1a3bce41ba9db002de5dd3864b9b8a1f99d1",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/scripts/validate_wiki.cjs:L1-L20"
+        ],
+        "files": [
+          {
+            "lineEnd": 20,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-wiki/scripts/validate_wiki.cjs",
+            "sha256": "d8a6a3c441dba6290e0f06c2ad9bd5a9765acaa3bebc528d15678012c5e3f1a0"
+          }
+        ],
+        "findings": [],
+        "id": "AC12",
+        "linkEventIds": [],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-010",
+          "section-012",
+          "section-018"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "validate_wiki exits 0 on valid wiki structure",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:58:56.290Z"
+          }
+        ],
+        "text": "Deterministic script `.agents/skills/ws-wiki/scripts/validate_wiki.cjs` validates wiki existence, detects broken relative links, and checks the three-section format.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "58ed1a3bce41ba9db002de5dd3864b9b8a1f99d1",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-wiki/scripts/sync_wiki_index.cjs:L1-L20"
+        ],
+        "files": [
+          {
+            "lineEnd": 20,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-wiki/scripts/sync_wiki_index.cjs",
+            "sha256": "ae3e89cb22bc9233210b17b457da8dc5d9bddc9bc3d05671214aec12244451eb"
+          }
+        ],
+        "findings": [],
+        "id": "AC13",
+        "linkEventIds": [],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-010",
+          "section-012",
+          "section-018"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "sync_wiki_index exits 0 when adding new domain feature",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:58:56.290Z"
+          }
+        ],
+        "text": "Deterministic script `.agents/skills/ws-wiki/scripts/sync_wiki_index.cjs` registers and updates feature links with one-line descriptions in `index.wiki.md`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "58ed1a3bce41ba9db002de5dd3864b9b8a1f99d1",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L180-L195"
+        ],
+        "files": [
+          {
+            "lineEnd": 195,
+            "lineStart": 180,
+            "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+            "sha256": "02a13611118f4420d0a1cb88d4d2112f8d6e51065b7908291051a248c56c61a7"
+          }
+        ],
+        "findings": [],
+        "id": "AC14",
+        "linkEventIds": [],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-010",
+          "section-014",
+          "section-018"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC14: STEP-DISPATCH.md includes ws-wiki sync in post-close lifecycle",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:58:56.290Z"
+          }
+        ],
+        "text": "Delivery close lifecycle in `ws-spec-to-pr` and `ws-spec-to-pr-lite` offers `ws-wiki sync` as a post-close documentation sync step.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "58ed1a3bce41ba9db002de5dd3864b9b8a1f99d1",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/config.schema.json:L1-L20"
+        ],
+        "files": [
+          {
+            "lineEnd": 20,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/runtime/config.schema.json",
+            "sha256": "21fe8dbd1c3d9d7bc55cc134057d4f7435f02c8a913937095e0c1c4309337ab2"
+          }
+        ],
+        "findings": [],
+        "id": "AC15",
+        "linkEventIds": [],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-010",
+          "section-011",
+          "section-018"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC15: config.schema.json defines plans.wikiDir",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:58:56.290Z"
+          }
+        ],
+        "text": "Configuration schema in `ws-shared/runtime/config.schema.json` supports optional `plans.wikiDir` with default value `.agents/specs/wiki`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "58ed1a3bce41ba9db002de5dd3864b9b8a1f99d1",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "test/test-wiki.js:L1-L20"
+        ],
+        "files": [
+          {
+            "lineEnd": 20,
+            "lineStart": 1,
+            "path": "test/test-wiki.js",
+            "sha256": "f70e2164f49d112fdb20a34cb8ebed4cf0a63ab2d7d4ccb61f6a7d9bb5859323"
+          }
+        ],
+        "findings": [],
+        "id": "AC16",
+        "linkEventIds": [],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-010",
+          "section-016",
+          "section-018"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "validate_wiki exits 0 on valid wiki structure",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:58:56.290Z"
+          }
+        ],
+        "text": "Test suite `test/test-wiki.js` validates script execution, index synchronization, broken link detection, and three-section heading verification.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "58ed1a3bce41ba9db002de5dd3864b9b8a1f99d1",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "CATALOG.md:L85-L95"
+        ],
+        "files": [
+          {
+            "lineEnd": 95,
+            "lineStart": 85,
+            "path": "CATALOG.md",
+            "sha256": "a1d8ed47d2ecf573bb5ea78455db0bbcf9f4d5a1162ec766196d01fb713813df"
+          }
+        ],
+        "findings": [],
+        "id": "AC17",
+        "linkEventIds": [],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-010",
+          "section-015",
+          "section-018"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC17: CATALOG.md registers ws-wiki",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:58:56.290Z"
+          }
+        ],
+        "text": "Documentation and catalogs in `CATALOG.md` and `ws-shared/autoload.md` register `ws-wiki` under the documentation and specification tooling catalog.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "58ed1a3bce41ba9db002de5dd3864b9b8a1f99d1",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/plans/ws-wiki/step-00-ws-wiki.spec.md:L1-L20"
+        ],
+        "files": [
+          {
+            "lineEnd": 20,
+            "lineStart": 1,
+            "path": ".agents/plans/ws-wiki/step-00-ws-wiki.spec.md",
+            "sha256": "b3a23da85eafcaccdaff359f21109977238935513d9a92c378cbda1cf03c5955"
+          }
+        ],
+        "findings": [],
+        "id": "AC18",
+        "linkEventIds": [],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-010",
+          "section-016",
+          "section-018"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1: ws-wiki/SKILL.md exists",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:58:56.290Z"
+          }
+        ],
+        "text": "Authoring validation for this specification passes cleanly with exit code zero.",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      }
+    ],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "step5-ns-link-1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS1: validate_wiki fails with exit 1 on broken relative link",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:57:47.618Z"
+          }
+        ],
+        "text": "Broken Relative Link Detection: `validate_wiki.cjs` fails with exit code 1 when `index.wiki.md` links to a non-existent subpage."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "step5-ns-link-2"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS2: validate_wiki fails with exit 1 when feature page omits required section",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:57:53.922Z"
+          }
+        ],
+        "text": "Malformed Heading Detection: `validate_wiki.cjs` fails with exit code 1 when a feature page omits one of the three required sections."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "step5-ns-link-3"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS3: Cancel in review gate terminates ws-wiki without modifying files",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:58:01.912Z"
+          }
+        ],
+        "text": "Cancelled Review Gate: Selecting Cancel in the review gate terminates `ws-wiki sync` without modifying files on disk."
+      },
+      {
+        "id": "NS4",
+        "linkEventIds": [
+          "step5-ns-link-4"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS4: Missing project configuration triggers entry check gate",
+            "phase": "observed",
+            "sourceFile": "test/test-wiki.js",
+            "timestamp": "2026-09-12T04:58:08.395Z"
+          }
+        ],
+        "text": "Missing Project Configuration: Executing `ws-wiki` in an unconfigured project triggers the standard entry check gate."
+      }
+    ],
+    "planIndexPath": ".agents/plans/ws-wiki/.runtime/plan.index.json",
+    "revision": 14,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "step5",
+      "computedAt": "2026-09-12T05:02:55.686Z",
+      "earnedUnits": 180,
+      "errors": [],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "missingEvidence": false,
+      "score": 10,
+      "totalUnits": 180
+    },
+    "slug": "ws-wiki",
+    "specPath": ".agents/plans/ws-wiki/step-00-ws-wiki.spec.md",
+    "testingSkip": null,
+    "workflowId": "ws-wiki-20260912T043312Z"
+  },
+  "acTotal": 18,
+  "autoMode": true,
+  "baseBranch": "main",
+  "baselineCommit": "263710a7b5e712cd14b31c502726f1ba0a244e41",
+  "branch": "feat/ws-wiki",
+  "branchStrategy": "from-current",
+  "checkpoints": [
+    {
+      "sha": "263710a7b5e712cd14b31c502726f1ba0a244e41",
+      "step": 0,
+      "tag": "uswf/ws-wiki-20260912T043312Z/before-step-0"
+    }
+  ],
+  "commits": [],
+  "completedSteps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "completedTasks": [],
+  "currentModel": "composer-2.5",
+  "currentStep": 9,
+  "dryRun": false,
+  "endedAt": "2026-09-12T05:05:05Z",
+  "execMode": "sequential",
+  "fullMode": true,
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/ws-wiki/step-00-ws-wiki.spec.md",
+        ".agents/plans/ws-wiki/ac-ledger.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "ws-wiki",
+      "status": "completed",
+      "step": 0,
+      "summary": "Finished step 0",
+      "workflowId": "ws-wiki-20260912T043312Z",
+      "workflowType": "standard"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/ws-wiki/step-01-ws-wiki.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "ws-wiki",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "ws-wiki-20260912T043312Z",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/ws-wiki/step-02-ws-wiki.plan-interview.md",
+        ".agents/plans/ws-wiki/step-02-ws-wiki.plan.refined.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "ws-wiki",
+      "status": "completed",
+      "step": 2,
+      "summary": "Finished step 2",
+      "workflowId": "ws-wiki-20260912T043312Z",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "ws-wiki",
+      "status": "skipped",
+      "step": 3,
+      "summary": "Finished step 3",
+      "workflowId": "ws-wiki-20260912T043312Z",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "ws-wiki",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "ws-wiki-20260912T043312Z",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "ws-wiki",
+      "status": "completed",
+      "step": 5,
+      "summary": "Finished step 5",
+      "workflowId": "ws-wiki-20260912T043312Z",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/ws-wiki/step-06-ws-wiki.review.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "ws-wiki",
+      "status": "completed",
+      "step": 6,
+      "summary": "Finished step 6",
+      "workflowId": "ws-wiki-20260912T043312Z",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/ws-wiki/step-07-ws-wiki.testing.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "ws-wiki",
+      "status": "completed",
+      "step": 7,
+      "summary": "Finished step 7",
+      "workflowId": "ws-wiki-20260912T043312Z",
+      "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/ws-wiki/step-08-ws-wiki.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "ws-wiki",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "ws-wiki-20260912T043312Z",
+      "workflowType": "standard"
+    }
+  },
+  "nextAction": "Run step 9",
+  "preExistingDirty": [],
+  "revision": 18,
+  "schemaVersion": 1,
+  "scoreAndRefine": false,
+  "shipStatus": "pending",
+  "skippedSteps": [
+    {
+      "evidence": "",
+      "reason": "dag-disabled",
+      "step": 3
+    }
+  ],
+  "slug": "ws-wiki",
+  "specPath": ".agents/plans/ws-wiki/step-00-ws-wiki.spec.md",
+  "specSource": "local",
+  "startedAt": "2026-09-12T04:33:12Z",
+  "statePath": ".agents/plans/ws-wiki/ws-wiki-20260912T043312Z.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [
+    {
+      "agentType": "named:ws-step-00-spec-write",
+      "dispatchedAt": "2026-09-12T04:33:12.000Z",
+      "model": "cursor-grok-4.6-high",
+      "step": 0
+    },
+    {
+      "agentType": "named:ws-step-01-plan-write",
+      "dispatchedAt": "2026-09-12T04:37:30.000Z",
+      "model": "cursor-grok-4.6-high",
+      "step": 1
+    },
+    {
+      "agentType": "named:ws-step-02-plan-interview",
+      "dispatchedAt": "2026-09-12T04:40:00.000Z",
+      "model": "opencode-go/deepseek-v4-pro",
+      "step": 2
+    },
+    {
+      "agentType": "named:ws-step-03-plan-to-tasks",
+      "dispatchedAt": "2026-09-12T04:41:00.000Z",
+      "model": "opencode-go/deepseek-v4-pro",
+      "step": 3
+    },
+    {
+      "agentType": "named:ws-step-04-implement-tasks",
+      "dispatchedAt": "2026-09-12T04:41:30.000Z",
+      "model": "composer-2.5",
+      "step": 4
+    },
+    {
+      "agentType": "named:ws-step-05-plan-verify",
+      "dispatchedAt": "2026-09-12T04:55:40Z",
+      "model": "cursor-grok-4.6-high",
+      "step": 5
+    },
+    {
+      "agentType": "named:ws-step-06-code-review",
+      "dispatchedAt": "2026-09-12T05:02:10Z",
+      "model": "cursor-grok-4.6-medium",
+      "step": 6
+    },
+    {
+      "agentType": "named:ws-step-07-testing",
+      "dispatchedAt": "2026-09-12T05:03:15Z",
+      "model": "composer-2.5",
+      "step": 7
+    },
+    {
+      "agentType": "named:ws-step-08-ship-pr",
+      "dispatchedAt": "2026-09-12T05:04:00Z",
+      "model": "composer-2.5",
+      "step": 8
+    }
+  ],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "skipped",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed"
+  },
+  "telemetry": {
+    "steps": [
+      {
+        "N": 0,
+        "agentType": "named:ws-step-00-spec-write",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T04:33:12.000Z",
+        "elapsedSec": 18,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/ws-wiki/step-00-ws-wiki.spec.md",
+            ".agents/plans/ws-wiki/ac-ledger.json"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T04:33:30.000Z",
+        "label": "Spec",
+        "model": "cursor-grok-4.6-high",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 1,
+        "agentType": "named:ws-step-01-plan-write",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T04:37:30.000Z",
+        "elapsedSec": 30,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/ws-wiki/step-01-ws-wiki.plan.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T04:38:00.000Z",
+        "label": "Planning",
+        "model": "cursor-grok-4.6-high",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": "named:ws-step-02-plan-interview",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T04:40:00.000Z",
+        "elapsedSec": 30,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/ws-wiki/step-02-ws-wiki.plan-interview.md",
+            ".agents/plans/ws-wiki/step-02-ws-wiki.plan.refined.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T04:40:30.000Z",
+        "label": "Interview",
+        "model": "opencode-go/deepseek-v4-pro",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": "named:ws-step-03-plan-to-tasks",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T04:41:00.000Z",
+        "elapsedSec": 10,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T04:41:10.000Z",
+        "label": "Plan to tasks",
+        "model": "opencode-go/deepseek-v4-pro",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": "named:ws-step-04-implement-tasks",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T04:41:30.000Z",
+        "elapsedSec": 840,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T04:55:30Z",
+        "label": "Implement",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": "named:ws-step-05-plan-verify",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T04:55:40Z",
+        "elapsedSec": 230,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T04:59:30Z",
+        "label": "Verify",
+        "model": "cursor-grok-4.6-high",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 6,
+        "agentType": "named:ws-step-06-code-review",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T05:02:10Z",
+        "elapsedSec": 30,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/ws-wiki/step-06-ws-wiki.review.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T05:02:40Z",
+        "label": "Code review",
+        "model": "cursor-grok-4.6-medium",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 7,
+        "agentType": "named:ws-step-07-testing",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T05:03:15Z",
+        "elapsedSec": 30,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/ws-wiki/step-07-ws-wiki.testing.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T05:03:45Z",
+        "label": "Testing",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": "named:ws-step-08-ship-pr",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-12T05:04:00Z",
+        "elapsedSec": 65,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/ws-wiki/step-08-ws-wiki.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-12T05:05:05Z",
+        "label": "Ship",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 1283,
+    "totalTokens": 0
+  },
+  "verificationScore": 10,
+  "workflowId": "ws-wiki-20260912T043312Z",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/ws-wiki/ac-ledger.json",
+      ".agents/plans/ws-wiki/step-00-ws-wiki.spec.md",
+      ".agents/plans/ws-wiki/step-01-ws-wiki.plan.md",
+      ".agents/plans/ws-wiki/step-02-ws-wiki.plan-interview.md",
+      ".agents/plans/ws-wiki/step-02-ws-wiki.plan.refined.md",
+      ".agents/plans/ws-wiki/step-06-ws-wiki.review.md",
+      ".agents/plans/ws-wiki/step-07-ws-wiki.testing.report.md",
+      ".agents/plans/ws-wiki/step-08-ws-wiki.result.md"
+    ],
+    "deleted": [],
+    "modified": []
+  },
+  "workflowType": "standard"
+}

@@ -1,0 +1,16 @@
+---
+step: 3
+slug: ws-wiki
+workflowId: ws-wiki-20260912T043312Z
+status: completed
+startedAt: 1970-01-01T00:00:00Z
+endedAt: 1970-01-01T00:00:00Z
+acRefs: [AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15, AC16, AC17, AC18]
+execMode: sequential
+skipReason: dag-disabled
+---
+# Sequential execution plan
+
+Plan of record: `.agents/plans/ws-wiki/step-01-ws-wiki.plan.md`.
+
+Execute implementation tasks in plan order. No task subagents or parallel levels are created.

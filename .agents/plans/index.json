@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 24,
-  "generatedAt": "2026-09-11T05:05:00Z",
+  "revision": 18,
+  "generatedAt": "2026-09-12T05:05:05Z",
   "workflows": [
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
@@ -574,6 +574,17 @@
       "currentStep": 10,
       "updatedAt": "2026-08-14T11:23:51Z",
       "runPath": ".agents/plans/ws-doctor-204-205/ws-doctor-204-205-20260814T013818Z.state.json"
+    },
+    {
+      "workflowId": "ws-wiki-20260912T043312Z",
+      "slug": "ws-wiki",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/ws-wiki/ws-wiki-20260912T043312Z.state.md",
+      "stateSha256": "2f805a0df16ec9f90789ed23877419558c0547c0d7d2cc3177b80b351298e6a5",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-12T05:05:05Z",
+      "runPath": ".agents/plans/ws-wiki/ws-wiki-20260912T043312Z.state.json"
     }
   ]
 }
