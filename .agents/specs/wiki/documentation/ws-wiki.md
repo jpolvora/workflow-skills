@@ -6,6 +6,7 @@
 
 Key subcommands include:
 - `/ws-wiki init`: Bootstraps initial project taxonomy and `index.wiki.md`; offers first-time spec sweep when appropriate.
+- `/ws-wiki from-code` (aliases `reverse`, `reconstruct`): Alternate genesis from project structure and code in deterministic area order when no spec board exists; merges into existing pages by default, with full-body overwrite behind a confirm gate.
 - `/ws-wiki sweep` (aliases `first-time`, `backfill`): Walks all top-level `NNNN-*.spec.md` files in order and overlays living wiki pages from specs plus current code.
 - `/ws-wiki verify` (aliases `audit`, `check-code`): Phase 2 read-only wiki-vs-code statement verify; classifies each claim `confirmed` | `differs` | `absent` | `inconclusive` with code evidence; checkpoint at `{wikiDir}/verify.state.json` (`status: audited`).
 - `/ws-wiki apply` (aliases `reconcile`, `phase-3`): Phase 3 findings plan plus batch apply; per-finding truth gate (Update wiki recommended vs Update code); wiki batch then standalone `ws-spec-write` per code-directed finding.
@@ -35,6 +36,7 @@ Key subcommands include:
   - `validate_wiki.cjs`: Deterministic validator for relative links, index presence, and 3-section headings. Supports `--json` and `--check` modes.
   - `sync_wiki_index.cjs`: Idempotent index updater that creates domain sections and bullet links in `index.wiki.md`.
   - `list_wiki_sweep_specs.cjs`: Lists top-level specs in sweep order (`NNNN` ascending, then unprefixed); fail-closes on ambiguous dual filenames.
+  - `list_wiki_from_code_areas.cjs`: Lists from-code investigation areas in canonical order with existing candidate paths; `git-surface` is always present with `paths: []`.
   - `list_wiki_feature_pages.cjs`: Lists feature pages in Phase 2 verify order (`**/*.md` excluding root `index.wiki.md` and `*.state.json`, POSIX lexicographic); `--json` prints `{ ok, pages, errors }`; containment-gated `--repo-root`/`--wiki-dir`, unknown flags exit 2, `--help` exit 0.
 - **Configuration**:
   - Configured via `config.json` -> `plans.wikiDir` (schema default: `.agents/specs/wiki`).

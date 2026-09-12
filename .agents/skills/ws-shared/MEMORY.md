@@ -33,6 +33,24 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Add or expand root `CATALOG.md` prose without checking the CRLF-normalized byte size against the 24000 B cap; do not assume `npm run generate-integrity` covers CATALOG edits.
 - **INSTEAD DO**: Keep CATALOG descriptions terse; after editing, verify `Buffer.byteLength(readFileSync('CATALOG.md','utf8').replace(/\r\n?/g,'\n'))` <= 24000 and run `node test/test-context-budget.js`. When trimming, preserve strings asserted by `test/test-wiki.js` (`first-time spec sweep`, `from-code genesis`, `Phase 2`+`verify`, `Phase 3`+`plan/apply`).
 
+### [2026-09-12] Refresh wiki documentation page when a skill gains subcommands
+- **Layer**: `harness`
+- **Module**: `ws-wiki / docs site`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/specs/wiki/documentation/*.md; docs/wiki/**`
+- **Scenario / Context**: A PR added `/ws-wiki from-code` and `list_wiki_from_code_areas.cjs` to `SKILL.md`, `runtime/CATALOG.md`, and tests, but the published wiki page `.agents/specs/wiki/documentation/ws-wiki.md` still listed only init/sweep/verify/apply/sync/update/validate. Code review flagged it (6/10). `node bin/build-site.js --check` stayed green because the generated HTML matched the stale source.
+- **DO NOT**: Ship a skill subcommand or helper while its `{wikiDir}` documentation page omits it; do not assume `build-site --check` catches documentation drift (it only verifies the HTML matches its source).
+- **INSTEAD DO**: When a skill adds/renames subcommands or helpers, update `{wikiDir}/documentation/<skill>.md` and run `node bin/build-site.js` so `docs/wiki/**` is regenerated in the same change.
+
+### [2026-09-12] Portable skill prose must not cite internal spec numbers
+- **Layer**: `harness`
+- **Module**: `skill portability`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-*/**`
+- **Scenario / Context**: `PHASE-1-SWEEP.md` read "sweep does not present 0075's per-diff Apply/Cancel gate". Spec `0075` is upstream-only history; a consumer cannot resolve it. Code review flagged it on PR 323.
+- **DO NOT**: Reference internal spec/issue/PR numbers or other upstream-only history in shipped skill bodies or companion docs.
+- **INSTEAD DO**: Describe the behavior or gate generically (for example, "a per-diff Apply/Cancel gate like `/ws-wiki sync [slug]`") and keep spec-number provenance in specs or memory, not in portable procedure text.
+
 ### [2026-09-12] Never commit consumer-local probe cache upstream
 - **Layer**: `harness`
 - **Module**: `ws-shared host binding probe cache`

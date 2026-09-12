@@ -30,7 +30,7 @@ First-time (or re-runnable) sequential backfill from every top-level spec of rec
    - Update checkpoint `lastFile` / `completedFiles`.
    - Log progress: `{index}/{total} {file}`.
 
-5. **No per-spec Apply/Cancel gate:** Unlike `/ws-wiki sync [slug]`, sweep does not present 0075's per-diff Apply/Cancel gate for each spec. Mid-run **Pause** is allowed; resume from checkpoint.
+5. **No per-spec Apply/Cancel gate:** Unlike `/ws-wiki sync [slug]`, sweep does not present a per-diff Apply/Cancel gate for each spec. Mid-run **Pause** is allowed; resume from checkpoint.
 
 6. **`--dry-run`:** Print the ordered queue (and checkpoint summary if present). Write neither wiki pages nor `sweep.state.json`.
 
