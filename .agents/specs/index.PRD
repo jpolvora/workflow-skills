@@ -130,6 +130,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] ws-wiki first-time sequential spec sweep (`spec: 0076-ws-wiki-spec-sweep.spec.md`)
 - [ ] Dedicated GitHub Pages wiki site generated from {wikiDir} (`spec: 0077-website-wiki-page.spec.md`)
 - [ ] ws-wiki Phase 2 verify and Phase 3 plan/apply (`spec: 0078-ws-wiki-code-verify.spec.md`)
+- [ ] ws-wiki from-code genesis and progressive-disclosure split (`spec: 0079-ws-wiki-from-code.spec.md`)
+
 
 
 
@@ -231,6 +233,8 @@ All Next-specs closed except true todo: `unique-skill-script-runtime` and `ws-sh
 | 83 | `website-wiki-page` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Dedicated GitHub Pages wiki site generated from {wikiDir} |
 
 | 84 | `ws-wiki-code-verify` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-wiki Phase 2 verify and Phase 3 plan/apply |
+
+| 85 | `ws-wiki-from-code` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-wiki from-code genesis and progressive-disclosure split |
 
 ## 9. Inbox
 

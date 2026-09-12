@@ -205,10 +205,331 @@ function renderInline(text, sourceRelKey, wikiDir) {
   return out;
 }
 
-function renderMarkdown(markdown, sourceRelKey, wikiDir) {
+function slugify(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'section';
+}
+
+function resolvePageHref(targetOutRel, currentOutRel, currentDepth) {
+  if (currentDepth === 1) {
+    return targetOutRel;
+  }
+  if (targetOutRel === 'index.html') {
+    return '../index.html';
+  }
+  const currentDir = path.posix.dirname(currentOutRel);
+  return path.posix.relative(currentDir, targetOutRel);
+}
+
+function collectDomainTopics(pages, wikiDir) {
+  const domains = new Map();
+  for (const page of pages) {
+    if (page.depth === 1) continue;
+    const domain = page.relKey.split('/')[0];
+    if (!domains.has(domain)) {
+      domains.set(domain, []);
+    }
+    const markdown = fs.readFileSync(page.sourcePath, 'utf8');
+    const title = extractTitle(markdown, path.basename(page.relKey, '.md'));
+    domains.get(domain).push({
+      relKey: page.relKey,
+      outRel: page.outRel,
+      title,
+      domain,
+      feature: path.basename(page.relKey, '.md'),
+    });
+  }
+  return domains;
+}
+
+function buildTocHtml(headings) {
+  const items = headings.map((h, idx) => {
+    return `    <li class="wiki-toc-item"><a href="#${escapeHtml(h.id)}"><span class="wiki-toc-number">${idx + 1}</span> <span class="wiki-toc-text">${escapeHtml(h.title)}</span></a></li>`;
+  });
+  return `<div class="wiki-toc-box" id="toc" role="navigation" aria-label="Table of contents">
+  <div class="wiki-toc-header">
+    <span class="wiki-toc-title">Contents</span>
+    <button type="button" class="wiki-toc-toggle" id="wiki-toc-toggle" aria-expanded="true">[hide]</button>
+  </div>
+  <ol class="wiki-toc-list" id="wiki-toc-list">
+${items.join('\n')}
+  </ol>
+</div>`;
+}
+
+function buildInfoboxHtml(page, title, markdown) {
+  const domain = page.relKey.split('/')[0];
+  const feature = path.basename(page.relKey, '.md');
+  const cleanTitle = title.replace(/\s*\([^)]*\)/, '').trim();
+
+  let specsText = '0001–0075';
+  const provenanceMatch = markdown.match(/(?:synthesis of specs?|specs?)\s+([0-9,\s–-]+)/i);
+  if (provenanceMatch) {
+    specsText = 'Specs ' + provenanceMatch[1].trim().replace(/\.$/, '');
+  }
+
+  return `<aside class="wiki-infobox" aria-label="Feature specification details">
+  <div class="wiki-infobox-header">
+    <div class="wiki-infobox-title">${escapeHtml(cleanTitle)}</div>
+    <div class="wiki-infobox-badge-wrap"><span class="wiki-infobox-badge">Domain: ${escapeHtml(domain)}</span></div>
+  </div>
+  <table class="wiki-infobox-table">
+    <tbody>
+      <tr>
+        <th>Domain</th>
+        <td><code>${escapeHtml(domain)}</code></td>
+      </tr>
+      <tr>
+        <th>Feature</th>
+        <td><code>${escapeHtml(feature)}</code></td>
+      </tr>
+      <tr>
+        <th>Status</th>
+        <td><span class="wiki-status-pill"><span class="wiki-status-dot"></span>Living Synthesis</span></td>
+      </tr>
+      <tr>
+        <th>Contract</th>
+        <td>Canonical Spec Wiki</td>
+      </tr>
+      <tr>
+        <th>Provenance</th>
+        <td>${escapeHtml(specsText)}</td>
+      </tr>
+      <tr>
+        <th>Framework</th>
+        <td>workflow-skills</td>
+      </tr>
+      <tr>
+        <th>Manager</th>
+        <td><code>ws-wiki</code></td>
+      </tr>
+    </tbody>
+  </table>
+</aside>`;
+}
+
+function buildIndexInfoboxHtml(allPages) {
+  const featurePages = allPages ? allPages.filter((p) => p.depth === 2) : [];
+  const domainCount = new Set(featurePages.map((p) => p.relKey.split('/')[0])).size || 8;
+  return `<aside class="wiki-infobox" aria-label="Wiki overview">
+  <div class="wiki-infobox-header">
+    <div class="wiki-infobox-title">Workflow Skills Wiki</div>
+    <div class="wiki-infobox-badge-wrap"><span class="wiki-infobox-badge">Domain Knowledge Base</span></div>
+  </div>
+  <table class="wiki-infobox-table">
+    <tbody>
+      <tr>
+        <th>Scope</th>
+        <td>Living Architecture</td>
+      </tr>
+      <tr>
+        <th>Domains</th>
+        <td>${domainCount} Active Domains</td>
+      </tr>
+      <tr>
+        <th>Features</th>
+        <td>${featurePages.length} Living Pages</td>
+      </tr>
+      <tr>
+        <th>Contract</th>
+        <td><code>*.spec.md</code> of Record</td>
+      </tr>
+      <tr>
+        <th>Orchestrators</th>
+        <td><code>ws-spec-to-pr</code><br><code>ws-spec-to-pr-lite</code></td>
+      </tr>
+      <tr>
+        <th>Manager</th>
+        <td><code>ws-wiki</code></td>
+      </tr>
+    </tbody>
+  </table>
+</aside>`;
+}
+
+function renderSidebarHtml(domains, currentPage, homeHref, wikiHomeHref) {
+  const domainOrder = ['harness', 'delivery', 'providers', 'specs', 'quality', 'memory', 'engineering', 'documentation'];
+  const allDomainKeys = [...domains.keys()].sort((a, b) => {
+    const idxA = domainOrder.indexOf(a);
+    const idxB = domainOrder.indexOf(b);
+    if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+    if (idxA !== -1) return -1;
+    if (idxB !== -1) return 1;
+    return a.localeCompare(b);
+  });
+
+  const domainSections = [];
+  for (const domain of allDomainKeys) {
+    const topicList = domains.get(domain);
+    const topicRows = [];
+    for (const topic of topicList) {
+      const href = resolvePageHref(topic.outRel, currentPage.outRel, currentPage.depth);
+      const isActive = currentPage.outRel === topic.outRel;
+      topicRows.push(`        <li class="wiki-nav-item${isActive ? ' active' : ''}">` +
+        `<a href="${escapeHtml(href)}" class="wiki-nav-link${isActive ? ' active' : ''}" title="${escapeHtml(topic.title)}">` +
+        `<span class="wiki-topic-marker">${isActive ? '▸' : '•'}</span>` +
+        `<span class="wiki-nav-text">${escapeHtml(topic.title)}</span></a></li>`);
+    }
+    domainSections.push(`      <div class="wiki-domain-section" data-domain="${escapeHtml(domain)}">` +
+      `\n        <div class="wiki-domain-header"><span class="wiki-domain-name">${escapeHtml(domain.toUpperCase())}</span><span class="wiki-domain-badge">${topicList.length}</span></div>` +
+      `\n        <ul class="wiki-domain-topics">\n${topicRows.join('\n')}\n        </ul>\n      </div>`);
+  }
+
+  const githubSourceRel = currentPage.relKey === 'index.wiki.md'
+    ? '.agents/specs/wiki/index.wiki.md'
+    : `.agents/specs/wiki/${currentPage.relKey}`;
+  const githubBlobUrl = `https://github.com/jpolvora/workflow-skills/blob/develop/${githubSourceRel}`;
+  const githubHistoryUrl = `https://github.com/jpolvora/workflow-skills/commits/develop/${githubSourceRel}`;
+
+  return `<aside class="wiki-sidebar" id="wiki-sidebar" aria-label="Wiki navigation">
+  <div class="wiki-sidebar-inner">
+    <div class="wiki-sidebar-brand-block">
+      <a href="${escapeHtml(wikiHomeHref)}" class="wiki-sidebar-brand">
+        <div class="wiki-sidebar-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+        </div>
+        <div class="wiki-sidebar-title-group">
+          <span class="wiki-sidebar-main-title">WORKFLOW SKILLS</span>
+          <span class="wiki-sidebar-sub-title">Living Knowledge Base</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="wiki-sidebar-filter-wrapper">
+      <input type="text" id="wiki-filter-topics" class="wiki-filter-input" placeholder="Filter topics..." aria-label="Filter topics in sidebar">
+    </div>
+
+    <nav class="wiki-sidebar-sections">
+      <div class="wiki-nav-group">
+        <div class="wiki-nav-heading">Navigation</div>
+        <ul class="wiki-nav-list">
+          <li class="wiki-nav-item${currentPage.outRel === 'index.html' ? ' active' : ''}">
+            <a href="${escapeHtml(wikiHomeHref)}" class="wiki-nav-link${currentPage.outRel === 'index.html' ? ' active' : ''}">
+              <span class="wiki-nav-icon">📖</span><span class="wiki-nav-text">Main page</span>
+            </a>
+          </li>
+          <li class="wiki-nav-item">
+            <a href="${escapeHtml(homeHref)}" class="wiki-nav-link">
+              <span class="wiki-nav-icon">🏠</span><span class="wiki-nav-text">Project Home</span>
+            </a>
+          </li>
+          <li class="wiki-nav-item">
+            <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener" class="wiki-nav-link">
+              <span class="wiki-nav-icon">🐙</span><span class="wiki-nav-text">GitHub Repository</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="wiki-nav-group wiki-topics-group">
+        <div class="wiki-nav-heading">Topics by Domain</div>
+${domainSections.join('\n')}
+      </div>
+
+      <div class="wiki-nav-group">
+        <div class="wiki-nav-heading">Tools</div>
+        <ul class="wiki-nav-list">
+          <li class="wiki-nav-item">
+            <a href="${escapeHtml(wikiHomeHref)}" class="wiki-nav-link">
+              <span class="wiki-nav-icon">🔗</span><span class="wiki-nav-text">What links here</span>
+            </a>
+          </li>
+          <li class="wiki-nav-item">
+            <a href="${escapeHtml(githubBlobUrl)}" target="_blank" rel="noopener" class="wiki-nav-link">
+              <span class="wiki-nav-icon">📄</span><span class="wiki-nav-text">View Markdown</span>
+            </a>
+          </li>
+          <li class="wiki-nav-item">
+            <a href="${escapeHtml(githubHistoryUrl)}" target="_blank" rel="noopener" class="wiki-nav-link">
+              <span class="wiki-nav-icon">⏳</span><span class="wiki-nav-text">Page History</span>
+            </a>
+          </li>
+          <li class="wiki-nav-item">
+            <button type="button" onclick="window.print()" class="wiki-nav-link wiki-nav-btn">
+              <span class="wiki-nav-icon">🖨️</span><span class="wiki-nav-text">Print / PDF</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+</aside>`;
+}
+
+function renderTopbarHtml(homeHref, wikiHomeHref) {
+  return `<header class="wiki-topbar">
+  <div class="wiki-topbar-left">
+    <button type="button" class="wiki-menu-toggle" id="wiki-menu-toggle" aria-label="Toggle navigation menu" title="Toggle navigation">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+    <a href="${escapeHtml(wikiHomeHref)}" class="wiki-topbar-brand">
+      <span class="wiki-brand-logo-mark">W</span>
+      <span class="wiki-brand-name">Workflow Skills <span class="wiki-brand-tag">Wiki</span></span>
+    </a>
+  </div>
+  <div class="wiki-topbar-center">
+    <div class="wiki-search-box">
+      <svg class="wiki-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="search" id="wiki-search-input" placeholder="Search wiki topics..." aria-label="Search wiki topics">
+    </div>
+  </div>
+  <div class="wiki-topbar-right">
+    <a href="${escapeHtml(homeHref)}" class="wiki-topbar-link">Home</a>
+    <a href="${escapeHtml(wikiHomeHref)}" class="wiki-topbar-link">Wiki Index</a>
+    <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener" class="wiki-topbar-link">GitHub</a>
+    <button type="button" class="wiki-theme-toggle" id="wiki-theme-toggle" aria-label="Toggle dark/light theme" title="Toggle theme">
+      <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </div>
+</header>`;
+}
+
+function renderTabsHtml(githubBlobUrl, githubHistoryUrl, githubEditUrl) {
+  return `<div class="wiki-content-header-tabs">
+  <div class="wiki-tabs-left">
+    <span class="wiki-tab active">Article</span>
+    <a href="https://github.com/jpolvora/workflow-skills/tree/develop/specs" target="_blank" rel="noopener" class="wiki-tab">Specifications</a>
+  </div>
+  <div class="wiki-tabs-right">
+    <span class="wiki-tab active">Read</span>
+    <a href="${escapeHtml(githubEditUrl)}" target="_blank" rel="noopener" class="wiki-tab" title="Edit this page on GitHub">Edit</a>
+    <a href="${escapeHtml(githubHistoryUrl)}" target="_blank" rel="noopener" class="wiki-tab" title="View commit history on GitHub">View history</a>
+  </div>
+</div>`;
+}
+
+function renderMarkdown(markdown, sourceRelKey, wikiDir, page, allPages) {
   const lines = normalizeLf(markdown).split('\n');
   const htmlParts = [];
+  const headings = [];
+  const usedSlugs = new Map();
   let i = 0;
+  let firstH2Index = -1;
+
+  function generateSlug(raw) {
+    const slug = slugify(raw);
+    const count = usedSlugs.get(slug) || 0;
+    usedSlugs.set(slug, count + 1);
+    return count === 0 ? slug : `${slug}-${count}`;
+  }
+
+  const githubSourceRel = (sourceRelKey === 'index.wiki.md' || !sourceRelKey)
+    ? '.agents/specs/wiki/index.wiki.md'
+    : `.agents/specs/wiki/${sourceRelKey}`;
+  const editUrl = `https://github.com/jpolvora/workflow-skills/edit/develop/${githubSourceRel}`;
 
   while (i < lines.length) {
     const line = lines[i];
@@ -234,7 +555,35 @@ function renderMarkdown(markdown, sourceRelKey, wikiDir) {
     const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
     if (headingMatch) {
       const level = headingMatch[1].length;
-      htmlParts.push(`<h${level}>${renderInline(headingMatch[2], sourceRelKey, wikiDir)}</h${level}>`);
+      const headingText = headingMatch[2];
+
+      if (level === 1) {
+        htmlParts.push(`<h1>${renderInline(headingText, sourceRelKey, wikiDir)}</h1>`);
+        htmlParts.push(`<div class="wiki-tagline">From Workflow Skills Wiki, the living architecture &amp; domain knowledge base</div>`);
+        if (page && page.depth === 2) {
+          htmlParts.push(buildInfoboxHtml(page, headingText, markdown));
+        } else if (page && page.depth === 1) {
+          htmlParts.push(buildIndexInfoboxHtml(allPages || []));
+        }
+        i += 1;
+        continue;
+      }
+
+      const cleanText = headingText
+        .replace(/`([^`]+)`/g, '$1')
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+        .replace(/[*_]/g, '')
+        .trim();
+      const slug = generateSlug(cleanText);
+
+      if (level === 2) {
+        headings.push({ level: 2, title: cleanText, id: slug });
+        if (firstH2Index === -1) {
+          firstH2Index = htmlParts.length;
+        }
+      }
+
+      htmlParts.push(`<h${level} id="${escapeHtml(slug)}">${renderInline(headingText, sourceRelKey, wikiDir)} <span class="wiki-edit-section"><a href="${escapeHtml(editUrl)}" target="_blank" rel="noopener" title="Edit section: ${escapeHtml(cleanText)}">[edit]</a></span></h${level}>`);
       i += 1;
       continue;
     }
@@ -272,6 +621,11 @@ function renderMarkdown(markdown, sourceRelKey, wikiDir) {
     htmlParts.push(`<p>${renderInline(paraLines.join(' '), sourceRelKey, wikiDir)}</p>`);
   }
 
+  if (headings.length >= 2 && firstH2Index !== -1) {
+    const tocHtml = buildTocHtml(headings);
+    htmlParts.splice(firstH2Index, 0, tocHtml);
+  }
+
   return htmlParts.join('\n');
 }
 
@@ -280,9 +634,25 @@ function extractTitle(markdown, fallback) {
   return match ? match[1].trim() : fallback;
 }
 
-function buildDocument({ title, bodyHtml, depth }) {
+function buildDocument({ title, bodyHtml, depth, page, domains, allPages }) {
   const cssHref = depth === 1 ? '../assets/css/style.css' : '../../assets/css/style.css';
   const homeHref = depth === 1 ? '../' : '../../';
+  const wikiHomeHref = depth === 1 ? 'index.html' : '../index.html';
+
+  const githubSourceRel = page.relKey === 'index.wiki.md'
+    ? '.agents/specs/wiki/index.wiki.md'
+    : `.agents/specs/wiki/${page.relKey}`;
+  const githubBlobUrl = `https://github.com/jpolvora/workflow-skills/blob/develop/${githubSourceRel}`;
+  const githubHistoryUrl = `https://github.com/jpolvora/workflow-skills/commits/develop/${githubSourceRel}`;
+  const githubEditUrl = `https://github.com/jpolvora/workflow-skills/edit/develop/${githubSourceRel}`;
+
+  const sidebarHtml = renderSidebarHtml(domains, page, homeHref, wikiHomeHref);
+  const topbarHtml = renderTopbarHtml(homeHref, wikiHomeHref);
+  const tabsHtml = renderTabsHtml(githubBlobUrl, githubHistoryUrl, githubEditUrl);
+
+  const pageDomain = page.depth === 2 ? page.relKey.split('/')[0] : '';
+  const domainBreadcrumb = pageDomain ? ` · <span>${escapeHtml(pageDomain.toUpperCase())}</span>` : '';
+
   return normalizeLf(`<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -292,8 +662,101 @@ function buildDocument({ title, bodyHtml, depth }) {
 <link rel="stylesheet" href="${cssHref}">
 </head>
 <body class="wiki-page">
-<nav class="wiki-chrome"><a href="${homeHref}">Home</a> · <a href="${depth === 1 ? 'index.html' : '../index.html'}">Wiki</a></nav>
-<article class="wiki-article wiki-toc">${bodyHtml}</article>
+${topbarHtml}
+<div class="wiki-layout">
+${sidebarHtml}
+  <main class="wiki-content-column">
+    <nav class="wiki-chrome"><a href="${homeHref}">Home</a> · <a href="${wikiHomeHref}">Wiki</a>${domainBreadcrumb}</nav>
+${tabsHtml}
+    <article class="wiki-article wiki-toc">${bodyHtml}
+      <div class="wiki-catlinks">
+        <span class="wiki-catlinks-title">Categories:</span>
+        <a href="${wikiHomeHref}">Workflow Skills</a>
+        ${pageDomain ? ` · <a href="${wikiHomeHref}#domain-${escapeHtml(pageDomain)}">${escapeHtml(pageDomain.toUpperCase())}</a>` : ''}
+        · <a href="${wikiHomeHref}">Living Architecture</a>
+      </div>
+    </article>
+    <footer class="wiki-page-footer">
+      <p>This living wiki page was synthesized from canonical specifications. Content is maintained under <a href="https://github.com/jpolvora/workflow-skills">workflow-skills</a>.</p>
+    </footer>
+  </main>
+</div>
+<script>
+(function() {
+  /* Theme initialization */
+  var themeToggle = document.getElementById('wiki-theme-toggle');
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    try { localStorage.setItem('theme', t); } catch(e) {}
+  }
+  try {
+    var saved = localStorage.getItem('theme');
+    if (saved) applyTheme(saved);
+  } catch(e) {}
+  if (themeToggle) {
+    themeToggle.addEventListener('click', function() {
+      var current = document.documentElement.getAttribute('data-theme') || 'dark';
+      applyTheme(current === 'light' ? 'dark' : 'light');
+    });
+  }
+
+  /* Table of Contents toggle */
+  var tocToggle = document.getElementById('wiki-toc-toggle');
+  var tocList = document.getElementById('wiki-toc-list');
+  if (tocToggle && tocList) {
+    tocToggle.addEventListener('click', function() {
+      var isHidden = tocList.style.display === 'none';
+      tocList.style.display = isHidden ? 'block' : 'none';
+      tocToggle.textContent = isHidden ? '[hide]' : '[show]';
+      tocToggle.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+    });
+  }
+
+  /* Left sidebar topic filter */
+  var filterInput = document.getElementById('wiki-filter-topics');
+  if (filterInput) {
+    filterInput.addEventListener('input', function() {
+      var q = filterInput.value.toLowerCase().trim();
+      var sections = document.querySelectorAll('.wiki-domain-section');
+      sections.forEach(function(sec) {
+        var items = sec.querySelectorAll('.wiki-nav-item');
+        var visible = 0;
+        items.forEach(function(item) {
+          var txt = item.textContent.toLowerCase();
+          var match = !q || txt.includes(q);
+          item.style.display = match ? '' : 'none';
+          if (match) visible++;
+        });
+        sec.style.display = visible > 0 ? '' : 'none';
+      });
+    });
+  }
+
+  /* Top search input sync with sidebar filter */
+  var topSearch = document.getElementById('wiki-search-input');
+  if (topSearch && filterInput) {
+    topSearch.addEventListener('input', function() {
+      filterInput.value = topSearch.value;
+      filterInput.dispatchEvent(new Event('input'));
+    });
+  }
+
+  /* Mobile menu drawer toggle */
+  var menuToggle = document.getElementById('wiki-menu-toggle');
+  var sidebar = document.getElementById('wiki-sidebar');
+  if (menuToggle && sidebar) {
+    menuToggle.addEventListener('click', function(e) {
+      e.stopPropagation();
+      sidebar.classList.toggle('open');
+    });
+    document.addEventListener('click', function(e) {
+      if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== menuToggle) {
+        sidebar.classList.remove('open');
+      }
+    });
+  }
+})();
+</script>
 </body>
 </html>
 `);
@@ -330,14 +793,15 @@ export function buildWikiSite({ repoRoot: _repoRoot, wikiDir, outDir, check = fa
     return { skipped: true, pages: 0, sitemapLocs: [], staleReasons };
   }
 
+  const domains = collectDomainTopics(pages, wikiDir);
   const generated = new Map();
   const sitemapLocs = [`${SITE_BASE}/wiki/`];
 
   for (const page of pages) {
     const markdown = fs.readFileSync(page.sourcePath, 'utf8');
     const title = extractTitle(markdown, path.basename(page.relKey, '.md'));
-    const bodyHtml = renderMarkdown(markdown, page.relKey, wikiDir);
-    const html = buildDocument({ title, bodyHtml, depth: page.depth });
+    const bodyHtml = renderMarkdown(markdown, page.relKey, wikiDir, page, pages);
+    const html = buildDocument({ title, bodyHtml, depth: page.depth, page, domains, allPages: pages });
     generated.set(page.outRel, html);
 
     if (page.outRel !== 'index.html') {
