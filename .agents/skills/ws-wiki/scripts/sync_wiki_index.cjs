@@ -63,9 +63,17 @@ function syncWikiIndex(options = {}) {
     }
   }
 
-  const title = options.title ? String(options.title).trim() : feature;
-  const description = options.description ? String(options.description).trim() : 'Living feature documentation and business rules.';
-  const linkPath = options.file ? String(options.file).trim().replace(/\\/g, '/') : `${domain}/${feature}.md`;
+  const sanitizeOneLine = (v, fallback) => {
+    const s = String(v ?? fallback).replace(/[\r\n]+/g, ' ').trim();
+    return s;
+  };
+  const title = sanitizeOneLine(options.title, feature).replace(/[\[\]]/g, '');
+  const description = sanitizeOneLine(options.description, 'Living feature documentation and business rules.');
+  const rawLink = options.file ? String(options.file).trim().replace(/\\/g, '/') : `${domain}/${feature}.md`;
+  if (/[\[\]()\n\r]/.test(rawLink)) {
+    throw new Error('invalid linkPath: markdown metacharacters not allowed: ' + rawLink);
+  }
+  const linkPath = rawLink;
 
   fs.mkdirSync(wikiDir, { recursive: true });
   const indexFile = path.join(wikiDir, 'index.wiki.md');

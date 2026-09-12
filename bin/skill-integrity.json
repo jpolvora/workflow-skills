@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "46b8871301cdefdc520db4a9b2a9857768c2e2386ec192d12121afb559de4289",
+  "fullPackageDigest": "8115a204068b570be960a5cfb8cd3fc27819147a5c1ac55de13305bf9d25b320",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -13,7 +13,7 @@
       "runtime/AGENTS.md": "a66b44f481e2cad0aeaa5543736335d9b1a4c77d094d404548afed68a0dbec20",
       "runtime/autoload.md": "a4f61313fb4ee3e191c95149521f9693ab1ba089787524749f1ab61d9e98a771",
       "runtime/CATALOG.md": "2f9a70aee1bfa2f3e811eed7a3edfba06e5b7eaa8cbde2d90e0f82abc493e5eb",
-      "runtime/config-resolution.md": "87d81087fcaaa68047b3800ee7358ab74546c73edb2950f3dee3f243b9bcf00c",
+      "runtime/config-resolution.md": "055dcb9d395fb5bf9852a3a59f4237b4e0b7f4b51f8f9825a447103ca2c2baa6",
       "runtime/config.schema.json": "acb39eee6c43f18027655fefb83855d268dd2c3b5dfd78bd48ac86bc8b00a6fb",
       "runtime/CROSS-PLATFORM.md": "68cf59d446957bee662ee84327676b6d87ab184b55b87a86710c58ec84057916",
       "runtime/evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
@@ -42,21 +42,21 @@
       "runtime/scripts/validate_json_schema.cjs": "db5bc07614c6496ae92ad7356b6f4c26cb8df5dd72681cfa228f1c76502bed61",
       "runtime/scripts/workflow_state.cjs": "fbe39c75d527e73300746c0379d20233b6b467ae2e70933d824e7395ec9fd342",
       "runtime/setup.md": "3f04ade2fd15c169983af236790b5691ab1174b2f8d59b6ea1382918a51682a8",
-      "runtime/skill-dependencies.json": "f045725134cf45a6dfca762fbb9610efe72e36cad1209a7a0b34478d4136db69",
+      "runtime/skill-dependencies.json": "9be738b371e261db048d42dfb0f00832c2bbc3b5a1f6770fed41117dc9ea6696",
       "runtime/stacks/abp-angular.md": "afd0426d06b2e2cd048fae3aa9a120ebed221d261713e3373840ef01f5ac629d",
       "runtime/stacks/nextjs-react.md": "32526a07aa999291084ac4f89711b023882b01a8ca4e9153f01d58b3ea6bfeac",
       "runtime/stacks/php-laravel.md": "9ab6a66dad32adbf4110e863372c92a47528b1ffb7941b4cdec6339f27df5f1d",
       "runtime/stacks/typescript-node.md": "fb9fb4d49e8f1eb79ced7be656a5ff6a2a2dcfd784a50b77c2766a98b52a73ab",
       "runtime/step-artifact.schema.json": "85a1674590d900df2bbbf818d9f4a4c5ccaf004bdc4a1523fe2c28e4dab554a2",
       "runtime/telemetry.schema.json": "d1654d1ed3cc52e55206e23ccc031686849d3ddf1c8afcba79065f8319e7654a",
-      "runtime/tools.md": "9b38f910f42cc978f998d09f000695c35e436f1f98bd37a03b3c05855146ab27",
+      "runtime/tools.md": "a2c4736b9fe63d5a75b1b4d22cca2ed595fc160a1f7f2679cb48ae98c9ab0d05",
       "runtime/workflow-state.schema.json": "46048a0268f17bcd647a5d04734d27b1669fb442e6b373bd78a95a62e3bb5ceb",
       "templates/CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
       "templates/config.json.example": "f819dbd6efc3b9f4a8828f5be6618887c44d50cb08a88fd14ee0e63f6829034a",
       "templates/MEMORY.md.template": "5b67274d91cd4507fecd8aa9e3c2ee10d2f7fb90f0d8eb35fb575089bc5664fb",
       "templates/STACK.md.example": "68cff04083447e0f585c48a4e8165cfd02f1d60504f0baced2148579104ad5a8"
     },
-    "skillDigest": "d65cef4e92a4af6f2dd140cf7c551d648b2f7059a982ddc14758c3e64a353ad6"
+    "skillDigest": "0a4ce5e87b50b539db841ceaeec1a6db7f2b85316de81d4c0f70068c228decd1"
   },
   "packageVersion": "0.4.19",
   "skills": {
@@ -575,11 +575,11 @@
     },
     "ws-wiki": {
       "files": {
-        "scripts/sync_wiki_index.cjs": "9acb4e6503f5eacdc7263c33a24489b2f66f995322ea2e921c51d282e763855c",
+        "scripts/sync_wiki_index.cjs": "7a766eef51d26a75a5fd9f76e87aa51278af20176b55d1adc2cf2aeed6ddfa14",
         "scripts/validate_wiki.cjs": "7ead61e90bfaff48de0bd92cd8c8674436c2ee7066716ad82054aa674c26a5d7",
-        "SKILL.md": "8944a0d10e25f6c47b2d3038426f4b31c5a9964adc329f93272bbc3f378e2804"
+        "SKILL.md": "dd0050f1b3abb01d9e1b01c5b86678992e10c251ff46a33767636902c83338e2"
       },
-      "skillDigest": "039f24b7e2fc1cecd441a9b196d5d4b7e789d11ebf803c9a328aba8b0d9085e7"
+      "skillDigest": "1d31e6773902e398187b2a7b19075f196e8cda91828ba4315cf0ecf4842206ed"
     },
     "ws-write-a-skill": {
       "files": {

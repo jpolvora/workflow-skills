@@ -269,6 +269,69 @@ Missing Business Rules & Logic section!
     );
   }
 
+  // Test 12: Orchestrator dependency closures and {wikiDir} token documentation
+  {
+    const binDepsPath = path.join(REPO_ROOT, 'bin/skill-dependencies.json');
+    const binDeps = JSON.parse(fs.readFileSync(binDepsPath, 'utf8'));
+    assert(binDeps.dependencies?.['ws-spec-to-pr']?.includes('ws-wiki'), 'bin/skill-dependencies.json: ws-spec-to-pr includes ws-wiki');
+    assert(binDeps.dependencies?.['ws-spec-to-pr-lite']?.includes('ws-wiki'), 'bin/skill-dependencies.json: ws-spec-to-pr-lite includes ws-wiki');
+
+    const runtimeDepsPath = path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/skill-dependencies.json');
+    const runtimeDeps = JSON.parse(fs.readFileSync(runtimeDepsPath, 'utf8'));
+    assert(runtimeDeps.dependencies?.['ws-spec-to-pr']?.includes('ws-wiki'), 'runtime/skill-dependencies.json: ws-spec-to-pr includes ws-wiki');
+    assert(runtimeDeps.dependencies?.['ws-spec-to-pr-lite']?.includes('ws-wiki'), 'runtime/skill-dependencies.json: ws-spec-to-pr-lite includes ws-wiki');
+
+    const toolsPath = path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/tools.md');
+    const tools = fs.readFileSync(toolsPath, 'utf8');
+    assert(tools.includes('{wikiDir}') && tools.includes('plans.wikiDir'), 'tools.md Path tokens table documents {wikiDir}');
+
+    const configResPath = path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/config-resolution.md');
+    const configRes = fs.readFileSync(configResPath, 'utf8');
+    assert(configRes.includes('{wikiDir}') && configRes.includes('plans.wikiDir'), 'config-resolution.md documents {wikiDir}');
+
+    const skillPath = path.join(REPO_ROOT, '.agents/skills/ws-wiki/SKILL.md');
+    const skill = fs.readFileSync(skillPath, 'utf8');
+    assert(skill.includes('{wikiDir}'), 'ws-wiki SKILL.md uses {wikiDir}');
+    assert(!skill.includes('{specsDir}/wiki/'), 'ws-wiki SKILL.md does not hardcode {specsDir}/wiki/');
+  }
+
+  // Test 13: Markdown metacharacters sanitization and rejection
+  {
+    // sync_wiki_index sanitizes brackets and newlines in title and description
+    const resSanitized = run(SYNC, [
+      '--wiki-dir', wikiDir,
+      '--domain', 'identity',
+      '--feature', 'user-management',
+      '--title', 'A]B\n- [Evil](evil.md)',
+      '--description', 'Multi\r\nline\ndescription',
+    ]);
+    assert(resSanitized.status === 0, 'sync_wiki_index handles title/description with brackets and newlines');
+    const idxContent = fs.readFileSync(indexFile, 'utf8');
+    assert(!idxContent.includes('[Evil]'), 'injected link neutralized');
+    assert(idxContent.includes('AB'), 'brackets removed from title');
+    assert(idxContent.includes('Multi line description'), 'newlines collapsed in description');
+
+    // validate_wiki succeeds on sanitized index
+    const resValSanitized = run(VALIDATE, ['--wiki-dir', wikiDir, '--json']);
+    assert(resValSanitized.status === 0, 'validate_wiki succeeds on index with sanitized entries');
+
+    // sync_wiki_index rejects linkPath with markdown metacharacters
+    const resBadMetachars = run(SYNC, [
+      '--wiki-dir', wikiDir,
+      '--domain', 'identity',
+      '--feature', 'user-management',
+      '--file', 'identity/bad)name.md',
+    ]);
+    assert(resBadMetachars.status !== 0, 'sync_wiki_index rejects --file with closing paren');
+
+    // Restore index
+    fs.writeFileSync(
+      indexFile,
+      `# Project Living Feature Wiki\n\n## Domain: identity\n\n- [User Management](identity/user-management.md): User account onboarding and lifecycle.\n`,
+      'utf8',
+    );
+  }
+
 } finally {
   try {
     fs.rmSync(tmp, { recursive: true, force: true });

@@ -22,7 +22,7 @@ Existing documents serve distinct roles:
 - `*.spec.md`: Bounded, point-in-time contract for a specific delivery package.
 - `ws-spec-update`: Surgical drift updater for individual delta specifications.
 
-`ws-wiki` manages a consolidated, living feature wiki at `{specsDir}/wiki/` (configurable via `plans.wikiDir`, defaulting to `.agents/specs/wiki/`).
+`ws-wiki` manages a consolidated, living feature wiki at `{wikiDir}` (`plans.wikiDir`, default `.agents/specs/wiki/`).
 
 ## Wiki Structure
 
@@ -58,12 +58,12 @@ Bootstrap the living wiki from existing project context:
 
 1. **Scan Project Files**: Inspect `README.md`, `AGENTS.md`, `index.PRD`, `.prd`, `features.md`, and architectural documentation.
 2. **Synthesize Domain Taxonomy**: Identify the project's core vision, bounded contexts, and key domain modules (e.g. `identity`, `catalog`, `billing`, `harness`).
-3. **Generate Root Index**: Write `{specsDir}/wiki/index.wiki.md` containing:
+3. **Generate Root Index**: Write `{wikiDir}/index.wiki.md` containing:
    - `# Project Living Feature Wiki & Domain Knowledge Base`
    - `## System Vision & Overview`
    - `## Architectural Boundaries`
    - `## Domain Catalog` with empty domain sections or seed placeholders.
-4. **Guard**: If `{specsDir}/wiki/index.wiki.md` already exists, do not overwrite without explicit user confirmation. Defer feature subpages until features are delivered.
+4. **Guard**: If `{wikiDir}/index.wiki.md` already exists, do not overwrite without explicit user confirmation. Defer feature subpages until features are delivered.
 
 ### 2. `/ws-wiki sync [slug]`
 
@@ -76,7 +76,7 @@ Synchronize shipped code changes to living domain wiki subpages:
    - Determine which bounded context domain(s) the feature belongs to (e.g., `identity`, `billing`).
    - If a feature spans multiple modules (e.g. `orders` touches `inventory` and `notifications`), map updates across multiple domain subpages and establish cross-boundary markdown links between them.
 3. **In-Place Rule Refinement**:
-   - Read the existing `{specsDir}/wiki/{domain}/{feature}.md` if present.
+   - Read the existing `{wikiDir}/{domain}/{feature}.md` if present.
    - Update, reconcile, and refine existing business rules and technical architecture in place. Do **not** append repetitive chronological change logs.
    - If creating a new page, adhere strictly to the 3-section structure (`## Feature Overview`, `## Business Rules & Logic`, `## Technical Architecture`).
 4. **Approval Review Gate**:
@@ -86,7 +86,7 @@ Synchronize shipped code changes to living domain wiki subpages:
    - If **Cancel** is selected: STOP, terminate immediately without writing changes to disk.
 5. **Write & Index**:
    - On approval, write the updated feature markdown files.
-   - Invoke `sync_wiki_index.cjs` to register/update the feature link and one-line description in `{specsDir}/wiki/index.wiki.md`.
+   - Invoke `sync_wiki_index.cjs` to register/update the feature link and one-line description in `{wikiDir}/index.wiki.md`.
    - Run `validate_wiki.cjs` to verify structural integrity.
 
 ### 3. `/ws-wiki update [target]`

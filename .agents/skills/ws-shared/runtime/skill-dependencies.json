@@ -132,6 +132,7 @@
       "ws-changelog",
       "ws-configure-project",
       "ws-spec-index",
+      "ws-wiki",
       "ws-senior-developer"
     ],
     "ws-spec-to-pr-lite": [
@@ -153,6 +154,7 @@
       "ws-changelog",
       "ws-configure-project",
       "ws-spec-index",
+      "ws-wiki",
       "ws-senior-developer"
     ],
     "ws-spec-write": [

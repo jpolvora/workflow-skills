@@ -12,6 +12,7 @@ Canonical tool names every agent uses. Project-specific parameters from `config.
 | `{sharedDir}` | `pathTokens.sharedDir` | `{skillsRoot}/ws-shared` → `.agents/skills/ws-shared` |
 | `{plansDir}` | `plans.dir` | `.agents/plans` |
 | `{specsDir}` | `plans.specsDir` | `.agents/specs` |
+| `{wikiDir}` | `plans.wikiDir` | `.agents/specs/wiki` |
 | `{reviewsDir}` | `reviews.dir` | `.agents/codereviews` |
 | `{us-dir}` | `{plansDir}/{slug}/` | (slug from workflow) |
 | `{globalSkillsRoot}` | `WORKFLOW_SKILLS_GLOBAL_DIR` (if set) | `~/.agents/skills` |
