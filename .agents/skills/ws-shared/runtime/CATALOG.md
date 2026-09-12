@@ -6,7 +6,7 @@ Path tokens: expand via `.agents/skills/ws-shared/runtime/tools.md` before tool 
 
 ## Skill catalog (layers)
 
-> **Scope note:** Full inventory for this install. Membership is [`skill-dependencies.json`](skill-dependencies.json) (`workflows` = 45, `extra` = 8). Extra rows are absent from Workflows-only installs. Ids in `externalSkills` (spec-memo companions) are not packaged here. Consumer routes: [`AGENTS.md`](AGENTS.md).
+> **Scope note:** Full inventory for this install. Membership is [`skill-dependencies.json`](skill-dependencies.json) (`workflows` = 47, `extra` = 8). Extra rows are absent from Workflows-only installs. Ids in `externalSkills` (spec-memo companions) are not packaged here. Consumer routes: [`AGENTS.md`](AGENTS.md).
 >
 > **Do not load this catalog as a work list** — it is an index. Load skills per root `AGENTS.md` § Progressive disclosure.
 
@@ -91,6 +91,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-spec-memo` | `.agents/skills/ws-spec-memo/SKILL.md` | Harness ↔ spec-memo **bridge** only (`config.json`, import, hybrid fallback); runtime vault ops → `ws-memo` |
 | `ws-spec-organizer` | `.agents/skills/ws-spec-organizer/SKILL.md` | Spec path resolution & NNNN organizer |
 | `ws-spec-manager` | `.agents/skills/ws-spec-manager/SKILL.md` | Unified spec router & lifecycle manager |
+| `ws-wiki` | `.agents/skills/ws-wiki/SKILL.md` | Living project feature wiki & domain knowledge base manager |
 | `ws-task-lifecycle` | `.agents/skills/ws-task-lifecycle/SKILL.md` | Prompt-driven task tracking |
 | `grill-with-docs` | `(global)` | Docs grill |
 | `find-skills` | via `using-superpowers` | Discover/install |
@@ -135,6 +136,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Auto-update feature specs after code changes | `ws-spec-update` |
 | Resolve spec path / organize board specs | `ws-spec-organizer` |
 | Manage / route all spec operations (unified front door) | `ws-spec-manager` |
+| Living project feature wiki & domain knowledge base | `ws-wiki` |
 | spec-memo vault setup/bridge / import MEMORY / hybrid fallback | `ws-spec-memo` |
 | Runtime spec-memo vault ops (search, upsert, bootstrap, canvas, doctor) | `ws-memo` (external; skip if missing) |
 | Prompt/session tracking / vault activity (MCP prompt) | `ws-session-tracking` (external; skip if missing) |

@@ -180,7 +180,7 @@ after code changes outside orch
 
 after ship / delivery evidence
     → ws-spec-index sync     → index.PRD checkboxes / Done log
-    → ws-wiki sync           → {specsDir}/wiki/ living domain pages & index.wiki.md
+    → ws-wiki sync           → {wikiDir} living domain pages & index.wiki.md
 
 harvest {plansDir} history (manual)
     → ws-spec-archive        → index.PRD Archive + optional plan-dir cleanup

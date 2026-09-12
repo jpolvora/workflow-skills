@@ -230,9 +230,20 @@ Missing Business Rules & Logic section!
     const catalog = fs.readFileSync(catalogPath, 'utf8');
     assert(catalog.includes('ws-wiki') && catalog.includes('.agents/skills/ws-wiki/SKILL.md'), 'AC17: CATALOG.md registers ws-wiki');
 
+    const runtimeCatalogPath = path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/CATALOG.md');
+    const runtimeCatalog = fs.readFileSync(runtimeCatalogPath, 'utf8');
+    assert(runtimeCatalog.includes('ws-wiki') && runtimeCatalog.includes('.agents/skills/ws-wiki/SKILL.md'), 'AC17: runtime/CATALOG.md registers ws-wiki');
+    assert(runtimeCatalog.includes('`workflows` = 47'), 'AC17: runtime/CATALOG.md scope note has workflows = 47');
+
     const autoloadPath = path.join(REPO_ROOT, '.agents/skills/ws-shared/autoload.md');
     const autoload = fs.readFileSync(autoloadPath, 'utf8');
     assert(autoload.includes('ws-wiki'), 'AC17: autoload.md registers ws-wiki');
+    assert(autoload.includes('{wikiDir} living domain pages'), 'AC17: autoload.md diagram uses {wikiDir}');
+
+    const runtimeAutoloadPath = path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/autoload.md');
+    const runtimeAutoload = fs.readFileSync(runtimeAutoloadPath, 'utf8');
+    assert(runtimeAutoload.includes('ws-wiki'), 'AC17: runtime/autoload.md registers ws-wiki');
+    assert(runtimeAutoload.includes('{wikiDir} living domain pages'), 'AC17: runtime/autoload.md diagram uses {wikiDir}');
   }
 
   // Test 10: NS3 & NS4 Negative Scenarios Gate Coverage
