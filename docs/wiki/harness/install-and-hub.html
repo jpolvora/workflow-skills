@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Install &amp; Hub (`harness` — part 1)</title>
+<title>Install &amp; Hub (`harness`)</title>
 <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
 <body class="wiki-page">
@@ -89,8 +89,8 @@
       <div class="wiki-domain-section" data-domain="harness">
         <div class="wiki-domain-header"><span class="wiki-domain-name">HARNESS</span><span class="wiki-domain-badge">2</span></div>
         <ul class="wiki-domain-topics">
-        <li class="wiki-nav-item"><a href="diagnostics-and-benchmarks.html" class="wiki-nav-link" title="Diagnostics &amp; Benchmarks (`harness` — part 2)"><span class="wiki-topic-marker">•</span><span class="wiki-nav-text">Diagnostics &amp; Benchmarks (`harness` — part 2)</span></a></li>
-        <li class="wiki-nav-item active"><a href="install-and-hub.html" class="wiki-nav-link active" title="Install &amp; Hub (`harness` — part 1)"><span class="wiki-topic-marker">▸</span><span class="wiki-nav-text">Install &amp; Hub (`harness` — part 1)</span></a></li>
+        <li class="wiki-nav-item"><a href="diagnostics-and-benchmarks.html" class="wiki-nav-link" title="Diagnostics &amp; Benchmarks (`harness`)"><span class="wiki-topic-marker">•</span><span class="wiki-nav-text">Diagnostics &amp; Benchmarks (`harness`)</span></a></li>
+        <li class="wiki-nav-item active"><a href="install-and-hub.html" class="wiki-nav-link active" title="Install &amp; Hub (`harness`)"><span class="wiki-topic-marker">▸</span><span class="wiki-nav-text">Install &amp; Hub (`harness`)</span></a></li>
         </ul>
       </div>
       <div class="wiki-domain-section" data-domain="delivery">
@@ -179,7 +179,7 @@
     <a href="https://github.com/jpolvora/workflow-skills/commits/develop/.agents/specs/wiki/harness/install-and-hub.md" target="_blank" rel="noopener" class="wiki-tab" title="View commit history on GitHub">View history</a>
   </div>
 </div>
-    <article class="wiki-article wiki-toc"><h1>Install &amp; Hub (<code>harness</code> — part 1)</h1>
+    <article class="wiki-article wiki-toc"><h1>Install &amp; Hub (<code>harness</code>)</h1>
 <div class="wiki-tagline">From Workflow Skills Wiki, the living architecture &amp; domain knowledge base</div>
 <aside class="wiki-infobox" aria-label="Feature specification details">
   <div class="wiki-infobox-header">
@@ -206,7 +206,7 @@
       </tr>
       <tr>
         <th>Provenance</th>
-        <td>Specs 0002, 0007, 0010, 0013, 0017, 0027, 0032, 0037, 0052, 0058, 0061, 0069, 0070,</td>
+        <td>Specs 0002, 0007, 0010, 0013, 0017, 0027, 0032, 0037, 0052, 0058, 0061, 0069, 0070, 0071</td>
       </tr>
       <tr>
         <th>Framework</th>
@@ -219,23 +219,27 @@
     </tbody>
   </table>
 </aside>
+<p>&gt; Provenance: <code>bin/cli.js</code>, <code>bin/skill-dependencies.json</code>, <code>.agents/skills/ws-shared/runtime/hub-layout.json</code>, root <code>AGENTS.md</code> § Skill SoT, living synthesis of specs 0002, 0007, 0010, 0013, 0017, 0027, 0032, 0037, 0052, 0058, 0061, 0069, 0070, 0071.</p>
 <div class="wiki-toc-box" id="toc" role="navigation" aria-label="Table of contents">
   <div class="wiki-toc-header">
     <span class="wiki-toc-title">Contents</span>
     <button type="button" class="wiki-toc-toggle" id="wiki-toc-toggle" aria-expanded="true">[hide]</button>
   </div>
   <ol class="wiki-toc-list" id="wiki-toc-list">
-    <li class="wiki-toc-item"><a href="#feature-overview"><span class="wiki-toc-number">1</span> <span class="wiki-toc-text">Feature Overview</span></a></li>
-    <li class="wiki-toc-item"><a href="#business-rules-logic"><span class="wiki-toc-number">2</span> <span class="wiki-toc-text">Business Rules &amp; Logic</span></a></li>
-    <li class="wiki-toc-item"><a href="#technical-architecture"><span class="wiki-toc-number">3</span> <span class="wiki-toc-text">Technical Architecture</span></a></li>
+    <li class="wiki-toc-item"><a href="#feature"><span class="wiki-toc-number">1</span> <span class="wiki-toc-text">Feature</span></a></li>
+    <li class="wiki-toc-item"><a href="#how-it-works"><span class="wiki-toc-number">2</span> <span class="wiki-toc-text">How it works</span></a></li>
+    <li class="wiki-toc-item"><a href="#backend"><span class="wiki-toc-number">3</span> <span class="wiki-toc-text">Backend</span></a></li>
   </ol>
 </div>
-<h2 id="feature-overview">Feature Overview <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/harness/install-and-hub.md" target="_blank" rel="noopener" title="Edit section: Feature Overview">[edit]</a></span></h2>
-<p>The harness ships portable skill bodies (<code>.agents/skills/ws-*</code> is the only SoT) through a package installer (<code>Workflows</code> / <code>Extra</code>, <code>--global</code> vs project-local) with hybrid execution: skill bodies resolve local-first then <code>{globalSkillsRoot}</code>, while project <code>$PWD/.agents/skills/ws-shared/config.json</code> always wins over global defaults. The consumer hub (<code>ws-shared/</code>) is split into installer-owned <code>runtime/</code> (contracts, scripts, schemas, stacks), setup-only <code>templates/</code> (seeds), and consumer-owned root (<code>config.json</code>, <code>STACK.md</code>, <code>MEMORY.md</code>, <code>CHANGELOG.md</code>), classified by a layout manifest. Upstream authoring (root <code>AGENTS.md</code> dogfood contract, version bumps, site rebuilds) is fully separated from the consumer-portable hub. Skill ids follow <code>ws-{family}-{verb}</code> with the spec family first; the compiler can project canonical skills into host-native subagents.</p>
-<h2 id="business-rules-logic">Business Rules &amp; Logic <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/harness/install-and-hub.md" target="_blank" rel="noopener" title="Edit section: Business Rules &amp; Logic">[edit]</a></span></h2>
-<ul><li><strong>SoT and neutrality</strong>: author and hash only under <code>.agents/skills/</code>; skill bodies never name host products, never hardcode consumer paths, and never keep legacy-path shims — latest layout only on install/update.</li><li><strong>Hybrid precedence</strong>: explicit override &gt; project-local hub &gt; global fallback; global installs write only the minimal consumer bundle and never copy <code>runtime/</code>/<code>templates/</code>/manifests/memory globally; consumer files are preserved byte-identical and migrations fail closed on collision.</li><li><strong>Package selection</strong>: selecting a skill auto-selects transitive deps; deselect never silently drops dependents; retired ids migrate idempotently to canonical ids; unpackaged external companions (<code>ws-memo</code>, <code>ws-session-tracking</code>) are declared in <code>externalSkills</code>, never vendored, pruned, or required.</li><li><strong>Hub identity</strong>: consumer mode audits <code>ws-shared/AGENTS.md</code> as the hub; no skill/installer may require <code>.agents/AGENTS.md</code>; <code>rules.harness</code> resolves via thin local pointer or documented global fallback.</li><li><strong>Naming law</strong>: every id containing <code>spec</code> matches <code>^ws-spec-</code>; folder, <code>name:</code>, graph keys, and router rows use the identical string; <code>update</code> leaves only new directories.</li><li><strong>Subagents projection</strong>: disabled by default; compiled agents set <code>disable-model-invocation: true</code>; unsupported hosts fall back to generic dispatch.</li></ul>
-<h2 id="technical-architecture">Technical Architecture <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/harness/install-and-hub.md" target="_blank" rel="noopener" title="Edit section: Technical Architecture">[edit]</a></span></h2>
-<ul><li><strong>Installer</strong>: <code>bin/cli.js</code> (<code>--global</code>, <code>--targets</code>, <code>--symlink</code>), <code>bin/skill-dependencies.json</code> (+ <code>externalSkills</code>), <code>bin/install-rules.js</code> target registry + <code>HUB_WHITELIST</code>, <code>runtime/hub-layout.json</code> manifest, <code>retired_artifacts.cjs</code> (<code>RETIRED_HUB_FILES</code>, <code>RETIRED_DEFAULTS_KEYS</code>), <code>compile_host_subagents.cjs --host/--prefix/--clean/--check/--json/--force</code>.</li><li><strong>Multi-host globals</strong>: <code>$HOME/.agents/skills</code> stays canonical; per-skill junctions (Windows) / symlinks (POSIX) with copy fallback project into Claude/Codex/Gemini dirs without clobbering third-party skills.</li><li><strong>Consumer config</strong>: <code>pathTokens</code> (<code>skillsRoot</code>, <code>sharedDir</code>), <code>providers.active/scm</code>, <code>plans.specsDir/wikiDir</code>, <code>rules.*</code>, <code>defaults.specializedSubagents</code>; consumer-owned scripts resolve the hub from <code>$PWD</code>, never <code>__file__</code>.</li><li><strong>Provenance</strong>: living synthesis of specs 0002, 0007, 0010, 0013, 0017, 0027, 0032, 0037, 0052, 0058, 0061, 0069, 0070, and 0071.</li></ul>
+<h2 id="feature">Feature <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/harness/install-and-hub.md" target="_blank" rel="noopener" title="Edit section: Feature">[edit]</a></span></h2>
+<p>The harness ships portable skill bodies through a package installer that supports Workflows-only and Full package selections, project-local installs, and optional global installs under <code>$HOME/.agents/skills</code>. Canonical skill content lives only under <code>.agents/skills/ws-*</code> in the upstream source tree; consumers receive managed copies on install and update. Hybrid execution resolves skill bodies local-first then <code>{globalSkillsRoot}</code>, while project <code>$PWD/.agents/skills/ws-shared/config.json</code> always overrides global hub defaults. The consumer hub splits into installer-owned <code>runtime/</code> (contracts, scripts, schemas), setup-only <code>templates/</code> (seeds), and consumer-owned root files (<code>config.json</code>, <code>STACK.md</code>, <code>MEMORY.md</code>, <code>CHANGELOG.md</code>), classified by <code>hub-layout.json</code>. Upstream authoring prose in root <code>AGENTS.md</code> stays separate from the consumer-portable hub contract in <code>ws-shared/AGENTS.md</code>.</p>
+<h2 id="how-it-works">How it works <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/harness/install-and-hub.md" target="_blank" rel="noopener" title="Edit section: How it works">[edit]</a></span></h2>
+<p>Authors hash and publish only from <code>.agents/skills/</code> in the upstream package. Skill bodies never name host products, never hardcode consumer artifact paths, and never ship legacy-path shims; install and update deliver the latest layout only. Config resolution follows explicit override, then project-local hub, then global fallback. Global installs write only the minimal consumer bundle and never copy <code>runtime/</code>, <code>templates/</code>, manifests, or memory files into the global tree as consumer data.</p>
+<p>Package selection auto-selects transitive dependencies when a skill is chosen, and deselect never silently drops dependents. Retired skill ids migrate idempotently to canonical ids during update. Unpackaged external companions such as <code>ws-memo</code> and <code>ws-session-tracking</code> appear in <code>externalSkills</code>, are never vendored, and are never required for core workflow installs. Consumer mode audits <code>ws-shared/AGENTS.md</code> as the hub entrypoint; no skill or installer may require a repo-root <code>.agents/AGENTS.md</code>. The <code>rules.harness</code> path resolves through a thin local pointer or documented global fallback.</p>
+<p>Naming law requires every id containing <code>spec</code> to match <code>^ws-spec-</code>, with identical strings across folder name, <code>name:</code> frontmatter, dependency graph keys, and router rows. Subagent projection via <code>compile_host_subagents.cjs</code> is disabled by default, compiled agents set <code>disable-model-invocation: true</code>, and unsupported hosts fall back to generic dispatch.</p>
+<h2 id="backend">Backend <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/harness/install-and-hub.md" target="_blank" rel="noopener" title="Edit section: Backend">[edit]</a></span></h2>
+<p>The installer entrypoint is <code>bin/cli.js</code> with flags such as <code>--global</code>, <code>--targets</code>, and <code>--symlink</code>. <code>bin/skill-dependencies.json</code> carries the install graph, <code>packageVersion</code>, and <code>externalSkills</code>. <code>bin/install-rules.js</code> implements the target registry and <code>HUB_WHITELIST</code>. <code>retired_artifacts.cjs</code> tracks <code>RETIRED_HUB_FILES</code> and <code>RETIRED_DEFAULTS_KEYS</code>. Multi-host global installs keep <code>$HOME/.agents/skills</code> canonical and project per-skill junctions on Windows or symlinks on POSIX into companion host skill directories without clobbering third-party skills.</p>
+<p>Consumer configuration uses <code>pathTokens</code> (<code>skillsRoot</code>, <code>sharedDir</code>), <code>providers.active</code> and <code>providers.scm</code>, <code>plans.specsDir</code> and optional <code>plans.wikiDir</code>, <code>rules.*</code> guardrail paths, and <code>defaults.specializedSubagents</code>. Consumer-owned scripts resolve the hub from <code>$PWD</code> via <code>resolve_consumer_root.cjs</code>, never from <code>__file__</code> inside a managed skill copy.</p>
       <div class="wiki-catlinks">
         <span class="wiki-catlinks-title">Categories:</span>
         <a href="../index.html">Workflow Skills</a>
