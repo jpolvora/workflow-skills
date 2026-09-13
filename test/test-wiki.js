@@ -714,6 +714,8 @@ Missing Business Rules & Logic section!
     assert(sweep.includes('Verbosity gate') && sweep.includes('sweep.state.json'), 'us-324: SWEEP verbosity gate + checkpoint');
     assert(sweep.includes('plans.wiki.verbosity'), 'us-324: SWEEP honors config verbosity as pre-selected default');
     assert(skill.includes('sweep.state.json'), 'us-324: SKILL resolution covers per-flow run state');
+    const verifyCompanion = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'PHASE-2-VERIFY.md'), 'utf8');
+    assert(verifyCompanion.includes('## How it works') && verifyCompanion.includes('## Backend'), 'us-324: VERIFY extracts from new conditional headings');
     const sync = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'SYNC.md'), 'utf8');
     assert(sync.includes('verbosity') && sync.includes('from-code.state.json') && sync.includes('plans.wiki.verbosity'), 'us-324: SYNC resolves persisted verbosity');
     assert(sync.includes('Apply wiki updates (Recommended)') && sync.includes('Cancel') && sync.includes('STOP'), 'us-324: SYNC review gate still fail-closed on Cancel');

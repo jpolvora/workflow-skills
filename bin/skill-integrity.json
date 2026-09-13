@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "cf701507f4065dde39fd23c13dd71db5e99d28fb7c8b4ac1866b23a314b07fc2",
+  "fullPackageDigest": "bc787ee764d75f17be15b86a0206b01640a7a860be979825e5abe13d0e634709",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -578,7 +578,7 @@
         "FROM-CODE.md": "44989af66697d1f091dd9997616887a89fa3a0a4358af725224a68ba137c4b51",
         "INIT.md": "f61124dfa3c3fffca6f6ee1f30b54419f8b14eb59dc56e3e5a321889c2636d32",
         "PHASE-1-SWEEP.md": "ccca19c1002de9d32eb2b763a2be9f1bf6b0a78b87d44d36f8be06130b362f45",
-        "PHASE-2-VERIFY.md": "9a8f90dfe21fab234254cb2a99da78088864f71ee66e2b278ce1588e0e74be53",
+        "PHASE-2-VERIFY.md": "1540a45a187f9474d9990db82dd18bb202540e81c5494350003919d308bfb07c",
         "PHASE-3-APPLY.md": "fcc97f810bd96b42f71cf604cdc521670f8678c4f2caf6cb960647fa35048476",
         "references/VERBOSITY-EXAMPLE.md": "606e23b31cc8e010f7b3c697c74b5b8c606a729d6f6d98aa14a5e415745193aa",
         "scripts/list_wiki_feature_pages.cjs": "2687cd9dbdfce28f0f95877466be334bf3a1e31d7318c1c31585c30f4714172e",
@@ -590,7 +590,7 @@
         "SYNC.md": "a5c2cbbdac21f73b1b90f0c8a0885358547124d46fc3843fc0ecdbe303c080aa",
         "UPDATE.md": "109b28937601396f642215b3f3821eabc87e8571fb7376150036ebddf3087e37"
       },
-      "skillDigest": "0bc22651fb59e2f401a8c3a20b8afc864cbb30aab9fbd20c7132896e77a0c47e"
+      "skillDigest": "eea3056a5531e2f87670dde6d21c544a095776c498b136524a395117e75e3ca0"
     },
     "ws-write-a-skill": {
       "files": {
