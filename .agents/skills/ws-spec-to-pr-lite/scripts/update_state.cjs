@@ -6,6 +6,6 @@ const { runUpdateCli } = require('../../ws-shared/runtime/scripts/workflow_state
 runUpdateCli({
   pipeline: 'lite',
   maxStep: 5,
-  labels: ['Spec', 'Planning', 'Implementation', 'Code review', 'Consolidation', 'Ship and PR'],
+  labels: ['Spec', 'Planning', 'Implementation', 'Review', 'Ship', 'Fix-PR'],
   scriptFile: __filename,
 });

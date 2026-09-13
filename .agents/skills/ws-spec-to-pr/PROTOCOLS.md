@@ -13,7 +13,7 @@ Sibling protocol files under [`protocols/`](protocols/) remain authoritative for
 | G0 | Read, RO reports | — |
 | G1 | Edit WT, plans, impl (no commit) | Transition gate |
 | G2-code | `git commit` workflow product `files_touched` only (path-scoped; never `{plansDir}`) | Required: **G2-code after Step 5 before Step 6**; after Step 6 review-fix if dirty. Optional: Step 4 / Step 7 fix |
-| G2-delivery | `git commit` **configured delivery artifacts only** (see [`ARTIFACTS.md`](ARTIFACTS.md) § Step 8 / `defaults.deliveryCommitArtifacts`) | Step 8 close implementation gate |
+| G2-delivery | `git commit` **configured delivery artifacts only** (see [`ARTIFACTS.md`](ARTIFACTS.md) § Step 8 / `defaults.deliveryCommitArtifacts`) | Step 8 combined gate (close phase) |
 | G3 | `git push`, PR create/merge | Step 8 **ship action** (within combined gate) |
 
 ```text
@@ -196,7 +196,7 @@ Orch `git add` must be path-scoped — never `git add .` / `git add -A` on code-
 
 → [`protocols/delivery-result.md`](protocols/delivery-result.md) (writes `step-08-{slug}.result.md` with Timing totals from step `elapsedSec` only; never start a harness benchmark)
 
-**Order:** delivery result → **close implementation gate** (G2-delivery, MEMORY, changelog, `status: completed`, `shipStatus: pending`) → **ship gate** → `ws-ship-pr` (push/PR only) → optional Phase B plan-dir temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md).
+**Order:** delivery result → **Step 8 combined gate** (one prompt; state still records close then ship) → `ws-ship-pr` when applicable (push/PR only) → optional Phase B plan-dir temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md).
 
 **Terminal shipping (Phase A — once):** When `shipStatus` is terminal (`skipped`, `merged`, `stopped`, or skip-ship after close with no Step 9), run mandatory Phase A git cleanup **before** claiming the run fully ended:
 
@@ -206,21 +206,15 @@ python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id 
 
 Do **not** invoke Phase A at close when `shipStatus` is still `pending`/`pr-open`/`pushed`. Phase B stays optional (delete-temps only). Keep-all still runs Phase A when shipping is terminal. Skip auto Phase A for `failed` / `cancelled` / `paused` / active Pause. Exit 0 → claim ended; exit 2 → surface leftovers, may claim ended; exit 1 → do not claim ended.
 
-**Close gate** ([`gates.md`](../ws-shared/runtime/gates.md) § Close implementation + [`STEP-DISPATCH.md`](STEP-DISPATCH.md)):
+**Step 8 combined gate** ([`gates.md`](../ws-shared/runtime/gates.md) § Step 8 combined gate + [`STEP-DISPATCH.md`](STEP-DISPATCH.md)):
 
-1. **Commit configured delivery artifacts** (Recommended when `fullMode`)
-2. **Skip delivery commit**
-3. **Pause**
+1. **Commit configured delivery artifacts and Create PR** (Recommended when `fullMode`)
+2. **Commit configured delivery artifacts and Push only**
+3. **Commit configured delivery artifacts and Skip shipping**
+4. **Skip delivery commit and Create PR**
+5. **More options / Separate gates / Pause**
 
-**Ship gate** (after close):
-
-1. **Create PR** (Recommended when `fullMode`)
-2. **Push only**
-3. **Skip PR**
-4. **Skip shipping entirely**
-5. **Pause**
-
-Dispatch `ws-ship-pr` with `workflowMode: true`, `shipAction`, `stopBeforeFixPr: true` — **no delivery commit, no goal-fix loop inside ship**. Advance to Step 9 when PR created and user chose create-pr.
+Dispatch `ws-ship-pr` with `workflowMode: true`, `shipAction`, `stopBeforeFixPr: true` — **no delivery commit, no goal-fix loop inside ship**. Advance to Step 9 when PR created and user chose create-pr (options 1 or 4).
 
 ### Fix-PR (Step 9)
 
@@ -259,7 +253,7 @@ Resume: active `autoMode` same US → continue `currentStep`; else new `workflow
 | Step 7 mutation fail (score &lt; threshold) | **Apply fixes and revalidate** (strengthen tests) |
 | Step 7 failure | **Apply fixes and revalidate** |
 | Step 8 combined gate (`fullMode`) | **Commit configured delivery artifacts, then create PR** |
-| Step 8 combined gate (not `fullMode`) | **Commit configured delivery artifacts, skip PR** |
+| Step 8 combined gate (not `fullMode`) | **Skip delivery commit and skip shipping** |
 | Step 9 fix-pr | **Run ws-goal-fix-pr loop** |
 
 Shared defaults: [`gates.md`](../ws-shared/runtime/gates.md) § Auto-gate defaults. Log `auto-gate | step {N} | {choice} | ISO`. Disabled: backward/repeat/pause menus; Step 3 without shared understanding.

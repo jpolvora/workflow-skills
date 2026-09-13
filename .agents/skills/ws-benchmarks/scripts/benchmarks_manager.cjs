@@ -264,6 +264,23 @@ function renderEvolutionMarkdown(rows, options = {}) {
   return lines.join('\n');
 }
 
+function comparisonFingerprint(md) {
+  return String(md)
+    .replace(/\r\n/g, '\n')
+    .replace(/^\*\*Generated:\*\* [^\n]*\n?/m, '');
+}
+
+function writeComparisonFile(filePath, markdown) {
+  if (fs.existsSync(filePath)) {
+    const existing = fs.readFileSync(filePath, 'utf8');
+    if (comparisonFingerprint(existing) === comparisonFingerprint(markdown)) {
+      return { wrote: false, path: filePath };
+    }
+  }
+  fs.writeFileSync(filePath, markdown, 'utf8');
+  return { wrote: true, path: filePath };
+}
+
 function updateComparisonFiles(repoRoot, options = {}) {
   const baselinesRoot = path.join(repoRoot, 'benchmarks', 'baselines');
   const resultsRoot = options.resultsDir
@@ -274,9 +291,11 @@ function updateComparisonFiles(repoRoot, options = {}) {
   const baselines = listBaselines(baselinesRoot);
   const markdown = renderEvolutionMarkdown(baselines, options);
   const evolutionFile = path.join(resultsRoot, 'BENCHMARK_EVOLUTION.md');
-  fs.writeFileSync(evolutionFile, markdown, 'utf8');
+  const written = [];
+  const skipped = [];
+  const evoWrite = writeComparisonFile(evolutionFile, markdown);
+  (evoWrite.wrote ? written : skipped).push(evolutionFile);
 
-  // Also write per-version table if requested
   const byVersion = {};
   for (const row of baselines) {
     const v = safePackageVersionSegment(row.packageVersion);
@@ -284,7 +303,6 @@ function updateComparisonFiles(repoRoot, options = {}) {
     byVersion[v].push(row);
   }
 
-  const generatedFiles = [evolutionFile];
   const resultsRootResolved = path.resolve(resultsRoot);
   for (const [v, rows] of Object.entries(byVersion)) {
     const vMd = renderEvolutionMarkdown(rows, { version: v });
@@ -294,13 +312,14 @@ function updateComparisonFiles(repoRoot, options = {}) {
     if (rel.startsWith('..') || path.isAbsolute(rel)) {
       throw new Error(`unsafe version segment: ${v}`);
     }
-    fs.writeFileSync(vFile, vMd, 'utf8');
-    generatedFiles.push(vFile);
+    const vWrite = writeComparisonFile(vFile, vMd);
+    (vWrite.wrote ? written : skipped).push(vFile);
   }
 
   return {
     evolutionFile,
-    generatedFiles,
+    generatedFiles: written,
+    skippedFiles: skipped,
     snapshotCount: baselines.length,
     versions: Object.keys(byVersion),
   };
@@ -360,8 +379,17 @@ function main() {
   if (options.updateComparison) {
     const res = updateComparisonFiles(repoRoot, options);
     process.stdout.write(`Updated benchmark comparison files (${res.snapshotCount} snapshots across versions: ${res.versions.join(', ')}):\n`);
+    if (res.generatedFiles.length === 0) {
+      process.stdout.write('  (none written; scores unchanged)\n');
+    }
     for (const f of res.generatedFiles) {
       process.stdout.write(`  - ${path.relative(repoRoot, f)}\n`);
+    }
+    if (res.skippedFiles.length > 0) {
+      process.stdout.write(`Skipped unchanged (${res.skippedFiles.length}; Generated stamp left as-is):\n`);
+      for (const f of res.skippedFiles) {
+        process.stdout.write(`  - ${path.relative(repoRoot, f)}\n`);
+      }
     }
     return;
   }
@@ -413,6 +441,8 @@ module.exports = {
   listBaselines,
   listRecentRuns,
   renderEvolutionMarkdown,
+  comparisonFingerprint,
+  writeComparisonFile,
   updateComparisonFiles,
   formatWallSec,
   formatTokens,

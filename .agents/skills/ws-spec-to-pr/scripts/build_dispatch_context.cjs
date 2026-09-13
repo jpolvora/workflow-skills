@@ -41,7 +41,7 @@ function parseArgs(argv) {
 function section(text, heading) {
   const normalized = text.replace(/\r\n?/g, '\n');
   const escaped = heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const match = normalized.match(new RegExp(`^(#{2,4})\\s+${escaped}\\s*$\\n([\\s\\S]*?)(?=^\\1\\s+|\\z)`, 'mi'));
+  const match = normalized.match(new RegExp(`^(#{2,4})\\s+${escaped}\\s*$\\n([\\s\\S]*?)(?=^\\1\\s+|(?![\\s\\S]))`, 'mi'));
   if (match) return `${match[1]} ${heading}\n${match[2].replace(/\s*$/, '\n')}`;
   const start = normalized.search(new RegExp(`^#{2,4}\\s+${escaped}\\s*$`, 'mi'));
   if (start < 0) throw new Error(`required section not found: ${heading}`);
@@ -167,7 +167,7 @@ function latestHandoff(context, stateRel, explicit) {
 function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help) {
-    process.stdout.write('Usage: build_dispatch_context.cjs --skill FILE [--ac ACn ...] [options]\n');
+    process.stdout.write('Usage: build_dispatch_context.cjs --skill FILE [--step N] [--slug SLUG] [--ac ACn ...] [options]\n');
     return;
   }
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
@@ -177,6 +177,8 @@ function main() {
     '# Portable workflow dispatch',
     '',
     'Follow the target skill contract, the injected acceptance-criteria slices, and every hard stop below.',
+    'Enhancing-skill contracts and MEMORY slice are inlined; do not re-Read those SKILL.md files.',
+    'Still Read product files and the target `## Subagent contract` if not inlined.',
     'Write only the paths assigned to this dispatch. Return structured step-output evidence.',
     '',
   ].join('\n');
@@ -221,6 +223,8 @@ function main() {
     omitted,
     memoryBytes: bytes(memory),
     acRefs: options.ac,
+    step: options.step || null,
+    slug: options.slug || null,
     sourceSkill: toRepoRelative(context.repoRoot, skillPath, { allowOutside: true }),
   };
   if (options.output) fs.writeFileSync(path.resolve(context.repoRoot, options.output), output.replace(/\r\n?/g, '\n'), 'utf8');

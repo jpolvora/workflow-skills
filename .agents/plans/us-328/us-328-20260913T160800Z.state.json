@@ -1,0 +1,1151 @@
+{
+  "acImplemented": 5,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "43190245",
+            "step": 5
+          },
+          {
+            "sha": "afa5eeab",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/autoload.md:L147-L147"
+        ],
+        "files": [
+          {
+            "lineEnd": 147,
+            "lineStart": 147,
+            "path": ".agents/skills/ws-shared/runtime/autoload.md",
+            "sha256": "641f671389359701c062c5d99aeb790997f8bb89c5d95b62b893e8943e013844"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "g2-commit-43190245",
+          "impl-ac1",
+          "review-fix-afa5eeab"
+        ],
+        "planSections": [
+          "section-004"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "runtime autoload keyword-map prose uses runtime/ token",
+            "phase": "observed",
+            "sourceFile": "test/test-doc-sync.js",
+            "timestamp": "2026-09-13T16:15:15.903Z"
+          }
+        ],
+        "text": "`.agents/skills/ws-shared/runtime/autoload.md` keyword-map row reads `{sharedDir}/runtime/scm-provider-contract.md` (exact token with `runtime/` prefix) and no longer contains the bare `{sharedDir}/scm-provider-contract.md` prose.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "43190245",
+            "step": 5
+          },
+          {
+            "sha": "afa5eeab",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/autoload.md:L141-L142",
+          ".agents/skills/ws-shared/autoload.md:L146-L146",
+          ".agents/skills/ws-shared/autoload.md:L25-L25",
+          ".agents/skills/ws-shared/autoload.md:L5-L5"
+        ],
+        "files": [
+          {
+            "lineEnd": 5,
+            "lineStart": 5,
+            "path": ".agents/skills/ws-shared/autoload.md",
+            "sha256": "c2d49212decbbeeca181abb67bc5bfeb2b05b851e27c7fb08ea430f8c8fe1270"
+          },
+          {
+            "lineEnd": 25,
+            "lineStart": 25,
+            "path": ".agents/skills/ws-shared/autoload.md",
+            "sha256": "c2d49212decbbeeca181abb67bc5bfeb2b05b851e27c7fb08ea430f8c8fe1270"
+          },
+          {
+            "lineEnd": 142,
+            "lineStart": 141,
+            "path": ".agents/skills/ws-shared/autoload.md",
+            "sha256": "c2d49212decbbeeca181abb67bc5bfeb2b05b851e27c7fb08ea430f8c8fe1270"
+          },
+          {
+            "lineEnd": 146,
+            "lineStart": 146,
+            "path": ".agents/skills/ws-shared/autoload.md",
+            "sha256": "c2d49212decbbeeca181abb67bc5bfeb2b05b851e27c7fb08ea430f8c8fe1270"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "g2-commit-43190245",
+          "impl-ac2",
+          "review-fix-afa5eeab"
+        ],
+        "planSections": [
+          "section-004"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "All autoload configure tests passed",
+            "phase": "observed",
+            "sourceFile": "test/test-autoload-configure.js",
+            "timestamp": "2026-09-13T16:15:20.171Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "mirror autoload has no bare",
+            "phase": "observed",
+            "sourceFile": "test/test-doc-sync.js",
+            "timestamp": "2026-09-13T16:15:20.170Z"
+          }
+        ],
+        "text": "`.agents/skills/ws-shared/autoload.md` keyword-map row reads the same corrected `{sharedDir}/runtime/scm-provider-contract.md` prose, and its Hub-contracts sibling link targets resolve on disk (`runtime/scm-provider-contract.md`, `runtime/tools.md`, `runtime/gates.md` present; bare `](scm-provider-contract.md)`, `](tools.md)`, `](gates.md)` absent from that file).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "43190245",
+            "step": 5
+          },
+          {
+            "sha": "afa5eeab",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          "test/test-doc-sync.js:L48-L62"
+        ],
+        "files": [
+          {
+            "lineEnd": 62,
+            "lineStart": 48,
+            "path": "test/test-doc-sync.js",
+            "sha256": "274c2b4fdf0b141101e789bd75ea62fa602c5661782ced1318b3f67c426fe374"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "g2-commit-43190245",
+          "impl-ac3",
+          "review-fix-afa5eeab"
+        ],
+        "planSections": [
+          "section-004"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "mirror autoload has no bare",
+            "phase": "planned",
+            "sourceFile": "test/test-doc-sync.js",
+            "timestamp": "2026-09-13T16:15:24.525Z"
+          }
+        ],
+        "text": "No other `{sharedDir}/*.md` prose misses are introduced: a repo-wide search for the bare `{sharedDir}/scm-provider-contract.md` token returns zero hits (excluding historical specs/changelog that quote the old string as evidence).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "43190245",
+            "step": 5
+          },
+          {
+            "sha": "afa5eeab",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          "test/test-doc-sync.js:L48-L62"
+        ],
+        "files": [
+          {
+            "lineEnd": 62,
+            "lineStart": 48,
+            "path": "test/test-doc-sync.js",
+            "sha256": "274c2b4fdf0b141101e789bd75ea62fa602c5661782ced1318b3f67c426fe374"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "g2-commit-43190245",
+          "impl-ac4",
+          "review-fix-afa5eeab"
+        ],
+        "planSections": [
+          "section-004"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-doc-sync: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-doc-sync.js",
+            "timestamp": "2026-09-13T16:15:24.581Z"
+          }
+        ],
+        "text": "A regression test asserts AC1–AC2 (prose token + mirror link targets) and passes under `npm run test` (or the narrow test file when the full suite is impractical in the session).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "43190245",
+            "step": 5
+          },
+          {
+            "sha": "afa5eeab",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          "bin/skill-integrity.json:L61-L61"
+        ],
+        "files": [
+          {
+            "lineEnd": 61,
+            "lineStart": 61,
+            "path": "bin/skill-integrity.json",
+            "sha256": "cd389545cb4e36da844f4df980103905258b41dd32b1675800356ca9e41015fa"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "g2-commit-43190245",
+          "impl-ac5",
+          "review-fix-afa5eeab"
+        ],
+        "planSections": [
+          "section-004"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "verify-integrity",
+            "phase": "observed",
+            "sourceFile": "package.json",
+            "timestamp": "2026-09-13T16:15:24.638Z"
+          }
+        ],
+        "text": "`npm run generate-integrity && npm run verify-integrity` passes when the touched hub files are hashed inputs; when they are not hashed, verify-integrity still passes unchanged.",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      }
+    ],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "impl-ns"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-doc-sync: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-doc-sync.js",
+            "timestamp": "2026-09-13T16:15:28.966Z"
+          }
+        ],
+        "text": "Red before green: regression test fails on the pre-fix tree (bare `{sharedDir}/scm-provider-contract.md` present and/or mirror has bare `](scm-provider-contract.md)`), passes after the fix — proves the test guards the defect."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "impl-ns"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-doc-sync: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-doc-sync.js",
+            "timestamp": "2026-09-13T16:15:28.966Z"
+          }
+        ],
+        "text": "Mirror-only hand fix without source fix: next `renderConsumerAutoload` regen reintroduces stale prose — rejected by asserting the source file, not just the mirror."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "impl-ns"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-doc-sync: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-doc-sync.js",
+            "timestamp": "2026-09-13T16:15:28.966Z"
+          }
+        ],
+        "text": "Over-broad fix: touching unrelated autoload rows or adding a second downloader/ingest path breaks `test-doc-sync` / harness link audits — caught by running the narrow docs-sync test alongside the new assertion."
+      }
+    ],
+    "planIndexPath": ".agents/plans/us-328/.runtime/plan.index.json",
+    "revision": 15,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "step5",
+      "computedAt": "2026-09-13T16:21:30.215Z",
+      "earnedUnits": 50,
+      "errors": [],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "missingEvidence": false,
+      "score": 10,
+      "totalUnits": 50
+    },
+    "slug": "us-328",
+    "specPath": ".agents/plans/us-328/step-00-us-328.spec.md",
+    "testingSkip": null,
+    "workflowId": "us-328-20260913T160800Z"
+  },
+  "acTotal": 5,
+  "autoMode": true,
+  "baseBranch": "main",
+  "baselineCommit": "2954f7ac6962317eaf3cd6f15c057e5e353490da",
+  "branch": "develop",
+  "branchStrategy": "stay",
+  "checkpoints": {},
+  "commits": [],
+  "completedSteps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "complexityClass": "standard",
+  "currentModel": "muse-spark-1.3-contributor",
+  "currentStep": 9,
+  "dryRun": false,
+  "endedAt": "2026-09-13T16:24:56Z",
+  "execMode": "sequential",
+  "finalPipeline": "standard",
+  "fullMode": true,
+  "gateHistory": [
+    "branch-gate | auto | stay | develop | 2026-09-13T16:08:00Z",
+    "classify | recommended=standard | choice=accept | 2026-09-13T16:08:00Z"
+  ],
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-328/step-00-us-328.spec.md",
+        ".agents/plans/us-328/ac-ledger.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "us-328",
+      "status": "completed",
+      "step": 0,
+      "summary": "Finished step 0",
+      "workflowId": "us-328-20260913T160800Z",
+      "workflowType": "standard"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-328/step-01-us-328.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "us-328",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "us-328-20260913T160800Z",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-328/step-02-us-328.plan-interview.md",
+        ".agents/plans/us-328/step-02-us-328.plan.refined.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "us-328",
+      "status": "completed",
+      "step": 2,
+      "summary": "Finished step 2",
+      "workflowId": "us-328-20260913T160800Z",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "us-328",
+      "status": "skipped",
+      "step": 3,
+      "summary": "Finished step 3",
+      "workflowId": "us-328-20260913T160800Z",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/skills/ws-activity-report/SKILL.md",
+        ".agents/skills/ws-benchmarks/SKILL.md",
+        ".agents/skills/ws-changelog/SKILL.md",
+        ".agents/skills/ws-check-harness/SKILL.md",
+        ".agents/skills/ws-check-workflows/SKILL.md",
+        ".agents/skills/ws-classify-complexity/SKILL.md",
+        ".agents/skills/ws-cleanup/SKILL.md",
+        ".agents/skills/ws-code-review/SKILL.md",
+        ".agents/skills/ws-configure-project/SKILL.md",
+        ".agents/skills/ws-doctor/SKILL.md",
+        ".agents/skills/ws-fable-domain/SKILL.md",
+        ".agents/skills/ws-fable-judge/SKILL.md",
+        ".agents/skills/ws-fable-method/SKILL.md",
+        ".agents/skills/ws-fix-pr/SKILL.md",
+        ".agents/skills/ws-goal-fix-pr/SKILL.md",
+        ".agents/skills/ws-goal-loop/SKILL.md",
+        ".agents/skills/ws-implement-tasks/SKILL.md",
+        ".agents/skills/ws-karpathy-guidelines/SKILL.md",
+        ".agents/skills/ws-megabrain/SKILL.md",
+        ".agents/skills/ws-monitor/SKILL.md",
+        ".agents/skills/ws-plan-interview/SKILL.md",
+        ".agents/skills/ws-plan-to-tasks/SKILL.md",
+        ".agents/skills/ws-plan-update/SKILL.md",
+        ".agents/skills/ws-plan-verify/SKILL.md",
+        ".agents/skills/ws-plan-write/SKILL.md",
+        ".agents/skills/ws-pre-daily/SKILL.md",
+        ".agents/skills/ws-preview/SKILL.md",
+        ".agents/skills/ws-run-benchmark/SKILL.md",
+        ".agents/skills/ws-secrets-leak-review/SKILL.md",
+        ".agents/skills/ws-self-learning/SKILL.md",
+        ".agents/skills/ws-senior-developer/SKILL.md",
+        ".agents/skills/ws-shared/autoload.md",
+        ".agents/skills/ws-shared/runtime/autoload.md",
+        ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+        ".agents/skills/ws-ship-pr/SKILL.md",
+        ".agents/skills/ws-show-harness/SKILL.md",
+        ".agents/skills/ws-spec-archive/SKILL.md",
+        ".agents/skills/ws-spec-explain/SKILL.md",
+        ".agents/skills/ws-spec-format/SKILL.md",
+        ".agents/skills/ws-spec-from-provider/SKILL.md",
+        ".agents/skills/ws-spec-index/SKILL.md",
+        ".agents/skills/ws-spec-list/SKILL.md",
+        ".agents/skills/ws-spec-manager/SKILL.md",
+        ".agents/skills/ws-spec-memo/SKILL.md",
+        ".agents/skills/ws-spec-multi/SKILL.md",
+        ".agents/skills/ws-spec-organizer/SKILL.md",
+        ".agents/skills/ws-spec-provider-azure-devops/SKILL.md",
+        ".agents/skills/ws-spec-provider-github/SKILL.md",
+        ".agents/skills/ws-spec-provider-local/SKILL.md",
+        ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+        ".agents/skills/ws-spec-to-pr/SKILL.md",
+        ".agents/skills/ws-spec-update/SKILL.md",
+        ".agents/skills/ws-spec-write/SKILL.md",
+        ".agents/skills/ws-task-lifecycle/SKILL.md",
+        ".agents/skills/ws-tdah/SKILL.md",
+        ".agents/skills/ws-testing/SKILL.md",
+        ".agents/skills/ws-wiki/SKILL.md",
+        ".agents/skills/ws-write-a-skill/SKILL.md",
+        "bin/skill-dependencies.json",
+        "bin/skill-integrity.json",
+        "docs/index.html",
+        "docs/wiki/delivery/spec-to-pr-pipeline.html",
+        "docs/wiki/documentation/website-and-hub.html",
+        "docs/wiki/documentation/ws-wiki.html",
+        "docs/wiki/engineering/practices-and-tooling.html",
+        "docs/wiki/harness/diagnostics-and-benchmarks.html",
+        "docs/wiki/harness/install-and-hub.html",
+        "docs/wiki/index.html",
+        "docs/wiki/memory/knowledge-and-timesheet.html",
+        "docs/wiki/providers/scm-providers.html",
+        "docs/wiki/quality/verification-and-review.html",
+        "docs/wiki/specs/spec-lifecycle.html",
+        "package.json",
+        "test/test-doc-sync.js"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "us-328",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "us-328-20260913T160800Z",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-328/step-05-us-328.plan.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "us-328",
+      "status": "completed",
+      "step": 5,
+      "summary": "Finished step 5",
+      "workflowId": "us-328-20260913T160800Z",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-328/step-06-us-328.review.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "us-328",
+      "status": "completed",
+      "step": 6,
+      "summary": "Finished step 6",
+      "workflowId": "us-328-20260913T160800Z",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-328/step-07-us-328.testing.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "us-328",
+      "status": "completed",
+      "step": 7,
+      "summary": "Finished step 7",
+      "workflowId": "us-328-20260913T160800Z",
+      "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-328/step-08-us-328.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-328",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "us-328-20260913T160800Z",
+      "workflowType": "standard"
+    },
+    "9": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-328",
+      "status": "completed",
+      "step": 9,
+      "summary": "Finished step 9",
+      "workflowId": "us-328-20260913T160800Z",
+      "workflowType": "standard"
+    }
+  },
+  "nextAction": "Run step 9",
+  "preExistingDirty": [
+    "test/package.json"
+  ],
+  "recommendedPipeline": "standard",
+  "revision": 23,
+  "scoreAndRefine": false,
+  "shipAction": "create-pr",
+  "shipStatus": "merged",
+  "skipQualityGates": false,
+  "skipTesting": false,
+  "skipTests": false,
+  "skippedSteps": [
+    {
+      "evidence": "",
+      "reason": "dag-disabled",
+      "step": 3
+    }
+  ],
+  "slug": "us-328",
+  "specPath": ".agents/plans/us-328/step-00-us-328.spec.md",
+  "specSource": "github",
+  "startedAt": "2026-09-13T16:08:00Z",
+  "statePath": ".agents/plans/us-328/us-328-20260913T160800Z.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [
+    {
+      "agentType": "named:ws-step-00-spec-write",
+      "dispatchedAt": "2026-09-13T16:09:16Z",
+      "model": "muse-spark-1.3-contributor",
+      "step": 0
+    },
+    {
+      "agentType": "named:ws-step-01-plan-write",
+      "dispatchedAt": "2026-09-13T16:10:07Z",
+      "model": "muse-spark-1.3-contributor",
+      "step": 1
+    },
+    {
+      "agentType": "named:ws-step-02-plan-interview",
+      "dispatchedAt": "2026-09-13T16:10:46Z",
+      "model": "muse-spark-1.3-contributor",
+      "step": 2
+    },
+    {
+      "agentType": "named:ws-step-04-implement-tasks",
+      "dispatchedAt": "2026-09-13T16:10:54Z",
+      "model": "muse-spark-1.3-contributor",
+      "step": 4
+    },
+    {
+      "agentType": "named:ws-step-05-plan-verify",
+      "dispatchedAt": "2026-09-13T16:13:25Z",
+      "model": "muse-spark-1.3-contributor",
+      "step": 5
+    },
+    {
+      "agentType": "named:ws-step-06-code-review",
+      "dispatchedAt": "2026-09-13T16:17:13Z",
+      "model": "muse-spark-1.3-contributor",
+      "step": 6
+    },
+    {
+      "agentType": "named:ws-step-07-testing",
+      "dispatchedAt": "2026-09-13T16:21:15Z",
+      "model": "muse-spark-1.3-contributor",
+      "step": 7
+    },
+    {
+      "agentType": "named:ws-step-08-ship-pr",
+      "dispatchedAt": "2026-09-13T16:21:38Z",
+      "model": "muse-spark-1.3-contributor",
+      "step": 8
+    },
+    {
+      "agentType": "named:ws-step-04-implement-tasks",
+      "dispatchedAt": "2026-09-13T16:31:37Z",
+      "model": "muse-spark-1.3-contributor",
+      "step": 9,
+      "substep": "fixPrExec"
+    }
+  ],
+  "stepModels": [
+    {
+      "dispatched": "2026-09-13T16:08:00Z",
+      "model": "muse-spark-1.3-contributor",
+      "step": 0
+    }
+  ],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "skipped",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed",
+    "9": "completed"
+  },
+  "telemetry": {
+    "loc": "{'baseline': None}",
+    "steps": [
+      {
+        "N": 0,
+        "agentType": "named:ws-step-00-spec-write",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-13T16:09:16Z",
+        "elapsedSec": 3,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-328/step-00-us-328.spec.md",
+            ".agents/plans/us-328/ac-ledger.json"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-13T16:09:19Z",
+        "label": "Spec",
+        "model": "muse-spark-1.3-contributor",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 1,
+        "agentType": "named:ws-step-01-plan-write",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-13T16:10:07Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-328/step-01-us-328.plan.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-13T16:10:07Z",
+        "label": "Planning",
+        "model": "muse-spark-1.3-contributor",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": "named:ws-step-02-plan-interview",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-13T16:10:46Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-328/step-02-us-328.plan-interview.md",
+            ".agents/plans/us-328/step-02-us-328.plan.refined.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-13T16:10:46Z",
+        "label": "Interview",
+        "model": "muse-spark-1.3-contributor",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-13T16:10:50Z",
+        "label": "Plan to tasks",
+        "model": "muse-spark-1.3-contributor",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": "named:ws-step-04-implement-tasks",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-13T16:10:54Z",
+        "elapsedSec": 144,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-activity-report/SKILL.md",
+            ".agents/skills/ws-benchmarks/SKILL.md",
+            ".agents/skills/ws-changelog/SKILL.md",
+            ".agents/skills/ws-check-harness/SKILL.md",
+            ".agents/skills/ws-check-workflows/SKILL.md",
+            ".agents/skills/ws-classify-complexity/SKILL.md",
+            ".agents/skills/ws-cleanup/SKILL.md",
+            ".agents/skills/ws-code-review/SKILL.md",
+            ".agents/skills/ws-configure-project/SKILL.md",
+            ".agents/skills/ws-doctor/SKILL.md",
+            ".agents/skills/ws-fable-domain/SKILL.md",
+            ".agents/skills/ws-fable-judge/SKILL.md",
+            ".agents/skills/ws-fable-method/SKILL.md",
+            ".agents/skills/ws-fix-pr/SKILL.md",
+            ".agents/skills/ws-goal-fix-pr/SKILL.md",
+            ".agents/skills/ws-goal-loop/SKILL.md",
+            ".agents/skills/ws-implement-tasks/SKILL.md",
+            ".agents/skills/ws-karpathy-guidelines/SKILL.md",
+            ".agents/skills/ws-megabrain/SKILL.md",
+            ".agents/skills/ws-monitor/SKILL.md",
+            ".agents/skills/ws-plan-interview/SKILL.md",
+            ".agents/skills/ws-plan-to-tasks/SKILL.md",
+            ".agents/skills/ws-plan-update/SKILL.md",
+            ".agents/skills/ws-plan-verify/SKILL.md",
+            ".agents/skills/ws-plan-write/SKILL.md",
+            ".agents/skills/ws-pre-daily/SKILL.md",
+            ".agents/skills/ws-preview/SKILL.md",
+            ".agents/skills/ws-run-benchmark/SKILL.md",
+            ".agents/skills/ws-secrets-leak-review/SKILL.md",
+            ".agents/skills/ws-self-learning/SKILL.md",
+            ".agents/skills/ws-senior-developer/SKILL.md",
+            ".agents/skills/ws-shared/autoload.md",
+            ".agents/skills/ws-shared/runtime/autoload.md",
+            ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+            ".agents/skills/ws-ship-pr/SKILL.md",
+            ".agents/skills/ws-show-harness/SKILL.md",
+            ".agents/skills/ws-spec-archive/SKILL.md",
+            ".agents/skills/ws-spec-explain/SKILL.md",
+            ".agents/skills/ws-spec-format/SKILL.md",
+            ".agents/skills/ws-spec-from-provider/SKILL.md",
+            ".agents/skills/ws-spec-index/SKILL.md",
+            ".agents/skills/ws-spec-list/SKILL.md",
+            ".agents/skills/ws-spec-manager/SKILL.md",
+            ".agents/skills/ws-spec-memo/SKILL.md",
+            ".agents/skills/ws-spec-multi/SKILL.md",
+            ".agents/skills/ws-spec-organizer/SKILL.md",
+            ".agents/skills/ws-spec-provider-azure-devops/SKILL.md",
+            ".agents/skills/ws-spec-provider-github/SKILL.md",
+            ".agents/skills/ws-spec-provider-local/SKILL.md",
+            ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+            ".agents/skills/ws-spec-to-pr/SKILL.md",
+            ".agents/skills/ws-spec-update/SKILL.md",
+            ".agents/skills/ws-spec-write/SKILL.md",
+            ".agents/skills/ws-task-lifecycle/SKILL.md",
+            ".agents/skills/ws-tdah/SKILL.md",
+            ".agents/skills/ws-testing/SKILL.md",
+            ".agents/skills/ws-wiki/SKILL.md",
+            ".agents/skills/ws-write-a-skill/SKILL.md",
+            "bin/skill-dependencies.json",
+            "bin/skill-integrity.json",
+            "docs/index.html",
+            "docs/wiki/delivery/spec-to-pr-pipeline.html",
+            "docs/wiki/documentation/website-and-hub.html",
+            "docs/wiki/documentation/ws-wiki.html",
+            "docs/wiki/engineering/practices-and-tooling.html",
+            "docs/wiki/harness/diagnostics-and-benchmarks.html",
+            "docs/wiki/harness/install-and-hub.html",
+            "docs/wiki/index.html",
+            "docs/wiki/memory/knowledge-and-timesheet.html",
+            "docs/wiki/providers/scm-providers.html",
+            "docs/wiki/quality/verification-and-review.html",
+            "docs/wiki/specs/spec-lifecycle.html",
+            "package.json",
+            "test/test-doc-sync.js"
+          ]
+        },
+        "finishedAt": "2026-09-13T16:13:18Z",
+        "label": "Implement",
+        "model": "muse-spark-1.3-contributor",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": "named:ws-step-05-plan-verify",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-13T16:13:25Z",
+        "elapsedSec": 153,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-328/step-05-us-328.plan.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-13T16:15:58Z",
+        "label": "Verify",
+        "model": "muse-spark-1.3-contributor",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 6,
+        "agentType": "named:ws-step-06-code-review",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-13T16:17:13Z",
+        "elapsedSec": 234,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-328/step-06-us-328.review.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-13T16:21:07Z",
+        "label": "Code review",
+        "model": "muse-spark-1.3-contributor",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 7,
+        "agentType": "named:ws-step-07-testing",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-13T16:21:15Z",
+        "elapsedSec": 9,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-328/step-07-us-328.testing.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-13T16:21:24Z",
+        "label": "Testing",
+        "model": "muse-spark-1.3-contributor",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": "named:ws-step-08-ship-pr",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-13T16:21:38Z",
+        "elapsedSec": 198,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-328/step-08-us-328.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-13T16:24:56Z",
+        "label": "Ship",
+        "model": "muse-spark-1.3-contributor",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 9,
+        "agentType": "named:ws-step-04-implement-tasks",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-13T16:31:37Z",
+        "elapsedSec": 224,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-13T16:35:21Z",
+        "label": "Fix PR",
+        "model": "muse-spark-1.3-contributor",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 965,
+    "totalTokens": 0,
+    "workflowStartedAt": "2026-09-13T16:08:00Z"
+  },
+  "title": "Fix stale autoload keyword-map prose for scm-provider-contract path",
+  "us": 328,
+  "verificationScore": 9,
+  "workflowId": "us-328-20260913T160800Z",
+  "workflowManifest": {
+    "artifacts": [],
+    "created": [
+      ".agents/plans/us-328/ac-ledger.json",
+      ".agents/plans/us-328/step-00-us-328.classify.md",
+      ".agents/plans/us-328/step-00-us-328.spec.md",
+      ".agents/plans/us-328/step-01-us-328.plan.md",
+      ".agents/plans/us-328/step-02-us-328.plan-interview.md",
+      ".agents/plans/us-328/step-02-us-328.plan.refined.md",
+      ".agents/plans/us-328/step-05-us-328.plan.report.md",
+      ".agents/plans/us-328/step-06-us-328.review.md",
+      ".agents/plans/us-328/step-07-us-328.testing.report.md",
+      ".agents/plans/us-328/step-08-us-328.result.md"
+    ],
+    "deleted": [],
+    "modified": [
+      ".agents/skills/ws-activity-report/SKILL.md",
+      ".agents/skills/ws-benchmarks/SKILL.md",
+      ".agents/skills/ws-changelog/SKILL.md",
+      ".agents/skills/ws-check-harness/SKILL.md",
+      ".agents/skills/ws-check-workflows/SKILL.md",
+      ".agents/skills/ws-classify-complexity/SKILL.md",
+      ".agents/skills/ws-cleanup/SKILL.md",
+      ".agents/skills/ws-code-review/SKILL.md",
+      ".agents/skills/ws-configure-project/SKILL.md",
+      ".agents/skills/ws-doctor/SKILL.md",
+      ".agents/skills/ws-fable-domain/SKILL.md",
+      ".agents/skills/ws-fable-judge/SKILL.md",
+      ".agents/skills/ws-fable-method/SKILL.md",
+      ".agents/skills/ws-fix-pr/SKILL.md",
+      ".agents/skills/ws-goal-fix-pr/SKILL.md",
+      ".agents/skills/ws-goal-loop/SKILL.md",
+      ".agents/skills/ws-implement-tasks/SKILL.md",
+      ".agents/skills/ws-karpathy-guidelines/SKILL.md",
+      ".agents/skills/ws-megabrain/SKILL.md",
+      ".agents/skills/ws-monitor/SKILL.md",
+      ".agents/skills/ws-plan-interview/SKILL.md",
+      ".agents/skills/ws-plan-to-tasks/SKILL.md",
+      ".agents/skills/ws-plan-update/SKILL.md",
+      ".agents/skills/ws-plan-verify/SKILL.md",
+      ".agents/skills/ws-plan-write/SKILL.md",
+      ".agents/skills/ws-pre-daily/SKILL.md",
+      ".agents/skills/ws-preview/SKILL.md",
+      ".agents/skills/ws-run-benchmark/SKILL.md",
+      ".agents/skills/ws-secrets-leak-review/SKILL.md",
+      ".agents/skills/ws-self-learning/SKILL.md",
+      ".agents/skills/ws-senior-developer/SKILL.md",
+      ".agents/skills/ws-shared/autoload.md",
+      ".agents/skills/ws-shared/runtime/autoload.md",
+      ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+      ".agents/skills/ws-ship-pr/SKILL.md",
+      ".agents/skills/ws-show-harness/SKILL.md",
+      ".agents/skills/ws-spec-archive/SKILL.md",
+      ".agents/skills/ws-spec-explain/SKILL.md",
+      ".agents/skills/ws-spec-format/SKILL.md",
+      ".agents/skills/ws-spec-from-provider/SKILL.md",
+      ".agents/skills/ws-spec-index/SKILL.md",
+      ".agents/skills/ws-spec-list/SKILL.md",
+      ".agents/skills/ws-spec-manager/SKILL.md",
+      ".agents/skills/ws-spec-memo/SKILL.md",
+      ".agents/skills/ws-spec-multi/SKILL.md",
+      ".agents/skills/ws-spec-organizer/SKILL.md",
+      ".agents/skills/ws-spec-provider-azure-devops/SKILL.md",
+      ".agents/skills/ws-spec-provider-github/SKILL.md",
+      ".agents/skills/ws-spec-provider-local/SKILL.md",
+      ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+      ".agents/skills/ws-spec-to-pr/SKILL.md",
+      ".agents/skills/ws-spec-update/SKILL.md",
+      ".agents/skills/ws-spec-write/SKILL.md",
+      ".agents/skills/ws-task-lifecycle/SKILL.md",
+      ".agents/skills/ws-tdah/SKILL.md",
+      ".agents/skills/ws-testing/SKILL.md",
+      ".agents/skills/ws-wiki/SKILL.md",
+      ".agents/skills/ws-write-a-skill/SKILL.md",
+      "bin/skill-dependencies.json",
+      "bin/skill-integrity.json",
+      "docs/index.html",
+      "docs/wiki/delivery/spec-to-pr-pipeline.html",
+      "docs/wiki/documentation/website-and-hub.html",
+      "docs/wiki/documentation/ws-wiki.html",
+      "docs/wiki/engineering/practices-and-tooling.html",
+      "docs/wiki/harness/diagnostics-and-benchmarks.html",
+      "docs/wiki/harness/install-and-hub.html",
+      "docs/wiki/index.html",
+      "docs/wiki/memory/knowledge-and-timesheet.html",
+      "docs/wiki/providers/scm-providers.html",
+      "docs/wiki/quality/verification-and-review.html",
+      "docs/wiki/specs/spec-lifecycle.html",
+      "package.json",
+      "test/test-doc-sync.js"
+    ]
+  },
+  "workflowType": "standard"
+}

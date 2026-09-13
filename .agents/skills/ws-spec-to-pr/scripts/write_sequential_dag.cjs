@@ -76,8 +76,12 @@ function main() {
   };
   fs.mkdirSync(path.dirname(execOut), { recursive: true });
   fs.mkdirSync(path.dirname(dagOut), { recursive: true });
-  fs.writeFileSync(execOut, `${frontmatter.join('\n')}${body.join('\n')}`, 'utf8');
-  fs.writeFileSync(dagOut, `${JSON.stringify(dag, null, 2)}\n`, 'utf8');
+  const execTmp = `${execOut}.tmp-${process.pid}-${Date.now()}`;
+  const dagTmp = `${dagOut}.tmp-${process.pid}-${Date.now()}`;
+  fs.writeFileSync(execTmp, `${frontmatter.join('\n')}${body.join('\n')}`, 'utf8');
+  fs.writeFileSync(dagTmp, `${JSON.stringify(dag, null, 2)}\n`, 'utf8');
+  fs.renameSync(execTmp, execOut);
+  fs.renameSync(dagTmp, dagOut);
   process.stdout.write(`${JSON.stringify({ ok: true, execPath: toRepoRelative(context.repoRoot, execOut), dagPath: toRepoRelative(context.repoRoot, dagOut), skipReason: 'dag-disabled' })}\n`);
 }
 

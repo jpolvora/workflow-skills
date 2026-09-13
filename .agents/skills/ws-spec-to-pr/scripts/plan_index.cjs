@@ -110,7 +110,10 @@ function build(options) {
     acceptanceCriteria: criteria,
   };
   fs.mkdirSync(path.dirname(path.resolve(context.repoRoot, options.output)), { recursive: true });
-  fs.writeFileSync(path.resolve(context.repoRoot, options.output), `${JSON.stringify(index, null, 2)}\n`, 'utf8');
+  const outAbs = path.resolve(context.repoRoot, options.output);
+  const outTmp = `${outAbs}.tmp-${process.pid}-${Date.now()}`;
+  fs.writeFileSync(outTmp, `${JSON.stringify(index, null, 2)}\n`, 'utf8');
+  fs.renameSync(outTmp, outAbs);
   const defaultLedger = path.join(path.dirname(path.resolve(context.repoRoot, options.output)), 'ac-ledger.json');
   const ledgerPath = options.ledger ? path.resolve(context.repoRoot, options.ledger) : (fs.existsSync(defaultLedger) ? defaultLedger : null);
   if (ledgerPath && fs.existsSync(ledgerPath)) {

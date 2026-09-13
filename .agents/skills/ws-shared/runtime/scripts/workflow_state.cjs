@@ -549,6 +549,25 @@ function atomicWrite(file, content) {
   fs.renameSync(temporary, file);
 }
 
+function syncStateDualWrite(stateFile, state, { body = null, jsonText = null } = {}) {
+  const mdPath = markdownStatePath(stateFile);
+  const jsonPath = jsonStatePath(stateFile);
+  const canonicalJson = jsonText !== null ? jsonText : canonicalStateJson(state);
+  atomicWrite(jsonPath, canonicalJson);
+  if (fs.existsSync(mdPath) || mdPath === stateFile) {
+    let markdownBody = body;
+    if (markdownBody === null && fs.existsSync(mdPath)) {
+      const text = fs.readFileSync(mdPath, 'utf8');
+      const parsed = parseFrontmatter(text);
+      markdownBody = parsed.body || '';
+    }
+    const safeBody = (markdownBody || '').replace(/^\n*/, '');
+    const stateContent = `---\n${serializeFrontmatter(state)}\n---\n${safeBody}`;
+    atomicWrite(mdPath, stateContent);
+  }
+  return { jsonPath, mdPath, stateSha256: sha256(canonicalJson), jsonText: canonicalJson };
+}
+
 function appendJsonl(file, record) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.appendFileSync(file, `${JSON.stringify(record)}\n`, 'utf8');
@@ -571,21 +590,137 @@ function normalizeFileList(repoRoot, value) {
   )];
 }
 
+const GIT_TRACKED_CACHE_TTL_MS = 5000;
+const gitTrackedCache = new Map();
+const GIT_PATH_CASE_INSENSITIVE = process.platform === 'win32';
+
+function trackedKey(value) {
+  const normalized = String(value).replace(/\\/g, '/');
+  return GIT_PATH_CASE_INSENSITIVE ? normalized.toLowerCase() : normalized;
+}
+
+function clearGitTrackedCache() {
+  gitTrackedCache.clear();
+}
+
+function gitTrackedSet(repoRoot, { forceRefresh = false, ttlMs = GIT_TRACKED_CACHE_TTL_MS } = {}) {
+  const rootKey = path.resolve(repoRoot);
+  const now = Date.now();
+  const cached = gitTrackedCache.get(rootKey);
+  if (!forceRefresh && cached && (now - cached.timestamp < ttlMs)) {
+    return cached.set;
+  }
+  try {
+    const ls = spawnSync('git', ['ls-files', '-z'], { cwd: repoRoot, encoding: 'buffer', maxBuffer: 10 * 1024 * 1024 });
+    const diff = spawnSync('git', ['diff', '--name-only', '-z', 'HEAD'], { cwd: repoRoot, encoding: 'buffer', maxBuffer: 10 * 1024 * 1024 });
+    const status = spawnSync('git', ['status', '--porcelain=v1', '-z'], { cwd: repoRoot, encoding: 'buffer', maxBuffer: 10 * 1024 * 1024 });
+    if (ls.status !== 0 && diff.status !== 0 && status.status !== 0) {
+      gitTrackedCache.set(rootKey, { set: null, timestamp: now });
+      return null;
+    }
+    const set = new Set();
+    const addBuffer = (buf) => {
+      if (!buf || !buf.length) return;
+      for (const entry of String(buf).split('\0')) {
+        const clean = entry.trim().replace(/\\/g, '/');
+        if (clean) set.add(trackedKey(clean));
+      }
+    };
+    addBuffer(ls.stdout);
+    addBuffer(diff.stdout);
+    if (status.stdout) {
+      const raw = String(status.stdout).split('\0');
+      for (let index = 0; index < raw.length; index += 1) {
+        const entry = raw[index];
+        if (!entry || entry.length < 4) continue;
+        const x = entry[0];
+        const y = entry[1];
+        const file = entry.slice(3).trim().replace(/\\/g, '/');
+        if ((x === 'R' || y === 'R' || x === 'C' || y === 'C') && raw[index + 1]) {
+          if (file) set.add(trackedKey(file));
+          const other = String(raw[index + 1]).trim().replace(/\\/g, '/');
+          if (other) set.add(trackedKey(other));
+          index += 1;
+          continue;
+        }
+        if (file.includes(' -> ')) {
+          for (const part of file.split(' -> ').map((item) => item.trim()).filter(Boolean)) {
+            set.add(trackedKey(part));
+          }
+          continue;
+        }
+        if (file) set.add(trackedKey(file));
+      }
+    }
+    gitTrackedCache.set(rootKey, { set, timestamp: now });
+    return set;
+  } catch {
+    gitTrackedCache.set(rootKey, { set: null, timestamp: now });
+    return null;
+  }
+}
+
+function intersectWithGit(repoRoot, files, options = {}) {
+  if (!files.length) return { kept: [], phantoms: [] };
+  const tracked = gitTrackedSet(repoRoot, options);
+  if (!tracked) return { kept: files, phantoms: [] };
+  const kept = [];
+  const phantoms = [];
+  for (const file of files) {
+    const absolute = path.isAbsolute(file) ? file : path.resolve(repoRoot, file);
+    const key = trackedKey(String(file).replace(/\\/g, '/'));
+    if (tracked.has(key)) {
+      kept.push(file);
+      continue;
+    }
+    try {
+      if (fs.existsSync(absolute) && fs.statSync(absolute).isFile()) {
+        const status = spawnSync('git', ['check-ignore', '-q', file], { cwd: repoRoot });
+        if (status.status !== 0) {
+          kept.push(file);
+          continue;
+        }
+      }
+    } catch {
+      // fall through to phantom
+    }
+    phantoms.push(file);
+  }
+  return { kept, phantoms };
+}
+
 function normalizeFilesTouched(output, options, repoRoot, fallbackArtifacts = []) {
   const reported = output?.files_touched ?? output?.filesTouched;
   const source = Array.isArray(reported) ? { created: reported } : (reported || {});
-  const created = normalizeFileList(
+  let created = normalizeFileList(
     repoRoot,
     options.created !== undefined ? options.created : source.created,
   );
-  const modified = normalizeFileList(
+  let modified = normalizeFileList(
     repoRoot,
     options.modified !== undefined ? options.modified : source.modified,
   );
-  const deleted = normalizeFileList(
+  let deleted = normalizeFileList(
     repoRoot,
     options.deleted !== undefined ? options.deleted : source.deleted,
   );
+  const all = [...created, ...modified, ...deleted];
+  let phantoms = [];
+  if (all.length) {
+    const intersected = intersectWithGit(repoRoot, all, options);
+    phantoms = intersected.phantoms;
+    if (phantoms.length) {
+      const keepSet = new Set(intersected.kept.map((item) => trackedKey(item)));
+      created = created.filter((item) => keepSet.has(trackedKey(item)));
+      modified = modified.filter((item) => keepSet.has(trackedKey(item)));
+      deleted = deleted.filter((item) => keepSet.has(trackedKey(item)));
+      try {
+        process.stderr.write(`NOTICE: dropped ${phantoms.length} phantom files_touched path(s) not in git: ${phantoms.join(', ')}\n`);
+      } catch {
+        // ignore logging failure
+      }
+    }
+  }
   if (!created.length && !modified.length && !deleted.length && Array.isArray(fallbackArtifacts) && fallbackArtifacts.length) {
     const existing = fallbackArtifacts.filter((file) => fs.existsSync(file));
     if (existing.length) {
@@ -593,10 +728,11 @@ function normalizeFilesTouched(output, options, repoRoot, fallbackArtifacts = []
         created: normalizeFileList(repoRoot, existing),
         modified: [],
         deleted: [],
+        phantoms,
       };
     }
   }
-  return { created, modified, deleted };
+  return { created, modified, deleted, phantoms };
 }
 
 function redactSecrets(value) {
@@ -1380,7 +1516,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       fallbackArtifacts.push(path.join(specsDir, `${slug}.spec.md`));
       fallbackArtifacts.push(path.join(paths.usDir, 'ac-ledger.json'));
     }
-    const { created, modified, deleted } = normalizeFilesTouched(output, options, context.repoRoot, fallbackArtifacts);
+    const { created, modified, deleted, phantoms } = normalizeFilesTouched(output, options, context.repoRoot, fallbackArtifacts);
     const promptTokens = tokenCount(options, output, 'promptTokens');
     const completionTokens = tokenCount(options, output, 'completionTokens');
     applyFinishTelemetry(state, labels, step, {
@@ -1423,6 +1559,8 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       promptTokens,
       completionTokens,
       filesTouched: { created, modified, deleted },
+      phantoms: Array.isArray(phantoms) ? phantoms : [],
+      phantomCount: Array.isArray(phantoms) ? phantoms.length : 0,
       gateDecision,
       score: derivedScore,
       verdict: options.fableVerdict || null,
@@ -1504,8 +1642,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   if (!isIdempotentFinish && !isDuplicateFinish) {
     appendJsonl(telemetryFile, event);
   }
-  atomicWrite(paths.jsonFile, jsonText);
-  atomicWrite(absoluteState, stateContent);
+  syncStateDualWrite(absoluteState, state, { body, jsonText });
   atomicWrite(index.file, `${JSON.stringify(index.index, null, 2)}\n`);
   if (operation === 'finish') {
     for (const artifact of finishArtifactNames(state.slug, step, pipeline)) {
@@ -1736,15 +1873,41 @@ function runUpdateCli(config) {
   try {
     const { positional, options } = parseArgs(process.argv.slice(2));
     if (options.help) {
-      process.stdout.write('Usage: update_state.cjs dispatch|finish|bypass <state> --step N [options]\n');
+      process.stdout.write('Usage: update_state.cjs dispatch|finish|finish-batch|bypass <state> --step N [options]\n');
+      process.stdout.write('  finish-batch <state> --steps "2:skipped:interview-not-required,3:skipped:dag-disabled"\n');
       return;
     }
     const [operation, stateFile] = positional;
-    if (!['dispatch', 'finish', 'bypass'].includes(operation)) {
-      throw new Error('operation must be dispatch, finish, or bypass');
+    if (!['dispatch', 'finish', 'finish-batch', 'bypass'].includes(operation)) {
+      throw new Error('operation must be dispatch, finish, finish-batch, or bypass');
     }
     if (!stateFile) throw new Error('state path or workflow id is required');
     options.scriptFile = config.scriptFile;
+    if (operation === 'finish-batch') {
+      const spec = String(options.steps || '');
+      if (!spec.trim()) throw new Error('finish-batch requires --steps "N:status:reason,..."');
+      const parsed = spec.split(',').map((item) => item.trim()).filter(Boolean).map((part) => {
+        const [stepStr, status, ...reasonParts] = part.split(':');
+        const step = Number(stepStr);
+        if (!Number.isInteger(step)) throw new Error(`finish-batch invalid step in "${part}"`);
+        return { part, step, status, reason: reasonParts.join(':') };
+      });
+      const results = [];
+      for (const { part, step, status, reason } of parsed) {
+        const perStep = { ...options, step: String(step) };
+        if (status) perStep.status = status;
+        if (reason) perStep.reason = reason;
+        delete perStep.steps;
+        try {
+          results.push(performUpdate(config, 'finish', stateFile, perStep));
+        } catch (error) {
+          process.stderr.write(`ERROR: finish-batch failed at step ${step} after ${results.length} applied (${parsed.length} requested); no rollback; fix cause then re-run remaining steps\n`);
+          throw new Error(`finish-batch failed at step ${step} in "${part}": ${error.message}`);
+        }
+      }
+      process.stdout.write(`${JSON.stringify({ ok: true, type: 'finish-batch', results }, null, 2)}\n`);
+      return;
+    }
     const result = performUpdate(config, operation, stateFile, options);
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   } catch (error) {
@@ -1894,6 +2057,12 @@ module.exports = {
   artifactStampFields,
   resolveStepStampStatus,
   stampStepArtifact,
+  atomicWrite,
+  syncStateDualWrite,
+  gitTrackedSet,
+  trackedKey,
+  GIT_PATH_CASE_INSENSITIVE,
+  clearGitTrackedCache,
   normalizeFilesTouched,
   resolvePackageVersion,
   resolveDispatchModel,

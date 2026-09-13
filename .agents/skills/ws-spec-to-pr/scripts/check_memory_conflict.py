@@ -432,6 +432,7 @@ def main():
     parser = argparse.ArgumentParser(description="Cross-reference a plan file against MEMORY.md entries")
     parser.add_argument("plan_file", help="Path to plan file (*.plan.md or *.exec.md)")
     parser.add_argument("--json", action="store_true", help="Output JSON instead of human-readable report")
+    parser.add_argument("--soft-exit", action="store_true", help="Exit 0 when traps overlap; requires --json so callers parse force_interview (fail-closed without --json)")
     parser.add_argument("--memory", default=None, help="Explicit path to MEMORY.md")
     parser.add_argument("--shared-dir", default=None, help="Explicit path to ws-shared directory")
     parser.add_argument("--repo-root", default=None, help="Explicit path to repository root")
@@ -464,22 +465,30 @@ def main():
     memory = parse_memory(memory_path)
     plan_text = _read_utf8(plan_path)
     plan = extract_plan_keywords(plan_path)
+    if args.soft_exit and not args.json:
+        print("Error: --soft-exit requires --json so force_interview is machine-readable", file=sys.stderr)
+        sys.exit(1)
     results = cross_reference(memory, plan, plan_text)
+
+    has_traps = len(results["traps"]) > 0
+    force_interview = any(
+        item.get("force_interview", False) for item in results["traps"]
+    ) or (args.soft_exit and has_traps)
 
     if args.json:
         print(json.dumps({
             "plan_keywords": plan,
             "results": results,
             "memory_path": str(memory_path),
-            "force_interview": any(
-                item.get("force_interview", False) for item in results["traps"]
-            ),
+            "force_interview": force_interview,
         }, ensure_ascii=False, indent=2))
     else:
         report = format_report(plan_path, plan, results)
         print(report)
 
-    if len(results["traps"]) > 0:
+    if has_traps:
+        if args.soft_exit:
+            sys.exit(0)
         sys.exit(2)
 
 

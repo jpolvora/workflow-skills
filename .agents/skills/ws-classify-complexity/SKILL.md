@@ -1,7 +1,7 @@
 ---
 name: ws-classify-complexity
 description: Pipeline complexity classifier — analyzes a spec against config.json dagThresholds and recommends ws-spec-to-pr-lite or ws-spec-to-pr (standard).
-version: 0.4.24
+version: 0.4.25
 invocation_names:
   - classify-complexity
   - ws-classify-complexity
@@ -93,6 +93,13 @@ See [`references/THRESHOLDS.md`](references/THRESHOLDS.md).
 - [`ws-spec-multi`](../ws-spec-multi/SKILL.md) — batch Smart Flow prefers this skill (or live `dagThresholds`) for lite vs standard selection.
 - [`ws-plan-to-tasks`](../ws-plan-to-tasks/SKILL.md) — DAG sequential detection uses the same `dagThresholds` for plan size.
 - [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md) / [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) — orchestrators wire Step 0 classify and `--classify` flag.
+
+## Subagent contract
+
+- Run `classify.cjs` via explicit launcher; do not hand-write classify.md.
+- Count spec-touched layers via path-refs mapped to `stack.backend.layers[].path`, never raw configured layer count.
+- Emit `complexityClass` (`simple`: docs/test-only refs, or zero refs with AC <= 2, AC <= 6, no Open Questions, no schema/API/tenancy; uncertain → `standard`) and `runInterview` into classify.md and state. `runInterview` is true when class is `complex`, or when pipeline is `standard` with open questions or more than two spec-touched layers; the executionProfile reason must name those matching triggers. Complexity `complex` forces `standard` pipeline because lite has no interview step.
+- Return pipeline recommendation plus complexity class in `step-output`.
 
 ## step-output
 

@@ -14,7 +14,7 @@ Config: [`.agents/skills/ws-shared/config.json`](../config.json) only — see [`
 |------|--------|
 | **Shared skills are workflow-agnostic** | Pipeline `ws-*` skills (`ws-spec-write`…`ws-fix-pr`, `ws-goal-fix-pr`), providers, `ws-goal-loop` never assume full vs lite step numbers. Orch passes mode, paths, and flags. `ws-plan-update` is optional Extra (invoke when installed). |
 | **`workflowType`** | `standard` (full) or `lite`. Resume filters by type — never cross-resume. |
-| **Close then ship (two gates)** | Orchestrator presents **close implementation** then **ship** at standard Step 8 / lite Step 4. Close sets `status: completed` before push/PR. [`ws-ship-pr`](../../ws-ship-pr/SKILL.md) in workflow mode **executes** the ship option (push/PR only) — does **not** re-ask delivery commit or workflow close. Standalone `/ship-pr` may ask. |
+| **Close then ship (one combined menu)** | Orchestrator presents **one combined Step 8 user-gate** at standard Step 8 / lite Step 4 (five options; state still records close then `shipStatus` in two phases). Close sets `status: completed` before push/PR. [`ws-ship-pr`](../../ws-ship-pr/SKILL.md) in workflow mode **executes** the ship intent (push/PR only) — does **not** re-ask delivery commit or workflow close. Option 5 restores separate close-then-ship prompts. Standalone `/ship-pr` may ask. |
 | **Fix-PR is separate** | Standard Step 9 / lite Step 5 — **not** inside ship. `ws-ship-pr` receives `stopBeforeFixPr: true`. |
 | **Artifact names** | Delivery result is `step-08-{slug}.result.md` for **both** workflows. Plan is `step-01-{slug}.plan.md`. |
 | **Step ranges** | Standard: Steps 0–9. Lite: Steps 0–5. |
@@ -34,7 +34,7 @@ Host binding: [`tools.md`](tools.md) § Host-tool binding & dispatch tiers (`ask
 3. If `askQuestionTool` binds `none` → present the **same options** as a short markdown list; wait for user reply. Log: `user-gate-fallback | {gate} | ISO`.
 4. Markdown fallback turn-yielding (mandatory): when a `user-gate` is presented as text/markdown, output ONLY the question and options and MUST NOT emit any tool calls in the same response turn — immediately yield the turn to wait for user input. Emitting a gate plus Step N+1 tool calls in one turn violates this gate.
 5. Cancelled / dismissed → **HS-1** (STOP; re-present; never infer yes).
-6. `autoMode` → zero `user-gate` prompts of any kind (neither modal tool nor markdown) at **every** boundary — entry, transition, G2-code, close, ship, fix-PR; use orch auto-gate table (index 0) to automatically select the recommended option and proceed to the next step without pausing. **`autoMode` does not skip planning:** the full FSM 0→9 still runs; only gates are automatic. An existing parent feature branch (e.g. `feat/{parent}`) plus a child bug/task slug does not waive Steps 1–3 for the **child slug** — only an explicit user override may shorten planning.
+6. `autoMode` → zero `user-gate` prompts of any kind (neither modal tool nor markdown) at **every** boundary — entry, transition, G2-code, close, ship, fix-PR; use orch auto-gate table (index 0) to automatically select the recommended option and proceed to the next step without pausing. **`autoMode` never waives planning for `standard`/`complex`:** the full FSM 0→9 still runs; only gates are automatic. `complexityClass: simple` (scripted stub Step 1, skip 2/3) **does** apply in `autoMode`. An existing parent feature branch (e.g. `feat/{parent}`) plus a child bug/task slug does not waive Steps 1–3 for the **child slug** — only an explicit user override may shorten planning.
 7. Gate continuation (all gates, every step boundary 0→1 through 8→9 / lite 0→1 through 4→5): a native modal `user-gate` return is already explicit confirmation — selecting the recommended advance option (Next / Accept / Commit then advance / Reach-10 advance / close / ship intent) MUST continue in the same turn (record the decision, run the gated action, present the next gate or dispatch next). A markdown fallback gate MUST yield the turn per rule 4; the user's next reply is consumed as that gate's decision before any other tool call. This applies equally to transition gates and intermediate gates (classifier, safety valve, Reach-10, scoreAndRefine, G2-code, close, ship).
 
 ## Interactive execution cadence (One Step Per Turn)
@@ -114,7 +114,7 @@ Before Step 1, evaluate complexity (same spirit as Dynamic Execution):
 
 | Class | Criteria | Path |
 |-------|----------|------|
-| **simple** | Docs-only, single-file text, no cascading side effects | Skip Steps 1–2–3; write stub `step-01-{slug}.plan.md` (goal + files + AC checklist); `execMode: sequential`; jump to Step 4 |
+| **simple** | Docs-only, single-file text, no cascading side effects (`complexityClass: simple` from `classify.cjs`: docs/test-only refs, AC ≤ 6, no Open Questions, no schema/API/tenancy) | Stub Step 1 via `write_simple_plan_stub.cjs` + `plan_index.cjs build`, skip 2/3 (`interview-not-required`, `dag-disabled`) via `finish-batch`, `execMode: sequential`; jump to Step 4 |
 | **standard** | Normal feature | Steps 1 → conditional 2 → 3 → … |
 | **complex** | Multi-domain, schema, tenancy, API surface | Enforce 1 + 2 + 3 |
 
@@ -190,35 +190,33 @@ Optional More-options **Commit** at Step 4 / other boundaries does not replace t
 
 ---
 
-## Close implementation gate (standard Step 8 / lite Step 4 — phase A)
+## Step 8 combined gate (standard Step 8 / lite Step 4)
 
-**Before any push or PR.** Ends spec/plan implementation; sets `status: completed`, `endedAt`, `shipStatus: pending`.
+**Before any push or PR.** Ends spec/plan implementation; sets `status: completed`, `endedAt`, `shipStatus: pending`. Step 8 presents **one combined menu; state still records close then `shipStatus` (two phases, one prompt)**.
 
-1. **Commit configured delivery artifacts** (Recommended when `fullMode`)
-2. **Skip delivery commit** (still closes implementation: MEMORY + changelog + `status: completed`)
-3. **Pause** (to change model: switch in IDE/agent host, then resume)
+1. **Commit configured delivery artifacts and Create PR** (Recommended when `fullMode`)
+2. **Commit configured delivery artifacts and Push only**
+3. **Commit configured delivery artifacts and Skip shipping**
+4. **Skip delivery commit and Create PR** (PR will lack delivery artifacts; use only when delivery commit was already done or explicitly unwanted)
+5. **More options / Separate gates / Pause** (restores the legacy close-then-ship two-prompt flow)
 
-When `fullMode` is false, Recommended = **Skip delivery commit** (option 2) unless user explicitly wants delivery artifacts committed. When `fullMode` is true, Recommended = **Commit configured delivery artifacts** (option 1).
+When `fullMode` is true, Recommended (interactive index 0) = **Commit configured delivery artifacts and Create PR** (option 1). When `fullMode` is false, interactive Recommended is option 3 (commit delivery artifacts, skip shipping) unless the user explicitly wants a PR without delivery artifacts; **auto-gate index 0** is skip delivery commit **and** skip shipping (mechanical; not a numbered interactive option). Do not auto-create a PR when `fullMode` is false.
+
+**Mechanical mapping (options 1–4):** run close phase (G2-delivery per option, MEMORY + changelog, `status: completed`, `shipStatus: pending`) then ship phase (`shipAction` from the paired intent). Options **1, 2, 4** dispatch `ws-ship-pr`. Option **3** skips remote ship after close. Option **5** does not advance; user may resume with separate close then ship menus. Auto-gate not-`fullMode` closes without G2-delivery and sets `shipAction: skip` / `shipStatus: skipped`.
 
 G2-delivery stages only artifacts enabled by `defaults.deliveryCommitArtifacts` — algorithm and toggle map in [`ARTIFACTS.md`](../../ws-spec-to-pr/ARTIFACTS.md) § Step 8 (refined-plan fallback preserved when `includeRefinedPlan` is true; delivery result not staged by default).
 
-After successful close (options 1 or 2): MEMORY.md / ws-self-learning sweep, then `ws-changelog`. Set `status: completed`, `endedAt`, `shipStatus: pending`. Optional Phase B plan-dir temp delete (see [`artifact-cleanup.md`](../../ws-spec-to-pr/protocols/artifact-cleanup.md)).
+After successful close (options 1–4): MEMORY.md / ws-self-learning sweep, then `ws-changelog`. Set `status: completed`, `endedAt`, `shipStatus: pending`. Optional Phase B plan-dir temp delete (see [`artifact-cleanup.md`](../../ws-spec-to-pr/protocols/artifact-cleanup.md)).
 
 `ws-spec-index sync` on close uses **implementation** evidence only — not merged/shipped.
 
-## Ship gate (standard Step 8 / lite Step 4 — phase B)
-
-**After close.** Same run; workflow already `status: completed`.
-
-1. **Create PR** (Recommended when `fullMode`)
-2. **Push only**
-3. **Skip PR** (no create)
-4. **Skip shipping entirely**
-5. **Pause**
-
-When `fullMode` is false, Recommended = **Skip shipping entirely** (option 4) unless user explicitly wants push-only. When `fullMode` is true, Recommended = **Create PR** (option 1).
-
 Pass the selected ship intent into `ws-ship-pr` as `shipAction: create-pr|push-only|skip` with `workflowMode: true`, `stopBeforeFixPr: true`. Update `shipStatus` per outcome (`pushed`, `pr-open`, `skipped`, `stopped`). `ws-ship-pr` in `workflowMode` does **not** own delivery commit or workflow completion.
+
+**Legacy separate menus (option 5 only):**
+
+*Close implementation:* (1) Commit configured delivery artifacts, (2) Skip delivery commit, (3) Pause.
+
+*Ship after close:* (1) Create PR, (2) Push only, (3) Skip PR, (4) Skip shipping entirely, (5) Pause.
 
 ---
 
@@ -272,7 +270,7 @@ When the loop is active (score below `defaults.minVerifyScore`, or `scoreAndRefi
 |------|-------|
 | HS-1 / HS-2 / HS-2a | Both orch |
 | G2-code | Required: **G2-code after Step 5 before Step 6** (standard) / **G2-code after Step 2 before Step 3** (lite); post-review-fix when product files remain. Optional: Step 4 / Step 7 fix More-options Commit |
-| G2-delivery | Inside close implementation gate (phase A) |
+| G2-delivery | Inside Step 8 combined gate (close phase) |
 | Review findings | Lite Step 3; full Step 6 — fix → re-review until clean (max 3); Pause on residual Critical/Warning |
 | Active Resume | `setup.md` |
 
@@ -287,10 +285,8 @@ When the loop is active (score below `defaults.minVerifyScore`, or `scoreAndRefi
 | Lite safety valve | Continue lite |
 | Feature branch (new start) | Stay on current (detached `HEAD`: create `feat/{slug}` from HEAD; never persist `HEAD`; `ls-remote` auth/network → local-check-only) |
 | Feature branch resume mismatch | Check out `state.branch` |
-| Close implementation (`fullMode`) | Commit configured delivery artifacts |
-| Close implementation (not `fullMode`) | Skip delivery commit |
-| Ship after close (`fullMode`) | Create PR |
-| Ship after close (not `fullMode`) | Skip shipping entirely |
+| Step 8 combined gate (`fullMode`) | Commit configured delivery artifacts, then create PR |
+| Step 8 combined gate (not `fullMode`) | Skip delivery commit and skip shipping (mechanical; not a numbered interactive option) |
 | Completed workflow bootstrap | Run Score & Second Pass (score-and-refine) |
 | Score Analysis gate (`scoreAndRefine`) | Proceed with Second Pass Refinement |
 | Check-implementation below minVerifyScore | scoreAndRefine until ≥ `defaults.minVerifyScore` (default 9) (max 3); Pause on residual (no auto-approve) |

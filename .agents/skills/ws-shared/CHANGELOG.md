@@ -1,5 +1,35 @@
 # Changelog
 
+### [2026-09-13 18:05] Agent: Composer
+- **Prompt**: Verify plan execution then ship 0.4.25 (fix Step 8 contract, bump).
+- **Done**: Ship phase options 1/2/4; not-fullMode auto-gate skip delivery + skip shipping; leftover close-gate wording; probe ignore-only + human --soft-exit tests; FEATURES Step 8 combined menu; bump 0.4.24 to 0.4.25.
+- **Result**: Targeted tests green; integrity + harness/workflows to follow bump. Learning: N/A (standard implementation).
+
+### [2026-09-13 17:55] Agent: Composer
+- **Prompt**: Implement consolidated Gemini review fixes (D1 + D2a + D3 + Step 8 combined menu).
+- **Done**: Single JSON `--json --soft-exit` in check_memory_conflict.py; portable `__dirname/ac_ledger.cjs` in commit_g2_code.cjs; probe_test_surface git ls-files --others; Step 8 five-option combined gate in gates.md, STEP-DISPATCH.md, PROTOCOLS.md, faq.md; classifier-history + runtime-portability tests; integrity regen (no version bump).
+- **Result**: Targeted tests exit 0; verify-integrity OK. Learning: N/A (standard implementation).
+
+### [2026-09-13 13:33] Agent: Cursor Grok 4.6
+- **Prompt**: Make `--update-comparison` skip unchanged version tables (Generated stamp noise).
+- **Done**: Fingerprint compare ignoring `**Generated:**`; write only changed `table-*.md` / evolution; regression in `test-ws-benchmarks.js`; integrity regen for `ws-benchmarks`.
+- **Result**: `node test/test-ws-benchmarks.js` exit 0; `verify-integrity` OK. Learning: persist trap 2026-09-13-benchmark-table-generated-stamp.
+
+### [2026-09-13 13:25] Agent: Cursor Grok 4.6
+- **Prompt**: Verify and fix runInterview reason mismatch when complexityClass is complex on a lite pipeline.
+- **Done**: classify.cjs now names matching interview triggers; SKILL contract line; regression in test-classifier-history.js (lite + complex fixture).
+- **Result**: Issue confirmed and fixed; test-classifier-history exit 0. Learning: persist trap 2026-09-13-runinterview-reason-triggers.
+
+### [2026-09-13 17:00] Agent: muse-spark-1.3-contributor
+- **Prompt**: /ws-fable-judge implement .cursor/plans/stp_speed_determinism_b0c43a78.plan.md
+- **Done**: P0/P1/P2 speed-determinism core (classify complexityClass + spec-touched layers, link persists pre-step6 scoreState, git-intersect files_touched, finish-batch, stub/commit/manifest helpers, dispatch hook + prefix, alias/probe/history/soft-exit/lite-label/wiki-offer hygiene, fx-docs-micro waste test wired into CI, integrity regen).
+- **Result**: Targeted tests green (process-waste, ac-ledger, classifier-history, workflow-state-contract, artifact-economy, doc-sync, dispatch-provenance) + full npm test green; fable-judge VERIFIED WITH CAVEATS (minor hygiene deferred, no version bump). Learning: plan-scale delivery must list partial items as caveats (see memory 2026-09-13-fable-stp-speed-determinism).
+
+### [2026-09-13 16:30] Agent: muse-spark-1.3-contributor (Step 8 close us-328)
+- **Prompt**: /ws-spec-from-provider (bulk import, 1 open issue) then /ws-spec-to-pr 0081-us-328.spec.md full auto ship PR (standard, autoMode, fullMode)
+- **Done**: Issue 328 fetch-to-spec + agentic reformulation (0081-us-328.spec.md) + register; keyword-map prose fix in runtime/autoload.md + mirror sync (5 rows, installer-refresh stable); regression block in test-doc-sync.js (red-verified); release 0.4.23 -> 0.4.24 + integrity + site; G2 43190245, review-fix afa5eeab (spec archival), delivery c355d0bb.
+- **Result**: Ledger 10/10, full npm run tests exit 0, review clean + fable-judge VERIFIED. Learning: reuse vendor transforms verbatim via temp scripts (no retyped inline regex); new workflow state must be stamped via update_state dispatch/finish (see memory 2026-09-13-us-328-harness-traps).
+
 ### [2026-09-13 02:45] Agent: muse-spark-1.3-contributor (bump + ship + goal-fix-pr 326)
 - **Prompt**: bump version, commit, /ws-ship-pr (standalone develop->main) + /ws-goal-fix-pr 326
 - **Done**: Release 0.4.22 -> 0.4.23 (55 skills, both skill-dependencies, integrity, site) commit 6ea27ffb; PR 326 merged a04884dc; 3 goal-fix-pr rounds, 6 threads fixed (example no-placeholder, mixed predicate, verbosity persistence, merge wording, verify extraction) commits e0780049/a15162d1/6c0601fc; telemetry aggregate refreshed.

@@ -1,0 +1,375 @@
+{
+  "schemaVersion": 1,
+  "revision": 15,
+  "workflowId": "us-328-20260913T160800Z",
+  "slug": "us-328",
+  "specPath": ".agents/plans/us-328/step-00-us-328.spec.md",
+  "planIndexPath": ".agents/plans/us-328/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "`.agents/skills/ws-shared/runtime/autoload.md` keyword-map row reads `{sharedDir}/runtime/scm-provider-contract.md` (exact token with `runtime/` prefix) and no longer contains the bare `{sharedDir}/scm-provider-contract.md` prose.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/autoload.md:L147-L147"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/autoload.md",
+          "lineStart": 147,
+          "lineEnd": 147,
+          "sha256": "641f671389359701c062c5d99aeb790997f8bb89c5d95b62b893e8943e013844"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "43190245",
+          "step": 5
+        },
+        {
+          "sha": "afa5eeab",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "runtime autoload keyword-map prose uses runtime/ token",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-13T16:15:15.903Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-43190245",
+        "impl-ac1",
+        "review-fix-afa5eeab"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "`.agents/skills/ws-shared/autoload.md` keyword-map row reads the same corrected `{sharedDir}/runtime/scm-provider-contract.md` prose, and its Hub-contracts sibling link targets resolve on disk (`runtime/scm-provider-contract.md`, `runtime/tools.md`, `runtime/gates.md` present; bare `](scm-provider-contract.md)`, `](tools.md)`, `](gates.md)` absent from that file).",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/autoload.md:L141-L142",
+        ".agents/skills/ws-shared/autoload.md:L146-L146",
+        ".agents/skills/ws-shared/autoload.md:L25-L25",
+        ".agents/skills/ws-shared/autoload.md:L5-L5"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/autoload.md",
+          "lineStart": 5,
+          "lineEnd": 5,
+          "sha256": "c2d49212decbbeeca181abb67bc5bfeb2b05b851e27c7fb08ea430f8c8fe1270"
+        },
+        {
+          "path": ".agents/skills/ws-shared/autoload.md",
+          "lineStart": 25,
+          "lineEnd": 25,
+          "sha256": "c2d49212decbbeeca181abb67bc5bfeb2b05b851e27c7fb08ea430f8c8fe1270"
+        },
+        {
+          "path": ".agents/skills/ws-shared/autoload.md",
+          "lineStart": 141,
+          "lineEnd": 142,
+          "sha256": "c2d49212decbbeeca181abb67bc5bfeb2b05b851e27c7fb08ea430f8c8fe1270"
+        },
+        {
+          "path": ".agents/skills/ws-shared/autoload.md",
+          "lineStart": 146,
+          "lineEnd": 146,
+          "sha256": "c2d49212decbbeeca181abb67bc5bfeb2b05b851e27c7fb08ea430f8c8fe1270"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "43190245",
+          "step": 5
+        },
+        {
+          "sha": "afa5eeab",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "All autoload configure tests passed",
+          "sourceFile": "test/test-autoload-configure.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-13T16:15:20.171Z"
+        },
+        {
+          "name": "mirror autoload has no bare",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-13T16:15:20.170Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-43190245",
+        "impl-ac2",
+        "review-fix-afa5eeab"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "No other `{sharedDir}/*.md` prose misses are introduced: a repo-wide search for the bare `{sharedDir}/scm-provider-contract.md` token returns zero hits (excluding historical specs/changelog that quote the old string as evidence).",
+      "status": "Implemented",
+      "evidence": [
+        "test/test-doc-sync.js:L48-L62"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004"
+      ],
+      "files": [
+        {
+          "path": "test/test-doc-sync.js",
+          "lineStart": 48,
+          "lineEnd": 62,
+          "sha256": "274c2b4fdf0b141101e789bd75ea62fa602c5661782ced1318b3f67c426fe374"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "43190245",
+          "step": 5
+        },
+        {
+          "sha": "afa5eeab",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "mirror autoload has no bare",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-13T16:15:24.525Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-43190245",
+        "impl-ac3",
+        "review-fix-afa5eeab"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "A regression test asserts AC1–AC2 (prose token + mirror link targets) and passes under `npm run test` (or the narrow test file when the full suite is impractical in the session).",
+      "status": "Implemented",
+      "evidence": [
+        "test/test-doc-sync.js:L48-L62"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004"
+      ],
+      "files": [
+        {
+          "path": "test/test-doc-sync.js",
+          "lineStart": 48,
+          "lineEnd": 62,
+          "sha256": "274c2b4fdf0b141101e789bd75ea62fa602c5661782ced1318b3f67c426fe374"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "43190245",
+          "step": 5
+        },
+        {
+          "sha": "afa5eeab",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-doc-sync: ok",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-13T16:15:24.581Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-43190245",
+        "impl-ac4",
+        "review-fix-afa5eeab"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "`npm run generate-integrity && npm run verify-integrity` passes when the touched hub files are hashed inputs; when they are not hashed, verify-integrity still passes unchanged.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/skill-integrity.json:L61-L61"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004"
+      ],
+      "files": [
+        {
+          "path": "bin/skill-integrity.json",
+          "lineStart": 61,
+          "lineEnd": 61,
+          "sha256": "cd389545cb4e36da844f4df980103905258b41dd32b1675800356ca9e41015fa"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "43190245",
+          "step": 5
+        },
+        {
+          "sha": "afa5eeab",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "verify-integrity",
+          "sourceFile": "package.json",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-13T16:15:24.638Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-43190245",
+        "impl-ac5",
+        "review-fix-afa5eeab"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Red before green: regression test fails on the pre-fix tree (bare `{sharedDir}/scm-provider-contract.md` present and/or mirror has bare `](scm-provider-contract.md)`), passes after the fix — proves the test guards the defect.",
+      "tests": [
+        {
+          "name": "test-doc-sync: ok",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-13T16:15:28.966Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-ns"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Mirror-only hand fix without source fix: next `renderConsumerAutoload` regen reintroduces stale prose — rejected by asserting the source file, not just the mirror.",
+      "tests": [
+        {
+          "name": "test-doc-sync: ok",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-13T16:15:28.966Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-ns"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Over-broad fix: touching unrelated autoload rows or adding a second downloader/ingest path breaks `test-doc-sync` / harness link audits — caught by running the narrow docs-sync test alongside the new assertion.",
+      "tests": [
+        {
+          "name": "test-doc-sync: ok",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-13T16:15:28.966Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-ns"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 10,
+    "earnedUnits": 50,
+    "totalUnits": 50,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-13T16:21:30.215Z"
+  }
+}

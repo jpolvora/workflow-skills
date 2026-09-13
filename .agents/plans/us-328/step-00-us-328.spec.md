@@ -1,0 +1,116 @@
+---
+id: 328
+slug: us-328
+title: Fix stale autoload keyword-map prose for scm-provider-contract path
+source: github
+specDate: 2026-09-13
+issueState: open
+issueUrl: "https://github.com/jpolvora/workflow-skills/issues/328"
+step: 0
+workflowId: us-328-20260913T160800Z
+status: completed
+startedAt: "2026-09-13T16:07:00.990Z"
+endedAt: "2026-09-13T16:07:00.990Z"
+acRefs: []
+---
+# Specification — Fix stale autoload keyword-map prose for scm-provider-contract path
+
+## Description
+
+The keyword-map row in the shared autoload hub cites the SCM provider contract as `{sharedDir}/scm-provider-contract.md` prose. Expanded from the repo root that resolves to `.agents/skills/ws-shared/scm-provider-contract.md`, which does not exist. The canonical file lives at `.agents/skills/ws-shared/runtime/scm-provider-contract.md`.
+
+Correct the prose token to `{sharedDir}/runtime/scm-provider-contract.md` in the runtime source (`.agents/skills/ws-shared/runtime/autoload.md`, keyword-map row) and synchronize the generated consumer mirror (`.agents/skills/ws-shared/autoload.md`) through the existing `renderConsumerAutoload` rewrite so both copies agree. While synchronizing, keep the mirror's `runtime/`-prefixed sibling link targets (`tools.md`, `scm-provider-contract.md`, `gates.md`, plus the other five runtime files handled by the renderer) correct; do not hand-edit the mirror into a shape the renderer would revert.
+
+This is a docs-only change: no runtime behavior, no new intents, no config keys. The fix must be covered by a regression assertion so future prose/link drift fails fast.
+
+## Acceptance Criteria
+
+- AC1: `.agents/skills/ws-shared/runtime/autoload.md` keyword-map row reads `{sharedDir}/runtime/scm-provider-contract.md` (exact token with `runtime/` prefix) and no longer contains the bare `{sharedDir}/scm-provider-contract.md` prose.
+- AC2: `.agents/skills/ws-shared/autoload.md` keyword-map row reads the same corrected `{sharedDir}/runtime/scm-provider-contract.md` prose, and its Hub-contracts sibling link targets resolve on disk (`runtime/scm-provider-contract.md`, `runtime/tools.md`, `runtime/gates.md` present; bare `](scm-provider-contract.md)`, `](tools.md)`, `](gates.md)` absent from that file).
+- AC3: No other `{sharedDir}/*.md` prose misses are introduced: a repo-wide search for the bare `{sharedDir}/scm-provider-contract.md` token returns zero hits (excluding historical specs/changelog that quote the old string as evidence).
+- AC4: A regression test asserts AC1–AC2 (prose token + mirror link targets) and passes under `npm run test` (or the narrow test file when the full suite is impractical in the session).
+- AC5: `npm run generate-integrity && npm run verify-integrity` passes when the touched hub files are hashed inputs; when they are not hashed, verify-integrity still passes unchanged.
+
+## Original Issue Context
+
+## Summary
+Keyword-map row in ws-shared/autoload.md cites token prose `{sharedDir}/scm-provider-contract.md` which expands from repo root to .agents/skills/ws-shared/scm-provider-contract.md — file does not exist. Canonical file lives at .agents/skills/ws-shared/runtime/scm-provider-contract.md.
+
+## Evidence
+- Upstream: .agents/skills/ws-shared/autoload.md:147
+  | SCM parity, github vs azure intents, provider contract | \{sharedDir}/scm-provider-contract.md\ then one provider |\
+- Markdown link targets in the same file already use the correct form: \[scm-provider-contract.md](runtime/scm-provider-contract.md)\ (Hub contracts table) — only the keyword-map prose is stale.
+- Verified: \ws-shared/scm-provider-contract.md\ = missing, \ws-shared/runtime/scm-provider-contract.md\ = present.
+- Consumer copy in spec-memo had the same stale prose plus 4 stale sibling link targets without \runtime/\ prefix (fixed locally to match upstream link targets; prose fixed locally to \{sharedDir}/runtime/scm-provider-contract.md\).
+
+## Expected
+Prose should read `{sharedDir}/runtime/scm-provider-contract.md` to match the on-disk layout and the corrected link targets.
+
+## Proposed correction
+```diff
+-| SCM parity, github vs azure intents, provider contract | \{sharedDir}/scm-provider-contract.md\ then one provider |
++| SCM parity, github vs azure intents, provider contract | \{sharedDir}/runtime/scm-provider-contract.md\ then one provider |
+```
+
+## Context
+Found via \ws-check-harness\ consumer audit (Install mode: consumer) in jpolvora/spec-memo. Upstream link targets already correct — this is the last remaining prose miss. No other \{sharedDir}/*.md\ prose misses found (tools/AGENTS/gates prose either use tokens correctly or are link targets).
+
+### Prior Work Sweep
+
+- Provider `sweep-prior-work` (`--issue 328`, keywords `autoload scm-provider-contract keyword-map`): no exact open PR for issue 328. One keyword hit is PR 206 (`fix ws-doctor false-positive docs/ links`, MERGED) — unrelated docs/link fix, no duplicate risk.
+- `git log --oneline -10 -- .agents/skills/ws-shared/runtime/autoload.md`: recent touches are wiki sync (`b5811d3b`), monitor/issues resolve (`5db6f9f7`), hybrid-config docs (`561f86e9`) — none changed the keyword-map row; no in-flight branch owns this line.
+- Mirror generator: `bin/cli.js` `renderConsumerAutoloadText` rewrites same-dir `](scm-provider-contract.md)` / `](tools.md)` / `](](gates.md)` etc. to `](runtime/…)` when rendering `runtime/autoload.md` → `ws-shared/autoload.md`. Prose tokens (`{sharedDir}/…`) pass through untouched, so the source prose fix propagates to the mirror on regen. Hand-fixing only the mirror without the source would regress on next install/update.
+
+### Design Intent
+
+Modification task (one-line prose correction, not greenfield). `git log -p -S "sharedDir}/scm-provider-contract" -- .agents/skills/ws-shared/` shows the bare token predates the `runtime/` hub-layout migration (managed hub content moved below `runtime/`/`templates/` per memory 2026-09-08); the prose row was missed when link targets were migrated. Intentional layout is `runtime/` for managed hub files (`hub-layout.json` classification); the fix restores prose-to-disk agreement rather than changing architecture.
+
+## Notes
+
+- Source of truth is `.agents/skills/ws-shared/runtime/autoload.md`; `.agents/skills/ws-shared/autoload.md` is the rendered consumer mirror (see `bin/cli.js` `renderConsumerAutoload`). Edit the source, then regen/sync the mirror — never diverge them by hand.
+- `runtime/autoload.md` same-dir links (`](scm-provider-contract.md)`, `](tools.md)`, `](gates.md)`) are correct from inside `runtime/`; the mirror must carry the `runtime/` prefix. The renderer's eight-file list already covers this; verify the synced mirror rather than extending the renderer unless a new runtime file is involved.
+- Scope is the keyword-map prose row plus mirror sync. Do not reword neighboring rows, reformat tables, or sweep unrelated `{sharedDir}` prose in the same change.
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| New SCM intents or provider behavior | Docs-only path prose fix; contract unchanged |
+| Renderer feature work or new runtime files | Existing eight-file rewrite already covers these links |
+| Consumer spec-memo copy fixes | Separate repo; already fixed locally per issue |
+| Broad `{sharedDir}` prose audit beyond scm-provider-contract | Issue confirms no other misses; keep change surgical |
+
+## Assumptions & Open Questions
+
+| Assumption | Chosen default | Rationale | Confirmed |
+|------------|----------------|-----------|-----------|
+| Mirror is synced by renderer in the same change | N/A because both files are tracked upstream and the renderer mapping is verified in this change | Avoids hand-divergence that install/update would revert | y |
+| No visual attachments on the issue | N/A because issue body has no images; ingest helper skipped with zero URLs | Nothing to download or patch into Visual References | y |
+| Stack invariants for a Node skills package need no extra DoR rows beyond docs/test gates | N/A because change touches only markdown + test; no backend/framework boundaries | Keeps DoR bounded per FORMAT implicit-dimension rule | y |
+
+## Definition of Ready (DoR)
+
+| Readiness Item | Requirement | Verification Method |
+|----------------|-------------|---------------------|
+| Bounded scope | Only the keyword-map prose row + mirror sync + one regression test change | `git diff --name-only` lists autoload source, mirror, test (plus integrity manifest only if hashing requires) |
+| Atomic criteria | AC1–AC5 each independently checkable | Run link/prose grep, file-exists checks, narrow test, integrity commands |
+| Failure modes | Stale prose or bare mirror links fail the regression test | Assert exact strings; run test before fix (red) and after (green) |
+| Observation telemetry | Named commands and scores recorded | See Validation & Observation Notes |
+| Zero open blockers | Tracker id 328 is the single open issue; no auth/config gaps | `gh auth status` exit 0; list script returned exactly this issue |
+
+## Validation & Observation Notes
+
+### Telemetry & Observable Signals
+
+- `gh auth status` → exit 0 (both github.com accounts listed; active `jpolvora` token present).
+- `python .agents/skills/ws-spec-from-provider/scripts/list_open_issues.py --repo-root .` → `[{"id": 328, …}]` (single open issue).
+- `node .agents/skills/ws-spec-organizer/scripts/resolve_spec_path.cjs --slug us-328 --repo-root .` → `.agents/specs/0081-us-328.spec.md`.
+- `python .agents/skills/ws-spec-provider-github/scripts/sweep_prior_work.py --issue 328 …` → status ok, no same-issue open PR.
+- Post-write: `node .agents/skills/ws-spec-format/scripts/validate_spec.cjs --mode=authoring .agents/specs/0081-us-328.spec.md` must exit 0.
+- Post-fix: `npm run test` (or narrow harness/docs-sync test) green; `npm run generate-integrity && npm run verify-integrity` green when applicable; `node bin/build-site.js --check` green if site embeds the hub copy.
+
+### Negative & Failing Test Scenarios
+
+- Red before green: regression test fails on the pre-fix tree (bare `{sharedDir}/scm-provider-contract.md` present and/or mirror has bare `](scm-provider-contract.md)`), passes after the fix — proves the test guards the defect.
+- Mirror-only hand fix without source fix: next `renderConsumerAutoload` regen reintroduces stale prose — rejected by asserting the source file, not just the mirror.
+- Over-broad fix: touching unrelated autoload rows or adding a second downloader/ingest path breaks `test-doc-sync` / harness link audits — caught by running the narrow docs-sync test alongside the new assertion.

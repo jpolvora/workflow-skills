@@ -1,6 +1,6 @@
 import utils from './harness-test-utils.cjs';
 
-const { assert, path, repoRoot, temp, run, write } = utils;
+const { assert, fs, path, repoRoot, temp, run, write } = utils;
 const classifier = path.join(repoRoot, '.agents/skills/ws-classify-complexity/scripts/classify.cjs');
 const history = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/search_plan_history.cjs');
 const memory = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/check_memory_conflict.py');
@@ -35,6 +35,50 @@ for (const key of ['pipeline', 'execMode', 'runInterview', 'runTesting', 'estima
   assert.ok(payload.executionProfile[key] && payload.executionProfile[key].reason, `${key} includes value and reason`);
 }
 assert.strictEqual(payload.executionProfile.estimatedElapsedSec.value, 777);
+
+const liteComplexRoot = temp('ws-classifier-lite-complex-');
+write(path.join(liteComplexRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  plans: { dir: '.agents/plans' },
+  dagThresholds: { maxImplementationSteps: 3, maxExpectedFiles: 6, maxLayers: 2 },
+  defaults: { enableDag: false, skipTesting: false },
+  verification: {},
+}));
+write(path.join(liteComplexRoot, 'schema-lite.spec.md'), `---
+id: null
+slug: schema-lite
+title: Schema lite
+source: local
+specDate: 2026-09-13
+---
+## Description
+Docs-only schema note in README.md.
+## Acceptance Criteria
+- AC1: Mention the schema change in \`README.md\`.
+`);
+const liteComplex = run(classifier, ['schema-lite.spec.md', '--output-dir', 'out'], {
+  cwd: liteComplexRoot,
+  env: { WS_REPO_ROOT: liteComplexRoot },
+});
+assert.strictEqual(liteComplex.status, 0, liteComplex.stderr);
+const liteComplexPayload = JSON.parse(liteComplex.stdout.split('\nWrote ')[0]);
+assert.strictEqual(liteComplexPayload.complexityClass, 'complex');
+assert.strictEqual(liteComplexPayload.recommendedPipeline, 'standard');
+assert.strictEqual(liteComplexPayload.runInterview, true);
+assert.ok(liteComplexPayload.metrics.layers <= 2);
+assert.match(
+  liteComplexPayload.executionProfile.runInterview.reason,
+  /Complexity class `complex`/,
+);
+assert.doesNotMatch(
+  liteComplexPayload.executionProfile.runInterview.reason,
+  /Standard execution has open questions/,
+);
+const liteComplexMd = fs.readFileSync(
+  path.join(liteComplexRoot, 'out', 'step-00-schema-lite.classify.md'),
+  'utf8',
+);
+assert.match(liteComplexMd, /Complexity class `complex`/);
+assert.doesNotMatch(liteComplexMd, /Standard execution has open questions/);
 
 write(path.join(root, '.agents/specs/0051-prefix-only.spec.md'), `
 ## Description
@@ -79,4 +123,14 @@ write(path.join(root, 'MEMORY.md'), `## Traps
 const memoryResult = run(memory, ['plan.md', '--json', '--memory', 'MEMORY.md', '--repo-root', root], { command: 'python', cwd: root });
 assert.strictEqual(memoryResult.status, 2);
 assert.strictEqual(JSON.parse(memoryResult.stdout).force_interview, true);
+
+const softExitResult = run(memory, ['plan.md', '--json', '--soft-exit', '--memory', 'MEMORY.md', '--repo-root', root], { command: 'python', cwd: root });
+assert.strictEqual(softExitResult.status, 0, softExitResult.stderr);
+const softPayload = JSON.parse(softExitResult.stdout);
+assert.strictEqual(softPayload.force_interview, true);
+assert.ok(Array.isArray(softPayload.results.traps) && softPayload.results.traps.length > 0);
+
+const humanSoft = run(memory, ['plan.md', '--soft-exit', '--memory', 'MEMORY.md', '--repo-root', root], { command: 'python', cwd: root });
+assert.strictEqual(humanSoft.status, 1, humanSoft.stderr);
+assert.match(humanSoft.stderr, /--soft-exit requires --json/);
 console.log('test-classifier-history: ok');

@@ -46,7 +46,7 @@ function readJson(file) {
 
 function writeJson(file, value) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  const temporary = `${file}.tmp-${process.pid}`;
+  const temporary = `${file}.tmp-${process.pid}-${crypto.randomBytes(4).toString('hex')}`;
   fs.writeFileSync(temporary, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
   fs.renameSync(temporary, file);
 }
@@ -347,7 +347,15 @@ function link(options, context) {
     }
   }
   ledger.revision += 1;
-  ledger.scoreState = null;
+  const requestedBoundary = options.scoreBoundary || options.boundary;
+  const hasCommit = (ledger.acceptanceCriteria || []).some((row) => (row.commits || []).length > 0);
+  const linkBoundary = requestedBoundary || (hasCommit ? 'pre-step6' : 'step5');
+  try {
+    const linkScore = scoreLedger(ledger, linkBoundary, context);
+    ledger.scoreState = { ...linkScore, boundary: linkBoundary, computedAt: new Date().toISOString() };
+  } catch {
+    ledger.scoreState = null;
+  }
   writeJson(file, ledger);
   return ledger;
 }

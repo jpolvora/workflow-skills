@@ -41,7 +41,8 @@ function candidateFiles(directory) {
 function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help) {
-    process.stdout.write('Usage: search_plan_history.cjs --slug SLUG|--keyword WORD [--json]\n');
+    process.stdout.write('Usage: search_plan_history.cjs --slug SLUG|--keyword WORD [--max-matches N] [--output FILE] [--json]\n');
+    process.stdout.write('  Returns top-N matches plus totalMatches; when totalMatches > matches.length, surface the count and narrow keywords.\n');
     return;
   }
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
@@ -76,10 +77,13 @@ function main() {
     }
   }
   matches.sort((a, b) => b.score - a.score || a.workflowId.localeCompare(b.workflowId));
+  const maxMatches = options.maxMatches ? Number(options.maxMatches) : 3;
+  const capped = Number.isFinite(maxMatches) && maxMatches > 0 ? matches.slice(0, maxMatches) : matches;
   const result = {
     indexPath: fs.existsSync(indexFile) ? toRepoRelative(context.repoRoot, indexFile) : null,
     keywords: needles,
-    matches,
+    matches: capped,
+    totalMatches: matches.length,
   };
   if (options.output) {
     const output = path.resolve(context.repoRoot, options.output);

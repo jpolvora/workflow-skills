@@ -44,6 +44,23 @@ const evoContent = fs.readFileSync(evoPath, 'utf8');
 assert.match(evoContent, /# Harness Benchmark Evolution Report/);
 assert.match(evoContent, /0\.3\.61/);
 
+const table048 = path.join(tmpResults, 'table-0.3.48.md');
+assert.ok(fs.existsSync(table048), 'table-0.3.48.md created');
+const firstStamp = fs.readFileSync(table048, 'utf8');
+const genLine = firstStamp.match(/^\*\*Generated:\*\* .+$/m)[0];
+const second = run(script, ['--update-comparison', '--results-dir', tmpResults]);
+assert.strictEqual(second.status, 0, second.stderr);
+assert.match(second.stdout, /Skipped unchanged/);
+assert.strictEqual(fs.readFileSync(table048, 'utf8'), firstStamp, 'unchanged version table must keep Generated stamp');
+assert.ok(fs.readFileSync(table048, 'utf8').includes(genLine));
+fs.writeFileSync(table048, firstStamp.replace('**100**', '**99**'), 'utf8');
+const third = run(script, ['--update-comparison', '--results-dir', tmpResults]);
+assert.strictEqual(third.status, 0, third.stderr);
+const rewritten = fs.readFileSync(table048, 'utf8');
+assert.match(rewritten, /\*\*100\*\*/);
+assert.notStrictEqual(rewritten, firstStamp);
+assert.ok(!rewritten.includes(genLine), 'score change must rewrite Generated stamp');
+
 // 6. Unit assertions on helper exports
 const { formatWallSec, formatTokens, versionKey } = await import(`file://${script}`);
 assert.strictEqual(formatWallSec(45), '45s');
