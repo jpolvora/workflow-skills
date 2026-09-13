@@ -6,6 +6,33 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-09-13] Wiki examples must not keep placeholder conditional sections
+- **Layer**: `harness`
+- **Module**: `ws-wiki / validate_wiki.cjs`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-wiki/scripts/validate_wiki.cjs; test/test-wiki.js`
+- **Scenario / Context**: `classifyTemplate` returned `mixed` only for new-complete plus ALL legacy headings, so new-complete plus one stray legacy heading passed silently as `new`. Test 22 fixtures covered new-full/omit/legacy/malformed but no new-complete plus partial-legacy case. Reviewer scored 6/10 on PR 326.
+- **DO NOT**: Gate the `mixed` style on full legacy residue (`missingOld.length === 0`); do not ship classifier changes without a partial-overlap fixture.
+- **INSTEAD DO**: Classify new-complete plus any legacy heading as `mixed` (`hasAnyOld ? 'mixed' : 'new'`, warn-only preserved); add a hybrid fixture asserting exit 0 plus a `Mixed template` warning.
+
+### [2026-09-13] Verifier extraction must follow writer template migrations
+- **Layer**: `harness`
+- **Module**: `ws-wiki / Phase 2 verify`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-wiki/PHASE-2-VERIFY.md; test/test-wiki.js`
+- **Scenario / Context**: Writers (from-code/sweep/sync/update) and the validator moved to the conditional template, but PHASE-2-VERIFY still extracted checkable statements only from legacy `## Business Rules & Logic` / `## Technical Architecture`, so new pages verified vacuously (zero statements). No test asserted verifier extraction headings. Reviewer scored 6/10 on PR 326.
+- **DO NOT**: Migrate writer/validator templates without sweeping reader flows (verifier, apply) for hardcoded old heading names.
+- **INSTEAD DO**: Extract from `## How it works` + `## Backend` (+ conditionals when present; `## Feature` only for testable invariants), keep legacy headings as fallback with a migrate-on-touch flag, and assert the new headings in tests.
+
+### [2026-09-13] Per-flow run-state verbosity must honor the config default uniformly
+- **Layer**: `harness`
+- **Module**: `ws-wiki / from-code merge mode`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-wiki/FROM-CODE.md; test/test-wiki.js`
+- **Scenario / Context**: FROM-CODE merge mode was updated to fill conditional headings but its preservation clause still named legacy `Business Rules` / `Architecture` statements, inviting duplication or dropped invariants on new pages. A test assert locked the stale wording. Reviewer scored 6/10 on PR 326.
+- **DO NOT**: Half-migrate a clause (new action verbs, old heading names); do not let test asserts lock pre-migration prose.
+- **INSTEAD DO**: Name current headings (`## How it works` / `## Backend`) with a legacy-when-present migrate-on-touch qualifier, and update the locking assert to the new wording in the same change.
+
 ### [2026-09-12] Wiki infobox counts must stay data-driven
 - **Layer**: `Web`
 - **Module**: `Wiki site builder`

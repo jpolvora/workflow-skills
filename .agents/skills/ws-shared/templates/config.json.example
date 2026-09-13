@@ -257,6 +257,10 @@
     "specsDir": ".agents/specs",
     "_comment_wikiDir": "Living feature wiki and domain knowledge base root. Skill token {wikiDir} ← plans.wikiDir (default .agents/specs/wiki).",
     "wikiDir": ".agents/specs/wiki",
+    "_comment_wiki": "Living wiki defaults. plans.wiki.verbosity selects ws-wiki prose style (condensed default terse; detailed paragraph walkthrough).",
+    "wiki": {
+      "verbosity": "condensed"
+    },
     "diagnosticsDir": ".agents/plans/diagnostics",
     "worktreesDir": ".agents/plans/{slug}/worktrees",
     "useWorktrees": false,

@@ -1,6 +1,6 @@
 # `/ws-wiki from-code`
 
-Alternate whole-tree wiki genesis beside Phase 1 sweep. Inspect project structure and code in deterministic area order, merge with existing wiki/specs/docs (default), write or refine `{wikiDir}/{domain}/{feature}.md` pages in the 3-section format.
+Alternate whole-tree wiki genesis beside Phase 1 sweep. Inspect project structure and code in deterministic area order, merge with existing wiki/specs/docs (default), write or refine `{wikiDir}/{domain}/{feature}.md` pages in the conditional template (`## Feature` + `## How it works` required; `## Backend` / `## Frontend` / `## Third-party services` conditional, omitted when not applicable).
 
 **Aliases:** `reverse`, `reconstruct`
 
@@ -31,18 +31,25 @@ Alternate whole-tree wiki genesis beside Phase 1 sweep. Inspect project structur
    3. **Cancel**
    Cancel → STOP; write no wiki pages and no `from-code.state.json`. **`autoMode`:** take option 1 without prompting.
 
+2b. **Verbosity gate (prose style):** Present `user-gate` once after the Start gate and before the checkpoint:
+   1. **Condensed (Recommended)** — short terse statements, one fact per line; lowest token cost
+   2. **Detailed** — full-sentence paragraphs, feature-by-feature walkthrough; disables terse rewriting for wiki bodies
+   3. **Cancel**
+   Cancel → STOP; write no wiki pages and no `from-code.state.json`. **`autoMode`:** take `condensed` without prompting. Persist the choice as `verbosity: condensed|detailed` in `{wikiDir}/from-code.state.json` (and honor `plans.wiki.verbosity` from `{sharedDir}/config.json` as the pre-selected default when no state exists). Unknown persisted values fail closed to `condensed` with a warning. `detailed` pages still use the conditional template; only the prose depth changes.
+
 3. **Overwrite confirm (only when option 2 was picked and feature pages already exist):** Present a second `user-gate`:
    1. **Confirm overwrite existing wiki from code**
    2. **Cancel**
    Cancel → STOP. Overwrite without this confirm must not replace existing feature page bodies.
 
-4. **Checkpoint (resume):** Maintain `{wikiDir}/from-code.state.json` with `status` (`running` | `completed`), `completedAreas`, `lastArea`, `mode` (`merge` | `overwrite`), `startedAt`, `updatedAt`. `--resume` continues after `lastArea` (skip completed unless `--force`). Agents must not stage this file in product commits.
+4. **Checkpoint (resume):** Maintain `{wikiDir}/from-code.state.json` with `status` (`running` | `completed`), `completedAreas`, `lastArea`, `mode` (`merge` | `overwrite`), `verbosity` (`condensed` | `detailed`, default `condensed`), `startedAt`, `updatedAt`. `--resume` continues after `lastArea` (skip completed unless `--force`). Agents must not stage this file in product commits.
 
 5. **Sequential investigation (one area at a time):** For each queued area not yet completed:
    - Read existing wiki pages that map to the area.
    - Read matching docs/specs and listed source paths.
-   - **Merge mode:** create missing domain/feature pages and fill empty 3-section headings from code/docs; do not drop existing Business Rules or Architecture statements.
-   - **Overwrite mode (after confirm):** may replace page bodies but still writes 3-section pages.
+    - **Merge mode:** create missing domain/feature pages and fill empty conditional headings from code/docs; do not drop existing statements in `## How it works` / `## Backend` (and legacy `## Business Rules & Logic` / `## Technical Architecture` when present; migrate on touch).
+   - **Overwrite mode (after confirm):** may replace page bodies but still writes conditional-template pages.
+   - Honor the persisted `verbosity`: `condensed` writes one-fact-per-line statements; `detailed` writes paragraph prose and disables terse rewriting for wiki bodies.
    - Run `sync_wiki_index.cjs` after each successful area.
    - Update checkpoint `lastArea` / `completedAreas`.
    - Log progress: `{index}/{total} {areaId}`.

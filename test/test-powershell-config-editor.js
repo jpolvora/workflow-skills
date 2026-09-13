@@ -350,6 +350,13 @@ while ((match = regex.exec(guiScript)) !== null) {
 const plansProps = Object.keys(schema.properties.plans?.properties || {});
 assert(plansProps.length > 0, 'Schema plans.properties must not be empty');
 for (const prop of plansProps) {
+  const propSchema = schema.properties.plans.properties[prop];
+  if (propSchema?.type === 'object' && propSchema?.properties) {
+    for (const sub of Object.keys(propSchema.properties)) {
+      assert(guiKeys.has(`plans.${prop}.${sub}`), `Missing schema property plans.${prop}.${sub} in Edit-WorkflowSkillsConfig.ps1`);
+    }
+    continue;
+  }
   assert(guiKeys.has(`plans.${prop}`), `Missing schema property plans.${prop} in Edit-WorkflowSkillsConfig.ps1`);
 }
 

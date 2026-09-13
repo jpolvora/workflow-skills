@@ -1,6 +1,6 @@
 # `/ws-wiki sweep` (Phase 1 — sweep/backfill)
 
-First-time (or re-runnable) sequential backfill from every top-level spec of record, in prefix order, overlaying living wiki pages so later specs win. Phase 1 current-code overlay bias is unchanged: when code contradicts an older spec AC, document current code.
+First-time (or re-runnable) sequential backfill from every top-level spec of record, in prefix order, overlaying living wiki pages so later specs win. Phase 1 current-code overlay bias is unchanged: when code contradicts an older spec AC, document current code. Pages use the conditional template (`## Feature` + `## How it works` required; `## Backend` / `## Frontend` / `## Third-party services` conditional).
 
 **Aliases:** `/ws-wiki first-time`, `/ws-wiki backfill`
 
@@ -19,13 +19,20 @@ First-time (or re-runnable) sequential backfill from every top-level spec of rec
    2. **Cancel**
    Cancel → STOP; write no sweep pages and no checkpoint. **`autoMode`:** take option 1 without prompting.
 
-3. **Checkpoint (resume):** Maintain `{wikiDir}/sweep.state.json` with `status`, `completedFiles` (repo-relative POSIX paths), `lastFile`, `startedAt`, `updatedAt`. `--resume` continues after `lastFile` (skip completed unless `--force`). Successful full run sets `status: completed` or deletes the file. Never stage this checkpoint in product commits.
+2b. **Verbosity gate (prose style):** Present `user-gate` once after the Start gate:
+   1. **Condensed (Recommended)** — short terse statements; lowest token cost
+   2. **Detailed** — paragraph prose with feature-by-feature walkthrough; disables terse rewriting for wiki bodies
+   3. **Cancel**
+   Cancel → STOP; write no sweep pages and no checkpoint. **`autoMode`:** take `condensed` without prompting. Persist as `verbosity` in `{wikiDir}/sweep.state.json` (default `condensed`; honor `plans.wiki.verbosity` from `{sharedDir}/config.json` as the pre-selected default when no sweep state exists; unknown values fail closed to `condensed`). A sweep choice is per-run only; sync/update resolve from `from-code.state.json`.
+
+3. **Checkpoint (resume):** Maintain `{wikiDir}/sweep.state.json` with `status`, `completedFiles` (repo-relative POSIX paths), `lastFile`, `verbosity` (`condensed` | `detailed`, default `condensed`), `startedAt`, `updatedAt`. `--resume` continues after `lastFile` (skip completed unless `--force`). Successful full run sets `status: completed` or deletes the file. Never stage this checkpoint in product commits.
 
 4. **Sequential overlay (one spec at a time):** For each queued spec not yet completed:
    - Read the spec of record.
    - Consult **current** shipped code/docs the spec touches (skills, scripts, tests, hub files).
    - Map bounded-context domain page(s) under `{wikiDir}/{domain}/{feature}.md`.
-   - Refine pages **in place** (3-section format). Later specs supersede earlier rules. When code contradicts an older spec AC, document **current code**; spec text is provenance only.
+   - Refine pages **in place** (conditional template). Later specs supersede earlier rules. When code contradicts an older spec AC, document **current code**; spec text is provenance only.
+   - Honor the run `verbosity` (`condensed` terse statements; `detailed` paragraph prose with terse rewriting disabled for wiki bodies).
    - Run `sync_wiki_index.cjs` after each successful overlay.
    - Update checkpoint `lastFile` / `completedFiles`.
    - Log progress: `{index}/{total} {file}`.

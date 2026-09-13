@@ -1,6 +1,9 @@
 # Changelog
 
-### [2026-09-12 13:35] Agent: composer-2.5 (Step 8 close ws-wiki-from-code)
+### [2026-09-13 22:00] Agent: muse-spark-1.3-contributor (Step 8 close us-324)
+- **Prompt**: /ws-spec-to-pr full auto 324 ship goal-fix-pr (standard, autoMode, fullMode)
+- **Done**: ws-wiki verbosity (condensed/detailed) + conditional template across SKILL/FROM-CODE/SWEEP/SYNC/UPDATE; validator dual-template + normalizeVerbosity; config schema/example/GUI + configure mention; VERBOSITY-EXAMPLE + wiki doc migration; tests (Test 22 + nested GUI parity); release 0.4.21 -> 0.4.22 + integrity + site; G2 commit 78525a5d; delivery e94f2d57.
+- **Result**: Score 10, clean review, testing green. Learning: N/A (standard implementation)
 - **Prompt**: Step 8 Close implementation then Ship for ws-wiki-from-code (standard, autoMode, fullMode)
 - **Done**: Delivery result; integrity regen + wiki site refresh; G2-delivery refined plan; status completed, shipStatus pending; push + PR to main.
 - **Result**: Score 9, clean review VERIFIED, testing passed. Learning: N/A (standard implementation)
