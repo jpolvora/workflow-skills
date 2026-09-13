@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-09-13 17:00] Agent: muse-spark-1.3-contributor
+- **Prompt**: /ws-fable-judge implement .cursor/plans/stp_speed_determinism_b0c43a78.plan.md
+- **Done**: P0/P1/P2 speed-determinism core (classify complexityClass + spec-touched layers, link persists pre-step6 scoreState, git-intersect files_touched, finish-batch, stub/commit/manifest helpers, dispatch hook + prefix, alias/probe/history/soft-exit/lite-label/wiki-offer hygiene, fx-docs-micro waste test wired into CI, integrity regen).
+- **Result**: Targeted tests green (process-waste, ac-ledger, classifier-history, workflow-state-contract, artifact-economy, doc-sync, dispatch-provenance) + full npm test green; fable-judge VERIFIED WITH CAVEATS (minor hygiene deferred, no version bump). Learning: plan-scale delivery must list partial items as caveats (see memory 2026-09-13-fable-stp-speed-determinism).
+
+### [2026-09-13 16:30] Agent: muse-spark-1.3-contributor (Step 8 close us-328)
+- **Prompt**: /ws-spec-from-provider (bulk import, 1 open issue) then /ws-spec-to-pr 0081-us-328.spec.md full auto ship PR (standard, autoMode, fullMode)
+- **Done**: Issue 328 fetch-to-spec + agentic reformulation (0081-us-328.spec.md) + register; keyword-map prose fix in runtime/autoload.md + mirror sync (5 rows, installer-refresh stable); regression block in test-doc-sync.js (red-verified); release 0.4.23 -> 0.4.24 + integrity + site; G2 43190245, review-fix afa5eeab (spec archival), delivery c355d0bb.
+- **Result**: Ledger 10/10, full npm run tests exit 0, review clean + fable-judge VERIFIED. Learning: reuse vendor transforms verbatim via temp scripts (no retyped inline regex); new workflow state must be stamped via update_state dispatch/finish (see memory 2026-09-13-us-328-harness-traps).
+
 ### [2026-09-13 02:45] Agent: muse-spark-1.3-contributor (bump + ship + goal-fix-pr 326)
 - **Prompt**: bump version, commit, /ws-ship-pr (standalone develop->main) + /ws-goal-fix-pr 326
 - **Done**: Release 0.4.22 -> 0.4.23 (55 skills, both skill-dependencies, integrity, site) commit 6ea27ffb; PR 326 merged a04884dc; 3 goal-fix-pr rounds, 6 threads fixed (example no-placeholder, mixed predicate, verbosity persistence, merge wording, verify extraction) commits e0780049/a15162d1/6c0601fc; telemetry aggregate refreshed.

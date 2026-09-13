@@ -69,3 +69,9 @@ Workflow (ws-spec-to-pr Step 3): dispatched **only** when `defaults.enableDag` i
 - Do not write product code: only structure the plan into tasks.
 - Strict isolation: tasks in the same parallel level never share files (prevents worktree merge conflicts).
 - Consult `config.json` for layer boundaries and project paths.
+
+## Subagent contract
+
+- Read only the plan of record and `dagThresholds`; write only `step-03-*.plan.exec.md` and `step-03-*.exec.dag.json`.
+- Evaluate `dagThresholds`; write sequential stub or parallel DAG with file-collision-free levels (max 3 per level).
+- Return both output paths in `step-output`.

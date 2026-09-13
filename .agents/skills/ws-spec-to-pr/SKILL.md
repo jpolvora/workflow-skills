@@ -47,9 +47,9 @@ Subagents return parseable `step-output`. Gate contexts: transitions, entry/resu
 
 | Does | Never |
 |------|-------|
-| Auto-select recommended gate option (index 0) at every boundary | Skip Steps 1–3 |
+| Auto-select recommended gate option (index 0) at every boundary | Skip Steps 1–3 for `standard`/`complex` |
 | Proceed continuously across step boundaries (no One Step Per Turn halt) | Edit product code before `step-01-*.plan.md` and other advance-to-4 artifacts exist on disk |
-| | Ignore classifier `runInterview` / `execMode` to waive planning |
+| Apply scripted `complexityClass: simple` (stub Step 1, skip 2/3) in autoMode | Ignore classifier `runInterview` / `execMode` to waive planning |
 | | Treat an existing parent feature branch plus a child slug as a planning waiver |
 
 First Step 4 `dispatch-agent` (`ws-implement-tasks`) only after fail-closed `validate_state.cjs --pre-advance 4` exits 0, unless `--skip-gates` / `skipQualityGates` is active (omit the pre-advance and log `gate-bypass | pre-advance` per [`gates.md`](../ws-shared/runtime/gates.md) § Quality gate bypass). Bypass does **not** weaken autoMode ≠ skip planning. Guard failure → **HS-5** STOP — no product-file edits, no Step 4 dispatch.

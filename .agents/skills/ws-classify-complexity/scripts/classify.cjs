@@ -134,7 +134,7 @@ function countAcceptanceCriteria(body) {
   return 0;
 }
 
-function countPathRefs(body) {
+function collectPathRefs(body) {
   const refs = new Set();
   const backtickRe = /`([^`\n]+)`/g;
   let m;
@@ -143,7 +143,11 @@ function countPathRefs(body) {
     if (!looksLikePath(candidate)) continue;
     refs.add(normalizePathRef(candidate));
   }
-  return refs.size;
+  return refs;
+}
+
+function countPathRefs(body) {
+  return collectPathRefs(body).size;
 }
 
 function looksLikePath(s) {
@@ -190,17 +194,59 @@ function countSpecLayers(body) {
 }
 
 function countConfigLayers(config) {
+  return realLayers(config).length;
+}
+
+function realLayers(config) {
   const layers = config && config.stack && config.stack.backend && config.stack.backend.layers;
-  if (!Array.isArray(layers)) return 0;
-  const real = layers.filter((layer) => {
+  if (!Array.isArray(layers)) return [];
+  return layers.filter((layer) => {
     if (!layer || typeof layer !== 'object') return false;
     const name = String(layer.name || '');
     const layerPath = String(layer.path || '');
     if (!name && !layerPath) return false;
     if (name.includes('<') || layerPath.includes('<')) return false;
     return true;
-  });
-  return real.length;
+  }).map((layer) => ({
+    name: String(layer.name || '').toLowerCase(),
+    path: String(layer.path || '').replace(/\\/g, '/').replace(/^\.\//, '').toLowerCase().replace(/\/$/, ''),
+  })).filter((layer) => layer.name || layer.path);
+}
+
+function countSpecTouchedLayers(body, config, specLayers) {
+  const configured = realLayers(config);
+  if (!configured.length) return specLayers;
+  const refs = collectPathRefs(body);
+  if (!refs.size) return 0;
+  const touched = new Set();
+  for (const ref of refs) {
+    for (const layer of configured) {
+      if (!layer.path) continue;
+      if (ref === layer.path || ref.startsWith(`${layer.path}/`)) touched.add(layer.name || layer.path);
+    }
+  }
+  return touched.size;
+}
+
+function isDocsTestOnlyRef(ref) {
+  return /(^|\/)(docs\/|test\/|tests\/|\.agents\/specs\/|\.agents\/plans\/|wiki\/)|readme\.md$|\.md$/i.test(ref);
+}
+
+function hasOpenQuestions(body) {
+  if (!/##\s+Open Questions[\s\S]*?(?:^##\s+|$)/mi.test(body)) return false;
+  return !/##\s+Open Questions\s*\n\s*(?:none|n\/a|-\s*\[x\])/i.test(body);
+}
+
+function hasSchemaApiTenancy(body) {
+  return /\b(schema|migration|api surface|tenancy|tenant|multi-tenant)\b/i.test(body);
+}
+
+function computeComplexityClass({ refs, acCount, openQuestions, schemaApiTenancy }) {
+  const refList = [...refs];
+  const docsOnly = refList.length > 0 && refList.every(isDocsTestOnlyRef);
+  if (docsOnly && acCount <= 6 && !openQuestions && !schemaApiTenancy) return 'simple';
+  if (schemaApiTenancy) return 'complex';
+  return 'standard';
 }
 
 function parseArgs(argv) {
@@ -367,6 +413,8 @@ function buildClassifyMarkdown({
   scoreSection,
   reasoning,
   executionProfile,
+  complexityClass,
+  runInterview,
 }) {
   const now = new Date().toISOString();
   const lines = [
@@ -374,6 +422,8 @@ function buildClassifyMarkdown({
     `slug: ${slug}`,
     `recommendedPipeline: ${recommendedPipeline}`,
     `thresholdPipeline: ${thresholdOnlyPipeline}`,
+    `complexityClass: ${complexityClass}`,
+    `runInterview: ${runInterview}`,
     `classifiedAt: ${now}`,
     `scoreAndRefine: ${scoreAndRefine}`,
     '---',
@@ -383,6 +433,8 @@ function buildClassifyMarkdown({
     '## Recommendation',
     '',
     `**Recommended pipeline:** \`${recommendedPipeline}\``,
+    '',
+    `**Complexity class:** \`${complexityClass}\``,
     '',
     '| Orchestrator | When |',
     '|--------------|------|',
@@ -394,6 +446,7 @@ function buildClassifyMarkdown({
     '| Decision | Value | Reason |',
     '|---|---|---|',
     ...Object.entries(executionProfile).map(([key, item]) => `| ${key} | \`${item.value}\` | ${item.reason} |`),
+    `| complexityClass | \`${complexityClass}\` | Scripted simple/standard/complex for the full-orch Complexity gate |`,
     '',
     '## Metrics',
     '',
@@ -401,7 +454,8 @@ function buildClassifyMarkdown({
     '|--------|-------|-----------|--------|',
     `| Implementation steps (ACs) | ${metrics.implementationSteps} | ${thresholds.maxImplementationSteps} | ${withinCell(within.steps)} |`,
     `| Estimated files (path refs) | ${metrics.estimatedFiles} | ${thresholds.maxExpectedFiles} | ${withinCell(within.files)} |`,
-    `| Layers | ${metrics.layers} | ${thresholds.maxLayers} | ${withinCell(within.layers)} |`,
+    `| Layers (spec-touched) | ${metrics.layers} | ${thresholds.maxLayers} | ${withinCell(within.layers)} |`,
+    `| Spec Layer headings | ${metrics.specLayers ?? metrics.layers} | — | — |`,
     `| Sections | ${metrics.sections} | — | — |`,
     '',
     '## Threshold comparison',
@@ -465,24 +519,18 @@ function main() {
   const { config, thresholds, scoreAndRefine, minVerifyScore, configSource } = loadConfig(context);
 
   const specLayers = countSpecLayers(body);
-  const configLayers = countConfigLayers(config);
-  const layers = Math.max(specLayers, configLayers, specLayers > 0 ? specLayers : 0);
+  const specTouchedLayers = countSpecTouchedLayers(body, config, specLayers);
+  const layers = specTouchedLayers;
 
+  const refs = collectPathRefs(body);
   const metrics = {
     sections: countSections(body),
     implementationSteps: countAcceptanceCriteria(body),
-    estimatedFiles: countPathRefs(body),
-    layers: layers || (configLayers > 0 ? configLayers : specLayers),
+    estimatedFiles: refs.size,
+    layers,
+    specLayers,
+    specTouchedLayers,
   };
-
-  if (metrics.layers === 0 && (body.includes('skills') || body.includes('cli') || body.includes('tests'))) {
-    const layerKeywords = ['skills', 'cli', 'tests', 'bin', 'frontend', 'backend'];
-    let hits = 0;
-    for (const kw of layerKeywords) {
-      if (new RegExp(`\\b${kw}\\b`, 'i').test(body)) hits += 1;
-    }
-    if (hits >= 2) metrics.layers = Math.min(hits, 4);
-  }
 
   const thresholdResult = thresholdRecommendation(metrics, thresholds);
   let recommendedPipeline = thresholdResult.pipeline;
@@ -551,9 +599,17 @@ function main() {
   fs.mkdirSync(outputDir, { recursive: true });
 
   const execMode = config.defaults?.enableDag === true && recommendedPipeline === 'standard' && !thresholdResult.allWithin ? 'dag' : 'sequential';
-  const openQuestions = /##\s+Open Questions[\s\S]*?(?:^##\s+|$)/mi.test(body)
-    && !/##\s+Open Questions\s*\n\s*(?:none|n\/a|-\s*\[x\])/i.test(body);
-  const runInterview = recommendedPipeline === 'standard' && (metrics.layers > 2 || openQuestions);
+  const openQuestions = hasOpenQuestions(body);
+  const schemaApiTenancy = hasSchemaApiTenancy(body);
+  const complexityClass = computeComplexityClass({
+    refs,
+    acCount: metrics.implementationSteps,
+    openQuestions,
+    schemaApiTenancy,
+  });
+  if (complexityClass === 'simple') reasoningParts.push('Complexity class `simple`: docs/test-only refs, AC <= 6, no Open Questions, no schema/API/tenancy.');
+  else reasoningParts.push(`Complexity class \`${complexityClass}\`: uncertain or non-simple scope defaults to standard or higher.`);
+  const runInterview = complexityClass === 'complex' || (recommendedPipeline === 'standard' && (metrics.layers > 2 || openQuestions));
   const runTesting = config.defaults?.skipTesting !== true;
   const aggregateFile = path.resolve(context.repoRoot, config.telemetry?.aggregateFile || path.join(config.plans?.dir || '.agents/plans', 'telemetry', 'aggregate.json'));
   const aggregate = loadJsonIfExists(aggregateFile);
@@ -593,6 +649,8 @@ function main() {
     scoreSection,
     reasoning: reasoningParts.join(' '),
     executionProfile,
+    complexityClass,
+    runInterview,
   });
 
   fs.writeFileSync(outPath, markdown, 'utf8');
@@ -601,6 +659,8 @@ function main() {
     status: 'success',
     recommendedPipeline,
     thresholdPipeline: thresholdResult.pipeline,
+    complexityClass,
+    runInterview,
     scoreAdjusted,
     classifyPath: toRepoRelative(context.repoRoot, outPath, { allowOutside: true }),
     metrics,

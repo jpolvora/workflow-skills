@@ -94,6 +94,13 @@ See [`references/THRESHOLDS.md`](references/THRESHOLDS.md).
 - [`ws-plan-to-tasks`](../ws-plan-to-tasks/SKILL.md) — DAG sequential detection uses the same `dagThresholds` for plan size.
 - [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md) / [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) — orchestrators wire Step 0 classify and `--classify` flag.
 
+## Subagent contract
+
+- Run `classify.cjs` via explicit launcher; do not hand-write classify.md.
+- Count spec-touched layers via path-refs mapped to `stack.backend.layers[].path`, never raw configured layer count.
+- Emit `complexityClass` (`simple`: docs/test-only refs, AC <= 6, no Open Questions, no schema/API/tenancy; uncertain → `standard`) and `runInterview` into classify.md and state.
+- Return pipeline recommendation plus complexity class in `step-output`.
+
 ## step-output
 
 Return YAML:

@@ -76,10 +76,13 @@ function main() {
     }
   }
   matches.sort((a, b) => b.score - a.score || a.workflowId.localeCompare(b.workflowId));
+  const maxMatches = options.maxMatches ? Number(options.maxMatches) : 3;
+  const capped = Number.isFinite(maxMatches) && maxMatches > 0 ? matches.slice(0, maxMatches) : matches;
   const result = {
     indexPath: fs.existsSync(indexFile) ? toRepoRelative(context.repoRoot, indexFile) : null,
     keywords: needles,
-    matches,
+    matches: capped,
+    totalMatches: matches.length,
   };
   if (options.output) {
     const output = path.resolve(context.repoRoot, options.output);

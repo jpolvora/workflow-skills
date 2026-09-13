@@ -34,7 +34,7 @@ Host binding: [`tools.md`](tools.md) § Host-tool binding & dispatch tiers (`ask
 3. If `askQuestionTool` binds `none` → present the **same options** as a short markdown list; wait for user reply. Log: `user-gate-fallback | {gate} | ISO`.
 4. Markdown fallback turn-yielding (mandatory): when a `user-gate` is presented as text/markdown, output ONLY the question and options and MUST NOT emit any tool calls in the same response turn — immediately yield the turn to wait for user input. Emitting a gate plus Step N+1 tool calls in one turn violates this gate.
 5. Cancelled / dismissed → **HS-1** (STOP; re-present; never infer yes).
-6. `autoMode` → zero `user-gate` prompts of any kind (neither modal tool nor markdown) at **every** boundary — entry, transition, G2-code, close, ship, fix-PR; use orch auto-gate table (index 0) to automatically select the recommended option and proceed to the next step without pausing. **`autoMode` does not skip planning:** the full FSM 0→9 still runs; only gates are automatic. An existing parent feature branch (e.g. `feat/{parent}`) plus a child bug/task slug does not waive Steps 1–3 for the **child slug** — only an explicit user override may shorten planning.
+6. `autoMode` → zero `user-gate` prompts of any kind (neither modal tool nor markdown) at **every** boundary — entry, transition, G2-code, close, ship, fix-PR; use orch auto-gate table (index 0) to automatically select the recommended option and proceed to the next step without pausing. **`autoMode` never waives planning for `standard`/`complex`:** the full FSM 0→9 still runs; only gates are automatic. `complexityClass: simple` (scripted stub Step 1, skip 2/3) **does** apply in `autoMode`. An existing parent feature branch (e.g. `feat/{parent}`) plus a child bug/task slug does not waive Steps 1–3 for the **child slug** — only an explicit user override may shorten planning.
 7. Gate continuation (all gates, every step boundary 0→1 through 8→9 / lite 0→1 through 4→5): a native modal `user-gate` return is already explicit confirmation — selecting the recommended advance option (Next / Accept / Commit then advance / Reach-10 advance / close / ship intent) MUST continue in the same turn (record the decision, run the gated action, present the next gate or dispatch next). A markdown fallback gate MUST yield the turn per rule 4; the user's next reply is consumed as that gate's decision before any other tool call. This applies equally to transition gates and intermediate gates (classifier, safety valve, Reach-10, scoreAndRefine, G2-code, close, ship).
 
 ## Interactive execution cadence (One Step Per Turn)
@@ -114,7 +114,7 @@ Before Step 1, evaluate complexity (same spirit as Dynamic Execution):
 
 | Class | Criteria | Path |
 |-------|----------|------|
-| **simple** | Docs-only, single-file text, no cascading side effects | Skip Steps 1–2–3; write stub `step-01-{slug}.plan.md` (goal + files + AC checklist); `execMode: sequential`; jump to Step 4 |
+| **simple** | Docs-only, single-file text, no cascading side effects (`complexityClass: simple` from `classify.cjs`: docs/test-only refs, AC ≤ 6, no Open Questions, no schema/API/tenancy) | Stub Step 1 via `write_simple_plan_stub.cjs` + `plan_index.cjs build`, skip 2/3 (`interview-not-required`, `dag-disabled`) via `finish-batch`, `execMode: sequential`; jump to Step 4 |
 | **standard** | Normal feature | Steps 1 → conditional 2 → 3 → … |
 | **complex** | Multi-domain, schema, tenancy, API surface | Enforce 1 + 2 + 3 |
 
@@ -192,7 +192,7 @@ Optional More-options **Commit** at Step 4 / other boundaries does not replace t
 
 ## Close implementation gate (standard Step 8 / lite Step 4 — phase A)
 
-**Before any push or PR.** Ends spec/plan implementation; sets `status: completed`, `endedAt`, `shipStatus: pending`.
+**Before any push or PR.** Ends spec/plan implementation; sets `status: completed`, `endedAt`, `shipStatus: pending`. Step 8 presents **one combined menu; state still records close then `shipStatus` (two phases, one prompt)**.
 
 1. **Commit configured delivery artifacts** (Recommended when `fullMode`)
 2. **Skip delivery commit** (still closes implementation: MEMORY + changelog + `status: completed`)

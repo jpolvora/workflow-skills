@@ -432,6 +432,7 @@ def main():
     parser = argparse.ArgumentParser(description="Cross-reference a plan file against MEMORY.md entries")
     parser.add_argument("plan_file", help="Path to plan file (*.plan.md or *.exec.md)")
     parser.add_argument("--json", action="store_true", help="Output JSON instead of human-readable report")
+    parser.add_argument("--soft-exit", action="store_true", help="Exit 0 with JSON { force_interview: true } when traps overlap (for orch scripting)")
     parser.add_argument("--memory", default=None, help="Explicit path to MEMORY.md")
     parser.add_argument("--shared-dir", default=None, help="Explicit path to ws-shared directory")
     parser.add_argument("--repo-root", default=None, help="Explicit path to repository root")
@@ -480,6 +481,9 @@ def main():
         print(report)
 
     if len(results["traps"]) > 0:
+        if args.soft_exit:
+            print(json.dumps({"force_interview": True}, ensure_ascii=False))
+            sys.exit(0)
         sys.exit(2)
 
 

@@ -24,6 +24,24 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Migrate writer/validator templates without sweeping reader flows (verifier, apply) for hardcoded old heading names.
 - **INSTEAD DO**: Extract from `## How it works` + `## Backend` (+ conditionals when present; `## Feature` only for testable invariants), keep legacy headings as fallback with a migrate-on-touch flag, and assert the new headings in tests.
 
+### [2026-09-13] Reuse the vendor transform when re-applying generated-file rewrites
+- **Layer**: `harness`
+- **Module**: `ws-shared / renderConsumerAutoload`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-shared/autoload.md; bin/cli.js`
+- **Scenario / Context**: Regenerating the consumer mirror `.agents/skills/ws-shared/autoload.md` with a retyped inline regex under PowerShell silently dropped 18 skill-link captures (`](../../ws-x/SKILL.md)` became `(../)`), because shell quoting mangled the replacement token. Caught by diff review before commit; recovered via `git checkout` plus surgical edits, then proved installer-refresh stable with a temp script holding the verbatim vendor function.
+- **DO NOT**: Retype a vendor rewrite (regex plus replacement string) into an inline shell one-liner; do not trust a regen diff without counting changed rows against the plan.
+- **INSTEAD DO**: Reuse the vendor code path verbatim (`renderConsumerAutoloadText` in `bin/cli.js`) via a temp `.cjs` file, or make the minimal surgical edits directly; verify with `git diff` row counts plus an installer-refresh stability check (`render(current) === current`).
+
+### [2026-09-13] Plan-scale delivery must list partial items as caveats, not full completion
+- **Layer**: `harness`
+- **Module**: `ws-spec-to-pr / speed-determinism plan`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/*; .agents/skills/ws-classify-complexity/scripts/classify.cjs; test/test-workflow-process-waste.js`
+- **Scenario / Context**: Implementing a multi-phase reconciled plan (P0/P1/P2) where mechanical traps (scoreState persist on link, spec-touched layers, git-intersect files_touched, finish-batch, stub/commit/manifest helpers, dispatch hook) land and targeted plus full suites pass, but minor hygiene bullets remain (memory-conflict mtime gate, fuller prose dedup, version bump deferred to release PR).
+- **DO NOT**: Claim 100% completion of every plan sub-bullet when verification proves the core traps but minor hygiene items remain open.
+- **INSTEAD DO**: Ship the mechanical core with passing tests and integrity green, then report VERIFIED WITH CAVEATS naming each deferred bullet, its file, and the proof command for the landed core (`link` persists `pre-step6` scoreState; classify emits `complexityClass`; `test-workflow-process-waste` guards simple-path waste).
+
 ### [2026-09-13] Per-flow run-state verbosity must honor the config default uniformly
 - **Layer**: `harness`
 - **Module**: `ws-wiki / from-code merge mode`
@@ -32,6 +50,24 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: FROM-CODE merge mode was updated to fill conditional headings but its preservation clause still named legacy `Business Rules` / `Architecture` statements, inviting duplication or dropped invariants on new pages. A test assert locked the stale wording. Reviewer scored 6/10 on PR 326.
 - **DO NOT**: Half-migrate a clause (new action verbs, old heading names); do not let test asserts lock pre-migration prose.
 - **INSTEAD DO**: Name current headings (`## How it works` / `## Backend`) with a legacy-when-present migrate-on-touch qualifier, and update the locking assert to the new wording in the same change.
+
+### [2026-09-13] New workflow state must be stamped via update_state dispatch/finish
+- **Layer**: `harness`
+- **Module**: `ws-spec-to-pr / workflow_state`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/plans/*/step-00-*.spec.md; .agents/plans/*/*.state.md`
+- **Scenario / Context**: A hand-written `.state.md` for a new workflow failed `--pre-advance 1` with `artifact metadata identity mismatch`: provider register stamps `step-00` with `workflowId: <slug>`, while the gate requires the full workflow id plus `endedAt`/`acRefs`, and no `.state.json` existed. Resolved by running `update_state.cjs dispatch` then `finish --step 0`, which created the JSON, stamped the artifact, and rebuilt the index entry.
+- **DO NOT**: Hand-create a workflow `.state.md` and expect pre-advance gates to pass; do not patch `workflowId` into `step-00` by hand.
+- **INSTEAD DO**: Write the minimal bootstrap frontmatter, then run `update_state.cjs dispatch <state> --step 0` followed by `finish <state> --step 0 --status completed` before any `--pre-advance` check.
+
+### [2026-09-13] Assert every sibling row a multi-row docs change touches
+- **Layer**: `harness`
+- **Module**: `test-doc-sync / mirror-link guard`
+- **Severity**: `Medium`
+- **PathPattern**: `test/test-doc-sync.js; .agents/skills/ws-shared/autoload.md`
+- **Scenario / Context**: A mirror sync changed 4 sibling link rows but the new regression guard asserted only 3; CI review posted a thread (score 6/10) showing a revert of the fourth row would stay green. Fixed in the fix-pr round by extending both loops.
+- **DO NOT**: Ship a regression guard that covers a subset of the sibling rows changed in the same diff.
+- **INSTEAD DO**: Count the changed sibling rows in the diff and assert each one (absence of the bare form plus existence of the target); red-prove at least one row by revert-then-run.
 
 ### [2026-09-12] Wiki infobox counts must stay data-driven
 - **Layer**: `Web`

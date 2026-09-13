@@ -571,21 +571,95 @@ function normalizeFileList(repoRoot, value) {
   )];
 }
 
+function gitTrackedSet(repoRoot) {
+  try {
+    const ls = spawnSync('git', ['ls-files', '-z'], { cwd: repoRoot, encoding: 'buffer', maxBuffer: 10 * 1024 * 1024 });
+    const diff = spawnSync('git', ['diff', '--name-only', '-z', 'HEAD'], { cwd: repoRoot, encoding: 'buffer', maxBuffer: 10 * 1024 * 1024 });
+    const status = spawnSync('git', ['status', '--porcelain=v1', '-z'], { cwd: repoRoot, encoding: 'buffer', maxBuffer: 10 * 1024 * 1024 });
+    if (ls.status !== 0 && diff.status !== 0 && status.status !== 0) return null;
+    const set = new Set();
+    const addBuffer = (buf) => {
+      if (!buf || !buf.length) return;
+      for (const entry of String(buf).split('\0')) {
+        const clean = entry.trim().replace(/\\/g, '/');
+        if (clean) set.add(clean.toLowerCase());
+      }
+    };
+    addBuffer(ls.stdout);
+    addBuffer(diff.stdout);
+    if (status.stdout) {
+      const raw = String(status.stdout).split('\0');
+      for (const entry of raw) {
+        if (entry.length < 4) continue;
+        const file = entry.slice(3).trim().replace(/\\/g, '/');
+        if (file) set.add(file.toLowerCase());
+      }
+    }
+    return set;
+  } catch {
+    return null;
+  }
+}
+
+function intersectWithGit(repoRoot, files) {
+  if (!files.length) return { kept: [], phantoms: [] };
+  const tracked = gitTrackedSet(repoRoot);
+  if (!tracked) return { kept: files, phantoms: [] };
+  const kept = [];
+  const phantoms = [];
+  for (const file of files) {
+    const absolute = path.isAbsolute(file) ? file : path.resolve(repoRoot, file);
+    const lower = String(file).replace(/\\/g, '/').toLowerCase();
+    if (tracked.has(lower)) {
+      kept.push(file);
+      continue;
+    }
+    try {
+      if (fs.existsSync(absolute) && fs.statSync(absolute).isFile()) {
+        const status = spawnSync('git', ['check-ignore', '-q', file], { cwd: repoRoot });
+        if (status.status !== 0) {
+          kept.push(file);
+          continue;
+        }
+      }
+    } catch {
+      // fall through to phantom
+    }
+    phantoms.push(file);
+  }
+  return { kept, phantoms };
+}
+
 function normalizeFilesTouched(output, options, repoRoot, fallbackArtifacts = []) {
   const reported = output?.files_touched ?? output?.filesTouched;
   const source = Array.isArray(reported) ? { created: reported } : (reported || {});
-  const created = normalizeFileList(
+  let created = normalizeFileList(
     repoRoot,
     options.created !== undefined ? options.created : source.created,
   );
-  const modified = normalizeFileList(
+  let modified = normalizeFileList(
     repoRoot,
     options.modified !== undefined ? options.modified : source.modified,
   );
-  const deleted = normalizeFileList(
+  let deleted = normalizeFileList(
     repoRoot,
     options.deleted !== undefined ? options.deleted : source.deleted,
   );
+  const all = [...created, ...modified, ...deleted];
+  if (all.length) {
+    const { kept, phantoms } = intersectWithGit(repoRoot, all);
+    if (phantoms.length) {
+      const keepSet = new Set(kept.map((item) => item.toLowerCase()));
+      created = created.filter((item) => keepSet.has(item.toLowerCase()));
+      modified = modified.filter((item) => keepSet.has(item.toLowerCase()));
+      deleted = deleted.filter((item) => keepSet.has(item.toLowerCase()));
+      try {
+        process.stderr.write(`NOTICE: dropped ${phantoms.length} phantom files_touched path(s) not in git: ${phantoms.join(', ')}\n`);
+      } catch {
+        // ignore logging failure
+      }
+    }
+  }
   if (!created.length && !modified.length && !deleted.length && Array.isArray(fallbackArtifacts) && fallbackArtifacts.length) {
     const existing = fallbackArtifacts.filter((file) => fs.existsSync(file));
     if (existing.length) {
@@ -1736,15 +1810,34 @@ function runUpdateCli(config) {
   try {
     const { positional, options } = parseArgs(process.argv.slice(2));
     if (options.help) {
-      process.stdout.write('Usage: update_state.cjs dispatch|finish|bypass <state> --step N [options]\n');
+      process.stdout.write('Usage: update_state.cjs dispatch|finish|finish-batch|bypass <state> --step N [options]\n');
+      process.stdout.write('  finish-batch <state> --steps "2:skipped:interview-not-required,3:skipped:dag-disabled"\n');
       return;
     }
     const [operation, stateFile] = positional;
-    if (!['dispatch', 'finish', 'bypass'].includes(operation)) {
-      throw new Error('operation must be dispatch, finish, or bypass');
+    if (!['dispatch', 'finish', 'finish-batch', 'bypass'].includes(operation)) {
+      throw new Error('operation must be dispatch, finish, finish-batch, or bypass');
     }
     if (!stateFile) throw new Error('state path or workflow id is required');
     options.scriptFile = config.scriptFile;
+    if (operation === 'finish-batch') {
+      const spec = String(options.steps || '');
+      if (!spec.trim()) throw new Error('finish-batch requires --steps "N:status:reason,..."');
+      const results = [];
+      for (const part of spec.split(',').map((item) => item.trim()).filter(Boolean)) {
+        const [stepStr, status, ...reasonParts] = part.split(':');
+        const step = Number(stepStr);
+        if (!Number.isInteger(step)) throw new Error(`finish-batch invalid step in "${part}"`);
+        const reason = reasonParts.join(':');
+        const perStep = { ...options, step: String(step) };
+        if (status) perStep.status = status;
+        if (reason) perStep.reason = reason;
+        delete perStep.steps;
+        results.push(performUpdate(config, 'finish', stateFile, perStep));
+      }
+      process.stdout.write(`${JSON.stringify({ ok: true, type: 'finish-batch', results }, null, 2)}\n`);
+      return;
+    }
     const result = performUpdate(config, operation, stateFile, options);
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   } catch (error) {
