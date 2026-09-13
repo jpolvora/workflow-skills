@@ -722,6 +722,7 @@ Missing Business Rules & Logic section!
     assert(fs.existsSync(examplePath), 'us-324: VERBOSITY-EXAMPLE.md exists');
     const example = fs.readFileSync(examplePath, 'utf8');
     assert(example.includes('Condensed') && example.includes('Detailed'), 'us-324: example shows both styles');
+    assert(!example.includes('## Third-party services'), 'us-324: detailed example omits inapplicable conditionals with no placeholder heading');
 
     const schema = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/config.schema.json'), 'utf8'));
     assert(schema.properties?.plans?.properties?.wiki?.properties?.verbosity?.default === 'condensed', 'us-324: schema plans.wiki.verbosity defaults condensed');
@@ -753,6 +754,14 @@ Missing Business Rules & Logic section!
       const dataBad = JSON.parse(resBad.stdout);
       assert(dataBad.errors.some((e) => e.includes('How it works')), 'us-324: error names missing How it works');
       fs.unlinkSync(path.join(fixWiki, 'billing', 'bad-new.md'));
+
+      // New-complete plus one stray legacy heading warns as mixed (warn-only migration)
+      fs.writeFileSync(path.join(fixWiki, 'billing', 'hybrid.md'), '# Hybrid\n\n## Feature\nF.\n\n## How it works\nH.\n\n## Backend\nB.\n\n## Business Rules & Logic\nLeftover.\n', 'utf8');
+      const resHybrid = run(VALIDATE, ['--wiki-dir', fixWiki, '--json']);
+      assert(resHybrid.status === 0, 'us-324: validator passes new-complete plus stray legacy heading with warning only');
+      const dataHybrid = JSON.parse(resHybrid.stdout);
+      assert(dataHybrid.warnings.some((w) => w.includes('Mixed template') && w.includes('hybrid.md')), 'us-324: hybrid page warns mixed template');
+      fs.unlinkSync(path.join(fixWiki, 'billing', 'hybrid.md'));
 
       // normalizeVerbosity fail-closed (CJS require via subprocess for Windows-safe paths)
       const normRes = cp.spawnSync(process.execPath, ['-e', `const v=require(${JSON.stringify(VALIDATE)});console.log(JSON.stringify([v.normalizeVerbosity('detailed'),v.normalizeVerbosity('verbose'),v.normalizeVerbosity(undefined)]))`], { cwd: REPO_ROOT, encoding: 'utf8' });

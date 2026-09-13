@@ -45,9 +45,7 @@ The `User` aggregate persists via `UserEntity` with a unique index on `(tenantId
 
 The Angular `users` page mirrors the backend states with a searchable table, a profile drawer, and role chips guarded by the `manage-users` permission. Form errors surface per-field messages without clearing typed input.
 
-## Third-party services
-
-Omitted here: no external provider participates in this flow. A fiscal integration page would keep this section (for example, the invoice issuer and its retry policy).
+<!-- Third-party services omitted: no external provider participates in this flow. Do not emit a placeholder heading. -->
 ```
 
 ## Notes

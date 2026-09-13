@@ -129,7 +129,7 @@ function classifyTemplate(content) {
     || NEW_CONDITIONAL_SECTIONS.some((s) => hasSection(content, s));
   const hasAnyOld = REQUIRED_SECTIONS.some((s) => hasSection(content, s));
   if (missingNew.length === 0) {
-    return { style: hasAnyOld && missingOld.length === 0 ? 'mixed' : 'new', missingNew, missingOld, hasAnyNew, hasAnyOld };
+    return { style: hasAnyOld ? 'mixed' : 'new', missingNew, missingOld, hasAnyNew, hasAnyOld };
   }
   if (missingOld.length === 0) {
     return { style: 'legacy', missingNew, missingOld, hasAnyNew, hasAnyOld };
