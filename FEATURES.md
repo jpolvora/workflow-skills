@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.4.8** · 54 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.4.25** · 55 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 ### ws-shared hybrid configuration boundary
 
@@ -112,7 +112,7 @@ The suite's central claim is that nothing ships on an agent's word alone. Every 
 - **`deliveryCommitArtifacts`** selects exactly which plan artifacts enter the delivery commit (refined plan on by default; result, spec, check report, review, and testing report opt-in).
 - **Checkpoint tags** (`uswf/{workflow-id}/before-step-{N}`) are written at each transition, so a run can be inspected or rolled back per step.
 - **Telemetry** is emitted as a single append-only stream under `{plansDir}/{slug}/telemetry.jsonl`.
-- **State is transactional and indexed.** Atomic Node state updates publish `{workflow-id}.state.json` (machine SoT with embedded handoffs), `{workflow-id}.state.md`, and the repo-level plans index with repo-relative POSIX paths and closed skip reasons.
+- **State is transactional, dual-written, and indexed.** Atomic Node state updates and G2 delivery commits use `syncStateDualWrite` to keep `{workflow-id}.state.json` (machine SoT with embedded handoffs, AC ledger, and commits) and `{workflow-id}.state.md` strictly synchronized while preserving human markdown bodies. Subprocess caching in `gitTrackedSet` (5000ms TTL) eliminates redundant git process spawns across step finishes and batch executions.
 - **Acceptance criteria are traceable.** Orchestrator Step 0 runs `ac_ledger.cjs init`; Step 1 (and Step 2 after interview) runs `plan_index.cjs build`. Downstream steps read AC slices from `plan.index.json`. The ledger links each AC to semantic evidence, files, tests, commits, findings, and sabotage outcomes.
 - **Review history is immutable.** Every review round is preserved as `.review.rN.md`; the canonical review file points at the latest validated round.
 
@@ -280,12 +280,14 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.3.63)
+## 12. Recent evolution (0.3.22 → 0.4.25)
 
-Derived from recent commits on `develop` (2026-08-16 → 2026-09-06).
+Derived from recent commits on `develop` (2026-08-16 → 2026-09-13).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.4.25** | Sep 13 | **State dual-write, git caching & Step 8 gate alignment:** `syncStateDualWrite` guarantees atomic `.state.json` and `.state.md` frontmatter/body synchronization during G2 delivery commits; `gitTrackedSet` subprocess caching with 5000ms TTL eliminates redundant git spawns during step finishes; aligned Step 8 5-option interactive user-gate; single JSON output for `check_memory_conflict.py --soft-exit`; untracked test file probing in `probe_test_surface.cjs` |
+| **0.4.20** | Sep 12 | **Wiki verbosity & richer conditional template (`us-324`):** `ws-wiki` supports `condensed` and `detailed` styles via `plans.wiki.verbosity` config, conditional section headings, and automated wiki index/feature validation |
 | **0.4.5** | Sep 9 | **Specialized subagents compiler & host projections:** `compile_host_subagents.cjs` projects canonical skills into `.cursor/agents/ws-step-*.md` with zero-turn bootstrap, `@generated` collision-proof signatures, drift check (`--check`), auto-configure wizard section, and fail-safe 3-tier dispatch ladder |
 | **0.4.3** | Sep 7 | **External spec-memo companions:** `externalSkills` for `ws-memo` / `ws-session-tracking`; Always-applied no longer mandates them; consumer CATALOG membership links shipped `skill-dependencies.json`; `ws-check-harness` treats missing companions as intentional omission |
 | **0.3.63** | Sep 6 | **OpenCode agentic PR reviews + new skills:** CI switches active reviewer to OpenCode (`opencode-code-review.yml`); ships `ws-benchmarks` (interactive benchmark suite) and `ws-spec-manager` (unified spec router); catalog counts and dependency graph aligned (45 workflows / 8 extra) |
@@ -327,7 +329,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-09-06).
 
 ## 13. Roadmap (not in the current package)
 
-These items remain todo or partial on [`index.PRD`](.agents/specs/index.PRD). They are **not** shipped in **0.3.48**.
+These items remain todo or partial on [`index.PRD`](.agents/specs/index.PRD). They are **not** shipped in **0.4.25**.
 
 | Item | Status | Notes |
 |------|--------|-------|

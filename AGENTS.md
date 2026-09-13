@@ -141,7 +141,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 - State: `workflowType` `standard` | `lite` (no cross-resume)
 - Handoffs: step context is stored in `{workflow-id}.state.json` under `state.handoffs`; generated consumer-root `autoload.md` rewrites hub and skill links for its root-relative location.
 - Shared pipeline skills stay orch-agnostic
-- **Product commits:** standard after Step 5 when score ≥ `defaults.minVerifyScore` (default 9) (before Step 6 review) then after Step 6 review-fix if files changed; lite after Step 2 (before Step 3 review) then after review-fix if files changed. Stage only workflow `files_touched` (never `{plansDir}` until Step 8 close / lite Step 4 close). **`status: completed`** at close (implementation done), before push/PR; `shipStatus` tracks shipping. Review uses `git diff {base}...HEAD`. No push before ship phase.
+- **Product commits:** standard after Step 5 when score ≥ `defaults.minVerifyScore` (default 9) (before Step 6 review) then after Step 6 review-fix if files changed; lite after Step 2 (before Step 3 review) then after review-fix if files changed. Stage only workflow `files_touched` (never `{plansDir}` until Step 8 close / lite Step 4 close). **`status: completed`** at close (implementation done), before push/PR; `shipStatus` tracks shipping. Review uses `git diff {base}...HEAD`. No push before ship phase. Dual-write sync: G2 delivery commits and state updates synchronize `.state.json` and `.state.md` atomically (`syncStateDualWrite`) with `gitTrackedSet` caching.
 - **Dispatch:** [`ws-spec-to-pr/STEP-DISPATCH.md`](.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–9). Lite keeps its own Steps 0–5 table; do not use STEP-DISPATCH as lite step numbers.
 
 ### Pipeline skills (owned here)
@@ -175,7 +175,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 
 ## Upstream session contract (this repo only)
 
-**Not packaged.** Inline here so this repo does not `Read` live `ws-*` SKILL.md for session autoload (those files are the SoT being authored). Compact snapshot of packaged behavior **0.3.57** (`ws-tdah`, `ws-karpathy-guidelines`, `ws-senior-developer`, `ws-fable-method`, `ws-self-learning`, `ws-changelog`, `ws-spec-write`, `ws-spec-format`). When those contracts change and dogfood should follow, update **this section** in the same PR.
+**Not packaged.** Inline here so this repo does not `Read` live `ws-*` SKILL.md for session autoload (those files are the SoT being authored). Compact snapshot of packaged behavior **0.4.25** (`ws-tdah`, `ws-karpathy-guidelines`, `ws-senior-developer`, `ws-fable-method`, `ws-self-learning`, `ws-changelog`, `ws-spec-write`, `ws-spec-format`). When those contracts change and dogfood should follow, update **this section** in the same PR.
 
 Do **not** recreate `.agents/dev-harness/` or any extra `SKILL.md` for this contract. A folder under `.agents/skills/` would be hashed and shipped. Summarize here; invoke live scripts by path; load a live body only when **authoring or testing that skill**. Orchestrators, providers, `ws-check-harness`: task router, one skill at a time.
 
