@@ -12,6 +12,7 @@ const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 const { resolveConsumerContext, resolveConfiguredPath, toRepoRelative } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
+const { syncStateDualWrite } = require('../../ws-shared/runtime/scripts/workflow_state.cjs');
 
 function parseArgs(argv) {
   const options = {};
@@ -79,7 +80,7 @@ function main() {
   const sha = runGit(repoRoot, ['rev-parse', 'HEAD']).stdout.trim();
   state.commits = Array.isArray(state.commits) ? state.commits : [];
   if (!state.commits.some((item) => item.sha === sha)) state.commits.push({ sha, step: Number(options.step) });
-  fs.writeFileSync(stateJsonPath, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
+  syncStateDualWrite(statePath, state);
   const ledgerRel = options.ledger || path.join(path.dirname(statePath), 'ac-ledger.json');
   const ledgerPath = path.resolve(repoRoot, ledgerRel);
   if (fs.existsSync(ledgerPath)) {

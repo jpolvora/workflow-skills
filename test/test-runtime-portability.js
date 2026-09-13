@@ -5,6 +5,7 @@ import utils from './harness-test-utils.cjs';
 
 const require = createRequire(import.meta.url);
 const resolver = require('../.agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs');
+const { syncStateDualWrite, gitTrackedSet, clearGitTrackedCache, parseFrontmatter } = require('../.agents/skills/ws-shared/runtime/scripts/workflow_state.cjs');
 const { assert, path, repoRoot, temp, run, write } = utils;
 const registerNode = path.join(repoRoot, '.agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs');
 const probe = path.join(repoRoot, '.agents/skills/ws-testing/scripts/probe_test_surface.cjs');
@@ -51,8 +52,101 @@ assert.strictEqual(JSON.parse(surface.stdout).hasTestSurface, true);
   const g2Source = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/commit_g2_code.cjs'), 'utf8');
   assert.match(g2Source, /__dirname/);
   assert.match(g2Source, /ac_ledger\.cjs/);
+  assert.match(g2Source, /syncStateDualWrite/);
   assert.doesNotMatch(g2Source, /'\.agents',\s*'skills',\s*'ws-spec-to-pr'/);
+  assert.doesNotMatch(g2Source, /fs\.writeFileSync\(\s*stateJsonPath/);
 }
+
+{
+  const g2Root = temp('ws-commit-g2-dual-');
+  write(path.join(g2Root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    plans: { dir: '.agents/plans' },
+  }));
+  spawnSync('git', ['init'], { cwd: g2Root });
+  spawnSync('git', ['config', 'user.name', 'Test User'], { cwd: g2Root });
+  spawnSync('git', ['config', 'user.email', 'test@example.com'], { cwd: g2Root });
+
+  const slug = 'demo-dual';
+  const planDir = path.join(g2Root, '.agents/plans', slug);
+  fs.mkdirSync(planDir, { recursive: true });
+
+  const initialState = {
+    stateVersion: 7,
+    revision: 0,
+    workflowId: 'wf-demo',
+    slug,
+    workflowType: 'standard',
+    status: 'active',
+    currentStep: 5,
+    completedSteps: [0, 1, 2, 3, 4],
+    skippedSteps: [],
+    workflowManifest: { created: ['src/feature.js'], modified: [], deleted: [] },
+    commits: [],
+  };
+
+  const mdBody = '# Demo Plan\n\nPreserve this markdown body.';
+  const stateRel = `.agents/plans/${slug}/${slug}.state.md`;
+  const jsonRel = `.agents/plans/${slug}/${slug}.state.json`;
+  write(path.join(g2Root, jsonRel), JSON.stringify(initialState, null, 2) + '\n');
+  write(path.join(g2Root, stateRel), `---\n${JSON.stringify(initialState, null, 2)}\n---\n${mdBody}\n`);
+
+  write(path.join(g2Root, 'src/feature.js'), 'console.log("hello world");\n');
+
+  const g2Script = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/commit_g2_code.cjs');
+  const res = run(g2Script, [
+    '--state', stateRel,
+    '--step', '5',
+    '--message', 'feat: implement feature (G2)',
+    '--repo-root', g2Root,
+  ]);
+  assert.strictEqual(res.status, 0, res.stderr);
+
+  const updatedJson = JSON.parse(fs.readFileSync(path.join(g2Root, jsonRel), 'utf8'));
+  assert.strictEqual(updatedJson.commits.length, 1, 'commits recorded in .state.json');
+  assert.strictEqual(updatedJson.commits[0].step, 5);
+  const committedSha = updatedJson.commits[0].sha;
+  assert.ok(committedSha, 'SHA is recorded');
+
+  const updatedMdRaw = fs.readFileSync(path.join(g2Root, stateRel), 'utf8');
+  const parsedMd = parseFrontmatter(updatedMdRaw);
+  assert.strictEqual(parsedMd.data.commits.length, 1, 'commits recorded in .state.md');
+  assert.strictEqual(parsedMd.data.commits[0].sha, committedSha, 'SHA in .state.md matches .state.json');
+  assert.strictEqual(parsedMd.data.commits[0].step, 5);
+  assert.match(parsedMd.body, /Preserve this markdown body\./, 'markdown body preserved after dual write');
+}
+
+{
+  const cacheRoot = temp('ws-tracked-cache-');
+  spawnSync('git', ['init'], { cwd: cacheRoot });
+  spawnSync('git', ['config', 'user.name', 'Test User'], { cwd: cacheRoot });
+  spawnSync('git', ['config', 'user.email', 'test@example.com'], { cwd: cacheRoot });
+  write(path.join(cacheRoot, 'file1.txt'), 'file1');
+  spawnSync('git', ['add', 'file1.txt'], { cwd: cacheRoot });
+  spawnSync('git', ['commit', '-m', 'initial commit'], { cwd: cacheRoot });
+
+  clearGitTrackedCache();
+  const set1 = gitTrackedSet(cacheRoot);
+  assert.ok(set1 instanceof Set, 'gitTrackedSet returns a Set');
+  assert.ok(set1.has('file1.txt'), 'set contains tracked file');
+
+  const set2 = gitTrackedSet(cacheRoot);
+  assert.strictEqual(set1, set2, 'subsequent call within TTL returns cached Set reference');
+
+  const setRefreshed = gitTrackedSet(cacheRoot, { forceRefresh: true });
+  assert.notStrictEqual(set1, setRefreshed, 'forceRefresh: true creates a new Set');
+  assert.deepStrictEqual([...set1].sort(), [...setRefreshed].sort(), 'forceRefresh contains same files');
+
+  clearGitTrackedCache();
+  const setAfterClear = gitTrackedSet(cacheRoot);
+  assert.notStrictEqual(setRefreshed, setAfterClear, 'clearGitTrackedCache causes re-population');
+
+  const setShortTtl1 = gitTrackedSet(cacheRoot, { ttlMs: 10 });
+  const start = Date.now();
+  while (Date.now() - start < 25) { /* busy wait for TTL */ }
+  const setShortTtl2 = gitTrackedSet(cacheRoot, { ttlMs: 10 });
+  assert.notStrictEqual(setShortTtl1, setShortTtl2, 'TTL expiration causes re-population');
+}
+
 
 {
   const gitRoot = temp('ws-probe-untracked-');

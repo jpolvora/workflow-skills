@@ -549,6 +549,25 @@ function atomicWrite(file, content) {
   fs.renameSync(temporary, file);
 }
 
+function syncStateDualWrite(stateFile, state, { body = null, jsonText = null } = {}) {
+  const mdPath = markdownStatePath(stateFile);
+  const jsonPath = jsonStatePath(stateFile);
+  const canonicalJson = jsonText !== null ? jsonText : canonicalStateJson(state);
+  atomicWrite(jsonPath, canonicalJson);
+  if (fs.existsSync(mdPath) || mdPath === stateFile) {
+    let markdownBody = body;
+    if (markdownBody === null && fs.existsSync(mdPath)) {
+      const text = fs.readFileSync(mdPath, 'utf8');
+      const parsed = parseFrontmatter(text);
+      markdownBody = parsed.body || '';
+    }
+    const safeBody = (markdownBody || '').replace(/^\n*/, '');
+    const stateContent = `---\n${serializeFrontmatter(state)}\n---\n${safeBody}`;
+    atomicWrite(mdPath, stateContent);
+  }
+  return { jsonPath, mdPath, stateSha256: sha256(canonicalJson), jsonText: canonicalJson };
+}
+
 function appendJsonl(file, record) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.appendFileSync(file, `${JSON.stringify(record)}\n`, 'utf8');
@@ -571,12 +590,28 @@ function normalizeFileList(repoRoot, value) {
   )];
 }
 
-function gitTrackedSet(repoRoot) {
+const GIT_TRACKED_CACHE_TTL_MS = 5000;
+const gitTrackedCache = new Map();
+
+function clearGitTrackedCache() {
+  gitTrackedCache.clear();
+}
+
+function gitTrackedSet(repoRoot, { forceRefresh = false, ttlMs = GIT_TRACKED_CACHE_TTL_MS } = {}) {
+  const rootKey = path.resolve(repoRoot);
+  const now = Date.now();
+  const cached = gitTrackedCache.get(rootKey);
+  if (!forceRefresh && cached && (now - cached.timestamp < ttlMs)) {
+    return cached.set;
+  }
   try {
     const ls = spawnSync('git', ['ls-files', '-z'], { cwd: repoRoot, encoding: 'buffer', maxBuffer: 10 * 1024 * 1024 });
     const diff = spawnSync('git', ['diff', '--name-only', '-z', 'HEAD'], { cwd: repoRoot, encoding: 'buffer', maxBuffer: 10 * 1024 * 1024 });
     const status = spawnSync('git', ['status', '--porcelain=v1', '-z'], { cwd: repoRoot, encoding: 'buffer', maxBuffer: 10 * 1024 * 1024 });
-    if (ls.status !== 0 && diff.status !== 0 && status.status !== 0) return null;
+    if (ls.status !== 0 && diff.status !== 0 && status.status !== 0) {
+      gitTrackedCache.set(rootKey, { set: null, timestamp: now });
+      return null;
+    }
     const set = new Set();
     const addBuffer = (buf) => {
       if (!buf || !buf.length) return;
@@ -595,15 +630,17 @@ function gitTrackedSet(repoRoot) {
         if (file) set.add(file.toLowerCase());
       }
     }
+    gitTrackedCache.set(rootKey, { set, timestamp: now });
     return set;
   } catch {
+    gitTrackedCache.set(rootKey, { set: null, timestamp: now });
     return null;
   }
 }
 
-function intersectWithGit(repoRoot, files) {
+function intersectWithGit(repoRoot, files, options = {}) {
   if (!files.length) return { kept: [], phantoms: [] };
-  const tracked = gitTrackedSet(repoRoot);
+  const tracked = gitTrackedSet(repoRoot, options);
   if (!tracked) return { kept: files, phantoms: [] };
   const kept = [];
   const phantoms = [];
@@ -647,7 +684,7 @@ function normalizeFilesTouched(output, options, repoRoot, fallbackArtifacts = []
   );
   const all = [...created, ...modified, ...deleted];
   if (all.length) {
-    const { kept, phantoms } = intersectWithGit(repoRoot, all);
+    const { kept, phantoms } = intersectWithGit(repoRoot, all, options);
     if (phantoms.length) {
       const keepSet = new Set(kept.map((item) => item.toLowerCase()));
       created = created.filter((item) => keepSet.has(item.toLowerCase()));
@@ -1578,8 +1615,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   if (!isIdempotentFinish && !isDuplicateFinish) {
     appendJsonl(telemetryFile, event);
   }
-  atomicWrite(paths.jsonFile, jsonText);
-  atomicWrite(absoluteState, stateContent);
+  syncStateDualWrite(absoluteState, state, { body, jsonText });
   atomicWrite(index.file, `${JSON.stringify(index.index, null, 2)}\n`);
   if (operation === 'finish') {
     for (const artifact of finishArtifactNames(state.slug, step, pipeline)) {
@@ -1987,6 +2023,10 @@ module.exports = {
   artifactStampFields,
   resolveStepStampStatus,
   stampStepArtifact,
+  atomicWrite,
+  syncStateDualWrite,
+  gitTrackedSet,
+  clearGitTrackedCache,
   normalizeFilesTouched,
   resolvePackageVersion,
   resolveDispatchModel,
