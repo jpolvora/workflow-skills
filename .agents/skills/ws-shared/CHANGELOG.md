@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-13 02:45] Agent: muse-spark-1.3-contributor (bump + ship + goal-fix-pr 326)
+- **Prompt**: bump version, commit, /ws-ship-pr (standalone develop->main) + /ws-goal-fix-pr 326
+- **Done**: Release 0.4.22 -> 0.4.23 (55 skills, both skill-dependencies, integrity, site) commit 6ea27ffb; PR 326 merged a04884dc; 3 goal-fix-pr rounds, 6 threads fixed (example no-placeholder, mixed predicate, verbosity persistence, merge wording, verify extraction) commits e0780049/a15162d1/6c0601fc; telemetry aggregate refreshed.
+- **Result**: activeThreads 0, review + test checks green, CLEAN merge. Learning: wiki examples must not keep placeholder conditional sections; template-mix predicates must warn on any legacy residue; per-flow verbosity must honor config uniformly; preservation/verifier clauses must name current headings.
+
 ### [2026-09-13 22:00] Agent: muse-spark-1.3-contributor (Step 8 close us-324)
 - **Prompt**: /ws-spec-to-pr full auto 324 ship goal-fix-pr (standard, autoMode, fullMode)
 - **Done**: ws-wiki verbosity (condensed/detailed) + conditional template across SKILL/FROM-CODE/SWEEP/SYNC/UPDATE; validator dual-template + normalizeVerbosity; config schema/example/GUI + configure mention; VERBOSITY-EXAMPLE + wiki doc migration; tests (Test 22 + nested GUI parity); release 0.4.21 -> 0.4.22 + integrity + site; G2 commit 78525a5d; delivery e94f2d57.

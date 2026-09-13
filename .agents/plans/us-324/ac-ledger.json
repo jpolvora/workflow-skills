@@ -1,0 +1,423 @@
+{
+  "schemaVersion": 1,
+  "revision": 3,
+  "workflowId": "us-324-20260913T214500Z",
+  "slug": "us-324",
+  "specPath": ".agents/plans/us-324/step-00-us-324.spec.md",
+  "planIndexPath": null,
+  "declaredGaps": [],
+  "aliasResults": [],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "`SKILL.md` documents the new page template and the `verbosity` option with condensed vs detailed meaning plus a before/after example or pointer.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [
+        {
+          "sha": "78525a5de668d25ef9ec27b85c488fe0b8faa991",
+          "step": 5
+        }
+      ],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-78525a5d"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "`FROM-CODE.md` Start gate asks `verbosity` (condensed Recommended default), persists choice in `{wikiDir}/from-code.state.json` (`verbosity: condensed|detailed`), honors it for all written pages, and takes `condensed` without prompting in `autoMode`.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [
+        {
+          "sha": "78525a5de668d25ef9ec27b85c488fe0b8faa991",
+          "step": 5
+        }
+      ],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-78525a5d"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "`PHASE-1-SWEEP.md` asks/persists/honors `verbosity` for the sweep run (checkpoint or state memory) with `condensed` default and `autoMode` takes `condensed` without prompting.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [
+        {
+          "sha": "78525a5de668d25ef9ec27b85c488fe0b8faa991",
+          "step": 5
+        }
+      ],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-78525a5d"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "`SYNC.md` single-page flow asks/honors `verbosity` (persisted default from `from-code.state.json` or `plans.wiki.verbosity` when present, else `condensed`) with `autoMode` taking the persisted/default without prompting.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [
+        {
+          "sha": "78525a5de668d25ef9ec27b85c488fe0b8faa991",
+          "step": 5
+        }
+      ],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-78525a5d"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "`UPDATE.md` honors the persisted `verbosity` for the target page unless explicitly overridden, preserving untouched sections.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [
+        {
+          "sha": "78525a5de668d25ef9ec27b85c488fe0b8faa991",
+          "step": 5
+        }
+      ],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-78525a5d"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "`validate_wiki.cjs` passes new-style pages with `## Feature` + `## How it works` required and `## Backend` / `## Frontend` / `## Third-party services` conditional (absent when not applicable is not an error); old 3-section pages still pass with a deprecation warning (no fail) during migration; malformed pages missing all required headings still fail with exit 1.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [
+        {
+          "sha": "78525a5de668d25ef9ec27b85c488fe0b8faa991",
+          "step": 5
+        }
+      ],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-78525a5d"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "`condensed` is the default everywhere (gates, `autoMode`, missing persisted value, missing config). `detailed` explicitly disables terse (`caveman`/`ws-tdah`-style) rewriting for wiki bodies.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [
+        {
+          "sha": "78525a5de668d25ef9ec27b85c488fe0b8faa991",
+          "step": 5
+        }
+      ],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-78525a5d"
+      ]
+    },
+    {
+      "id": "AC8",
+      "text": "Verbosity choice is persisted in `{wikiDir}/from-code.state.json` and/or `plans.wiki.verbosity` in `ws-shared/config.json` so later `sync`/`update` stay consistent unless overridden; state file stays excluded from product commits.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [
+        {
+          "sha": "78525a5de668d25ef9ec27b85c488fe0b8faa991",
+          "step": 5
+        }
+      ],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-78525a5d"
+      ]
+    },
+    {
+      "id": "AC9",
+      "text": "`sync_wiki_index.cjs` and list helpers need no heading-aware change; index/link behavior unchanged.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [
+        {
+          "sha": "78525a5de668d25ef9ec27b85c488fe0b8faa991",
+          "step": 5
+        }
+      ],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-78525a5d"
+      ]
+    },
+    {
+      "id": "AC10",
+      "text": "Before/after example for condensed vs detailed ships in skill docs or `docs/` and is linked from `SKILL.md`.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [
+        {
+          "sha": "78525a5de668d25ef9ec27b85c488fe0b8faa991",
+          "step": 5
+        }
+      ],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-78525a5d"
+      ]
+    },
+    {
+      "id": "AC11",
+      "text": "`test/test-wiki.js` covers new template acceptance, old-style warn-compat, conditional-section omit, and verbosity gate strings; full `npm run test` stays green.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [
+        {
+          "sha": "78525a5de668d25ef9ec27b85c488fe0b8faa991",
+          "step": 5
+        }
+      ],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-78525a5d"
+      ]
+    },
+    {
+      "id": "AC12",
+      "text": "No host product names in skill bodies, companions, gates, or scripts; gates use portable `user-gate`; paths use `{wikiDir}` / `{sharedDir}` / `{skillsRoot}` tokens, never hardcoded consumer paths.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [
+        {
+          "sha": "78525a5de668d25ef9ec27b85c488fe0b8faa991",
+          "step": 5
+        }
+      ],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-78525a5d"
+      ]
+    },
+    {
+      "id": "AC13",
+      "text": "`plans.wikiDir` default (`.agents/specs/wiki`) unchanged; `plans.wiki.verbosity` when introduced defaults to `condensed` in schema, example, and GUI editor.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [
+        {
+          "sha": "78525a5de668d25ef9ec27b85c488fe0b8faa991",
+          "step": 5
+        }
+      ],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-78525a5d"
+      ]
+    },
+    {
+      "id": "AC14",
+      "text": "Existing wiki pages and `validate --check` in CI keep passing without rewrite (backward compatible migration).",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [
+        {
+          "sha": "78525a5de668d25ef9ec27b85c488fe0b8faa991",
+          "step": 5
+        }
+      ],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-78525a5d"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "New-style page missing `## How it works` fails validation (exit 1) even when `## Backend` is present.",
+      "tests": [],
+      "linkEventIds": []
+    },
+    {
+      "id": "NS2",
+      "text": "Old-style page missing `## Business Rules & Logic` still fails (exit 1) — warn-compat does not excuse malformed old pages.",
+      "tests": [],
+      "linkEventIds": []
+    },
+    {
+      "id": "NS3",
+      "text": "Unknown `verbosity` value (e.g. `verbose`) in state/config fails closed to `condensed` with a warning, never crashes the run.",
+      "tests": [],
+      "linkEventIds": []
+    },
+    {
+      "id": "NS4",
+      "text": "`validate_wiki.cjs` on wiki without `index.wiki.md` fails with exit 1.",
+      "tests": [],
+      "linkEventIds": []
+    },
+    {
+      "id": "NS5",
+      "text": "Authoring validation of this spec fails when `### Negative & Failing Test Scenarios` is empty or placeholder-only.",
+      "tests": [],
+      "linkEventIds": []
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "pre-step6",
+    "score": 0,
+    "earnedUnits": 0,
+    "totalUnits": 140,
+    "knownDefect": true,
+    "missingEvidence": true,
+    "errors": [
+      "configured verification alias lacks observed result: backendTest"
+    ],
+    "invariantViolations": [],
+    "computedAt": "2026-09-13T01:55:00.855Z"
+  }
+}

@@ -1,21 +1,23 @@
 # Verification & Review (`quality`)
 
-## Feature Overview
+> Provenance: `.agents/skills/ws-plan-verify/SKILL.md`, `.agents/skills/ws-code-review/SKILL.md`, `.agents/skills/ws-testing/SKILL.md`, `.agents/skills/ws-shared/runtime/scripts/scan_stack_invariants.cjs`, `.agents/skills/ws-fix-pr/SKILL.md`, living synthesis of specs 0004, 0005, 0015, 0028, 0031, 0038, 0044, 0046, 0050, 0067.
 
-Quality is a left-shifted, fail-closed chain: `ws-plan-verify` scores spec compliance (advance only at `defaults.minVerifyScore`, default 9, via derived `ac-ledger.json` — never self-reported), `ws-code-review` runs two-phase adversarial review with fix → re-review loops (max 3), `ws-testing` executes unit/integration/E2E/coverage with an opt-in mutation substep, and `ws-preview` offers a user-invoked CI-shaped dry-run that publishes nothing. `ws-fable-judge` adversarial audits and `ws-secrets-leak-review` scans gate shipping; stack-invariant profiles block PRs with reviewer-aligned defects. `ws-fix-pr` / `ws-goal-fix-pr` converge PR threads with proactive same-class sweeps.
+## Feature
 
-## Business Rules & Logic
+Quality is a left-shifted, fail-closed chain embedded in the Spec-to-PR orchestrators. `ws-plan-verify` scores spec compliance and advances only when the derived ledger reaches `defaults.minVerifyScore` (default 9), never from self-reported scores. `ws-code-review` runs two-phase adversarial review with fix and re-review loops capped at three rounds. `ws-testing` executes unit, integration, end-to-end, and coverage gates with an opt-in mutation substep. `ws-preview` offers a user-invoked CI-shaped dry-run that publishes nothing. `ws-fable-judge` adversarial audits and `ws-secrets-leak-review` scans gate shipping. Stack-invariant profiles block pull requests when reviewer-aligned defects appear. `ws-fix-pr` and `ws-goal-fix-pr` converge PR threads with proactive same-class sweeps before resolution.
 
-- **Derived scores only**: verify score derives from `ac-ledger.json`; score 9 with known defects is unreachable; `REFUTED` fable verdicts (with `auditVerdictsBlockShip`) cap below the bar and halt `ws-ship-pr`; `ws-secrets-leak-review` failure halts push/PR creation.
-- **Stack invariants are non-negotiable**: critical violations cap Step 5 below `minVerifyScore` and force `scoreAndRefine`; Step 6 requires two-phase proof (Evidence / Failure / Missing-Protection / Discards) with the stack rule pack; local review dry-run (`localReviewCommand`) stays read-only and never replaces remote CI.
-- **Mutation is opt-in and ordered**: runs only after green build/unit/integration/coverage and before the Step 7 verdict (standard pipeline only); below-threshold scores fail Step 7 into `ws-implement-tasks` fix mode, which never edits product code from the tester role.
-- **Proactive class sweep**: after validating a thread, the fixer names the defect class, searches code, MEMORY, PR context, and patterns, fixes small/local siblings now, and records skips with path + reason — resolving after an anchor-only fix with unrecorded siblings is forbidden.
-- **Deadlock-free advance**: `verification` keys matching `/^_/` are never required aliases; a valid `skipReason` counts as observed without defect caps; genuinely missing required aliases still fail closed.
-- **Preview is user-only**: `/ws-preview` / `/pipeline-review` is never model-invoked, always `--dry-run`, includes uncommitted changes, and stops after the summary.
+## How it works
 
-## Technical Architecture
+Verify scores derive exclusively from `ac-ledger.json` produced by `ac_ledger.cjs`. A score of 9 with known defects is unreachable by design. Uncovered negative scenarios cap the score at 8. Critical stack-invariant violations cap Step 5 below `minVerifyScore` and force `scoreAndRefine` back into implementation. When `fable.enabled` and `auditVerdictsBlockShip` include `refuted`, a `REFUTED` verdict caps below the bar and halts `ws-ship-pr`. Secrets scan failure halts push and PR creation.
 
-- **Ledgers & artifacts**: `ac_ledger.cjs` (alias filter, skipReason, knownDefect cap 8, missingEvidence cap 9), `step-07-*.testing.{plan,report}.md` (Mutation `passed|failed|skipped`), `{us-dir}/audit-{slug}-{timestamp}.log.md`, `metrics.json` telemetry, `benchmarks/results/` evolution reports.
-- **Configuration**: `verification.mutationTest` + `verification.mutationThreshold` (default 80), `defaults.skipMutationTesting` (default true), `fable.enabled/autoAudit/autoDetectDomain/auditVerdictsBlockShip`, `config.json:localReviewCommand`, `ws-shared/stacks/` profiles + `scan_stack_invariants.cjs`.
-- **Review surface**: `ws-fable-judge` detects Weakened Checks, False Completion, Scope Creep, Unauthorized Action; fix reports carry `defectClass`, `sourcesConsulted`, `proactiveFixed`, `proactiveSkipped`.
-- **Provenance**: living synthesis of specs 0004, 0005, 0015, 0028, 0031, 0038, 0044, 0046, 0050, and 0067.
+Stack invariants are non-negotiable. Step 6 requires two-phase review proof covering Evidence, Failure, Missing-Protection, and Discards categories with the stack rule pack loaded from configured profiles. The optional `localReviewCommand` dry-run stays read-only and never replaces remote CI. Mutation testing runs only after green build, unit, integration, and coverage steps and before the Step 7 verdict in the standard pipeline; below-threshold mutation scores fail Step 7 into fix mode, and the tester role never edits product code directly.
+
+Proactive class sweep after validating a review thread requires naming the defect class, searching code, MEMORY, PR context, and pattern files, fixing small local siblings immediately, and recording skips with path and reason. Resolving after an anchor-only fix while unrecorded siblings remain is forbidden. Verification keys matching `/^_/` are never required aliases; a valid `skipReason` counts as observed without defect caps; genuinely missing required aliases still fail closed.
+
+Preview via `/ws-preview` or `/pipeline-review` is user-only, never model-invoked, always `--dry-run`, includes uncommitted changes, and stops after the summary without shipping.
+
+## Backend
+
+Ledgers and artifacts include `ac_ledger.cjs` with alias filtering, `skipReason` handling, known-defect cap 8, and missing-evidence cap 9. Testing emits `step-07-*.testing.{plan,report}.md` with Mutation status `passed|failed|skipped`. Audit logs use `{us-dir}/audit-{slug}-{timestamp}.log.md`. Benchmark evolution stores under `benchmarks/results/` with telemetry in `metrics.json`.
+
+Configuration spans `verification.mutationTest`, `verification.mutationThreshold` (default 80), `defaults.skipMutationTesting` (default true), `fable.enabled`, `fable.autoAudit`, `fable.autoDetectDomain`, `fable.auditVerdictsBlockShip`, optional `localReviewCommand`, and stack profiles under `ws-shared/stacks/` consumed by `scan_stack_invariants.cjs`. Review fix reports carry `defectClass`, `sourcesConsulted`, `proactiveFixed`, and `proactiveSkipped` fields for convergence auditing.
