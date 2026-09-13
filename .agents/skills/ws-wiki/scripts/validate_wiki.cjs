@@ -15,6 +15,31 @@ const REQUIRED_SECTIONS = [
   'Technical Architecture',
 ];
 
+const NEW_REQUIRED_SECTIONS = [
+  'Feature',
+  'How it works',
+];
+
+const NEW_CONDITIONAL_SECTIONS = [
+  'Backend',
+  'Frontend',
+  'Third-party services',
+];
+
+const VERBOSITY_LEVELS = ['condensed', 'detailed'];
+const DEFAULT_VERBOSITY = 'condensed';
+
+function normalizeVerbosity(value) {
+  const raw = String(value ?? '').trim().toLowerCase();
+  if (raw === 'condensed' || raw === 'detailed') return raw;
+  return DEFAULT_VERBOSITY;
+}
+
+function hasSection(content, section) {
+  const pattern = new RegExp(`^##\\s+${section.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`, 'm');
+  return pattern.test(content);
+}
+
 function parseArgs(argv) {
   const options = {};
   for (let index = 0; index < argv.length; index += 1) {
@@ -87,6 +112,31 @@ function checkRequiredSections(content) {
   return missing;
 }
 
+function checkNewRequiredSections(content) {
+  const missing = [];
+  for (const section of NEW_REQUIRED_SECTIONS) {
+    if (!hasSection(content, section)) {
+      missing.push(section);
+    }
+  }
+  return missing;
+}
+
+function classifyTemplate(content) {
+  const missingNew = checkNewRequiredSections(content);
+  const missingOld = checkRequiredSections(content);
+  const hasAnyNew = NEW_REQUIRED_SECTIONS.some((s) => hasSection(content, s))
+    || NEW_CONDITIONAL_SECTIONS.some((s) => hasSection(content, s));
+  const hasAnyOld = REQUIRED_SECTIONS.some((s) => hasSection(content, s));
+  if (missingNew.length === 0) {
+    return { style: hasAnyOld && missingOld.length === 0 ? 'mixed' : 'new', missingNew, missingOld, hasAnyNew, hasAnyOld };
+  }
+  if (missingOld.length === 0) {
+    return { style: 'legacy', missingNew, missingOld, hasAnyNew, hasAnyOld };
+  }
+  return { style: 'malformed', missingNew, missingOld, hasAnyNew, hasAnyOld };
+}
+
 function validateWiki(options = {}) {
   const context = resolveConsumerContext({
     repoRoot: options.repoRoot,
@@ -146,10 +196,25 @@ function validateWiki(options = {}) {
     validatedPages.push(relPage);
     const content = fs.readFileSync(pageFile, 'utf8');
 
-    // Check 3-section format
-    const missingSections = checkRequiredSections(content);
-    if (missingSections.length > 0) {
-      errors.push(`Malformed feature page ${relPage}: missing required section heading(s): ${missingSections.map((s) => `"## ${s}"`).join(', ')}`);
+    // Check page template: new conditional format OR legacy 3-section (warn-only migration).
+    const template = classifyTemplate(content);
+    if (template.style === 'new') {
+      // Conditional sections (Backend/Frontend/Third-party services) may be absent when not applicable.
+    } else if (template.style === 'mixed') {
+      warnings.push(`Mixed template in ${relPage}: page contains both new headings ("## Feature", "## How it works") and legacy 3-section headings; prefer the new template for new content.`);
+    } else if (template.style === 'legacy') {
+      warnings.push(`Legacy template in ${relPage}: page uses deprecated 3-section headings ("## Feature Overview", "## Business Rules & Logic", "## Technical Architecture"); migrate to "## Feature" + "## How it works" with conditional "## Backend" / "## Frontend" / "## Third-party services" on next touch.`);
+    } else {
+      if (template.hasAnyNew && !template.hasAnyOld) {
+        errors.push(`Malformed feature page ${relPage}: missing required section heading(s): ${template.missingNew.map((s) => `"## ${s}"`).join(', ')} (new template requires "## Feature" + "## How it works"; conditional "## Backend" / "## Frontend" / "## Third-party services" may be omitted when not applicable)`);
+      } else if (template.hasAnyOld && !template.hasAnyNew) {
+        const missingSections = checkRequiredSections(content);
+        errors.push(`Malformed feature page ${relPage}: missing required section heading(s): ${missingSections.map((s) => `"## ${s}"`).join(', ')}`);
+      } else if (template.hasAnyNew || template.hasAnyOld) {
+        errors.push(`Malformed feature page ${relPage}: missing required section heading(s): ${template.missingNew.map((s) => `"## ${s}"`).join(', ')}; legacy pages require ${template.missingOld.map((s) => `"## ${s}"`).join(', ')}`);
+      } else {
+        errors.push(`Malformed feature page ${relPage}: missing required section heading(s): ${template.missingNew.map((s) => `"## ${s}"`).join(', ')} (new template requires "## Feature" + "## How it works")`);
+      }
     }
 
     // Check links within feature page
@@ -240,6 +305,13 @@ if (require.main === module) {
 module.exports = {
   validateWiki,
   REQUIRED_SECTIONS,
+  NEW_REQUIRED_SECTIONS,
+  NEW_CONDITIONAL_SECTIONS,
+  VERBOSITY_LEVELS,
+  DEFAULT_VERBOSITY,
+  normalizeVerbosity,
+  classifyTemplate,
+  checkNewRequiredSections,
   extractMarkdownLinks,
   checkRequiredSections,
 };

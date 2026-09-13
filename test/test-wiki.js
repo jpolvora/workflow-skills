@@ -699,6 +699,73 @@ Missing Business Rules & Logic section!
     assert(!Object.prototype.hasOwnProperty.call(binDeps.dependencies || {}, 'ws-wiki-from-code'), 'AC1: no ws-wiki-from-code packaged skill');
   }
 
+  // Test 22: verbosity gate + conditional template (us-324)
+  {
+    const skill = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'SKILL.md'), 'utf8');
+    assert(skill.includes('verbosity') && skill.includes('condensed') && skill.includes('detailed'), 'us-324: SKILL documents verbosity condensed/detailed');
+    assert(skill.includes('## Feature') && skill.includes('## How it works') && skill.includes('Third-party services'), 'us-324: SKILL documents new conditional template');
+    assert(skill.includes('VERBOSITY-EXAMPLE'), 'us-324: SKILL links before/after verbosity example');
+    assert(skill.includes('from-code.state.json') && skill.includes('plans.wiki.verbosity'), 'us-324: SKILL documents verbosity persistence');
+
+    const fromCode = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'FROM-CODE.md'), 'utf8');
+    assert(fromCode.includes('Verbosity gate') && fromCode.includes('Condensed (Recommended)') && fromCode.includes('Detailed'), 'us-324: FROM-CODE verbosity gate reachable');
+    assert(fromCode.includes('autoMode') && fromCode.includes('condensed') && fromCode.includes('from-code.state.json'), 'us-324: FROM-CODE autoMode condensed + persistence');
+    const sweep = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'PHASE-1-SWEEP.md'), 'utf8');
+    assert(sweep.includes('Verbosity gate') && sweep.includes('sweep.state.json'), 'us-324: SWEEP verbosity gate + checkpoint');
+    const sync = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'SYNC.md'), 'utf8');
+    assert(sync.includes('verbosity') && sync.includes('from-code.state.json') && sync.includes('plans.wiki.verbosity'), 'us-324: SYNC resolves persisted verbosity');
+    assert(sync.includes('Apply wiki updates (Recommended)') && sync.includes('Cancel') && sync.includes('STOP'), 'us-324: SYNC review gate still fail-closed on Cancel');
+    const update = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'UPDATE.md'), 'utf8');
+    assert(update.includes('verbosity') && update.includes('condensed'), 'us-324: UPDATE honors persisted verbosity');
+
+    const examplePath = path.join(WIKI_SKILL_DIR, 'references', 'VERBOSITY-EXAMPLE.md');
+    assert(fs.existsSync(examplePath), 'us-324: VERBOSITY-EXAMPLE.md exists');
+    const example = fs.readFileSync(examplePath, 'utf8');
+    assert(example.includes('Condensed') && example.includes('Detailed'), 'us-324: example shows both styles');
+
+    const schema = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/config.schema.json'), 'utf8'));
+    assert(schema.properties?.plans?.properties?.wiki?.properties?.verbosity?.default === 'condensed', 'us-324: schema plans.wiki.verbosity defaults condensed');
+    assert(schema.properties.plans.properties.wiki.properties.verbosity.enum.includes('detailed'), 'us-324: schema verbosity enum includes detailed');
+
+    const gui = fs.readFileSync(path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1'), 'utf8');
+    assert(gui.includes("plans.wiki") && gui.includes("verbosity") && gui.includes("condensed"), 'us-324: GUI binds plans.wiki.verbosity');
+
+    // Validator fixtures: new full, new omit-conditional, legacy warn-compat, new malformed, old malformed
+    const fixTmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-wiki-324-'));
+    try {
+      const fixWiki = path.join(fixTmp, '.agents', 'specs', 'wiki');
+      fs.mkdirSync(path.join(fixWiki, 'billing'), { recursive: true });
+      fs.writeFileSync(path.join(fixWiki, 'index.wiki.md'), '# index\n\n## Domain: billing\n\n- [New](billing/new.md): New template.\n- [Omit](billing/omit.md): Omit conditional.\n- [Old](billing/old.md): Legacy.\n', 'utf8');
+      fs.writeFileSync(path.join(fixWiki, 'billing', 'new.md'), '# New\n\n## Feature\nF.\n\n## How it works\nH.\n\n## Backend\nB.\n\n## Frontend\nF.\n\n## Third-party services\nT.\n', 'utf8');
+      fs.writeFileSync(path.join(fixWiki, 'billing', 'omit.md'), '# Omit\n\n## Feature\nF.\n\n## How it works\nH.\n\n## Backend\nB only; Frontend omitted as pure backend job.\n', 'utf8');
+      fs.writeFileSync(path.join(fixWiki, 'billing', 'old.md'), '# Old\n\n## Feature Overview\nO.\n\n## Business Rules & Logic\nB.\n\n## Technical Architecture\nT.\n', 'utf8');
+      const res = run(VALIDATE, ['--wiki-dir', fixWiki, '--json']);
+      assert(res.status === 0, 'us-324: validator passes new + omit + legacy fixtures');
+      const data = JSON.parse(res.stdout);
+      assert(data.ok === true && data.errors.length === 0, 'us-324: no errors for mixed new/legacy wiki');
+      assert(data.warnings.some((w) => w.includes('Legacy template') && w.includes('old.md')), 'us-324: legacy page warns (warn-only migration)');
+      assert(!data.warnings.some((w) => w.includes('omit.md')), 'us-324: conditional omit produces no warning');
+
+      // New malformed: missing How it works
+      fs.writeFileSync(path.join(fixWiki, 'billing', 'bad-new.md'), '# Bad\n\n## Feature\nF.\n\n## Backend\nB.\n', 'utf8');
+      const resBad = run(VALIDATE, ['--wiki-dir', fixWiki, '--json']);
+      assert(resBad.status === 1, 'us-324: validator fails new page missing How it works');
+      const dataBad = JSON.parse(resBad.stdout);
+      assert(dataBad.errors.some((e) => e.includes('How it works')), 'us-324: error names missing How it works');
+      fs.unlinkSync(path.join(fixWiki, 'billing', 'bad-new.md'));
+
+      // normalizeVerbosity fail-closed (CJS require via subprocess for Windows-safe paths)
+      const normRes = cp.spawnSync(process.execPath, ['-e', `const v=require(${JSON.stringify(VALIDATE)});console.log(JSON.stringify([v.normalizeVerbosity('detailed'),v.normalizeVerbosity('verbose'),v.normalizeVerbosity(undefined)]))`], { cwd: REPO_ROOT, encoding: 'utf8' });
+      assert(normRes.status === 0, 'us-324: normalizeVerbosity subprocess exits 0');
+      const normVals = JSON.parse(normRes.stdout);
+      assert(normVals[0] === 'detailed', 'us-324: normalizeVerbosity keeps detailed');
+      assert(normVals[1] === 'condensed', 'us-324: unknown verbosity fails closed to condensed');
+      assert(normVals[2] === 'condensed', 'us-324: missing verbosity defaults condensed');
+    } finally {
+      fs.rmSync(fixTmp, { recursive: true, force: true });
+    }
+  }
+
 } finally {
   try {
     fs.rmSync(tmp, { recursive: true, force: true });

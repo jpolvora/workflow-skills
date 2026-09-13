@@ -394,6 +394,18 @@
           "default": ".agents/specs/wiki",
           "description": "Repo-relative directory for living feature wiki and domain knowledge base. Skill token {wikiDir} ← plans.wikiDir (default: .agents/specs/wiki)."
         },
+        "wiki": {
+          "type": "object",
+          "description": "Living wiki defaults. Skill token {wikiDir} stays plans.wikiDir; prose style lives here as plans.wiki.verbosity.",
+          "properties": {
+            "verbosity": {
+              "type": "string",
+              "enum": ["condensed", "detailed"],
+              "default": "condensed",
+              "description": "Default prose style for ws-wiki page writes (condensed terse statements; detailed paragraph walkthrough, terse rewriting disabled). Resolved after explicit gate choice and from-code.state.json; unknown values fail closed to condensed."
+            }
+          }
+        },
         "diagnosticsDir": {
           "type": "string",
           "default": ".agents/plans/diagnostics",
