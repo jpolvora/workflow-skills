@@ -53,10 +53,10 @@ const mirrorAutoload = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-sh
 assert.match(runtimeAutoload, /\{sharedDir\}\/runtime\/scm-provider-contract\.md/, 'runtime autoload keyword-map prose uses runtime/ token');
 assert.doesNotMatch(runtimeAutoload.replaceAll('{sharedDir}/runtime/scm-provider-contract.md', ''), /\{sharedDir\}\/scm-provider-contract\.md/, 'runtime autoload has no bare contract prose');
 assert.match(mirrorAutoload, /\{sharedDir\}\/runtime\/scm-provider-contract\.md/, 'mirror autoload keyword-map prose uses runtime/ token');
-for (const bare of ['](tools.md)', '](scm-provider-contract.md)', '](gates.md)']) {
+for (const bare of ['](tools.md)', '](AGENTS.md)', '](scm-provider-contract.md)', '](gates.md)']) {
   assert.ok(!mirrorAutoload.includes(bare), `mirror autoload has no bare ${bare}`);
 }
-for (const target of ['runtime/tools.md', 'runtime/scm-provider-contract.md', 'runtime/gates.md']) {
+for (const target of ['runtime/tools.md', 'runtime/AGENTS.md', 'runtime/scm-provider-contract.md', 'runtime/gates.md']) {
   assert.ok(fs.existsSync(path.join(repoRoot, '.agents/skills/ws-shared', target)), `mirror link target exists: ${target}`);
 }
 console.log('test-doc-sync: ok');
