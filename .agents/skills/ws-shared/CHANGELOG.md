@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-13 13:33] Agent: Cursor Grok 4.6
+- **Prompt**: Make `--update-comparison` skip unchanged version tables (Generated stamp noise).
+- **Done**: Fingerprint compare ignoring `**Generated:**`; write only changed `table-*.md` / evolution; regression in `test-ws-benchmarks.js`; integrity regen for `ws-benchmarks`.
+- **Result**: `node test/test-ws-benchmarks.js` exit 0; `verify-integrity` OK. Learning: persist trap 2026-09-13-benchmark-table-generated-stamp.
+
 ### [2026-09-13 13:25] Agent: Cursor Grok 4.6
 - **Prompt**: Verify and fix runInterview reason mismatch when complexityClass is complex on a lite pipeline.
 - **Done**: classify.cjs now names matching interview triggers; SKILL contract line; regression in test-classifier-history.js (lite + complex fixture).

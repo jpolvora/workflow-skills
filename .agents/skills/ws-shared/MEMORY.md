@@ -69,6 +69,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Hard-code a single standard-pipeline reason whenever `runInterview` is true; do not assume interview implies standard + layers/OQ.
 - **INSTEAD DO**: Build the reason from the matching triggers (`complex` class, standard + layers > 2, standard + open questions) so classify.md and JSON stay factually aligned.
 
+### [2026-09-13] Benchmark comparison tables skip Generated-only rewrites
+- **Layer**: `Tests`
+- **Module**: `ws-benchmarks / benchmarks_manager.cjs`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-benchmarks/scripts/benchmarks_manager.cjs`;`benchmarks/results/**`
+- **Scenario / Context**: `--update-comparison` rewrote every `table-<version>.md` because each file embeds `**Generated:** {now}`, dirtying git even when scores were unchanged.
+- **DO NOT**: `writeFileSync` all per-version tables on every comparison refresh, or treat a new Generated timestamp as a content change.
+- **INSTEAD DO**: Compare table bodies with the Generated line stripped; write only when scores/rows changed; leave older version tables and their stamps untouched.
+
 ### [2026-09-13] Assert every sibling row a multi-row docs change touches
 - **Layer**: `harness`
 - **Module**: `test-doc-sync / mirror-link guard`

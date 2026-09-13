@@ -41,7 +41,7 @@ Interactive suite for inspecting, executing, and reporting harness benchmarks in
 2. **Menu** — Unless a specific flag was provided via CLI, present an interactive structured menu via `user-gate` (recommended first):
    1. **View Benchmark Evolution Report (Recommended)** — Render the full version-over-version Markdown evolution table in chat/artifacts.
    2. **Run New Benchmark** — Execute static run across all fixtures or prepare a live sandbox for an isolated fixture run.
-   3. **Update Comparison .md by Version** — Refresh `benchmarks/results/BENCHMARK_EVOLUTION.md` and per-version summary tables.
+   3. **Update Comparison .md by Version** — Refresh `benchmarks/results/BENCHMARK_EVOLUTION.md` and per-version summary tables. Skip files whose scores are unchanged; do not bump `**Generated:**` alone.
    4. **Compare Baselines / Check Regressions** — Compare two baselines or evaluate an uncommitted run against a baseline.
    5. **Promote Run to Baseline (Snapshot)** — Snapshot a recent run from `benchmarks/runs/` to `benchmarks/baselines/`.
    6. **Export Summary to Spec-Memo Vault** — Log benchmark evolution summary into the external `spec-memo` memory vault (when available).
@@ -70,6 +70,7 @@ Interactive suite for inspecting, executing, and reporting harness benchmarks in
      ```bash
      node {skillsRoot}/ws-benchmarks/scripts/benchmarks_manager.cjs --update-comparison
      ```
+     Writes only `BENCHMARK_EVOLUTION.md` and `table-<version>.md` files whose table body changed. Unchanged version tables keep their prior Generated stamp.
    - **Compare Baselines**:
      ```bash
      node scripts/harness-benchmark/cli.cjs compare --from {fromBaseline} --to {toBaseline}
