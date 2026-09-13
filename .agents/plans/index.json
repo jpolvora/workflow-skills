@@ -1,8 +1,88 @@
 {
   "schemaVersion": 1,
-  "revision": 19,
-  "generatedAt": "2026-09-12T17:32:10Z",
+  "revision": 24,
+  "generatedAt": "2026-09-13T01:47:52Z",
   "workflows": [
+    {
+      "workflowId": "",
+      "pipeline": "ws-multi-spec",
+      "statePath": ".agents/plans/ws-multi-spec/ms-20260812T191636Z.state.md",
+      "stateSha256": "8c996d503a63fd115ff8de0a12478f12b4acfe7a50cc9389fcb965a858580864",
+      "status": "completed",
+      "currentStep": 0,
+      "updatedAt": "2026-08-12T20:43:00Z",
+      "runPath": ".agents/plans/ws-multi-spec/ms-20260812T191636Z.state.json"
+    },
+    {
+      "workflowId": "",
+      "pipeline": "ws-multi-spec",
+      "statePath": ".agents/plans/ws-multi-spec/ms-20260812T204614Z.state.md",
+      "stateSha256": "fd5ac96efdea7646792ba05c72a78f59eaa441c34bf19fa042662fd61dad2dfb",
+      "status": "completed",
+      "currentStep": 0,
+      "updatedAt": "2026-08-12T20:47:00Z",
+      "runPath": ".agents/plans/ws-multi-spec/ms-20260812T204614Z.state.json"
+    },
+    {
+      "workflowId": "",
+      "pipeline": "ws-multi-spec",
+      "statePath": ".agents/plans/ws-multi-spec/ms-20260815T171347Z.state.md",
+      "stateSha256": "335b36e5c5ae3dfc7af26664b8bfc7d2df8f6269d14b3edb163c8fde1e18417a",
+      "status": "completed",
+      "currentStep": 0,
+      "updatedAt": "2026-08-15T19:12:13Z",
+      "runPath": ".agents/plans/ws-multi-spec/ms-20260815T171347Z.state.json"
+    },
+    {
+      "workflowId": "",
+      "pipeline": "ws-multi-spec",
+      "statePath": ".agents/plans/ws-multi-spec/ms-20260822T204000Z.state.md",
+      "stateSha256": "cf3437a6a688799461c9c02caf0d0c49e24607697bdc598685d895145be2a9e8",
+      "status": "implemented",
+      "currentStep": 0,
+      "updatedAt": "2026-08-22T21:30:00Z",
+      "runPath": ".agents/plans/ws-multi-spec/ms-20260822T204000Z.state.json"
+    },
+    {
+      "workflowId": "",
+      "pipeline": "ws-multi-spec",
+      "statePath": ".agents/plans/ws-multi-spec/ms-20260823T151035Z.state.md",
+      "stateSha256": "23d18a3c58a17ba8dc458e21f424c880fe5e5e7da2e8cd8c1c07c2128fed3f5f",
+      "status": "completed",
+      "currentStep": 0,
+      "updatedAt": "2026-08-23T16:32:00Z",
+      "runPath": ".agents/plans/ws-multi-spec/ms-20260823T151035Z.state.json"
+    },
+    {
+      "workflowId": "",
+      "pipeline": "ws-spec-multi",
+      "statePath": ".agents/plans/ws-spec-multi/ms-20260903T104720Z.state.md",
+      "stateSha256": "1285043432fa2082993d10751124dc222b35b1b5eb2293c74c435d910692a863",
+      "status": "completed",
+      "currentStep": 0,
+      "updatedAt": "2026-09-03T11:20:45Z",
+      "runPath": ".agents/plans/ws-spec-multi/ms-20260903T104720Z.state.json"
+    },
+    {
+      "workflowId": "",
+      "pipeline": "ws-spec-multi",
+      "statePath": ".agents/plans/ws-spec-multi/ms-20260905T015320Z.state.md",
+      "stateSha256": "fb217d59a08e9d35393de9a5d96a9ea294d07ac30d9a8cf52a82e518f185ba18",
+      "status": "completed",
+      "currentStep": 0,
+      "updatedAt": "2026-09-05T01:53:20Z",
+      "runPath": ".agents/plans/ws-spec-multi/ms-20260905T015320Z.state.json"
+    },
+    {
+      "workflowId": "",
+      "pipeline": "ws-spec-multi",
+      "statePath": ".agents/plans/ws-spec-multi/ms-20260911T034316Z.state.md",
+      "stateSha256": "af8a5e75b975e2e72250f86f8c24d106c7072286599220cb71de77beec485f25",
+      "status": "completed",
+      "currentStep": 0,
+      "updatedAt": "2026-09-11T04:35:00Z",
+      "runPath": ".agents/plans/ws-spec-multi/ms-20260911T034316Z.state.json"
+    },
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
       "slug": "agents-skills-as-sot",
@@ -532,6 +612,17 @@
       "runPath": ".agents/plans/us-311/us-311-20260911T034559Z.state.json"
     },
     {
+      "workflowId": "us-324-20260913T214500Z",
+      "slug": "us-324",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/us-324/us-324-20260913T214500Z.state.md",
+      "stateSha256": "641d03de13507a587b7768f47d7bfc64ed03f2a87a03a4a5b8f741a02da70de2",
+      "status": "active",
+      "currentStep": 4,
+      "updatedAt": "2026-09-13T21:47:00Z",
+      "runPath": ".agents/plans/us-324/us-324-20260913T214500Z.state.json"
+    },
+    {
       "workflowId": "us-global-vs-project-skill-installation",
       "slug": "global-vs-project-skill-installation",
       "pipeline": "standard",
@@ -547,7 +638,7 @@
       "slug": "website-wiki-page",
       "pipeline": "standard",
       "statePath": ".agents/plans/website-wiki-page/website-wiki-page-20260912T152056Z.state.md",
-      "stateSha256": "ca69deed0fa7a670b27372d579d67cb69103643b6d4643064498747deee4402b",
+      "stateSha256": "ea366c25f3da83d57b3504c1f94a40f08dd6c1608e791550aa7ee9ce8a5aa0d1",
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-09-12T15:48:52Z",
@@ -602,7 +693,7 @@
       "slug": "ws-wiki-code-verify",
       "pipeline": "standard",
       "statePath": ".agents/plans/ws-wiki-code-verify/ws-wiki-code-verify-20260912T160041Z.state.md",
-      "stateSha256": "818e99163159dc1958471d9483ec36c6d3f804f6ffcd314dd38cf2593a26c9e0",
+      "stateSha256": "acef4fc62f2da507c4478fddcc3bd8b459302847cdf28e885783d7044fe5180b",
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-09-12T16:54:23Z",
@@ -613,7 +704,7 @@
       "slug": "ws-wiki-from-code",
       "pipeline": "standard",
       "statePath": ".agents/plans/ws-wiki-from-code/ws-wiki-from-code-20260912T171926Z.state.md",
-      "stateSha256": "6fe9d9a36cd305016975589b2846d2153d8e3348b4fa8f3cd6a7ef94757151d7",
+      "stateSha256": "7849e7d37ef87ff502df9317d701c680edefabd5fd794c06ac4f219c808bbfe5",
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-09-12T17:32:10Z",

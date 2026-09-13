@@ -89,8 +89,8 @@
       <div class="wiki-domain-section" data-domain="harness">
         <div class="wiki-domain-header"><span class="wiki-domain-name">HARNESS</span><span class="wiki-domain-badge">2</span></div>
         <ul class="wiki-domain-topics">
-        <li class="wiki-nav-item"><a href="../harness/diagnostics-and-benchmarks.html" class="wiki-nav-link" title="Diagnostics &amp; Benchmarks (`harness` — part 2)"><span class="wiki-topic-marker">•</span><span class="wiki-nav-text">Diagnostics &amp; Benchmarks (`harness` — part 2)</span></a></li>
-        <li class="wiki-nav-item"><a href="../harness/install-and-hub.html" class="wiki-nav-link" title="Install &amp; Hub (`harness` — part 1)"><span class="wiki-topic-marker">•</span><span class="wiki-nav-text">Install &amp; Hub (`harness` — part 1)</span></a></li>
+        <li class="wiki-nav-item"><a href="../harness/diagnostics-and-benchmarks.html" class="wiki-nav-link" title="Diagnostics &amp; Benchmarks (`harness`)"><span class="wiki-topic-marker">•</span><span class="wiki-nav-text">Diagnostics &amp; Benchmarks (`harness`)</span></a></li>
+        <li class="wiki-nav-item"><a href="../harness/install-and-hub.html" class="wiki-nav-link" title="Install &amp; Hub (`harness`)"><span class="wiki-topic-marker">•</span><span class="wiki-nav-text">Install &amp; Hub (`harness`)</span></a></li>
         </ul>
       </div>
       <div class="wiki-domain-section" data-domain="delivery">
@@ -206,7 +206,7 @@
       </tr>
       <tr>
         <th>Provenance</th>
-        <td>Specs 0057</td>
+        <td>Specs 0057, 0066, 0075</td>
       </tr>
       <tr>
         <th>Framework</th>
@@ -219,23 +219,25 @@
     </tbody>
   </table>
 </aside>
+<p>&gt; Provenance: <code>docs/index.html</code>, <code>bin/build-site.js</code>, <code>test/test-doc-sync.js</code>, root <code>AGENTS.md</code> § Harness change protocol, <code>.agents/skills/ws-shared/runtime/AGENTS.md</code>, living synthesis of specs 0057, 0066, 0075.</p>
 <div class="wiki-toc-box" id="toc" role="navigation" aria-label="Table of contents">
   <div class="wiki-toc-header">
     <span class="wiki-toc-title">Contents</span>
     <button type="button" class="wiki-toc-toggle" id="wiki-toc-toggle" aria-expanded="true">[hide]</button>
   </div>
   <ol class="wiki-toc-list" id="wiki-toc-list">
-    <li class="wiki-toc-item"><a href="#feature-overview"><span class="wiki-toc-number">1</span> <span class="wiki-toc-text">Feature Overview</span></a></li>
-    <li class="wiki-toc-item"><a href="#business-rules-logic"><span class="wiki-toc-number">2</span> <span class="wiki-toc-text">Business Rules &amp; Logic</span></a></li>
-    <li class="wiki-toc-item"><a href="#technical-architecture"><span class="wiki-toc-number">3</span> <span class="wiki-toc-text">Technical Architecture</span></a></li>
+    <li class="wiki-toc-item"><a href="#feature"><span class="wiki-toc-number">1</span> <span class="wiki-toc-text">Feature</span></a></li>
+    <li class="wiki-toc-item"><a href="#how-it-works"><span class="wiki-toc-number">2</span> <span class="wiki-toc-text">How it works</span></a></li>
+    <li class="wiki-toc-item"><a href="#backend"><span class="wiki-toc-number">3</span> <span class="wiki-toc-text">Backend</span></a></li>
   </ol>
 </div>
-<h2 id="feature-overview">Feature Overview <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/documentation/website-and-hub.md" target="_blank" rel="noopener" title="Edit section: Feature Overview">[edit]</a></span></h2>
-<p>The public site (<code>docs/</code>, zero-dependency static GitHub Pages) presents the harness with a restrained engineering UI — dense typography, terminal tabs, FSM visualizer, catalog search, and drawer — rebuilt deterministically by <code>bin/build-site.js</code>, which also enforces doc-sync: every shipped skill change must be reflected across the site, <code>README.md</code>, root and <code>ws-shared</code> <code>AGENTS.md</code>, and <code>FEATURES.md</code>. The consumer hub docs (<code>ws-shared/AGENTS.md</code>, <code>CATALOG.md</code>, <code>setup.md</code>, <code>autoload.md</code>) carry an explicit consumer identity with no upstream authoring prose, enforced mechanically by denylist plus a context-budget cap.</p>
-<h2 id="business-rules-logic">Business Rules &amp; Logic <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/documentation/website-and-hub.md" target="_blank" rel="noopener" title="Edit section: Business Rules &amp; Logic">[edit]</a></span></h2>
-<ul><li><strong>Restrained UI</strong>: no neon glows, looping video, or floating badges; dark-first plus accessible light theme with contrast ≥ 4.5:1, keyboard navigation, and zero console errors.</li><li><strong>Build contracts preserved</strong>: all doc-sync headings, version stamps, and deterministic <code>--check</code> gates survive the revamp; catalog-only fixes rebuild without a version bump, package changes require a strictly-higher bump per release PR.</li><li><strong>Hub split enforced</strong>: managed hub sections are classified <code>consumer-portable</code> / <code>upstream-only</code> / <code>shared-reference</code>; upstream-only prose relocated root-ward; <code>HUB_WHITELIST</code> behavior and <code>rules.harness</code> default (<code>{sharedDir}/AGENTS.md</code>) unchanged.</li><li><strong>Change protocol</strong>: feature/CLI/skill changes update site + <code>README.md</code> + both <code>AGENTS.md</code> hubs + <code>FEATURES.md</code> in the same effort; <code>ws-check-harness</code> must pass before ship.</li></ul>
-<h2 id="technical-architecture">Technical Architecture <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/documentation/website-and-hub.md" target="_blank" rel="noopener" title="Edit section: Technical Architecture">[edit]</a></span></h2>
-<ul><li><strong>Site</strong>: <code>docs/index.html</code>, <code>docs/assets/css/style.css</code>, <code>bin/build-site.js</code> injection (layers/presets), <code>test/test-doc-sync.js</code>, <code>node bin/build-site.js</code> / <code>npm run build-site:bump</code>.</li><li><strong>Hub docs</strong>: root <code>AGENTS.md</code> (upstream contract + router) vs <code>ws-shared/AGENTS.md</code> (consumer hub); <code>ws-shared/autoload.md</code> Always-applied set + specs router; dual-hub drift rules in <code>ws-check-harness</code>.</li><li><strong>Provenance</strong>: living synthesis of specs 0057 and 0066 (plus 0075, documented at <a href="ws-wiki.html">Living Feature Wiki &amp; Domain Knowledge Base</a>).</li></ul>
+<h2 id="feature">Feature <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/documentation/website-and-hub.md" target="_blank" rel="noopener" title="Edit section: Feature">[edit]</a></span></h2>
+<p>The public engineering site under <code>docs/</code> is a zero-dependency static GitHub Pages presentation of the harness. It uses restrained typography, terminal-style tabs, an FSM visualizer, catalog search, and a drawer layout rather than marketing-heavy visuals. <code>bin/build-site.js</code> rebuilds the site deterministically and enforces a doc-sync protocol: every shipped skill or CLI change must appear consistently across the site, <code>README.md</code>, root and <code>ws-shared</code> <code>AGENTS.md</code>, and optional <code>FEATURES.md</code>. Consumer hub documentation (<code>ws-shared/AGENTS.md</code>, <code>CATALOG.md</code>, <code>setup.md</code>, <code>autoload.md</code>) carries an explicit consumer identity with no upstream authoring prose mixed in, enforced mechanically by denylist rules and a context-budget cap in harness audits.</p>
+<h2 id="how-it-works">How it works <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/documentation/website-and-hub.md" target="_blank" rel="noopener" title="Edit section: How it works">[edit]</a></span></h2>
+<p>The site revamp contract forbids neon glows, looping video, and floating badges. Dark-first theming plus an accessible light theme must maintain contrast at or above 4.5:1, support keyboard navigation, and produce zero console errors on load. Doc-sync headings, version stamps, and deterministic <code>--check</code> gates survive visual changes. Catalog-only documentation fixes may rebuild via <code>node bin/build-site.js</code> without a version bump; package content changes require a strictly higher <code>package.json</code> version per release PR before push.</p>
+<p>Hub prose is classified as <code>consumer-portable</code>, <code>upstream-only</code>, or <code>shared-reference</code> in the layout manifest. Upstream-only sections relocate toward root <code>AGENTS.md</code>; <code>HUB_WHITELIST</code> behavior and the default <code>rules.harness</code> path (<code>{sharedDir}/AGENTS.md</code>) stay unchanged. When features, CLI options, workflows, or skills change, maintainers update the site, <code>README.md</code>, both hub <code>AGENTS.md</code> files, and <code>FEATURES.md</code> in the same effort, then pass <code>ws-check-harness</code> before ship.</p>
+<h2 id="backend">Backend <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/documentation/website-and-hub.md" target="_blank" rel="noopener" title="Edit section: Backend">[edit]</a></span></h2>
+<p>Site assets include <code>docs/index.html</code>, <code>docs/assets/css/style.css</code>, and injected catalog layers from <code>bin/build-site.js</code>. Verification runs through <code>test/test-doc-sync.js</code> and npm scripts <code>build-site</code> / <code>build-site:bump</code>. Hub documentation splits root <code>AGENTS.md</code> (upstream contract and task router) from <code>ws-shared/AGENTS.md</code> (consumer hub). <code>ws-shared/autoload.md</code> defines the Always-applied promotion set plus the specs progressive-disclosure router. Dual-hub drift rules are audited in <code>ws-check-harness</code> phases that compare root override wording against consumer defaults.</p>
       <div class="wiki-catlinks">
         <span class="wiki-catlinks-title">Categories:</span>
         <a href="../index.html">Workflow Skills</a>

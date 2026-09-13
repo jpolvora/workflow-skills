@@ -89,8 +89,8 @@
       <div class="wiki-domain-section" data-domain="harness">
         <div class="wiki-domain-header"><span class="wiki-domain-name">HARNESS</span><span class="wiki-domain-badge">2</span></div>
         <ul class="wiki-domain-topics">
-        <li class="wiki-nav-item"><a href="../harness/diagnostics-and-benchmarks.html" class="wiki-nav-link" title="Diagnostics &amp; Benchmarks (`harness` — part 2)"><span class="wiki-topic-marker">•</span><span class="wiki-nav-text">Diagnostics &amp; Benchmarks (`harness` — part 2)</span></a></li>
-        <li class="wiki-nav-item"><a href="../harness/install-and-hub.html" class="wiki-nav-link" title="Install &amp; Hub (`harness` — part 1)"><span class="wiki-topic-marker">•</span><span class="wiki-nav-text">Install &amp; Hub (`harness` — part 1)</span></a></li>
+        <li class="wiki-nav-item"><a href="../harness/diagnostics-and-benchmarks.html" class="wiki-nav-link" title="Diagnostics &amp; Benchmarks (`harness`)"><span class="wiki-topic-marker">•</span><span class="wiki-nav-text">Diagnostics &amp; Benchmarks (`harness`)</span></a></li>
+        <li class="wiki-nav-item"><a href="../harness/install-and-hub.html" class="wiki-nav-link" title="Install &amp; Hub (`harness`)"><span class="wiki-topic-marker">•</span><span class="wiki-nav-text">Install &amp; Hub (`harness`)</span></a></li>
         </ul>
       </div>
       <div class="wiki-domain-section" data-domain="delivery">
@@ -206,7 +206,7 @@
       </tr>
       <tr>
         <th>Provenance</th>
-        <td>Specs 0001, 0006</td>
+        <td>Specs 0001, 0006, 0060</td>
       </tr>
       <tr>
         <th>Framework</th>
@@ -219,23 +219,31 @@
     </tbody>
   </table>
 </aside>
+<p>&gt; Provenance: <code>.agents/skills/ws-shared/runtime/scm-provider-contract.md</code>, <code>.agents/skills/ws-spec-provider-github/SKILL.md</code>, <code>.agents/skills/ws-spec-provider-azure-devops/SKILL.md</code>, <code>.agents/skills/ws-spec-provider-local/SKILL.md</code>, <code>test/test-provider-parity.js</code>, living synthesis of specs 0001, 0006, 0060.</p>
 <div class="wiki-toc-box" id="toc" role="navigation" aria-label="Table of contents">
   <div class="wiki-toc-header">
     <span class="wiki-toc-title">Contents</span>
     <button type="button" class="wiki-toc-toggle" id="wiki-toc-toggle" aria-expanded="true">[hide]</button>
   </div>
   <ol class="wiki-toc-list" id="wiki-toc-list">
-    <li class="wiki-toc-item"><a href="#feature-overview"><span class="wiki-toc-number">1</span> <span class="wiki-toc-text">Feature Overview</span></a></li>
-    <li class="wiki-toc-item"><a href="#business-rules-logic"><span class="wiki-toc-number">2</span> <span class="wiki-toc-text">Business Rules &amp; Logic</span></a></li>
-    <li class="wiki-toc-item"><a href="#technical-architecture"><span class="wiki-toc-number">3</span> <span class="wiki-toc-text">Technical Architecture</span></a></li>
+    <li class="wiki-toc-item"><a href="#feature"><span class="wiki-toc-number">1</span> <span class="wiki-toc-text">Feature</span></a></li>
+    <li class="wiki-toc-item"><a href="#how-it-works"><span class="wiki-toc-number">2</span> <span class="wiki-toc-text">How it works</span></a></li>
+    <li class="wiki-toc-item"><a href="#backend"><span class="wiki-toc-number">3</span> <span class="wiki-toc-text">Backend</span></a></li>
+    <li class="wiki-toc-item"><a href="#third-party-services"><span class="wiki-toc-number">4</span> <span class="wiki-toc-text">Third-party services</span></a></li>
   </ol>
 </div>
-<h2 id="feature-overview">Feature Overview <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/providers/scm-providers.md" target="_blank" rel="noopener" title="Edit section: Feature Overview">[edit]</a></span></h2>
-<p>Three provider skills own all tracker and PR intents behind one parity contract, so orchestrators never embed host CLI names: <code>ws-spec-provider-github</code> (issues → specs, PR ops), <code>ws-spec-provider-azure-devops</code> (work items → specs, PR ops), and <code>ws-spec-provider-local</code> (hand-written <code>*.spec.md</code> detection, normalization, registration). Exactly one provider is active per project (<code>providers.active</code>); the PR/thread host (<code>providers.scm</code>) may differ, supporting hybrid local-specs plus remote-PRs. <code>fetch-to-spec</code> downloads tracker images and attachments identically on both remotes.</p>
-<h2 id="business-rules-logic">Business Rules &amp; Logic <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/providers/scm-providers.md" target="_blank" rel="noopener" title="Edit section: Business Rules &amp; Logic">[edit]</a></span></h2>
-<ul><li><strong>Intent parity</strong>: GitHub and Azure DevOps implement the same required intents (<code>fetch-to-spec</code>, <code>validate-auth</code>, <code>create-pr</code>, <code>list/resolve-thread</code>, <code>merge-pr</code>); only URL discovery may differ, and one-sided behavior fails closed.</li><li><strong>Local registration first</strong>: local writes stay <code>source: local</code> and must register <code>{specsDir}/{slug}.spec.md</code> before any <code>{plansDir}</code> copy; the working branch is never deleted by default.</li><li><strong>Attachment tolerance</strong>: per-file 404/403/timeout, size caps, and disallowed hosts/types are tolerated per file; auth failures STOP the fetch.</li><li><strong>Thread resolution is explicit</strong>: posting a fix reply never marks a thread resolved — the <code>resolveReviewThread</code> GraphQL mutation (with <code>threadId</code> from the <code>reviewThreads</code> node) must run after reply/commit verification, with graceful fallback when the id is unavailable.</li></ul>
-<h2 id="technical-architecture">Technical Architecture <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/providers/scm-providers.md" target="_blank" rel="noopener" title="Edit section: Technical Architecture">[edit]</a></span></h2>
-<ul><li><strong>Contract</strong>: <code>ws-shared/runtime/scm-provider-contract.md</code> is the normative intent surface; converters are provider-local, ingestion helpers are shared under <code>ws-shared/scripts</code>.</li><li><strong>Artifacts</strong>: <code>{specStem}.assets/{NN}-{kind}-{stem}{ext}</code> plus <code>manifest.json</code>, a <code>## Visual References</code> spec section, and a <code>{us-dir}/attachments</code> register copy.</li><li><strong>CLI</strong>: <code>gh api graphql ... resolveReviewThread(input:{threadId})</code>, <code>register_local_spec.cjs --source</code>, <code>validate-auth</code> preflight in ship/fix flows.</li><li><strong>Provenance</strong>: living synthesis of specs 0001, 0006 (thread resolve), and 0060.</li></ul>
+<h2 id="feature">Feature <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/providers/scm-providers.md" target="_blank" rel="noopener" title="Edit section: Feature">[edit]</a></span></h2>
+<p>Three provider skills own all tracker and pull-request intents behind one parity contract so orchestrators never embed host CLI names directly. <code>ws-spec-provider-github</code> converts GitHub issues to specs and performs PR operations. <code>ws-spec-provider-azure-devops</code> converts Azure DevOps work items to specs with the same intent surface. <code>ws-spec-provider-local</code> detects hand-written <code>*.spec.md</code> files, normalizes them, and registers them into the workflow tree. Exactly one provider is active per project through <code>providers.active</code>, while the PR and review-thread host (<code>providers.scm</code>) may differ, supporting hybrid flows such as local specs with GitHub pull requests. Shared <code>fetch-to-spec</code> behavior downloads tracker images and attachments identically on both remote providers.</p>
+<h2 id="how-it-works">How it works <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/providers/scm-providers.md" target="_blank" rel="noopener" title="Edit section: How it works">[edit]</a></span></h2>
+<p>GitHub and Azure DevOps must implement the same required intents: <code>validate-auth</code>, <code>fetch-to-spec</code>, <code>create-pr</code>, <code>list-threads</code>, <code>sweep-prior-work</code>, <code>check-pr-status</code>, <code>resolve-thread</code>, <code>comment-issue</code>, and <code>merge-pr</code>. Only URL discovery may differ; one-sided behavior fails closed in <code>test/test-provider-parity.js</code>. Local provider writes stay <code>source: local</code> and must register <code>{specsDir}/{slug}.spec.md</code> before any <code>{plansDir}</code> copy is created. The working branch is never deleted after merge.</p>
+<p>Attachment ingestion tolerates per-file 404, 403, timeout, size caps, and disallowed hosts or MIME types without aborting the entire fetch, but authentication failures STOP the run. Files land in <code>{specStem}.assets/</code> with a <code>manifest.json</code>, patch a <code>## Visual References</code> section into the spec, and copy the sidecar to <code>{us-dir}/attachments/</code> at register time.</p>
+<p>Thread resolution is explicit: posting a fix reply never marks a thread resolved. The <code>resolveReviewThread</code> GraphQL mutation (GitHub) or equivalent ADO procedure must run after reply and commit verification using the <code>threadId</code> from structured thread listings. Dry-run callers skip remote mutation. Resolution comments must describe the correction, not hash-only or filler text.</p>
+<p>Local provider delegates PR intents to <code>providers.scm</code>; <code>scm: &quot;local&quot;</code> is rejected for PR, thread, and merge operations.</p>
+<h2 id="backend">Backend <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/providers/scm-providers.md" target="_blank" rel="noopener" title="Edit section: Backend">[edit]</a></span></h2>
+<p>The normative contract lives in <code>ws-shared/runtime/scm-provider-contract.md</code>. Converters are provider-local; shared ingestion helpers live under <code>ws-shared/scripts</code>. Registration uses <code>register_local_spec.cjs --source</code> after <code>ws-spec-write</code> produces the specs-of-record file. Ship and fix flows run <code>validate-auth</code> preflight before mutating remotes.</p>
+<p>CLI examples include GitHub GraphQL <code>resolveReviewThread(input:{threadId})</code> and ADO WIT comment APIs at documented preview versions. Parity verification is <code>node test/test-provider-parity.js</code>, also wired into <code>npm run test</code>.</p>
+<h2 id="third-party-services">Third-party services <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/providers/scm-providers.md" target="_blank" rel="noopener" title="Edit section: Third-party services">[edit]</a></span></h2>
+<p>GitHub and Azure DevOps are the supported SCM backends for authentication, issue or work-item fetch, pull-request creation, review-thread listing and resolution, CI status checks, and merge operations. Orchestrators call intents by name; host-specific CLI recipes (<code>gh</code>, <code>az</code>, REST, or GraphQL) stay inside each provider&#39;s <code>INTENTS.md</code>. Switching providers without user confirmation is forbidden when auth or SCM resolution fails.</p>
       <div class="wiki-catlinks">
         <span class="wiki-catlinks-title">Categories:</span>
         <a href="../index.html">Workflow Skills</a>

@@ -1,21 +1,21 @@
 # Practices & Tooling (`engineering`)
 
-## Feature Overview
+> Provenance: `SKILL_AUTHORING.md`, `.agents/skills/ws-karpathy-guidelines/SKILL.md`, `.agents/skills/ws-fable-method/SKILL.md`, `.agents/skills/ws-senior-developer/SKILL.md`, `.agents/skills/ws-megabrain/SKILL.md`, `package.json` engines, living synthesis of specs 0008, 0011, 0025, 0042, 0055, 0058, 0063, 0072, 0074.
 
-Engineering practices keep diffs surgical and the toolchain uniform: `ws-karpathy-guidelines` (minimum code, touched-lines traceability), `ws-tdah` (action-first reply shape), `ws-fable-method` (evidence-based investigate loop), and `ws-senior-developer` (scope, anti-reinvention, ambiguity stops, pre-ship proof) form the always-applied core, authored under `SKILL_AUTHORING.md` progressive-disclosure rules (3-tier, tool-first, zero-sediment). `ws-megabrain` handles spec-optional vibe coding by consuming those companions through capped specialists instead of duplicating them. All packaged helper scripts run on a single Node 22 `.cjs` runtime; Windows users get a native PowerShell config editor; global installs project per-skill symlinks into host skill dirs.
+## Feature
 
-## Business Rules & Logic
+Engineering practices keep agent diffs surgical and the toolchain uniform across the skill package. `ws-karpathy-guidelines` enforces minimum code and touched-line traceability. `ws-tdah` shapes replies action-first for operational clarity. `ws-fable-method` runs an evidence-based investigate loop before mutating work. `ws-senior-developer` adds scope control, anti-reinvention stops, ambiguity gates, and pre-ship proof. All packaged skills follow `SKILL_AUTHORING.md` progressive-disclosure rules: three tiers, tool-first bodies, and zero sediment. `ws-megabrain` handles spec-optional vibe coding by routing through capped specialists instead of duplicating companion prose. The runtime standard is Node 22 `.cjs` helpers with a native PowerShell config editor on Windows and per-skill symlinks into host skill directories on global installs.
 
-- **Surgical scope**: touch only what the request requires; every changed line traces to it; orphans the change created are removed, unrelated dead code is mentioned but left alone.
-- **One runtime**: new `.py` helpers are forbidden; bash survives only as thin host adapters that exec node; `ws-check-harness` fails critical on any reappearing `.py`; the suite runs with Python absent from `PATH`.
-- **Config editor safety**: the GUI preserves `_comment*` keys and unmodeled fields, writes UTF-8 2-space JSON atomically after a `.bak` backup with a dirty guard, and exits cleanly on non-Windows/headless pointing at `ws-configure-project`.
-- **Megabrain deference**: defers whenever Spec-to-PR owns the session; reads at most two specialist references after mode/`user-gate`; cancels cleanly on gate dismiss.
-- **State hygiene**: nested telemetry maps serialize as YAML mappings (never Python-repr strings); duplicate `completedSteps` union-sort; step artifact `status` equals the per-step result via one derivation path; only `created`/`modified`/`deleted` flags accumulate.
-- **Git safety**: workflow cleanup detaches worktrees and deletes only `uswf-*` tags, never protected branches; failures never throw unhandled or corrupt telemetry.
+## How it works
 
-## Technical Architecture
+Surgical scope means touching only what the request requires, matching existing style, and ensuring every changed line traces to the request. Orphans created by the change are removed; unrelated dead code may be mentioned but is not deleted opportunistically. New helper scripts must be Node `.cjs`; reappearing `.py` helpers fail `ws-check-harness` critically, and the test suite runs with Python absent from `PATH`. Bash survives only as thin host adapters that exec Node per `tools.md` launcher rules.
 
-- **Practices**: `SKILL_AUTHORING.md`, `ws-megabrain/SKILL.md` (Router/Domain tables, `references/*.md` specialists, `REVERSE.md` archaeology-only), `cleanup_workflow_git.py` unified cleanup, `configure_autoload.py --write-root-agents/--check`.
-- **Runtime**: `.cjs` helpers over shared `ws-shared` scripts, zero npm runtime deps, `package.json` engines `node >= 22`; `runtime/scripts/Edit-WorkflowSkillsConfig.ps1` (WinForms, PS 5.1/7+, themes, tabbed hybrid layout with search; description precedence `_comment_<prop>` > schema > fallback).
-- **Fixes carried**: `update_state.py` serialization/duplicate keys, `workflow_state.cjs` artifact stamping + file-list accumulation, doctor ESM/`--json` contract, provider canonical tables with explicit python launchers.
-- **Provenance**: living synthesis of specs 0008, 0011, 0025, 0042, 0055, 0058, 0063, 0072, and 0074.
+The PowerShell config editor (`Edit-WorkflowSkillsConfig.ps1`) preserves `_comment*` keys and unmodeled JSON fields, writes UTF-8 two-space JSON atomically after a `.bak` backup with a dirty guard, and exits cleanly on non-Windows or headless hosts by pointing operators at `ws-configure-project`. Megabrain defers whenever Spec-to-PR owns the session, reads at most two specialist references after mode selection or `user-gate`, and cancels cleanly when a gate dismisses.
+
+Workflow state hygiene requires nested telemetry maps to serialize as YAML mappings rather than Python-repr strings, duplicate `completedSteps` entries to union-sort, step artifact `status` to equal the per-step result through one derivation path, and file-list flags to accumulate only `created`, `modified`, and `deleted`. Git cleanup detaches worktrees and deletes only `uswf-*` tags, never protected branches; failures must not throw unhandled or corrupt telemetry.
+
+## Backend
+
+Authoring guidance lives in `SKILL_AUTHORING.md`. Megabrain exposes Router and Domain tables in `SKILL.md` with `references/*.md` specialists and `REVERSE.md` for archaeology-only flows. Shared runtime scripts under `ws-shared/runtime/scripts/` include unified workflow git cleanup and autoload configuration helpers. `package.json` declares `engines.node >= 22` with zero npm runtime dependencies for skill scripts.
+
+The WinForms config editor supports PowerShell 5.1 and 7+, themed tabs, hybrid layout with search, and description precedence `_comment_<prop>` over JSON schema over fallback strings. Recent fixes consolidated state serialization, artifact stamping, file-list accumulation, doctor ESM and `--json` contracts, and provider canonical tables with explicit launcher prefixes in skill bodies.

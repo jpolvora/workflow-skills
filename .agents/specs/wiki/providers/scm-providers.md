@@ -1,19 +1,27 @@
 # SCM Providers (`providers`)
 
-## Feature Overview
+> Provenance: `.agents/skills/ws-shared/runtime/scm-provider-contract.md`, `.agents/skills/ws-spec-provider-github/SKILL.md`, `.agents/skills/ws-spec-provider-azure-devops/SKILL.md`, `.agents/skills/ws-spec-provider-local/SKILL.md`, `test/test-provider-parity.js`, living synthesis of specs 0001, 0006, 0060.
 
-Three provider skills own all tracker and PR intents behind one parity contract, so orchestrators never embed host CLI names: `ws-spec-provider-github` (issues → specs, PR ops), `ws-spec-provider-azure-devops` (work items → specs, PR ops), and `ws-spec-provider-local` (hand-written `*.spec.md` detection, normalization, registration). Exactly one provider is active per project (`providers.active`); the PR/thread host (`providers.scm`) may differ, supporting hybrid local-specs plus remote-PRs. `fetch-to-spec` downloads tracker images and attachments identically on both remotes.
+## Feature
 
-## Business Rules & Logic
+Three provider skills own all tracker and pull-request intents behind one parity contract so orchestrators never embed host CLI names directly. `ws-spec-provider-github` converts GitHub issues to specs and performs PR operations. `ws-spec-provider-azure-devops` converts Azure DevOps work items to specs with the same intent surface. `ws-spec-provider-local` detects hand-written `*.spec.md` files, normalizes them, and registers them into the workflow tree. Exactly one provider is active per project through `providers.active`, while the PR and review-thread host (`providers.scm`) may differ, supporting hybrid flows such as local specs with GitHub pull requests. Shared `fetch-to-spec` behavior downloads tracker images and attachments identically on both remote providers.
 
-- **Intent parity**: GitHub and Azure DevOps implement the same required intents (`fetch-to-spec`, `validate-auth`, `create-pr`, `list/resolve-thread`, `merge-pr`); only URL discovery may differ, and one-sided behavior fails closed.
-- **Local registration first**: local writes stay `source: local` and must register `{specsDir}/{slug}.spec.md` before any `{plansDir}` copy; the working branch is never deleted by default.
-- **Attachment tolerance**: per-file 404/403/timeout, size caps, and disallowed hosts/types are tolerated per file; auth failures STOP the fetch.
-- **Thread resolution is explicit**: posting a fix reply never marks a thread resolved — the `resolveReviewThread` GraphQL mutation (with `threadId` from the `reviewThreads` node) must run after reply/commit verification, with graceful fallback when the id is unavailable.
+## How it works
 
-## Technical Architecture
+GitHub and Azure DevOps must implement the same required intents: `validate-auth`, `fetch-to-spec`, `create-pr`, `list-threads`, `sweep-prior-work`, `check-pr-status`, `resolve-thread`, `comment-issue`, and `merge-pr`. Only URL discovery may differ; one-sided behavior fails closed in `test/test-provider-parity.js`. Local provider writes stay `source: local` and must register `{specsDir}/{slug}.spec.md` before any `{plansDir}` copy is created. The working branch is never deleted after merge.
 
-- **Contract**: `ws-shared/runtime/scm-provider-contract.md` is the normative intent surface; converters are provider-local, ingestion helpers are shared under `ws-shared/scripts`.
-- **Artifacts**: `{specStem}.assets/{NN}-{kind}-{stem}{ext}` plus `manifest.json`, a `## Visual References` spec section, and a `{us-dir}/attachments` register copy.
-- **CLI**: `gh api graphql ... resolveReviewThread(input:{threadId})`, `register_local_spec.cjs --source`, `validate-auth` preflight in ship/fix flows.
-- **Provenance**: living synthesis of specs 0001, 0006 (thread resolve), and 0060.
+Attachment ingestion tolerates per-file 404, 403, timeout, size caps, and disallowed hosts or MIME types without aborting the entire fetch, but authentication failures STOP the run. Files land in `{specStem}.assets/` with a `manifest.json`, patch a `## Visual References` section into the spec, and copy the sidecar to `{us-dir}/attachments/` at register time.
+
+Thread resolution is explicit: posting a fix reply never marks a thread resolved. The `resolveReviewThread` GraphQL mutation (GitHub) or equivalent ADO procedure must run after reply and commit verification using the `threadId` from structured thread listings. Dry-run callers skip remote mutation. Resolution comments must describe the correction, not hash-only or filler text.
+
+Local provider delegates PR intents to `providers.scm`; `scm: "local"` is rejected for PR, thread, and merge operations.
+
+## Backend
+
+The normative contract lives in `ws-shared/runtime/scm-provider-contract.md`. Converters are provider-local; shared ingestion helpers live under `ws-shared/scripts`. Registration uses `register_local_spec.cjs --source` after `ws-spec-write` produces the specs-of-record file. Ship and fix flows run `validate-auth` preflight before mutating remotes.
+
+CLI examples include GitHub GraphQL `resolveReviewThread(input:{threadId})` and ADO WIT comment APIs at documented preview versions. Parity verification is `node test/test-provider-parity.js`, also wired into `npm run test`.
+
+## Third-party services
+
+GitHub and Azure DevOps are the supported SCM backends for authentication, issue or work-item fetch, pull-request creation, review-thread listing and resolution, CI status checks, and merge operations. Orchestrators call intents by name; host-specific CLI recipes (`gh`, `az`, REST, or GraphQL) stay inside each provider's `INTENTS.md`. Switching providers without user confirmation is forbidden when auth or SCM resolution fails.

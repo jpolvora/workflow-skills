@@ -1,19 +1,21 @@
 # Spec Lifecycle (`specs`)
 
-## Feature Overview
+> Provenance: `.agents/skills/ws-spec-write/SKILL.md`, `.agents/skills/ws-spec-format/scripts/validate_spec.cjs`, `.agents/skills/ws-spec-organizer/scripts/resolve_spec_path.cjs`, `.agents/skills/ws-spec-index/SKILL.md`, living synthesis of specs 0009, 0040, 0045, 0051, 0053, 0065.
 
-Specs are point-in-time delivery contracts authored in free text or reformulated from tracker issues, then planned, listed, indexed, and archived through a specialist family fronted by one router: `ws-spec-manager` (`/spec`) dispatches to `ws-spec-write` (author), `ws-spec-format` (schema/validator), `ws-spec-organizer` (paths/prefixes), `ws-spec-index` (`index.PRD` tracker), `ws-spec-list` (dual-board inventory), `ws-spec-explain` (read-only panorama), `ws-spec-update` (drift fix), and `ws-spec-archive` (harvest + cleanup). Creation flows `ws-spec-write` → `ws-spec-organizer` → `ws-spec-format` → `ws-spec-index track`. `ws-spec-list` keeps the human Spec Board (`{specsDir}/*.spec.md`) strictly separate from the transient Plan Board (`{plansDir}` runs) with gated destructive actions.
+## Feature
 
-## Business Rules & Logic
+Specifications are point-in-time delivery contracts. Operators author them in free text or reformulate tracker issues into testable acceptance criteria, then route them through planning, indexing, listing, explanation, drift repair, and archival. The `ws-spec-manager` router (`/spec`) dispatches to specialists without reimplementing their logic: `ws-spec-write` authors specs, `ws-spec-format` validates schema, `ws-spec-organizer` resolves paths and prefix ordering, `ws-spec-index` maintains `index.PRD`, `ws-spec-list` inventories both boards, `ws-spec-explain` provides read-only panorama, `ws-spec-update` fixes surgical drift, and `ws-spec-archive` harvests history and cleans shipped plan directories. Creation flows run `ws-spec-write` → `ws-spec-organizer` → `ws-spec-format` → `ws-spec-index track`. The human Spec Board (`{specsDir}/*.spec.md`) stays strictly separate from the transient Plan Board (`{plansDir}` runs), with gated destructive actions on the list skill.
 
-- **Authoring closure**: authoring mode requires Out of Scope, Assumptions, DoR, Validation & Observation Notes, and Negative Scenarios; every requirement maps to ≥1 acceptance criterion or explicit out-of-scope; `validate_spec.cjs --mode=authoring` must pass, gray areas (≥2 product options) get a `{slug}.context.md` companion.
-- **TDD execution**: plans are interrogated against DoR; implementation is failing-tests-first with positive and negative scenario verification; `ws-spec-update` (delta spec) and `ws-spec-index sync` (phase status) are never interchanged.
-- **Prefix ordering is opt-in**: `plans.enforceSpecPrefixOrdering: false` by default; when true, specs-of-record use `NNNN-{slug}.spec.md` ordered by `specDate`/git first-add/mtime while frontmatter `slug` and `{plansDir}/{slug}/step-00` stay unprefixed; reorder is explicit `--apply` only, never auto-rename on install.
-- **Dispatcher only**: `ws-spec-manager` never reimplements specialist logic; slice specs for task-lifecycle work never create `{plansDir}` trees.
+## How it works
 
-## Technical Architecture
+Authoring mode requires sections for Out of Scope, Assumptions, Definition of Ready, Validation and Observation Notes, and Negative and Failing Test Scenarios. Every stated requirement maps to at least one acceptance criterion or an explicit out-of-scope row. `validate_spec.cjs --mode=authoring` must exit zero before registration proceeds. Gray areas with two or more product options get a `{slug}.context.md` companion that is never empty.
 
-- **Paths**: `{specsDir}` ← `plans.specsDir` (default `.agents/specs`); `resolve_spec_path.cjs` is the single path authority; `organize_specs.cjs --dry-run/--apply` with `git mv` index backtick updates.
-- **Tracking order**: `FEATURES.md` → `PLAN.md` → `PRODUCT.PRD` → `index.PRD`, skipping missing files with a note.
-- **Validation**: `validate_spec.cjs --mode=authoring|compat`, `test/test-spec-dor-tdd.js`, `test/test-ws-spec-manager.js`.
-- **Provenance**: living synthesis of specs 0009, 0040, 0045, 0051, 0053, and 0065.
+Plans are interrogated against DoR during the plan interview step. Implementation follows failing-tests-first discipline with positive and negative scenario verification. `ws-spec-update` (delta spec drift) and `ws-spec-index sync` (phase status) serve different purposes and must not be interchanged. Prefix ordering is opt-in via `plans.enforceSpecPrefixOrdering`; when true, specs-of-record use `NNNN-{slug}.spec.md` ordered by `specDate`, git first-add, or mtime, while frontmatter `slug` and `{plansDir}/{slug}/step-00` paths stay unprefixed. Reorder runs only through explicit `organize_specs.cjs --apply` with `git mv`; install never auto-renames existing files.
+
+The dispatcher never reimplements specialist scripts. Slice specs for task-lifecycle work never create `{plansDir}` trees.
+
+## Backend
+
+Path authority lives in `resolve_spec_path.cjs`, which reads `plans.specsDir` (default `.agents/specs`) and the prefix flag. `organize_specs.cjs` supports `--dry-run` and `--apply` with index backtick updates after moves. Tracking order for index operations walks `FEATURES.md` → `PLAN.md` → `PRODUCT.PRD` → `index.PRD`, skipping missing files with a note.
+
+Validation tooling includes `validate_spec.cjs --mode=authoring|compat`, covered by `test/test-spec-dor-tdd.js` and `test/test-ws-spec-manager.js`. Local registration copies specs into `{plansDir}/{slug}/step-00-*.spec.md` through `register_local_spec.cjs` after the specs-of-record file exists under `{specsDir}`.

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Diagnostics &amp; Benchmarks (`harness` — part 2)</title>
+<title>Diagnostics &amp; Benchmarks (`harness`)</title>
 <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
 <body class="wiki-page">
@@ -89,8 +89,8 @@
       <div class="wiki-domain-section" data-domain="harness">
         <div class="wiki-domain-header"><span class="wiki-domain-name">HARNESS</span><span class="wiki-domain-badge">2</span></div>
         <ul class="wiki-domain-topics">
-        <li class="wiki-nav-item active"><a href="diagnostics-and-benchmarks.html" class="wiki-nav-link active" title="Diagnostics &amp; Benchmarks (`harness` — part 2)"><span class="wiki-topic-marker">▸</span><span class="wiki-nav-text">Diagnostics &amp; Benchmarks (`harness` — part 2)</span></a></li>
-        <li class="wiki-nav-item"><a href="install-and-hub.html" class="wiki-nav-link" title="Install &amp; Hub (`harness` — part 1)"><span class="wiki-topic-marker">•</span><span class="wiki-nav-text">Install &amp; Hub (`harness` — part 1)</span></a></li>
+        <li class="wiki-nav-item active"><a href="diagnostics-and-benchmarks.html" class="wiki-nav-link active" title="Diagnostics &amp; Benchmarks (`harness`)"><span class="wiki-topic-marker">▸</span><span class="wiki-nav-text">Diagnostics &amp; Benchmarks (`harness`)</span></a></li>
+        <li class="wiki-nav-item"><a href="install-and-hub.html" class="wiki-nav-link" title="Install &amp; Hub (`harness`)"><span class="wiki-topic-marker">•</span><span class="wiki-nav-text">Install &amp; Hub (`harness`)</span></a></li>
         </ul>
       </div>
       <div class="wiki-domain-section" data-domain="delivery">
@@ -179,7 +179,7 @@
     <a href="https://github.com/jpolvora/workflow-skills/commits/develop/.agents/specs/wiki/harness/diagnostics-and-benchmarks.md" target="_blank" rel="noopener" class="wiki-tab" title="View commit history on GitHub">View history</a>
   </div>
 </div>
-    <article class="wiki-article wiki-toc"><h1>Diagnostics &amp; Benchmarks (<code>harness</code> — part 2)</h1>
+    <article class="wiki-article wiki-toc"><h1>Diagnostics &amp; Benchmarks (<code>harness</code>)</h1>
 <div class="wiki-tagline">From Workflow Skills Wiki, the living architecture &amp; domain knowledge base</div>
 <aside class="wiki-infobox" aria-label="Feature specification details">
   <div class="wiki-infobox-header">
@@ -206,7 +206,7 @@
       </tr>
       <tr>
         <th>Provenance</th>
-        <td>Specs 0003, 0012, 0014, 0019, 0020, 0026, 0030, 0036, 0039, 0041, 0056, 0059,</td>
+        <td>Specs 0003, 0012, 0014, 0019, 0020, 0026, 0030, 0036, 0039, 0041, 0056, 0059, 0064</td>
       </tr>
       <tr>
         <th>Framework</th>
@@ -219,23 +219,27 @@
     </tbody>
   </table>
 </aside>
+<p>&gt; Provenance: <code>.agents/skills/ws-doctor/SKILL.md</code>, <code>.agents/skills/ws-check-harness/SKILL.md</code>, <code>.agents/skills/ws-check-workflows/SKILL.md</code>, <code>.agents/skills/ws-benchmarks/SKILL.md</code>, living synthesis of specs 0003, 0012, 0014, 0019, 0020, 0026, 0030, 0036, 0039, 0041, 0056, 0059, 0064.</p>
 <div class="wiki-toc-box" id="toc" role="navigation" aria-label="Table of contents">
   <div class="wiki-toc-header">
     <span class="wiki-toc-title">Contents</span>
     <button type="button" class="wiki-toc-toggle" id="wiki-toc-toggle" aria-expanded="true">[hide]</button>
   </div>
   <ol class="wiki-toc-list" id="wiki-toc-list">
-    <li class="wiki-toc-item"><a href="#feature-overview"><span class="wiki-toc-number">1</span> <span class="wiki-toc-text">Feature Overview</span></a></li>
-    <li class="wiki-toc-item"><a href="#business-rules-logic"><span class="wiki-toc-number">2</span> <span class="wiki-toc-text">Business Rules &amp; Logic</span></a></li>
-    <li class="wiki-toc-item"><a href="#technical-architecture"><span class="wiki-toc-number">3</span> <span class="wiki-toc-text">Technical Architecture</span></a></li>
+    <li class="wiki-toc-item"><a href="#feature"><span class="wiki-toc-number">1</span> <span class="wiki-toc-text">Feature</span></a></li>
+    <li class="wiki-toc-item"><a href="#how-it-works"><span class="wiki-toc-number">2</span> <span class="wiki-toc-text">How it works</span></a></li>
+    <li class="wiki-toc-item"><a href="#backend"><span class="wiki-toc-number">3</span> <span class="wiki-toc-text">Backend</span></a></li>
   </ol>
 </div>
-<h2 id="feature-overview">Feature Overview <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/harness/diagnostics-and-benchmarks.md" target="_blank" rel="noopener" title="Edit section: Feature Overview">[edit]</a></span></h2>
-<p>Harness health is observable without running a delivery: <code>ws-doctor</code> (read-only diagnostic inspector with <code>--skill</code> scoping and a machine-parseable <code>--json</code> stdout contract), <code>ws-check-harness</code> (Phases 0–5c integrity auditor over routing, links, portability, digests, duplication, and topology), and <code>ws-check-workflows</code> (FSM simulation over step continuity, state isolation, and provider dispatch) form the verification chain, with <code>ws-benchmarks</code> managing frozen-fixture evolution reports on explicit invoke only. <code>ws-cleanup</code> removes disposable leftovers behind a <code>user-gate</code>; an opt-in runtime audit wrapper observes deliveries and proposes upstream issues without mutating them. Host capability binding probes the active host once per workflow and caches portable tool aliases.</p>
-<h2 id="business-rules-logic">Business Rules &amp; Logic <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/harness/diagnostics-and-benchmarks.md" target="_blank" rel="noopener" title="Edit section: Business Rules &amp; Logic">[edit]</a></span></h2>
-<ul><li><strong>Read-only first</strong>: <code>ws-doctor</code> edits nothing and runs path/script/reference checks even without config (reporting config-unavailable + recommending <code>ws-configure-project</code>); it never replaces check-harness phases or <code>ws-show-harness</code>.</li><li><strong>Single JSON on stdout</strong>: <code>doctor.js --json</code> emits exactly one JSON object on stdout; warnings/usage go to stderr; skill-local ESM marker keeps copied installs loadable without touching root <code>package.json</code>.</li><li><strong>Normative singles</strong>: duplicated normative blocks fail <code>ws-check-harness</code>; path recipes resolve consumer hub from <code>--repo-root</code>/cwd probe (never <code>__file__</code>), expand <code>{skillsRoot}</code> local-first, and keep <code>{sharedDir}</code>/<code>{skillsRoot}</code> independent.</li><li><strong>Autoload is explicit</strong>: effective <code>autoload</code> is false unless explicitly true; when true the consumer root <code>AGENTS.md</code> must exist and delegate to <code>autoload.md</code>, else the harness fails closed; the installer never creates root files.</li><li><strong>Benchmarks never auto-run</strong>: <code>ws-benchmarks</code> acts only on explicit invoke with a six-action gate (View Evolution Report recommended); static runs are fully scripted with no product writes, live runs are sandboxed with <code>dryRun</code> and no push/PR; regressions fail compare.</li><li><strong>Audit is observer-only</strong>: zero overhead when <code>defaults.enableAuditing</code> is false; end-of-run findings propose an upstream issue through <code>user-gate</code> and never auto-file or block completion alone.</li><li><strong>Host binding</strong>: one probe per workflow cached in gitignored <code>host-capabilities.json</code>; <code>autoMode</code> emits zero modal/markdown gates; contracts stay brand-neutral.</li></ul>
-<h2 id="technical-architecture">Technical Architecture <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/harness/diagnostics-and-benchmarks.md" target="_blank" rel="noopener" title="Edit section: Technical Architecture">[edit]</a></span></h2>
-<ul><li><strong>Tools</strong>: <code>doctor.js</code> (<code>resolveCitedPath</code>, explicit <code>python|node|bash</code> recipes, <code>py_compile</code>/Node-syntax/<code>bash -n</code>), <code>validate_state.cjs</code>, <code>detect_specs_dir.py</code> (ported to shared resolver), <code>benchmarks_manager.cjs --check/--list/--evolution/--update-comparison/--compare/--snapshot</code>, <code>audit_log.js</code> draft-suggestions.</li><li><strong>Reports</strong>: <code>benchmarks/results/BENCHMARK_EVOLUTION.md</code> + <code>table-&lt;version&gt;.md</code> (score/time/tokens/model/verdict), <code>report.schema.json</code> (dimensions, index, perAc, sensor, diffRange, verdict), <code>{us-dir}/audit-{slug}-{timestamp}.log.md</code>.</li><li><strong>Configuration</strong>: <code>defaults.enableAuditing</code> / <code>defaults.autoload</code> (both default false), <code>defaults.modelsPreset</code> / <code>modelPresets</code> / <code>stepModels</code>, <code>defaults.hostAdapter.mode</code>, <code>contextBudget</code>, <code>plan.index.json</code>, <code>run.json</code>.</li><li><strong>Provenance</strong>: living synthesis of specs 0003, 0012, 0014, 0019, 0020, 0026, 0030, 0036, 0039, 0041, 0056, 0059, and 0064.</li></ul>
+<h2 id="feature">Feature <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/harness/diagnostics-and-benchmarks.md" target="_blank" rel="noopener" title="Edit section: Feature">[edit]</a></span></h2>
+<p>Harness health is observable without running a full delivery. <code>ws-doctor</code> provides a read-only diagnostic inspector with optional <code>--skill</code> scoping and a machine-parseable <code>--json</code> stdout contract. <code>ws-check-harness</code> runs Phases 0 through 5c as an integrity auditor over routing, links, portability, digests, duplication, and topology. <code>ws-check-workflows</code> simulates FSM step continuity, state isolation, and provider dispatch. <code>ws-benchmarks</code> manages frozen-fixture evolution reports on explicit invoke only. <code>ws-cleanup</code> removes disposable workflow leftovers behind a <code>user-gate</code>. An opt-in runtime audit wrapper observes deliveries and proposes upstream issues without mutating consumer trees. Host capability binding probes the active host once per workflow and caches portable tool aliases.</p>
+<h2 id="how-it-works">How it works <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/harness/diagnostics-and-benchmarks.md" target="_blank" rel="noopener" title="Edit section: How it works">[edit]</a></span></h2>
+<p><code>ws-doctor</code> edits nothing. It runs path, script, and reference checks even when project config is missing, reporting config-unavailable status and recommending <code>ws-configure-project</code>. It does not replace <code>ws-check-harness</code> phases or <code>ws-show-harness</code> inventory. The <code>doctor.js --json</code> flag emits exactly one JSON object on stdout; warnings and usage text go to stderr. A skill-local ESM marker keeps copied installs loadable without modifying root <code>package.json</code>.</p>
+<p>Duplicated normative blocks fail <code>ws-check-harness</code>. Path recipes resolve the consumer hub from <code>--repo-root</code> or cwd probe, never from <code>__file__</code> inside a managed copy. Token expansion keeps <code>{skillsRoot}</code> local-first and <code>{sharedDir}</code> independent. Effective <code>defaults.autoload</code> is false unless explicitly true; when true, a consumer root <code>AGENTS.md</code> must exist and delegate to <code>autoload.md</code>, otherwise the harness fails closed. The installer never creates root agent index files.</p>
+<p>Benchmarks never auto-run. <code>ws-benchmarks</code> acts only on explicit invoke behind a six-action gate where View Evolution Report is recommended. Static benchmark runs are fully scripted with no product writes; live runs stay sandboxed with <code>dryRun</code> and no push or PR. Regressions fail comparison against frozen tables. The audit wrapper adds zero overhead when <code>defaults.enableAuditing</code> is false; end-of-run findings propose an upstream issue through <code>user-gate</code> and never auto-file or block completion alone. Host binding runs one probe per workflow, caches results in gitignored <code>host-capabilities.json</code>, and keeps contracts brand-neutral with zero modal gates in <code>autoMode</code>.</p>
+<h2 id="backend">Backend <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/harness/diagnostics-and-benchmarks.md" target="_blank" rel="noopener" title="Edit section: Backend">[edit]</a></span></h2>
+<p>Diagnostic tooling centers on <code>doctor.js</code> with <code>resolveCitedPath</code>, explicit <code>python|node|bash</code> recipe checks, and syntax probes via <code>py_compile</code>, Node parsing, or <code>bash -n</code>. Workflow integrity uses <code>validate_state.cjs</code>. Benchmark management runs through <code>benchmarks_manager.cjs</code> with flags such as <code>--check</code>, <code>--list</code>, <code>--evolution</code>, <code>--update-comparison</code>, <code>--compare</code>, and <code>--snapshot</code>. Audit drafts emit through <code>audit_log.js</code>.</p>
+<p>Reports land in <code>benchmarks/results/BENCHMARK_EVOLUTION.md</code> plus versioned <code>table-&lt;version&gt;.md</code> files with score, time, tokens, model, and verdict columns governed by <code>report.schema.json</code> dimensions. Per-run audit logs use <code>{us-dir}/audit-{slug}-{timestamp}.log.md</code>. Configuration keys include <code>defaults.enableAuditing</code>, <code>defaults.autoload</code>, model preset bundles, <code>defaults.hostAdapter.mode</code>, context budget limits, <code>plan.index.json</code>, and <code>run.json</code>.</p>
       <div class="wiki-catlinks">
         <span class="wiki-catlinks-title">Categories:</span>
         <a href="../index.html">Workflow Skills</a>
