@@ -245,6 +245,7 @@ function computeComplexityClass({ refs, acCount, openQuestions, schemaApiTenancy
   const refList = [...refs];
   const docsOnly = refList.length > 0 && refList.every(isDocsTestOnlyRef);
   if (docsOnly && acCount <= 6 && !openQuestions && !schemaApiTenancy) return 'simple';
+  if (!refList.length && acCount <= 2 && !openQuestions && !schemaApiTenancy) return 'simple';
   if (schemaApiTenancy) return 'complex';
   return 'standard';
 }
@@ -615,7 +616,6 @@ function main() {
     : path.dirname(specPath);
   fs.mkdirSync(outputDir, { recursive: true });
 
-  const execMode = config.defaults?.enableDag === true && recommendedPipeline === 'standard' && !thresholdResult.allWithin ? 'dag' : 'sequential';
   const openQuestions = hasOpenQuestions(body);
   const schemaApiTenancy = hasSchemaApiTenancy(body);
   const complexityClass = computeComplexityClass({
@@ -624,7 +624,12 @@ function main() {
     openQuestions,
     schemaApiTenancy,
   });
-  if (complexityClass === 'simple') reasoningParts.push('Complexity class `simple`: docs/test-only refs, AC <= 6, no Open Questions, no schema/API/tenancy.');
+  if (complexityClass === 'complex' && recommendedPipeline === 'lite') {
+    recommendedPipeline = 'standard';
+    reasoningParts.push('Complexity class `complex` forces `standard` pipeline: lite has no interview step to resolve schema/API/tenancy.');
+  }
+  const execMode = config.defaults?.enableDag === true && recommendedPipeline === 'standard' && !thresholdResult.allWithin ? 'dag' : 'sequential';
+  if (complexityClass === 'simple') reasoningParts.push('Complexity class `simple`: docs/test-only refs (or zero refs with AC <= 2), AC <= 6, no Open Questions, no schema/API/tenancy.');
   else reasoningParts.push(`Complexity class \`${complexityClass}\`: uncertain or non-simple scope defaults to standard or higher.`);
   const runInterview = complexityClass === 'complex' || (recommendedPipeline === 'standard' && (metrics.layers > 2 || openQuestions));
   const runTesting = config.defaults?.skipTesting !== true;

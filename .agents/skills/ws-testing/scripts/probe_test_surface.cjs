@@ -38,17 +38,24 @@ function walk(root) {
     const { spawnSync } = require('child_process');
     const ls = spawnSync('git', ['ls-files', '-z', '--cached', '--others', '--exclude-standard'], { cwd: root, encoding: 'buffer', maxBuffer: 10 * 1024 * 1024 });
     if (ls.status === 0 && ls.stdout && ls.stdout.length) {
-      return String(ls.stdout).split('\0').filter(Boolean).map((file) => path.join(root, file));
+      return String(ls.stdout).split('\0').filter(Boolean).map((file) => path.join(root, file)).filter((full) => {
+        try {
+          return fs.existsSync(full) && fs.statSync(full).isFile();
+        } catch {
+          return false;
+        }
+      });
     }
   } catch {
     // fall through to filesystem walk
   }
+  const ignoredDirs = new Set(['.git', 'node_modules', 'dist', 'coverage', 'benchmarks']);
   const files = [];
   const stack = [root];
   while (stack.length) {
     const current = stack.pop();
     for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
-      if (['.git', 'node_modules'].includes(entry.name)) continue;
+      if (ignoredDirs.has(entry.name)) continue;
       const full = path.join(current, entry.name);
       if (entry.isDirectory()) stack.push(full);
       else files.push(full);

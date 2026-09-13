@@ -41,7 +41,7 @@ function parseArgs(argv) {
 function section(text, heading) {
   const normalized = text.replace(/\r\n?/g, '\n');
   const escaped = heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const match = normalized.match(new RegExp(`^(#{2,4})\\s+${escaped}\\s*$\\n([\\s\\S]*?)(?=^\\1\\s+|$)`, 'mi'));
+  const match = normalized.match(new RegExp(`^(#{2,4})\\s+${escaped}\\s*$\\n([\\s\\S]*?)(?=^\\1\\s+|(?![\\s\\S]))`, 'mi'));
   if (match) return `${match[1]} ${heading}\n${match[2].replace(/\s*$/, '\n')}`;
   const start = normalized.search(new RegExp(`^#{2,4}\\s+${escaped}\\s*$`, 'mi'));
   if (start < 0) throw new Error(`required section not found: ${heading}`);

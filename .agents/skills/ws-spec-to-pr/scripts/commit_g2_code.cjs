@@ -3,9 +3,10 @@
 
 /**
  * commit_g2_code.cjs — mechanical G2-code helper.
- * Stages path-scoped files_touched (minus plansDir / gitignored / preExistingDirty),
- * commits with a canonical message, links the SHA into ac-ledger.json (persisting
- * scoreState pre-step6), and appends state.commits. Empty stage → skip log, no commit.
+ * Stages path-scoped files_touched (minus plansDir / gitignored),
+ * commits with a canonical message, links the SHA into ac-ledger.json only for
+ * ACs with file evidence intersecting the staged candidates (or explicit --ac),
+ * and appends state.commits. Empty stage → skip log, no commit.
  */
 
 const fs = require('fs');
@@ -15,7 +16,7 @@ const { resolveConsumerContext, resolveConfiguredPath, toRepoRelative } = requir
 const { syncStateDualWrite } = require('../../ws-shared/runtime/scripts/workflow_state.cjs');
 
 function parseArgs(argv) {
-  const options = {};
+  const options = { ac: [] };
   for (let i = 0; i < argv.length; i += 1) {
     const token = argv[i];
     if (token === '--help' || token === '-h') {
@@ -23,7 +24,13 @@ function parseArgs(argv) {
       continue;
     }
     if (!token.startsWith('--')) throw new Error(`unknown argument: ${token}`);
-    options[token.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = argv[++i];
+    const key = token.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+    const value = argv[++i];
+    if (key === 'ac') {
+      options.ac.push(value);
+      continue;
+    }
+    options[key] = value;
   }
   return options;
 }
@@ -40,7 +47,7 @@ function isIgnored(repoRoot, file) {
 function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help) {
-    process.stdout.write('Usage: commit_g2_code.cjs --state FILE --step N --message MSG [--ledger FILE] [--slug SLUG]\n');
+    process.stdout.write('Usage: commit_g2_code.cjs --state FILE --step N --message MSG [--ledger FILE] [--slug SLUG] [--ac AC1 --ac AC2]\n');
     return;
   }
   if (!options.state || !options.step || !options.message) throw new Error('--state, --step, and --message are required');
@@ -83,20 +90,39 @@ function main() {
   syncStateDualWrite(statePath, state);
   const ledgerRel = options.ledger || path.join(path.dirname(statePath), 'ac-ledger.json');
   const ledgerPath = path.resolve(repoRoot, ledgerRel);
+  let linkedAcs = [];
   if (fs.existsSync(ledgerPath)) {
-    const acIds = (state.acLedger?.acceptanceCriteria || JSON.parse(fs.readFileSync(ledgerPath, 'utf8')).acceptanceCriteria || []).map((row) => row.id);
-    if (acIds.length) {
+    let rows = [];
+    try {
+      const ledger = JSON.parse(fs.readFileSync(ledgerPath, 'utf8'));
+      rows = ledger.acceptanceCriteria || [];
+    } catch {
+      rows = [];
+    }
+    if (Array.isArray(options.ac) && options.ac.length) {
+      linkedAcs = [...new Set(options.ac)];
+    } else {
+      const candidateSet = new Set(candidates.map((f) => String(f).replace(/\\/g, '/').toLowerCase()));
+      linkedAcs = rows.filter((row) => Array.isArray(row.files) && row.files.some((f) => candidateSet.has(String(f.path || '').replace(/\\/g, '/').toLowerCase()))).map((row) => row.id);
+      if (!linkedAcs.length && rows.length) {
+        try {
+          process.stderr.write(`WARN: no AC file evidence intersects G2 candidates; linking skipped (use --ac to override)\n`);
+        } catch { /* ignore */ }
+      }
+    }
+    if (linkedAcs.length) {
       const link = spawnSync('node', [
         path.join(__dirname, 'ac_ledger.cjs'),
         'link', '--ledger', toRepoRelative(repoRoot, ledgerPath),
         '--event-id', `g2-commit-${sha}`,
-        ...acIds.flatMap((id) => ['--ac', id]),
+        ...linkedAcs.flatMap((id) => ['--ac', id]),
         '--commit', JSON.stringify({ sha, step: Number(options.step) }),
+        '--score-boundary', 'pre-step6',
       ], { cwd: repoRoot, encoding: 'utf8' });
       if (link.status !== 0) process.stderr.write(`WARN: ledger link failed: ${link.stderr}\n`);
     }
   }
-  process.stdout.write(`${JSON.stringify({ ok: true, sha, step: Number(options.step) })}\n`);
+  process.stdout.write(`${JSON.stringify({ ok: true, sha, step: Number(options.step), linkedAcs })}\n`);
 }
 
 try {

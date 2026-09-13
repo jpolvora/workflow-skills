@@ -41,7 +41,8 @@ function candidateFiles(directory) {
 function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help) {
-    process.stdout.write('Usage: search_plan_history.cjs --slug SLUG|--keyword WORD [--json]\n');
+    process.stdout.write('Usage: search_plan_history.cjs --slug SLUG|--keyword WORD [--max-matches N] [--output FILE] [--json]\n');
+    process.stdout.write('  Returns top-N matches plus totalMatches; when totalMatches > matches.length, surface the count and narrow keywords.\n');
     return;
   }
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });

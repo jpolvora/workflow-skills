@@ -66,15 +66,23 @@ function main() {
       // ignore
     }
   }
-  const filesHash = sha256(JSON.stringify(filesTouched));
+  const filesHash = sha256(JSON.stringify({
+    created: [...(filesTouched.created || [])].sort(),
+    modified: [...(filesTouched.modified || [])].sort(),
+    deleted: [...(filesTouched.deleted || [])].sort(),
+  }));
   const manifest = {
     schemaVersion: 1,
     createdAt: new Date().toISOString(),
-    filesTouched,
+    filesTouched: {
+      created: [...(filesTouched.created || [])].sort(),
+      modified: [...(filesTouched.modified || [])].sort(),
+      deleted: [...(filesTouched.deleted || [])].sort(),
+    },
     filesHash,
     aliasResults,
     sabotage,
-    reuse: 'Steps 5/6/7 re-run alias/stack/sabotage commands only if files_touched changed; AC scoring, review, and tests still run.',
+    reuse: 'Steps 5/6/7 re-run alias/stack/sabotage commands only if files_touched changed; AC scoring, review, and tests still run. Compare current workflowManifest sorted hash to filesHash; match means reuse aliasResults/sabotage, mismatch means re-run.',
   };
   fs.mkdirSync(path.dirname(output), { recursive: true });
   const tmp = `${output}.tmp-${process.pid}-${Date.now()}`;

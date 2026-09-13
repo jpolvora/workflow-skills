@@ -592,6 +592,12 @@ function normalizeFileList(repoRoot, value) {
 
 const GIT_TRACKED_CACHE_TTL_MS = 5000;
 const gitTrackedCache = new Map();
+const GIT_PATH_CASE_INSENSITIVE = process.platform === 'win32';
+
+function trackedKey(value) {
+  const normalized = String(value).replace(/\\/g, '/');
+  return GIT_PATH_CASE_INSENSITIVE ? normalized.toLowerCase() : normalized;
+}
 
 function clearGitTrackedCache() {
   gitTrackedCache.clear();
@@ -617,17 +623,33 @@ function gitTrackedSet(repoRoot, { forceRefresh = false, ttlMs = GIT_TRACKED_CAC
       if (!buf || !buf.length) return;
       for (const entry of String(buf).split('\0')) {
         const clean = entry.trim().replace(/\\/g, '/');
-        if (clean) set.add(clean.toLowerCase());
+        if (clean) set.add(trackedKey(clean));
       }
     };
     addBuffer(ls.stdout);
     addBuffer(diff.stdout);
     if (status.stdout) {
       const raw = String(status.stdout).split('\0');
-      for (const entry of raw) {
-        if (entry.length < 4) continue;
+      for (let index = 0; index < raw.length; index += 1) {
+        const entry = raw[index];
+        if (!entry || entry.length < 4) continue;
+        const x = entry[0];
+        const y = entry[1];
         const file = entry.slice(3).trim().replace(/\\/g, '/');
-        if (file) set.add(file.toLowerCase());
+        if ((x === 'R' || y === 'R' || x === 'C' || y === 'C') && raw[index + 1]) {
+          if (file) set.add(trackedKey(file));
+          const other = String(raw[index + 1]).trim().replace(/\\/g, '/');
+          if (other) set.add(trackedKey(other));
+          index += 1;
+          continue;
+        }
+        if (file.includes(' -> ')) {
+          for (const part of file.split(' -> ').map((item) => item.trim()).filter(Boolean)) {
+            set.add(trackedKey(part));
+          }
+          continue;
+        }
+        if (file) set.add(trackedKey(file));
       }
     }
     gitTrackedCache.set(rootKey, { set, timestamp: now });
@@ -646,8 +668,8 @@ function intersectWithGit(repoRoot, files, options = {}) {
   const phantoms = [];
   for (const file of files) {
     const absolute = path.isAbsolute(file) ? file : path.resolve(repoRoot, file);
-    const lower = String(file).replace(/\\/g, '/').toLowerCase();
-    if (tracked.has(lower)) {
+    const key = trackedKey(String(file).replace(/\\/g, '/'));
+    if (tracked.has(key)) {
       kept.push(file);
       continue;
     }
@@ -683,13 +705,15 @@ function normalizeFilesTouched(output, options, repoRoot, fallbackArtifacts = []
     options.deleted !== undefined ? options.deleted : source.deleted,
   );
   const all = [...created, ...modified, ...deleted];
+  let phantoms = [];
   if (all.length) {
-    const { kept, phantoms } = intersectWithGit(repoRoot, all, options);
+    const intersected = intersectWithGit(repoRoot, all, options);
+    phantoms = intersected.phantoms;
     if (phantoms.length) {
-      const keepSet = new Set(kept.map((item) => item.toLowerCase()));
-      created = created.filter((item) => keepSet.has(item.toLowerCase()));
-      modified = modified.filter((item) => keepSet.has(item.toLowerCase()));
-      deleted = deleted.filter((item) => keepSet.has(item.toLowerCase()));
+      const keepSet = new Set(intersected.kept.map((item) => trackedKey(item)));
+      created = created.filter((item) => keepSet.has(trackedKey(item)));
+      modified = modified.filter((item) => keepSet.has(trackedKey(item)));
+      deleted = deleted.filter((item) => keepSet.has(trackedKey(item)));
       try {
         process.stderr.write(`NOTICE: dropped ${phantoms.length} phantom files_touched path(s) not in git: ${phantoms.join(', ')}\n`);
       } catch {
@@ -704,10 +728,11 @@ function normalizeFilesTouched(output, options, repoRoot, fallbackArtifacts = []
         created: normalizeFileList(repoRoot, existing),
         modified: [],
         deleted: [],
+        phantoms,
       };
     }
   }
-  return { created, modified, deleted };
+  return { created, modified, deleted, phantoms };
 }
 
 function redactSecrets(value) {
@@ -1491,7 +1516,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       fallbackArtifacts.push(path.join(specsDir, `${slug}.spec.md`));
       fallbackArtifacts.push(path.join(paths.usDir, 'ac-ledger.json'));
     }
-    const { created, modified, deleted } = normalizeFilesTouched(output, options, context.repoRoot, fallbackArtifacts);
+    const { created, modified, deleted, phantoms } = normalizeFilesTouched(output, options, context.repoRoot, fallbackArtifacts);
     const promptTokens = tokenCount(options, output, 'promptTokens');
     const completionTokens = tokenCount(options, output, 'completionTokens');
     applyFinishTelemetry(state, labels, step, {
@@ -1534,6 +1559,8 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       promptTokens,
       completionTokens,
       filesTouched: { created, modified, deleted },
+      phantoms: Array.isArray(phantoms) ? phantoms : [],
+      phantomCount: Array.isArray(phantoms) ? phantoms.length : 0,
       gateDecision,
       score: derivedScore,
       verdict: options.fableVerdict || null,
@@ -1859,17 +1886,24 @@ function runUpdateCli(config) {
     if (operation === 'finish-batch') {
       const spec = String(options.steps || '');
       if (!spec.trim()) throw new Error('finish-batch requires --steps "N:status:reason,..."');
-      const results = [];
-      for (const part of spec.split(',').map((item) => item.trim()).filter(Boolean)) {
+      const parsed = spec.split(',').map((item) => item.trim()).filter(Boolean).map((part) => {
         const [stepStr, status, ...reasonParts] = part.split(':');
         const step = Number(stepStr);
         if (!Number.isInteger(step)) throw new Error(`finish-batch invalid step in "${part}"`);
-        const reason = reasonParts.join(':');
+        return { part, step, status, reason: reasonParts.join(':') };
+      });
+      const results = [];
+      for (const { part, step, status, reason } of parsed) {
         const perStep = { ...options, step: String(step) };
         if (status) perStep.status = status;
         if (reason) perStep.reason = reason;
         delete perStep.steps;
-        results.push(performUpdate(config, 'finish', stateFile, perStep));
+        try {
+          results.push(performUpdate(config, 'finish', stateFile, perStep));
+        } catch (error) {
+          process.stderr.write(`ERROR: finish-batch failed at step ${step} after ${results.length} applied (${parsed.length} requested); no rollback; fix cause then re-run remaining steps\n`);
+          throw new Error(`finish-batch failed at step ${step} in "${part}": ${error.message}`);
+        }
       }
       process.stdout.write(`${JSON.stringify({ ok: true, type: 'finish-batch', results }, null, 2)}\n`);
       return;
@@ -2026,6 +2060,8 @@ module.exports = {
   atomicWrite,
   syncStateDualWrite,
   gitTrackedSet,
+  trackedKey,
+  GIT_PATH_CASE_INSENSITIVE,
   clearGitTrackedCache,
   normalizeFilesTouched,
   resolvePackageVersion,

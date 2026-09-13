@@ -347,11 +347,12 @@ function link(options, context) {
     }
   }
   ledger.revision += 1;
+  const requestedBoundary = options.scoreBoundary || options.boundary;
   const hasCommit = (ledger.acceptanceCriteria || []).some((row) => (row.commits || []).length > 0);
-  const linkBoundary = hasCommit ? 'pre-step6' : 'step5';
+  const linkBoundary = requestedBoundary || (hasCommit ? 'pre-step6' : 'step5');
   try {
     const linkScore = scoreLedger(ledger, linkBoundary, context);
-    ledger.scoreState = { ...linkScore, computedAt: new Date().toISOString() };
+    ledger.scoreState = { ...linkScore, boundary: linkBoundary, computedAt: new Date().toISOString() };
   } catch {
     ledger.scoreState = null;
   }

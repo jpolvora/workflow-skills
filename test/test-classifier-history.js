@@ -61,8 +61,8 @@ const liteComplex = run(classifier, ['schema-lite.spec.md', '--output-dir', 'out
 });
 assert.strictEqual(liteComplex.status, 0, liteComplex.stderr);
 const liteComplexPayload = JSON.parse(liteComplex.stdout.split('\nWrote ')[0]);
-assert.strictEqual(liteComplexPayload.recommendedPipeline, 'lite');
 assert.strictEqual(liteComplexPayload.complexityClass, 'complex');
+assert.strictEqual(liteComplexPayload.recommendedPipeline, 'standard');
 assert.strictEqual(liteComplexPayload.runInterview, true);
 assert.ok(liteComplexPayload.metrics.layers <= 2);
 assert.match(
@@ -131,7 +131,6 @@ assert.strictEqual(softPayload.force_interview, true);
 assert.ok(Array.isArray(softPayload.results.traps) && softPayload.results.traps.length > 0);
 
 const humanSoft = run(memory, ['plan.md', '--soft-exit', '--memory', 'MEMORY.md', '--repo-root', root], { command: 'python', cwd: root });
-assert.strictEqual(humanSoft.status, 0, humanSoft.stderr);
-assert.throws(() => JSON.parse(humanSoft.stdout.trim()), SyntaxError);
-assert.match(humanSoft.stdout, /Payment boundary|DO NOT|INSTEAD DO|trap/i);
+assert.strictEqual(humanSoft.status, 1, humanSoft.stderr);
+assert.match(humanSoft.stderr, /--soft-exit requires --json/);
 console.log('test-classifier-history: ok');

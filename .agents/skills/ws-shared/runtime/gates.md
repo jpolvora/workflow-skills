@@ -197,10 +197,10 @@ Optional More-options **Commit** at Step 4 / other boundaries does not replace t
 1. **Commit configured delivery artifacts and Create PR** (Recommended when `fullMode`)
 2. **Commit configured delivery artifacts and Push only**
 3. **Commit configured delivery artifacts and Skip shipping**
-4. **Skip delivery commit and Create PR**
+4. **Skip delivery commit and Create PR** (PR will lack delivery artifacts; use only when delivery commit was already done or explicitly unwanted)
 5. **More options / Separate gates / Pause** (restores the legacy close-then-ship two-prompt flow)
 
-When `fullMode` is true, Recommended (interactive index 0) = **Commit configured delivery artifacts and Create PR** (option 1). When `fullMode` is false, interactive Recommended may be option 4, but **auto-gate index 0** is skip delivery commit **and** skip shipping (mechanical; not a numbered interactive option). Do not auto-create a PR when `fullMode` is false.
+When `fullMode` is true, Recommended (interactive index 0) = **Commit configured delivery artifacts and Create PR** (option 1). When `fullMode` is false, interactive Recommended is option 3 (commit delivery artifacts, skip shipping) unless the user explicitly wants a PR without delivery artifacts; **auto-gate index 0** is skip delivery commit **and** skip shipping (mechanical; not a numbered interactive option). Do not auto-create a PR when `fullMode` is false.
 
 **Mechanical mapping (options 1–4):** run close phase (G2-delivery per option, MEMORY + changelog, `status: completed`, `shipStatus: pending`) then ship phase (`shipAction` from the paired intent). Options **1, 2, 4** dispatch `ws-ship-pr`. Option **3** skips remote ship after close. Option **5** does not advance; user may resume with separate close then ship menus. Auto-gate not-`fullMode` closes without G2-delivery and sets `shipAction: skip` / `shipStatus: skipped`.
 

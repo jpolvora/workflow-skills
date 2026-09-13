@@ -118,9 +118,9 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | Clean workflow leftovers / shipped plan dirs | `ws-cleanup` |
 | Testing pre-PR | `ws-testing` |
 | Fix PR threads | `ws-fix-pr` / `ws-goal-fix-pr` |
-| Ship PR (Step 8 combined 5-option gate) | `ws-ship-pr` |
-| Spec → PR E2E (steps 0–9, G2 delivery commit, dual-write state) | `ws-spec-to-pr` |
-| Spec → PR lite (steps 0–5, fast delivery, dual-write state) | `ws-spec-to-pr-lite` |
+| Ship PR | `ws-ship-pr` |
+| Spec → PR E2E | `ws-spec-to-pr` |
+| Spec → PR lite | `ws-spec-to-pr-lite` |
 | Prompt-driven implementation (not Spec-to-PR) | `ws-task-lifecycle` |
 | Batch spec delivery | `ws-spec-multi` |
 | Project spec index init/sync/promote | `ws-spec-index` |
