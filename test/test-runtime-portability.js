@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { spawnSync } from 'child_process';
 import { createRequire } from 'module';
 import utils from './harness-test-utils.cjs';
 
@@ -45,6 +46,31 @@ assert.strictEqual(JSON.parse(surface.stdout).hasTestSurface, false);
 write(path.join(root, 'test/example.js'), 'test("x", () => {});\n');
 surface = run(probe, ['--repo-root', root]);
 assert.strictEqual(JSON.parse(surface.stdout).hasTestSurface, true);
+
+{
+  const g2Source = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/commit_g2_code.cjs'), 'utf8');
+  assert.match(g2Source, /__dirname/);
+  assert.match(g2Source, /ac_ledger\.cjs/);
+  assert.doesNotMatch(g2Source, /'\.agents',\s*'skills',\s*'ws-spec-to-pr'/);
+}
+
+{
+  const gitRoot = temp('ws-probe-untracked-');
+  write(path.join(gitRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    plans: { dir: '.agents/plans' },
+    defaults: { testGlobs: ['test/**/*.js'] },
+    verification: { backendTest: '' },
+  }));
+  write(path.join(gitRoot, '.gitignore'), 'node_modules/\n');
+  assert.strictEqual(spawnSync('git', ['init'], { cwd: gitRoot, encoding: 'utf8' }).status, 0);
+  write(path.join(gitRoot, 'test/new-feature.test.js'), 'test("untracked", () => {});\n');
+  const untracked = run(probe, ['--repo-root', gitRoot]);
+  assert.strictEqual(untracked.status, 0, untracked.stderr);
+  assert.strictEqual(JSON.parse(untracked.stdout).hasTestSurface, true, 'untracked test file counts as test surface');
+  write(path.join(gitRoot, 'node_modules/pkg/index.js'), 'module.exports = {};\n');
+  const ignored = run(probe, ['--repo-root', gitRoot]);
+  assert.strictEqual(JSON.parse(ignored.stdout).hasTestSurface, true, 'ignored node_modules does not add spurious surface');
+}
 
 for (const relative of [
   '.agents/skills/ws-shared/runtime/tools.md',

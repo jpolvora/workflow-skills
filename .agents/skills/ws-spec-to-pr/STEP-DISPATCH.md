@@ -125,36 +125,31 @@ Fix is **not** its own `completedSteps` entry — log `review-fix | round={n}/3`
 
 **Semantics:** `status: completed` marks **end of spec/plan implementation**, not PR merge. `shipStatus` tracks shipping (`pending` → `skipped` \| `pushed` \| `pr-open` \| `merged` \| `stopped`). Phase A git cleanup runs when shipping is **terminal**, not when `status` flips to `completed`.
 
-**A. Close implementation (always before any remote ship):**
+**Combined user-gate (default — one prompt, five options):** [`gates.md`](../ws-shared/runtime/gates.md) § Step 8 combined gate:
+
+1. **Commit configured delivery artifacts and Create PR** (Recommended when `fullMode`)
+2. **Commit configured delivery artifacts and Push only**
+3. **Commit configured delivery artifacts and Skip shipping**
+4. **Skip delivery commit and Create PR**
+5. **More options / Separate gates / Pause** (legacy close-then-ship two-prompt flow)
+
+**Mechanical sequence (options 1–4):**
 
 1. [`protocols/delivery-result.md`](protocols/delivery-result.md) (writes `step-08-{slug}.result.md` **with Timing Total wall-clock time**). Never load `ws-run-benchmark` or run `npm run benchmark` / `benchmark:static` / `scripts/harness-benchmark` here.
 2. Render Step 8 final board Telemetry ([`progress-board.md`](protocols/progress-board.md)).
-3. **Close implementation gate** ([`gates.md`](../ws-shared/runtime/gates.md) § Close implementation):
-   - Commit configured delivery artifacts (G2-delivery) **or** skip that commit.
-   - Pause remains available.
-4. After successful close (even when delivery commit skipped): MEMORY sweep → `ws-changelog`.
+3. **Close phase** per combined choice: G2-delivery when options 1–3; skip delivery commit when option 4; Pause only on option 5.
+4. After successful close: MEMORY sweep → `ws-changelog`.
 5. Set `status: completed`, `endedAt`, `shipStatus: pending`. `finish --step 8` records step 8; overall workflow `status` is set here, **not** in Step 9.
 6. [`ws-spec-index`](../ws-spec-index/SKILL.md) `sync` with `{slug}` and **implementation** evidence only — do not treat as merged/shipped.
 7. [`ws-wiki`](../ws-wiki/SKILL.md) `sync` when the wiki dir (`plans.wikiDir`) exists — otherwise skip (offered, not mandatory).
-8. Optional Phase B plan-dir temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md) (close gate option).
+8. Optional Phase B plan-dir temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md).
+9. **Ship phase** (options 1–3 only): dispatch `ws-ship-pr` with `workflowMode: true`, `shipAction`, `stopBeforeFixPr: true` — **no delivery commit, no goal-fix loop inside ship**; orch advances to Step 9 when `shipAction: create-pr` and PR exists. Update `shipStatus` to `pushed` \| `pr-open` \| `skipped` \| `stopped` per outcome.
 
 When `scoreAndRefine` was executed, generate `step-08-{slug}.second-pass-report.md` comparing Pass 1 vs Pass 2 scores, LOC deltas, simplifications/deletions, quality gains, and test metrics. Include Pass 1 vs Pass 2 comparative summary table in `step-08-{slug}.result.md`.
 
 Dispatch/finish timestamps still required under `autoMode`/`fullMode` (State Hygiene → HS-5 if missing). Authored `--elapsed` is rejected.
 
 G2-delivery stages only artifacts enabled by `defaults.deliveryCommitArtifacts` — see [`ARTIFACTS.md`](ARTIFACTS.md) § Step 8.
-
-**B. Ship (same run, optional; after close):**
-
-**Ship gate** ([`gates.md`](../ws-shared/runtime/gates.md) § Ship after close):
-
-1. **Create PR** (Recommended when `fullMode`)
-2. **Push only**
-3. **Skip PR** (no create)
-4. **Skip shipping entirely**
-5. **Pause**
-
-Dispatch `ws-ship-pr` with `workflowMode: true`, `shipAction`, `stopBeforeFixPr: true` — **no delivery commit, no goal-fix loop inside ship**; orch advances to Step 9 when `shipAction: create-pr` and PR exists. Update `shipStatus` to `pushed` \| `pr-open` \| `skipped` \| `stopped` per outcome.
 
 **Phase A git cleanup:** Run **once** when shipping is terminal — skip-ship after close (`shipStatus: skipped`), skip-PR with no Step 9, or after Step 9 stop/merge (`python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}`). **Do not** run Phase A at close when ship is still `pending`/`pr-open`/`pushed`. Exit 0 proceed; exit 2 surface leftovers (may claim ended); exit 1 do not claim ended.
 

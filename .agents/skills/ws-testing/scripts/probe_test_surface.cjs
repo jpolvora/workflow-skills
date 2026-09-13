@@ -36,7 +36,7 @@ function matcher(glob) {
 function walk(root) {
   try {
     const { spawnSync } = require('child_process');
-    const ls = spawnSync('git', ['ls-files', '-z'], { cwd: root, encoding: 'buffer', maxBuffer: 10 * 1024 * 1024 });
+    const ls = spawnSync('git', ['ls-files', '-z', '--cached', '--others', '--exclude-standard'], { cwd: root, encoding: 'buffer', maxBuffer: 10 * 1024 * 1024 });
     if (ls.status === 0 && ls.stdout && ls.stdout.length) {
       return String(ls.stdout).split('\0').filter(Boolean).map((file) => path.join(root, file));
     }

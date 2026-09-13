@@ -162,13 +162,13 @@ flowchart TD
 
 ### Step 8: Close implementation, then ship
 *   **Executor**: Orchestrator (close) + ship subagent (`ws-ship-pr`) for push/PR only.
-*   **Role**: Compiles the delivery summary in `step-08-{slug}.result.md` (including step elapsed timing), then **closes implementation** (G2-delivery optional, MEMORY, changelog, `status: completed`, `shipStatus: pending`), then presents the **Ship gate**:
-    1.  Create PR
-    2.  Push only
-    3.  Skip PR
-    4.  Skip shipping entirely
-    5.  Pause
-*   **Close gate** (before ship): Commit configured delivery artifacts **or** skip delivery commit (still closes implementation).
+*   **Role**: Compiles the delivery summary in `step-08-{slug}.result.md` (including step elapsed timing), then presents **one combined Step 8 user-gate** (state still records close then ship):
+    1.  Commit configured delivery artifacts and Create PR (Recommended when `fullMode`)
+    2.  Commit configured delivery artifacts and Push only
+    3.  Commit configured delivery artifacts and Skip shipping
+    4.  Skip delivery commit and Create PR
+    5.  More options / Separate gates / Pause
+*   **Mechanical flow**: Options 1–4 run close (G2-delivery per choice, MEMORY, changelog, `status: completed`, `shipStatus: pending`) then ship when applicable. Option 5 restores separate close-then-ship prompts.
 *   **Artifact commits**: Stage only artifacts enabled by `defaults.deliveryCommitArtifacts` (see `ARTIFACTS.md` § Step 8) at **close**. Mid-workflow plan files remain forbidden until close. Product/source files were already committed after verify and after review-fix.
 
 ### Step 9: Fix-PR

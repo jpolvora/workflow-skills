@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-13 17:55] Agent: Composer
+- **Prompt**: Implement consolidated Gemini review fixes (D1 + D2a + D3 + Step 8 combined menu).
+- **Done**: Single JSON `--json --soft-exit` in check_memory_conflict.py; portable `__dirname/ac_ledger.cjs` in commit_g2_code.cjs; probe_test_surface git ls-files --others; Step 8 five-option combined gate in gates.md, STEP-DISPATCH.md, PROTOCOLS.md, faq.md; classifier-history + runtime-portability tests; integrity regen (no version bump).
+- **Result**: Targeted tests exit 0; verify-integrity OK. Learning: N/A (standard implementation).
+
 ### [2026-09-13 13:33] Agent: Cursor Grok 4.6
 - **Prompt**: Make `--update-comparison` skip unchanged version tables (Generated stamp noise).
 - **Done**: Fingerprint compare ignoring `**Generated:**`; write only changed `table-*.md` / evolution; regression in `test-ws-benchmarks.js`; integrity regen for `ws-benchmarks`.

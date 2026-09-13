@@ -86,7 +86,7 @@ function main() {
     const acIds = (state.acLedger?.acceptanceCriteria || JSON.parse(fs.readFileSync(ledgerPath, 'utf8')).acceptanceCriteria || []).map((row) => row.id);
     if (acIds.length) {
       const link = spawnSync('node', [
-        path.join(repoRoot, '.agents', 'skills', 'ws-spec-to-pr', 'scripts', 'ac_ledger.cjs'),
+        path.join(__dirname, 'ac_ledger.cjs'),
         'link', '--ledger', toRepoRelative(repoRoot, ledgerPath),
         '--event-id', `g2-commit-${sha}`,
         ...acIds.flatMap((id) => ['--ac', id]),
