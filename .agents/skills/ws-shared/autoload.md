@@ -2,7 +2,7 @@
 
 **Audience: agents.** Load this file when the project root `AGENTS.md` references it, or whenever the user mentions specs / plans / Spec-to-PR / SCM intents / verify score without naming a skill.
 
-Path tokens: expand via [`tools.md`](tools.md) before tool calls (`{skillsRoot}`, `{sharedDir}`, `{specsDir}`, `{plansDir}`).
+Path tokens: expand via [`tools.md`](runtime/tools.md) before tool calls (`{skillsRoot}`, `{sharedDir}`, `{specsDir}`, `{plansDir}`).
 
 ---
 
@@ -22,7 +22,7 @@ When root `AGENTS.md` points here, load each listed `SKILL.md` every prompt (unl
 | `ws-megabrain` | `{skillsRoot}/ws-megabrain/SKILL.md` | Every prompt — vibe-coding implementer (no spec required); defer when orch owns the session |
 | `ws-spec-memo` | `{skillsRoot}/ws-spec-memo/SKILL.md` | Config preflight & bridge — wire config.json memory backends & hybrid fallback |
 
-Precedence when both root and `{sharedDir}/AGENTS.md` load: root / this file win for **membership of the Always-applied set above**; shared-hub mandatory skills (including `ws-karpathy-guidelines`) still load. See [`AGENTS.md`](AGENTS.md) § Consumer root override.
+Precedence when both root and `{sharedDir}/AGENTS.md` load: root / this file win for **membership of the Always-applied set above**; shared-hub mandatory skills (including `ws-karpathy-guidelines`) still load. See [`AGENTS.md`](runtime/AGENTS.md) § Consumer root override.
 
 ### Precedence among Always-applied (highest first)
 
@@ -138,12 +138,12 @@ Load the named hub file or one skill. Do not load both SCM provider bodies to co
 
 | When the user / task means… | Load | Does **not** do |
 |-----------------------------|------|-----------------|
-| SCM parity / GitHub vs Azure intents / `scm-provider-contract` | [`scm-provider-contract.md`](scm-provider-contract.md) then **one** provider | Do not load both provider `SKILL.md` bodies to compare intents |
-| Check-implementation / verify score / `scoreAndRefine` | Orch Step 5; standalone [`ws-plan-verify`](../ws-plan-verify/SKILL.md); gates in [`gates.md`](gates.md) | Do not auto-approve below `defaults.minVerifyScore` (default 9); do not load `ws-implement-tasks` until scoreAndRefine says to |
+| SCM parity / GitHub vs Azure intents / `scm-provider-contract` | [`scm-provider-contract.md`](runtime/scm-provider-contract.md) then **one** provider | Do not load both provider `SKILL.md` bodies to compare intents |
+| Check-implementation / verify score / `scoreAndRefine` | Orch Step 5; standalone [`ws-plan-verify`](../ws-plan-verify/SKILL.md); gates in [`gates.md`](runtime/gates.md) | Do not auto-approve below `defaults.minVerifyScore` (default 9); do not load `ws-implement-tasks` until scoreAndRefine says to |
 
 | Keywords / phrases | Invoke |
 |--------------------|--------|
-| SCM parity, github vs azure intents, provider contract | `{sharedDir}/scm-provider-contract.md` then one provider |
+| SCM parity, github vs azure intents, provider contract | `{sharedDir}/runtime/scm-provider-contract.md` then one provider |
 | verify score, check-implementation, scoreAndRefine | orch Step 5 / `ws-plan-verify` |
 
 ---
