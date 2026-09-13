@@ -107,7 +107,7 @@ The suite's central claim is that nothing ships on an agent's word alone. Every 
 
 ## 3. Commit and artifact discipline
 
-- **Product code and plan files are committed separately.** Product files commit after verify (standard) or after implement (lite); plan artifacts commit at Step 8 **close** (G2-delivery). **`status: completed`** marks implementation done at close, before push/PR; `shipStatus` tracks shipping.
+- **Product code and plan files are committed separately.** Product files commit after verify (standard) or after implement (lite); plan artifacts commit at Step 8 **close** (G2-delivery). **`status: completed`** marks implementation done at close, before push/PR; `shipStatus` tracks shipping. Interactive Step 8 is **one combined 5-option user-gate** (two state phases). Auto-gate without `fullMode` skips the delivery commit and skips shipping; `fullMode` auto-gate commits delivery artifacts then creates a PR.
 - **Review fixes get their own commit**, so a reviewer can see what the review changed.
 - **`deliveryCommitArtifacts`** selects exactly which plan artifacts enter the delivery commit (refined plan on by default; result, spec, check report, review, and testing report opt-in).
 - **Checkpoint tags** (`uswf/{workflow-id}/before-step-{N}`) are written at each transition, so a run can be inspected or rolled back per step.

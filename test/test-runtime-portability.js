@@ -69,7 +69,22 @@ assert.strictEqual(JSON.parse(surface.stdout).hasTestSurface, true);
   assert.strictEqual(JSON.parse(untracked.stdout).hasTestSurface, true, 'untracked test file counts as test surface');
   write(path.join(gitRoot, 'node_modules/pkg/index.js'), 'module.exports = {};\n');
   const ignored = run(probe, ['--repo-root', gitRoot]);
-  assert.strictEqual(JSON.parse(ignored.stdout).hasTestSurface, true, 'ignored node_modules does not add spurious surface');
+  assert.strictEqual(JSON.parse(ignored.stdout).hasTestSurface, true, 'untracked test still counts when node_modules is also present');
+}
+
+{
+  const ignoreOnly = temp('ws-probe-ignored-only-');
+  write(path.join(ignoreOnly, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    plans: { dir: '.agents/plans' },
+    defaults: { testGlobs: ['test/**/*.js'] },
+    verification: { backendTest: '' },
+  }));
+  write(path.join(ignoreOnly, '.gitignore'), 'node_modules/\n');
+  assert.strictEqual(spawnSync('git', ['init'], { cwd: ignoreOnly, encoding: 'utf8' }).status, 0);
+  write(path.join(ignoreOnly, 'node_modules/pkg/index.js'), 'module.exports = {};\n');
+  const surface = run(probe, ['--repo-root', ignoreOnly]);
+  assert.strictEqual(surface.status, 0, surface.stderr);
+  assert.strictEqual(JSON.parse(surface.stdout).hasTestSurface, false, 'ignored node_modules alone is not a test surface');
 }
 
 for (const relative of [

@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-13 18:05] Agent: Composer
+- **Prompt**: Verify plan execution then ship 0.4.25 (fix Step 8 contract, bump).
+- **Done**: Ship phase options 1/2/4; not-fullMode auto-gate skip delivery + skip shipping; leftover close-gate wording; probe ignore-only + human --soft-exit tests; FEATURES Step 8 combined menu; bump 0.4.24 to 0.4.25.
+- **Result**: Targeted tests green; integrity + harness/workflows to follow bump. Learning: N/A (standard implementation).
+
 ### [2026-09-13 17:55] Agent: Composer
 - **Prompt**: Implement consolidated Gemini review fixes (D1 + D2a + D3 + Step 8 combined menu).
 - **Done**: Single JSON `--json --soft-exit` in check_memory_conflict.py; portable `__dirname/ac_ledger.cjs` in commit_g2_code.cjs; probe_test_surface git ls-files --others; Step 8 five-option combined gate in gates.md, STEP-DISPATCH.md, PROTOCOLS.md, faq.md; classifier-history + runtime-portability tests; integrity regen (no version bump).

@@ -13,7 +13,7 @@ Sibling protocol files under [`protocols/`](protocols/) remain authoritative for
 | G0 | Read, RO reports | — |
 | G1 | Edit WT, plans, impl (no commit) | Transition gate |
 | G2-code | `git commit` workflow product `files_touched` only (path-scoped; never `{plansDir}`) | Required: **G2-code after Step 5 before Step 6**; after Step 6 review-fix if dirty. Optional: Step 4 / Step 7 fix |
-| G2-delivery | `git commit` **configured delivery artifacts only** (see [`ARTIFACTS.md`](ARTIFACTS.md) § Step 8 / `defaults.deliveryCommitArtifacts`) | Step 8 close implementation gate |
+| G2-delivery | `git commit` **configured delivery artifacts only** (see [`ARTIFACTS.md`](ARTIFACTS.md) § Step 8 / `defaults.deliveryCommitArtifacts`) | Step 8 combined gate (close phase) |
 | G3 | `git push`, PR create/merge | Step 8 **ship action** (within combined gate) |
 
 ```text
@@ -253,7 +253,7 @@ Resume: active `autoMode` same US → continue `currentStep`; else new `workflow
 | Step 7 mutation fail (score &lt; threshold) | **Apply fixes and revalidate** (strengthen tests) |
 | Step 7 failure | **Apply fixes and revalidate** |
 | Step 8 combined gate (`fullMode`) | **Commit configured delivery artifacts, then create PR** |
-| Step 8 combined gate (not `fullMode`) | **Skip delivery commit and create PR** |
+| Step 8 combined gate (not `fullMode`) | **Skip delivery commit and skip shipping** |
 | Step 9 fix-pr | **Run ws-goal-fix-pr loop** |
 
 Shared defaults: [`gates.md`](../ws-shared/runtime/gates.md) § Auto-gate defaults. Log `auto-gate | step {N} | {choice} | ISO`. Disabled: backward/repeat/pause menus; Step 3 without shared understanding.

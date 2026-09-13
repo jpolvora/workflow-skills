@@ -200,9 +200,9 @@ Optional More-options **Commit** at Step 4 / other boundaries does not replace t
 4. **Skip delivery commit and Create PR**
 5. **More options / Separate gates / Pause** (restores the legacy close-then-ship two-prompt flow)
 
-When `fullMode` is false, Recommended = **Skip delivery commit and Create PR** (option 4) unless user explicitly wants delivery artifacts committed or skip-ship. When `fullMode` is true, Recommended = **Commit configured delivery artifacts and Create PR** (option 1).
+When `fullMode` is true, Recommended (interactive index 0) = **Commit configured delivery artifacts and Create PR** (option 1). When `fullMode` is false, interactive Recommended may be option 4, but **auto-gate index 0** is skip delivery commit **and** skip shipping (mechanical; not a numbered interactive option). Do not auto-create a PR when `fullMode` is false.
 
-**Mechanical mapping (options 1–4):** run close phase (G2-delivery per option, MEMORY + changelog, `status: completed`, `shipStatus: pending`) then ship phase (`shipAction` from the paired intent). Option 3 skips remote ship after close. Option 5 does not advance; user may resume with separate close then ship menus.
+**Mechanical mapping (options 1–4):** run close phase (G2-delivery per option, MEMORY + changelog, `status: completed`, `shipStatus: pending`) then ship phase (`shipAction` from the paired intent). Options **1, 2, 4** dispatch `ws-ship-pr`. Option **3** skips remote ship after close. Option **5** does not advance; user may resume with separate close then ship menus. Auto-gate not-`fullMode` closes without G2-delivery and sets `shipAction: skip` / `shipStatus: skipped`.
 
 G2-delivery stages only artifacts enabled by `defaults.deliveryCommitArtifacts` — algorithm and toggle map in [`ARTIFACTS.md`](../../ws-spec-to-pr/ARTIFACTS.md) § Step 8 (refined-plan fallback preserved when `includeRefinedPlan` is true; delivery result not staged by default).
 
@@ -270,7 +270,7 @@ When the loop is active (score below `defaults.minVerifyScore`, or `scoreAndRefi
 |------|-------|
 | HS-1 / HS-2 / HS-2a | Both orch |
 | G2-code | Required: **G2-code after Step 5 before Step 6** (standard) / **G2-code after Step 2 before Step 3** (lite); post-review-fix when product files remain. Optional: Step 4 / Step 7 fix More-options Commit |
-| G2-delivery | Inside close implementation gate (phase A) |
+| G2-delivery | Inside Step 8 combined gate (close phase) |
 | Review findings | Lite Step 3; full Step 6 — fix → re-review until clean (max 3); Pause on residual Critical/Warning |
 | Active Resume | `setup.md` |
 
@@ -286,7 +286,7 @@ When the loop is active (score below `defaults.minVerifyScore`, or `scoreAndRefi
 | Feature branch (new start) | Stay on current (detached `HEAD`: create `feat/{slug}` from HEAD; never persist `HEAD`; `ls-remote` auth/network → local-check-only) |
 | Feature branch resume mismatch | Check out `state.branch` |
 | Step 8 combined gate (`fullMode`) | Commit configured delivery artifacts, then create PR |
-| Step 8 combined gate (not `fullMode`) | Skip delivery commit and create PR |
+| Step 8 combined gate (not `fullMode`) | Skip delivery commit and skip shipping (mechanical; not a numbered interactive option) |
 | Completed workflow bootstrap | Run Score & Second Pass (score-and-refine) |
 | Score Analysis gate (`scoreAndRefine`) | Proceed with Second Pass Refinement |
 | Check-implementation below minVerifyScore | scoreAndRefine until ≥ `defaults.minVerifyScore` (default 9) (max 3); Pause on residual (no auto-approve) |

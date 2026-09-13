@@ -129,4 +129,9 @@ assert.strictEqual(softExitResult.status, 0, softExitResult.stderr);
 const softPayload = JSON.parse(softExitResult.stdout);
 assert.strictEqual(softPayload.force_interview, true);
 assert.ok(Array.isArray(softPayload.results.traps) && softPayload.results.traps.length > 0);
+
+const humanSoft = run(memory, ['plan.md', '--soft-exit', '--memory', 'MEMORY.md', '--repo-root', root], { command: 'python', cwd: root });
+assert.strictEqual(humanSoft.status, 0, humanSoft.stderr);
+assert.throws(() => JSON.parse(humanSoft.stdout.trim()), SyntaxError);
+assert.match(humanSoft.stdout, /Payment boundary|DO NOT|INSTEAD DO|trap/i);
 console.log('test-classifier-history: ok');
