@@ -47,7 +47,7 @@ Alternate whole-tree wiki genesis beside Phase 1 sweep. Inspect project structur
 5. **Sequential investigation (one area at a time):** For each queued area not yet completed:
    - Read existing wiki pages that map to the area.
    - Read matching docs/specs and listed source paths.
-   - **Merge mode:** create missing domain/feature pages and fill empty conditional headings from code/docs; do not drop existing Business Rules or Architecture statements.
+    - **Merge mode:** create missing domain/feature pages and fill empty conditional headings from code/docs; do not drop existing statements in `## How it works` / `## Backend` (and legacy `## Business Rules & Logic` / `## Technical Architecture` when present; migrate on touch).
    - **Overwrite mode (after confirm):** may replace page bodies but still writes conditional-template pages.
    - Honor the persisted `verbosity`: `condensed` writes one-fact-per-line statements; `detailed` writes paragraph prose and disables terse rewriting for wiki bodies.
    - Run `sync_wiki_index.cjs` after each successful area.

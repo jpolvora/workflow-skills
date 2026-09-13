@@ -23,7 +23,7 @@ First-time (or re-runnable) sequential backfill from every top-level spec of rec
    1. **Condensed (Recommended)** — short terse statements; lowest token cost
    2. **Detailed** — paragraph prose with feature-by-feature walkthrough; disables terse rewriting for wiki bodies
    3. **Cancel**
-   Cancel → STOP; write no sweep pages and no checkpoint. **`autoMode`:** take `condensed` without prompting. Persist as `verbosity` in `{wikiDir}/sweep.state.json` (default `condensed`; unknown values fail closed to `condensed`).
+   Cancel → STOP; write no sweep pages and no checkpoint. **`autoMode`:** take `condensed` without prompting. Persist as `verbosity` in `{wikiDir}/sweep.state.json` (default `condensed`; honor `plans.wiki.verbosity` from `{sharedDir}/config.json` as the pre-selected default when no sweep state exists; unknown values fail closed to `condensed`). A sweep choice is per-run only; sync/update resolve from `from-code.state.json`.
 
 3. **Checkpoint (resume):** Maintain `{wikiDir}/sweep.state.json` with `status`, `completedFiles` (repo-relative POSIX paths), `lastFile`, `verbosity` (`condensed` | `detailed`, default `condensed`), `startedAt`, `updatedAt`. `--resume` continues after `lastFile` (skip completed unless `--force`). Successful full run sets `status: completed` or deletes the file. Never stage this checkpoint in product commits.
 

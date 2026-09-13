@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "3117abf7883c19157d13f11ddec18441963a922987c8f7d1f666a6505f1cd191",
+  "fullPackageDigest": "cf701507f4065dde39fd23c13dd71db5e99d28fb7c8b4ac1866b23a314b07fc2",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -575,9 +575,9 @@
     },
     "ws-wiki": {
       "files": {
-        "FROM-CODE.md": "39b8cf3fcc6e96f10512e8b42642b7327f5d2c0864c22af26e4ccdd2cb913371",
+        "FROM-CODE.md": "44989af66697d1f091dd9997616887a89fa3a0a4358af725224a68ba137c4b51",
         "INIT.md": "f61124dfa3c3fffca6f6ee1f30b54419f8b14eb59dc56e3e5a321889c2636d32",
-        "PHASE-1-SWEEP.md": "469b04ccd60c9540c94728851be0c9a95ea00be59b6dd1edc191d4739eb2e899",
+        "PHASE-1-SWEEP.md": "ccca19c1002de9d32eb2b763a2be9f1bf6b0a78b87d44d36f8be06130b362f45",
         "PHASE-2-VERIFY.md": "9a8f90dfe21fab234254cb2a99da78088864f71ee66e2b278ce1588e0e74be53",
         "PHASE-3-APPLY.md": "fcc97f810bd96b42f71cf604cdc521670f8678c4f2caf6cb960647fa35048476",
         "references/VERBOSITY-EXAMPLE.md": "606e23b31cc8e010f7b3c697c74b5b8c606a729d6f6d98aa14a5e415745193aa",
@@ -586,11 +586,11 @@
         "scripts/list_wiki_sweep_specs.cjs": "05e3783a4e3def2303d1d7fbe20a116bb4fa76994931ee7ffb4be875872ca0f4",
         "scripts/sync_wiki_index.cjs": "23fc9c78c4e1ae08103e476860c4ccd3c504615ed5417461d1d2aac1b4732b22",
         "scripts/validate_wiki.cjs": "c9147872256bfe42114421d86f5acaa726267cccaf85100c357374e9b26257f9",
-        "SKILL.md": "d7138b62b3e444b6642c359bf73acf9f7122696d50e9f350a095ec483f1dfdfa",
+        "SKILL.md": "44be9f13ed953aa784dac83c06409ae3d4aa795b49c01f5af41b9dcf34251c30",
         "SYNC.md": "a5c2cbbdac21f73b1b90f0c8a0885358547124d46fc3843fc0ecdbe303c080aa",
         "UPDATE.md": "109b28937601396f642215b3f3821eabc87e8571fb7376150036ebddf3087e37"
       },
-      "skillDigest": "2418bbaa1a1433184a274db05a68556b4b2456e3cfab54cab943f61b7f1e7b82"
+      "skillDigest": "0bc22651fb59e2f401a8c3a20b8afc864cbb30aab9fbd20c7132896e77a0c47e"
     },
     "ws-write-a-skill": {
       "files": {
