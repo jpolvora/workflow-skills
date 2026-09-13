@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-13 15:50] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-manager then Sync spec status in index.PRD.
+- **Done**: E1 sync for `website-wiki-page` (commit `499b5125`) and `ws-wiki-from-code` (commit `013431e4`); Feature map + Next-specs `[x]`; Done log rows; spec frontmatter `status: completed`.
+- **Result**: Left `[ ]`: unique-skill-script-runtime, ws-shared-hub-agents-separation, ws-wiki-spec-sweep (no E1). Learning: N/A (no new project knowledge).
+
 ### [2026-09-13 18:05] Agent: Composer
 - **Prompt**: Verify plan execution then ship 0.4.25 (fix Step 8 contract, bump).
 - **Done**: Ship phase options 1/2/4; not-fullMode auto-gate skip delivery + skip shipping; leftover close-gate wording; probe ignore-only + human --soft-exit tests; FEATURES Step 8 combined menu; bump 0.4.24 to 0.4.25.

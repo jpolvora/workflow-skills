@@ -4,7 +4,7 @@ slug: ws-wiki-from-code
 title: "ws-wiki from-code genesis and progressive-disclosure split"
 source: local
 specDate: 2026-09-12
-status: draft
+status: completed
 ---
 
 # Specification — ws-wiki from-code genesis and progressive-disclosure split
