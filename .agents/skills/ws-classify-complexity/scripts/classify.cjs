@@ -249,6 +249,23 @@ function computeComplexityClass({ refs, acCount, openQuestions, schemaApiTenancy
   return 'standard';
 }
 
+function runInterviewReason({ runInterview, complexityClass, recommendedPipeline, layers, openQuestions }) {
+  if (!runInterview) {
+    return 'No interview trigger was detected by the classifier; MEMORY may still force it later.';
+  }
+  const parts = [];
+  if (complexityClass === 'complex') {
+    parts.push('Complexity class `complex` (schema, migration, or tenancy keywords).');
+  }
+  if (recommendedPipeline === 'standard' && layers > 2) {
+    parts.push('Standard pipeline detected more than two spec-touched layers.');
+  }
+  if (recommendedPipeline === 'standard' && openQuestions) {
+    parts.push('Standard pipeline has open questions.');
+  }
+  return parts.join(' ') || 'An interview trigger was detected by the classifier.';
+}
+
 function parseArgs(argv) {
   const args = { specPath: null, outputDir: null, scoreAnalysis: null };
   const rest = argv.slice(2);
@@ -623,7 +640,13 @@ function main() {
     },
     runInterview: {
       value: runInterview,
-      reason: runInterview ? 'Standard execution has open questions or more than two detected layers.' : 'No interview trigger was detected by the classifier; MEMORY may still force it later.',
+      reason: runInterviewReason({
+        runInterview,
+        complexityClass,
+        recommendedPipeline,
+        layers: metrics.layers,
+        openQuestions,
+      }),
     },
     runTesting: {
       value: runTesting,

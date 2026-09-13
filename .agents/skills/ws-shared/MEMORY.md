@@ -60,6 +60,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Hand-create a workflow `.state.md` and expect pre-advance gates to pass; do not patch `workflowId` into `step-00` by hand.
 - **INSTEAD DO**: Write the minimal bootstrap frontmatter, then run `update_state.cjs dispatch <state> --step 0` followed by `finish <state> --step 0 --status completed` before any `--pre-advance` check.
 
+### [2026-09-13] Classifier runInterview reason must name the actual trigger
+- **Layer**: `harness`
+- **Module**: `ws-classify-complexity / classify.cjs`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-classify-complexity/scripts/classify.cjs; test/test-classifier-history.js`
+- **Scenario / Context**: `runInterview` became true on `complexityClass === 'complex'` (schema/migration/tenancy) even when the pipeline stayed `lite` with layers ≤ 2 and no open questions, but the executionProfile reason still said "Standard execution has open questions or more than two detected layers."
+- **DO NOT**: Hard-code a single standard-pipeline reason whenever `runInterview` is true; do not assume interview implies standard + layers/OQ.
+- **INSTEAD DO**: Build the reason from the matching triggers (`complex` class, standard + layers > 2, standard + open questions) so classify.md and JSON stay factually aligned.
+
 ### [2026-09-13] Assert every sibling row a multi-row docs change touches
 - **Layer**: `harness`
 - **Module**: `test-doc-sync / mirror-link guard`

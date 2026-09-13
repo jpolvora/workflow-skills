@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-13 13:25] Agent: Cursor Grok 4.6
+- **Prompt**: Verify and fix runInterview reason mismatch when complexityClass is complex on a lite pipeline.
+- **Done**: classify.cjs now names matching interview triggers; SKILL contract line; regression in test-classifier-history.js (lite + complex fixture).
+- **Result**: Issue confirmed and fixed; test-classifier-history exit 0. Learning: persist trap 2026-09-13-runinterview-reason-triggers.
+
 ### [2026-09-13 17:00] Agent: muse-spark-1.3-contributor
 - **Prompt**: /ws-fable-judge implement .cursor/plans/stp_speed_determinism_b0c43a78.plan.md
 - **Done**: P0/P1/P2 speed-determinism core (classify complexityClass + spec-touched layers, link persists pre-step6 scoreState, git-intersect files_touched, finish-batch, stub/commit/manifest helpers, dispatch hook + prefix, alias/probe/history/soft-exit/lite-label/wiki-offer hygiene, fx-docs-micro waste test wired into CI, integrity regen).
