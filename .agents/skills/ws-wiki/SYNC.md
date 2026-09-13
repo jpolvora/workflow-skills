@@ -1,6 +1,6 @@
 # `/ws-wiki sync [slug]`
 
-Synchronize shipped code changes to living domain wiki subpages:
+Synchronize shipped code changes to living domain wiki subpages (conditional template: `## Feature` + `## How it works` required; `## Backend` / `## Frontend` / `## Third-party services` conditional, omitted when not applicable):
 
 1. **Discover Context & Evidence**:
    - If `slug` provided: load `{us-dir}/step-00-{slug}.spec.md` (or `{specsDir}/{slug}.spec.md`), committed diff `git diff {baseBranch}...HEAD`, and touched files list.
@@ -11,11 +11,13 @@ Synchronize shipped code changes to living domain wiki subpages:
 3. **In-Place Rule Refinement**:
    - Read the existing `{wikiDir}/{domain}/{feature}.md` if present.
    - Update, reconcile, and refine existing business rules and technical architecture in place. Do **not** append repetitive chronological change logs.
-   - If creating a new page, adhere strictly to the 3-section structure (`## Feature Overview`, `## Business Rules & Logic`, `## Technical Architecture`).
+   - If creating a new page, adhere to the conditional template (`## Feature`, `## How it works`, plus `## Backend` / `## Frontend` / `## Third-party services` only when applicable).
+   - **Verbosity:** resolve `verbosity` as explicit gate choice > `{wikiDir}/from-code.state.json:verbosity` > `plans.wiki.verbosity` in `{sharedDir}/config.json` > `condensed`. Unknown values fail closed to `condensed`. `detailed` writes paragraph prose and disables terse rewriting for wiki bodies. `autoMode` takes the persisted/default value without prompting.
 4. **Approval Review Gate**:
-   - Present the synthesized wiki diffs to the user via structured `user-gate`:
+   - Present the synthesized wiki diffs plus the resolved `verbosity` to the user via structured `user-gate`:
      1. **Apply wiki updates (Recommended)**
-     2. **Cancel**
+     2. **Apply with detailed prose** (when resolved verbosity is `condensed`; writes this page as `detailed` once)
+     3. **Cancel**
    - If **Cancel** is selected: STOP, terminate immediately without writing changes to disk.
 5. **Write & Index**:
    - On approval, write the updated feature markdown files.

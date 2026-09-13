@@ -32,10 +32,23 @@ Existing documents serve distinct roles:
 
 2. **Domain-Partitioned Subpages (`{domain}/{feature}.md`)**:
    - Dedicated markdown documents organized by bounded context (e.g. `identity/user-management.md`, `billing/invoicing.md`).
-   - Adheres strictly to the standardized 3-section format:
-     - `## Feature Overview`: Purpose, user journeys, screens, forms, and core interactions.
-     - `## Business Rules & Logic`: Invariants, validation constraints, permissions, state transitions, and edge cases.
-     - `## Technical Architecture`: Persistence models, API contracts, backend workflows, side effects, and provenance traceability.
+   - Page template (conditional sections omitted when not applicable, no placeholder):
+     - `# {Feature}` + provenance quote (`> Provenance: ...`).
+     - `## Feature` (required): purpose, scope, user journeys, screens.
+     - `## How it works` (required): end-to-end behavior, invariants, state transitions, permissions.
+     - `## Backend` (conditional): persistence models, API contracts, backend workflows, side effects.
+     - `## Frontend` (conditional): routes, forms, client behavior; omit for pure backend jobs.
+     - `## Third-party services` (conditional): external integrations; always present for fiscal/integration domains.
+   - Legacy 3-section pages (`## Feature Overview`, `## Business Rules & Logic`, `## Technical Architecture`) still validate with a deprecation warning; migrate on next touch (`Business Rules & Logic` folds into `How it works` + `Backend`; `Technical Architecture` splits into `Backend` / `Frontend` / `Third-party services`).
+
+## Verbosity (prose style)
+
+Page-writing flows (`from-code`, `sweep`, `sync`, `update`) resolve `verbosity` (`condensed` | `detailed`) via portable `user-gate` and honor it for every written page:
+
+- `condensed` (default): short terse statements, one fact per line. Keeps token cost low. Used when no choice is persisted and in `autoMode` without prompting.
+- `detailed`: full-sentence paragraphs, feature-by-feature walkthrough naming screens, services, aggregates, DTOs, permissions, side effects. Explicitly disables terse rewriting for wiki bodies.
+- Resolution: explicit gate choice > `{wikiDir}/from-code.state.json:verbosity` > `plans.wiki.verbosity` in `{sharedDir}/config.json` > `condensed`. Unknown values fail closed to `condensed` with a warning.
+- Before/after: condensed `User has email. Email unique.` vs detailed `Users sign up with an email and password. The onboarding form validates uniqueness per tenant before creating the account.` See `references/VERBOSITY-EXAMPLE.md`.
 
 ---
 
@@ -49,7 +62,7 @@ Existing documents serve distinct roles:
 /ws-wiki apply                  Phase 3 findings plan plus batch apply (aliases: reconcile, phase-3)
 /ws-wiki sync [slug]            Sync delivered feature or commit diff to living domain wiki pages
 /ws-wiki update [target]        Surgically update an individual feature wiki page
-/ws-wiki validate               Deterministic validation of links and 3-section heading structures
+/ws-wiki validate               Deterministic validation of links and heading structures (new conditional + legacy 3-section)
 ```
 
 Phase names: Phase 1 is sweep/backfill, Phase 2 is wiki-vs-code statement verify, Phase 3 is findings plan plus batch apply. From-code is an alternate genesis beside sweep (not Phase 4).
@@ -85,8 +98,8 @@ node {skillsRoot}/ws-wiki/scripts/validate_wiki.cjs [--wiki-dir <path>] [--repo-
 Checks:
 - Wiki directory and `index.wiki.md` exist.
 - All relative markdown links resolve to existing files (broken links fail with exit 1).
-- All feature subpages contain all three required sections (`## Feature Overview`, `## Business Rules & Logic`, `## Technical Architecture`) (malformed headings fail with exit 1).
-- Warns on unindexed feature pages.
+- New pages contain `## Feature` + `## How it works` (required); `## Backend` / `## Frontend` / `## Third-party services` are conditional and may be omitted. Legacy 3-section pages pass with a deprecation warning. Malformed pages fail with exit 1.
+- Warns on unindexed feature pages and on legacy/mixed templates.
 
 ---
 
