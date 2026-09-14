@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-14 19:05] Agent: GPT-5.6 Luna
+- **Prompt**: /ws-goal-fix-pr (PR #332, round 4 staged-leftover review threads).
+- **Done**: Made fix-pr hunk staging index-aware by inspecting HEAD, cached, and porcelain state; preserve staged WIP with `git restore --staged` before non-interactive hunk staging; updated shared gates, tools, spec, evals, and tests.
+- **Result**: Four same-class review threads addressed in one batch. Learning: path-scoped staging is insufficient when the same path already has staged WIP.
+
 ### [2026-09-14 18:54] Agent: GPT-5.6 Luna
 - **Prompt**: /ws-goal-fix-pr (resume PR #332, round 3).
 - **Done**: Added deterministic `FETCH_HEAD` overlap detection before pull and fail-closed handling for inseparable dirty fix hunks across ws-fix-pr, cooperative guidance, G2 staging, spec, evals, and tests.

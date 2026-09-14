@@ -157,6 +157,13 @@ for (const [name, text] of [
       /comment-only only for 0[–-]5 threads/i.test(text),
     `${name} keeps inseparable 6-10 fixes unresolved`,
   );
+  assert(
+    text.includes('git diff HEAD -- <path>') &&
+      text.includes('git diff --cached -- <path>') &&
+      text.includes('git status --porcelain -- <path>') &&
+      text.includes('git restore --staged -- <path>'),
+    `${name} separates staged WIP from fix hunks`,
+  );
 }
 assert(
   cooperative.includes('preExistingDirty') && !/refuse dirty worktree/i.test(cooperative),
@@ -299,6 +306,14 @@ assert(
 assert(
   eval8.assertions.some((a) => /6-10 thread/i.test(a) && /landed commit/i.test(a)),
   'fix-pr eval id 8 covers inseparable anchor resolution guard',
+);
+assert(
+  eval8.assertions.some((a) => /git diff HEAD/i.test(a) && /git diff --cached/i.test(a)),
+  'fix-pr eval id 8 covers staged-vs-unstaged hunk inspection',
+);
+assert(
+  eval8.assertions.some((a) => /git restore --staged/i.test(a) && /WIP/i.test(a)),
+  'fix-pr eval id 8 preserves staged WIP while separating hunks',
 );
 assert(eval9 && /structured amendment before/i.test(eval9.expected_output), 'fix-pr eval covers amendment-before-edit');
 const eval10 = evals.evals.find((e) => e.id === 10);
