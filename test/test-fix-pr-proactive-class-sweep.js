@@ -106,8 +106,13 @@ assert(
   'fix-pr forbids whole-tree stash sandwich',
 );
 assert(
-  /git add -- <paths>/i.test(fixPr) && /Never `git add -A`/i.test(fixPr),
+  /git add -- <paths>/i.test(fixPr) && /Never `git add -A`/i.test(fixPr) &&
+    /git add -u -- <deleted-paths>/i.test(fixPr),
   'fix-pr step 5 requires surgical git add only',
+);
+assert(
+  /git add -u -- <deleted-paths>/i.test(cooperative) && /bare `git add -u --`/i.test(cooperative),
+  'COOPERATIVE_FIX scopes git add -u to deleted-paths',
 );
 assert(
   cooperative.includes('preExistingDirty') && !/refuse dirty worktree/i.test(cooperative),

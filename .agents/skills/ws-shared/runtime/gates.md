@@ -168,7 +168,7 @@ Choosing Reach 10 runs one `scoreAndRefine` polish round (role `scoreAndRefine`)
 
 Orchestrator owns `git commit` via `commit-code` ([`tools.md`](tools.md)). [`ws-code-review`](../../ws-code-review/SKILL.md) does **not** commit. `skipQualityGates` does **not** skip these save points or the dirty-tree STOP.
 
-**Staging:** union of workflow `files_touched` (created/updated/deleted) still dirty in `git status`. Drop `{plansDir}/**`, secrets, gitignored, `preExistingDirty`. `git add -- <paths>` and `git add -u --` for those deletes. Never `git add -A`, `git add .`, or directory-wide `src/` `web/` `tests/`. Empty staged set → skip, log `g2-code | skip | empty-stage | ISO`, continue. Before add/commit: `HEAD` must equal `state.branch` (checkout `state.branch` only if drifted; never reset / `-D`).
+**Staging:** union of workflow `files_touched` (created/updated/deleted) still dirty in `git status`. Drop `{plansDir}/**`, secrets, gitignored, `preExistingDirty`. `git add -- <paths>` and `git add -u -- <deleted-paths>` for those deletes. Never `git add -A`, `git add .`, or directory-wide `src/` `web/` `tests/`. Empty staged set → skip, log `g2-code | skip | empty-stage | ISO`, continue. Before add/commit: `HEAD` must equal `state.branch` (checkout `state.branch` only if drifted; never reset / `-D`).
 
 | Mode | After | Before | Message | `commits[].step` |
 |------|-------|--------|---------|------------------|

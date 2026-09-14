@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "1c481396b8512a6924e96fe262934079e2158f4f37ad451db215b239f0e6159e",
+  "fullPackageDigest": "8b5935fc9077f0f50bda02a5b452876a9bc1f22a87b38551a3e547586c047dbb",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -17,7 +17,7 @@
       "runtime/config.schema.json": "22bb1547d195303fffe4bfc55a6f24a98f3de9abcf5281f253cae41369ae6c8f",
       "runtime/CROSS-PLATFORM.md": "68cf59d446957bee662ee84327676b6d87ab184b55b87a86710c58ec84057916",
       "runtime/evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
-      "runtime/gates.md": "faae185f66015f90dcce9c9557c25aa88958ddc8f4d7e162d60e16cdae1bc562",
+      "runtime/gates.md": "cd8f850b67ae8dd46fd284244745a63ac0792bdaef7da92097bee1f93026bb62",
       "runtime/host-dispatch.md": "7bf9d7963adc7d7143ac31b219b6872d4c07b9832064dbab8178b69a1cf2a1e5",
       "runtime/hub-layout.json": "2d018faa3180d2a2b25cdd7fd15c5cf7c2390f496d3ebe7c1c01604d3ce2f8ba",
       "runtime/plan-index.schema.json": "36df14cc8d9ba17413c456baf6550662b6218465cdf28d9981d624dac9ab4c7f",
@@ -56,7 +56,7 @@
       "templates/MEMORY.md.template": "5b67274d91cd4507fecd8aa9e3c2ee10d2f7fb90f0d8eb35fb575089bc5664fb",
       "templates/STACK.md.example": "68cff04083447e0f585c48a4e8165cfd02f1d60504f0baced2148579104ad5a8"
     },
-    "skillDigest": "4da331f372e439c475b3751840b687fb4d70ee2b435be60d557aa9e92e916bad"
+    "skillDigest": "72e65a857936a9f78672d85ce93ba398ca2f8ce305cc7ea22217225820f916ed"
   },
   "packageVersion": "0.4.26",
   "skills": {
@@ -183,13 +183,13 @@
         "evals/evals.json": "a255d8c3b1d79c5f7a77d41e2bb75e9b31f9e91ea43d653f80716ffa57b2e61e",
         "README.md": "0357238976549be3758d47ecffe8f86967864a927f4aa10fc8bd82a2b76ab403",
         "scripts/AUTO_FIX.md": "9eaea7184a967b503a41824593066ae55969066b68ffecfeee3daf52deff75e0",
-        "scripts/COOPERATIVE_FIX.md": "f85798568e33a0f2362814138f7519c1fd0a0a1ce1af98d399890d72689c352d",
+        "scripts/COOPERATIVE_FIX.md": "e251a044693904d4cf853010dcb490267f5ae709cb118c2349c0067aa32945d5",
         "scripts/fetch_threads.cjs": "ad555cfd34e9d0e0893d514a09e2ea52ea850c8889dfdbdf888e38bf0e26e203",
         "scripts/fix_pr_azure_context.py": "6af4a5712c2dc0ce377985dc3617b7184599f6bab1741a65a1b75ff7c5c0bad8",
         "scripts/resolve_thread.cjs": "597aa82018ca462ad117a22357696411fa73daa7bf4614522ab25afb4b543c9c",
-        "SKILL.md": "08e0b91e9fca79916f26f6dc0fc7842215c96b6bf0e11dff7c6b8ce604fa7652"
+        "SKILL.md": "5b4db0316fd474282258dc0e97698620bb19525c29e82f9efbe74a630dc9b8ae"
       },
-      "skillDigest": "c333ac92f8ed76dc0f456f84bed1d9caa16651227390efe78d4456c150199174"
+      "skillDigest": "edbd27b4df3bc3d02ef484ef3f8783d0ddcbc83b7399dba25ee4ae14c2f25010"
     },
     "ws-goal-fix-pr": {
       "files": {

@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-14 18:20] Agent: Composer
+- **Prompt**: Fix opened PR #332 review threads (bare git add -u).
+- **Done**: Scoped `git add -u -- <deleted-paths>` in ws-fix-pr SKILL, COOPERATIVE_FIX, gates.md staging; test asserts pathspec.
+- **Result**: Round 1 thread PRRT_kwDOTFajc86iTPwD. Learning: Bare git add -u stages all tracked dirty files.
+
 ### [2026-09-14 18:05] Agent: Composer
 - **Prompt**: Implement spec 0082 ws-fix-pr surgical commit without full-tree stash.
 - **Done**: `ws-fix-pr/SKILL.md` preflight snapshots `preExistingDirty` (allows dirty tree; forbids stash sandwich); step 5 path-scoped `git add --`; `COOPERATIVE_FIX.md` order-of-ops + surgical commit note; evals id 8 assertions; `test-fix-pr-proactive-class-sweep.js` guards.

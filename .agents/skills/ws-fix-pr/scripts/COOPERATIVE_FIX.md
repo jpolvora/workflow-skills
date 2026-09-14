@@ -105,7 +105,7 @@ Follow `SKILL.md` steps 1–5 (outer preflight → gate-only `fixPrPlan` → val
 5. Surgical commit (git add -- fix paths only; preExistingDirty stays unstaged) + push (unless dry-run)
 ```
 
-**Surgical commit (dirty tree OK):** Operators may keep uncommitted local harness / workflow helpers on disk for the whole run. Snapshot them as `preExistingDirty` at preflight; do not `git stash` the whole tree before or after the batch. Stage and commit only paths this batch changed for the threads (`git add -- <paths>`). Never `git add -A` or `git add .` so local harness WIP does not ride the fix commit.
+**Surgical commit (dirty tree OK):** Operators may keep uncommitted local harness / workflow helpers on disk for the whole run. Snapshot them as `preExistingDirty` at preflight; do not `git stash` the whole tree before or after the batch. Stage and commit only paths this batch changed for the threads (`git add -- <paths>` and `git add -u -- <deleted-paths>` for deletions in that same list). Never `git add -A`, `git add .`, or bare `git add -u --` so local harness WIP does not ride the fix commit.
 
 GitHub close recipe (after fixes land):  
 `node …/resolve_thread.cjs {THREAD_ID} "{note}" --model {currentModel}`  
