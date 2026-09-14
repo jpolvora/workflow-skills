@@ -131,6 +131,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Dedicated GitHub Pages wiki site generated from {wikiDir} (`spec: 0077-website-wiki-page.spec.md`)
 - [x] ws-wiki Phase 2 verify and Phase 3 plan/apply (`spec: 0078-ws-wiki-code-verify.spec.md`)
 - [x] ws-wiki from-code genesis and progressive-disclosure split (`spec: 0079-ws-wiki-from-code.spec.md`)
+- [ ] ws-fix-pr surgical commit without full-tree stash (`spec: 0082-ws-fix-pr-surgical-commit.spec.md`)
+
 
 
 
@@ -235,6 +237,8 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 | 84 | `ws-wiki-code-verify` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-wiki Phase 2 verify and Phase 3 plan/apply |
 
 | 85 | `ws-wiki-from-code` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-wiki from-code genesis and progressive-disclosure split |
+
+| 86 | `ws-fix-pr-surgical-commit` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-fix-pr surgical commit without full-tree stash |
 
 ## 9. Inbox
 

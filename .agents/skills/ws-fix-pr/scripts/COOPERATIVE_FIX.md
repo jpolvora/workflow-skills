@@ -97,13 +97,15 @@ Do not close a thread without a corresponding fix listed explicitly (`resolvedTh
 Follow `SKILL.md` steps 1–5 (outer preflight → gate-only `fixPrPlan` → validated `fixPrExec` → verify/learn/resolve/push). Use this file for proactive discovery, defect-class sweeps, and resolution report fields — not as a competing outer sequence.
 
 ```
-0. Outer preflight: sync branch, refuse dirty worktree, `validate-auth`
+0. Outer preflight: sync branch when pull is safe; snapshot preExistingDirty; validate-auth; no refuse-dirty; no stash sandwich
 1. fixPrPlan: list-threads + check-pr-status; score threads; write complete plan-gate.md only
 2. Handoff validation: batchId/prId/headSha/activeThreadIds must match HEAD
 3. fixPrExec: proactive discovery (below) → surgical fixes → verification
 4. Provider resolve-thread with <!-- resolution-reply --> and --model {currentModel}
-5. Commit + push (unless dry-run)
+5. Surgical commit (git add -- fix paths only; preExistingDirty stays unstaged) + push (unless dry-run)
 ```
+
+**Surgical commit (dirty tree OK):** Operators may keep uncommitted local harness / workflow helpers on disk for the whole run. Snapshot them as `preExistingDirty` at preflight; do not `git stash` the whole tree before or after the batch. Stage and commit only paths this batch changed for the threads (`git add -- <paths>`). Never `git add -A` or `git add .` so local harness WIP does not ride the fix commit.
 
 GitHub close recipe (after fixes land):  
 `node …/resolve_thread.cjs {THREAD_ID} "{note}" --model {currentModel}`  

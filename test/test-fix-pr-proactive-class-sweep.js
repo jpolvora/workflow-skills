@@ -95,7 +95,23 @@ assert(
 );
 assert(
   fixPr.indexOf('1. **Outer preflight**') < fixPr.indexOf('2. **`fixPrPlan`'),
-  'sync and dirty-worktree preflight precedes fixPrPlan',
+  'outer preflight precedes fixPrPlan',
+);
+assert(
+  fixPr.includes('preExistingDirty') && !/refuse dirty worktree/i.test(fixPr),
+  'fix-pr snapshots preExistingDirty and does not refuse dirty worktrees',
+);
+assert(
+  /git stash/i.test(fixPr) && /Forbidden/i.test(fixPr),
+  'fix-pr forbids whole-tree stash sandwich',
+);
+assert(
+  /git add -- <paths>/i.test(fixPr) && /Never `git add -A`/i.test(fixPr),
+  'fix-pr step 5 requires surgical git add only',
+);
+assert(
+  cooperative.includes('preExistingDirty') && !/refuse dirty worktree/i.test(cooperative),
+  'COOPERATIVE_FIX preflight allows dirty tree without refuse-dirty',
 );
 assert(
   /1\. \*\*Outer preflight\*\*[\s\S]*validate-auth[\s\S]*2\. \*\*`fixPrPlan`/i.test(fixPr),
@@ -215,6 +231,14 @@ const eval8 = evals.evals.find((e) => e.id === 8);
 const eval9 = evals.evals.find((e) => e.id === 9);
 const goalEval8 = goalEvals.evals.find((e) => e.id === 8);
 assert(eval8 && /one batch-wide fixPrPlan/i.test(eval8.expected_output), 'fix-pr eval covers one batch pair');
+assert(
+  eval8.assertions.some((a) => /preExistingDirty/i.test(a)),
+  'fix-pr eval id 8 covers preExistingDirty on dirty tree',
+);
+assert(
+  eval8.assertions.some((a) => /surgical fix paths/i.test(a)),
+  'fix-pr eval id 8 covers surgical staging',
+);
 assert(eval9 && /structured amendment before/i.test(eval9.expected_output), 'fix-pr eval covers amendment-before-edit');
 const eval10 = evals.evals.find((e) => e.id === 10);
 assert(

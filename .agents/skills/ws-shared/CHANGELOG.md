@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-14 18:05] Agent: Composer
+- **Prompt**: Implement spec 0082 ws-fix-pr surgical commit without full-tree stash.
+- **Done**: `ws-fix-pr/SKILL.md` preflight snapshots `preExistingDirty` (allows dirty tree; forbids stash sandwich); step 5 path-scoped `git add --`; `COOPERATIVE_FIX.md` order-of-ops + surgical commit note; evals id 8 assertions; `test-fix-pr-proactive-class-sweep.js` guards.
+- **Result**: `node test/test-fix-pr-proactive-class-sweep.js` exit 0. Learning: N/A (standard implementation).
+
 ### [2026-09-13 15:50] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-spec-manager then Sync spec status in index.PRD.
 - **Done**: E1 sync for `website-wiki-page` (commit `499b5125`) and `ws-wiki-from-code` (commit `013431e4`); Feature map + Next-specs `[x]`; Done log rows; spec frontmatter `status: completed`.
