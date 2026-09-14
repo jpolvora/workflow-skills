@@ -5,5 +5,5 @@
 - **Severity**: High
 - **PathPattern**: .agents/skills/ws-fix-pr/SKILL.md;.agents/skills/ws-shared/runtime/gates.md
 - **Scenario / Context**: Spec 0082 allowed dirty trees. Step 5 said `git add -u --` without a pathspec. On a dirty harness worktree that command stages every tracked modification, not only deleted fix paths.
-- **DO NOT**: Run bare `git add -u` / `git add -u --` during fix-pr or G2-code when `preExistingDirty` exists.
-- **INSTEAD DO**: `git add -- <paths>` and `git add -u -- <deleted-paths>` using only this batch's scoped list (same as tools.md `commit-code`).
+- **DO NOT**: Run bare `git add -u` / `git add -u --` during fix-pr or G2-code when `preExistingDirty` exists. Do not `git add -- <path>` a whole file that already had unrelated dirty hunks.
+- **INSTEAD DO**: `git add -- <paths>` and `git add -u -- <deleted-paths>` using only this batch's scoped list (same as tools.md `commit-code`). When the path is already in `preExistingDirty`, inspect `git diff -- <path>` and stage only fix hunks; if inseparable, leave unstaged and record `path + reason`.

@@ -78,6 +78,7 @@
       "assertions": [
         "Agent snapshots preExistingDirty and proceeds on a dirty tree without git stash push or stash pop of the whole worktree",
         "Agent stages only surgical fix paths and leaves pre-existing local harness WIP unstaged in the fix commit",
+        "Agent forbids bare git add -u and stages only fix hunks when a path is also in preExistingDirty",
         "fixPrPlan writes only plan-gate.md with batchId, prId, headSha, activeThreadIds, scores, proposed actions, proactive placeholders, and amendments",
         "No product edit, commit, push, resolve-thread, or Step 9 finish occurs in fixPrPlan",
         "Agent runs one fixPrPlan and one fixPrExec for the three-thread batch, not one pair per thread"

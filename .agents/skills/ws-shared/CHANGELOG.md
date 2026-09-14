@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-14 18:32] Agent: Composer
+- **Prompt**: /ws-goal-fix-pr 332 (round 2 mixed-hunk / bare git add -u Never list).
+- **Done**: SKILL, gates.md, tools.md commit-code, COOPERATIVE_FIX, evals, tests: forbid bare `git add -u`; stage only fix hunks on preExistingDirty overlap.
+- **Result**: Threads PRRT_kwDOTFajc86iTYbw and PRRT_kwDOTFajc86iTYcm. Learning: mixed hunks on dirty paths.
+
 ### [2026-09-14 18:20] Agent: Composer
 - **Prompt**: Fix opened PR #332 review threads (bare git add -u).
 - **Done**: Scoped `git add -u -- <deleted-paths>` in ws-fix-pr SKILL, COOPERATIVE_FIX, gates.md staging; test asserts pathspec.

@@ -30,6 +30,8 @@ function read(rel) {
 const cooperative = read('.agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md');
 const fixPr = read('.agents/skills/ws-fix-pr/SKILL.md');
 const autoFix = read('.agents/skills/ws-fix-pr/scripts/AUTO_FIX.md');
+const gates = read('.agents/skills/ws-shared/runtime/gates.md');
+const toolsMd = read('.agents/skills/ws-shared/runtime/tools.md');
 const goalFix = read('.agents/skills/ws-goal-fix-pr/SKILL.md');
 const lite = read('.agents/skills/ws-spec-to-pr-lite/SKILL.md');
 const evals = JSON.parse(read('.agents/skills/ws-fix-pr/evals/evals.json'));
@@ -107,12 +109,21 @@ assert(
 );
 assert(
   /git add -- <paths>/i.test(fixPr) && /Never `git add -A`/i.test(fixPr) &&
-    /git add -u -- <deleted-paths>/i.test(fixPr),
+    /git add -u -- <deleted-paths>/i.test(fixPr) &&
+    /bare `git add -u`/.test(fixPr) && /preExistingDirty/.test(fixPr) && /fix hunks/.test(fixPr),
   'fix-pr step 5 requires surgical git add only',
 );
 assert(
-  /git add -u -- <deleted-paths>/i.test(cooperative) && /bare `git add -u --`/i.test(cooperative),
+  /git add -u -- <deleted-paths>/i.test(cooperative) && /bare `git add -u`/.test(cooperative),
   'COOPERATIVE_FIX scopes git add -u to deleted-paths',
+);
+assert(
+  /bare `git add -u`/.test(gates) && /fix hunks/.test(gates),
+  'gates.md G2 staging forbids bare git add -u and mixed hunks',
+);
+assert(
+  /bare `git add -u`/.test(toolsMd) && /fix hunks/.test(toolsMd),
+  'tools.md commit-code forbids bare git add -u and mixed hunks',
 );
 assert(
   cooperative.includes('preExistingDirty') && !/refuse dirty worktree/i.test(cooperative),
@@ -243,6 +254,10 @@ assert(
 assert(
   eval8.assertions.some((a) => /surgical fix paths/i.test(a)),
   'fix-pr eval id 8 covers surgical staging',
+);
+assert(
+  eval8.assertions.some((a) => /bare git add -u/i.test(a) && /fix hunks/i.test(a)),
+  'fix-pr eval id 8 covers bare git add -u and mixed-hunk staging',
 );
 assert(eval9 && /structured amendment before/i.test(eval9.expected_output), 'fix-pr eval covers amendment-before-edit');
 const eval10 = evals.evals.find((e) => e.id === 10);
