@@ -97,7 +97,7 @@ Do not close a thread without a corresponding fix listed explicitly (`resolvedTh
 Follow `SKILL.md` steps 1–5 (outer preflight → gate-only `fixPrPlan` → validated `fixPrExec` → verify/learn/resolve/push). Use this file for proactive discovery, defect-class sweeps, and resolution report fields — not as a competing outer sequence.
 
 ```
-0. Outer preflight: sync branch when pull is safe; snapshot preExistingDirty; validate-auth; no refuse-dirty; no stash sandwich
+0. Outer preflight: snapshot preExistingDirty; `git fetch origin <sourceRefName>`; compare `git diff --name-only HEAD..FETCH_HEAD` with normalized preExistingDirty paths; pull only when there is no overlap; STOP on overlap; validate-auth; no refuse-dirty; no stash sandwich
 1. fixPrPlan: list-threads + check-pr-status; score threads; write complete plan-gate.md only
 2. Handoff validation: batchId/prId/headSha/activeThreadIds must match HEAD
 3. fixPrExec: proactive discovery (below) → surgical fixes → verification
@@ -105,7 +105,7 @@ Follow `SKILL.md` steps 1–5 (outer preflight → gate-only `fixPrPlan` → val
 5. Surgical commit (git add -- fix paths only; preExistingDirty stays unstaged) + push (unless dry-run)
 ```
 
-**Surgical commit (dirty tree OK):** Operators may keep uncommitted local harness / workflow helpers on disk for the whole run. Snapshot them as `preExistingDirty` at preflight; do not `git stash` the whole tree before or after the batch. Stage and commit only paths this batch changed for the threads (`git add -- <paths>` and `git add -u -- <deleted-paths>` for deletions in that same list). Never `git add -A`, `git add .`, bare `git add -u`, bare `git add -u --` so local harness WIP does not ride the fix commit. When a fix path is also in `preExistingDirty`, stage only fix hunks; if mixed hunks cannot be separated, leave unstaged and record `path + reason`.
+**Surgical commit (dirty tree OK):** Operators may keep uncommitted local harness / workflow helpers on disk for the whole run. Snapshot them as `preExistingDirty` at preflight; do not `git stash` the whole tree before or after the batch. Stage and commit only paths this batch changed for the threads (`git add -- <paths>` and `git add -u -- <deleted-paths>` for deletions in that same list). Never `git add -A`, `git add .`, bare `git add -u`, bare `git add -u --` so local harness WIP does not ride the fix commit. When a fix path is also in `preExistingDirty`, stage only fix hunks via a non-interactive scoped patch / `git apply --cached` (never interactive `git add -p` in automation); if anchor hunks cannot be separated without staging unrelated WIP, do not resolve that 6–10 thread as fixed — leave it open or escalate with `path + reason`. Empty staged set → skip commit and resolve comment-only only for 0–5 threads.
 
 GitHub close recipe (after fixes land):  
 `node …/resolve_thread.cjs {THREAD_ID} "{note}" --model {currentModel}`  

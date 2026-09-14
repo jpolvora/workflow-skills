@@ -28,7 +28,7 @@ The contract (same idea as G2-code / `commit-code`):
 5. **Do not** `git stash` / `stash push` / `stash pop` the whole worktree (or “save everything then restore”) before or after the batch.
 6. After commit, leftover porcelain still includes `preExistingDirty` paths that were not part of this batch’s fix.
 
-`git pull origin <sourceRefName>` and `validate-auth` remain. If pull cannot proceed because a **pre-existing dirty path overlaps** files that would change on pull, STOP and report the conflict; do not stash-all (that would again drop local harness).
+Before `git pull origin <sourceRefName>`, run `git fetch origin <sourceRefName>`, compare `git diff --name-only HEAD..FETCH_HEAD` with normalized `preExistingDirty` paths, and pull only when the intersection is empty. If the intersection is non-empty, STOP and report the overlapping paths; do not risk a conflicted pull or stash-all (that would again drop local harness).
 
 Align `ws-fix-pr` commit wording with hub `preExistingDirty` / `commit-code`. Do not rewrite the whole G2-code section.
 

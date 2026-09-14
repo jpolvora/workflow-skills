@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-14 18:54] Agent: GPT-5.6 Luna
+- **Prompt**: /ws-goal-fix-pr (resume PR #332, round 3).
+- **Done**: Added deterministic `FETCH_HEAD` overlap detection before pull and fail-closed handling for inseparable dirty fix hunks across ws-fix-pr, cooperative guidance, G2 staging, spec, evals, and tests.
+- **Result**: Six review threads addressed in one surgical batch. Learning: pull overlap must be computed, and score 6–10 anchors require a landed commit.
+
 ### [2026-09-14 18:32] Agent: Composer
 - **Prompt**: /ws-goal-fix-pr 332 (round 2 mixed-hunk / bare git add -u Never list).
 - **Done**: SKILL, gates.md, tools.md commit-code, COOPERATIVE_FIX, evals, tests: forbid bare `git add -u`; stage only fix hunks on preExistingDirty overlap.
