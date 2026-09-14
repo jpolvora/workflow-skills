@@ -1,5 +1,35 @@
 # Changelog
 
+### [2026-09-14 19:05] Agent: GPT-5.6 Luna
+- **Prompt**: /ws-goal-fix-pr (PR #332, round 4 staged-leftover review threads).
+- **Done**: Made fix-pr hunk staging index-aware by inspecting HEAD, cached, and porcelain state; preserve staged WIP with `git restore --staged` before non-interactive hunk staging; updated shared gates, tools, spec, evals, and tests.
+- **Result**: Four same-class review threads addressed in one batch. Learning: path-scoped staging is insufficient when the same path already has staged WIP.
+
+### [2026-09-14 18:54] Agent: GPT-5.6 Luna
+- **Prompt**: /ws-goal-fix-pr (resume PR #332, round 3).
+- **Done**: Added deterministic `FETCH_HEAD` overlap detection before pull and fail-closed handling for inseparable dirty fix hunks across ws-fix-pr, cooperative guidance, G2 staging, spec, evals, and tests.
+- **Result**: Six review threads addressed in one surgical batch. Learning: pull overlap must be computed, and score 6–10 anchors require a landed commit.
+
+### [2026-09-14 18:32] Agent: Composer
+- **Prompt**: /ws-goal-fix-pr 332 (round 2 mixed-hunk / bare git add -u Never list).
+- **Done**: SKILL, gates.md, tools.md commit-code, COOPERATIVE_FIX, evals, tests: forbid bare `git add -u`; stage only fix hunks on preExistingDirty overlap.
+- **Result**: Threads PRRT_kwDOTFajc86iTYbw and PRRT_kwDOTFajc86iTYcm. Learning: mixed hunks on dirty paths.
+
+### [2026-09-14 18:20] Agent: Composer
+- **Prompt**: Fix opened PR #332 review threads (bare git add -u).
+- **Done**: Scoped `git add -u -- <deleted-paths>` in ws-fix-pr SKILL, COOPERATIVE_FIX, gates.md staging; test asserts pathspec.
+- **Result**: Round 1 thread PRRT_kwDOTFajc86iTPwD. Learning: Bare git add -u stages all tracked dirty files.
+
+### [2026-09-14 18:05] Agent: Composer
+- **Prompt**: Implement spec 0082 ws-fix-pr surgical commit without full-tree stash.
+- **Done**: `ws-fix-pr/SKILL.md` preflight snapshots `preExistingDirty` (allows dirty tree; forbids stash sandwich); step 5 path-scoped `git add --`; `COOPERATIVE_FIX.md` order-of-ops + surgical commit note; evals id 8 assertions; `test-fix-pr-proactive-class-sweep.js` guards.
+- **Result**: `node test/test-fix-pr-proactive-class-sweep.js` exit 0. Learning: N/A (standard implementation).
+
+### [2026-09-13 15:50] Agent: Cursor Grok 4.6
+- **Prompt**: /ws-spec-manager then Sync spec status in index.PRD.
+- **Done**: E1 sync for `website-wiki-page` (commit `499b5125`) and `ws-wiki-from-code` (commit `013431e4`); Feature map + Next-specs `[x]`; Done log rows; spec frontmatter `status: completed`.
+- **Result**: Left `[ ]`: unique-skill-script-runtime, ws-shared-hub-agents-separation, ws-wiki-spec-sweep (no E1). Learning: N/A (no new project knowledge).
+
 ### [2026-09-13 18:05] Agent: Composer
 - **Prompt**: Verify plan execution then ship 0.4.25 (fix Step 8 contract, bump).
 - **Done**: Ship phase options 1/2/4; not-fullMode auto-gate skip delivery + skip shipping; leftover close-gate wording; probe ignore-only + human --soft-exit tests; FEATURES Step 8 combined menu; bump 0.4.24 to 0.4.25.

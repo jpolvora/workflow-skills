@@ -76,7 +76,13 @@
       "prompt": "Fix three active threads on PR #42 with separate reviewer and execution model preferences.",
       "expected_output": "One batch-wide fixPrPlan writes the complete gate before one fixPrExec edits; numeric Step 9 remains outer-only.",
       "assertions": [
-        "Agent performs sync and dirty-worktree preflight before fixPrPlan",
+        "Agent snapshots preExistingDirty and proceeds on a dirty tree without git stash push or stash pop of the whole worktree",
+        "Agent stages only surgical fix paths and leaves pre-existing local harness WIP unstaged in the fix commit",
+        "Agent forbids bare git add -u and stages only fix hunks when a path is also in preExistingDirty",
+        "Agent fetches the source branch, intersects git diff --name-only HEAD..FETCH_HEAD with preExistingDirty, and pulls only with no overlap",
+        "Agent leaves a 6-10 thread open or escalates when anchor hunks cannot be separated, rather than resolving comment-only without a landed commit",
+        "Agent inspects git diff HEAD, git diff --cached, and git status --porcelain for a preExistingDirty fix path and preserves unrelated staged WIP",
+        "Agent may unstage unrelated index hunks with git restore --staged while keeping WIP in the worktree before hunk-staging",
         "fixPrPlan writes only plan-gate.md with batchId, prId, headSha, activeThreadIds, scores, proposed actions, proactive placeholders, and amendments",
         "No product edit, commit, push, resolve-thread, or Step 9 finish occurs in fixPrPlan",
         "Agent runs one fixPrPlan and one fixPrExec for the three-thread batch, not one pair per thread"

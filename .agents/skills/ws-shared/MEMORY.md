@@ -6,6 +6,33 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-09-14] Fix-pr must separate staged WIP before hunk staging
+- **Layer**: `Harness`
+- **Module**: `ws-fix-pr / surgical commit`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-fix-pr/SKILL.md;.agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md;.agents/skills/ws-shared/runtime/gates.md;.agents/skills/ws-shared/runtime/tools.md`
+- **Scenario / Context**: Review round 4 found that `git diff -- <path>` compares the worktree with the index and hides staged leftovers, so `git apply --cached` can add the fix while unrelated staged harness hunks on the same path remain in the commit.
+- **DO NOT**: Treat a path-scoped name list as proof that staged content is safe. Do not stage fix hunks without checking both the index and worktree against HEAD.
+- **INSTEAD DO**: Inspect `git diff HEAD -- <path>`, `git diff --cached -- <path>`, and `git status --porcelain -- <path>`. If the index holds unrelated WIP, use `git restore --staged -- <path>` to keep it in the worktree before non-interactive hunk staging; if the anchor cannot be separated, leave the score 6–10 thread open or escalate with `path + reason`.
+
+### [2026-09-14] Fix-pr must detect pull overlap and protect inseparable anchors
+- **Layer**: `Harness`
+- **Module**: `ws-fix-pr / dirty-tree preflight and surgical commit`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-fix-pr/SKILL.md;.agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md;.agents/skills/ws-shared/runtime/gates.md;.agents/skills/ws-shared/runtime/tools.md`
+- **Scenario / Context**: Review round 3 found that “pull when safe” had no deterministic remote-path check, and an inseparable mixed hunk on a preExistingDirty fix path could be left unstaged while a score 6–10 thread was still resolved as fixed.
+- **DO NOT**: Pull based on a guess about dirty-path overlap. Do not resolve a score 6–10 thread as fixed when its anchor cannot be separated from unrelated WIP, and do not use comment-only resolution as a substitute for a missing landed commit.
+- **INSTEAD DO**: Fetch the source branch, compare `git diff --name-only HEAD..FETCH_HEAD` with normalized `preExistingDirty` paths, and pull only with no intersection. Stage anchor hunks through a non-interactive scoped patch / `git apply --cached`; if inseparable, leave the thread open or escalate with `path + reason`. Comment-only resolution is for 0–5 threads only.
+
+### [2026-09-14] Bare git add -u stages all tracked dirty files
+- **Layer**: `Harness`
+- **Module**: `ws-fix-pr / surgical commit`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-fix-pr/SKILL.md;.agents/skills/ws-shared/runtime/gates.md`
+- **Scenario / Context**: Spec 0082 allowed dirty trees. Step 5 said `git add -u --` without a pathspec. On a dirty harness worktree that command stages every tracked modification, not only deleted fix paths.
+- **DO NOT**: Run bare `git add -u` / `git add -u --` during fix-pr or G2-code when `preExistingDirty` exists. Do not `git add -- <path>` a whole file that already had unrelated dirty hunks.
+- **INSTEAD DO**: `git add -- <paths>` and `git add -u -- <deleted-paths>` using only this batch's scoped list (same as tools.md `commit-code`). When the path is already in `preExistingDirty`, inspect `git diff -- <path>` and stage only fix hunks; if inseparable, leave unstaged and record `path + reason`.
+
 ### [2026-09-13] Wiki examples must not keep placeholder conditional sections
 - **Layer**: `harness`
 - **Module**: `ws-wiki / validate_wiki.cjs`

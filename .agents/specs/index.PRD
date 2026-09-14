@@ -128,9 +128,11 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] workflow_state.cjs drops earlier values for repeated file-list flags (`spec: 0074-us-310.spec.md`) — PR #313 MERGED
 - [x] ws-wiki: living project feature wiki and domain knowledge base manager (`spec: 0075-ws-wiki.spec.md`) — PR #319
 - [ ] ws-wiki first-time sequential spec sweep (`spec: 0076-ws-wiki-spec-sweep.spec.md`)
-- [ ] Dedicated GitHub Pages wiki site generated from {wikiDir} (`spec: 0077-website-wiki-page.spec.md`)
+- [x] Dedicated GitHub Pages wiki site generated from {wikiDir} (`spec: 0077-website-wiki-page.spec.md`)
 - [x] ws-wiki Phase 2 verify and Phase 3 plan/apply (`spec: 0078-ws-wiki-code-verify.spec.md`)
-- [ ] ws-wiki from-code genesis and progressive-disclosure split (`spec: 0079-ws-wiki-from-code.spec.md`)
+- [x] ws-wiki from-code genesis and progressive-disclosure split (`spec: 0079-ws-wiki-from-code.spec.md`)
+- [x] ws-fix-pr surgical commit without full-tree stash (`spec: 0082-ws-fix-pr-surgical-commit.spec.md`)
+
 
 
 
@@ -212,7 +214,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 68 | `us-250` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Remove retired ws-patterns references from hub templates/seeds (PR #251) |
 | 69 | `us-272` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Prune retired skill ids on update + hybrid harness fallback (PR #273) |
 
-All Next-specs closed except true todo: `unique-skill-script-runtime` and `ws-shared-hub-agents-separation`.
+All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-shared-hub-agents-separation`, and `ws-wiki-spec-sweep`.
 
 | 70 | `ws-benchmarks-skill` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-benchmarks: benchmark commands and evolution report manager |
 | 71 | `ws-spec-manager-skill` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-manager: unified specification router and lifecycle manager |
@@ -230,11 +232,13 @@ All Next-specs closed except true todo: `unique-skill-script-runtime` and `ws-sh
 
 | 82 | `ws-wiki-spec-sweep` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-wiki first-time sequential spec sweep |
 
-| 83 | `website-wiki-page` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Dedicated GitHub Pages wiki site generated from {wikiDir} |
+| 83 | `website-wiki-page` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Dedicated GitHub Pages wiki site generated from {wikiDir} |
 
 | 84 | `ws-wiki-code-verify` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-wiki Phase 2 verify and Phase 3 plan/apply |
 
-| 85 | `ws-wiki-from-code` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-wiki from-code genesis and progressive-disclosure split |
+| 85 | `ws-wiki-from-code` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-wiki from-code genesis and progressive-disclosure split |
+
+| 86 | `ws-fix-pr-surgical-commit` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-fix-pr surgical commit without full-tree stash |
 
 ## 9. Inbox
 
@@ -323,6 +327,8 @@ All Next-specs closed except true todo: `unique-skill-script-runtime` and `ws-sh
 | 2026-09-11 | `us-310` | workflow_state.cjs drops earlier values for repeated file-list flags | [PR #313](https://github.com/jpolvora/workflow-skills/pull/313) |
 | 2026-09-12 | `ws-wiki` | ws-wiki: living project feature wiki and domain knowledge base manager | [PR #319](https://github.com/jpolvora/workflow-skills/pull/319) |
 | 2026-09-12 | `ws-wiki-code-verify` | ws-wiki Phase 2 verify and Phase 3 plan/apply | Implemented (`88760ba8`, PR pending) |
+| 2026-09-12 | `website-wiki-page` | Dedicated GitHub Pages wiki site generated from {wikiDir} | Implemented (`499b5125`, PR pending) |
+| 2026-09-14 | `ws-fix-pr-surgical-commit` | ws-fix-pr surgical commit without full-tree stash | [PR #332](https://github.com/jpolvora/workflow-skills/pull/332) |
 
 ## 11. Maintenance checklist
 

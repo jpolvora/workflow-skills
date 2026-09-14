@@ -4,7 +4,7 @@ slug: website-wiki-page
 title: "Dedicated GitHub Pages wiki site generated from {wikiDir}"
 source: local
 specDate: 2026-09-12
-status: draft
+status: completed
 ---
 
 # Specification — Dedicated GitHub Pages wiki site generated from {wikiDir}

@@ -30,6 +30,9 @@ function read(rel) {
 const cooperative = read('.agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md');
 const fixPr = read('.agents/skills/ws-fix-pr/SKILL.md');
 const autoFix = read('.agents/skills/ws-fix-pr/scripts/AUTO_FIX.md');
+const gates = read('.agents/skills/ws-shared/runtime/gates.md');
+const toolsMd = read('.agents/skills/ws-shared/runtime/tools.md');
+const spec = read('.agents/specs/0082-ws-fix-pr-surgical-commit.spec.md');
 const goalFix = read('.agents/skills/ws-goal-fix-pr/SKILL.md');
 const lite = read('.agents/skills/ws-spec-to-pr-lite/SKILL.md');
 const evals = JSON.parse(read('.agents/skills/ws-fix-pr/evals/evals.json'));
@@ -95,7 +98,76 @@ assert(
 );
 assert(
   fixPr.indexOf('1. **Outer preflight**') < fixPr.indexOf('2. **`fixPrPlan`'),
-  'sync and dirty-worktree preflight precedes fixPrPlan',
+  'outer preflight precedes fixPrPlan',
+);
+assert(
+  fixPr.includes('preExistingDirty') && !/refuse dirty worktree/i.test(fixPr),
+  'fix-pr snapshots preExistingDirty and does not refuse dirty worktrees',
+);
+assert(
+  fixPr.includes('git fetch origin <sourceRefName>') &&
+    fixPr.includes('git diff --name-only HEAD..FETCH_HEAD') &&
+    /intersect.*preExistingDirty/i.test(fixPr) &&
+    /git pull origin <sourceRefName>/i.test(fixPr),
+  'fix-pr preflight deterministically checks pull overlap',
+);
+assert(
+  cooperative.includes('git fetch origin <sourceRefName>') &&
+    cooperative.includes('git diff --name-only HEAD..FETCH_HEAD') &&
+    /overlap/i.test(cooperative),
+  'COOPERATIVE_FIX preflight deterministically checks pull overlap',
+);
+assert(
+  spec.includes('git fetch origin <sourceRefName>') &&
+    spec.includes('git diff --name-only HEAD..FETCH_HEAD') &&
+    /normalized.*preExistingDirty/i.test(spec),
+  'spec records deterministic pull-overlap detection',
+);
+assert(
+  /git stash/i.test(fixPr) && /Forbidden/i.test(fixPr),
+  'fix-pr forbids whole-tree stash sandwich',
+);
+assert(
+  /git add -- <paths>/i.test(fixPr) && /Never `git add -A`/i.test(fixPr) &&
+    /git add -u -- <deleted-paths>/i.test(fixPr) &&
+    /bare `git add -u`/.test(fixPr) && /preExistingDirty/.test(fixPr) && /fix hunks/.test(fixPr),
+  'fix-pr step 5 requires surgical git add only',
+);
+assert(
+  /git add -u -- <deleted-paths>/i.test(cooperative) && /bare `git add -u`/.test(cooperative),
+  'COOPERATIVE_FIX scopes git add -u to deleted-paths',
+);
+assert(
+  /bare `git add -u`/.test(gates) && /fix hunks/.test(gates),
+  'gates.md G2 staging forbids bare git add -u and mixed hunks',
+);
+assert(
+  /bare `git add -u`/.test(toolsMd) && /fix hunks/.test(toolsMd),
+  'tools.md commit-code forbids bare git add -u and mixed hunks',
+);
+for (const [name, text] of [
+  ['fix-pr', fixPr],
+  ['COOPERATIVE_FIX', cooperative],
+  ['gates.md', gates],
+  ['tools.md', toolsMd],
+]) {
+  assert(
+    /non-interactive scoped patch/.test(text) &&
+      /do not resolve that 6[–-]10 thread as fixed/i.test(text) &&
+      /comment-only only for 0[–-]5 threads/i.test(text),
+    `${name} keeps inseparable 6-10 fixes unresolved`,
+  );
+  assert(
+    text.includes('git diff HEAD -- <path>') &&
+      text.includes('git diff --cached -- <path>') &&
+      text.includes('git status --porcelain -- <path>') &&
+      text.includes('git restore --staged -- <path>'),
+    `${name} separates staged WIP from fix hunks`,
+  );
+}
+assert(
+  cooperative.includes('preExistingDirty') && !/refuse dirty worktree/i.test(cooperative),
+  'COOPERATIVE_FIX preflight allows dirty tree without refuse-dirty',
 );
 assert(
   /1\. \*\*Outer preflight\*\*[\s\S]*validate-auth[\s\S]*2\. \*\*`fixPrPlan`/i.test(fixPr),
@@ -215,6 +287,34 @@ const eval8 = evals.evals.find((e) => e.id === 8);
 const eval9 = evals.evals.find((e) => e.id === 9);
 const goalEval8 = goalEvals.evals.find((e) => e.id === 8);
 assert(eval8 && /one batch-wide fixPrPlan/i.test(eval8.expected_output), 'fix-pr eval covers one batch pair');
+assert(
+  eval8.assertions.some((a) => /preExistingDirty/i.test(a)),
+  'fix-pr eval id 8 covers preExistingDirty on dirty tree',
+);
+assert(
+  eval8.assertions.some((a) => /surgical fix paths/i.test(a)),
+  'fix-pr eval id 8 covers surgical staging',
+);
+assert(
+  eval8.assertions.some((a) => /bare git add -u/i.test(a) && /fix hunks/i.test(a)),
+  'fix-pr eval id 8 covers bare git add -u and mixed-hunk staging',
+);
+assert(
+  eval8.assertions.some((a) => /FETCH_HEAD/i.test(a) && /preExistingDirty/i.test(a)),
+  'fix-pr eval id 8 covers deterministic pull-overlap detection',
+);
+assert(
+  eval8.assertions.some((a) => /6-10 thread/i.test(a) && /landed commit/i.test(a)),
+  'fix-pr eval id 8 covers inseparable anchor resolution guard',
+);
+assert(
+  eval8.assertions.some((a) => /git diff HEAD/i.test(a) && /git diff --cached/i.test(a)),
+  'fix-pr eval id 8 covers staged-vs-unstaged hunk inspection',
+);
+assert(
+  eval8.assertions.some((a) => /git restore --staged/i.test(a) && /WIP/i.test(a)),
+  'fix-pr eval id 8 preserves staged WIP while separating hunks',
+);
 assert(eval9 && /structured amendment before/i.test(eval9.expected_output), 'fix-pr eval covers amendment-before-edit');
 const eval10 = evals.evals.find((e) => e.id === 10);
 assert(
