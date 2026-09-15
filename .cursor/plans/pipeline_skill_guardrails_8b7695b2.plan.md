@@ -151,32 +151,34 @@ Evidence: `G2-code` 90x, `Commit configured delivery artifacts` 14x, `fixPrPlan`
 
 ## Gap-fill (only blast radius; after or with shrink)
 
-Net-add only what is missing and **skill-owned**. Prefer replacing a long paragraph with a shorter Guardrails bullet.
+Net-add only what is missing and **skill-owned**. Prefer replacing a long paragraph with a shorter Guardrails bullet. Each add is one line; full prose stays in its SoT (no new copies).
 
-### P0
+### P0 (verified gaps 2026-09-15 — grep-backed)
 
-| Skill | Add (lean) | Shrink while editing |
-|-------|------------|----------------------|
-| `ws-implement-tasks` | Exact `files_touched`; no `git add`/`commit`/`push`, no `{plansDir}`, no `git add -A`; DAG path isolation; sabotage-aware tests when plan requires; no managed `ws-*` rewrites | Drop memory essay, ScoreAndRefine table → gates link; drop handoff boilerplate; thin stack cheat sheet |
-| `ws-plan-verify` | Shell against product tree; no host question-only that blocks Shell; no product edits; no Advance-imply below `minVerifyScore`; negatives are gaps (cap via ledger) | Drop orch scoreAndRefine/Reach-10/G2 handoff prose → gates link |
-| `ws-plan-interview` | MEMORY PathPattern / `force_interview` never soft-skip; emit `shared_understanding` correctly | Keep Grilling Protocol; avoid restating orch skip matrix |
-| `ws-plan-write` | Write only assigned plan artifact; no git | Drop long memory Pre-work; pointer to injected/consult contract |
-| `ws-testing` | Fail-closed mutation/sabotage; no product edits; `skipQualityGates` ≠ skip build/test; orch max-3 then Pause (one line) | Keep probe/mutation tables (local SoT) |
+| Skill | Add (lean, 1 line each) | Shrink while editing |
+|-------|-------------------------|----------------------|
+| `ws-implement-tasks` | Exact `files_touched` (created/modified/deleted, repo-relative, no `{plansDir}`); no `git add`/`commit`/`push` in any form (staging is orch-owned); DAG sibling isolation (edit only assigned task files); sabotage-ready tests (assertions must fail on inverted code, no tautologies); no managed `ws-*` rewrites unless task names that file | Drop memory essay, ScoreAndRefine table → gates link; drop handoff boilerplate; thin stack cheat sheet |
+| `ws-plan-verify` | Shell-required (product-tree inspection via Shell; never host question-only/readonly — PROTOCOLS Step 5 owns this, skill restates 1 line so standalone `/plan-verify` can't go Shell-less); no product/spec/plan edits (report only); no Advance-imply below `minVerifyScore`; negatives are gaps (cap via ledger); below-bar quick score must escalate to full matrix, never finalize in quick mode | Drop orch scoreAndRefine/Reach-10/G2 handoff prose → gates link |
+| `ws-plan-interview` | `force_interview` (from `check_memory_conflict.py`) overrides `softSkipEligible` — never soft-skip on MEMORY PathPattern match; emit `shared_understanding` correctly (auto-confirmed only via 2c End, else pending) | Keep Grilling Protocol; avoid restating orch skip matrix |
+| `ws-plan-write` | Write only assigned plan artifact; no product edits; no `git add`/`commit`/`push`; no managed `ws-*` rewrites; §6 invariant plan mandatory (touched framework boundaries without checks → blocking gap for interview, not silent pass) | Drop long memory Pre-work; pointer to injected/consult contract |
+| `ws-testing` | Fail-closed mutation/sabotage; no product **or test-source** edits (report gaps → `ws-implement-tasks` fix mode); `skipQualityGates` ≠ skip build/test/leak scans (quality gates only); probe-machine skip only (never judgment); orch max-3 then Pause (one line) | Keep probe/mutation tables (local SoT) |
 
 ### P1
 
 | Skill | Change |
 |-------|--------|
-| `ws-spec-write` | Anonymization bullets; existing-spec short-circuit one-liner |
-| `ws-code-review` | Portable `localReviewCommand` only (drop host-branded path); dirty-tree → gates pointer; workflow fix-loop half → PROTOCOLS pointer where safe for standalone |
-| `ws-ship-pr` | No benchmarks; workflowMode = push/PR only |
-| `ws-plan-to-tasks` | No git; no inventing stubs when DAG off |
-| `ws-fix-pr` | Managed-skill one-liner; staging → `tools.md commit-code` + gates timing link + keep path-scoped add |
-| `ws-classify-complexity` | Tiny consolidated Don't (axes / hand-write classify / mid-flight flip) |
+| `ws-spec-write` | Anonymization 1-liner (strip private names/paths/hosts; paraphrase consumer pastes — hub SoT, skill restates for standalone); do-not-overwrite differing spec-of-record without explicit overwrite intent (register `--force` rule already covers plan copy); existing-spec short-circuit one-liner |
+| `ws-code-review` | Portable `localReviewCommand` only (drop `cursor-reviewer`/`scripts/cursor-reviewer` branded path — grep must hit 0); dirty-tree → gates fail-closed pointer (committed `{base}...HEAD` only, never dirty WT as snapshot); workflow fix-loop table → PROTOCOLS pointer, keep short standalone loop; sibling sweep beyond diff stays |
+| `ws-ship-pr` | No benchmarks (1 line; `generate-telemetry-aggregate.cjs` is not a harness benchmark); workflowMode = push/PR only (no delivery commit, no goal-fix loop when `stopBeforeFixPr`); external-post anonymization 1-liner (PR body/issue comments: generic wording, no private paths/hosts) |
+| `ws-plan-to-tasks` | No git; no state/ledger writes (return paths only); no inventing stubs/DAG when `enableDag` false (STOP or sequential-stub note — orch owns the stub); DAG path isolation stays |
+| `ws-fix-pr` | Managed-skill one-liner (no `ws-*` rewrites unless batch names that file); staging → `tools.md commit-code` + gates timing link + keep path-scoped add; external-post anonymization 1-liner (resolution comments: generic class wording); one `fixPrPlan`→`fixPrExec` pair per batch (already present — keep, don't expand) |
+| `ws-classify-complexity` | Tiny consolidated Don't (axes / hand-write classify / mid-flight flip); `complex` forces `standard` stays |
+| `ws-spec-to-pr-lite` | MEMORY consult aligns to `tools.md read-memory` (both backends, not grep-only — current Invariant 9 misses vault when `enableSpecMemoIntegration`); rest unchanged (no verify/testing dispatch, role keys ignored, safety valve stays) |
 
 ### P2
 
-- [`setup.md`](.agents/skills/ws-shared/runtime/setup.md) § External dependencies: **Source anonymization** → hub `AGENTS.md`.
+- [`setup.md`](.agents/skills/ws-shared/runtime/setup.md) § External dependencies: **Source anonymization** → hub `AGENTS.md` (skills that post externally — `ws-ship-pr` create-pr/comment-issue, `ws-fix-pr` resolve-thread — each keep a 1-line pointer, not pasted prose).
+- Providers (`github`/`azure-devops`/`local`): no new guardrails — contract already owns spec-of-record-first, `ws-spec-write` reformulation (never raw copy), `--force`-only overwrite, delegate-or-STOP PR intents, `validate-auth` before remote mutation. Keep as-is; do not paste provider tables into callers.
 
 ## Explicitly leave orch-only
 
@@ -187,6 +189,7 @@ Do **not** paste into step skills: HS enforcement, G2 timing algorithm, pre-adva
 1. Preserve `Visual References` string in the four skills asserted by `test/test-visual-attachment-ingest.js`.
 2. Enhancing-skill `## Subagent contract` stays ≤40 lines (`build_dispatch_context.cjs` throws otherwise).
 3. Grep (must drop, not just move): `After step finish` → 0 in SKILLs (owned by PROTOCOLS Base Prefix + STEP-DISPATCH post-transition); `Commit configured delivery artifacts` → 1 file (gates.md); `cleanup_workflow_git` → 1 file (artifact-cleanup.md + 1 pointer each orch); `Starting step` template → 1 file (config-resolution); `cursor-reviewer` branded path → 0 (portable `localReviewCommand` only); `minVerifyScore` tables → gates + 1-line pointers in verify/implement; G2 hunk prose (`git apply --cached`) → tools.md only.
+3b. Grep (must appear — new guardrails): `force_interview` in `ws-plan-interview` (overrides soft-skip); `question-only` in `ws-plan-verify` (Shell-required); `skipQualityGates` in `ws-testing` (≠ skip build/test); `git` prohibition in `ws-plan-write` + `ws-plan-to-tasks` (no commit/push/state writes); `managed` (`ws-*` no-rewrite) in implement/plan-write/fix-pr; `read-memory` routing in lite (both backends, not grep-only); `anonym` pointer in spec-write/ship-pr/fix-pr.
 4. Run `test/test-context-budget.js` / harness duplicate checks / targeted skill tests; regenerate integrity only when preparing a ship commit.
 5. Standalone spot-check: `/fix-pr`, `/plan-verify`, lite Step 2→3 still gate correctly from skill-local Guardrails alone (no injected contract).
 
