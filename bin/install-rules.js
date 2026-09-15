@@ -436,14 +436,18 @@ export function resolveHostTargetPath(idOrPath, homeDir = getHomeDir()) {
 
 /**
  * Auto-detects secondary global host targets that already exist on disk.
- * A target counts as present when its skills dir exists OR its host root
- * exists (e.g. `~/.gemini` counts for `~/.gemini/config/skills` on a fresh
- * Antigravity / Gemini CLI machine that has never received a projection).
+ * A target counts as present when its skills dir exists as a directory OR its
+ * host root exists as a directory (e.g. `~/.gemini` counts for
+ * `~/.gemini/config/skills` on a fresh Antigravity / Gemini CLI machine that
+ * has never received a projection). Regular files never count as consent.
  * Canonical (`~/.agents/skills`) is always the primary root and is excluded.
  * Never creates directories — read-only existence probe only.
+ * Detected entries carry `bestEffort: true` so callers can isolate a failing
+ * auto-detected projection (warn and continue) instead of aborting the
+ * explicitly requested canonical install.
  * @param {string} [homeDir] - User home directory (defaults to getHomeDir())
  * @param {boolean} [symlink=true] - Symlink mode to record for detected targets
- * @returns {Array<{ id: string, name: string, path: string, symlink: boolean }>}
+ * @returns {Array<{ id: string, name: string, path: string, symlink: boolean, bestEffort: boolean }>}
  */
 export function detectExistingSecondaryTargets(homeDir = getHomeDir(), symlink = true) {
   let all;
@@ -452,6 +456,13 @@ export function detectExistingSecondaryTargets(homeDir = getHomeDir(), symlink =
   } catch {
     return [];
   }
+  const isExistingDir = (p) => {
+    try {
+      return fs.statSync(p).isDirectory();
+    } catch {
+      return false;
+    }
+  };
   const detected = [];
   for (const host of all) {
     if (host.id === 'canonical') continue;
@@ -459,12 +470,13 @@ export function detectExistingSecondaryTargets(homeDir = getHomeDir(), symlink =
     const hostRoot = segments.length > 0 ? segments[0] : null;
     const hostRootPath = hostRoot ? path.join(homeDir, hostRoot) : null;
     try {
-      if (fs.existsSync(host.path) || (hostRootPath && fs.existsSync(hostRootPath))) {
+      if (isExistingDir(host.path) || (hostRootPath && isExistingDir(hostRootPath))) {
         detected.push({
           id: host.id,
           name: host.name,
           path: host.path,
           symlink,
+          bestEffort: true,
         });
       }
     } catch {

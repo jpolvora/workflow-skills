@@ -330,6 +330,7 @@ function resolveSecondaryTargets(targetsList, symlink = true) {
         name: host.name,
         path: host.path,
         symlink,
+        bestEffort: false,
       });
     }
   }
@@ -343,6 +344,7 @@ function resolveSecondaryTargets(targetsList, symlink = true) {
         name: path.basename(raw),
         path: path.resolve(raw),
         symlink,
+        bestEffort: false,
       });
     }
   }
@@ -351,6 +353,10 @@ function resolveSecondaryTargets(targetsList, symlink = true) {
 
 /**
  * Projects installed skills to secondary global targets using symlinks/junctions (with copy fallback).
+ * Targets flagged `bestEffort: true` (auto-detected, never explicitly requested)
+ * are isolated: a projection failure warns and continues so one broken
+ * secondary never aborts the canonical install/update. Explicit targets stay
+ * fail-closed and throw.
  */
 function projectSkillsToSecondaryTargets(skillNames, secondaryTargets) {
   if (!Array.isArray(secondaryTargets) || secondaryTargets.length === 0) return;
@@ -360,21 +366,37 @@ function projectSkillsToSecondaryTargets(skillNames, secondaryTargets) {
     const useSymlink = target.symlink !== false;
     const typeLabel = useSymlink ? (process.platform === 'win32' ? 'junction' : 'symlink') : 'copy';
     console.log(`  Target [${target.id}]: ${targetPath} (${typeLabel})`);
-    ensureWriteableDir(targetPath);
-
-    for (const skillName of skillNames) {
-      const srcSkill = path.join(targetSkillsDir, skillName);
-      const destSkill = path.join(targetPath, skillName);
-      if (!fs.existsSync(srcSkill)) continue;
-
-      const result = projectSkillToTarget(srcSkill, destSkill, {
-        symlink: useSymlink,
-        copyFn: (s, d) => syncManagedSkillDir(s, d),
-      });
-
-      if (result.fallback) {
-        console.log(`    Note: Symlink failed for '${skillName}' (${result.error}). Fell back to directory copy.`);
+    try {
+      ensureWriteableDir(targetPath);
+    } catch (err) {
+      if (target.bestEffort === true) {
+        console.log(`    Warning: Skipping auto-detected target [${target.id}]: ${err.message}`);
+        continue;
       }
+      throw err;
+    }
+
+    try {
+      for (const skillName of skillNames) {
+        const srcSkill = path.join(targetSkillsDir, skillName);
+        const destSkill = path.join(targetPath, skillName);
+        if (!fs.existsSync(srcSkill)) continue;
+
+        const result = projectSkillToTarget(srcSkill, destSkill, {
+          symlink: useSymlink,
+          copyFn: (s, d) => syncManagedSkillDir(s, d),
+        });
+
+        if (result.fallback) {
+          console.log(`    Note: Symlink failed for '${skillName}' (${result.error}). Fell back to directory copy.`);
+        }
+      }
+    } catch (err) {
+      if (target.bestEffort === true) {
+        console.log(`    Warning: Skipping auto-detected target [${target.id}]: ${err.message}`);
+        continue;
+      }
+      throw err;
     }
   }
 }

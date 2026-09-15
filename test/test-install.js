@@ -14,6 +14,7 @@ import {
   GLOBAL_HOST_TARGETS,
   getGlobalHostTargets,
   resolveHostTargetPath,
+  detectExistingSecondaryTargets,
   projectSkillToTarget,
 } from '../bin/install-rules.js';
 
@@ -2871,6 +2872,89 @@ child.on('close', async (code) => {
     // Cleanup
     fs.rmSync(mockHome, { recursive: true, force: true });
     fs.rmSync(copyHome, { recursive: true, force: true });
+  }
+
+  // --- Phase 12b: Auto-detect hardening (file-vs-dir, root-only, best-effort) ---
+  console.log('\n[Phase 12b] Auto-detect hardening (file-vs-dir, root-only, best-effort)...');
+  {
+    const cliPath = path.join(parentDir, 'bin', 'cli.js');
+    const runCli = (args, home) =>
+      cp.spawnSync(process.execPath, [cliPath, ...args], {
+        cwd: path.join(parentDir, 'test'),
+        encoding: 'utf8',
+        env: { ...process.env, HOME: home, USERPROFILE: home, FORCE_COLOR: '0' },
+      });
+
+    // 1. Unit: regular file at host root or skills path is not consent
+    const unitHome = path.join(__dirname, '.mock-autodetect-home');
+    fs.rmSync(unitHome, { recursive: true, force: true });
+    fs.mkdirSync(unitHome, { recursive: true });
+    fs.writeFileSync(path.join(unitHome, '.gemini'), 'not a directory');
+    if (detectExistingSecondaryTargets(unitHome, true).some((t) => t.id === 'gemini')) {
+      fail('file at host root must not count as a detected target');
+    }
+    ok('file at host root is not treated as an existing host target');
+    fs.rmSync(path.join(unitHome, '.gemini'), { force: true });
+    fs.mkdirSync(path.join(unitHome, '.gemini'), { recursive: true });
+    if (!detectExistingSecondaryTargets(unitHome, true).some((t) => t.id === 'gemini')) {
+      fail('root-only host dir must be detected via the host-root disjunct');
+    }
+    ok('root-only host dir is detected via the host-root disjunct');
+
+    // 2. Bare install with a file-rooted host: no crash, canonical still lands
+    const fileHome = path.join(__dirname, '.mock-autodetect-file-home');
+    fs.rmSync(fileHome, { recursive: true, force: true });
+    fs.mkdirSync(fileHome, { recursive: true });
+    fs.writeFileSync(path.join(fileHome, '.gemini'), 'not a directory');
+    const fileRes = runCli(['install', '--skills', 'ws-tdah', '--global', '--yes'], fileHome);
+    if (fileRes.status !== 0) {
+      console.error(fileRes.stdout, fileRes.stderr);
+      fail('bare install with file-rooted host dir must not crash');
+    }
+    if (!fs.existsSync(path.join(fileHome, '.agents', 'skills', 'ws-tdah', 'SKILL.md'))) {
+      fail('canonical skill missing after file-rooted bare install');
+    }
+    ok('bare install ignores file-rooted host dir and still installs canonical skills');
+
+    // 3. Root-only host dir is healed by bare install and recorded
+    const rootOnlyHome = path.join(__dirname, '.mock-autodetect-root-home');
+    fs.rmSync(rootOnlyHome, { recursive: true, force: true });
+    fs.mkdirSync(path.join(rootOnlyHome, '.gemini'), { recursive: true });
+    const rootRes = runCli(['install', '--skills', 'ws-tdah', '--global', '--yes'], rootOnlyHome);
+    if (rootRes.status !== 0) {
+      console.error(rootRes.stdout, rootRes.stderr);
+      fail('bare install with root-only host dir failed');
+    }
+    if (!/Auto-detected/.test(rootRes.stdout + rootRes.stderr)) {
+      fail('bare install did not report auto-detection of the root-only host');
+    }
+    if (!fs.existsSync(path.join(rootOnlyHome, '.gemini', 'config', 'skills', 'ws-tdah', 'SKILL.md'))) {
+      fail('root-only host was not projected by bare install');
+    }
+    ok('bare install auto-detects and projects a root-only host dir');
+
+    // 4. Unwritable-shaped secondary (skills path is a file): best-effort warn, exit 0
+    const blockedHome = path.join(__dirname, '.mock-autodetect-blocked-home');
+    fs.rmSync(blockedHome, { recursive: true, force: true });
+    fs.mkdirSync(path.join(blockedHome, '.gemini', 'config'), { recursive: true });
+    fs.writeFileSync(path.join(blockedHome, '.gemini', 'config', 'skills'), 'blocking file');
+    const blockedRes = runCli(['install', '--skills', 'ws-tdah', '--global', '--yes'], blockedHome);
+    if (blockedRes.status !== 0) {
+      console.error(blockedRes.stdout, blockedRes.stderr);
+      fail('failing auto-detected secondary must not abort the canonical install');
+    }
+    if (!/Skipping auto-detected target/.test(blockedRes.stdout + blockedRes.stderr)) {
+      fail('best-effort skip was not logged for the failing auto-detected target');
+    }
+    if (!fs.existsSync(path.join(blockedHome, '.agents', 'skills', 'ws-tdah', 'SKILL.md'))) {
+      fail('canonical skill missing after best-effort skip');
+    }
+    ok('failing auto-detected secondary warns and continues without aborting');
+
+    fs.rmSync(unitHome, { recursive: true, force: true });
+    fs.rmSync(fileHome, { recursive: true, force: true });
+    fs.rmSync(rootOnlyHome, { recursive: true, force: true });
+    fs.rmSync(blockedHome, { recursive: true, force: true });
   }
 
   console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, packages, deps, non-interactive --yes, MEMORY isolation, uninstall, and integrity all passed.');
