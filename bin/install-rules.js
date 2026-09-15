@@ -654,6 +654,20 @@ export function readGeminiSkillsJson(jsonPath) {
 }
 
 /**
+ * Normalizes a Gemini skills.json entry path for comparison, expanding a
+ * leading tilde against homeDir so `~/.agents/skills` and the expanded
+ * absolute path compare equal. Non-tilde paths resolve normally.
+ */
+function normalizeGeminiPath(p, homeDir) {
+  if (typeof p !== 'string') return p;
+  if (p === '~') return path.resolve(homeDir);
+  if (p.startsWith('~/') || p.startsWith('~\\')) {
+    return path.resolve(homeDir, p.slice(2));
+  }
+  return path.resolve(p);
+}
+
+/**
  * Idempotently adds or updates an entry in ~/.gemini/config/skills.json.
  * @param {string} [homeDir] - User home directory (defaults to getHomeDir())
  * @param {Object} [entry] - Entry to upsert
@@ -675,11 +689,8 @@ export function upsertGeminiSkillsJsonEntry(
   const isMatch = (e) => {
     if (!e || typeof e !== 'object' || !e.path) return false;
     if (e.path === targetPath) return true;
-    if (targetPath === '~/.agents/skills' || targetPath === '~\\.agents\\skills') {
-      return e.path === '~/.agents/skills' || e.path === '~\\.agents\\skills';
-    }
     try {
-      return path.resolve(e.path) === path.resolve(targetPath);
+      return normalizeGeminiPath(e.path, homeDir) === normalizeGeminiPath(targetPath, homeDir);
     } catch {
       return false;
     }
@@ -726,11 +737,8 @@ export function removeGeminiSkillsJsonEntry(homeDir = getHomeDir(), targetPath =
   const isMatch = (e) => {
     if (!e || typeof e !== 'object' || !e.path) return false;
     if (e.path === targetPath) return true;
-    if (targetPath === '~/.agents/skills' || targetPath === '~\\.agents\\skills') {
-      return e.path === '~/.agents/skills' || e.path === '~\\.agents\\skills';
-    }
     try {
-      return path.resolve(e.path) === path.resolve(targetPath);
+      return normalizeGeminiPath(e.path, homeDir) === normalizeGeminiPath(targetPath, homeDir);
     } catch {
       return false;
     }

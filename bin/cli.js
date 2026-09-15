@@ -359,7 +359,7 @@ function resolveSecondaryTargets(targetsList, symlink = true) {
 function resolveTargetHomeDir(target) {
   try {
     const envHome = getHomeDir();
-    if (target.path && target.path.startsWith(envHome)) return envHome;
+    if (target.path && (target.path === envHome || target.path.startsWith(envHome + path.sep))) return envHome;
   } catch {}
   if (target.path) {
     return path.dirname(path.dirname(path.dirname(target.path)));
@@ -2080,6 +2080,22 @@ async function runUninstall(_upstreamSkills, argv) {
         : recordedTargets.filter((t) => t.id !== 'gemini');
       const secondaryRemoved = removeSkillsFromSecondaryTargets(remove, targetsToRemoveFrom);
       console.log(`  Removed ${secondaryRemoved} secondary projection(s) from ${recordedTargets.length} recorded global target(s).`);
+      // Partial uninstall keeps the gemini skills.json entry, but legacy ws-*
+      // junctions under ~/.gemini/config/skills/ must still be swept to avoid
+      // duplicate discovery alongside the declarative entry.
+      if (remainingWsSkills.length > 0) {
+        let legacySwept = 0;
+        for (const t of recordedTargets) {
+          if (t && t.id === 'gemini') {
+            try {
+              legacySwept += cleanupLegacyGeminiSkills(resolveTargetHomeDir(t));
+            } catch {}
+          }
+        }
+        if (legacySwept > 0) {
+          console.log(`  Swept ${legacySwept} legacy Gemini ws-* junction(s) while preserving skills.json entry.`);
+        }
+      }
     }
   }
 
