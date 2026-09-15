@@ -125,7 +125,7 @@ When writing a spec derived from a remote tracker issue or raw human description
 
 ## Guardrails
 
-- Anonymize externally visible spec output: strip private consumer project names, paths, hostnames, and customer data from pasted traces; describe the failure class, not the originating app.
+- Anonymize pasted consumer traces and externally visible spec output: strip private project names, paths, hostnames, and customer data; describe the failure class, not the originating app. Tracker-issue `## Original Issue Context` stays verbatim.
 - Do not overwrite an existing differing spec of record without explicit overwrite intent; write only the resolved `SPEC_PATH` (and lazy `context.md`).
 - Contract: hub [`AGENTS.md`](../ws-shared/AGENTS.md) § Source anonymization · [`ws-spec-format`](../ws-spec-format/SKILL.md).
 
@@ -139,5 +139,5 @@ When writing a spec derived from a remote tracker issue or raw human description
 - Write only the requested spec path (and lazy `context.md` when a gray area exists) and return its repo-relative location.
 - After a standalone user invoke, stop at the `index.PRD` user-gate; on Add, `track` via `ws-spec-index` only.
 - Do not register a workflow `step-00` or advance orch state unless the caller assigns `--register` / Step 0.
-- After workflow step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.
+- Handoff: recorded under `state.handoffs` — see [`PROTOCOLS.md`](../ws-spec-to-pr/PROTOCOLS.md) § Base Prompt Prefix.
 

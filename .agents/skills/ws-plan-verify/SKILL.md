@@ -42,7 +42,7 @@ Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, opti
    - Done when: the resolved plan (and, in full mode, spec) path is known.
 
 2. **Evaluate**: Inspect code and tests using tools. Quick Score evaluates Completeness, Correctness & Style, and Testing. US Verification maps every plan feature and acceptance criterion to **Implemented**, **Not implemented**, or **Implemented differently**, each with file:line evidence. Also map spec **negative test** scenarios (`negativeScenarios` from Validation Notes / failing cases) to covering tests before advancing; missing negative coverage is a gap, not an implicit pass.
-   - Run **Stack Invariant Audit**: execute `node {skillsRoot}/ws-shared/runtime/scripts/scan_stack_invariants.cjs` against touched files and project framework invariant rules (`{sharedDir}/runtime/stacks/`). Flag anti-patterns (`.Result`, `.Wait()`, missing `[Authorize]`, unchecked `any`, floating Promises, unmanaged subscriptions).
+   - Run **Stack Invariant Audit**: execute `node {skillsRoot}/ws-shared/runtime/scripts/scan_stack_invariants.cjs` against touched files and the project framework invariant rules (`{sharedDir}/runtime/stacks/`); flag violations per that pack.
    - Optional `fable` integration: If `config.json.fable.enabled` and `autoAudit` are `true`, run [`ws-fable-judge`](../ws-fable-judge/SKILL.md) against `git diff` ground truth. Record verdict (`VERIFIED`, `VERIFIED WITH CAVEATS`, `REFUTED`) and fraud findings in the report.
    - Done when: every planned feature/AC, spec negative scenario, and stack invariant audit has observed evidence.
 

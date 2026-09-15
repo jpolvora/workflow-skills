@@ -91,7 +91,7 @@ Every step: call `update_state.cjs dispatch` before execution and `finish` after
 
 No in-gate model picker. At every transition, show the gates.md banner (`Orchestrator session model` + `Subagent phase model` + Pause → IDE/agent host → Resume).
 
-The orchestrator session ALWAYS executes under the active session model (`currentModel`). Resolve subagent models from `defaults.modelsPreset` / `defaults.modelPresets`, optional `defaults.stepModels`, and legacy phase keys (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`). Those preferences apply EXCLUSIVELY to subagents spawned via `dispatch-agent`. Pass the resolved id on `dispatch-agent` and record it with `--model` / optional `--substep` on `update_state.cjs`. Step 7 uses the `testingModel` → `executionModel` → session chain after preset/`stepModels` overrides. Step 9 internal roles use `fixPrPlan` → `reviewerModel` and `fixPrExec` → `executionModel`; they bypass numeric `"9"`, resolve from one captured session fallback, emit dispatch events only, and leave the single Step 9 finish to the outer orchestrator. On subagent switch failure or unconfigured model, gracefully fall back to the captured `currentModel`.
+The orchestrator session ALWAYS executes under the active session model (`currentModel`). Resolve subagent models from `defaults.modelsPreset` / `defaults.modelPresets`, optional `defaults.stepModels`, and legacy phase keys (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`). Those preferences apply EXCLUSIVELY to subagents spawned via `dispatch-agent`. Pass the resolved id on `dispatch-agent` and record it with `--model` / optional `--substep` on `update_state.cjs`. Step 7 uses the `testingModel` → `executionModel` → session chain after preset/`stepModels` overrides. Step 9 internal roles resolve per [`tools.md`](../ws-shared/runtime/tools.md) § Subagent model preferences (`fixPrPlan` → `reviewerModel`, `fixPrExec` → `executionModel`; never numeric `"9"`). On subagent switch failure or unconfigured model, gracefully fall back to the captured `currentModel`.
 
 When Advance crosses **F1→F2** (after Step 3, before Step 4) or **F3→F4** (after Step 5, before Step 6), add the soft hint from [`gates.md`](../ws-shared/runtime/gates.md) (Coder / Reviewer class). Log `model-hint | F1→F2|F3→F4 | current={currentModel} | ISO`. Tags `before-step-4`, `before-step-6` remain for telemetry only.
 
@@ -206,15 +206,9 @@ python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id 
 
 Do **not** invoke Phase A at close when `shipStatus` is still `pending`/`pr-open`/`pushed`. Phase B stays optional (delete-temps only). Keep-all still runs Phase A when shipping is terminal. Skip auto Phase A for `failed` / `cancelled` / `paused` / active Pause. Exit 0 → claim ended; exit 2 → surface leftovers, may claim ended; exit 1 → do not claim ended.
 
-**Step 8 combined gate** ([`gates.md`](../ws-shared/runtime/gates.md) § Step 8 combined gate + [`STEP-DISPATCH.md`](STEP-DISPATCH.md)):
+**Step 8 combined gate:** follow [`gates.md`](../ws-shared/runtime/gates.md) § Step 8 combined gate for the five close/ship options; dispatch detail in [`STEP-DISPATCH.md`](STEP-DISPATCH.md) § Step 8.
 
-1. **Commit configured delivery artifacts and Create PR** (Recommended when `fullMode`)
-2. **Commit configured delivery artifacts and Push only**
-3. **Commit configured delivery artifacts and Skip shipping**
-4. **Skip delivery commit and Create PR**
-5. **More options / Separate gates / Pause**
-
-Dispatch `ws-ship-pr` with `workflowMode: true`, `shipAction`, `stopBeforeFixPr: true` — **no delivery commit, no goal-fix loop inside ship**. Advance to Step 9 when PR created and user chose create-pr (options 1 or 4).
+Dispatch `ws-ship-pr` with `workflowMode: true`, `shipAction`, `stopBeforeFixPr: true` — **no delivery commit, no goal-fix loop inside ship**. Advance to Step 9 when PR created and the ship intent was create-pr.
 
 ### Fix-PR (Step 9)
 
