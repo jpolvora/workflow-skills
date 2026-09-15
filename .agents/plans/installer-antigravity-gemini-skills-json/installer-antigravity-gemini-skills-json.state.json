@@ -1,0 +1,632 @@
+{
+  "acImplemented": 8,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [],
+        "evidence": [
+          "bin/install-rules.js:L604-L707"
+        ],
+        "files": [
+          {
+            "lineEnd": 707,
+            "lineStart": 604,
+            "path": "bin/install-rules.js",
+            "sha256": "1cd472a2477bbc340ccc8c613d800909c2534894d4d78ba72eb115eac8399b7a"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "ev-ac1"
+        ],
+        "planSections": [
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [],
+        "text": "Define helper functions in bin/install-rules.js to read, upsert, and remove entries in $HOME/.gemini/config/skills.json with path ~/.agents/skills and include_only pattern ws-*.",
+        "verdicts": []
+      },
+      {
+        "commits": [],
+        "evidence": [
+          "bin/cli.js:L377-L415"
+        ],
+        "files": [
+          {
+            "lineEnd": 415,
+            "lineStart": 377,
+            "path": "bin/cli.js",
+            "sha256": "8da532aea8d64dd59cc415e948c5aa582438aa460742dce871d274931d6e29c6"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "ev-ac2"
+        ],
+        "planSections": [
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [],
+        "text": "Update global installation and update workflows in bin/cli.js so the gemini target configures $HOME/.gemini/config/skills.json instead of creating directory links or copies in ~/.gemini/config/skills.",
+        "verdicts": []
+      },
+      {
+        "commits": [],
+        "evidence": [
+          "bin/install-rules.js:L715-L747"
+        ],
+        "files": [
+          {
+            "lineEnd": 747,
+            "lineStart": 715,
+            "path": "bin/install-rules.js",
+            "sha256": "1cd472a2477bbc340ccc8c613d800909c2534894d4d78ba72eb115eac8399b7a"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "ev-ac3"
+        ],
+        "planSections": [
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [],
+        "text": "Automatically detect and remove legacy ws-* symlinks, junctions, and directories inside $HOME/.gemini/config/skills during gemini target configuration to prevent duplicate skill discovery.",
+        "verdicts": []
+      },
+      {
+        "commits": [],
+        "evidence": [
+          "bin/cli.js:L448-L465"
+        ],
+        "files": [
+          {
+            "lineEnd": 465,
+            "lineStart": 448,
+            "path": "bin/cli.js",
+            "sha256": "8da532aea8d64dd59cc415e948c5aa582438aa460742dce871d274931d6e29c6"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "ev-ac4"
+        ],
+        "planSections": [
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [],
+        "text": "Update global uninstallation in bin/cli.js so removing workflow-skills or the gemini target deletes the ~/.agents/skills entry from $HOME/.gemini/config/skills.json.",
+        "verdicts": []
+      },
+      {
+        "commits": [],
+        "evidence": [
+          "bin/install-rules.js:L615-L684"
+        ],
+        "files": [
+          {
+            "lineEnd": 684,
+            "lineStart": 615,
+            "path": "bin/install-rules.js",
+            "sha256": "1cd472a2477bbc340ccc8c613d800909c2534894d4d78ba72eb115eac8399b7a"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "ev-ac5"
+        ],
+        "planSections": [
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [],
+        "text": "Preserve pre-existing custom entries, inherits blocks, and comments in $HOME/.gemini/config/skills.json and non-workflow skill directories in ~/.gemini/config/skills across all operations.",
+        "verdicts": []
+      },
+      {
+        "commits": [],
+        "evidence": [
+          "bin/install-rules.js:L105-L127"
+        ],
+        "files": [
+          {
+            "lineEnd": 127,
+            "lineStart": 105,
+            "path": "bin/install-rules.js",
+            "sha256": "1cd472a2477bbc340ccc8c613d800909c2534894d4d78ba72eb115eac8399b7a"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "ev-ac6"
+        ],
+        "planSections": [
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [],
+        "text": "Update secondary target detection in bin/install-rules.js so the gemini target auto-detects when ~/.gemini, ~/.gemini/config/skills.json, or ~/.gemini/config/skills exists.",
+        "verdicts": []
+      },
+      {
+        "commits": [],
+        "evidence": [
+          "README.md:L138-L141"
+        ],
+        "files": [
+          {
+            "lineEnd": 141,
+            "lineStart": 138,
+            "path": "README.md",
+            "sha256": "db2421a10c6a53ca4b885510712955acacc59b25190892ecc13852be4c5e2c80"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [
+          "ev-ac7"
+        ],
+        "planSections": [
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [],
+        "text": "Update CLI documentation in README.md and docs/index.html describing declarative skills.json configuration for Antigravity and Gemini CLI.",
+        "verdicts": []
+      },
+      {
+        "commits": [],
+        "evidence": [
+          "test/test-install.js:L2630-L2725"
+        ],
+        "files": [
+          {
+            "lineEnd": 2725,
+            "lineStart": 2630,
+            "path": "test/test-install.js",
+            "sha256": "6e052f3b9790093c8864b03fa2824af626bad2e7ba939f134411767549e059fe"
+          }
+        ],
+        "findings": [],
+        "id": "AC8",
+        "linkEventIds": [
+          "ev-ac8"
+        ],
+        "planSections": [
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [],
+        "text": "Provide automated tests in test/test-install.js covering skills.json creation, idempotency, legacy cleanup, custom entry preservation, and uninstallation.",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "ev-ns1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "corrupt skills.json recovery creates backup and heals safely (NS1)",
+            "phase": "observed",
+            "sourceFile": "test/test-install.js",
+            "timestamp": "2026-09-15T03:54:06.989Z"
+          }
+        ],
+        "text": "Corrupt JSON recovery test: when `$HOME/.gemini/config/skills.json` contains invalid/malformed JSON, the installer creates a `.bak` backup, logs an informative warning, and writes a valid structure without crashing."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "ev-ns2"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "cleanupLegacyGeminiSkills cleans legacy ws-* and preserves custom skills (AC3, NS2)",
+            "phase": "observed",
+            "sourceFile": "test/test-install.js",
+            "timestamp": "2026-09-15T03:54:17.565Z"
+          }
+        ],
+        "text": "Legacy directory cleanup test: when `$HOME/.gemini/config/skills/` contains legacy `ws-tdah` junction and `my-custom-skill` directory, installing gemini removes `ws-tdah` but preserves `my-custom-skill`."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "ev-ns3"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "removeGeminiSkillsJsonEntry removes canonical entry and keeps user entries (AC4)",
+            "phase": "observed",
+            "sourceFile": "test/test-install.js",
+            "timestamp": "2026-09-15T03:54:17.615Z"
+          }
+        ],
+        "text": "Uninstallation cleanup test: when uninstalling with `--targets gemini`, the `~/.agents/skills` entry is removed from `skills.json`, while any pre-existing custom entries remain untouched."
+      },
+      {
+        "id": "NS4",
+        "linkEventIds": [
+          "ev-ns4"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "failing auto-detected secondary warns and continues without aborting",
+            "phase": "observed",
+            "sourceFile": "test/test-install.js",
+            "timestamp": "2026-09-15T03:54:17.677Z"
+          }
+        ],
+        "text": "Read-only permission containment test: when `skills.json` cannot be written due to permissions, the auto-detected target logs a best-effort warning without failing canonical installation."
+      }
+    ],
+    "planIndexPath": ".agents/plans/installer-antigravity-gemini-skills-json/.runtime/plan.index.json",
+    "revision": 14,
+    "schemaVersion": 1,
+    "scoreState": null,
+    "slug": "installer-antigravity-gemini-skills-json",
+    "specPath": ".agents/plans/installer-antigravity-gemini-skills-json/step-00-installer-antigravity-gemini-skills-json.spec.md",
+    "testingSkip": null,
+    "workflowId": "installer-antigravity-gemini-skills-json"
+  },
+  "acTotal": 8,
+  "autoMode": true,
+  "baseBranch": "main",
+  "baselineCommit": "c4b28dca93bf77e4269bf190ce351ed0770e4765",
+  "branch": "develop",
+  "branchStrategy": "stay",
+  "checkpoints": [
+    {
+      "sha": "c4b28dca93bf77e4269bf190ce351ed0770e4765",
+      "step": 0,
+      "tag": "uswf/installer-antigravity-gemini-skills-json/before-step-0"
+    }
+  ],
+  "commits": [],
+  "completedSteps": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "currentModel": "Gemini 3.8 Flash",
+  "currentStep": 5,
+  "dryRun": false,
+  "endedAt": "2026-09-15T04:07:17Z",
+  "fullMode": true,
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/installer-antigravity-gemini-skills-json/step-00-installer-antigravity-gemini-skills-json.spec.md",
+        ".agents/plans/installer-antigravity-gemini-skills-json/ac-ledger.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "installer-antigravity-gemini-skills-json",
+      "status": "completed",
+      "step": 0,
+      "summary": "Finished step 0",
+      "workflowId": "installer-antigravity-gemini-skills-json",
+      "workflowType": "lite"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/installer-antigravity-gemini-skills-json/step-01-installer-antigravity-gemini-skills-json.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "installer-antigravity-gemini-skills-json",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "installer-antigravity-gemini-skills-json",
+      "workflowType": "lite"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "installer-antigravity-gemini-skills-json",
+      "status": "completed",
+      "step": 2,
+      "summary": "Finished step 2",
+      "workflowId": "installer-antigravity-gemini-skills-json",
+      "workflowType": "lite"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "installer-antigravity-gemini-skills-json",
+      "status": "completed",
+      "step": 3,
+      "summary": "Finished step 3",
+      "workflowId": "installer-antigravity-gemini-skills-json",
+      "workflowType": "lite"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "installer-antigravity-gemini-skills-json",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "installer-antigravity-gemini-skills-json",
+      "workflowType": "lite"
+    }
+  },
+  "nextAction": "Run step 5",
+  "preExistingDirty": false,
+  "revision": 11,
+  "scoreAndRefine": false,
+  "shipStatus": "pending",
+  "skipQualityGates": false,
+  "skipTesting": false,
+  "skipTests": false,
+  "skippedSteps": [],
+  "slug": "installer-antigravity-gemini-skills-json",
+  "startedAt": "2026-09-15T03:30:00Z",
+  "statePath": ".agents/plans/installer-antigravity-gemini-skills-json/installer-antigravity-gemini-skills-json.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [
+    {
+      "agentType": "named:ws-step-00-spec-write",
+      "dispatchedAt": "2026-09-15T03:31:06Z",
+      "model": "Gemini 3.8 Flash",
+      "step": 0
+    },
+    {
+      "agentType": "named:ws-step-01-plan-write",
+      "dispatchedAt": "2026-09-15T03:31:46Z",
+      "model": "Gemini 3.8 Flash",
+      "step": 1
+    },
+    {
+      "agentType": "named:ws-step-02-plan-interview",
+      "dispatchedAt": "2026-09-15T03:33:38Z",
+      "model": "Gemini 3.8 Flash",
+      "step": 2
+    },
+    {
+      "agentType": "named:ws-code-review",
+      "dispatchedAt": "2026-09-15T03:57:32Z",
+      "model": "Gemini 3.8 Flash",
+      "step": 3
+    },
+    {
+      "agentType": "named:ws-ship-pr",
+      "dispatchedAt": "2026-09-15T04:03:52Z",
+      "model": "Gemini 3.8 Flash",
+      "step": 4
+    }
+  ],
+  "stepModels": [],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "completed",
+    "4": "completed",
+    "5": "pending"
+  },
+  "telemetry": {
+    "loc": {
+      "baseline": 0
+    },
+    "steps": [
+      {
+        "N": 0,
+        "agentType": "named:ws-step-00-spec-write",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-15T03:31:06Z",
+        "elapsedSec": 14,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/installer-antigravity-gemini-skills-json/step-00-installer-antigravity-gemini-skills-json.spec.md",
+            ".agents/plans/installer-antigravity-gemini-skills-json/ac-ledger.json"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-15T03:31:20Z",
+        "label": "Spec",
+        "model": "Gemini 3.8 Flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 1,
+        "agentType": "named:ws-step-01-plan-write",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-15T03:31:46Z",
+        "elapsedSec": 87,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/installer-antigravity-gemini-skills-json/step-01-installer-antigravity-gemini-skills-json.plan.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-15T03:33:13Z",
+        "label": "Planning",
+        "model": "Gemini 3.8 Flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": "named:ws-step-02-plan-interview",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-15T03:33:38Z",
+        "elapsedSec": 1351,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-15T03:56:09Z",
+        "label": "Implementation",
+        "model": "Gemini 3.8 Flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": "named:ws-code-review",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-15T03:57:32Z",
+        "elapsedSec": 76,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-15T03:58:48Z",
+        "label": "Review",
+        "model": "Gemini 3.8 Flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": "named:ws-ship-pr",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-15T04:03:52Z",
+        "elapsedSec": 205,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-15T04:07:17Z",
+        "label": "Ship",
+        "model": "Gemini 3.8 Flash",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 1733,
+    "totalTokens": 0
+  },
+  "workflowId": "installer-antigravity-gemini-skills-json",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/installer-antigravity-gemini-skills-json/ac-ledger.json",
+      ".agents/plans/installer-antigravity-gemini-skills-json/step-00-installer-antigravity-gemini-skills-json.spec.md",
+      ".agents/plans/installer-antigravity-gemini-skills-json/step-01-installer-antigravity-gemini-skills-json.plan.md"
+    ],
+    "deleted": [],
+    "modified": []
+  },
+  "workflowType": "lite"
+}

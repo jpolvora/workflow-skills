@@ -438,20 +438,22 @@ export const GLOBAL_HOST_TARGETS = [
     id: 'gemini',
     name: 'Gemini CLI / Antigravity IDE',
     subpath: path.join('.gemini', 'config', 'skills'),
+    configSubpath: path.join('.gemini', 'config', 'skills.json'),
     defaultSelected: false,
-    description: 'Gemini CLI & Antigravity IDE global customizations (~/.gemini/config/skills)',
+    description: 'Gemini CLI & Antigravity IDE global customizations (~/.gemini/config/skills.json)',
   },
 ];
 
 /**
  * Returns the list of standard global host targets with absolute paths resolved against homeDir.
  * @param {string} [homeDir] - User home directory (defaults to getHomeDir())
- * @returns {Array<{ id: string, name: string, subpath: string, path: string, defaultSelected: boolean, description: string }>}
+ * @returns {Array<{ id: string, name: string, subpath: string, path: string, configSubpath?: string, configPath?: string, defaultSelected: boolean, description: string }>}
  */
 export function getGlobalHostTargets(homeDir = getHomeDir()) {
   return GLOBAL_HOST_TARGETS.map((t) => ({
     ...t,
     path: path.join(homeDir, t.subpath),
+    configPath: t.configSubpath ? path.join(homeDir, t.configSubpath) : undefined,
   }));
 }
 
@@ -473,8 +475,9 @@ export function resolveHostTargetPath(idOrPath, homeDir = getHomeDir()) {
  * Auto-detects secondary global host targets that already exist on disk.
  * A target counts as present when its skills dir exists as a directory OR its
  * host root exists as a directory (e.g. `~/.gemini` counts for
- * `~/.gemini/config/skills` on a fresh Antigravity / Gemini CLI machine that
- * has never received a projection). Regular files never count as consent.
+ * `~/.gemini/config/skills.json` on a fresh Antigravity / Gemini CLI machine that
+ * has never received a projection) OR its config file exists. Regular files at
+ * the host root never count as consent.
  * Canonical (`~/.agents/skills`) is always the primary root and is excluded.
  * Never creates directories — read-only existence probe only.
  * Detected entries carry `bestEffort: true` so callers can isolate a failing
@@ -482,7 +485,7 @@ export function resolveHostTargetPath(idOrPath, homeDir = getHomeDir()) {
  * explicitly requested canonical install.
  * @param {string} [homeDir] - User home directory (defaults to getHomeDir())
  * @param {boolean} [symlink=true] - Symlink mode to record for detected targets
- * @returns {Array<{ id: string, name: string, path: string, symlink: boolean, bestEffort: boolean }>}
+ * @returns {Array<{ id: string, name: string, path: string, configPath?: string, symlink: boolean, bestEffort: boolean }>}
  */
 export function detectExistingSecondaryTargets(homeDir = getHomeDir(), symlink = true) {
   let all;
@@ -498,6 +501,13 @@ export function detectExistingSecondaryTargets(homeDir = getHomeDir(), symlink =
       return false;
     }
   };
+  const isExistingFile = (p) => {
+    try {
+      return fs.statSync(p).isFile();
+    } catch {
+      return false;
+    }
+  };
   const detected = [];
   for (const host of all) {
     if (host.id === 'canonical') continue;
@@ -505,11 +515,13 @@ export function detectExistingSecondaryTargets(homeDir = getHomeDir(), symlink =
     const hostRoot = segments.length > 0 ? segments[0] : null;
     const hostRootPath = hostRoot ? path.join(homeDir, hostRoot) : null;
     try {
-      if (isExistingDir(host.path) || (hostRootPath && isExistingDir(hostRootPath))) {
+      const hasConfig = host.configPath ? isExistingFile(host.configPath) : false;
+      if (isExistingDir(host.path) || (hostRootPath && isExistingDir(hostRootPath)) || hasConfig) {
         detected.push({
           id: host.id,
           name: host.name,
           path: host.path,
+          configPath: host.configPath,
           symlink,
           bestEffort: true,
         });
@@ -583,4 +595,213 @@ export function projectSkillToTarget(srcSkillPath, destSkillPath, options = {}) 
     return { mode: 'copy', fallback: false };
   }
 }
+
+/**
+ * Resolves the absolute path to ~/.gemini/config/skills.json.
+ * @param {string} [homeDir] - User home directory (defaults to getHomeDir())
+ * @returns {string} Absolute path to skills.json
+ */
+export function getGeminiSkillsJsonPath(homeDir = getHomeDir()) {
+  return path.join(homeDir, '.gemini', 'config', 'skills.json');
+}
+
+/**
+ * Reads and parses ~/.gemini/config/skills.json safely.
+ * If file does not exist, returns `{ entries: [] }`.
+ * If JSON is invalid, creates a backup, logs a warning, and returns `{ entries: [] }`.
+ * @param {string} jsonPath - Absolute path to skills.json
+ * @returns {{ entries: Array<Object>, inherits?: Array<Object> }}
+ */
+export function readGeminiSkillsJson(jsonPath) {
+  if (!fs.existsSync(jsonPath)) {
+    return { entries: [] };
+  }
+  try {
+    const raw = fs.readFileSync(jsonPath, 'utf8');
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      if (parsed.entries === undefined) {
+        parsed.entries = [];
+      }
+      if (Array.isArray(parsed.entries)) {
+        return parsed;
+      }
+    }
+    // Wrong shape (e.g. Array, primitive, null, or entries not array) -> backup and recover
+    const backupPath = `${jsonPath}.bak.${Date.now()}`;
+    try {
+      fs.copyFileSync(jsonPath, backupPath);
+      const detail = !parsed || typeof parsed !== 'object'
+        ? typeof parsed
+        : Array.isArray(parsed)
+          ? 'array'
+          : 'entries is not an array';
+      console.log(`    Warning: Invalid JSON structure in ${jsonPath} (expected object with entries array, got ${detail}). Created backup at ${backupPath}`);
+    } catch {
+      /* ignore backup failure */
+    }
+    const recovered = { entries: [] };
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) && Array.isArray(parsed.inherits)) {
+      recovered.inherits = parsed.inherits;
+    }
+    return recovered;
+  } catch (err) {
+    const backupPath = `${jsonPath}.bak.${Date.now()}`;
+    try {
+      fs.copyFileSync(jsonPath, backupPath);
+      console.log(`    Warning: Invalid JSON in ${jsonPath} (${err.message}). Created backup at ${backupPath}`);
+    } catch {
+      /* ignore backup failure */
+    }
+    return { entries: [] };
+  }
+}
+
+/**
+ * Normalizes a Gemini skills.json entry path for comparison, expanding a
+ * leading tilde against homeDir so `~/.agents/skills` and the expanded
+ * absolute path compare equal. Non-tilde paths resolve normally.
+ */
+function normalizeGeminiPath(p, homeDir) {
+  if (typeof p !== 'string') return p;
+  if (p === '~') return path.resolve(homeDir);
+  if (p.startsWith('~/') || p.startsWith('~\\')) {
+    return path.resolve(homeDir, p.slice(2));
+  }
+  return path.resolve(p);
+}
+
+/**
+ * Idempotently adds or updates an entry in ~/.gemini/config/skills.json.
+ * @param {string} [homeDir] - User home directory (defaults to getHomeDir())
+ * @param {Object} [entry] - Entry to upsert
+ * @param {string} [entry.path='~/.agents/skills']
+ * @param {Array<string>} [entry.include_only=['ws-*']]
+ * @returns {{ path: string, entriesCount: number }}
+ */
+export function upsertGeminiSkillsJsonEntry(
+  homeDir = getHomeDir(),
+  entry = { path: '~/.agents/skills', include_only: ['ws-*'] }
+) {
+  const jsonPath = getGeminiSkillsJsonPath(homeDir);
+  ensureWriteableDir(path.dirname(jsonPath));
+  const data = readGeminiSkillsJson(jsonPath);
+
+  const targetPath = entry.path || '~/.agents/skills';
+  const targetPattern = (entry.include_only && entry.include_only.length > 0) ? entry.include_only : ['ws-*'];
+
+  const isMatch = (e) => {
+    if (!e || typeof e !== 'object' || !e.path) return false;
+    if (e.path === targetPath) return true;
+    try {
+      return normalizeGeminiPath(e.path, homeDir) === normalizeGeminiPath(targetPath, homeDir);
+    } catch {
+      return false;
+    }
+  };
+
+  const existingIndex = data.entries.findIndex(isMatch);
+
+  if (existingIndex >= 0) {
+    const existing = data.entries[existingIndex];
+    if (Array.isArray(existing.include_only)) {
+      for (const pat of targetPattern) {
+        if (!existing.include_only.includes(pat)) {
+          existing.include_only.push(pat);
+        }
+      }
+      existing.path = targetPath;
+    }
+    // else: unrestricted entry (no include_only means all skills visible) — leave as-is, do not narrow to ws-*.
+  } else {
+    data.entries.push({
+      path: targetPath,
+      include_only: targetPattern,
+    });
+  }
+
+  const serialized = JSON.stringify(data, null, 2) + '\n';
+  fs.writeFileSync(jsonPath, serialized, 'utf8');
+  return { path: jsonPath, entriesCount: data.entries.length };
+}
+
+/**
+ * Removes the workflow skills entry from ~/.gemini/config/skills.json.
+ * @param {string} [homeDir] - User home directory (defaults to getHomeDir())
+ * @param {string} [targetPath='~/.agents/skills'] - Path entry to remove
+ * @returns {{ removed: boolean, remainingCount: number }}
+ */
+export function removeGeminiSkillsJsonEntry(homeDir = getHomeDir(), targetPath = '~/.agents/skills') {
+  const jsonPath = getGeminiSkillsJsonPath(homeDir);
+  if (!fs.existsSync(jsonPath)) {
+    return { removed: false, remainingCount: 0 };
+  }
+  const data = readGeminiSkillsJson(jsonPath);
+  const initialSnapshot = JSON.stringify(data.entries);
+
+  const isMatch = (e) => {
+    if (!e || typeof e !== 'object' || !e.path) return false;
+    if (e.path === targetPath) return true;
+    try {
+      return normalizeGeminiPath(e.path, homeDir) === normalizeGeminiPath(targetPath, homeDir);
+    } catch {
+      return false;
+    }
+  };
+
+  data.entries = data.entries.flatMap((e) => {
+    if (!isMatch(e)) return [e];
+    if (!Array.isArray(e.include_only)) return [e];
+    if (!e.include_only.includes('ws-*')) return [e];
+    const kept = e.include_only.filter((p) => p !== 'ws-*');
+    if (kept.length === 0) return [];
+    return [{ ...e, include_only: kept }];
+  });
+  if (JSON.stringify(data.entries) !== initialSnapshot) {
+    fs.writeFileSync(jsonPath, JSON.stringify(data, null, 2) + '\n', 'utf8');
+    return { removed: true, remainingCount: data.entries.length };
+  }
+  return { removed: false, remainingCount: data.entries.length };
+}
+
+/**
+ * Sweeps and cleans up legacy ws-* directory junctions, symlinks, or directories
+ * from ~/.gemini/config/skills/ while leaving non-ws-* third-party skills intact.
+ * @param {string} [homeDir] - User home directory (defaults to getHomeDir())
+ * @returns {number} Count of removed legacy skills
+ */
+export function cleanupLegacyGeminiSkills(homeDir = getHomeDir()) {
+  const skillsDir = path.join(homeDir, '.gemini', 'config', 'skills');
+  let cleanedCount = 0;
+  if (!fs.existsSync(skillsDir)) {
+    if (pathLexists(skillsDir)) {
+      try {
+        removeLexicalPath(skillsDir);
+      } catch {
+        /* ignore */
+      }
+    }
+    return cleanedCount;
+  }
+  try {
+    const items = fs.readdirSync(skillsDir);
+    for (const item of items) {
+      if (item.startsWith('ws-')) {
+        const itemPath = path.join(skillsDir, item);
+        try {
+          if (pathLexists(itemPath)) {
+            removeLexicalPath(itemPath);
+            cleanedCount++;
+          }
+        } catch {
+          /* ignore removal error */
+        }
+      }
+    }
+  } catch {
+    /* ignore read error */
+  }
+  return cleanedCount;
+}
+
 

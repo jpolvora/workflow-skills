@@ -2221,8 +2221,8 @@ Adhere to surgical code hygiene and verify ledger scoring.</code></pre>
         </div>
         <div class="env-snippet-wrap">
           <div class="env-snippet-top">
-            <span>Global install — Antigravity / Gemini CLI (~/.gemini/config/skills)</span>
-            <button type="button" class="cmd-copy-btn" data-copy="# Explicit Antigravity / Gemini CLI target
+            <span>Global install — Antigravity / Gemini CLI (~/.gemini/config/skills.json)</span>
+            <button type="button" class="cmd-copy-btn" data-copy="# Explicit Antigravity / Gemini CLI target (declarative ~/.gemini/config/skills.json)
 npx --yes github:jpolvora/workflow-skills install --full --global --targets gemini --yes
 
 # Or every known host (canonical + claude + codex + gemini)
@@ -2231,7 +2231,7 @@ npx --yes github:jpolvora/workflow-skills install --full --global --targets all 
 # Bare --global install/update auto-detects a pre-existing ~/.gemini dir when --targets is omitted
 npx --yes github:jpolvora/workflow-skills update --global">Copy</button>
           </div>
-          <pre class="env-code-block"><code># Explicit Antigravity / Gemini CLI target
+          <pre class="env-code-block"><code># Explicit Antigravity / Gemini CLI target (declarative ~/.gemini/config/skills.json)
 npx --yes github:jpolvora/workflow-skills install --full --global --targets gemini --yes
 
 # Or every known host (canonical + claude + codex + gemini)
