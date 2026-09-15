@@ -28,6 +28,7 @@ import {
   GLOBAL_HOST_TARGETS,
   getGlobalHostTargets,
   resolveHostTargetPath,
+  detectExistingSecondaryTargets,
   projectSkillToTarget,
 } from './install-rules.js';
 import {
@@ -329,6 +330,7 @@ function resolveSecondaryTargets(targetsList, symlink = true) {
         name: host.name,
         path: host.path,
         symlink,
+        bestEffort: false,
       });
     }
   }
@@ -342,6 +344,7 @@ function resolveSecondaryTargets(targetsList, symlink = true) {
         name: path.basename(raw),
         path: path.resolve(raw),
         symlink,
+        bestEffort: false,
       });
     }
   }
@@ -350,6 +353,10 @@ function resolveSecondaryTargets(targetsList, symlink = true) {
 
 /**
  * Projects installed skills to secondary global targets using symlinks/junctions (with copy fallback).
+ * Targets flagged `bestEffort: true` (auto-detected, never explicitly requested)
+ * are isolated: a projection failure warns and continues so one broken
+ * secondary never aborts the canonical install/update. Explicit targets stay
+ * fail-closed and throw.
  */
 function projectSkillsToSecondaryTargets(skillNames, secondaryTargets) {
   if (!Array.isArray(secondaryTargets) || secondaryTargets.length === 0) return;
@@ -359,21 +366,37 @@ function projectSkillsToSecondaryTargets(skillNames, secondaryTargets) {
     const useSymlink = target.symlink !== false;
     const typeLabel = useSymlink ? (process.platform === 'win32' ? 'junction' : 'symlink') : 'copy';
     console.log(`  Target [${target.id}]: ${targetPath} (${typeLabel})`);
-    ensureWriteableDir(targetPath);
-
-    for (const skillName of skillNames) {
-      const srcSkill = path.join(targetSkillsDir, skillName);
-      const destSkill = path.join(targetPath, skillName);
-      if (!fs.existsSync(srcSkill)) continue;
-
-      const result = projectSkillToTarget(srcSkill, destSkill, {
-        symlink: useSymlink,
-        copyFn: (s, d) => syncManagedSkillDir(s, d),
-      });
-
-      if (result.fallback) {
-        console.log(`    Note: Symlink failed for '${skillName}' (${result.error}). Fell back to directory copy.`);
+    try {
+      ensureWriteableDir(targetPath);
+    } catch (err) {
+      if (target.bestEffort === true) {
+        console.log(`    Warning: Skipping auto-detected target [${target.id}]: ${err.message}`);
+        continue;
       }
+      throw err;
+    }
+
+    try {
+      for (const skillName of skillNames) {
+        const srcSkill = path.join(targetSkillsDir, skillName);
+        const destSkill = path.join(targetPath, skillName);
+        if (!fs.existsSync(srcSkill)) continue;
+
+        const result = projectSkillToTarget(srcSkill, destSkill, {
+          symlink: useSymlink,
+          copyFn: (s, d) => syncManagedSkillDir(s, d),
+        });
+
+        if (result.fallback) {
+          console.log(`    Note: Symlink failed for '${skillName}' (${result.error}). Fell back to directory copy.`);
+        }
+      }
+    } catch (err) {
+      if (target.bestEffort === true) {
+        console.log(`    Warning: Skipping auto-detected target [${target.id}]: ${err.message}`);
+        continue;
+      }
+      throw err;
     }
   }
 }
@@ -1344,6 +1367,9 @@ Non-interactive install:
   --force-integrity  Unsafe: skip source/consumer integrity gates (still writes local record)
   --global, -g       Install globally into user home directory (~/.agents/skills)
   --targets <csv>    Global host targets: canonical, claude, codex, gemini, or custom paths (requires --global)
+                     When --targets is omitted on --global install/update, pre-existing host dirs
+                     (e.g. ~/.gemini for Antigravity / Gemini CLI) are auto-detected and synced.
+                     Explicit --targets (even canonical-only) disables auto-detect.
   --symlink          Link secondary global targets via directory symlinks/junctions (default)
   --no-symlink       Copy skill folders into secondary global targets instead of symlinking
   Non-TTY (CI/agents): --yes is required
@@ -1669,6 +1695,25 @@ async function runInstall(skills, opts) {
     if (existingManifest?.globalTargets?.length) {
       console.log(`Reusing ${existingManifest.globalTargets.length} recorded global target(s) from ${INSTALLED_SKILLS_FILE} (--targets omitted).`);
       secondaryTargets = existingManifest.globalTargets.map((t) => ({ ...t }));
+    }
+  }
+  // Auto-detect pre-existing host dirs (e.g. ~/.gemini from Antigravity) when
+  // --targets was omitted. Explicit --targets (even canonical-only) wins.
+  if (isGlobalScope && (!opts.targets || opts.targets.length === 0)) {
+    let homeForDetect = null;
+    try {
+      homeForDetect = getHomeDir();
+    } catch {
+      homeForDetect = null;
+    }
+    if (homeForDetect) {
+      const detected = detectExistingSecondaryTargets(homeForDetect, opts.symlink);
+      const knownIds = new Set(secondaryTargets.map((t) => t.id));
+      const fresh = detected.filter((t) => !knownIds.has(t.id));
+      if (fresh.length > 0) {
+        console.log(`Auto-detected ${fresh.length} existing host target(s): ${fresh.map((t) => t.id).join(', ')}.`);
+        secondaryTargets = [...secondaryTargets, ...fresh];
+      }
     }
   }
   const installedCount = installSelectedSkills(skills, selectedNames, {
@@ -2115,12 +2160,37 @@ function runUpdate(skills, includeNew, forceIntegrity = false, updateOpts = {}) 
     });
   }
 
-  // AC7: Synchronize secondary global targets recorded in manifest or specified via --targets
+  // AC7: Synchronize secondary global targets recorded in manifest or specified via --targets.
+  // When --targets is omitted, also auto-detect pre-existing host dirs
+  // (e.g. ~/.gemini from Antigravity) so bare `update --global` heals them.
   if (isGlobalScope) {
     const explicitTargets = updateOpts.targets && updateOpts.targets.length > 0;
-    const targetsToSync = explicitTargets
+    let targetsToSync = explicitTargets
       ? resolveSecondaryTargets(updateOpts.targets, updateOpts.symlink !== false)
       : (afterManifest?.globalTargets || []);
+    let autoDetectedCount = 0;
+
+    if (!explicitTargets) {
+      let homeForDetect = null;
+      try {
+        homeForDetect = getHomeDir();
+      } catch {
+        homeForDetect = null;
+      }
+      if (homeForDetect) {
+        const detected = detectExistingSecondaryTargets(
+          homeForDetect,
+          updateOpts.symlink !== false
+        );
+        const knownIds = new Set(targetsToSync.map((t) => t.id));
+        const fresh = detected.filter((t) => !knownIds.has(t.id));
+        if (fresh.length > 0) {
+          console.log(`Auto-detected ${fresh.length} existing host target(s): ${fresh.map((t) => t.id).join(', ')}.`);
+          targetsToSync = [...targetsToSync, ...fresh];
+          autoDetectedCount = fresh.length;
+        }
+      }
+    }
 
     if (targetsToSync.length > 0) {
       const skillsToProject = [
@@ -2128,7 +2198,7 @@ function runUpdate(skills, includeNew, forceIntegrity = false, updateOpts = {}) 
         ...(fs.existsSync(path.join(targetSkillsDir, HUB_DIR)) ? [HUB_DIR] : []),
       ];
       projectSkillsToSecondaryTargets(skillsToProject, targetsToSync);
-      if (explicitTargets) {
+      if (explicitTargets || autoDetectedCount > 0) {
         syncInstalledSkillsManifest({ globalTargets: targetsToSync });
       }
     }
@@ -2185,6 +2255,21 @@ async function runInteractive(skills, forceIntegrity = false) {
     const hostTargets = getGlobalHostTargets();
     const secondaryList = hostTargets.filter((t) => t.id !== 'canonical');
     const targetSelected = new Array(secondaryList.length).fill(false);
+    // Pre-select hosts that already exist on disk (e.g. ~/.gemini) so
+    // interactive installs default to keeping Antigravity / Gemini in sync.
+    try {
+      const preDetected = new Set(
+        detectExistingSecondaryTargets(getHomeDir(), true).map((t) => t.id)
+      );
+      for (let i = 0; i < secondaryList.length; i++) {
+        if (preDetected.has(secondaryList[i].id)) targetSelected[i] = true;
+      }
+      if (preDetected.size > 0) {
+        console.log(`Detected existing host dir(s): ${[...preDetected].join(', ')} (pre-selected).`);
+      }
+    } catch {
+      /* best-effort pre-selection only */
+    }
 
     while (true) {
       console.log('Select agent host targets to install into:');

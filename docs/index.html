@@ -137,7 +137,7 @@
     <span class="badge-dot"></span>
     <span>Deterministic Spec-Driven Harness</span>
     <span style="color:var(--text-dim)">&bull;</span>
-    <span style="color:var(--accent-cyan);font-family:var(--font-mono)">v0.4.26</span>
+    <span style="color:var(--accent-cyan);font-family:var(--font-mono)">v0.4.27</span>
   </a>
   <h1>From Spec to <span class="gradient-text">Delivery</span></h1>
   <p class="hero-brand">Workflow Skills</p>
@@ -2219,6 +2219,27 @@ Load project settings from .agents/skills/ws-shared/config.json.
 When running multi-spec batches, invoke ws-spec-multi.
 Adhere to surgical code hygiene and verify ledger scoring.</code></pre>
         </div>
+        <div class="env-snippet-wrap">
+          <div class="env-snippet-top">
+            <span>Global install — Antigravity / Gemini CLI (~/.gemini/config/skills)</span>
+            <button type="button" class="cmd-copy-btn" data-copy="# Explicit Antigravity / Gemini CLI target
+npx --yes github:jpolvora/workflow-skills install --full --global --targets gemini --yes
+
+# Or every known host (canonical + claude + codex + gemini)
+npx --yes github:jpolvora/workflow-skills install --full --global --targets all --yes
+
+# Bare --global install/update auto-detects a pre-existing ~/.gemini dir when --targets is omitted
+npx --yes github:jpolvora/workflow-skills update --global">Copy</button>
+          </div>
+          <pre class="env-code-block"><code># Explicit Antigravity / Gemini CLI target
+npx --yes github:jpolvora/workflow-skills install --full --global --targets gemini --yes
+
+# Or every known host (canonical + claude + codex + gemini)
+npx --yes github:jpolvora/workflow-skills install --full --global --targets all --yes
+
+# Bare --global install/update auto-detects a pre-existing ~/.gemini dir when --targets is omitted
+npx --yes github:jpolvora/workflow-skills update --global</code></pre>
+        </div>
       </div>
 
       <div class="env-panel" id="env-panel-shell">
@@ -2675,7 +2696,7 @@ npx --yes github:jpolvora/workflow-skills --global
 </section>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.4.26 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.4.27 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
 <!-- Skill Viewer Slide-Over Drawer -->
