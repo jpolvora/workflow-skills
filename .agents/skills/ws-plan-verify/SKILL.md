@@ -1,7 +1,7 @@
 ---
 name: ws-plan-verify
 description: Spec compliance scorer (0–10). Pipeline advances only at score ≥ `defaults.minVerifyScore` (default 9); below bar runs scoreAndRefine. Trigger for check-implementation or orch Step 5.
-version: 0.4.28
+version: 0.4.29
 disable-model-invocation: true
 invocation_names:
   - plan-verify
@@ -60,9 +60,16 @@ Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, opti
    - Done when: the report file exists with `Score: N/10` near the top and every required section populated.
 
 5. **Handoff**: return the score and report path in `step-output`.
-   - Workflow: the orchestrator passes `--verification-score <score>` to `update_state finish --step 5` and owns the gate after reading the report: score `>= defaults.minVerifyScore` (default 9) advances to Step 6 (optional `scoreAndRefine` second pass first when the flag is on — [`gates.md`](../ws-shared/runtime/gates.md) § Score & Refine); score below `defaults.minVerifyScore` runs `scoreAndRefine` (re-implement flagged tasks + re-verify) until `>= defaults.minVerifyScore` (default 9) (max 3 rounds per visit, then Pause). Do not auto-approve below `defaults.minVerifyScore`.
-   - Standalone: apply the same `>= defaults.minVerifyScore` (default 9) / below-bar threshold; recommend `scoreAndRefine` until `>= defaults.minVerifyScore` (default 9) when below bar.
+   - Workflow: the orchestrator passes `--verification-score <score>` to `update_state finish --step 5` and owns the gate; an optional `scoreAndRefine` second pass runs first when the flag is on. Standalone: apply the same bar. Never infer or imply Advance below `defaults.minVerifyScore`.
+   - Contract: [`gates.md`](../ws-shared/runtime/gates.md) § Check-implementation gate · § Score & Refine gate.
    - Done when: the caller has the score and report path.
+
+## Guardrails
+
+- Run Shell against the product tree; never operate in a host question-only/read-only session that blocks Shell. Product/spec/plan files stay immutable — write only the assigned report and ledger entries.
+- Never author, simulate, or override the numeric score; `ac_ledger.cjs score` owns the math. A below-bar quick score must escalate to the full matrix — never finalize in quick mode.
+- Uncovered spec negative scenarios are gaps, not implicit passes; the ledger caps the score.
+- Contract: [`gates.md`](../ws-shared/runtime/gates.md) § Check-implementation gate · orch: [`STEP-DISPATCH.md`](../ws-spec-to-pr/STEP-DISPATCH.md) § Step 5.
 
 ## Subagent contract
 
@@ -73,5 +80,5 @@ Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, opti
 - Link only observed semantic, file-line, test, alias, sabotage, and verdict evidence.
 - Derive the score through `ac_ledger.cjs`; never author or override it.
 - Write only the assigned verification report and return score plus findings in `step-output` (passed as `--verification-score` to `update_state finish`).
-- After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.
+- Handoff: recorded under `state.handoffs` — see [`PROTOCOLS.md`](../ws-spec-to-pr/PROTOCOLS.md) § Base Prompt Prefix.
 

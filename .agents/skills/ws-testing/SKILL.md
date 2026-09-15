@@ -1,7 +1,7 @@
 ---
 name: ws-testing
 description: Pre-PR test suite executor — plans and executes unit, integration, E2E, coverage, and optional mutation-testing batteries with quality verification.
-version: 0.4.28
+version: 0.4.29
 disable-model-invocation: true
 invocation_names:
   - testing
@@ -81,9 +81,11 @@ Workflow (ws-spec-to-pr Step 7): dispatched with `planPath` and `specPath` from 
 
 9. **Report**: write `step-07-{slug}.testing.report.md` with results from Steps 2–8, including an accessibility/contrast check on form validation errors and alert indicators. Always include **Mutation** and **Regression Sabotage** sections. Final pass verdict only when neither is `failed` and other planned areas passed (or were skipped per policy).
 
-## Rules of engagement
+## Guardrails
 
-- No code fixes: report gaps (including surviving mutants) and hand off to [ws-implement-tasks (fix mode)](../ws-implement-tasks/SKILL.md) rather than editing code.
+- No code fixes: report gaps (including surviving mutants) and hand off to [ws-implement-tasks (fix mode)](../ws-implement-tasks/SKILL.md). Do not edit product or test source.
+- Skip only on machine evidence (`probe_test_surface.cjs` / `skipTesting`) — never on agent judgment.
+- `skipQualityGates` bypasses quality gates only; build, tests, and leak scans still run. Mutation/sabotage failures are fail-closed (no Advance); the orchestrator retries ≤3 then Pause.
 - Do not vendor a mutation engine — consumers own `verification.mutationTest`.
 - Never run `npm run benchmark`, `npm run benchmark:static`, `ws-run-benchmark`, or `scripts/harness-benchmark/**`. Those compare versions of the upstream `workflow-skills` package at that package root only. Do not treat Timing / `elapsedSec` as a request to start a benchmark.
 
@@ -94,4 +96,4 @@ Workflow (ws-spec-to-pr Step 7): dispatched with `planPath` and `specPath` from 
 - Derive sabotage status from the helper exit code and preserve byte-identical restoration.
 - Write only testing plan/report artifacts; hand product fixes back to implementation.
 - Return observed tests or machine skip evidence from `probe_test_surface.cjs` (never skip on judgment alone).
-- After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.
+- Handoff: recorded under `state.handoffs` — see [`PROTOCOLS.md`](../ws-spec-to-pr/PROTOCOLS.md) § Base Prompt Prefix.

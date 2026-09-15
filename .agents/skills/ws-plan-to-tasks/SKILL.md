@@ -1,7 +1,7 @@
 ---
 name: ws-plan-to-tasks
 description: Task DAG breakdown generator — transforms approved implementation plans into atomic, dependency-mapped task execution graphs.
-version: 0.4.28
+version: 0.4.29
 disable-model-invocation: true
 invocation_names:
   - plan-to-tasks
@@ -62,12 +62,13 @@ Workflow (ws-spec-to-pr Step 3): dispatched **only** when `defaults.enableDag` i
    - Done when: every plan step maps to ≥1 task, every task has non-empty `files` and `coderPrompt`, and no file collision exists within a level.
 
 4. **Handoff** — Return both output paths for [ws-implement-tasks](../ws-implement-tasks/SKILL.md).
-   - Done when: caller has the `step-03-` exec.md and dag.json paths. After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.
+   - Done when: caller has the `step-03-` exec.md and dag.json paths.
 
 ## Rules of Engagement
 
-- Do not write product code: only structure the plan into tasks.
+- Do not write product code: only structure the plan into tasks. No `git`, state, or ledger writes — return artifact paths only.
 - Strict isolation: tasks in the same parallel level never share files (prevents worktree merge conflicts).
+- Do not invent stubs or a DAG when not dispatched for it; when `enableDag` is false the orchestrator owns the sequential stub.
 - Consult `config.json` for layer boundaries and project paths.
 
 ## Subagent contract
@@ -75,3 +76,4 @@ Workflow (ws-spec-to-pr Step 3): dispatched **only** when `defaults.enableDag` i
 - Read only the plan of record and `dagThresholds`; write only `step-03-*.plan.exec.md` and `step-03-*.exec.dag.json`.
 - Evaluate `dagThresholds`; write sequential stub or parallel DAG with file-collision-free levels (max 3 per level).
 - Return both output paths in `step-output`.
+- Handoff: recorded under `state.handoffs` — see [`PROTOCOLS.md`](../ws-spec-to-pr/PROTOCOLS.md) § Base Prompt Prefix.

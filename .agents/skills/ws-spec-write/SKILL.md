@@ -1,7 +1,7 @@
 ---
 name: ws-spec-write
 description: Local spec authoring & reformulation — drafts and enhances structured *.spec.md feature specifications under {specsDir} from free-text requirements or remote tracker issues.
-version: 0.4.28
+version: 0.4.29
 disable-model-invocation: true
 invocation_names:
   - spec-write
@@ -122,6 +122,12 @@ When writing a spec derived from a remote tracker issue or raw human description
 
 9. **Handoff** — Return `SPEC_PATH`. Mention the `{us-dir}/step-00-` path only if `--register` ran. Mention whether `index.PRD` was updated. For workflow mode after register, orchestrator records `specPath` at the `step-00-` file and `specSource: {source}`.
    - Done when: caller has the spec-of-record path (and plan path only when registered).
+
+## Guardrails
+
+- Anonymize externally visible spec output: strip private consumer project names, paths, hostnames, and customer data from pasted traces; describe the failure class, not the originating app.
+- Do not overwrite an existing differing spec of record without explicit overwrite intent; write only the resolved `SPEC_PATH` (and lazy `context.md`).
+- Contract: hub [`AGENTS.md`](../ws-shared/AGENTS.md) § Source anonymization · [`ws-spec-format`](../ws-spec-format/SKILL.md).
 
 ## Subagent contract
 

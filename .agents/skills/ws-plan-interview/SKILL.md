@@ -1,7 +1,7 @@
 ---
 name: ws-plan-interview
 description: Interactive plan interrogation engine — audits implementation plans to uncover hidden assumptions, resolve ambiguities, and refine technical designs.
-version: 0.4.28
+version: 0.4.29
 disable-model-invocation: true
 invocation_names:
   - plan-interview
@@ -47,6 +47,7 @@ Workflow (ws-spec-to-pr Step 2): dispatched when the orchestrator does not skip 
 3. **Surgical escalation** — ask exactly one question per round; include the recommended solution as the first choice.
 4. **Escalation cap** — max 3 rounds of user questions; on the 4th, apply sensible defaults and exit.
 5. **No code edits** — write only refined plans and metadata.
+6. **`force_interview` wins** — `check_memory_conflict.py` returning `force_interview: true` (MEMORY PathPattern match) overrides `softSkipEligible`; never soft-skip or auto-confirm shared understanding in that case.
 
 ## Steps
 
@@ -95,5 +96,5 @@ needs_user:
 - Resolve project-observable gaps before escalating one blocking question.
 - Preserve every AC mapping and record resolution source.
 - Write the dedicated interview artifact and, when applicable, the refined plan. Return the closed/open registry.
-- After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.
+- Handoff: recorded under `state.handoffs` — see [`PROTOCOLS.md`](../ws-spec-to-pr/PROTOCOLS.md) § Base Prompt Prefix.
 

@@ -4,32 +4,49 @@ overview: Strengthen Spec-to-PR pipeline Guardrails where subagents can break co
 todos:
   - id: sot-map
     content: Document single-owner map (gates / PROTOCOLS / dispatch inject / skill blast-radius) and lean SKILL section pattern
-    status: pending
+    status: completed
   - id: shrink-boilerplate
     content: Remove repeated orch handoff lines, memory/karpathy restatements, minVerifyScore/G2/scoreAndRefine tables from step skills; pointer to SoT
-    status: pending
+    status: completed
   - id: shrink-helpers
     content: Thin PROTOCOLS.md HS/G2 tables to ladder+links; trim COOPERATIVE_FIX / stack-cheat-sheet overlap toward gates.md + script
-    status: pending
+    status: in_progress
   - id: dedup-sweep2
     content: Rechecked sweep — G2 hunk algorithm, Step 8 x3, model-role chain x5, verbose/host-binding/banner, fable/mutation/benchmark one-liners (see Shrink C/D–F)
-    status: pending
+    status: in_progress
   - id: p0-blast-radius
     content: Add lean Guardrails only for skill blast-radius gaps (implement, verify, interview, plan-write, testing)
-    status: pending
+    status: completed
   - id: p1-portability
     content: Anonymization in ws-spec-write; portable localReviewCommand in ws-code-review; ship/plan-to-tasks/fix-pr/classify one-liners
-    status: pending
+    status: completed
   - id: p2-setup-pointer
     content: setup.md External dependencies anonymization row (hub pointer, not per-skill paste)
-    status: pending
+    status: completed
   - id: verify
     content: Keep Visual References phrase where tests require it; grep host branding; run context-budget/duplicates/harness checks
-    status: pending
+    status: completed
 isProject: false
 ---
 
 # Pipeline Guardrails + skill shrink (dedup)
+
+## Implementation status (2026-09-15)
+
+Landed (verified: `npm run test` exit 0, `verify-integrity` OK, `check_pipeline_handoff` OK):
+
+- Spec: [`0084-pipeline-skill-guardrails`](../../.agents/specs/0084-pipeline-skill-guardrails.spec.md) authored (authoring PASS) and tracked in `index.PRD`.
+- P0 guardrails: `ws-implement-tasks` (files_touched, no git, DAG isolation, sabotage-ready tests, no managed rewrites), `ws-plan-verify` (Shell-required, no product edits, no sub-bar Advance, quick→full escalate), `ws-plan-interview` (`force_interview` overrides soft-skip), `ws-plan-write` (no git, §6 mandatory), `ws-testing` (no product/test-source edits, `skipQualityGates` ≠ skip build/test, probe-only skip).
+- P1/P2 guardrails: `ws-spec-write` anonymization + no-overwrite, `ws-code-review` portable `localReviewCommand`, `ws-ship-pr` push/PR-only + no benchmark + anonymization, `ws-plan-to-tasks` no git/state + no invented stubs, `ws-fix-pr` managed-skill + staging pointer + anonymization, `ws-classify-complexity` consolidated Don't, `ws-spec-to-pr-lite` `read-memory` both backends, `setup.md` anonymization row.
+- Dedup: handoff **long sentence** removed from 10 skills (terse `state.handoffs` pointer kept — see caveat), memory pre-work essays, `ws-implement-tasks` ScoreAndRefine table, `cursor-reviewer` branded path, SCM tables in `ws-fix-pr` / `ws-goal-fix-pr` / `ws-ship-pr`.
+
+Deferred (caveats):
+
+- **Handoff sentence:** `check_pipeline_handoff.cjs` requires `state.handoffs` in all 11 pipeline skills, so a terse pointer replaced the full sentence instead of a full removal (full removal would weaken the harness check).
+- **Shrink C/D–F:** Step 8 x3, model-chain x5, G2-hunk x4, verbose/host/banner, and PROTOCOLS minVerifyScore/G2 ladder thinning remain; they touch orch FSM tables and need phrase-locked-test review.
+- Planned shrink target (~200–260 lines) not fully reached; enforcement strength was prioritized.
+
+Memory: `ws-shared/memory/2026-09-15-pipeline-dedup-locked-substrings.md` (+ compiled `MEMORY.md`, vault trap `pipeline-dedup-locked-substrings`).
 
 ## Verdict
 

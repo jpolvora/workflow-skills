@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-15 20:30] Agent: opencode-go/deepseek-v4.1-flash
+- **Prompt**: Draft spec from plan + register via ws-spec-index + implement via ws-fable-method for `.cursor/plans/pipeline_skill_guardrails_8b7695b2.plan.md`.
+- **Done**: Authored/tracked spec `0084-pipeline-skill-guardrails`; added P0/P1 blast-radius guardrails to 10 pipeline skills (files_touched, no git, Shell-required verify, `force_interview`, probe-only testing, anonymization, portable `localReviewCommand`, lite `read-memory`); deduped handoff boilerplate, memory essays, ScoreAndRefine table, branded reviewer path, and three SCM tables; added `setup.md` anonymization row.
+- **Result**: `npm run test` exit 0; `verify-integrity` OK; `check_pipeline_handoff` OK. Deferred as caveats: full handoff-sentence removal (kept terse `state.handoffs` pointer for the harness checker) and the Step 8 x3 / model-chain x5 / G2-hunk x4 / PROTOCOLS minVerifyScore dedup. Learning: pipeline prose dedup must keep checker- and test-locked substrings.
+
 ### [2026-09-15 03:45] Agent: Antigravity / Gemini
 - **Prompt**: /ws-spec-to-pr-lite slug=installer-antigravity-gemini-skills-json full auto ship
 - **Done**: Configured Gemini CLI and Antigravity IDE global host target declaratively via `$HOME/.gemini/config/skills.json` instead of folder symlinks/copies; swept legacy `ws-*` directory junctions from `~/.gemini/config/skills/`; preserved custom user skills and entries; updated auto-detection, docs, and test suite.

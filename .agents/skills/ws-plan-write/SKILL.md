@@ -1,7 +1,7 @@
 ---
 name: ws-plan-write
 description: Implementation plan generator — transforms feature specifications into structured, technical step-01 implementation plans.
-version: 0.4.28
+version: 0.4.29
 disable-model-invocation: true
 invocation_names:
   - plan-write
@@ -38,7 +38,7 @@ Workflow (ws-spec-to-pr Step 1): orchestrator passes `specInput` (path to `step-
 
 ## Steps
 
-1. **Load spec, stack & memory** — Read the spec input and `config.json` layers/invariants; run **`read-memory`** for plan keywords (vault and/or `{sharedDir}/MEMORY.md` per `enableSpecMemoIntegration` / `enableMemoryFiles`). When `## Visual References` exists on the spec of record or `step-00` copy, **Read** each `ok` image listed (skip PDF) before drafting the plan.
+1. **Load spec, stack & memory** — Read the spec input and `config.json` layers/invariants; apply the injected MEMORY slice, or route through [`tools.md`](../ws-shared/runtime/tools.md) **`read-memory`** when standalone. When `## Visual References` exists on the spec of record or `step-00` copy, **Read** each `ok` image listed (skip PDF) before drafting the plan.
    - **Design intent:** For modification / bugfix ACs, require `git log -p -S` and/or `git log -L` on touched symbols before recommending behavior changes; reference `### Design Intent` from the spec when present.
    - Optional `fable` integration: If `config.json.fable.enabled` and `autoDetectDomain` are `true` **and** the `ws-fable-domain` skill folder exists, check for domain signals (IaC `*.tf`, K8s `*.yaml`, Docker, DB migrations, Data scripts). If matched, consult [`ws-fable-domain`](../ws-fable-domain/SKILL.md) to append binding primary sources & observation rules into section 2/6. Missing folder: skip domain adapters (do not STOP).
    - Done when: stack and relevant memory entries (from every enabled backend) are identified.
@@ -53,11 +53,12 @@ Workflow (ws-spec-to-pr Step 1): orchestrator passes `specInput` (path to `step-
 3. **Handoff** — Return the plan path for [ws-plan-interview](../ws-plan-interview/SKILL.md) (or [ws-plan-to-tasks](../ws-plan-to-tasks/SKILL.md) when interview is skipped).
    - Done when: caller has the `step-01-` path.
 
-## Rules of Engagement
+## Guardrails
 
-- Every AC maps to ≥1 plan step and ≥1 §5 test mapping.
-- Do not write product code: this skill is strictly for planning and documentation.
+- Every AC maps to ≥1 plan step and ≥1 §5 test mapping; §6 Stack & Security Invariants Verification Plan is mandatory for touched framework boundaries (missing checks → blocking gap for interview, not a silent pass).
+- Planning only: no product code, no `git add`/`commit`/`push`, and no `ws-*` managed-skill rewrites. Write only the assigned plan artifact.
 - If the project stack cannot be detected from `config.json`, stop and ask for clarification.
+- Contract: [`gates.md`](../ws-shared/runtime/gates.md) § Complexity gate · orch: [`STEP-DISPATCH.md`](../ws-spec-to-pr/STEP-DISPATCH.md) § Step 1.
 
 ## Subagent contract
 
@@ -65,5 +66,5 @@ Workflow (ws-spec-to-pr Step 1): orchestrator passes `specInput` (path to `step-
 - Map every AC to implementation work, expected files, and a named test so `plan_index.cjs` can build `{us-dir}/plan.index.json`.
 - Record unresolved design choices explicitly instead of choosing silently.
 - Write only the assigned plan artifact and return its path.
-- After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.
+- Handoff: recorded under `state.handoffs` — see [`PROTOCOLS.md`](../ws-spec-to-pr/PROTOCOLS.md) § Base Prompt Prefix.
 

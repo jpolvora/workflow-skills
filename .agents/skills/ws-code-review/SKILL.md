@@ -1,7 +1,7 @@
 ---
 name: ws-code-review
 description: Local two-phase code review with fix → re-review loops (max 3). Trigger when reviewing a branch/diff before ship, or when orch Step 6 / lite Step 3 runs.
-version: 0.4.28
+version: 0.4.29
 disable-model-invocation: true
 invocation_names:
   - code-review
@@ -89,7 +89,7 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
 6. **Check invariants & Local Reviewer Dry-Run**:
    - Run deterministic scan `node {skillsRoot}/ws-shared/runtime/scripts/scan_stack_invariants.cjs` against modified files.
    - Cross-check `config.json.invariants` and the project stack rule pack (`{sharedDir}/runtime/stacks/`).
-   - **Local CI Reviewer Dry-Run Gate:** When `cursor-reviewer` or an equivalent review runner is detected in the workspace (`scripts/cursor-reviewer` or `config.json.verification.localReviewCommand` / `config.json.preview.localReviewCommand`), execute the local dry-run command (`--dry-run` against the diff) in read-only mode to catch reviewer-aligned defects before Step 8 ship. Ingest any reported critical issues into the review findings.
+   - **Local CI Reviewer Dry-Run Gate:** When `config.json.verification.localReviewCommand` or `config.json.preview.localReviewCommand` resolves to a review runner, execute it (`--dry-run` against the diff) read-only to catch reviewer-aligned defects before Step 8 ship; ingest reported critical issues into the findings. Resolve the runner from config only — do not detect or name a specific reviewer product.
    - Optional `fable` integration: If `config.json.fable.enabled` and `autoAudit` are `true`, run [`ws-fable-judge`](../ws-fable-judge/SKILL.md) for Weakened Checks, False Completion, Scope Creep, Unauthorized Action. Report detected frauds as Critical or Warning.
    - Done when: stack invariant scan, local reviewer dry-run (if configured/detected), and invariant checklists are evaluated.
 
@@ -112,4 +112,4 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
 - Treat ineffective assertions, tests, gates, and checks as minimum Warning.
 - Write only the assigned review draft; the orchestrator persists rounds and ledger links.
 - Return findings sorted by severity, path, line, and id.
-- After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.
+- Handoff: recorded under `state.handoffs` — see [`PROTOCOLS.md`](../ws-spec-to-pr/PROTOCOLS.md) § Base Prompt Prefix.

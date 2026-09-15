@@ -1,7 +1,7 @@
 ---
 name: ws-implement-tasks
 description: Task implementation & fix executor — builds planned features following task DAGs or applies surgical defect fixes from code review findings.
-version: 0.4.28
+version: 0.4.29
 disable-model-invocation: true
 invocation_names:
   - implement-tasks
@@ -39,7 +39,7 @@ Workflow (ws-spec-to-pr Step 4 build; Step 5 `scoreAndRefine` second pass; Step 
 1. **Load plan** — Parse execution tasks or plan steps; identify files to create/modify and their acceptance criteria. When the spec of record or `step-00` copy contains `## Visual References`, **Read** each `ok` image listed (skip PDF) before editing product files.
    - Done when: every task/step has an identified file list and AC.
 
-2. **Consult memory (`read-memory`)** — Via [`ws-self-learning`](../ws-self-learning/SKILL.md) Pre-work for 3–8 modules/paths/keywords in the plan (every enabled backend: local files and/or spec-memo vault); apply Medium+ Solutions before editing; record search keywords, backends queried, and hits.
+2. **Consult memory** — Apply the injected MEMORY slice; when standalone, route through [`tools.md`](../ws-shared/runtime/tools.md) **`read-memory`** for 3–8 plan keywords/paths.
    - Done when: relevant entries noted or none found; keywords + backends recorded for `step-output.memory_consult`.
 
 3. **Scan codebase** — Locate similar code in the project layers (`config.json`) for style consistency.
@@ -65,7 +65,7 @@ Workflow (ws-spec-to-pr Step 4 build; Step 5 `scoreAndRefine` second pass; Step 
 1. **Intake gaps** — Load findings from `step-06-*.review.md` / `step-06-*.fix.report.md`, `step-07-*.testing.report.md`, or review comment threads.
    - Done when: every finding is enumerated.
 
-2. **Consult memory (`read-memory`)** — Via [`ws-self-learning`](../ws-self-learning/SKILL.md) Pre-work for the defect class / paths (every enabled backend); reuse known Solutions before inventing fixes.
+2. **Consult memory** — Apply the injected MEMORY slice; when standalone, route through [`tools.md`](../ws-shared/runtime/tools.md) **`read-memory`** for the defect class/paths.
    - Done when: relevant entries noted or none found.
 
 3. **Correct** — Apply minimal, targeted fixes per [ws-karpathy-guidelines](../ws-karpathy-guidelines/SKILL.md).
@@ -110,13 +110,17 @@ summary: |
 
 ## ScoreAndRefine second pass
 
-When the orchestrator dispatches this skill for optional polish (Pass 1 score already ≥ `defaults.minVerifyScore` (default 9), `scoreAndRefine` flag): follow [`gates.md`](../ws-shared/runtime/gates.md) § Score & Refine gate item 4. Load the **full** Pass 1 diff, every plan task, and every AC — not only flagged task ids. Simplify overengineered implementations that still meet the AC. Delete unused files, tests, methods, and classes **this workflow introduced** that have no remaining code or doc references. Do not delete pre-existing unused code outside `files_touched`. Do not drop ACs. Re-run configured verification.
+Follow [`gates.md`](../ws-shared/runtime/gates.md) § Score & Refine gate item 4: load the **full** Pass 1 diff, every plan task, and every AC (not only flagged ids); simplify overengineering that still meets the AC; delete unused artifacts **this workflow introduced** only (nothing outside `files_touched`); Do not drop ACs; re-run configured verification.
 
 - Done when: each AC still met; unused workflow-introduced artifacts removed or justified in `summary`; verification green.
 
-## Rules
+## Guardrails
 
-No commit/push (orch/user owns staging). Surgical scope only. Schema migrations via project CLI only.
+- Write only assigned task ids, AC ids, and writable paths (DAG: only that task's files). Return exact `files_touched` (created/modified/deleted, repo-relative); never `{plansDir}`.
+- No `git add` / `commit` / `push` in any form (`git add -A` / `git add .` included): the orchestrator (or user, standalone) owns staging.
+- Surgical scope only; schema migrations via project CLI only. Do not rewrite managed `ws-*` skill files unless the task names that file.
+- When the plan requires regression/sabotage coverage, write tests that fail on inverted code — no tautological assertions.
+- Contract: [`gates.md`](../ws-shared/runtime/gates.md) § Required G2-code save points (no self-commit) · orch: [`PROTOCOLS.md`](../ws-spec-to-pr/PROTOCOLS.md) § Step 4 dispatch.
 
 ## Subagent contract
 
@@ -125,4 +129,4 @@ No commit/push (orch/user owns staging). Surgical scope only. Schema migrations 
 - Run the named configured verification commands after each task batch.
 - Never write workflow state or ledger files; return structured evidence to the orchestrator.
 - Report exact touched files, memory consult, checks, and remaining gaps.
-- After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.
+- Handoff: recorded under `state.handoffs` — see [`PROTOCOLS.md`](../ws-spec-to-pr/PROTOCOLS.md) § Base Prompt Prefix.

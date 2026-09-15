@@ -1,7 +1,7 @@
 ---
 name: ws-ship-pr
 description: End-to-end PR shipping manager — drives prepare-to-PR checklists, pushes code, creates PRs, waits for CI, and manages convergence.
-version: 0.4.28
+version: 0.4.29
 disable-model-invocation: true
 invocation_names:
   - ship-pr
@@ -18,11 +18,7 @@ Ship from the resolved PR **head** to `config.project.baseBranch`: prepare board
 
 ## SCM Independence & Configuration
 
-`ws-ship-pr` is **SCM-provider independent**. It reads `{sharedDir}/config.json` at runtime to determine the active SCM platform and dispatch the corresponding provider skill:
-
-- **`providers.scm: "github"`** → dispatches [`ws-spec-provider-github`](../ws-spec-provider-github/SKILL.md) (`gh` CLI / GitHub REST API)
-- **`providers.scm: "azure-devops"`** (or `"ado"`) → dispatches [`ws-spec-provider-azure-devops`](../ws-spec-provider-azure-devops/SKILL.md) (`az repos` / ADO REST API)
-- **`providers.scm: "local"`** → dispatches [`ws-spec-provider-local`](../ws-spec-provider-local/SKILL.md)
+`ws-ship-pr` is **SCM-provider independent**: resolve `providers.scm` at runtime per [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) and call intents on that provider per [`scm-provider-contract.md`](../ws-shared/runtime/scm-provider-contract.md). `github` and `azure-devops` are interchangeable; `local` is not a PR/thread/merge implementer (it delegates). Never embed raw `gh`/`az` recipes here.
 
 Prepare board (mandatory): [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md). Wait/converge timing: [GOAL-OVERRIDES.md](GOAL-OVERRIDES.md). Examples: [examples.md](examples.md).
 
@@ -118,6 +114,13 @@ In `dry-run`, `push-only`, `skip`, or early `stopBeforeFixPr` stop, state the ou
 - Review: [ws-code-review](../ws-code-review/SKILL.md) · Convergence: [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md) · Fixer: [ws-fix-pr](../ws-fix-pr/SKILL.md)
 - Base detection: `bash {skillsRoot}/ws-ship-pr/scripts/detect-base-branch.sh` · Artifacts: [ARTIFACTS.md](../ws-spec-to-pr/ARTIFACTS.md)
 
+## Guardrails
+
+- In `workflowMode`, ship **push/PR only** — no delivery commit and no goal-fix loop when `stopBeforeFixPr: true` (orchestrator owns close and Step 9).
+- Never run benchmarks (`ws-run-benchmark`, `npm run benchmark*`, `scripts/harness-benchmark`); `generate-telemetry-aggregate.cjs` is telemetry, not a harness benchmark.
+- Anonymize PR bodies and issue comments: generic wording only, no private project names, paths, or hostnames.
+- Contract: [`gates.md`](../ws-shared/runtime/gates.md) § Step 8 combined gate · [`scm-provider-contract.md`](../ws-shared/runtime/scm-provider-contract.md).
+
 ## Subagent contract
 
 - Treat prepare checks, SCM authorization, and Fable safety policy as hard boundaries.
@@ -125,5 +128,5 @@ In `dry-run`, `push-only`, `skip`, or early `stopBeforeFixPr` stop, state the ou
 - Stop before any external mutation unless the caller supplied the selected ship intent.
 - Return the prepare board, resulting refs/URL when applicable, and unresolved blockers.
 - Never weaken REFUTED handling or infer approval from cancellation.
-- After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.
+- Handoff: recorded under `state.handoffs` — see [`PROTOCOLS.md`](../ws-spec-to-pr/PROTOCOLS.md) § Base Prompt Prefix.
 

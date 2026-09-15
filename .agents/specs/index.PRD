@@ -133,6 +133,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] ws-wiki from-code genesis and progressive-disclosure split (`spec: 0079-ws-wiki-from-code.spec.md`)
 - [x] ws-fix-pr surgical commit without full-tree stash (`spec: 0082-ws-fix-pr-surgical-commit.spec.md`)
 - [x] Declarative Antigravity and Gemini Skills Configuration via skills.json (`spec: 0083-installer-antigravity-gemini-skills-json.spec.md`)
+- [ ] Pipeline skill guardrails: dedup shared contracts and add blast-radius guardrails (`spec: 0084-pipeline-skill-guardrails.spec.md`)
+
 
 
 
@@ -243,6 +245,8 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 | 86 | `ws-fix-pr-surgical-commit` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-fix-pr surgical commit without full-tree stash |
 
 | 87 | `installer-antigravity-gemini-skills-json` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Declarative Antigravity and Gemini Skills Configuration via skills.json |
+
+| 88 | `pipeline-skill-guardrails` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Pipeline skill guardrails: dedup shared contracts and add blast-radius guardrails |
 
 ## 9. Inbox
 

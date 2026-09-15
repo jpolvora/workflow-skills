@@ -1,7 +1,7 @@
 ---
 name: ws-fix-pr
 description: Single-pass PR thread fixer — resolves active GitHub or ADO PR review threads, applying targeted code fixes and posting progress reports.
-version: 0.4.28
+version: 0.4.29
 disable-model-invocation: true
 invocation_names:
   - fix-pr
@@ -43,12 +43,7 @@ A **batch** is all active threads fetched and scored in one standalone invocatio
 
 ## SCM provider resolution
 
-Resolve per [config-resolution.md](../ws-shared/runtime/config-resolution.md): read `providers.active` / `providers.scm`; if absent, prefer an enabled GitHub tracker, else Azure DevOps; reject `scm: "local"`.
-
-| `providers.scm` | Skill | Intents used here |
-|-----------------|-------|-------------------|
-| `github` | [ws-spec-provider-github](../ws-spec-provider-github/SKILL.md) | `list-threads`, `resolve-thread`, `check-pr-status` |
-| `azure-devops` | [ws-spec-provider-azure-devops](../ws-spec-provider-azure-devops/SKILL.md) | `list-threads`, `resolve-thread`, `check-pr-status` |
+Resolve `providers.scm` per [config-resolution.md](../ws-shared/runtime/config-resolution.md) (reject `scm: "local"`), then call `list-threads` / `resolve-thread` / `check-pr-status` on that provider per [`scm-provider-contract.md`](../ws-shared/runtime/scm-provider-contract.md) — never raw `gh`/`az`.
 
 ## Internal model roles
 
@@ -89,10 +84,13 @@ When an orchestrator owns the run and `dispatch-agent` is available, append orde
    - Done when: the execute role followed the gate, every deviation was amended before its governed edit, and every approved thread has class-wide proactive evidence or recorded skips.
 
 5. **Verify, learn, resolve, and push**: run `config.json.verification`; write `{reviewsDir}/PR-<PR-ID>-round-<N>.md`; run post-round learning per [`ws-self-learning`](../ws-self-learning/SKILL.md) § Post fix-pr round. Only after complete plan and execute/proactive evidence, call provider `resolve-thread` with a `<!-- resolution-reply -->` marker, a `--comment` / note that names the commit (when code changed) **and** states what changed (files + behavior + why it resolves; GitHub and Azure reject hash-only or model-footer-only bodies), and `--model` set to the executing session model (`currentModel` / actual `fixPrExec` model) so the closing comment ends with `---\nLLM model: {id}`. Template: [`scripts/COOPERATIVE_FIX.md`](scripts/COOPERATIVE_FIX.md) § Thread Response. Then stage and commit **only** this batch's surgical fix paths (`git add -- <paths>` and `git add -u -- <deleted-paths>` for deletions from thread fixes and recorded `proactiveFixed` / same-class hits, where `<deleted-paths>` is that same scoped list). Drop `{plansDir}/**`, secrets, gitignored paths, and `preExistingDirty` paths that were not edited for this batch. Never `git add -A`, `git add .`, bare `git add -u`, bare `git add -u --`, or directory-wide adds. When a fix path is also in `preExistingDirty`, inspect `git diff HEAD -- <path>`, `git diff --cached -- <path>`, and `git status --porcelain -- <path>` to separate staged WIP from unstaged fix hunks, then stage only fix hunks via a non-interactive scoped patch / `git apply --cached` (never interactive `git add -p` in automation). If the index already holds unrelated hunks on that path, unstage them with `git restore --staged -- <path>` (keeping the WIP in the worktree) before hunk-staging; if anchor hunks cannot be separated without staging unrelated WIP, do not resolve that 6–10 thread as fixed — leave it open or escalate with `path + reason`. Empty staged set → skip commit and resolve comment-only only for 0–5 threads. Align with hub [`tools.md`](../ws-shared/runtime/tools.md) `commit-code` and [`gates.md`](../ws-shared/runtime/gates.md) G2-code staging. Then `git push origin HEAD` when a commit landed. `dry-run` suppresses product/remote mutation, commit, and push; it does not stash or revert `preExistingDirty` files.
-    - Done when: both `fixPrPlan` gate evidence and `fixPrExec` proactive evidence are complete, verification passed, the report includes `Learning:`, required traps are compiled, each resolution comment describes the correction (not hash-only), threads are resolved or simulated, and the branch is pushed unless `dry-run`. After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.
+    - Done when: both `fixPrPlan` gate evidence and `fixPrExec` proactive evidence are complete, verification passed, the report includes `Learning:`, required traps are compiled, each resolution comment describes the correction (not hash-only), threads are resolved or simulated, and the branch is pushed unless `dry-run`.
 
 ## Subagent contract
 
 - `fixPrPlan` is gate-only: fetch/score threads, write the complete `plan-gate.md`; no product edits, commit, push, `resolve-thread`, or outer `finish --step 9`.
 - `fixPrExec` validates the gate against HEAD, follows it (amend before deviate), applies cooperative proactive sweeps, then verifies, resolves, and pushes.
+- Staging follows [`tools.md`](../ws-shared/runtime/tools.md) `commit-code` (path-scoped; `preExistingDirty` stays unstaged); timing in [`gates.md`](../ws-shared/runtime/gates.md) § Required G2-code save points.
+- Never rewrite managed `ws-*` skill files unless the batch names that file. Anonymize resolution comments and round reports (generic class wording; no private paths or hosts).
 - Return gate path plus fix evidence in `step-output`.
+- Handoff: recorded under `state.handoffs` — see [`PROTOCOLS.md`](../ws-spec-to-pr/PROTOCOLS.md) § Base Prompt Prefix.
