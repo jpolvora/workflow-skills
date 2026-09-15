@@ -334,8 +334,38 @@ export function resolveGlobalSkillsDir() {
 }
 
 /**
+ * Lexical existence check (lstat, no target resolution).
+ * Unlike fs.existsSync, returns true for broken symlinks/junctions whose
+ * target no longer exists (e.g. a stale projection pointing at a deleted
+ * test temp dir). Used before symlink creation and directory creation so
+ * stale reparse points are removed instead of causing EEXIST/ENOENT.
+ * @param {string} p - Path to check
+ * @returns {boolean} True when lstat succeeds (file, dir, or link incl. broken)
+ */
+export function pathLexists(p) {
+  try {
+    fs.lstatSync(p);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Removes a path when it lexically exists (file, dir, symlink, junction,
+ * including broken links). No-op when nothing exists at that path.
+ * @param {string} p - Path to remove
+ */
+export function removeLexicalPath(p) {
+  if (!pathLexists(p)) return;
+  fs.rmSync(p, { recursive: true, force: true });
+}
+
+/**
  * Checks and ensures target directory exists and is writeable.
  * Throws a friendly, actionable Error if target cannot be created or written to.
+ * Stale broken symlinks/junctions at the target path are removed first so a
+ * previous projection into a deleted temp dir heals instead of ENOENT.
  * @param {string} targetDirPath - Directory to check/create
  * @returns {string} Absolute path to ensured writeable directory
  */
@@ -343,6 +373,11 @@ export function ensureWriteableDir(targetDirPath) {
   const resolvedPath = path.resolve(targetDirPath);
   try {
     if (!fs.existsSync(resolvedPath)) {
+      if (pathLexists(resolvedPath)) {
+        // Broken symlink/junction: existsSync is false but the reparse point
+        // still occupies the path and mkdir would fail with ENOENT/EEXIST.
+        removeLexicalPath(resolvedPath);
+      }
       fs.mkdirSync(resolvedPath, { recursive: true });
     }
     try {
@@ -488,6 +523,10 @@ export function detectExistingSecondaryTargets(homeDir = getHomeDir(), symlink =
 
 function simpleCopyDir(src, dest) {
   if (!fs.existsSync(dest)) {
+    if (pathLexists(dest)) {
+      // Stale broken link occupies dest — clear before mkdir.
+      removeLexicalPath(dest);
+    }
     fs.mkdirSync(dest, { recursive: true });
   }
   const entries = fs.readdirSync(src, { withFileTypes: true });
@@ -518,7 +557,11 @@ export function projectSkillToTarget(srcSkillPath, destSkillPath, options = {}) 
 
   ensureWriteableDir(path.dirname(destSkillPath));
 
-  if (fs.existsSync(destSkillPath)) {
+  // Use lexical existence so broken junctions/symlinks (existsSync === false
+  // but reparse point still present) are removed before re-projection.
+  // Otherwise symlinkSync fails with EEXIST and the copy fallback fails
+  // with ENOENT on mkdir.
+  if (pathLexists(destSkillPath)) {
     try {
       fs.rmSync(destSkillPath, { recursive: true, force: true });
     } catch {

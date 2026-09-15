@@ -2307,7 +2307,15 @@ child.on('close', async (code) => {
     fs.mkdirSync(globalTestDir, { recursive: true });
     fs.mkdirSync(projectTestDir, { recursive: true });
 
-    const globalEnv = { ...process.env, WORKFLOW_SKILLS_GLOBAL_DIR: globalTestDir, FORCE_COLOR: '0' };
+    // Isolate HOME so auto-detect of secondary host targets (~/.gemini,
+    // ~/.claude, …) never projects test canonical dirs into the real user
+    // profile. Without this, junctions pointing at deleted test temp dirs
+    // leak into the real profile and break the next real update with ENOENT.
+    const mockGlobalHome = path.join(__dirname, '.mock-global-home');
+    fs.rmSync(mockGlobalHome, { recursive: true, force: true });
+    fs.mkdirSync(mockGlobalHome, { recursive: true });
+
+    const globalEnv = { ...process.env, WORKFLOW_SKILLS_GLOBAL_DIR: globalTestDir, HOME: mockGlobalHome, USERPROFILE: mockGlobalHome, FORCE_COLOR: '0' };
 
     // 1. Global install
     const gInst = cp.spawnSync(
@@ -2398,6 +2406,7 @@ child.on('close', async (code) => {
 
     fs.rmSync(globalTestDir, { recursive: true, force: true });
     fs.rmSync(projectTestDir, { recursive: true, force: true });
+    fs.rmSync(mockGlobalHome, { recursive: true, force: true });
 
     // 5. Unit & integration tests for multi-OS home dir detection and global skills dir resolution
     const originalHome = process.env.HOME;
