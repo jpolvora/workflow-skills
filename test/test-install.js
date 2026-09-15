@@ -2649,6 +2649,27 @@ child.on('close', async (code) => {
     }
     ok('removeGeminiSkillsJsonEntry removes canonical entry and keeps user entries (AC4)');
 
+    // 1g2. Shared path partial filter and unrestricted preservation
+    fs.writeFileSync(jsonPath, JSON.stringify({
+      entries: [
+        { path: '~/.agents/skills', include_only: ['my-*', 'ws-*'] },
+        { path: '~/unrestricted-shared' },
+      ],
+    }, null, 2), 'utf8');
+    removeGeminiSkillsJsonEntry(geminiUnitHome, '~/.agents/skills');
+    parsedJson = readGeminiSkillsJson(jsonPath);
+    const partialEntry = parsedJson.entries.find((e) => e.path === '~/.agents/skills');
+    if (!partialEntry || !Array.isArray(partialEntry.include_only) || partialEntry.include_only.includes('ws-*') || !partialEntry.include_only.includes('my-*')) {
+      fail('removeGeminiSkillsJsonEntry did not strip ws-* while preserving custom include_only patterns');
+    }
+    upsertGeminiSkillsJsonEntry(geminiUnitHome, { path: '~/unrestricted-shared', include_only: ['ws-*'] });
+    parsedJson = readGeminiSkillsJson(jsonPath);
+    const unrestrictedEntry = parsedJson.entries.find((e) => e.path === '~/unrestricted-shared');
+    if (!unrestrictedEntry || unrestrictedEntry.include_only !== undefined) {
+      fail('upsertGeminiSkillsJsonEntry narrowed an unrestricted entry to include_only');
+    }
+    ok('shared path partial filter and unrestricted entry preservation verified');
+
     // 1h. WORKFLOW_SKILLS_GLOBAL_DIR custom override path in skills.json
     const customGlobalDir = path.join(geminiUnitHome, '.custom-global-skills');
     fs.mkdirSync(customGlobalDir, { recursive: true });

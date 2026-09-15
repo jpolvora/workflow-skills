@@ -47,4 +47,25 @@ Introduced helper functions in `bin/install-rules.js` (`getGeminiSkillsJsonPath`
 
 ## Timing
 
-Completed within `ws-spec-to-pr-lite` sequential workflow execution across steps 0–4.
+| Metric | Value |
+|--------|-------|
+| Total wall-clock time | 28m 53s (1733s agent execution) |
+| Steps executed | 5 (steps 0–4 completed in lite workflow) |
+| Total tokens | 0 (estimated: false) |
+| Lines added | +1967 |
+| Lines removed | -32 |
+| Net LOC delta | +1935 |
+| Baseline LOC | N/A (this repo uses `bin/`, `docs/`, `test/`; no `src/`/`web/`/`tests/`) |
+| Final LOC | N/A (diff vs `c4b28dca`: 19 files, +1967 / -32) |
+
+### Step breakdown
+
+| Step | Label | Model | Elapsed | Tokens (est.) | Files changed |
+|------|-------|-------|---------|---------------|---------------|
+| 0 | Spec | Gemini 3.8 Flash | 14s | 0 | 2 created |
+| 1 | Planning | Gemini 3.8 Flash | 87s | 0 | 1 created |
+| 2 | Implementation | Gemini 3.8 Flash | 1351s | 0 | 5 product files |
+| 3 | Review | Gemini 3.8 Flash | 76s | 0 | 1 review report |
+| 4 | Ship | Gemini 3.8 Flash | 205s | 0 | 1 delivery result |
+
+Gate wait excluded. Sum of `telemetry.steps[].elapsedSec` (reporting telemetry only). No harness benchmark (forbidden in this workflow).

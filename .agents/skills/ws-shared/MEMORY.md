@@ -6,6 +6,33 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-09-15] Wrong-shape skills.json recovery must preserve inherits
+- **Layer**: `infrastructure`
+- **Module**: `installer (bin/install-rules.js)`
+- **Severity**: `Medium`
+- **PathPattern**: `bin/install-rules.js`
+- **Scenario / Context**: readGeminiSkillsJson wrong-shape branch (parseable object with non-array entries) backed up then returned bare { entries: [] }, discarding a valid inherits block. Upsert then rewrote the file without shared imports.
+- **DO NOT**: Return bare { entries: [] } on parseable wrong-shape JSON without carrying over valid inherits.
+- **INSTEAD DO**: Build recovered = { entries: [] } and copy parsed.inherits when it is an array; unparsable JSON and missing file keep bare recovery since inherits cannot be read.
+
+### [2026-09-15] Shared-path skills.json must merge/strip include_only, never narrow or delete
+- **Layer**: `infrastructure`
+- **Module**: `installer (bin/install-rules.js)`
+- **Severity**: `Medium`
+- **PathPattern**: `bin/install-rules.js`
+- **Scenario / Context**: Upsert merged ws-* into any matching path by forcing include_only to include ws-*, narrowing an unrestricted entry (no filter means all skills) to only ws-*. Remove deleted the whole entry for a matching path, dropping personal patterns sharing the same canonical path. Same-path sharing is the designed case since the default global dir is shared.
+- **DO NOT**: Force include_only onto an unrestricted entry on upsert, or delete a whole entry on remove when it still carries non-workflow patterns.
+- **INSTEAD DO**: Upsert merges only when existing.include_only is an array, leaving unrestricted entries untouched. Remove strips only ws-* via flatMap, keeping entries with remaining patterns or no filter, deleting only when the filter becomes empty; write when the snapshot changes, not only on length change.
+
+### [2026-09-15] Partial uninstall must still sweep legacy Gemini ws-* junctions
+- **Layer**: `infrastructure`
+- **Module**: `installer (bin/cli.js)`
+- **Severity**: `Medium`
+- **PathPattern**: `bin/cli.js`
+- **Scenario / Context**: resolveTargetHomeDir used target.path.startsWith(envHome) without a separator, so a sibling home sharing a string prefix (e.g. /home/user2 vs /home/user) resolved to the wrong home and read/wrote the wrong skills.json.
+- **DO NOT**: Use raw startsWith(envHome) to decide home ownership.
+- **INSTEAD DO**: Check target.path === envHome or startsWith(envHome + path.sep) before returning envHome, else fall back to dirname chain.
+
 ### [2026-09-15] Dangling symlink/junction handling in installer
 - **Layer**: `infrastructure`
 - **Module**: `installer (bin/install-rules.js)`
