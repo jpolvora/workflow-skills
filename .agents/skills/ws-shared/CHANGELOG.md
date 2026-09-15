@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-15 03:00] Agent: opencode-go/muse-spark-1.3-contributor
+- **Prompt**: fix install/update ENOENT on Gemini secondary target; then bump, commit, ws-ship-pr + ws-goal-fix-pr.
+- **Done**: Healed stale-junction projection via lexical existence in bin/install-rules.js, isolated test HOME, released 0.4.28, shipped PR #334 (merged), fixed 1 review thread with dangling-junction regression test.
+- **Result**: update --global green; PR #334 merged to main with all checks SUCCESS and zero threads. Learning: Installer dangling-link lexists trap.
+
 ### [2026-09-14 19:05] Agent: GPT-5.6 Luna
 - **Prompt**: /ws-goal-fix-pr (PR #332, round 4 staged-leftover review threads).
 - **Done**: Made fix-pr hunk staging index-aware by inspecting HEAD, cached, and porcelain state; preserve staged WIP with `git restore --staged` before non-interactive hunk staging; updated shared gates, tools, spec, evals, and tests.
