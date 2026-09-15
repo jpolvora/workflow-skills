@@ -2307,7 +2307,15 @@ child.on('close', async (code) => {
     fs.mkdirSync(globalTestDir, { recursive: true });
     fs.mkdirSync(projectTestDir, { recursive: true });
 
-    const globalEnv = { ...process.env, WORKFLOW_SKILLS_GLOBAL_DIR: globalTestDir, FORCE_COLOR: '0' };
+    // Isolate HOME so auto-detect of secondary host targets (~/.gemini,
+    // ~/.claude, …) never projects test canonical dirs into the real user
+    // profile. Without this, junctions pointing at deleted test temp dirs
+    // leak into the real profile and break the next real update with ENOENT.
+    const mockGlobalHome = path.join(__dirname, '.mock-global-home');
+    fs.rmSync(mockGlobalHome, { recursive: true, force: true });
+    fs.mkdirSync(mockGlobalHome, { recursive: true });
+
+    const globalEnv = { ...process.env, WORKFLOW_SKILLS_GLOBAL_DIR: globalTestDir, HOME: mockGlobalHome, USERPROFILE: mockGlobalHome, FORCE_COLOR: '0' };
 
     // 1. Global install
     const gInst = cp.spawnSync(
@@ -2398,6 +2406,7 @@ child.on('close', async (code) => {
 
     fs.rmSync(globalTestDir, { recursive: true, force: true });
     fs.rmSync(projectTestDir, { recursive: true, force: true });
+    fs.rmSync(mockGlobalHome, { recursive: true, force: true });
 
     // 5. Unit & integration tests for multi-OS home dir detection and global skills dir resolution
     const originalHome = process.env.HOME;
@@ -2646,6 +2655,47 @@ child.on('close', async (code) => {
       fail('With --no-symlink, destination should be a regular directory, not a symlink');
     }
     ok('Copy fallback mode (--no-symlink) produces direct directory copies');
+
+    // 5b. Dangling secondary junction heals on reinstall/update (stale-link regression).
+    // A secondary projection whose target was deleted (existsSync false, lstat true)
+    // must heal instead of failing symlinkSync EEXIST + copy mkdir ENOENT.
+    const healHome = path.join(__dirname, '.mock-heal-home');
+    fs.rmSync(healHome, { recursive: true, force: true });
+    fs.mkdirSync(healHome, { recursive: true });
+    const healEnv = { ...process.env, HOME: healHome, USERPROFILE: healHome, FORCE_COLOR: '0' };
+    const runHeal = (args) =>
+      cp.spawnSync(process.execPath, [cliPath, ...args], {
+        cwd: path.join(parentDir, 'test'),
+        encoding: 'utf8',
+        env: healEnv,
+        timeout: 60000,
+      });
+    let healRes = runHeal(['install', '--skills', 'ws-tdah', '--global', '--targets', 'canonical,claude', '--yes']);
+    if (healRes.status !== 0) fail('heal setup install failed');
+    const healSecondary = path.join(healHome, '.claude', 'skills', 'ws-tdah');
+    const staleTarget = path.join(__dirname, '.mock-heal-stale-target');
+    fs.rmSync(staleTarget, { recursive: true, force: true });
+    fs.mkdirSync(path.join(staleTarget, 'ws-tdah'), { recursive: true });
+    fs.rmSync(healSecondary, { recursive: true, force: true });
+    fs.symlinkSync(path.join(staleTarget, 'ws-tdah'), healSecondary, process.platform === 'win32' ? 'junction' : 'dir');
+    fs.rmSync(staleTarget, { recursive: true, force: true });
+    if (fs.existsSync(healSecondary)) fail('setup did not produce dangling link');
+    healRes = runHeal(['install', '--skills', 'ws-tdah', '--global', '--targets', 'canonical,claude', '--yes']);
+    if (healRes.status !== 0) fail('reinstall over dangling junction failed');
+    if (!fs.existsSync(path.join(healSecondary, 'SKILL.md'))) fail('heal did not restore secondary SKILL.md');
+    const danglingDir = path.join(healHome, '.gemini', 'config', 'skills');
+    fs.mkdirSync(path.dirname(danglingDir), { recursive: true });
+    const danglingTarget = path.join(__dirname, '.mock-heal-dir-target');
+    fs.rmSync(danglingTarget, { recursive: true, force: true });
+    fs.mkdirSync(danglingTarget, { recursive: true });
+    try {
+      fs.symlinkSync(danglingTarget, danglingDir, process.platform === 'win32' ? 'junction' : 'dir');
+    } catch {}
+    fs.rmSync(danglingTarget, { recursive: true, force: true });
+    ensureWriteableDir(danglingDir);
+    if (!fs.statSync(danglingDir).isDirectory()) fail('ensureWriteableDir did not heal dangling dir');
+    fs.rmSync(healHome, { recursive: true, force: true });
+    ok('dangling secondary junction heals on reinstall/update');
 
     // 6. Manifest records globalTargets and update synchronizes secondary targets (AC7)
     const manifestPath = path.join(mockGlobalRoot, 'ws-shared', 'installed-skills.json');
