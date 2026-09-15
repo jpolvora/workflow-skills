@@ -383,7 +383,12 @@ function projectSkillsToSecondaryTargets(skillNames, secondaryTargets) {
       const jsonPath = getGeminiSkillsJsonPath(homeDir);
       console.log(`  Target [gemini]: ${jsonPath} (skills.json entries)`);
       try {
-        upsertGeminiSkillsJsonEntry(homeDir);
+        const globalDir = resolveGlobalSkillsDir();
+        const defaultDir = path.join(homeDir, '.agents', 'skills');
+        const entryPath = path.resolve(globalDir) === path.resolve(defaultDir)
+          ? '~/.agents/skills'
+          : globalDir;
+        upsertGeminiSkillsJsonEntry(homeDir, { path: entryPath, include_only: ['ws-*'] });
         const cleaned = cleanupLegacyGeminiSkills(homeDir);
         if (cleaned > 0) {
           console.log(`    Cleaned up ${cleaned} legacy skill junction(s)/folder(s) from ~/.gemini/config/skills.`);
@@ -450,7 +455,12 @@ function removeSkillsFromSecondaryTargets(skillNames, secondaryTargets) {
     if (target.id === 'gemini') {
       try {
         const homeDir = resolveTargetHomeDir(target);
-        const res = removeGeminiSkillsJsonEntry(homeDir);
+        const globalDir = resolveGlobalSkillsDir();
+        const defaultDir = path.join(homeDir, '.agents', 'skills');
+        const entryPath = path.resolve(globalDir) === path.resolve(defaultDir)
+          ? '~/.agents/skills'
+          : globalDir;
+        const res = removeGeminiSkillsJsonEntry(homeDir, entryPath);
         if (res.removed) {
           removedCount++;
         }

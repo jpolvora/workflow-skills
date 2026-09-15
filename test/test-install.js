@@ -2603,6 +2603,19 @@ child.on('close', async (code) => {
     }
     ok('corrupt skills.json recovery creates backup and heals safely (NS1)');
 
+    // 1e2. Array or non-object shape backup and recovery
+    fs.writeFileSync(jsonPath, '[]', 'utf8');
+    const recoveredFromArray = readGeminiSkillsJson(jsonPath);
+    if (!recoveredFromArray || !Array.isArray(recoveredFromArray.entries)) {
+      fail('readGeminiSkillsJson did not recover safe structure from array json');
+    }
+    upsertGeminiSkillsJsonEntry(geminiUnitHome);
+    const afterArrayUpsert = readGeminiSkillsJson(jsonPath);
+    if (!afterArrayUpsert.entries.some((e) => e.path === '~/.agents/skills')) {
+      fail('upsert failed to persist entry when file was previously an array');
+    }
+    ok('valid JSON array in skills.json is backed up and heals safely with entries persisted');
+
     // 1f. Cleanup legacy skills directory (AC3, NS2)
     const legacySkillsDir = path.join(geminiUnitHome, '.gemini', 'config', 'skills');
     fs.mkdirSync(path.join(legacySkillsDir, 'ws-tdah'), { recursive: true });
@@ -2635,6 +2648,25 @@ child.on('close', async (code) => {
       fail('remove clobbered unrelated entries');
     }
     ok('removeGeminiSkillsJsonEntry removes canonical entry and keeps user entries (AC4)');
+
+    // 1h. WORKFLOW_SKILLS_GLOBAL_DIR custom override path in skills.json
+    const customGlobalDir = path.join(geminiUnitHome, '.custom-global-skills');
+    fs.mkdirSync(customGlobalDir, { recursive: true });
+    const overrideEntryPath = customGlobalDir;
+    upsertGeminiSkillsJsonEntry(geminiUnitHome, { path: overrideEntryPath, include_only: ['ws-*'] });
+    parsedJson = readGeminiSkillsJson(jsonPath);
+    if (!parsedJson.entries.some((e) => path.resolve(e.path) === path.resolve(customGlobalDir))) {
+      fail('skills.json missing entry for custom WORKFLOW_SKILLS_GLOBAL_DIR');
+    }
+    const removeOverrideRes = removeGeminiSkillsJsonEntry(geminiUnitHome, overrideEntryPath);
+    if (!removeOverrideRes.removed) {
+      fail('removeGeminiSkillsJsonEntry failed to remove custom globalDir entry');
+    }
+    parsedJson = readGeminiSkillsJson(jsonPath);
+    if (parsedJson.entries.some((e) => path.resolve(e.path) === path.resolve(customGlobalDir))) {
+      fail('custom globalDir entry still present after remove');
+    }
+    ok('WORKFLOW_SKILLS_GLOBAL_DIR custom path is properly upserted and removed in skills.json');
 
     fs.rmSync(geminiUnitHome, { recursive: true, force: true });
 

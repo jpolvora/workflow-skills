@@ -619,11 +619,26 @@ export function readGeminiSkillsJson(jsonPath) {
   try {
     const raw = fs.readFileSync(jsonPath, 'utf8');
     const parsed = JSON.parse(raw);
-    if (parsed && typeof parsed === 'object') {
-      if (!Array.isArray(parsed.entries)) {
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      if (parsed.entries === undefined) {
         parsed.entries = [];
       }
-      return parsed;
+      if (Array.isArray(parsed.entries)) {
+        return parsed;
+      }
+    }
+    // Wrong shape (e.g. Array, primitive, null, or entries not array) -> backup and recover
+    const backupPath = `${jsonPath}.bak.${Date.now()}`;
+    try {
+      fs.copyFileSync(jsonPath, backupPath);
+      const detail = !parsed || typeof parsed !== 'object'
+        ? typeof parsed
+        : Array.isArray(parsed)
+          ? 'array'
+          : 'entries is not an array';
+      console.log(`    Warning: Invalid JSON structure in ${jsonPath} (expected object with entries array, got ${detail}). Created backup at ${backupPath}`);
+    } catch {
+      /* ignore backup failure */
     }
     return { entries: [] };
   } catch (err) {
@@ -657,9 +672,20 @@ export function upsertGeminiSkillsJsonEntry(
   const targetPath = entry.path || '~/.agents/skills';
   const targetPattern = (entry.include_only && entry.include_only.length > 0) ? entry.include_only : ['ws-*'];
 
-  const existingIndex = data.entries.findIndex(
-    (e) => e && typeof e === 'object' && (e.path === targetPath || e.path === '~/.agents/skills' || e.path === '~\\.agents\\skills')
-  );
+  const isMatch = (e) => {
+    if (!e || typeof e !== 'object' || !e.path) return false;
+    if (e.path === targetPath) return true;
+    if (targetPath === '~/.agents/skills' || targetPath === '~\\.agents\\skills') {
+      return e.path === '~/.agents/skills' || e.path === '~\\.agents\\skills';
+    }
+    try {
+      return path.resolve(e.path) === path.resolve(targetPath);
+    } catch {
+      return false;
+    }
+  };
+
+  const existingIndex = data.entries.findIndex(isMatch);
 
   if (existingIndex >= 0) {
     const existing = data.entries[existingIndex];
@@ -696,9 +722,21 @@ export function removeGeminiSkillsJsonEntry(homeDir = getHomeDir(), targetPath =
   }
   const data = readGeminiSkillsJson(jsonPath);
   const initialCount = data.entries.length;
-  data.entries = data.entries.filter(
-    (e) => !(e && typeof e === 'object' && (e.path === targetPath || e.path === '~/.agents/skills' || e.path === '~\\.agents\\skills'))
-  );
+
+  const isMatch = (e) => {
+    if (!e || typeof e !== 'object' || !e.path) return false;
+    if (e.path === targetPath) return true;
+    if (targetPath === '~/.agents/skills' || targetPath === '~\\.agents\\skills') {
+      return e.path === '~/.agents/skills' || e.path === '~\\.agents\\skills';
+    }
+    try {
+      return path.resolve(e.path) === path.resolve(targetPath);
+    } catch {
+      return false;
+    }
+  };
+
+  data.entries = data.entries.filter((e) => !isMatch(e));
   if (data.entries.length !== initialCount) {
     fs.writeFileSync(jsonPath, JSON.stringify(data, null, 2) + '\n', 'utf8');
     return { removed: true, remainingCount: data.entries.length };
