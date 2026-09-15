@@ -640,7 +640,11 @@ export function readGeminiSkillsJson(jsonPath) {
     } catch {
       /* ignore backup failure */
     }
-    return { entries: [] };
+    const recovered = { entries: [] };
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) && Array.isArray(parsed.inherits)) {
+      recovered.inherits = parsed.inherits;
+    }
+    return recovered;
   } catch (err) {
     const backupPath = `${jsonPath}.bak.${Date.now()}`;
     try {
