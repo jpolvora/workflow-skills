@@ -704,14 +704,15 @@ export function upsertGeminiSkillsJsonEntry(
 
   if (existingIndex >= 0) {
     const existing = data.entries[existingIndex];
-    const includes = Array.isArray(existing.include_only) ? [...existing.include_only] : [];
-    for (const pat of targetPattern) {
-      if (!includes.includes(pat)) {
-        includes.push(pat);
+    if (Array.isArray(existing.include_only)) {
+      for (const pat of targetPattern) {
+        if (!existing.include_only.includes(pat)) {
+          existing.include_only.push(pat);
+        }
       }
+      existing.path = targetPath;
     }
-    existing.include_only = includes;
-    existing.path = targetPath;
+    // else: unrestricted entry (no include_only means all skills visible) — leave as-is, do not narrow to ws-*.
   } else {
     data.entries.push({
       path: targetPath,
@@ -736,7 +737,7 @@ export function removeGeminiSkillsJsonEntry(homeDir = getHomeDir(), targetPath =
     return { removed: false, remainingCount: 0 };
   }
   const data = readGeminiSkillsJson(jsonPath);
-  const initialCount = data.entries.length;
+  const initialSnapshot = JSON.stringify(data.entries);
 
   const isMatch = (e) => {
     if (!e || typeof e !== 'object' || !e.path) return false;
@@ -748,8 +749,15 @@ export function removeGeminiSkillsJsonEntry(homeDir = getHomeDir(), targetPath =
     }
   };
 
-  data.entries = data.entries.filter((e) => !isMatch(e));
-  if (data.entries.length !== initialCount) {
+  data.entries = data.entries.flatMap((e) => {
+    if (!isMatch(e)) return [e];
+    if (!Array.isArray(e.include_only)) return [e];
+    if (!e.include_only.includes('ws-*')) return [e];
+    const kept = e.include_only.filter((p) => p !== 'ws-*');
+    if (kept.length === 0) return [];
+    return [{ ...e, include_only: kept }];
+  });
+  if (JSON.stringify(data.entries) !== initialSnapshot) {
     fs.writeFileSync(jsonPath, JSON.stringify(data, null, 2) + '\n', 'utf8');
     return { removed: true, remainingCount: data.entries.length };
   }
