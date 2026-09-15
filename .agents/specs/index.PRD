@@ -133,7 +133,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] ws-wiki from-code genesis and progressive-disclosure split (`spec: 0079-ws-wiki-from-code.spec.md`)
 - [x] ws-fix-pr surgical commit without full-tree stash (`spec: 0082-ws-fix-pr-surgical-commit.spec.md`)
 - [x] Declarative Antigravity and Gemini Skills Configuration via skills.json (`spec: 0083-installer-antigravity-gemini-skills-json.spec.md`)
-- [ ] Pipeline skill guardrails: dedup shared contracts and add blast-radius guardrails (`spec: 0084-pipeline-skill-guardrails.spec.md`)
+- [x] Pipeline skill guardrails: dedup shared contracts and add blast-radius guardrails (`spec: 0084-pipeline-skill-guardrails.spec.md`)
 
 
 
@@ -246,7 +246,7 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 
 | 87 | `installer-antigravity-gemini-skills-json` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Declarative Antigravity and Gemini Skills Configuration via skills.json |
 
-| 88 | `pipeline-skill-guardrails` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Pipeline skill guardrails: dedup shared contracts and add blast-radius guardrails |
+| 88 | `pipeline-skill-guardrails` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Pipeline skill guardrails: dedup shared contracts and add blast-radius guardrails |
 
 ## 9. Inbox
 
@@ -338,6 +338,7 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 | 2026-09-12 | `website-wiki-page` | Dedicated GitHub Pages wiki site generated from {wikiDir} | Implemented (`499b5125`, PR pending) |
 | 2026-09-14 | `ws-fix-pr-surgical-commit` | ws-fix-pr surgical commit without full-tree stash | [PR #332](https://github.com/jpolvora/workflow-skills/pull/332) |
 | 2026-09-14 | `installer-antigravity-gemini-skills-json` | Declarative Antigravity and Gemini Skills Configuration via skills.json | Implemented (`51d3acb5`, PR pending) |
+| 2026-09-15 | `pipeline-skill-guardrails` | Pipeline skill guardrails: dedup shared contracts and add blast-radius guardrails | [PR #336](https://github.com/jpolvora/workflow-skills/pull/336) |
 
 ## 11. Maintenance checklist
 
