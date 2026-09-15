@@ -16,6 +16,11 @@ import {
   resolveHostTargetPath,
   detectExistingSecondaryTargets,
   projectSkillToTarget,
+  getGeminiSkillsJsonPath,
+  readGeminiSkillsJson,
+  upsertGeminiSkillsJsonEntry,
+  removeGeminiSkillsJsonEntry,
+  cleanupLegacyGeminiSkills,
 } from '../bin/install-rules.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -2541,7 +2546,97 @@ child.on('close', async (code) => {
     if (!geminiTarget || geminiTarget.path !== path.join(mockHome, '.gemini', 'config', 'skills')) {
       fail(`geminiTarget path unexpected: ${geminiTarget?.path}`);
     }
+    if (!geminiTarget.configPath || geminiTarget.configPath !== path.join(mockHome, '.gemini', 'config', 'skills.json')) {
+      fail(`geminiTarget configPath unexpected: ${geminiTarget?.configPath}`);
+    }
     ok('getGlobalHostTargets resolves absolute target paths correctly');
+
+    // Unit tests for gemini skills.json helpers (AC1, AC5, NS1, NS2)
+    const geminiUnitHome = path.join(__dirname, '.mock-gemini-unit-home');
+    fs.rmSync(geminiUnitHome, { recursive: true, force: true });
+    fs.mkdirSync(geminiUnitHome, { recursive: true });
+
+    // 1b. Initial upsert seeds clean skills.json
+    upsertGeminiSkillsJsonEntry(geminiUnitHome);
+    const jsonPath = getGeminiSkillsJsonPath(geminiUnitHome);
+    if (!fs.existsSync(jsonPath)) fail('skills.json not created');
+    let parsedJson = readGeminiSkillsJson(jsonPath);
+    if (parsedJson.entries.length !== 1 || parsedJson.entries[0].path !== '~/.agents/skills') {
+      fail('skills.json missing canonical entry');
+    }
+    if (!parsedJson.entries[0].include_only.includes('ws-*')) {
+      fail('skills.json missing ws-* include_only pattern');
+    }
+    ok('upsertGeminiSkillsJsonEntry seeds clean skills.json with ws-*');
+
+    // 1c. Idempotency: second upsert does not duplicate entry
+    upsertGeminiSkillsJsonEntry(geminiUnitHome);
+    parsedJson = readGeminiSkillsJson(jsonPath);
+    if (parsedJson.entries.length !== 1) {
+      fail('upsert duplicate entry in skills.json');
+    }
+    ok('upsertGeminiSkillsJsonEntry is idempotent');
+
+    // 1d. Preserves unrelated custom entries and inherits
+    parsedJson.entries.push({ path: '~/my-custom-skills' });
+    parsedJson.inherits = [{ path: '/shared/skills.json' }];
+    fs.writeFileSync(jsonPath, JSON.stringify(parsedJson, null, 2), 'utf8');
+    upsertGeminiSkillsJsonEntry(geminiUnitHome);
+    parsedJson = readGeminiSkillsJson(jsonPath);
+    if (parsedJson.entries.length !== 2 || !parsedJson.entries.some((e) => e.path === '~/my-custom-skills')) {
+      fail('upsert clobbered custom user entry');
+    }
+    if (!parsedJson.inherits || parsedJson.inherits.length !== 1) {
+      fail('upsert clobbered inherits block');
+    }
+    ok('upsertGeminiSkillsJsonEntry preserves custom user entries and inherits (AC5)');
+
+    // 1e. Corrupt JSON recovery (NS1)
+    fs.writeFileSync(jsonPath, '{ invalid json: syntax error');
+    const recovered = readGeminiSkillsJson(jsonPath);
+    if (!Array.isArray(recovered.entries) || recovered.entries.length !== 0) {
+      fail('readGeminiSkillsJson did not recover safe structure from corrupt file');
+    }
+    const backupFiles = fs.readdirSync(path.dirname(jsonPath)).filter((f) => f.includes('.bak.'));
+    if (backupFiles.length === 0) {
+      fail('readGeminiSkillsJson did not create .bak backup on corrupt file');
+    }
+    ok('corrupt skills.json recovery creates backup and heals safely (NS1)');
+
+    // 1f. Cleanup legacy skills directory (AC3, NS2)
+    const legacySkillsDir = path.join(geminiUnitHome, '.gemini', 'config', 'skills');
+    fs.mkdirSync(path.join(legacySkillsDir, 'ws-tdah'), { recursive: true });
+    fs.writeFileSync(path.join(legacySkillsDir, 'ws-tdah', 'SKILL.md'), '# legacy tdah');
+    fs.mkdirSync(path.join(legacySkillsDir, 'custom-user-skill'), { recursive: true });
+    fs.writeFileSync(path.join(legacySkillsDir, 'custom-user-skill', 'SKILL.md'), '# user skill');
+
+    const cleanedCount = cleanupLegacyGeminiSkills(geminiUnitHome);
+    if (cleanedCount !== 1) fail(`expected 1 legacy skill cleaned, got ${cleanedCount}`);
+    if (fs.existsSync(path.join(legacySkillsDir, 'ws-tdah'))) {
+      fail('legacy ws-* folder was not removed');
+    }
+    if (!fs.existsSync(path.join(legacySkillsDir, 'custom-user-skill', 'SKILL.md'))) {
+      fail('non-ws-* custom user skill was deleted by legacy cleanup (NS2)');
+    }
+    ok('cleanupLegacyGeminiSkills cleans legacy ws-* and preserves custom skills (AC3, NS2)');
+
+    // 1g. removeGeminiSkillsJsonEntry removes only the workflow skills entry (AC4)
+    upsertGeminiSkillsJsonEntry(geminiUnitHome);
+    parsedJson = readGeminiSkillsJson(jsonPath);
+    parsedJson.entries.push({ path: '~/keep-me' });
+    fs.writeFileSync(jsonPath, JSON.stringify(parsedJson, null, 2), 'utf8');
+    const removeResult = removeGeminiSkillsJsonEntry(geminiUnitHome);
+    if (!removeResult.removed) fail('removeGeminiSkillsJsonEntry failed to remove entry');
+    parsedJson = readGeminiSkillsJson(jsonPath);
+    if (parsedJson.entries.some((e) => e.path === '~/.agents/skills')) {
+      fail('workflow entry still present after remove');
+    }
+    if (!parsedJson.entries.some((e) => e.path === '~/keep-me')) {
+      fail('remove clobbered unrelated entries');
+    }
+    ok('removeGeminiSkillsJsonEntry removes canonical entry and keeps user entries (AC4)');
+
+    fs.rmSync(geminiUnitHome, { recursive: true, force: true });
 
     // 2. Self-overwrite guard with global scope (AC5, NS3)
     // Running from packageRoot with --project must fail (NS3)
@@ -2633,7 +2728,7 @@ child.on('close', async (code) => {
 
     const copyInstall = cp.spawnSync(
       process.execPath,
-      [cliPath, 'install', '--skills', 'ws-tdah', '--global', '--targets', 'canonical,gemini', '--no-symlink', '--yes'],
+      [cliPath, 'install', '--skills', 'ws-tdah', '--global', '--targets', 'canonical,codex', '--no-symlink', '--yes'],
       {
         cwd: path.join(parentDir, 'test'),
         encoding: 'utf8',
@@ -2646,12 +2741,12 @@ child.on('close', async (code) => {
       }
     );
     if (copyInstall.status !== 0) fail('Copy fallback install failed');
-    const geminiTdahDir = path.join(copyHome, '.gemini', 'config', 'skills', 'ws-tdah');
-    if (!fs.existsSync(path.join(geminiTdahDir, 'SKILL.md'))) {
+    const codexTdahDir = path.join(copyHome, '.codex', 'skills', 'ws-tdah');
+    if (!fs.existsSync(path.join(codexTdahDir, 'SKILL.md'))) {
       fail('Copy install did not produce SKILL.md in secondary target');
     }
-    const geminiStat = fs.lstatSync(geminiTdahDir);
-    if (geminiStat.isSymbolicLink()) {
+    const codexStat = fs.lstatSync(codexTdahDir);
+    if (codexStat.isSymbolicLink()) {
       fail('With --no-symlink, destination should be a regular directory, not a symlink');
     }
     ok('Copy fallback mode (--no-symlink) produces direct directory copies');
@@ -2881,9 +2976,13 @@ child.on('close', async (code) => {
       if (!mergedIds.includes(expected)) fail(`merge-on-write dropped recorded target: ${expected}`);
     }
     ok('targeted install merges new targets with recorded globalTargets');
-    const geminiBase = path.join(mockHome, '.gemini', 'config', 'skills');
-    if (!fs.existsSync(path.join(geminiBase, 'ws-plan-write', 'SKILL.md'))) {
-      fail('merged install did not project ws-plan-write to gemini');
+    const geminiSkillsJson = path.join(mockHome, '.gemini', 'config', 'skills.json');
+    if (!fs.existsSync(geminiSkillsJson)) {
+      fail('merged install did not configure gemini skills.json');
+    }
+    const geminiJsonData = JSON.parse(fs.readFileSync(geminiSkillsJson, 'utf8'));
+    if (!geminiJsonData.entries?.some((e) => e.path === '~/.agents/skills' && e.include_only?.includes('ws-*'))) {
+      fail('gemini skills.json does not contain ~/.agents/skills with ws-*');
     }
     // Bare update backfills the new skill to every recorded target (AC7)
     const backfillUpdate = cp.spawnSync(
@@ -2896,7 +2995,7 @@ child.on('close', async (code) => {
       }
     );
     if (backfillUpdate.status !== 0) fail('Bare backfill update failed');
-    for (const [id, base] of [['claude', path.join(mockHome, '.claude', 'skills')], ['codex', path.join(mockHome, '.codex', 'skills')], ['gemini', geminiBase]]) {
+    for (const [id, base] of [['claude', path.join(mockHome, '.claude', 'skills')], ['codex', path.join(mockHome, '.codex', 'skills')]]) {
       if (!fs.existsSync(path.join(base, 'ws-plan-write', 'SKILL.md'))) {
         fail(`backfill update did not project ws-plan-write to ${id}`);
       }
@@ -2912,7 +3011,7 @@ child.on('close', async (code) => {
       }
     );
     if (uninstallMerge.status !== 0) fail('Uninstall of ws-plan-write failed');
-    for (const [id, base] of [['claude', path.join(mockHome, '.claude', 'skills')], ['codex', path.join(mockHome, '.codex', 'skills')], ['gemini', geminiBase]]) {
+    for (const [id, base] of [['claude', path.join(mockHome, '.claude', 'skills')], ['codex', path.join(mockHome, '.codex', 'skills')]]) {
       if (fs.existsSync(path.join(base, 'ws-plan-write'))) {
         fail(`Uninstall left stale ws-plan-write projection in ${id}`);
       }
@@ -2978,16 +3077,21 @@ child.on('close', async (code) => {
     if (!/Auto-detected/.test(rootRes.stdout + rootRes.stderr)) {
       fail('bare install did not report auto-detection of the root-only host');
     }
-    if (!fs.existsSync(path.join(rootOnlyHome, '.gemini', 'config', 'skills', 'ws-tdah', 'SKILL.md'))) {
-      fail('root-only host was not projected by bare install');
+    const rootSkillsJson = path.join(rootOnlyHome, '.gemini', 'config', 'skills.json');
+    if (!fs.existsSync(rootSkillsJson)) {
+      fail('root-only host was not configured with skills.json by bare install');
     }
-    ok('bare install auto-detects and projects a root-only host dir');
+    const rootJsonData = JSON.parse(fs.readFileSync(rootSkillsJson, 'utf8'));
+    if (!rootJsonData.entries?.some((e) => e.path === '~/.agents/skills' && e.include_only?.includes('ws-*'))) {
+      fail('root-only host skills.json missing ~/.agents/skills with ws-*');
+    }
+    ok('bare install auto-detects root-only host dir and configures skills.json');
 
-    // 4. Unwritable-shaped secondary (skills path is a file): best-effort warn, exit 0
+    // 4. Unwritable-shaped secondary (config path is a file): best-effort warn, exit 0
     const blockedHome = path.join(__dirname, '.mock-autodetect-blocked-home');
     fs.rmSync(blockedHome, { recursive: true, force: true });
-    fs.mkdirSync(path.join(blockedHome, '.gemini', 'config'), { recursive: true });
-    fs.writeFileSync(path.join(blockedHome, '.gemini', 'config', 'skills'), 'blocking file');
+    fs.mkdirSync(path.join(blockedHome, '.gemini'), { recursive: true });
+    fs.writeFileSync(path.join(blockedHome, '.gemini', 'config'), 'blocking file');
     const blockedRes = runCli(['install', '--skills', 'ws-tdah', '--global', '--yes'], blockedHome);
     if (blockedRes.status !== 0) {
       console.error(blockedRes.stdout, blockedRes.stderr);

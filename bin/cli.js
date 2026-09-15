@@ -30,6 +30,11 @@ import {
   resolveHostTargetPath,
   detectExistingSecondaryTargets,
   projectSkillToTarget,
+  getGeminiSkillsJsonPath,
+  readGeminiSkillsJson,
+  upsertGeminiSkillsJsonEntry,
+  removeGeminiSkillsJsonEntry,
+  cleanupLegacyGeminiSkills,
 } from './install-rules.js';
 import {
   MANIFEST_REL,
@@ -351,6 +356,17 @@ function resolveSecondaryTargets(targetsList, symlink = true) {
   return secondary;
 }
 
+function resolveTargetHomeDir(target) {
+  try {
+    const envHome = getHomeDir();
+    if (target.path && target.path.startsWith(envHome)) return envHome;
+  } catch {}
+  if (target.path) {
+    return path.dirname(path.dirname(path.dirname(target.path)));
+  }
+  return getHomeDir();
+}
+
 /**
  * Projects installed skills to secondary global targets using symlinks/junctions (with copy fallback).
  * Targets flagged `bestEffort: true` (auto-detected, never explicitly requested)
@@ -362,6 +378,26 @@ function projectSkillsToSecondaryTargets(skillNames, secondaryTargets) {
   if (!Array.isArray(secondaryTargets) || secondaryTargets.length === 0) return;
   console.log(`\nProjecting skills to ${secondaryTargets.length} secondary global target(s)...`);
   for (const target of secondaryTargets) {
+    if (target.id === 'gemini') {
+      const homeDir = resolveTargetHomeDir(target);
+      const jsonPath = getGeminiSkillsJsonPath(homeDir);
+      console.log(`  Target [gemini]: ${jsonPath} (skills.json entries)`);
+      try {
+        upsertGeminiSkillsJsonEntry(homeDir);
+        const cleaned = cleanupLegacyGeminiSkills(homeDir);
+        if (cleaned > 0) {
+          console.log(`    Cleaned up ${cleaned} legacy skill junction(s)/folder(s) from ~/.gemini/config/skills.`);
+        }
+      } catch (err) {
+        if (target.bestEffort === true) {
+          console.log(`    Warning: Skipping auto-detected target [gemini]: ${err.message}`);
+          continue;
+        }
+        throw err;
+      }
+      continue;
+    }
+
     const targetPath = target.path;
     const useSymlink = target.symlink !== false;
     const typeLabel = useSymlink ? (process.platform === 'win32' ? 'junction' : 'symlink') : 'copy';
@@ -410,7 +446,21 @@ function removeSkillsFromSecondaryTargets(skillNames, secondaryTargets) {
   if (!Array.isArray(secondaryTargets) || secondaryTargets.length === 0) return 0;
   let removedCount = 0;
   for (const target of secondaryTargets) {
-    if (!target || !target.path) continue;
+    if (!target) continue;
+    if (target.id === 'gemini') {
+      try {
+        const homeDir = resolveTargetHomeDir(target);
+        const res = removeGeminiSkillsJsonEntry(homeDir);
+        if (res.removed) {
+          removedCount++;
+        }
+        removedCount += cleanupLegacyGeminiSkills(homeDir);
+      } catch (err) {
+        console.log(`    Note: Could not remove gemini skills.json entry: ${err.message}`);
+      }
+      continue;
+    }
+    if (!target.path) continue;
     for (const skillName of skillNames) {
       const destSkill = path.join(target.path, skillName);
       try {
@@ -1367,6 +1417,7 @@ Non-interactive install:
   --force-integrity  Unsafe: skip source/consumer integrity gates (still writes local record)
   --global, -g       Install globally into user home directory (~/.agents/skills)
   --targets <csv>    Global host targets: canonical, claude, codex, gemini, or custom paths (requires --global)
+                     gemini configures declarative ~/.gemini/config/skills.json; claude and codex link skill folders.
                      When --targets is omitted on --global install/update, pre-existing host dirs
                      (e.g. ~/.gemini for Antigravity / Gemini CLI) are auto-detected and synced.
                      Explicit --targets (even canonical-only) disables auto-detect.
@@ -2012,7 +2063,12 @@ async function runUninstall(_upstreamSkills, argv) {
     const manifestForTargets = readInstalledSkillsManifest();
     const recordedTargets = manifestForTargets?.globalTargets || [];
     if (recordedTargets.length > 0) {
-      const secondaryRemoved = removeSkillsFromSecondaryTargets(remove, recordedTargets);
+      const remainingWsSkills = keep.filter((s) => s.startsWith('ws-'));
+      // Only remove gemini skills.json entry if no ws-* skills remain installed globally
+      const targetsToRemoveFrom = remainingWsSkills.length === 0
+        ? recordedTargets
+        : recordedTargets.filter((t) => t.id !== 'gemini');
+      const secondaryRemoved = removeSkillsFromSecondaryTargets(remove, targetsToRemoveFrom);
       console.log(`  Removed ${secondaryRemoved} secondary projection(s) from ${recordedTargets.length} recorded global target(s).`);
     }
   }

@@ -135,7 +135,9 @@ When skills live under `$HOME/.agents/skills` (global) or a mix of global + proj
 
 #### Global secondary host targets (Claude / Codex / Antigravity / Gemini)
 
-Global installs keep `~/.agents/skills` canonical and can project each skill into companion host dirs via symlink/junction (or copy with `--no-symlink`):
+Global installs keep `~/.agents/skills` canonical and support companion host targets:
+- **Antigravity / Gemini CLI (`gemini`):** Configured declaratively via `~/.gemini/config/skills.json` referencing `~/.agents/skills` with `include_only: ["ws-*"]` (no individual skill folder projection).
+- **Claude Code (`claude`) & OpenAI Codex (`codex`):** Projected into companion host dirs via symlink/junction (or copy with `--no-symlink`).
 
 ```bash
 # Explicit: Antigravity / Gemini CLI only
