@@ -12,7 +12,7 @@ todos:
     content: Thin PROTOCOLS.md HS/G2 tables to ladder+links; trim COOPERATIVE_FIX / stack-cheat-sheet overlap toward gates.md + script
     status: pending
   - id: dedup-sweep2
-    content: Rechecked sweep — G2 hunk algorithm, Step 8 x3, model-role chain x5, verbose/host-binding/banner, fable/mutation/benchmark one-liners (see Shrink E–G)
+    content: Rechecked sweep — G2 hunk algorithm, Step 8 x3, model-role chain x5, verbose/host-binding/banner, fable/mutation/benchmark one-liners (see Shrink C/D–F)
     status: pending
   - id: p0-blast-radius
     content: Add lean Guardrails only for skill blast-radius gaps (implement, verify, interview, plan-write, testing)
@@ -39,7 +39,7 @@ Pipeline skills still (a) miss a few blast-radius do/don'ts and (b) **restate** 
 
 Estimated shrink from dedup alone: ~110–135 lines across the 11 pipeline skills, plus ~15–20 in `PROTOCOLS.md`, without weakening enforcement.
 
-Recheck 2026-09-15 (grep counts): `G2-code` 90 hits, `minVerifyScore` 80, `scoreAndRefine` 61, `dispatch-agent` 64, `user-gate` 121, `fixPrPlan` 39, `autoMode` 50, orch handoff boilerplate 10–11x, `Visual References` 12x, `Starting step` 5x, `Commit configured delivery artifacts` 14x, `cleanup_workflow_git` 3x, `fable.enabled` 5x, `askQuestionTool` 12x. Biggest new wins are orch-helper triplication (Step 8 x3, model-role chain x5, G2 hunk algorithm x4) — see Shrink E–G. Revised total with E–G: ~200–260 lines removed, skills stay standalone via one-line Contract pointers.
+Recheck 2026-09-15 (grep counts): `G2-code` 90 hits, `minVerifyScore` 80, `scoreAndRefine` 61, `dispatch-agent` 64, `user-gate` 121, `fixPrPlan` 39, `autoMode` 50, orch handoff boilerplate 10–11x, `Visual References` 12x, `Starting step` 5x, `Commit configured delivery artifacts` 14x, `cleanup_workflow_git` 3x, `fable.enabled` 5x, `askQuestionTool` 12x. Biggest new wins are orch-helper triplication (Step 8 x3, model-role chain x5, G2 hunk algorithm x4) — see Shrink C/D–F. Revised total with D–F: ~200–260 lines removed, skills stay standalone via one-line Contract pointers.
 
 ```mermaid
 flowchart TB
@@ -123,7 +123,7 @@ Evidence: `G2-code` 90x, `Commit configured delivery artifacts` 14x, `fixPrPlan`
 - **SCM tables x4** (fix-pr 44–51 vs goal-fix-pr 38–45 vs ship-pr 19–26+Step5 vs `tools.md`/`config-resolution.md`): keep full in `config-resolution.md` § SCM + `scm-provider-contract.md`; callers shrink to `Resolve providers.scm per config-resolution; intents per scm-provider-contract (never raw gh/az; reject local for PR intents)`.
 - **`read-memory` routing x4** (implement Build-2/Fix-2 vs plan-write Step1 vs COOPERATIVE_FIX Discovery-2 vs `tools.md read-memory` full): keep full routing in `tools.md read-memory`; skills keep `Apply injected slice + return memory_consult; standalone: tools.md read-memory` (implement keeps TDD/sabotage linkage line; fix-pr keeps `sourcesConsulted` field rule).
 
-#### G. Small one-liner normalizations (~25–35 lines)
+#### F. Small one-liner normalizations (~25–35 lines)
 
 - **Verbose/host/banner x3–5x** (`Starting step` 5x, `askQuestionTool` 12x, `Orchestrator session model` 3x, `More options` 9x): keep bullet spec in `config-resolution.md` § Verbose + `host-dispatch.md` + `gates.md` banner/controls; orchs + STEP-DISPATCH + PROTOCOLS shrink to pointers. Do not paste 4–8 bullet template more than once.
 - **`autoMode ≠ skip planning` x2** (standard SKILL 46–55 vs STEP-DISPATCH 9–18): keep in `gates.md` auto-gate + one orch table; other file points to it.
@@ -131,7 +131,7 @@ Evidence: `G2-code` 90x, `Commit configured delivery artifacts` 14x, `fixPrPlan`
 - **Visual References 12x** (spec-write 5x alone): normalize to one sentence `When spec has ## Visual References: Read each ok image (skip PDF)` + preserve-sidecar rule in spec-write only; tests still match phrase.
 - **`Entry check` 11x identical one-liner**: intentionally kept (standalone guard) — do not expand, do not delete.
 
-### D. What must stay local (do not over-dedup)
+### G. What must stay local (do not over-dedup)
 
 | Skill | Keep |
 |-------|------|
