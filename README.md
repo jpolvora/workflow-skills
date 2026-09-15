@@ -133,6 +133,26 @@ When skills live under `$HOME/.agents/skills` (global) or a mix of global + proj
 
 `ws-configure-project` keeps the scope boundary explicit. A project-local invocation reads the local `runtime/` and `templates/` and updates only the project consumer root. A global invocation reads the executing global hub and writes only project `config.json` plus accepted consumer-owned companions or pointer/autoload files; it does not copy runtime/templates, package manifests, integrity files, or global memory/history. Running from a global skills root without `--repo-root` stops with an actionable error.
 
+#### Global secondary host targets (Claude / Codex / Antigravity / Gemini)
+
+Global installs keep `~/.agents/skills` canonical and can project each skill into companion host dirs via symlink/junction (or copy with `--no-symlink`):
+
+```bash
+# Explicit: Antigravity / Gemini CLI only
+npx --yes github:jpolvora/workflow-skills install --full --global --targets gemini --yes
+
+# Explicit: every known host (canonical + claude + codex + gemini)
+npx --yes github:jpolvora/workflow-skills install --full --global --targets all --yes
+
+# Bare global install/update auto-detects pre-existing host dirs
+# (e.g. ~/.gemini from Antigravity) when --targets is omitted, then records
+# them in ws-shared/installed-skills.json for future bare updates.
+npx --yes github:jpolvora/workflow-skills install --full --global --yes
+npx --yes github:jpolvora/workflow-skills update --global
+```
+
+Explicit `--targets` (even `--targets canonical`) disables auto-detect for that run.
+
 #### ws-shared source-control boundary
 
 | Path | Consumer default |
