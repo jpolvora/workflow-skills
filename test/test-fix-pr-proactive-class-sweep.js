@@ -145,26 +145,33 @@ assert(
   /bare `git add -u`/.test(toolsMd) && /fix hunks/.test(toolsMd),
   'tools.md commit-code forbids bare git add -u and mixed hunks',
 );
+// Single source of truth: the full hunk-separation procedure lives in tools.md
+// commit-code. Callers keep an explicit pointer plus the fail-closed thread policy.
 for (const [name, text] of [
   ['fix-pr', fixPr],
   ['COOPERATIVE_FIX', cooperative],
   ['gates.md', gates],
-  ['tools.md', toolsMd],
 ]) {
   assert(
-    /non-interactive scoped patch/.test(text) &&
+    /tools\.md[\s\S]{0,120}commit-code/.test(text) &&
       /do not resolve that 6[–-]10 thread as fixed/i.test(text) &&
       /comment-only only for 0[–-]5 threads/i.test(text),
-    `${name} keeps inseparable 6-10 fixes unresolved`,
-  );
-  assert(
-    text.includes('git diff HEAD -- <path>') &&
-      text.includes('git diff --cached -- <path>') &&
-      text.includes('git status --porcelain -- <path>') &&
-      text.includes('git restore --staged -- <path>'),
-    `${name} separates staged WIP from fix hunks`,
+    `${name} points at tools.md commit-code and keeps inseparable 6-10 policy`,
   );
 }
+assert(
+  /non-interactive scoped patch/.test(toolsMd) &&
+    /do not resolve that 6[–-]10 thread as fixed/i.test(toolsMd) &&
+    /comment-only only for 0[–-]5 threads/i.test(toolsMd),
+  'tools.md keeps inseparable 6-10 fixes unresolved',
+);
+assert(
+  toolsMd.includes('git diff HEAD -- <path>') &&
+    toolsMd.includes('git diff --cached -- <path>') &&
+    toolsMd.includes('git status --porcelain -- <path>') &&
+    toolsMd.includes('git restore --staged -- <path>'),
+  'tools.md separates staged WIP from fix hunks',
+);
 assert(
   cooperative.includes('preExistingDirty') && !/refuse dirty worktree/i.test(cooperative),
   'COOPERATIVE_FIX preflight allows dirty tree without refuse-dirty',

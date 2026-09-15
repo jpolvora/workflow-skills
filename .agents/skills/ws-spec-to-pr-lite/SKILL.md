@@ -1,6 +1,6 @@
 ---
 name: ws-spec-to-pr-lite
-version: 0.4.28
+version: 0.4.29
 description: Fast Spec-to-PR (steps 0–5). Plan, implement, commit, review, ship. Trigger for lite/fast delivery.
 disable-model-invocation: true
 invocation_names:
@@ -32,7 +32,7 @@ Aliases: [`tools.md`](../ws-shared/runtime/tools.md). Host mode: resolve the hos
 6. **Auto Mode Models:** `ws-spec-to-pr-lite` dispatches no `dispatch-agent` subagents (Invariant 2); the session executes inline under `{currentModel}` without session model switching. Resolve models from `defaults.modelsPreset` / `modelPresets`, optional `stepModels` `"0"`–`"5"`, and phase buckets 0–1 / `plannerModel`, 2 / `executionModel`, 3 / `reviewerModel` (Step 3), 4–5 session unless step override — **telemetry / banner only**. Do **not** read or apply `defaults.testingModel` or role keys `dag`, `scoreAndRefine`, `reviewFix`, `fixPrPlan`, or `fixPrExec`, even if set. Lite Step 3 review-fix stays on numeric Step `3`; Fix-PR runs gate-only plan then execute inline on `currentModel`, while numeric Step `5` remains the only outer telemetry row.
 7. **Fable & Score/Refine:** Optional `fable.enabled` (domain@1, judge@3, verify@4). Optional `scoreAndRefine` (task score 0–10 in `step-05`, 2nd pass report in `step-08`; wide-context simplify per [`gates.md`](../ws-shared/runtime/gates.md) § Score & Refine).
 8. **Config Entry Check:** Verify local project `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, prompt `user-gate` to run [`ws-configure-project`](../ws-configure-project/SKILL.md).
-9. **MEMORY Consult:** In Steps 1, 2, and 3: grep `{sharedDir}/MEMORY.md` for 3–8 plan/spec keywords before coding; record `memory_consult` in step outputs.
+9. **MEMORY Consult:** In Steps 1, 2, and 3: route through [`tools.md`](../ws-shared/runtime/tools.md) **`read-memory`** (both enabled backends — local files and/or spec-memo vault) for 3–8 plan/spec keywords before coding; record `memory_consult` in step outputs.
 10. **Verbose preview:** When `defaults.verboseMode` is explicit `true`, the session model (lite is inline) must **analyze this run** and print `Starting step {N} ({Label}):` plus 4–8 `*` bullets before any tool call for that step (goal, lookups, actions, conditional writes, next-step readiness). Do **not** copy a canned list. Omitted/`false` → silent. Schema/`ws-configure-project` seed writes `true`.
 11. **Harness benchmark forbidden:** do not load `ws-run-benchmark`, and do not run `npm run benchmark`, `npm run benchmark:static`, or `scripts/harness-benchmark`. Step `elapsedSec` is reporting telemetry for [`delivery-result.md`](../ws-spec-to-pr/protocols/delivery-result.md) Timing only.
 

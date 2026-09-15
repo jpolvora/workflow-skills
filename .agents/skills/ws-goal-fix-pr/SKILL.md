@@ -1,7 +1,7 @@
 ---
 name: ws-goal-fix-pr
 description: PR thread convergence loop — orchestrates iterative fix-pr rounds until all open PR review threads are resolved and checks pass.
-version: 0.4.28
+version: 0.4.29
 disable-model-invocation: true
 invocation_names:
   - goal-fix-pr
@@ -37,12 +37,7 @@ Before executing, restate the parsed parameters: PR number, success criterion, m
 
 ## SCM resolution
 
-Resolve per [config-resolution.md](../ws-shared/runtime/config-resolution.md).
-
-| `providers.scm` | Provider skill | Intent used here |
-|-----------------|----------------|-------------------|
-| `github` | [ws-spec-provider-github](../ws-spec-provider-github/SKILL.md) | `list-threads`, `check-pr-status` |
-| `azure-devops` | [ws-spec-provider-azure-devops](../ws-spec-provider-azure-devops/SKILL.md) | `list-threads`, `check-pr-status` |
+Resolve `providers.scm` per [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) and call `list-threads` / `check-pr-status` on that provider per [`scm-provider-contract.md`](../ws-shared/runtime/scm-provider-contract.md). Never use raw `gh`/`az`; reject `scm: "local"`.
 
 Success criterion: `len(activeThreads) == 0` from a `list-threads` call **AND** `check-pr-status` from the configured SCM provider reports all active code reviews and CI pipelines have completed (status is completed, not `pending`, `in_progress`, or `queued`).
 
@@ -104,5 +99,5 @@ This loop applies the same revision-guarded / fail-closed / resume contract as [
 - Require one complete plan gate and one execute/proactive evidence set for each Act-round batch before resolve or push; never call `finish --step 9` from an internal role.
 - After every Act round, record accepted reviewer/CI defects via `ws-self-learning` (and pattern files when those flags are on).
 - Return rounds, stop condition, final active-thread evidence, remaining blockers, and `Learning:` titles.
-- After step finish, orch persists the handoff in `{workflow-id}.state.json` under `state.handoffs`.
+- Handoff: recorded under `state.handoffs` — see [`PROTOCOLS.md`](../ws-spec-to-pr/PROTOCOLS.md) § Base Prompt Prefix.
 

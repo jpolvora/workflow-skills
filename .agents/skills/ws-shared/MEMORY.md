@@ -6,6 +6,60 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-09-15] Wrong-shape skills.json recovery must preserve inherits
+- **Layer**: `infrastructure`
+- **Module**: `installer (bin/install-rules.js)`
+- **Severity**: `Medium`
+- **PathPattern**: `bin/install-rules.js`
+- **Scenario / Context**: readGeminiSkillsJson wrong-shape branch (parseable object with non-array entries) backed up then returned bare { entries: [] }, discarding a valid inherits block. Upsert then rewrote the file without shared imports.
+- **DO NOT**: Return bare { entries: [] } on parseable wrong-shape JSON without carrying over valid inherits.
+- **INSTEAD DO**: Build recovered = { entries: [] } and copy parsed.inherits when it is an array; unparsable JSON and missing file keep bare recovery since inherits cannot be read.
+
+### [2026-09-15] Shared-path skills.json must merge/strip include_only, never narrow or delete
+- **Layer**: `infrastructure`
+- **Module**: `installer (bin/install-rules.js)`
+- **Severity**: `Medium`
+- **PathPattern**: `bin/install-rules.js`
+- **Scenario / Context**: Upsert merged ws-* into any matching path by forcing include_only to include ws-*, narrowing an unrestricted entry (no filter means all skills) to only ws-*. Remove deleted the whole entry for a matching path, dropping personal patterns sharing the same canonical path. Same-path sharing is the designed case since the default global dir is shared.
+- **DO NOT**: Force include_only onto an unrestricted entry on upsert, or delete a whole entry on remove when it still carries non-workflow patterns.
+- **INSTEAD DO**: Upsert merges only when existing.include_only is an array, leaving unrestricted entries untouched. Remove strips only ws-* via flatMap, keeping entries with remaining patterns or no filter, deleting only when the filter becomes empty; write when the snapshot changes, not only on length change.
+
+### [2026-09-15] Pipeline prose dedup must keep checker- and test-locked substrings
+- **Layer**: `harness`
+- **Module**: `pipeline skill dedup / harness checks`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-*/SKILL.md`;`.agents/skills/ws-check-harness/scripts/check_pipeline_handoff.cjs`;`test/test-research-pipeline-quality.js`;`test/test-score-and-refine-second-pass.js`
+- **Scenario / Context**: Shrinking duplicated pipeline prose removed the per-skill handoff sentence and reworded two long gate paragraphs. `check_pipeline_handoff.cjs` requires the substring `state.handoffs` in all 11 pipeline skills, so `test-research-pipeline-quality.js` failed; and `test-score-and-refine-second-pass.js` locks the exact phrases `Do not drop ACs` (ws-implement-tasks) and `optional \`scoreAndRefine\` second pass` (ws-plan-verify), so simple rewording failed.
+- **DO NOT**: Delete the `state.handoffs` mention from a pipeline `SKILL.md`, or reword gate prose without checking phrase-locked tests, when deduping shared contracts.
+- **INSTEAD DO**: Keep a terse one-line handoff pointer per pipeline skill (dedup the long sentence only), and after any pipeline prose shrink run `node .agents/skills/ws-check-harness/scripts/check_pipeline_handoff.cjs --repo-root .` plus `node test/test-score-and-refine-second-pass.js` before regenerating integrity.
+
+### [2026-09-15] Partial uninstall must still sweep legacy Gemini ws-* junctions
+- **Layer**: `infrastructure`
+- **Module**: `installer (bin/cli.js)`
+- **Severity**: `Medium`
+- **PathPattern**: `bin/cli.js`
+- **Scenario / Context**: Global partial uninstall keeps the Gemini skills.json declarative entry when ws-* skills remain, but the filtered target list skips the gemini branch entirely so legacy ws-* junctions under ~/.gemini/config/skills/ stay on disk and cause duplicate discovery alongside skills.json.
+- **DO NOT**: Filter gemini out of secondary removal on partial uninstall without a separate legacy sweep.
+- **INSTEAD DO**: After removeSkillsFromSecondaryTargets, loop recorded gemini targets and call cleanupLegacyGeminiSkills(resolveTargetHomeDir(t)) even when the skills.json entry is preserved; log the swept count.
+
+### [2026-09-15] Home prefix check must require path separator
+- **Layer**: `infrastructure`
+- **Module**: `installer (bin/cli.js)`
+- **Severity**: `Medium`
+- **PathPattern**: `bin/cli.js`
+- **Scenario / Context**: resolveTargetHomeDir used target.path.startsWith(envHome) without a separator, so a sibling home sharing a string prefix (e.g. /home/user2 vs /home/user) resolved to the wrong home and read/wrote the wrong skills.json.
+- **DO NOT**: Use raw startsWith(envHome) to decide home ownership.
+- **INSTEAD DO**: Check target.path === envHome or startsWith(envHome + path.sep) before returning envHome, else fall back to dirname chain.
+
+### [2026-09-15] Gemini skills.json matcher must expand tilde before compare
+- **Layer**: `infrastructure`
+- **Module**: `installer (bin/install-rules.js)`
+- **Severity**: `Medium`
+- **PathPattern**: `bin/install-rules.js`
+- **Scenario / Context**: upsert/remove isMatch used path.resolve without tilde expansion and short-circuited default-tilde targets to tilde-only equality, so an absolute entry and its ~/ form for the same folder never matched, creating duplicates on install and orphans on uninstall.
+- **DO NOT**: Compare skills.json entry paths with bare path.resolve or gate default-tilde targets to tilde-only equality.
+- **INSTEAD DO**: Normalize via normalizeGeminiPath(p, homeDir) expanding leading ~/~\ to homeDir before resolve, and match on normalized equality in both upsert and remove; keep distinct homes distinct.
+
 ### [2026-09-15] Dangling symlink/junction handling in installer
 - **Layer**: `infrastructure`
 - **Module**: `installer (bin/install-rules.js)`
@@ -53,12 +107,12 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ### [2026-09-13] Wiki examples must not keep placeholder conditional sections
 - **Layer**: `harness`
-- **Module**: `ws-wiki / validate_wiki.cjs`
+- **Module**: `ws-wiki / conditional template docs`
 - **Severity**: `Medium`
-- **PathPattern**: `.agents/skills/ws-wiki/scripts/validate_wiki.cjs; test/test-wiki.js`
-- **Scenario / Context**: `classifyTemplate` returned `mixed` only for new-complete plus ALL legacy headings, so new-complete plus one stray legacy heading passed silently as `new`. Test 22 fixtures covered new-full/omit/legacy/malformed but no new-complete plus partial-legacy case. Reviewer scored 6/10 on PR 326.
-- **DO NOT**: Gate the `mixed` style on full legacy residue (`missingOld.length === 0`); do not ship classifier changes without a partial-overlap fixture.
-- **INSTEAD DO**: Classify new-complete plus any legacy heading as `mixed` (`hasAnyOld ? 'mixed' : 'new'`, warn-only preserved); add a hybrid fixture asserting exit 0 plus a `Mixed template` warning.
+- **PathPattern**: `.agents/skills/ws-wiki/references/*.md; test/test-wiki.js`
+- **Scenario / Context**: `VERBOSITY-EXAMPLE.md` Detailed example kept a `## Third-party services` section whose body only said the section was omitted, contradicting the normative no-placeholder omission rule in Notes/SKILL/SYNC. Test 22 asserted the example only contained Condensed/Detailed strings, so the contradiction was untested. Reviewer scored 6/10 on PR 326.
+- **DO NOT**: Illustrate an inapplicable conditional section with a placeholder heading plus "omitted" body in example fixtures; do not assert only style-name strings for example docs.
+- **INSTEAD DO**: Omit the heading and use an HTML-comment omission note inside the example fence; assert `!example.includes('## <Section>')` for inapplicable conditionals in Test 22.
 
 ### [2026-09-13] Verifier extraction must follow writer template migrations
 - **Layer**: `harness`
@@ -68,6 +122,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: Writers (from-code/sweep/sync/update) and the validator moved to the conditional template, but PHASE-2-VERIFY still extracted checkable statements only from legacy `## Business Rules & Logic` / `## Technical Architecture`, so new pages verified vacuously (zero statements). No test asserted verifier extraction headings. Reviewer scored 6/10 on PR 326.
 - **DO NOT**: Migrate writer/validator templates without sweeping reader flows (verifier, apply) for hardcoded old heading names.
 - **INSTEAD DO**: Extract from `## How it works` + `## Backend` (+ conditionals when present; `## Feature` only for testable invariants), keep legacy headings as fallback with a migrate-on-touch flag, and assert the new headings in tests.
+
+### [2026-09-13] Template-mix predicates must warn on any legacy residue
+- **Layer**: `harness`
+- **Module**: `ws-wiki / validate_wiki.cjs`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-wiki/scripts/validate_wiki.cjs; test/test-wiki.js`
+- **Scenario / Context**: `classifyTemplate` returned `mixed` only for new-complete plus ALL legacy headings, so new-complete plus one stray legacy heading passed silently as `new`. Test 22 fixtures covered new-full/omit/legacy/malformed but no new-complete plus partial-legacy case. Reviewer scored 6/10 on PR 326.
+- **DO NOT**: Gate the `mixed` style on full legacy residue (`missingOld.length === 0`); do not ship classifier changes without a partial-overlap fixture.
+- **INSTEAD DO**: Classify new-complete plus any legacy heading as `mixed` (`hasAnyOld ? 'mixed' : 'new'`, warn-only preserved); add a hybrid fixture asserting exit 0 plus a `Mixed template` warning.
 
 ### [2026-09-13] Reuse the vendor transform when re-applying generated-file rewrites
 - **Layer**: `harness`
@@ -89,12 +152,12 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ### [2026-09-13] Per-flow run-state verbosity must honor the config default uniformly
 - **Layer**: `harness`
-- **Module**: `ws-wiki / from-code merge mode`
+- **Module**: `ws-wiki / verbosity persistence`
 - **Severity**: `Medium`
-- **PathPattern**: `.agents/skills/ws-wiki/FROM-CODE.md; test/test-wiki.js`
-- **Scenario / Context**: FROM-CODE merge mode was updated to fill conditional headings but its preservation clause still named legacy `Business Rules` / `Architecture` statements, inviting duplication or dropped invariants on new pages. A test assert locked the stale wording. Reviewer scored 6/10 on PR 326.
-- **DO NOT**: Half-migrate a clause (new action verbs, old heading names); do not let test asserts lock pre-migration prose.
-- **INSTEAD DO**: Name current headings (`## How it works` / `## Backend`) with a legacy-when-present migrate-on-touch qualifier, and update the locking assert to the new wording in the same change.
+- **PathPattern**: `.agents/skills/ws-wiki/SKILL.md; .agents/skills/ws-wiki/PHASE-1-SWEEP.md; test/test-wiki.js`
+- **Scenario / Context**: SKILL.md promised uniform verbosity resolution for all four page-writing flows via `from-code.state.json`, but sweep persists to `sweep.state.json` with a hardcoded condensed default, ignoring a configured `plans.wiki.verbosity=detailed`; sync/update never read sweep state, so a sweep choice was silently discarded downstream. Test 22 asserted only that verbosity strings existed, never precedence or cross-state visibility. Reviewer scored 6/10 twice on PR 326.
+- **DO NOT**: Document a uniform resolution chain that names only one flow's state file; do not add a per-flow gate default without an honor-config clause matching the sibling flows.
+- **INSTEAD DO**: Name per-flow run state in the resolution chain (`from-code.state.json` for from-code/sync/update, `sweep.state.json` for sweep), mirror the honor-`plans.wiki.verbosity` pre-selected default in every gate, state that sweep choice is per-run only, and assert config-honoring strings in Test 22.
 
 ### [2026-09-13] New workflow state must be stamped via update_state dispatch/finish
 - **Layer**: `harness`
@@ -104,6 +167,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: A hand-written `.state.md` for a new workflow failed `--pre-advance 1` with `artifact metadata identity mismatch`: provider register stamps `step-00` with `workflowId: <slug>`, while the gate requires the full workflow id plus `endedAt`/`acRefs`, and no `.state.json` existed. Resolved by running `update_state.cjs dispatch` then `finish --step 0`, which created the JSON, stamped the artifact, and rebuilt the index entry.
 - **DO NOT**: Hand-create a workflow `.state.md` and expect pre-advance gates to pass; do not patch `workflowId` into `step-00` by hand.
 - **INSTEAD DO**: Write the minimal bootstrap frontmatter, then run `update_state.cjs dispatch <state> --step 0` followed by `finish <state> --step 0 --status completed` before any `--pre-advance` check.
+
+### [2026-09-13] Migrated preservation clauses must name current headings
+- **Layer**: `harness`
+- **Module**: `ws-wiki / from-code merge mode`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-wiki/FROM-CODE.md; test/test-wiki.js`
+- **Scenario / Context**: FROM-CODE merge mode was updated to fill conditional headings but its preservation clause still named legacy `Business Rules` / `Architecture` statements, inviting duplication or dropped invariants on new pages. A test assert locked the stale wording. Reviewer scored 6/10 on PR 326.
+- **DO NOT**: Half-migrate a clause (new action verbs, old heading names); do not let test asserts lock pre-migration prose.
+- **INSTEAD DO**: Name current headings (`## How it works` / `## Backend`) with a legacy-when-present migrate-on-touch qualifier, and update the locking assert to the new wording in the same change.
 
 ### [2026-09-13] Classifier runInterview reason must name the actual trigger
 - **Layer**: `harness`
@@ -132,6 +204,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Ship a regression guard that covers a subset of the sibling rows changed in the same diff.
 - **INSTEAD DO**: Count the changed sibling rows in the diff and assert each one (absence of the bare form plus existence of the target); red-prove at least one row by revert-then-run.
 
+### [2026-09-12] Wiki inline scanner must parse strong before dumping remainder
+- **Layer**: `Web`
+- **Module**: `Wiki site builder`
+- **Severity**: `Medium`
+- **PathPattern**: `bin/build-wiki-site.js; test/test-site-wiki.js`
+- **Scenario / Context**: Minimal markdown subset for published wiki pages that use `**bold**` lead-ins.
+- **DO NOT**: Match only single `*`/`_` emphasis, or `escapeHtml` the rest of a paragraph when the next special char search omits `*`/`_`. `**text**` then prints as literal asterisks.
+- **INSTEAD DO**: Match `**`/`__` strong before single-marker em, include `*_` in the inline special-char scan, and assert `<strong>` in the wiki renderer tests.
+
 ### [2026-09-12] Wiki infobox counts must stay data-driven
 - **Layer**: `Web`
 - **Module**: `Wiki site builder`
@@ -144,11 +225,11 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 ### [2026-09-12] Wiki HTML hrefs must be page-relative
 - **Layer**: `Web`
 - **Module**: `Wiki site builder`
-- **Severity**: `Medium`
-- **PathPattern**: `bin/build-wiki-site.js; test/test-site-wiki.js`
-- **Scenario / Context**: Minimal markdown subset for published wiki pages that use `**bold**` lead-ins.
-- **DO NOT**: Match only single `*`/`_` emphasis, or `escapeHtml` the rest of a paragraph when the next special char search omits `*`/`_`. `**text**` then prints as literal asterisks.
-- **INSTEAD DO**: Match `**`/`__` strong before single-marker em, include `*_` in the inline special-char scan, and assert `<strong>` in the wiki renderer tests.
+- **Severity**: `High`
+- **PathPattern**: `bin/build-wiki-site.js; test/test-site-wiki.js; docs/wiki/**`
+- **Scenario / Context**: Publishing `{wikiDir}` markdown to `docs/wiki/` static HTML. Links authored as sibling `feature.md` from a depth-2 page.
+- **DO NOT**: Return wiki-root-relative hrefs such as `documentation/ws-wiki.html` from a file already under `documentation/`. Browsers resolve that against the current directory and 404.
+- **INSTEAD DO**: Convert the markdown target to an HTML path, then `path.posix.relative` from the source HTML directory. Treat bare `index.wiki.md` as the wiki-root index. Cover depth-2 sibling and parent-index cases in `test/test-site-wiki.js`.
 
 ### [2026-09-12] Root CATALOG.md must stay under the 24000 B context budget
 - **Layer**: `tests`

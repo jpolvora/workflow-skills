@@ -17,6 +17,7 @@ Resolve `config.json` `rules.*` before assuming a skill or rule file exists. Ful
 | `rules.karpathyGuidelines` | Surgical-change guidelines | config path → shipped `../ws-karpathy-guidelines/SKILL.md` → global skill |
 | `rules.stackFile` | Human-readable stack companion | config path (default `.agents/skills/ws-shared/STACK.md`); bootstrap may create under `ws-shared/` if missing (see 1b below) — never require repo-root files |
 | Other `rules.*` | Optional consumer rules (e.g. `efMigrations`, `viewPatterns`) | Use path from config when set; do not invent filenames |
+| Source anonymization | Externally visible output (specs, PRs, comments, commits) | Hub [`AGENTS.md`](AGENTS.md) § Source anonymization — strip private consumer names, paths, and hosts; never copy them into tracked artifacts |
 
 **Code review proof:** When pipeline / utility skills ask for proof, load the checklist from the **resolved** `rules.seniorDeveloper` skill. Do not paste that checklist into hub docs. For autoload vs on-demand behavior, see [`AGENTS.md`](AGENTS.md) § Consumer root override.
 
