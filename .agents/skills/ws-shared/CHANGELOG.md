@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-15 03:45] Agent: Antigravity / Gemini
+- **Prompt**: /ws-spec-to-pr-lite slug=installer-antigravity-gemini-skills-json full auto ship
+- **Done**: Configured Gemini CLI and Antigravity IDE global host target declaratively via `$HOME/.gemini/config/skills.json` instead of folder symlinks/copies; swept legacy `ws-*` directory junctions from `~/.gemini/config/skills/`; preserved custom user skills and entries; updated auto-detection, docs, and test suite.
+- **Result**: All tests passed (exit 0); clean code review; spec 0083 verified and marked done in index.PRD.
+
 ### [2026-09-15 03:00] Agent: opencode-go/muse-spark-1.3-contributor
 - **Prompt**: fix install/update ENOENT on Gemini secondary target; then bump, commit, ws-ship-pr + ws-goal-fix-pr.
 - **Done**: Healed stale-junction projection via lexical existence in bin/install-rules.js, isolated test HOME, released 0.4.28, shipped PR #334 (merged), fixed 1 review thread with dangling-junction regression test.

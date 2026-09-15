@@ -132,7 +132,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] ws-wiki Phase 2 verify and Phase 3 plan/apply (`spec: 0078-ws-wiki-code-verify.spec.md`)
 - [x] ws-wiki from-code genesis and progressive-disclosure split (`spec: 0079-ws-wiki-from-code.spec.md`)
 - [x] ws-fix-pr surgical commit without full-tree stash (`spec: 0082-ws-fix-pr-surgical-commit.spec.md`)
-- [ ] Declarative Antigravity and Gemini Skills Configuration via skills.json (`spec: 0083-installer-antigravity-gemini-skills-json.spec.md`)
+- [x] Declarative Antigravity and Gemini Skills Configuration via skills.json (`spec: 0083-installer-antigravity-gemini-skills-json.spec.md`)
 
 
 
@@ -242,7 +242,7 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 
 | 86 | `ws-fix-pr-surgical-commit` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-fix-pr surgical commit without full-tree stash |
 
-| 87 | `installer-antigravity-gemini-skills-json` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Declarative Antigravity and Gemini Skills Configuration via skills.json |
+| 87 | `installer-antigravity-gemini-skills-json` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Declarative Antigravity and Gemini Skills Configuration via skills.json |
 
 ## 9. Inbox
 
@@ -333,6 +333,7 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 | 2026-09-12 | `ws-wiki-code-verify` | ws-wiki Phase 2 verify and Phase 3 plan/apply | Implemented (`88760ba8`, PR pending) |
 | 2026-09-12 | `website-wiki-page` | Dedicated GitHub Pages wiki site generated from {wikiDir} | Implemented (`499b5125`, PR pending) |
 | 2026-09-14 | `ws-fix-pr-surgical-commit` | ws-fix-pr surgical commit without full-tree stash | [PR #332](https://github.com/jpolvora/workflow-skills/pull/332) |
+| 2026-09-14 | `installer-antigravity-gemini-skills-json` | Declarative Antigravity and Gemini Skills Configuration via skills.json | Implemented (`51d3acb5`, PR pending) |
 
 ## 11. Maintenance checklist
 
