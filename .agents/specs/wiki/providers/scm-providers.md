@@ -1,6 +1,6 @@
 # SCM Providers (`providers`)
 
-> Provenance: `.agents/skills/ws-shared/runtime/scm-provider-contract.md`, `.agents/skills/ws-spec-provider-github/SKILL.md`, `.agents/skills/ws-spec-provider-azure-devops/SKILL.md`, `.agents/skills/ws-spec-provider-local/SKILL.md`, `test/test-provider-parity.js`, living synthesis of specs 0001, 0006, 0060.
+> Provenance: `.agents/skills/ws-shared/runtime/scm-provider-contract.md`, `.agents/skills/ws-spec-provider-github/SKILL.md`, `.agents/skills/ws-spec-provider-azure-devops/SKILL.md`, `.agents/skills/ws-spec-provider-local/SKILL.md`, `test/test-provider-parity.js`, living synthesis of specs 0001, 0006, 0060, 0084.
 
 ## Feature
 
@@ -14,7 +14,7 @@ Attachment ingestion tolerates per-file 404, 403, timeout, size caps, and disall
 
 Thread resolution is explicit: posting a fix reply never marks a thread resolved. The `resolveReviewThread` GraphQL mutation (GitHub) or equivalent ADO procedure must run after reply and commit verification using the `threadId` from structured thread listings. Dry-run callers skip remote mutation. Resolution comments must describe the correction, not hash-only or filler text.
 
-Local provider delegates PR intents to `providers.scm`; `scm: "local"` is rejected for PR, thread, and merge operations.
+Local provider delegates PR intents to `providers.scm`; `scm: "local"` is rejected for PR, thread, and merge operations. Step skills hold no provider resolution tables of their own: `ws-fix-pr`, `ws-goal-fix-pr`, and `ws-ship-pr` call intents by name and point at `config-resolution.md` plus this contract, and raw `gh` or `az` command literals are banned from skill bodies.
 
 ## Backend
 
