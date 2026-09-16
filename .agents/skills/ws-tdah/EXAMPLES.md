@@ -36,3 +36,31 @@ Load when calibrating reply shape and judgment.
 > 2. Inspect token expiry + clock skew in `verifyToken`
 >
 > Next: paste one failing request/response pair before any rewrite.
+
+## Re-pitch / wait-what (comprehension failure → grounded re-pitch)
+
+### Context
+
+Agent produced an explanation dense with ungrounded abstractions and stacked acronyms, skipping the premise.
+User invokes: `/wait-what` (or "Wait, what? You lost me.")
+
+### Before (reject: verbosity slop)
+
+> To address this issue, we should architect an asynchronous distributed event-driven pub-sub CQRS ingestion pipeline across our microservices fabric using an enterprise message broker intermediary to streamline multi-tenant ETL throughput.
+
+### Reject (caveman clipping: shorter but lost all causality)
+
+> Pubsub fast. Use Kafka. Pipe events. Next: edit code.
+
+### After (required: grounded re-pitch with missing premise in ASD-STE100)
+
+> Connect `web-events` directly to PostgreSQL WAL via `pg-listen`.
+>
+> State: current webhook queue drops ~4% of burst events; a separate broker is oversized.
+>
+> 1. Read existing event schema in `db/migrations/042_events.sql`
+> 2. Add `pg-listen` subscription in `services/ingress.ts`
+> 3. Verify event delivery with `npm test -- ingress.spec.ts`
+>
+> Next: inspect `db/migrations/042_events.sql` before adding any new service.
+

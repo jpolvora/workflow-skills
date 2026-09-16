@@ -1,6 +1,6 @@
 ---
 name: ws-megabrain
-version: 0.4.29
+version: 0.4.30
 description: >-
   Vibe-coding task implementer without a spec. Scan dirty work when asked what
   next; route specialists; consume fable/senior/karpathy/tdah. Trigger on
@@ -21,8 +21,7 @@ Do **not** copy companion protocols into this file. Load them:
 | Need | Load |
 |------|------|
 | Investigate / act / verify / report; `plan`; research (Question) | [`../ws-fable-method/SKILL.md`](../ws-fable-method/SKILL.md) |
-| Surgical diffs | [`../ws-karpathy-guidelines/SKILL.md`](../ws-karpathy-guidelines/SKILL.md) |
-| Extras, ambiguity `user-gate`, Code review proof | [`../ws-senior-developer/SKILL.md`](../ws-senior-developer/SKILL.md) |
+| Surgical diffs, extras, ambiguity `user-gate`, Code review proof | [`../ws-senior-developer/SKILL.md`](../ws-senior-developer/SKILL.md) |
 | Reply shape | [`../ws-tdah/SKILL.md`](../ws-tdah/SKILL.md) |
 | MEMORY before mutate | `read-memory` ([`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md)) |
 

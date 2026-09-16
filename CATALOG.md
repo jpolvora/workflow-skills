@@ -29,7 +29,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `ws-senior-developer` | `.agents/skills/ws-senior-developer/SKILL.md` | Optional engineering-delivery gate and Code review proof source |
+| `ws-senior-developer` | `.agents/skills/ws-senior-developer/SKILL.md` | Engineering delivery gate, surgical diff hygiene, and Code review proof source |
 
 ### Layer 2 — Pipeline + providers
 
@@ -62,8 +62,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 
 | Skill | Path | Notes |
 |-------|------|-------|
-| `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Action-first reply shape |
-| `ws-karpathy-guidelines` | `.agents/skills/ws-karpathy-guidelines/SKILL.md` | Micro diff hygiene |
+| `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Action-first shape + /wait-what |
 | `ws-spec-to-pr` | `.agents/skills/ws-spec-to-pr/SKILL.md` | Spec-to-PR (steps 0–9) |
 | `ws-spec-to-pr-lite` | `.agents/skills/ws-spec-to-pr-lite/SKILL.md` | Fast Spec-to-PR (steps 0–5) |
 | `ws-spec-multi` | `.agents/skills/ws-spec-multi/SKILL.md` | Batch multi-spec delivery |
@@ -103,7 +102,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | Classify spec pipeline complexity | `ws-classify-complexity` |
 | Plan implementation | `ws-plan-write` → `ws-plan-interview` → `ws-plan-to-tasks` |
 | Implement | `ws-implement-tasks` |
-| Engineering delivery gate / Code review proof | This file § [2. Delivery gate](#2-delivery-gate-ws-senior-developer) (live `ws-senior-developer` only when authoring that skill) |
+| Engineering delivery gate & surgical diffs / Code review proof | [`AGENTS.md`](AGENTS.md) § [1. Delivery gate & surgical diffs](AGENTS.md#1-delivery-gate--surgical-diffs-ws-senior-developer) (live `ws-senior-developer` only when authoring that skill) |
 | Verify / check-implementation / verify score | `ws-plan-verify` (advance at `defaults.minVerifyScore` (default 9); `scoreAndRefine` below) |
 | SCM intent contract / GitHub vs Azure parity | [`scm-provider-contract.md`](.agents/skills/ws-shared/runtime/scm-provider-contract.md) — then one provider skill |
 | Local code review | `ws-code-review` |

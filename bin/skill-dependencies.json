@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.4.29",
+  "packageVersion": "0.4.30",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -59,7 +59,6 @@
         "ws-doctor",
         "ws-monitor",
         "ws-tdah",
-        "ws-karpathy-guidelines",
         "ws-spec-format",
         "ws-goal-loop",
         "ws-self-learning",
@@ -125,7 +124,6 @@
       "ws-check-harness",
       "ws-check-workflows",
       "ws-tdah",
-      "ws-karpathy-guidelines",
       "ws-spec-format",
       "ws-goal-loop",
       "ws-self-learning",
@@ -148,7 +146,6 @@
       "ws-spec-provider-azure-devops",
       "ws-spec-provider-local",
       "ws-tdah",
-      "ws-karpathy-guidelines",
       "ws-spec-format",
       "ws-self-learning",
       "ws-changelog",
@@ -195,7 +192,7 @@
       "ws-spec-index"
     ],
     "ws-code-review": [
-      "ws-karpathy-guidelines",
+      "ws-senior-developer",
       "ws-tdah",
       "ws-self-learning",
       "ws-fable-judge"
@@ -203,12 +200,12 @@
     "ws-fable-method": [
       "ws-fable-judge",
       "ws-tdah",
-      "ws-karpathy-guidelines",
+      "ws-senior-developer",
       "ws-self-learning"
     ],
     "ws-fable-judge": [
       "ws-tdah",
-      "ws-karpathy-guidelines"
+      "ws-senior-developer"
     ],
     "ws-spec-multi": [
       "ws-spec-to-pr",
@@ -217,7 +214,7 @@
       "ws-ship-pr",
       "ws-goal-fix-pr",
       "ws-tdah",
-      "ws-karpathy-guidelines"
+      "ws-senior-developer"
     ],
     "ws-spec-list": [
       "ws-spec-to-pr",
@@ -239,7 +236,6 @@
     "ws-megabrain": [
       "ws-fable-method",
       "ws-senior-developer",
-      "ws-karpathy-guidelines",
       "ws-tdah",
       "ws-self-learning",
       "ws-changelog"
@@ -248,7 +244,6 @@
       "ws-spec-write",
       "ws-spec-format",
       "ws-spec-index",
-      "ws-karpathy-guidelines",
       "ws-senior-developer",
       "ws-changelog",
       "ws-self-learning"

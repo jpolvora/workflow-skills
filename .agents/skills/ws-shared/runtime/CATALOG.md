@@ -28,7 +28,7 @@ Path tokens: expand via `.agents/skills/ws-shared/runtime/tools.md` before tool 
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `ws-senior-developer` | `.agents/skills/ws-senior-developer/SKILL.md` | Optional engineering-delivery gate and Code review proof source |
+| `ws-senior-developer` | `.agents/skills/ws-senior-developer/SKILL.md` | Engineering delivery gate, surgical diff hygiene, and Code review proof source |
 
 ### Layer 2 — Pipeline + providers
 
@@ -65,8 +65,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 
 | Skill | Path | Notes |
 |-------|------|-------|
-| `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Action-first reply shape |
-| `ws-karpathy-guidelines` | `.agents/skills/ws-karpathy-guidelines/SKILL.md` | Micro diff hygiene |
+| `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Action-first shape + /wait-what |
 | `ws-spec-to-pr` | `.agents/skills/ws-spec-to-pr/SKILL.md` | Spec-to-PR (steps 0–9) |
 | `ws-spec-to-pr-lite` | `.agents/skills/ws-spec-to-pr-lite/SKILL.md` | Fast Spec-to-PR (steps 0–5) |
 | `ws-spec-multi` | `.agents/skills/ws-spec-multi/SKILL.md` | Batch multi-spec delivery |

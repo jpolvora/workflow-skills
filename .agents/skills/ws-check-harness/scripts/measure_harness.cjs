@@ -8,7 +8,6 @@ const { resolveConsumerContext, resolveSkillMdPath } = require('../../ws-shared/
 const BASELINE_HARNESS = 962298;
 const BASELINE_REREADS = 368038;
 const ENHANCING = [
-  'ws-karpathy-guidelines',
   'ws-senior-developer',
   'ws-tdah',
   'ws-self-learning',

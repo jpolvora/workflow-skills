@@ -30,7 +30,6 @@ assert(skill.includes('ws-megabrain loaded.'), 'loaded banner');
 assert(!/`AskQuestion`/.test(skill) && !/`ask_questions`/.test(skill), 'no vendor ask-tool ids');
 assert(skill.includes('../ws-fable-method/SKILL.md'), 'consumes fable');
 assert(skill.includes('../ws-senior-developer/SKILL.md'), 'consumes senior-developer');
-assert(skill.includes('../ws-karpathy-guidelines/SKILL.md'), 'consumes karpathy');
 assert(skill.includes('../ws-tdah/SKILL.md'), 'consumes tdah');
 assert(skill.includes('/ws-megabrain plan'), 'plan mode');
 assert(skill.includes('/ws-megabrain research'), 'research mode');
@@ -57,7 +56,6 @@ const companions = deps.dependencies['ws-megabrain'] || [];
 for (const id of [
   'ws-fable-method',
   'ws-senior-developer',
-  'ws-karpathy-guidelines',
   'ws-tdah',
   'ws-self-learning',
   'ws-changelog',

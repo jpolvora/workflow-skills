@@ -549,7 +549,7 @@ This phase generates three independent analyses that compose the **context simul
    | Code review | Local review skill (`ws-code-review`), quality gates (`ws-fable-judge`) |
    | Security | Secrets leak review (`ws-secrets-leak-review`), adversarial audit (`ws-fable-judge`) |
    | Planning | Write spec (`ws-spec-write`), write plan (`ws-plan-write`), interview (`ws-plan-interview`), task DAG (`ws-plan-to-tasks`) |
-   | Implementation | Build executor (`ws-implement-tasks`), engineering delivery gate (`ws-senior-developer`), surgical diffs (`ws-karpathy-guidelines`) |
+   | Implementation | Build executor (`ws-implement-tasks`), engineering delivery gate & surgical diffs (`ws-senior-developer`) |
    | Verification | Score verification (`ws-plan-verify`), pre-PR testing (`ws-testing`), pre-ship proof (`ws-senior-developer`) |
    | PR workflow | Thread resolution (`ws-fix-pr`), thread loop (`ws-goal-fix-pr`), delivery & ship (`ws-ship-pr`) |
    | Specs & Indexing | Spec schema (`ws-spec-format`), project PRD index (`ws-spec-index`), auto-sync (`ws-spec-update`) |
@@ -558,7 +558,7 @@ This phase generates three independent analyses that compose the **context simul
 
 2. **Audit instruction duplication, role clarity & composition**:
 
-   a. **Instruction Block Duplication**: Scan `SKILL.md` bodies for duplicated verbatim instruction blocks (e.g. repeated checklists, duplicated provider logic, parallel verification procedures). Skills must **delegate** to canonical composed primitives (e.g. `ws-fable-judge`, `ws-secrets-leak-review`, `ws-spec-format`, `ws-senior-developer`, `ws-karpathy-guidelines`) rather than copy-pasting parallel instructions.
+   a. **Instruction Block Duplication**: Scan `SKILL.md` bodies for duplicated verbatim instruction blocks (e.g. repeated checklists, duplicated provider logic, parallel verification procedures). Skills must **delegate** to canonical composed primitives (e.g. `ws-fable-judge`, `ws-secrets-leak-review`, `ws-spec-format`, `ws-senior-developer`) rather than copy-pasting parallel instructions.
    b. **Role Definition Clarity**: Assert that every skill defines a sharp, non-overlapping single responsibility in its frontmatter `description:` and header section.
    c. **Composition Topology**: Verify that orchestrators (`ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-spec-multi`) delegate step execution to pipeline skills, and high-level wrappers (e.g. `ws-goal-fix-pr`) compose underlying primitives (`ws-fix-pr`, `ws-goal-loop`) without implementing redundant inline logic.
 
@@ -568,7 +568,7 @@ This phase generates three independent analyses that compose the **context simul
    |---------------|----------|------------------|
    | **`duplicate`** | Two skills do essentially the same thing or duplicate large instruction blocks | Consolidate into canonical skill; delegate from consumer |
    | **`superset`** | One skill fully covers another's scope + extras | Keep superset; subset should delegate to superset |
-   | **`complementary`** | Skills cover the same domain from distinct, non-overlapping angles (e.g. macro delivery gate `ws-senior-developer` vs micro diff hygiene `ws-karpathy-guidelines`) | Keep both; verify distinct triggers in task router |
+   | **`complementary`** | Skills cover the same domain from distinct, non-overlapping angles (e.g. investigate loop `ws-fable-method` vs engineering delivery gate `ws-senior-developer`) | Keep both; verify distinct triggers in task router |
    | **`uncomposed_slop`** | A skill reimplements logic already owned by a canonical primitive instead of delegating | Refactor skill body to compose/link canonical primitive |
    | **`conflicting`** | Two skills give contradictory instructions for the same scenario | **critical** — resolve conflict; elect canonical source |
 

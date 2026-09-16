@@ -306,7 +306,7 @@ Sections: Workflow baseline, manifest, Step file log, Refinement registry, Conte
 Read state: `{us-dir}/{workflow-id}.state.json` (machine SoT), including `state.handoffs[String(previousStep)]`, and `{workflow-id}.state.md` `## Step outputs (compact)` plus at most the two most recent full step outputs. Do not reload full `step-06-*.review.md` or `step-07-*.testing.*` bodies unless ARTIFACTS.md names that file as required for this step.
 Skill: {SKILL.md path} — required sections: `## Subagent contract` and the step sections named by STEP-DISPATCH (never the full skill body).
 Orch: SKILL.md § Step {STEP} · model {resolvedSubagentModel} · {modeFlags}
-Enhancing skills (mandatory): read only `## Subagent contract` from ws-karpathy-guidelines, ws-senior-developer, ws-tdah, ws-self-learning
+Enhancing skills (mandatory): read only `## Subagent contract` from ws-senior-developer, ws-tdah, ws-self-learning
 Read: compact state outputs; injected MEMORY slice (orchestrator path-scoped query, ≤ 4,000 B — do not read the MEMORY.md index); `config.json.rules.stackFile` slices when provided.
 
 MEMORY: apply the injected slice (Severity Medium+ DO NOT / INSTEAD DO). Empty slice is valid when MEMORY.md is absent.

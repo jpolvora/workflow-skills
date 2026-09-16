@@ -1,7 +1,7 @@
 ---
 name: ws-task-lifecycle
 description: On-demand coordinator for prompt-driven product work — Intake, Implementation, Completion tracking without a Spec-to-PR plan tree.
-version: 0.4.29
+version: 0.4.30
 disable-model-invocation: true
 invocation_names:
   - task-lifecycle
@@ -37,11 +37,9 @@ Expand `{specsDir}` from `plans.specsDir` and `{sharedDir}` from config before R
 
 ## Phase 2 — Implementation
 
-1. Load [`ws-karpathy-guidelines`](../ws-karpathy-guidelines/SKILL.md) before the first product-file edit.
-   - Done when: surgical-scope rules are in session.
-2. Load [`ws-senior-developer`](../ws-senior-developer/SKILL.md) before claiming the task complete.
-   - Done when: delivery-gate / Code review proof rules are in session.
-3. If `verification.backendTest` is a non-empty string, run that alias. If it is empty, record a skip note and do not fail this phase for a missing test alias.
+1. Load [`ws-senior-developer`](../ws-senior-developer/SKILL.md) before the first product-file edit.
+   - Done when: delivery-gate, surgical diff hygiene, and Code review proof rules are in session.
+2. If `verification.backendTest` is a non-empty string, run that alias. If it is empty, record a skip note and do not fail this phase for a missing test alias.
    - Done when: the alias exited, or a skip note exists.
 
 ## Phase 3 — Completion

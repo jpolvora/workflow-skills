@@ -1,10 +1,10 @@
 # Practices & Tooling (`engineering`)
 
-> Provenance: `SKILL_AUTHORING.md`, `.agents/skills/ws-karpathy-guidelines/SKILL.md`, `.agents/skills/ws-fable-method/SKILL.md`, `.agents/skills/ws-senior-developer/SKILL.md`, `.agents/skills/ws-megabrain/SKILL.md`, `package.json` engines, living synthesis of specs 0008, 0011, 0025, 0042, 0055, 0058, 0063, 0072, 0074.
+> Provenance: `SKILL_AUTHORING.md`, `.agents/skills/ws-senior-developer/SKILL.md`, `.agents/skills/ws-fable-method/SKILL.md`, `.agents/skills/ws-megabrain/SKILL.md`, `package.json` engines, living synthesis of specs 0008, 0011, 0025, 0042, 0055, 0058, 0063, 0072, 0074.
 
 ## Feature
 
-Engineering practices keep agent diffs surgical and the toolchain uniform across the skill package. `ws-karpathy-guidelines` enforces minimum code and touched-line traceability. `ws-tdah` shapes replies action-first for operational clarity. `ws-fable-method` runs an evidence-based investigate loop before mutating work. `ws-senior-developer` adds scope control, anti-reinvention stops, ambiguity gates, and pre-ship proof. All packaged skills follow `SKILL_AUTHORING.md` progressive-disclosure rules: three tiers, tool-first bodies, and zero sediment. `ws-megabrain` handles spec-optional vibe coding by routing through capped specialists instead of duplicating companion prose. The runtime standard is Node 22 `.cjs` helpers with a native PowerShell config editor on Windows and per-skill symlinks into host skill directories on global installs.
+Engineering practices keep agent diffs surgical and the toolchain uniform across the skill package. `ws-senior-developer` enforces scope control, surgical diff hygiene, anti-reinvention stops, ambiguity gates, and pre-ship proof. `ws-tdah` shapes replies action-first for operational clarity. `ws-fable-method` runs an evidence-based investigate loop before mutating work. All packaged skills follow `SKILL_AUTHORING.md` progressive-disclosure rules: three tiers, tool-first bodies, and zero sediment. `ws-megabrain` handles spec-optional vibe coding by routing through capped specialists instead of duplicating companion prose. The runtime standard is Node 22 `.cjs` helpers with a native PowerShell config editor on Windows and per-skill symlinks into host skill directories on global installs.
 
 ## How it works
 

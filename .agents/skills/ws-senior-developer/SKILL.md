@@ -1,84 +1,88 @@
 ---
 name: ws-senior-developer
-description: Engineering delivery gate for scope control, anti-reinvention, ambiguity stops via user-gate, and pre-ship proof. Invoke via rules.seniorDeveloper or /senior-developer.
-version: 0.4.29
+description: Engineering delivery gate for scope control, anti-reinvention, ambiguity stops via user-gate, surgical diff hygiene, and pre-ship proof. Invoke via rules.seniorDeveloper, /senior-developer, or /karpathy-guidelines.
+version: 0.4.30
 invocation_names:
   - senior-developer
   - ws-senior-developer
+  - karpathy-guidelines
+  - ws-karpathy-guidelines
 ---
 
 # ws-senior-developer
 
 > When this skill is loaded, output "ws-senior-developer loaded."
 
-Optional model-invoked delivery gate when explicitly invoked or resolved through `rules.seniorDeveloper`. Guides prompting, planning, implementation, and review; does not replace project policy or an installed workflow.
+Delivery gate and diff hygiene. Stop scope creep; surface assumptions; enforce reuse; make surgical edits; produce verified proof. Does not replace project policy or named workflow (`ws-spec-to-pr*` wins routing).
 
-**Complement:** Named orch (`ws-spec-to-pr*`) wins routing (see §1). For non-orch non-trivial investigation without a confirmed plan, prefer [`ws-fable-method`](../ws-fable-method/SKILL.md) for Evidence→Act→Verify structure — do not run a second full plan ceremony. This skill alone owns the **Code review proof** checklist (§5).
+**Routing:** Named orch wins. For non-orch investigation without a plan, prefer [`ws-fable-method`](../ws-fable-method/SKILL.md) (Evidence→Act→Verify); do not run competing plan ceremony. Owns the **Code review proof** checklist (§5).
 
 When config-resolved: if `$PWD/.agents/skills/ws-shared/config.json` is missing, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) before relying on verification aliases.
 
-## Core Engineering Directives
+## Core Directives
 
-1. **Suggest unasked changes first:** Never implement features, refactors, or enhancements outside the user request or approved plan. Present opportunistic improvements via `user-gate` and wait for approval.
-
-2. **Audit and simplify:** Before writing custom logic, inspect existing helpers, stdlib, and project patterns. Prefer reuse and simplification that preserves behavior.
-
-3. **Stop on ambiguity:** If requirements or paths are underspecified, stop. Present options with trade-offs via `user-gate` and wait for a decision.
+1. **Think and surface assumptions:** Don't guess or hide confusion. State assumptions and trade-offs explicitly. If multiple interpretations exist, present them via `user-gate`; never pick silently. If unclear, stop, name what is confusing, and ask. Push back if overcomplicated or a simpler approach exists.
+2. **Consult MEMORY first:** Inspect `{sharedDir}/MEMORY.md` (via [`ws-self-learning`](../ws-self-learning/SKILL.md)) for task keywords and matching DO NOT / INSTEAD DO directives before inventing a new approach.
+3. **Simplicity and anti-reinvention:** Minimum code to solve the ask; zero speculative flexibility, single-use abstractions, or impossible-scenario error handling. Inspect existing helpers, stdlib, and project patterns before writing custom logic. If 200 lines could be 50, rewrite.
+4. **Scope enclosure:** Never implement unasked features, refactors, or enhancements. Present opportunistic improvements via `user-gate` and wait for approval.
+5. **Surgical diffs:** Touch only what the request requires. Don't improve adjacent code, comments, or formatting. Don't refactor unbroken code. Match existing style. Mention unrelated dead code; don't delete it. Remove orphan imports, variables, and functions that your changes created. Every changed line must trace directly to the request.
+6. **Goal-driven verification:** Transform tasks into verifiable checks (`[Step] → verify: [check]`). Define success criteria before mutating code. Loop until verified.
 
 ## 1. Route existing intent
 
-If the request names a workflow command, dispatch it through that workflow without adding a competing gate. If it explicitly requests implementation, use the installed implementation capability under `{skillsRoot}` and apply this skill only as its requested delivery constraint.
-
-**Done when:** the applicable workflow or implementation route is identified before review or planning requirements are imposed.
+If request names a workflow command, dispatch through that workflow without competing gates. If it requests implementation, use the installed capability under `{skillsRoot}` with this skill as its delivery constraint.
+- **Done when:** workflow or implementation route is identified before imposing gates.
 
 ## 2. Classify scope
 
-Treat a trivial or single-file change as exempt from plan ceremony; apply only the focused checks needed for its risk. For multi-file or multi-modification free-text work, continue to planning.
-
-**Done when:** scope class (trivial vs plan-required) is recorded.
+- **Trivial / single-file:** exempt from plan ceremony. Apply focused, risk-proportionate checks.
+- **Multi-file / complex free-text:** require confirmed plan before editing.
+- **Done when:** scope class is recorded.
 
 ## 3. Confirm plan when required
 
-Require a confirmed plan before multi-file or multi-modification free-text work. Use `{plansDir}` for plan artifacts, and route applicable work to installed workflow, specification, and specification-sync capabilities.
+Require confirmed plan before multi-file or multi-modification free-text work. Use `{plansDir}`. Apply Core Directives 1, 4, and 6:
+1. State verifiable goals: `[Step] → verify: [check]`.
+2. Push back on overcomplication; propose simpler approaches if available.
+3. Present options and trade-offs via `user-gate` for any ambiguity.
+- **Done when:** approved plan specifies scope, verifiable steps, and commands.
 
-During plan confirmation apply Core Directives 1 and 3 (scope enclosure; `user-gate` on ambiguity).
+## 4. Implement surgically
 
-**Done when:** an approved plan identifies scope, verification commands, and any required handoffs.
-
-## 4. Implement within constraints
-
-Make the smallest change that satisfies the confirmed plan. Follow loaded policy and architecture constraints, preserve consumer-owned data, and report a blocker instead of inventing unconfigured commands or dependencies.
-
-Apply Core Directives 1–2 during edits.
-
-**Done when:** implementation matches the approved scope or a concrete blocker is reported.
+Make the smallest diff satisfying the approved scope. Apply Core Directives 3–5:
+1. Touch only assigned files; keep diff footprint minimal.
+2. Match existing conventions and style exactly.
+3. Clean up own orphans (unused imports/vars/functions created by change); leave pre-existing dead code untouched.
+4. Report concrete blockers; never invent unconfigured commands or dependencies.
+- **Done when:** implementation matches approved scope and traces directly to the request.
 
 ## 5. Produce pre-ship proof
 
-Before branch or pull-request handoff, provide this Code review proof checklist:
+Before branch or PR handoff, complete this Code review proof checklist:
 
-- [ ] Run non-empty configured build, test, and format aliases that apply (`config.json.verification`); cite exit codes.
-- [ ] Run configured secrets checking and resolve or report findings.
+- [ ] Run non-empty configured build, test, and format aliases (`config.json.verification`); cite exit codes.
+- [ ] Run configured secrets checking; resolve or report findings.
 - [ ] Assess relevant documentation and specification-index updates.
-- [ ] Review the changed scope for correctness, regressions, policy compliance, and requested scope only.
-- [ ] **Self-learning / Failure reflection**: If $\ge 2$ tool, build, or test failures occurred before passing, record a new memory entry in `{sharedDir}/memory/` with root cause and trap avoided; `Learning: N/A` is strictly forbidden when session friction $\ge 2$.
+- [ ] Review changed scope for correctness, regressions, policy compliance, and requested scope only.
+- [ ] **Self-learning / Failure reflection:** If >= 2 tool, build, or test failures occurred before passing, record a new memory entry in `{sharedDir}/memory/` with root cause and trap avoided; `Learning: N/A` is strictly forbidden when session friction >= 2.
 - [ ] Report command evidence, outcomes, remaining risks, and blockers.
 
-Use configured aliases such as `build-backend`, `test-backend`, and `lint-backend`; do not hardcode consumer commands.
-
-**Done when:** every applicable checklist item has command evidence (exit code) or an explicit blocker.
+Use configured aliases (`build-backend`, `test-backend`, etc.); never hardcode consumer commands.
+- **Done when:** every applicable checklist item has command evidence (exit code) or an explicit blocker.
 
 ## Subagent contract
 
-- Refuse unapproved extra scope and name any ambiguity that changes the result.
+- Restate assigned goal, allowed paths, and named verification before mutation.
+- Make the smallest diff that satisfies assigned acceptance criteria; every line must trace to request.
+- Refuse unasked scope; escalate ambiguity changing behavior via caller instead of broadening scope.
+- Preserve repository style, existing formatting, and unrelated dirty or dead code.
+- Clean up only own orphans (imports/variables/functions made unused by this change).
 - Reuse configured project helpers and verification aliases before adding machinery.
-- Keep implementation inside the assigned path set.
-- Report build, test, format, and security evidence that applies to the changed layer.
-- Return blockers honestly; never convert a failed check into a pass.
+- Return exact touched paths, verification exit codes, and honest blockers; never claim a failed check passed.
 
 ## Opt-out
 
 | Phrase | Effect |
 |--------|--------|
-| `stop ws-senior-developer` | Disable for this session when autoloaded |
-| Unset `config.json` → `rules.seniorDeveloper` (empty string) | Disable path resolution / opt out of delivery-gate resolve |
+| `stop ws-senior-developer` / `stop ws-karpathy-guidelines` | Disable for this session when autoloaded |
+| Unset `config.json` → `rules.seniorDeveloper` (empty string) | Disable delivery-gate and surgical-diff resolution |

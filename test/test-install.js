@@ -208,7 +208,6 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     // Promoted top-level skills + dependency map
     'bin/skill-dependencies.json',
     '.agents/skills/ws-tdah/SKILL.md',
-    '.agents/skills/ws-karpathy-guidelines/SKILL.md',
     '.agents/skills/ws-spec-format/SKILL.md',
     '.agents/skills/ws-goal-loop/SKILL.md',
     '.agents/skills/ws-self-learning/SKILL.md',
@@ -223,7 +222,6 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   // Promoted skills must not remain nested under ws-shared/
   for (const slug of [
     'ws-tdah',
-    'ws-karpathy-guidelines',
     'ws-spec-format',
     'ws-goal-loop',
     'ws-self-learning',
@@ -1074,7 +1072,6 @@ child.on('close', async (code) => {
   {
     for (const slug of [
       'ws-tdah',
-      'ws-karpathy-guidelines',
       'ws-spec-format',
       'ws-goal-loop',
       'ws-self-learning',
@@ -2756,7 +2753,7 @@ child.on('close', async (code) => {
     // Run install of another skill
     const secondInstall = cp.spawnSync(
       process.execPath,
-      [cliPath, 'install', '--skills', 'ws-karpathy-guidelines', '--global', '--targets', 'canonical,claude', '--yes'],
+      [cliPath, 'install', '--skills', 'ws-senior-developer', '--global', '--targets', 'canonical,claude', '--yes'],
       {
         cwd: path.join(parentDir, 'test'),
         encoding: 'utf8',
@@ -2870,7 +2867,7 @@ child.on('close', async (code) => {
       }
     );
     if (updateRes.status !== 0) fail('Update --global failed');
-    if (!fs.existsSync(path.join(mockHome, '.claude', 'skills', 'ws-karpathy-guidelines', 'SKILL.md'))) {
+    if (!fs.existsSync(path.join(mockHome, '.claude', 'skills', 'ws-senior-developer', 'SKILL.md'))) {
       fail('Update did not synchronize secondary targets');
     }
     ok('update command synchronizes secondary targets recorded in manifest (AC7)');

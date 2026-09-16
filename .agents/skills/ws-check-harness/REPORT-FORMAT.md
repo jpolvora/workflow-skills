@@ -99,7 +99,7 @@ Otherwise — **correction plan** (mandatory before editing):
 | Domain | Skills | Overlap / Composition type | Role Clarity | Recommendation |
 |---------|--------|----------------------------|--------------|----------------|
 | Code review | `ws-code-review` vs `ws-fable-judge` | composed — `ws-code-review` delegates adversarial audit to `ws-fable-judge` | ✅ Sharp | Keep composed relationship; avoid inline duplicate audit logic |
-| Implementation | `ws-senior-developer` vs `ws-karpathy-guidelines` | complementary — macro delivery gate vs micro diff hygiene | ✅ Sharp | Distinct triggers; maintain scope vs diff boundary |
+| Implementation | `ws-senior-developer` vs `ws-fable-method` | complementary — engineering delivery gate vs investigate loop | ✅ Sharp | Distinct triggers; maintain scope vs investigation boundary |
 | PR workflow | `ws-fix-pr` vs `ws-goal-fix-pr` | composed — `ws-goal-fix-pr` wraps `ws-fix-pr` & `ws-goal-loop` | ✅ Sharp | Keep composition; `ws-goal-fix-pr` delegates single-pass fix to `ws-fix-pr` |
 | Security | `ws-ship-pr` vs `ws-secrets-leak-review` | composed — `ws-ship-pr` invokes `ws-secrets-leak-review` pre-commit | ✅ Sharp | Maintain single security scanner primitive |
 | Planning | `ws-plan-write` vs `ws-plan-interview` | complementary — create plan vs audit plan | ✅ Sharp | Sequential pipeline steps; distinct triggers |
@@ -110,9 +110,8 @@ Otherwise — **correction plan** (mandatory before editing):
 #### Loading tree (session start)
 ```
 AGENTS.md
-    ├── senior-developer (resolve via config / External Dependencies — optional)
+    ├── senior-developer (resolve via config / External Dependencies — delivery gate & surgical diffs)
     ├── ws-tdah/SKILL.md (auto)
-    ├── ws-karpathy-guidelines/SKILL.md (auto)
     ├── optional rules from config.json.rules.* (when set)
     └── MEMORY.md (session start, before first implementation)
 ```
