@@ -4,6 +4,7 @@ slug: pipeline-skill-guardrails
 title: "Pipeline skill guardrails: dedup shared contracts and add blast-radius guardrails"
 source: local
 specDate: 2026-09-15
+status: completed
 ---
 
 # Specification — Pipeline skill guardrails: dedup shared contracts and add blast-radius guardrails

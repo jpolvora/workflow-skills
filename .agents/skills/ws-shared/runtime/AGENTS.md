@@ -59,7 +59,7 @@
 
 | Skill | Path | Trigger |
 |-------|------|---------|
-| `ws-karpathy-guidelines` | [`../ws-karpathy-guidelines/SKILL.md`](../../ws-karpathy-guidelines/SKILL.md) | Every prompt — surgical scope |
+| `ws-senior-developer` | [`../ws-senior-developer/SKILL.md`](../../ws-senior-developer/SKILL.md) | Every prompt or `rules.seniorDeveloper` — delivery gate and surgical diffs |
 | `ws-changelog` | [`../ws-changelog/SKILL.md`](../../ws-changelog/SKILL.md) | Every task completion |
 | `ws-self-learning` | [`../ws-self-learning/SKILL.md`](../../ws-self-learning/SKILL.md) | Before plan/code/fix: consult `{sharedDir}/MEMORY.md` (keywords + path matching); on completion: write traps / failure reflection → compile; after each `ws-goal-fix-pr` / `ws-fix-pr` round: record reviewer/CI mistakes |
 
@@ -67,9 +67,9 @@
 
 ### Consumer root override (dual-hub)
 
-Default **shared hub only** (typical consumer install): `ws-tdah` and `ws-senior-developer` are **on-demand** — `ws-tdah` via explicit invoke; `ws-senior-developer` via `rules.seniorDeveloper` or explicit invoke. Neither is in the mandatory autoload table above.
+Default **shared hub only** (typical consumer install): `ws-tdah` and `ws-senior-developer` are **on-demand** — `ws-tdah` via explicit invoke; `ws-senior-developer` via `rules.seniorDeveloper` or explicit invoke.
 
-Some consumers set `defaults.autoload: true` and add a **root** `AGENTS.md` (installer never writes it; generate via [`ws-configure-project`](../../ws-configure-project/SKILL.md) `--section autoload`) that promotes skills listed in [`autoload.md`](autoload.md) (Always-applied table) and/or `ws-tdah` / `ws-senior-developer` to per-prompt autoload. That is an intentional root override, not a hub defect. Effective autoload is **false** when `config.json` is missing, the key is omitted, or the value is not explicit `true`. **`ws-karpathy-guidelines` remains in this hub's mandatory Skill loading table** and is not part of the Always-applied promotion set (see `autoload.md` complement note).
+Some consumers set `defaults.autoload: true` and add a **root** `AGENTS.md` (installer never writes it; generate via [`ws-configure-project`](../../ws-configure-project/SKILL.md) `--section autoload`) that promotes skills listed in [`autoload.md`](autoload.md) (Always-applied table) and/or `ws-tdah` / `ws-senior-developer` to per-prompt autoload. That is an intentional root override, not a hub defect. Effective autoload is **false** when `config.json` is missing, the key is omitted, or the value is not explicit `true`.
 
 **Specs progressive disclosure:** when the user mentions specs, plans, Spec-to-PR, `index.PRD`, or related keywords without naming a skill, load [`autoload.md`](autoload.md) § Specs vocabulary and § Specs skill router — then load **only** the matching skill.
 
@@ -84,11 +84,10 @@ See also: [`setup.md`](setup.md) § External dependencies.
 1. Explicit user instructions (current turn)
 2. Consumer root `AGENTS.md` when present (skill loading + precedence — overrides shared-hub opt-in defaults)
 3. Design / spec / architecture constraints
-4. `ws-karpathy-guidelines`
-5. `ws-senior-developer` when autoloaded (root hub, `autoload.md`, or `rules.seniorDeveloper` set; opt out via `stop ws-senior-developer` or unset path)
-6. `ws-fable-method` when autoloaded (root / `autoload.md`; defer Plan-First when orch owns session or senior plan already confirmed)
-7. `ws-tdah` when autoloaded (root hub, `autoload.md`, or `/ws-tdah`; opt out via `stop ws-tdah` / `stop verbosity` / `normal mode`)
-8. `ws-megabrain` when autoloaded (defer orch; `stop ws-megabrain`)
+4. `ws-senior-developer` (delivery gate and surgical diffs; opt out via `stop ws-senior-developer` / `stop ws-karpathy-guidelines` or unset path)
+5. `ws-fable-method` when autoloaded (root / `autoload.md`; defer Plan-First when orch owns session or senior plan already confirmed)
+6. `ws-tdah` when autoloaded (root hub, `autoload.md`, or `/ws-tdah`; opt out via `stop ws-tdah` / `stop verbosity` / `normal mode`)
+7. `ws-megabrain` when autoloaded (defer orch; `stop ws-megabrain`)
 
 ### Opt-out
 
@@ -97,8 +96,11 @@ See also: [`setup.md`](setup.md) § External dependencies.
 | `stop ws-tdah` / `stop verbosity` / `normal mode` | Disable ws-tdah |
 | `stop ws-megabrain` | Disable ws-megabrain |
 | `stop ws-gabarito` / `sem ws-gabarito` | Same disable (retired alias) |
-| `stop ws-senior-developer` | Disable ws-senior-developer when autoloaded |
+| `stop ws-senior-developer` / `stop ws-karpathy-guidelines` | Disable ws-senior-developer when autoloaded |
 | `/ws-tdah` · `/tdah` · `start ws-tdah` · `start ws-gabarito` | Activate (single default mode) |
+| `/wait-what` · `wait what` · `re-pitch` · `repitch` | Re-pitch last topic with missing premise (keeps ws-tdah active) |
+
+
 
 ---
 

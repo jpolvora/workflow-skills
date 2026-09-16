@@ -1,10 +1,10 @@
 # Practices & Tooling (`engineering`)
 
-> Provenance: `SKILL_AUTHORING.md`, `.agents/skills/ws-karpathy-guidelines/SKILL.md`, `.agents/skills/ws-fable-method/SKILL.md`, `.agents/skills/ws-senior-developer/SKILL.md`, `.agents/skills/ws-megabrain/SKILL.md`, `package.json` engines, living synthesis of specs 0008, 0011, 0025, 0042, 0055, 0058, 0063, 0072, 0074.
+> Provenance: `SKILL_AUTHORING.md`, `.agents/skills/ws-senior-developer/SKILL.md`, `.agents/skills/ws-fable-method/SKILL.md`, `.agents/skills/ws-megabrain/SKILL.md`, `package.json` engines, living synthesis of specs 0008, 0011, 0025, 0042, 0055, 0058, 0063, 0072, 0074, 0084.
 
 ## Feature
 
-Engineering practices keep agent diffs surgical and the toolchain uniform across the skill package. `ws-karpathy-guidelines` enforces minimum code and touched-line traceability. `ws-tdah` shapes replies action-first for operational clarity. `ws-fable-method` runs an evidence-based investigate loop before mutating work. `ws-senior-developer` adds scope control, anti-reinvention stops, ambiguity gates, and pre-ship proof. All packaged skills follow `SKILL_AUTHORING.md` progressive-disclosure rules: three tiers, tool-first bodies, and zero sediment. `ws-megabrain` handles spec-optional vibe coding by routing through capped specialists instead of duplicating companion prose. The runtime standard is Node 22 `.cjs` helpers with a native PowerShell config editor on Windows and per-skill symlinks into host skill directories on global installs.
+Engineering practices keep agent diffs surgical and the toolchain uniform across the skill package. `ws-senior-developer` enforces scope control, surgical diff hygiene, anti-reinvention stops, ambiguity gates, and pre-ship proof, and as of 0.4.30 it consolidates the retired `ws-karpathy-guidelines` micro-diff contract; the `karpathy-guidelines` invocation alias and the `rules.karpathyGuidelines` compatibility pointer still resolve to it. `ws-tdah` shapes replies action-first for operational clarity. `ws-fable-method` runs an evidence-based investigate loop before mutating work. All packaged skills follow `SKILL_AUTHORING.md` progressive-disclosure rules: three tiers, tool-first bodies, and zero sediment. `ws-megabrain` handles spec-optional vibe coding by routing through capped specialists instead of duplicating companion prose. The runtime standard is Node 22 `.cjs` helpers with a native PowerShell config editor on Windows and per-skill symlinks into host skill directories on global installs.
 
 ## How it works
 
@@ -12,10 +12,14 @@ Surgical scope means touching only what the request requires, matching existing 
 
 The PowerShell config editor (`Edit-WorkflowSkillsConfig.ps1`) preserves `_comment*` keys and unmodeled JSON fields, writes UTF-8 two-space JSON atomically after a `.bak` backup with a dirty guard, and exits cleanly on non-Windows or headless hosts by pointing operators at `ws-configure-project`. Megabrain defers whenever Spec-to-PR owns the session, reads at most two specialist references after mode selection or `user-gate`, and cancels cleanly when a gate dismisses.
 
+Guardrail boundaries are skill-owned rather than dispatch-only: pipeline step skills declare their writable paths and forbid self-commit or push, keep a one-line Contract pointer for shared gates, and remain enforceable in standalone or lite runs where `build_dispatch_context.cjs` does not inject context. That injector inlines enhancing `## Subagent contract` sections from `ws-senior-developer`, `ws-tdah`, and `ws-self-learning` and caps each section at 40 lines.
+
 Workflow state hygiene requires nested telemetry maps to serialize as YAML mappings rather than Python-repr strings, duplicate `completedSteps` entries to union-sort, step artifact `status` to equal the per-step result through one derivation path, and file-list flags to accumulate only `created`, `modified`, and `deleted`. Git cleanup detaches worktrees and deletes only `uswf-*` tags, never protected branches; failures must not throw unhandled or corrupt telemetry.
 
 ## Backend
 
 Authoring guidance lives in `SKILL_AUTHORING.md`. Megabrain exposes Router and Domain tables in `SKILL.md` with `references/*.md` specialists and `REVERSE.md` for archaeology-only flows. Shared runtime scripts under `ws-shared/runtime/scripts/` include unified workflow git cleanup and autoload configuration helpers. `package.json` declares `engines.node >= 22` with zero npm runtime dependencies for skill scripts.
+
+`ws-senior-developer` carries Core Directives 1–6, the §5 Code review proof checklist, the `## Subagent contract` that dispatch injects, and the `stop ws-senior-developer` / `stop ws-karpathy-guidelines` opt-outs. The 0.4.30 consolidation removed the standalone skill folder, its evals, and its dependency-graph entry while `CATALOG.md`, `FEATURES.md`, autoload rows, and the evals generator now point at the merged skill.
 
 The WinForms config editor supports PowerShell 5.1 and 7+, themed tabs, hybrid layout with search, and description precedence `_comment_<prop>` over JSON schema over fallback strings. Recent fixes consolidated state serialization, artifact stamping, file-list accumulation, doctor ESM and `--json` contracts, and provider canonical tables with explicit launcher prefixes in skill bodies.

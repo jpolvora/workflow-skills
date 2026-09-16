@@ -197,7 +197,7 @@ Persists `defaults.autoload` (boolean; omitted/missing/`false` → effective fal
 | Key | Type | Default | Meaning |
 |-----|------|---------|---------|
 | `defaults.autoload` | boolean | `false` | When `true`, consumer intends root `AGENTS.md` to autoload Always-applied skills from `{sharedDir}/autoload.md` |
-| `defaults.autoloadTaskLifecycle` | boolean | `false` | When `true`, `--write-autoload` includes `ws-task-lifecycle` in the Always-applied table. When `false` or omitted, `--write-autoload` does not add or retain that row. Does not set `defaults.autoload`. |
+| `defaults.autoloadTaskLifecycle` | boolean | `true` | When `false`, `--write-autoload` drops `ws-task-lifecycle` from the Always-applied table (opt-out). Omitted or `true` → required autoload. Does not set `defaults.autoload`. |
 
 | Signal | Suggest |
 |--------|---------|
@@ -206,10 +206,10 @@ Persists `defaults.autoload` (boolean; omitted/missing/`false` → effective fal
 | Skill only under global skills root | Path `{globalSkillsRoot}/ws-<id>/SKILL.md` |
 | Skill missing both places | Keep `{skillsRoot}/…` token; harness `--check` warns |
 | Enable consumer root autoload? | **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip |
-| Autoload `ws-task-lifecycle` like other Always-applied skills? | **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip |
+| Autoload `ws-task-lifecycle` like other Always-applied skills? | **Yes (`true`, Recommended)** / No (`false`) / Keep current / Skip |
 | User chooses Yes (`true`) for root autoload | Root write **first** (`--write-autoload` + `--write-root-agents`); persist `defaults.autoload: true` only after root succeeds. Non-generated root → user-gate overwrite/`--force` (Recommended: No → leave flag false) |
-| User chooses Yes (`true`) for `ws-task-lifecycle` | `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload-task-lifecycle true` then `--write-autoload`. Does **not** set `defaults.autoload` |
-| User chooses No / Skip / Keep false for `ws-task-lifecycle` | `--set-autoload-task-lifecycle false` then `--write-autoload` so the Always-applied row is stripped. Does **not** set `defaults.autoload` |
+| User chooses Yes (`true`) / Keep true / Skip for `ws-task-lifecycle` | `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload-task-lifecycle true` then `--write-autoload`. Does **not** set `defaults.autoload` |
+| User chooses No (`false`) for `ws-task-lifecycle` | `--set-autoload-task-lifecycle false` then `--write-autoload` so the Always-applied row is stripped (opt-out). Does **not** set `defaults.autoload` |
 | User chooses No / Skip / Keep false | Write or leave `defaults.autoload: false`; root `AGENTS.md` optional (do not require) |
 
 **Enablement gate options:** No (`false`, **Recommended**) / Yes (`true`) / Keep current / Skip.

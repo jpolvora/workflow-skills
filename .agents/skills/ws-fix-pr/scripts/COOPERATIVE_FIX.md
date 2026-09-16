@@ -11,7 +11,7 @@ These runtimes are **independent** (no code import or coupling). This contract a
 
 ---
 
-## Principles (Karpathy + AGENTS.md)
+## Principles (surgical diffs + AGENTS.md)
 
 1. **Think before coding** — understand root cause before editing.
 2. **Simplicity first** — minimal code that resolves the issue; no adjacent refactoring.

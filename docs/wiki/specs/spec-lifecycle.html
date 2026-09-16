@@ -206,7 +206,7 @@
       </tr>
       <tr>
         <th>Provenance</th>
-        <td>Specs 0009, 0040, 0045, 0051, 0053, 0065</td>
+        <td>Specs 0009, 0040, 0045, 0051, 0053, 0065, 0084</td>
       </tr>
       <tr>
         <th>Framework</th>
@@ -219,7 +219,7 @@
     </tbody>
   </table>
 </aside>
-<p>&gt; Provenance: <code>.agents/skills/ws-spec-write/SKILL.md</code>, <code>.agents/skills/ws-spec-format/scripts/validate_spec.cjs</code>, <code>.agents/skills/ws-spec-organizer/scripts/resolve_spec_path.cjs</code>, <code>.agents/skills/ws-spec-index/SKILL.md</code>, living synthesis of specs 0009, 0040, 0045, 0051, 0053, 0065.</p>
+<p>&gt; Provenance: <code>.agents/skills/ws-spec-write/SKILL.md</code>, <code>.agents/skills/ws-spec-format/scripts/validate_spec.cjs</code>, <code>.agents/skills/ws-spec-organizer/scripts/resolve_spec_path.cjs</code>, <code>.agents/skills/ws-spec-index/SKILL.md</code>, living synthesis of specs 0009, 0040, 0045, 0051, 0053, 0065, 0084.</p>
 <div class="wiki-toc-box" id="toc" role="navigation" aria-label="Table of contents">
   <div class="wiki-toc-header">
     <span class="wiki-toc-title">Contents</span>
@@ -234,7 +234,7 @@
 <h2 id="feature">Feature <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/specs/spec-lifecycle.md" target="_blank" rel="noopener" title="Edit section: Feature">[edit]</a></span></h2>
 <p>Specifications are point-in-time delivery contracts. Operators author them in free text or reformulate tracker issues into testable acceptance criteria, then route them through planning, indexing, listing, explanation, drift repair, and archival. The <code>ws-spec-manager</code> router (<code>/spec</code>) dispatches to specialists without reimplementing their logic: <code>ws-spec-write</code> authors specs, <code>ws-spec-format</code> validates schema, <code>ws-spec-organizer</code> resolves paths and prefix ordering, <code>ws-spec-index</code> maintains <code>index.PRD</code>, <code>ws-spec-list</code> inventories both boards, <code>ws-spec-explain</code> provides read-only panorama, <code>ws-spec-update</code> fixes surgical drift, and <code>ws-spec-archive</code> harvests history and cleans shipped plan directories. Creation flows run <code>ws-spec-write</code> → <code>ws-spec-organizer</code> → <code>ws-spec-format</code> → <code>ws-spec-index track</code>. The human Spec Board (<code>{specsDir}/*.spec.md</code>) stays strictly separate from the transient Plan Board (<code>{plansDir}</code> runs), with gated destructive actions on the list skill.</p>
 <h2 id="how-it-works">How it works <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/specs/spec-lifecycle.md" target="_blank" rel="noopener" title="Edit section: How it works">[edit]</a></span></h2>
-<p>Authoring mode requires sections for Out of Scope, Assumptions, Definition of Ready, Validation and Observation Notes, and Negative and Failing Test Scenarios. Every stated requirement maps to at least one acceptance criterion or an explicit out-of-scope row. <code>validate_spec.cjs --mode=authoring</code> must exit zero before registration proceeds. Gray areas with two or more product options get a <code>{slug}.context.md</code> companion that is never empty.</p>
+<p>Authoring mode requires sections for Out of Scope, Assumptions, Definition of Ready, Validation and Observation Notes, and Negative and Failing Test Scenarios. Every stated requirement maps to at least one acceptance criterion or an explicit out-of-scope row. <code>ws-spec-write</code> never blind-copies a tracker issue or pasted description: it reformulates the requirement into explicit, testable acceptance criteria, keeps public-issue context verbatim, and strips private consumer names, paths, hostnames, and customer data per the hub&#39;s Source anonymization rule. <code>validate_spec.cjs --mode=authoring</code> must exit zero before registration proceeds. Gray areas with two or more product options get a <code>{slug}.context.md</code> companion that is never empty.</p>
 <p>Plans are interrogated against DoR during the plan interview step. Implementation follows failing-tests-first discipline with positive and negative scenario verification. <code>ws-spec-update</code> (delta spec drift) and <code>ws-spec-index sync</code> (phase status) serve different purposes and must not be interchanged. Prefix ordering is opt-in via <code>plans.enforceSpecPrefixOrdering</code>; when true, specs-of-record use <code>NNNN-{slug}.spec.md</code> ordered by <code>specDate</code>, git first-add, or mtime, while frontmatter <code>slug</code> and <code>{plansDir}/{slug}/step-00</code> paths stay unprefixed. Reorder runs only through explicit <code>organize_specs.cjs --apply</code> with <code>git mv</code>; install never auto-renames existing files.</p>
 <p>The dispatcher never reimplements specialist scripts. Slice specs for task-lifecycle work never create <code>{plansDir}</code> trees.</p>
 <h2 id="backend">Backend <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/specs/spec-lifecycle.md" target="_blank" rel="noopener" title="Edit section: Backend">[edit]</a></span></h2>

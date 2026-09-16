@@ -6,6 +6,42 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-09-16] Root CATALOG.md edits hit the 24000 B context-budget cap and literal test assertions
+- **Layer**: `tests`
+- **Module**: `CATALOG.md (upstream task router and skill inventory)`
+- **Severity**: `Medium`
+- **PathPattern**: `CATALOG.md`
+- **Scenario / Context**: Adding ws-wiki Sync Baseline wording to root CATALOG.md pushed the normalized size to 24036 B and failed test/test-context-budget.js (limit 24000 B, only ~15 B headroom). A follow-up reword then broke test/test-wiki.js, which asserts the literal substring `first-time spec sweep` in the task-router row. Both failures surfaced only when running the suite after the edit.
+- **DO NOT**: Append or freely reword root CATALOG.md rows without measuring the normalized byte size and checking literal-string assertions used by test-wiki.js and test-context-budget.js.
+- **INSTEAD DO**: Measure headroom first (`node test/test-context-budget.js`), keep asserted phrases intact, and use minimal suffixes (for example `sweep/baseline`) or compress wording in the same row so the file stays at or below 24000 B.
+
+### [2026-09-16] Retiring a skill id must sweep every advertising surface
+- **Layer**: `other`
+- **Module**: `skill retirement (ws-karpathy-guidelines -> ws-senior-developer merge)`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/**`
+- **Scenario / Context**: After the 0.4.30 merge retired ws-karpathy-guidelines, a PR review thread still flagged the removed skill advertised as a consumable companion (ws-megabrain frontmatter + Step 5, fixed in 7b63fffe; docs/index.html stepper pills, fixed with 0.4.31). Proactive sweep for PR #337 found more prose hits in ws-fix-pr (README, COOPERATIVE_FIX heading) and ws-show-harness; AUTO_FIX.md is byte-locked by test/test-fix-pr-proactive-class-sweep.js and was recorded as a skip.
+- **DO NOT**: Retire or rename a skill id without sweeping site cards, stepper pills, role matrices, skill READMEs, scripts, harness docs, autoload rows, and FEATURES/config aliases.
+- **INSTEAD DO**: Run `rg -i "<retired-id>"` across .agents/skills, docs, root docs, and hubs; fix genuine references, keep intentional compatibility aliases, and record byte-locked or out-of-scope hits with `path + reason`.
+
+### [2026-09-16] Latest integrity regeneration must precede ship commit
+- **Layer**: `devops`
+- **Module**: `upstream release ship (ws-ship-pr, integrity gate)`
+- **Severity**: `High`
+- **PathPattern**: `bin/skill-integrity.json`
+- **Scenario / Context**: During the 0.4.31 ship, hashed hub content (Edit-WorkflowSkillsConfig.ps1) was edited after `generate-integrity`, so `npm run test` failed with "skill-integrity.json is stale vs current tree"; the suite passed only after regenerating integrity again. The fable-judge audit for the ship-scope tree returned VERIFIED WITH CAVEATS because the deterministic harness scripts and full suite ran, but interactive ws-check-harness Phases 0-5c were not executed end-to-end.
+- **DO NOT**: Regenerate integrity before the last hashed-file edit, or present the deterministic harness subset as a completed full harness audit.
+- **INSTEAD DO**: Make `npm run generate-integrity && npm run verify-integrity` the final step before commit, re-run `npm run test` after any post-regen skill/hub edit, and state the harness-audit scope honestly (deterministic phases plus suite evidence).
+
+### [2026-09-16] Autoload Always-applied heading must stay exact for configure script
+- **Layer**: `harness`
+- **Module**: `ws-shared / autoload routing`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/autoload.md;.agents/skills/ws-configure-project/scripts/configure_autoload.py`
+- **Scenario / Context**: Splitting Always-applied into required vs optional by renaming the heading to `## Always-applied skills (required)` broke `configure_autoload.py` table replacement (`## Always-applied skills\n` exact match), failing 11 autoload tests.
+- **DO NOT**: Rename the `## Always-applied skills` heading with a suffix or reword it when adding required/optional splits; do not put optional rows in the same table.
+- **INSTEAD DO**: Keep the heading byte-exact, add a bold required note below it, and put optional skills under a separate `## Optional skills` level-2 section so `parse_always_applied_rows` stops before it.
+
 ### [2026-09-15] Wrong-shape skills.json recovery must preserve inherits
 - **Layer**: `infrastructure`
 - **Module**: `installer (bin/install-rules.js)`

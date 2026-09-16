@@ -1,6 +1,6 @@
 # `/ws-wiki sweep` (Phase 1 — sweep/backfill)
 
-First-time (or re-runnable) sequential backfill from every top-level spec of record, in prefix order, overlaying living wiki pages so later specs win. Phase 1 current-code overlay bias is unchanged: when code contradicts an older spec AC, document current code. Pages use the conditional template (`## Feature` + `## How it works` required; `## Backend` / `## Frontend` / `## Third-party services` conditional).
+First-time (or re-runnable) sequential backfill from every top-level spec of record, in prefix order, overlaying living wiki pages so later specs win. When `index.wiki.md` carries a reachable `## Sync Baseline` commit, sweep runs bounded to that delta (step 1b) instead of every spec. Phase 1 current-code overlay bias is unchanged: when code contradicts an older spec AC, document current code. Pages use the conditional template (`## Feature` + `## How it works` required; `## Backend` / `## Frontend` / `## Third-party services` conditional).
 
 **Aliases:** `/ws-wiki first-time`, `/ws-wiki backfill`
 
@@ -13,6 +13,12 @@ First-time (or re-runnable) sequential backfill from every top-level spec of rec
    ```
 
    Top-level `{specsDir}/*.spec.md` only; `NNNN-*.spec.md` ascending, then unprefixed lexicographically. Excludes `{wikiDir}/**`, `*.context.md`, and nested `step-00-*.spec.md`. Ambiguous dual `{slug}.spec.md` + `NNNN-{slug}.spec.md` → omit slug, record error, continue.
+
+1b. **Baseline-bounded sweep (incremental):** When `index.wiki.md` carries a reachable `## Sync Baseline` `Commit:` (see `SKILL.md` § Incremental baseline), restrict the run to the delta instead of every top-level spec:
+    - `git diff --name-status <sha>..HEAD` lists changed paths; overlay only top-level `{specsDir}` `*.spec.md` added or modified in the range (in the step-1 order) plus new specs that land after it.
+    - Map changed product and doc paths to existing `{wikiDir}` pages through page provenance and path patterns; update only affected pages and new domains. Do not re-read unrelated code.
+    - Fall back to the full queue when the block is missing, the SHA is unreachable, or an explicit user request asks for a full sweep.
+    - Start gate states whether the queue is baseline-bounded (`<sha>..HEAD`) or full.
 
 2. **Start gate:** Present `user-gate` once before writing feature pages:
    1. **Start spec sweep (Recommended)** — shows queue length and first/last file
@@ -41,7 +47,7 @@ First-time (or re-runnable) sequential backfill from every top-level spec of rec
 
 6. **`--dry-run`:** Print the ordered queue (and checkpoint summary if present). Write neither wiki pages nor `sweep.state.json`.
 
-7. **Finish:** Run `validate_wiki.cjs --check`. Report processed, skipped (ambiguous/unreadable), pages written, and validate exit code. Empty `{specsDir}` → success with processed `0`.
+7. **Finish:** Run `validate_wiki.cjs --check`. Report processed, skipped (ambiguous/unreadable), pages written, queue mode (baseline-bounded `<sha>..HEAD` or full), and validate exit code. On a successful bounded or full sweep, advance the `## Sync Baseline` `Commit:` to the current full `HEAD` and `Synced:` to today's date (see `SKILL.md` § Incremental baseline); `--dry-run` never advances it. Empty `{specsDir}` → success with processed `0`.
 
 8. **Post-sweep Phase 2 offer:** After a successful sweep finish (including empty-queue success), present a `user-gate` before ending the turn:
    1. **Run Phase 2 wiki-vs-code audit (Recommended)**

@@ -30,7 +30,7 @@ assert(skill.includes('ws-megabrain loaded.'), 'loaded banner');
 assert(!/`AskQuestion`/.test(skill) && !/`ask_questions`/.test(skill), 'no vendor ask-tool ids');
 assert(skill.includes('../ws-fable-method/SKILL.md'), 'consumes fable');
 assert(skill.includes('../ws-senior-developer/SKILL.md'), 'consumes senior-developer');
-assert(skill.includes('../ws-karpathy-guidelines/SKILL.md'), 'consumes karpathy');
+assert(!/karpathy/i.test(skill), 'no karpathy references');
 assert(skill.includes('../ws-tdah/SKILL.md'), 'consumes tdah');
 assert(skill.includes('/ws-megabrain plan'), 'plan mode');
 assert(skill.includes('/ws-megabrain research'), 'research mode');
@@ -57,7 +57,6 @@ const companions = deps.dependencies['ws-megabrain'] || [];
 for (const id of [
   'ws-fable-method',
   'ws-senior-developer',
-  'ws-karpathy-guidelines',
   'ws-tdah',
   'ws-self-learning',
   'ws-changelog',
@@ -66,9 +65,9 @@ for (const id of [
 }
 
 const autoload = fs.readFileSync(autoloadPath, 'utf8');
-assert(/\| `ws-megabrain` \|/.test(autoload), 'autoload.md Always-applied row');
+assert(/## Optional skills[\s\S]*\| `ws-megabrain` \|/.test(autoload), 'autoload.md Optional row (on-demand, not Always-applied)');
 const configure = fs.readFileSync(configurePy, 'utf8');
-assert(configure.includes('"ws-megabrain"'), 'DEFAULT_ALWAYS_APPLIED includes ws-megabrain');
+assert(!/DEFAULT_ALWAYS_APPLIED[\s\S]*?"ws-megabrain"/.test(configure.split('TASK_LIFECYCLE_ID')[0]), 'DEFAULT_ALWAYS_APPLIED excludes ws-megabrain (optional)');
 
 if (failures) {
   console.error(`\n${failures} failure(s)`);

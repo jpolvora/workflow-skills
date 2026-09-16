@@ -145,8 +145,8 @@
         },
         "autoloadTaskLifecycle": {
           "type": "boolean",
-          "default": false,
-          "description": "When true, ws-configure-project --write-autoload includes ws-task-lifecycle in the Always-applied table. Omitted or false → on-demand only. Does not set defaults.autoload."
+          "default": true,
+          "description": "When false, ws-configure-project --write-autoload drops ws-task-lifecycle from the Always-applied table (opt-out). Omitted or true → required autoload. Does not set defaults.autoload."
         },
         "enableDag": {
           "type": "boolean",

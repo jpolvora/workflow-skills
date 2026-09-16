@@ -1,6 +1,6 @@
 ---
 name: ws-configure-project
-version: 0.4.29
+version: 0.4.31
 description: Project configuration wizard — detects project settings and interviews config.json sections (including preview.dryRunCommand and optional specMemo).
 invocation_names:
   - configure-project
@@ -34,7 +34,7 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 
 **`--section preview`:** optional `preview.dryRunCommand` for [`ws-preview`](../ws-preview/SKILL.md). Infer a local dry-run recipe from harness docs / package scripts / consumer skills (see [`INTERVIEW.md`](INTERVIEW.md) § Preview); user-gate; write the string or leave empty (Skip). Empty is valid — `/ws-preview` fails closed until set. Never invent or download a reviewer backend.
 
-**`--section autoload`:** mutates `config.json` for `defaults.autoload` (default / Recommended = `false`) and optional `defaults.autoloadTaskLifecycle` (default / Recommended = `false`). Also refreshes `{sharedDir}/autoload.md` Always-applied paths and, when the user enables autoload, generates/refreshes root `AGENTS.md` (see Steps § Autoload). Helper: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py`.
+**`--section autoload`:** mutates `config.json` for `defaults.autoload` (default / Recommended = `false`) and `defaults.autoloadTaskLifecycle` (default / Recommended = `true`; `false` opts out and drops the row). Also refreshes `{sharedDir}/autoload.md` Always-applied paths and, when the user enables autoload, generates/refreshes root `AGENTS.md` (see Steps § Autoload). Helper: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py`.
 
 **`--section specMemo`:** optional external vault bridge via [`ws-spec-memo`](../ws-spec-memo/SKILL.md). Runs preflight, interviews enable/mode/import/hook/bootstrap, writes `specMemo.*` through `configure_spec_memo.cjs`. Default / Recommended = `specMemo.enabled: false` (in-repo MEMORY). After enable: **`/ws-memo`** for runtime vault ops (not this wizard).
 
@@ -76,10 +76,10 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
       2. `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --write-autoload --write-root-agents [--force]` — refreshes Always-applied paths and writes thin repo-root `AGENTS.md` that (a) points at `{sharedDir}/AGENTS.md`, (b) instructs agents to load Always-applied from `autoload.md`, (c) notes root autoload overrides shared-hub on-demand defaults. Paths: project-local `.agents/skills/ws-<id>/SKILL.md` when present; else `{globalSkillsRoot}/ws-<id>/SKILL.md`. Never absolute author-machine paths. Default `--repo-root` is **cwd**. Helper refuses non-generated root without `--force` (writes `AGENTS.md.bak` when forced).
       3. Only after root write succeeds: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload true`. On any failure after a premature flag write, roll back with `--set-autoload false`.
    3. On **No (`false`)** / Keep current (when already false) / Skip: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload false` (or leave false); optionally `--write-autoload` to refresh paths; do **not** require creating root `AGENTS.md`.
-   4. user-gate: **Autoload `ws-task-lifecycle` like other Always-applied skills?** — **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip.
-      1. On **Yes (`true`)**: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload-task-lifecycle true` then `--write-autoload`. Do **not** set `defaults.autoload` from this answer.
-      2. On **No (`false`)** / Skip / Keep false: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload-task-lifecycle false` then **`--write-autoload`** (same as Yes) so a prior Always-applied row is stripped. Do **not** set `defaults.autoload`.
-   - Done when: `defaults.autoload` persisted; `defaults.autoloadTaskLifecycle` persisted or left false/omitted; Always-applied table refreshed via `--write-autoload` after both Yes and No answers for `ws-task-lifecycle`.
+   4. user-gate: **Autoload `ws-task-lifecycle` like other Always-applied skills?** — **Yes (`true`, Recommended)** / No (`false`) / Keep current / Skip.
+      1. On **Yes (`true`)** / Keep current (when already true/omitted) / Skip: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload-task-lifecycle true` then `--write-autoload`. Do **not** set `defaults.autoload` from this answer.
+      2. On **No (`false`)**: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload-task-lifecycle false` then **`--write-autoload`** so the Always-applied row is stripped (opt-out). Do **not** set `defaults.autoload`.
+   - Done when: `defaults.autoload` persisted; `defaults.autoloadTaskLifecycle` persisted or left true/omitted (required); Always-applied table refreshed via `--write-autoload` after both Yes and No answers for `ws-task-lifecycle`.
 7. **spec-memo vault & memory backends (optional)** — Run when full interview reaches optional extras, or immediately for `--section specMemo`. See [`INTERVIEW.md`](INTERVIEW.md) § specMemo and [`ws-spec-memo`](../ws-spec-memo/SKILL.md). Skip core project interview when `--section specMemo` only.
    1. Preflight: `node {skillsRoot}/ws-spec-memo/scripts/check_spec_memo.cjs --repo-root {repoRoot} --json`. When `cli.available` is false, user-gate: **Install spec-memo globally** (`npm install -g spec-memo`) / **Use npx for this session** (set `specMemo.cli` to `npx -y spec-memo`) / **Local markdown files only (Recommended when CLI missing)** / Cancel → STOP.
    2. user-gate: **Select memory backend(s)?**

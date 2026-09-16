@@ -74,7 +74,7 @@ Consumer projects keep hybrid rules unchanged: local `{skillsRoot}` overrides `{
 
 **Agent obligations:** before tool calls, resolve `{sharedDir}` from the project working tree first; expand `{skillsRoot}` independently when hybrid. Do not assume `{skillsRoot}` and `{sharedDir}` are always the same physical tree. When the host lists duplicate `ws-*` ids, follow § [Global vs local `ws-*` (this repo only — mandatory)](#global-vs-local-ws--this-repo-only--mandatory) before `Read`.
 
-**Global skill execution & local config gate:** When executing a skill installed globally (`$HOME/.agents/skills`), agents must check if the target skill is **config-dependent** (requires project settings, verification commands, SCM providers, or stack companions). If so, the agent MUST verify that the consuming local repository has `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, the agent MUST prompt the user via `user-gate` recommending running `ws-configure-project` to set up the project hub. Config-independent skills (e.g., `ws-configure-project`, `ws-secrets-leak-review`, `ws-karpathy-guidelines`, `ws-tdah`, `ws-write-a-skill`) do not require `config.json` and may run directly.
+**Global skill execution & local config gate:** When executing a skill installed globally (`$HOME/.agents/skills`), agents must check if the target skill is **config-dependent** (requires project settings, verification commands, SCM providers, or stack companions). If so, the agent MUST verify that the consuming local repository has `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, the agent MUST prompt the user via `user-gate` recommending running `ws-configure-project` to set up the project hub. Config-independent skills (e.g., `ws-configure-project`, `ws-secrets-leak-review`, `ws-tdah`, `ws-write-a-skill`) do not require `config.json` and may run directly.
 
 ---
 
@@ -175,7 +175,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 
 ## Upstream session contract (this repo only)
 
-**Not packaged.** Inline here so this repo does not `Read` live `ws-*` SKILL.md for session autoload (those files are the SoT being authored). Compact snapshot of packaged behavior **0.4.25** (`ws-tdah`, `ws-karpathy-guidelines`, `ws-senior-developer`, `ws-fable-method`, `ws-self-learning`, `ws-changelog`, `ws-spec-write`, `ws-spec-format`). When those contracts change and dogfood should follow, update **this section** in the same PR.
+**Not packaged.** Inline here so this repo does not `Read` live `ws-*` SKILL.md for session autoload (those files are the SoT being authored). Compact snapshot of packaged behavior **0.4.30** (`ws-tdah`, `ws-senior-developer`, `ws-fable-method`, `ws-self-learning`, `ws-changelog`, `ws-spec-write`, `ws-spec-format`). When those contracts change and dogfood should follow, update **this section** in the same PR.
 
 Do **not** recreate `.agents/dev-harness/` or any extra `SKILL.md` for this contract. A folder under `.agents/skills/` would be hashed and shipped. Summarize here; invoke live scripts by path; load a live body only when **authoring or testing that skill**. Orchestrators, providers, `ws-check-harness`: task router, one skill at a time.
 
@@ -183,30 +183,23 @@ Hub files (`config.json`, `tools.md`, `gates.md`) are not skills. Specs keywords
 
 `user-gate`: host structured choice (≥2 options, recommended first); markdown fallback; cancel → STOP, never infer yes.
 
-### 1. Surgical scope (`ws-karpathy-guidelines`)
+### 1. Delivery gate & surgical diffs (`ws-senior-developer`)
 
-Caution over speed; trivial tasks: judgment. Consult knowledge via `read-memory` (local MEMORY and/or spec-memo vault per routing) before inventing (§5).
+Caution over speed; trivial tasks: judgment. Consult knowledge via `read-memory` (local MEMORY and/or spec-memo vault per routing) before inventing (§4). Does not replace project policy or a named orch (`ws-spec-to-pr*` wins routing). This section owns **Code review proof**. Opt out: `stop ws-senior-developer` / `stop ws-karpathy-guidelines` (or unset `rules.seniorDeveloper` in a consumer).
 
-- **Think:** state assumptions; present multiple interpretations; say if a simpler path exists; stop and ask when unclear.
-- **Simplicity:** minimum code that solves the ask. No extras, single-use abstractions, unrequested configurability, or impossible-path error handling. If 200 lines could be 50, rewrite.
-- **Surgical:** touch only what the request requires. Do not improve adjacent code, comments, or formatting. Match existing style. Mention unrelated dead code; do not delete it. Remove orphans **your** change created. Every changed line traces to the request.
-- **Goal-driven:** verifiable success; multi-step `step → verify` until checked. Weak criteria ("make it work") need clarification.
+1. **Think and surface assumptions:** Don't guess or hide confusion. State assumptions and trade-offs explicitly. If multiple interpretations exist, present them via `user-gate`; never pick silently. Push back if overcomplicated or a simpler approach exists. Stop and ask when unclear.
+2. **Simplicity and anti-reinvention:** Minimum code to solve the ask. No extras, single-use abstractions, unrequested configurability, or impossible-case error handling. Inspect existing helpers, stdlib, and project patterns before writing custom logic. If 200 lines could be 50, rewrite.
+3. **Scope enclosure:** Never implement unasked features, refactors, or enhancements. Present opportunistic improvements via `user-gate` and wait for approval.
+4. **Surgical diffs:** Touch only what the request requires. Do not improve adjacent code, comments, or formatting. Don't refactor unbroken code. Match existing style. Mention unrelated dead code; do not delete it. Remove orphan imports, variables, and functions that your changes created. Every changed line traces to the request.
+5. **Goal-driven verification:** Verifiable success; multi-step `step → verify` until checked. Weak criteria ("make it work") need clarification.
 
-### 2. Delivery gate (`ws-senior-developer`)
-
-Does not replace project policy or a named orch (`ws-spec-to-pr*` wins routing). This section owns **Code review proof**. Opt out: `stop ws-senior-developer` (or unset `rules.seniorDeveloper` in a consumer).
-
-1. Unasked extras: present via `user-gate`; wait.
-2. Reuse helpers, stdlib, project patterns before custom logic.
-3. Ambiguity: options + trade-offs via `user-gate`; wait.
-
-Trivial / single-file → skip plan ceremony. Multi-file or multi-modification free-text → confirm a plan (`{plansDir}`). Implement the smallest change that satisfies that plan. Report a blocker; do not invent unconfigured commands.
+Trivial / single-file → skip plan ceremony; apply focused checks. Multi-file or multi-modification free-text → confirm a plan (`{plansDir}`). Implement the smallest change that satisfies that plan. Report a blocker; do not invent unconfigured commands.
 
 **Code review proof** (before branch / PR handoff): run non-empty `config.json.verification` aliases and cite exit codes; run configured secrets checking; assess docs / spec-index; review changed scope only; verify self-learning reflection (if $\ge 2$ tool/test/build failures occurred, `Learning: N/A` is forbidden and a memory trap must be recorded); report evidence, risks, blockers. Use configured aliases; do not hardcode consumer commands.
 
-### 3. Investigate loop (`ws-fable-method`)
+### 2. Investigate loop (`ws-fable-method`)
 
-Follow literally. Do not print step headers unless asked. Orch or confirmed senior plan → no competing Plan-First. Fable Verify does not replace §2 proof. Recurring domain → load live `ws-fable-domain` only when asked.
+Follow literally. Do not print step headers unless asked. Orch or confirmed senior plan → no competing Plan-First. Fable Verify does not replace §1 proof. Recurring domain → load live `ws-fable-domain` only when asked.
 
 **Triviality** (all): 1 file · <10 lines · no new behavior/architecture · solution known without search → change → one verify → 1–2 sentence report. Else full loop. Unlearned technique → lookup budget first. Inference only → say so.
 
@@ -226,7 +219,7 @@ ask → 0 Classify → 1 Done → 2 Evidence → 3 Decide → 4 Act → 5 Verify
 
 Subcommands: default = full loop; `plan` = 0–3 then STOP; `audit` = live `ws-fable-judge` only when asked; `report` = outcome-first with caveats.
 
-### 4. Reply shape (`ws-tdah`)
+### 3. Reply shape (`ws-tdah`)
 
 Action-first. Apply implicitly; do not lecture. Shape: `[next action]. [state]. [numbered steps]. [one next step].`
 
@@ -239,14 +232,20 @@ Action-first. Apply implicitly; do not lecture. Shape: `[next action]. [state]. 
 7. Error — cause → fix
 8. Lists — max 5 items; else top 5 + "N more on request"
 9. Compress — filler, hedging, preamble, recap, closers, tangents out; fragments OK
+10. Ground nouns — project terms (`STACK.md`, code symbols); no invented AI jargon or stacked acronyms
+11. Premise first — state underlying premise before a technical or architectural conclusion
+12. No caveman slop — concision cuts noise, not causality; never degrade into cryptic telegram fragments
+
+Re-pitch (`/wait-what` · `wait what` · `re-pitch`): when comprehension fails ("you lost me"), back up to supply the missing premise in ASD-STE100 Simplified Technical English with project nouns; shorter and clearer, not shorter and blunter.
 
 Judgment: outcome > polish; challenge weak plans; no silent guessing; verify risky facts with tools; "I don't know" over fake certainty.
 
 Style: no em dash or `--` in conversational replies; match user language; "X or Y?" → recommend with reason. Auto-Clarity (full sentences) for security, irreversible confirms, or ambiguity that risks a wrong action. Code / commits / PRs: normal prose. Skill bodies / gates / banners: en-us.
 
-Opt-out: `stop ws-tdah` / `stop verbosity` / `normal mode` (retired `stop ws-gabarito`). Re-enable: `/ws-tdah` · `/tdah` · `start ws-tdah`.
+Opt-out: `stop ws-tdah` / `stop verbosity` / `normal mode` (retired `stop ws-gabarito`). Re-enable: `/ws-tdah` · `/tdah` · `start ws-tdah` · `/wait-what`.
 
-### 5. Memory + changelog (`ws-self-learning`, `ws-changelog`)
+
+### 4. Memory + changelog (`ws-self-learning`, `ws-changelog`)
 
 MEMORY = anti-regression (input + output). Changelog = append-only history, not MEMORY.
 
@@ -285,7 +284,7 @@ Optional external vault ([spec-memo](https://github.com/jpolvora/spec-memo)) and
 
 When spec-memo integration is on: session consult → **`/ws-memo`** bootstrap when MCP is registered; new traps → `update-memory`; task log → `update-ws-changelog`. Dual mode persists to both local files and vault. `/ws-spec-memo bootstrap` is for MCP-down: CLI bootstrap in any vault mode; hybrid falls back to in-repo MEMORY on CLI failure; vault-only STOPs. `memo setup` (CLI) wires host MCP / deployment mode — it does **not** replace `/ws-spec-memo` for harness `config.json`.
 
-### 6. Write a spec (on demand)
+### 5. Write a spec (on demand)
 
 When the user asks to draft a spec or reformulate a tracker issue. Do not load live `ws-spec-write` / `ws-spec-format` unless authoring those skills.
 
@@ -305,7 +304,7 @@ Frontmatter: `id: {n}|null`, `slug`, `title`, `source: {local|github|azure-devop
 
 ## Skill loading (mandatory)
 
-**Session start:** this file is the hub. Apply § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only) before acting on the first prompt. Do **not** `Read` live `ws-tdah` / `ws-karpathy-guidelines` / `ws-senior-developer` / `ws-fable-method` / `ws-self-learning` / `ws-changelog` / `ws-spec-write` / `ws-spec-format` SKILL.md for session autoload. Do not `Read` a separate harness skill.
+**Session start:** this file is the hub. Apply § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only) before acting on the first prompt. Do **not** `Read` live `ws-tdah` / `ws-senior-developer` / `ws-fable-method` / `ws-self-learning` / `ws-changelog` / `ws-spec-write` / `ws-spec-format` SKILL.md for session autoload. Do not `Read` a separate harness skill.
 
 [`ws-shared/runtime/autoload.md`](.agents/skills/ws-shared/runtime/autoload.md) still owns **specs vocabulary**, **specs skill router**, and **hub contracts** (SCM parity, verify score). Load those sections when the user mentions specs / plans / Spec-to-PR / SCM intents / verify score without naming a skill. Do **not** follow `autoload.md` § Always-applied in this repo (those rows point at live `ws-*` bodies).
 
@@ -325,12 +324,12 @@ Only the sets above load unconditionally. Everything else is **pull, not push** 
 | Situation | Do this |
 |-----------|---------|
 | Session start | This file (including § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only)). Nothing else. Do not load `autoload.md` § Always-applied. |
-| Task with a clear intent | Match one row in § [Task router](#task-router) → load that single skill (or use § [6. Write a spec](#6-write-a-spec-on-demand)). Do not preload sibling or downstream skills. Duplicate `ws-*` paths: § [Global vs local `ws-*` (this repo only — mandatory)](#global-vs-local-ws--this-repo-only--mandatory). |
-| Spec / plan / `index.PRD` / Spec-to-PR wording without a named skill | Load [`autoload.md`](.agents/skills/ws-shared/runtime/autoload.md) § Specs vocabulary + § Specs skill router (or § Keyword → skill) → load **only** the matching skill, except standalone draft-spec uses § [6. Write a spec](#6-write-a-spec-on-demand). Never load the whole specs family. |
+| Task with a clear intent | Match one row in § [Task router](#task-router) → load that single skill (or use § [5. Write a spec](#5-write-a-spec-on-demand)). Do not preload sibling or downstream skills. Duplicate `ws-*` paths: § [Global vs local `ws-*` (this repo only — mandatory)](#global-vs-local-ws--this-repo-only--mandatory). |
+| Spec / plan / `index.PRD` / Spec-to-PR wording without a named skill | Load [`autoload.md`](.agents/skills/ws-shared/runtime/autoload.md) § Specs vocabulary + § Specs skill router (or § Keyword → skill) → load **only** the matching skill, except standalone draft-spec uses § [5. Write a spec](#5-write-a-spec-on-demand). Never load the whole specs family. |
 | SCM / verify-score wording without a named skill | Load [`autoload.md`](.agents/skills/ws-shared/runtime/autoload.md) § Hub contracts → then that hub file or one skill. |
 | Orchestrated run (`ws-spec-to-pr` / lite / `ws-spec-multi`) | The orchestrator owns loading. Load step skills via its dispatch table, one step at a time. |
 | Need config, tokens, or gate wording | Read `{sharedDir}/config.json` (shape: [`config.json.example`](.agents/skills/ws-shared/templates/config.json.example)) + [`tools.md`](.agents/skills/ws-shared/runtime/tools.md) / [`gates.md`](.agents/skills/ws-shared/runtime/gates.md) — not a skill body. |
-| spec-memo / vault / memo MCP / write-block hook | § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) (MCP + hooks). Setup → `ws-spec-memo`. Runtime → `{globalSkillsRoot}/ws-memo` (or project `{skillsRoot}/ws-memo`). Do not vendor `SURFACE.md` into this repo. |
+| spec-memo / vault / memo MCP / write-block hook | § [4. Memory + changelog](#4-memory--changelog-ws-self-learning-ws-changelog) (MCP + hooks). Setup → `ws-spec-memo`. Runtime → `{globalSkillsRoot}/ws-memo` (or project `{skillsRoot}/ws-memo`). Do not vendor `SURFACE.md` into this repo. |
 | Check-implementation / verify score / `scoreAndRefine` | Orchestrated: Step 5 via orch dispatch (`ws-plan-verify` only). Standalone: `ws-plan-verify`. Gate copy: `{sharedDir}/runtime/gates.md`. Advance only at `defaults.minVerifyScore` (default 9); do not load `ws-implement-tasks` until scoreAndRefine says to. |
 | SCM intents / GitHub vs Azure parity / `scm-provider-contract` | Read [`scm-provider-contract.md`](.agents/skills/ws-shared/runtime/scm-provider-contract.md). Load **one** provider `SKILL.md` when executing that SCM. Do not load both provider bodies to compare intents. |
 | A skill names a companion file (`PHASES.md`, `STEP-DISPATCH.md`, `FORMAT.md`, `scm-provider-contract.md`, …) | Read it **when that skill says to**, not upfront. |
@@ -349,11 +348,10 @@ Consumers may add their own root `AGENTS.md` with the same override pattern. Whe
 1. Explicit user instructions (current turn)
 2. This root `AGENTS.md` when present (skill loading + precedence — overrides ws-shared opt-in defaults; see § Dual-hub precedence)
 3. Design / spec / architecture constraints
-4. Surgical scope (§ [1. Surgical scope](#1-surgical-scope-ws-karpathy-guidelines); live `ws-karpathy-guidelines` only when authoring that skill)
-5. Delivery gate (§ [2. Delivery gate](#2-delivery-gate-ws-senior-developer); opt out `stop ws-senior-developer`)
-6. Investigate loop (§ [3. Investigate loop](#3-investigate-loop-ws-fable-method); defer Plan-First when orch owns session or senior plan already confirmed)
-7. Reply shape (§ [4. Reply shape](#4-reply-shape-ws-tdah); opt out `stop ws-tdah` / `stop verbosity` / `normal mode`)
-8. `ws-megabrain` when autoloaded (defer orch; opt out `stop ws-megabrain`)
+4. Delivery gate & surgical diffs (§ [1. Delivery gate & surgical diffs](#1-delivery-gate--surgical-diffs-ws-senior-developer); opt out `stop ws-senior-developer` / `stop ws-karpathy-guidelines`)
+5. Investigate loop (§ [2. Investigate loop](#2-investigate-loop-ws-fable-method); defer Plan-First when orch owns session or senior plan already confirmed)
+6. Reply shape (§ [3. Reply shape](#3-reply-shape-ws-tdah); opt out `stop ws-tdah` / `stop verbosity` / `normal mode`)
+7. `ws-megabrain` when autoloaded (defer orch; opt out `stop ws-megabrain`)
 
 ### Opt-out
 
@@ -362,7 +360,7 @@ Consumers may add their own root `AGENTS.md` with the same override pattern. Whe
 | `stop ws-tdah` / `stop verbosity` / `normal mode` | Disable ws-tdah |
 | `stop ws-megabrain` | Disable ws-megabrain when autoloaded |
 | `stop ws-gabarito` / `sem ws-gabarito` | Same disable (retired alias) |
-| `stop ws-senior-developer` | Disable ws-senior-developer when autoloaded |
+| `stop ws-senior-developer` / `stop ws-karpathy-guidelines` | Disable ws-senior-developer when autoloaded |
 | `/ws-tdah` · `/tdah` · `start ws-tdah` · `start ws-gabarito` | Activate (single default mode) |
 
 ---
@@ -406,8 +404,7 @@ Resolve in order (first match). Read paths from project `{sharedDir}/config.json
 
 | Dependency | Resolve (first match) |
 |------------|------------------------|
-| `senior-developer` | **This repo:** § [2. Delivery gate](#2-delivery-gate-ws-senior-developer). **Consumers:** `config.json` → `rules.seniorDeveloper` (default `.agents/skills/ws-senior-developer/SKILL.md`; set `""` to disable) → local skill (`senior-developer/SKILL.md`) → global/user skill |
-| `ws-karpathy-guidelines` | **This repo:** § [1. Surgical scope](#1-surgical-scope-ws-karpathy-guidelines). **Consumers:** `config.json` → `rules.karpathyGuidelines` → shipped `.agents/skills/ws-karpathy-guidelines/SKILL.md` → global skill |
+| `senior-developer` / `karpathy-guidelines` | **This repo:** § [1. Delivery gate & surgical diffs](#1-delivery-gate--surgical-diffs-ws-senior-developer). **Consumers:** `config.json` → `rules.seniorDeveloper` (default `.agents/skills/ws-senior-developer/SKILL.md`; set `""` to disable) → local skill (`senior-developer/SKILL.md`) → global/user skill |
 | Stack companion | `config.json` → `rules.stackFile` (default `.agents/skills/ws-shared/STACK.md`) — consumer-owned under `ws-shared/`; do not require repo-root `STACK.md` |
 | Changelog file | `config.json` → `rules.changelogFile` (default `.agents/skills/ws-shared/CHANGELOG.md`) — create under that path only; repo-root `CHANGELOG.md` only if explicitly configured |
 | Domain glossary | `config.json` → `domain.glossaryFile` (often `CONTEXT.md`) — consumer root, optional |
@@ -419,4 +416,4 @@ Packaged consumer mirror: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENT
 
 ### Code review proof
 
-**This repo:** § [2. Delivery gate](#2-delivery-gate-ws-senior-developer) (do not load live `ws-senior-developer/SKILL.md` for session proof). **Consumers:** use the resolved `rules.seniorDeveloper` checklist — do not paste it into hubs.
+**This repo:** § [1. Delivery gate & surgical diffs](#1-delivery-gate--surgical-diffs-ws-senior-developer) (do not load live `ws-senior-developer/SKILL.md` for session proof). **Consumers:** use the resolved `rules.seniorDeveloper` checklist — do not paste it into hubs.

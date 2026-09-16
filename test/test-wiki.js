@@ -779,6 +779,28 @@ Missing Business Rules & Logic section!
     }
   }
 
+  // Test 23: Incremental baseline (Sync Baseline commit watermark)
+  {
+    const skill = fs.readFileSync(path.join(REPO_ROOT, '.agents/skills/ws-wiki/SKILL.md'), 'utf8');
+    const sweep = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'PHASE-1-SWEEP.md'), 'utf8');
+    const sync = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'SYNC.md'), 'utf8');
+    const init = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'INIT.md'), 'utf8');
+    const update = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'UPDATE.md'), 'utf8');
+
+    assert(skill.includes('## Sync Baseline') && skill.includes('Incremental baseline'), 'baseline: SKILL documents the Sync Baseline watermark');
+    assert(skill.includes('- Commit:') && skill.includes('- Synced:'), 'baseline: SKILL pins Commit/Synced field names');
+    assert(skill.includes('git diff --name-status') && skill.includes('git log --oneline'), 'baseline: SKILL diffs from the recorded commit');
+    assert(skill.includes('unreachable'), 'baseline: SKILL falls back to full sweep when the SHA is unreachable');
+    assert(skill.includes('Advance the watermark') && skill.includes('never advances it'), 'baseline: SKILL defines advance and dry-run purity');
+    assert(skill.includes('sync [slug]') && skill.includes('update [target]'), 'baseline: targeted flows leave the watermark unchanged');
+
+    assert(sweep.includes('Baseline-bounded') && sweep.includes('git diff --name-status'), 'baseline: SWEEP documents the baseline-bounded queue');
+    assert(sweep.includes('advance the `## Sync Baseline`'), 'baseline: SWEEP advances the watermark on finish');
+    assert(sync.includes('Incremental mode (no slug, baseline present)') && sync.includes('git diff <sha>..HEAD'), 'baseline: SYNC uses the baseline range when no slug is given');
+    assert(init.includes('## Sync Baseline') && init.includes('- Synced:'), 'baseline: INIT seeds the watermark block');
+    assert(update.includes('Never advances the `## Sync Baseline` watermark'), 'baseline: UPDATE leaves the watermark unchanged');
+  }
+
 } finally {
   try {
     fs.rmSync(tmp, { recursive: true, force: true });

@@ -1,6 +1,6 @@
 ---
 name: ws-changelog
-version: 0.4.29
+version: 0.4.31
 description: Summarized task history writer — appends concise, structured task completion records to the project changelog file.
 invocation_names:
   - changelog
@@ -13,7 +13,7 @@ invocation_names:
 
 **Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
-**Mandatory completion gate** — run after [ws-self-learning](../ws-self-learning/SKILL.md) at the end of implementation tasks.
+**Optional completion gate** — run after [ws-self-learning](../ws-self-learning/SKILL.md) at the end of implementation tasks when history tracking is needed. On-demand via `ws-task-lifecycle` Phase 3 / orch close; not autoloaded every prompt.
 
 ## When to run
 

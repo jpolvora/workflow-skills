@@ -206,7 +206,7 @@
       </tr>
       <tr>
         <th>Provenance</th>
-        <td>Specs 0001, 0006, 0060</td>
+        <td>Specs 0001, 0006, 0060, 0084</td>
       </tr>
       <tr>
         <th>Framework</th>
@@ -219,7 +219,7 @@
     </tbody>
   </table>
 </aside>
-<p>&gt; Provenance: <code>.agents/skills/ws-shared/runtime/scm-provider-contract.md</code>, <code>.agents/skills/ws-spec-provider-github/SKILL.md</code>, <code>.agents/skills/ws-spec-provider-azure-devops/SKILL.md</code>, <code>.agents/skills/ws-spec-provider-local/SKILL.md</code>, <code>test/test-provider-parity.js</code>, living synthesis of specs 0001, 0006, 0060.</p>
+<p>&gt; Provenance: <code>.agents/skills/ws-shared/runtime/scm-provider-contract.md</code>, <code>.agents/skills/ws-spec-provider-github/SKILL.md</code>, <code>.agents/skills/ws-spec-provider-azure-devops/SKILL.md</code>, <code>.agents/skills/ws-spec-provider-local/SKILL.md</code>, <code>test/test-provider-parity.js</code>, living synthesis of specs 0001, 0006, 0060, 0084.</p>
 <div class="wiki-toc-box" id="toc" role="navigation" aria-label="Table of contents">
   <div class="wiki-toc-header">
     <span class="wiki-toc-title">Contents</span>
@@ -238,7 +238,7 @@
 <p>GitHub and Azure DevOps must implement the same required intents: <code>validate-auth</code>, <code>fetch-to-spec</code>, <code>create-pr</code>, <code>list-threads</code>, <code>sweep-prior-work</code>, <code>check-pr-status</code>, <code>resolve-thread</code>, <code>comment-issue</code>, and <code>merge-pr</code>. Only URL discovery may differ; one-sided behavior fails closed in <code>test/test-provider-parity.js</code>. Local provider writes stay <code>source: local</code> and must register <code>{specsDir}/{slug}.spec.md</code> before any <code>{plansDir}</code> copy is created. The working branch is never deleted after merge.</p>
 <p>Attachment ingestion tolerates per-file 404, 403, timeout, size caps, and disallowed hosts or MIME types without aborting the entire fetch, but authentication failures STOP the run. Files land in <code>{specStem}.assets/</code> with a <code>manifest.json</code>, patch a <code>## Visual References</code> section into the spec, and copy the sidecar to <code>{us-dir}/attachments/</code> at register time.</p>
 <p>Thread resolution is explicit: posting a fix reply never marks a thread resolved. The <code>resolveReviewThread</code> GraphQL mutation (GitHub) or equivalent ADO procedure must run after reply and commit verification using the <code>threadId</code> from structured thread listings. Dry-run callers skip remote mutation. Resolution comments must describe the correction, not hash-only or filler text.</p>
-<p>Local provider delegates PR intents to <code>providers.scm</code>; <code>scm: &quot;local&quot;</code> is rejected for PR, thread, and merge operations.</p>
+<p>Local provider delegates PR intents to <code>providers.scm</code>; <code>scm: &quot;local&quot;</code> is rejected for PR, thread, and merge operations. Step skills hold no provider resolution tables of their own: <code>ws-fix-pr</code>, <code>ws-goal-fix-pr</code>, and <code>ws-ship-pr</code> call intents by name and point at <code>config-resolution.md</code> plus this contract, and raw <code>gh</code> or <code>az</code> command literals are banned from skill bodies.</p>
 <h2 id="backend">Backend <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/providers/scm-providers.md" target="_blank" rel="noopener" title="Edit section: Backend">[edit]</a></span></h2>
 <p>The normative contract lives in <code>ws-shared/runtime/scm-provider-contract.md</code>. Converters are provider-local; shared ingestion helpers live under <code>ws-shared/scripts</code>. Registration uses <code>register_local_spec.cjs --source</code> after <code>ws-spec-write</code> produces the specs-of-record file. Ship and fix flows run <code>validate-auth</code> preflight before mutating remotes.</p>
 <p>CLI examples include GitHub GraphQL <code>resolveReviewThread(input:{threadId})</code> and ADO WIT comment APIs at documented preview versions. Parity verification is <code>node test/test-provider-parity.js</code>, also wired into <code>npm run test</code>.</p>

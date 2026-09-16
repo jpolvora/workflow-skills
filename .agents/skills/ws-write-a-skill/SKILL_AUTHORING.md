@@ -143,7 +143,7 @@ When skills are installed globally (`$HOME/.agents/skills` or `WORKFLOW_SKILLS_G
    - **Mandatory Entry Gate:** Must check if `$PWD/.agents/skills/ws-shared/config.json` exists in the consuming repository.
    - **Missing Config Protocol:** If missing or unconfigured, the skill MUST trigger a `user-gate` telling the user to run `ws-configure-project` (or offer an option/gate to invoke `ws-configure-project` immediately to seed and configure `.agents/skills/ws-shared/config.json`).
 2. **Config-Independent / Standalone Skills:**
-   - Pure utility or governance skills that operate without project hub config (e.g. `ws-secrets-leak-review`, `ws-karpathy-guidelines`, `ws-tdah`, `ws-write-a-skill`, `ws-spec-format`, `ws-check-harness`).
+   - Pure utility or governance skills that operate without project hub config (e.g. `ws-secrets-leak-review`, `ws-tdah`, `ws-write-a-skill`, `ws-spec-format`, `ws-check-harness`).
    - Can execute directly in any repository without prompting for `ws-configure-project`.
 
 ## 10. Pipeline artifacts and host hints

@@ -859,29 +859,6 @@ const EVALS = {
       },
     ],
   },
-  'ws-karpathy-guidelines': {
-    evals: [
-      {
-        id: 1,
-        prompt: 'Refactor entire auth module while fixing one bug.',
-        expected_output: 'Surgical fix only; pushback on scope creep.',
-        assertions: [
-          'Touches only code required for the bug',
-          'Consults MEMORY before inventing approach',
-          'States assumptions explicitly',
-        ],
-      },
-      {
-        id: 2,
-        prompt: 'Add error handling for impossible edge case we will never hit',
-        expected_output: 'Pushback on speculative error handling per simplicity first.',
-        assertions: [
-          'Does not add handling for impossible scenarios',
-          'Explains tradeoff when declining scope',
-        ],
-      },
-    ],
-  },
   'ws-self-learning': {
     evals: [
       {
@@ -1053,6 +1030,17 @@ const EVALS = {
           'Runs configured secrets checking and resolves or reports findings',
           'Assesses relevant documentation and specification-index updates',
           'Reports command evidence, outcomes, remaining risks, and explicit blockers',
+        ],
+      },
+      {
+        id: 5,
+        prompt: 'Refactor entire auth module while fixing one bug.',
+        expected_output:
+          'Surgical fix only; pushback on scope creep and simplicity first.',
+        assertions: [
+          'Touches only code required for the bug',
+          'Consults MEMORY before inventing approach',
+          'States assumptions and pushes back on overcomplication',
         ],
       },
     ],

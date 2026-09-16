@@ -1,7 +1,7 @@
 ---
 name: ws-task-lifecycle
 description: On-demand coordinator for prompt-driven product work — Intake, Implementation, Completion tracking without a Spec-to-PR plan tree.
-version: 0.4.29
+version: 0.4.31
 disable-model-invocation: true
 invocation_names:
   - task-lifecycle
@@ -16,7 +16,7 @@ invocation_names:
 
 Coordinator for **prompt-driven** implementation (direct user task). Not a second FSM. Do **not** invoke `ws-spec-to-pr` or `ws-spec-to-pr-lite` from this skill. Do **not** create `{plansDir}/{slug}/` or write `step-00-*.spec.md`.
 
-**Default invoke:** slash / task-router (on-demand). Always-applied membership is opt-in via `defaults.autoloadTaskLifecycle` and `ws-configure-project --section autoload`. Shipped `{sharedDir}/autoload.md` Always-applied table does not list this skill.
+**Default invoke:** slash / task-router (on-demand) plus Always-applied when root autoload is enabled. Required by default via `defaults.autoloadTaskLifecycle` (omitted/`true`); opt out with explicit `false` via `ws-configure-project --section autoload`. Shipped `{sharedDir}/autoload.md` Always-applied table lists this skill as required.
 
 **Specs family:** Role = prompt-task cowork. Drafts → [`ws-spec-write`](../ws-spec-write/SKILL.md). Index checkboxes → [`ws-spec-index`](../ws-spec-index/SKILL.md) conventions. Body drift → [`ws-spec-update`](../ws-spec-update/SKILL.md) (optional, not this bus). Router: [`../ws-shared/runtime/autoload.md`](../ws-shared/runtime/autoload.md).
 
@@ -37,11 +37,9 @@ Expand `{specsDir}` from `plans.specsDir` and `{sharedDir}` from config before R
 
 ## Phase 2 — Implementation
 
-1. Load [`ws-karpathy-guidelines`](../ws-karpathy-guidelines/SKILL.md) before the first product-file edit.
-   - Done when: surgical-scope rules are in session.
-2. Load [`ws-senior-developer`](../ws-senior-developer/SKILL.md) before claiming the task complete.
-   - Done when: delivery-gate / Code review proof rules are in session.
-3. If `verification.backendTest` is a non-empty string, run that alias. If it is empty, record a skip note and do not fail this phase for a missing test alias.
+1. Load [`ws-senior-developer`](../ws-senior-developer/SKILL.md) before the first product-file edit.
+   - Done when: delivery-gate, surgical diff hygiene, and Code review proof rules are in session.
+2. If `verification.backendTest` is a non-empty string, run that alias. If it is empty, record a skip note and do not fail this phase for a missing test alias.
    - Done when: the alias exited, or a skip note exists.
 
 ## Phase 3 — Completion

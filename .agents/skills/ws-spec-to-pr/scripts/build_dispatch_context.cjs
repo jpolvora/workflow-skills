@@ -15,7 +15,6 @@ const FIXED_LIMIT = 18000;
 const MEMORY_LIMIT = 4000;
 const DEFAULT_LIMIT = 32000;
 const ENHANCING_SKILLS = [
-  'ws-karpathy-guidelines',
   'ws-senior-developer',
   'ws-tdah',
   'ws-self-learning',

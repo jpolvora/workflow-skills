@@ -13,8 +13,8 @@ Resolve `config.json` `rules.*` before assuming a skill or rule file exists. Ful
 
 | Key | Role | Resolve (first match) |
 |-----|------|------------------------|
-| `rules.seniorDeveloper` | Optional engineering guardrails; **Code review proof** source | config path when set (on-demand default; root `AGENTS.md` may promote autoload — see [`AGENTS.md`](AGENTS.md) § Consumer root override) → local `senior-developer` skill → global/user skill |
-| `rules.karpathyGuidelines` | Surgical-change guidelines | config path → shipped `../ws-karpathy-guidelines/SKILL.md` → global skill |
+| `rules.seniorDeveloper` | Optional engineering guardrails; delivery gate, surgical diffs, and **Code review proof** source | config path when set (on-demand default; root `AGENTS.md` may promote autoload — see [`AGENTS.md`](AGENTS.md) § Consumer root override) → local `senior-developer` skill → global/user skill |
+| `rules.karpathyGuidelines` | Surgical-change guidelines (compatibility alias) | config path → shipped `../ws-senior-developer/SKILL.md` → global skill |
 | `rules.stackFile` | Human-readable stack companion | config path (default `.agents/skills/ws-shared/STACK.md`); bootstrap may create under `ws-shared/` if missing (see 1b below) — never require repo-root files |
 | Other `rules.*` | Optional consumer rules (e.g. `efMigrations`, `viewPatterns`) | Use path from config when set; do not invent filenames |
 | Source anonymization | Externally visible output (specs, PRs, comments, commits) | Hub [`AGENTS.md`](AGENTS.md) § Source anonymization — strip private consumer names, paths, and hosts; never copy them into tracked artifacts |

@@ -1,7 +1,7 @@
 ---
 name: ws-implement-tasks
 description: Task implementation & fix executor — builds planned features following task DAGs or applies surgical defect fixes from code review findings.
-version: 0.4.29
+version: 0.4.31
 disable-model-invocation: true
 invocation_names:
   - implement-tasks
@@ -68,7 +68,7 @@ Workflow (ws-spec-to-pr Step 4 build; Step 5 `scoreAndRefine` second pass; Step 
 2. **Consult memory** — Apply the injected MEMORY slice; when standalone, route through [`tools.md`](../ws-shared/runtime/tools.md) **`read-memory`** for the defect class/paths.
    - Done when: relevant entries noted or none found.
 
-3. **Correct** — Apply minimal, targeted fixes per [ws-karpathy-guidelines](../ws-karpathy-guidelines/SKILL.md).
+3. **Correct** — Apply minimal, targeted fixes per [ws-senior-developer](../ws-senior-developer/SKILL.md).
    - Done when: every enumerated finding has a corresponding edit.
 
 4. **Sweep siblings (repo-wide defect class)** — Search **beyond modified directories** (repo-wide grep of the same defect/pattern) for the same vulnerability/pattern; fix simultaneously or name exemptions (path + reason).

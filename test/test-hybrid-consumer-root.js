@@ -378,8 +378,8 @@ function testMeasureHarnessReadsGlobalWhenLocalHubExists() {
   }
   assert(report && Array.isArray(report.sources), 'measure_harness prints JSON sources');
   assert(
-    (report.sources || []).some((row) => row.skill === 'ws-karpathy-guidelines'),
-    'measure_harness loaded ws-karpathy-guidelines from global skills root',
+    (report.sources || []).some((row) => row.skill === 'ws-senior-developer'),
+    'measure_harness loaded ws-senior-developer from global skills root',
   );
 }
 

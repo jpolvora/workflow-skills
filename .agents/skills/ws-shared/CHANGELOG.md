@@ -1,5 +1,35 @@
 # Changelog
 
+### [2026-09-16 18:59] Agent: opencode-go/deepseek-v4.1-flash
+- **Prompt**: `ws-goal-fix-pr 337` round 1 (thread `PRRT_kwDOTFajc86jHrTf`: retired karpathy skill still advertised).
+- **Done**: Verified the anchor was fixed in `7b63fffe`; proactive class sweep replaced stale karpathy prose with `ws-senior-developer` in `ws-fix-pr` README + COOPERATIVE_FIX heading and `ws-show-harness`; `AUTO_FIX.md` skipped (byte-locked by `test-fix-pr-proactive-class-sweep.js`); regenerated integrity.
+- **Result**: `npm run test` exit 0; `verify-integrity` OK; thread resolved with commit evidence. Learning: trap `retired-skill-reference-sweep`.
+
+### [2026-09-16 18:50] Agent: opencode-go/deepseek-v4.1-flash
+- **Prompt**: `bump` then `ws-ship-pr` + `ws-goal-fix-pr` for the develop release.
+- **Done**: Bumped 0.4.30 -> 0.4.31 (package.json, 54 SKILL.md frontmatter, skill-dependencies, site footer); replaced retired `ws-karpathy-guidelines` pills with `ws-senior-developer` in site steppers and role matrix; GUI `autoloadTaskLifecycle` default true; regenerated integrity; ran prepare checks (`npm run test`, workflow simulation, secrets scan, duplicates/handoff/quoting, GUI parity).
+- **Result**: `npm run test` exit 0; `verify-integrity` OK; `check_workflows.py` 0 issues; secrets scan clean; fable verdict VERIFIED WITH CAVEATS (trap `fable-ship-integrity`). Learning: integrity regen must be the last step before commit.
+
+### [2026-09-16 18:40] Agent: opencode-go/deepseek-v4.1-flash
+- **Prompt**: `ws-spec-sync` — index sync routed via user-gate to `ws-spec-index sync`.
+- **Done**: Marked specs 0085 (karpathy merge, `cf6f585b` / PR #337), 0086 (ws-tdah wait-what, `cf6f585b` / PR #337), and 0087 (ws-wiki Sync Baseline, `71f90237`) done in `index.PRD` (Feature map checkboxes, Next-specs statuses, Done log) and set spec frontmatter `status: completed`.
+- **Result**: `validate_spec --mode=compat` PASS 3/3; idempotent (no duplicate rows). Learning: N/A (no new project knowledge).
+
+### [2026-09-16 18:39] Agent: opencode-go/muse-spark-1.3-contributor
+- **Prompt**: update ws-shared/autoload.md for required vs optional routing (senior/tdah/spec-memo required, changelog/fable/megabrain optional, task-lifecycle required).
+- **Done**: Split runtime + mirror autoload.md into required Always-applied (senior, self-learning, tdah, spec-memo, task-lifecycle) plus Optional on-demand (changelog, fable-method, megabrain); updated configure_autoload defaults, task-lifecycle default-required opt-out, schema/example/docs, skill bodies, tests, integrity.
+- **Result**: test-autoload-configure, test-external-companion-skills, test-ws-task-lifecycle, test-ws-megabrain, test-doc-sync, test-hybrid-consumer-root pass; verify-integrity OK. Learning: Autoload Always-applied heading must stay exact for configure script.
+
+### [2026-09-16 18:34] Agent: opencode-go/deepseek-v4.1-flash
+- **Prompt**: Update the living wiki from latest PRs/specs/plans with a second pass from code; record the current commit hash in `index.wiki.md` and teach `ws-wiki` to sweep incrementally from that baseline.
+- **Done**: Synced 8 wiki pages through specs 0077-0084 / PRs #332-#337 (0.4.26-0.4.30) and regenerated `docs/wiki` HTML; added `## Sync Baseline` (`7b63fffe`) plus `ws-wiki` § Incremental baseline across SKILL/PHASE-1-SWEEP/SYNC/INIT/UPDATE, CATALOG rows, and `test-wiki` assertions (spec 0087 AC1-AC10).
+- **Result**: `npm run test` exit 0; `tests:harness-efficiency` exit 0; `validate_wiki --check` PASS; `verify-integrity` OK. Learning: recorded trap `catalog-budget-literal-test-assertions` (CATALOG 24000 B cap + literal test substrings).
+
+### [2026-09-16 18:29] Agent: opencode-go/muse-spark-1.3-contributor
+- **Prompt**: create missing plans with ws-spec-write from latest PRs after 0084 (karpathy merge, wait-what, ws-wiki hash baseline).
+- **Done**: Authored and tracked `0085-merge-karpathy-into-senior-developer`, `0086-ws-tdah-wait-what-repitch`, `0087-ws-wiki-sync-baseline`; index.PRD rows 89-91.
+- **Result**: `validate_spec --mode=authoring` PASS for all three (9, 9, 10 ACs); `track_index` status tracked. Learning: N/A (standard implementation).
+
 ### [2026-09-15 20:30] Agent: opencode-go/deepseek-v4.1-flash
 - **Prompt**: Draft spec from plan + register via ws-spec-index + implement via ws-fable-method for `.cursor/plans/pipeline_skill_guardrails_8b7695b2.plan.md`.
 - **Done**: Authored/tracked spec `0084-pipeline-skill-guardrails`; added P0/P1 blast-radius guardrails to 10 pipeline skills (files_touched, no git, Shell-required verify, `force_interview`, probe-only testing, anonymization, portable `localReviewCommand`, lite `read-memory`); deduped handoff boilerplate, memory essays, ScoreAndRefine table, branded reviewer path, and three SCM tables; added `setup.md` anonymization row.

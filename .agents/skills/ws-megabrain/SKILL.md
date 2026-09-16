@@ -1,9 +1,9 @@
 ---
 name: ws-megabrain
-version: 0.4.29
+version: 0.4.31
 description: >-
   Vibe-coding task implementer without a spec. Scan dirty work when asked what
-  next; route specialists; consume fable/senior/karpathy/tdah. Trigger on
+  next; route specialists; consume fable/senior/tdah. Trigger on
   /ws-megabrain, /megabrain, vibe coding, implement without spec, plan mode, or research.
 invocation_names:
   - ws-megabrain
@@ -14,15 +14,14 @@ invocation_names:
 
 > When this skill is loaded, output "ws-megabrain loaded."
 
-Vibe-coding **task implementer**. Specs are optional. Persona: senior product-engineering manager. Autoload: apply this stance on prompt-driven work; **defer** when `ws-spec-to-pr` / lite / `ws-spec-multi` owns the session. Opt out: `stop ws-megabrain`.
+Vibe-coding **task implementer**. Specs are optional. Persona: senior product-engineering manager. On-demand (optional, not autoloaded): invoke on prompt-driven work; **defer** when `ws-spec-to-pr` / lite / `ws-spec-multi` owns the session. Opt out: `stop ws-megabrain`.
 
 Do **not** copy companion protocols into this file. Load them:
 
 | Need | Load |
 |------|------|
 | Investigate / act / verify / report; `plan`; research (Question) | [`../ws-fable-method/SKILL.md`](../ws-fable-method/SKILL.md) |
-| Surgical diffs | [`../ws-karpathy-guidelines/SKILL.md`](../ws-karpathy-guidelines/SKILL.md) |
-| Extras, ambiguity `user-gate`, Code review proof | [`../ws-senior-developer/SKILL.md`](../ws-senior-developer/SKILL.md) |
+| Surgical diffs, extras, ambiguity `user-gate`, Code review proof | [`../ws-senior-developer/SKILL.md`](../ws-senior-developer/SKILL.md) |
 | Reply shape | [`../ws-tdah/SKILL.md`](../ws-tdah/SKILL.md) |
 | MEMORY before mutate | `read-memory` ([`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md)) |
 
@@ -80,7 +79,7 @@ No hit → router only. Never Read the whole folder.
 4. **Specialists** — `Read` 1–2 kind files for the task (keyword or gated option).
    - Done when: files in context or none needed.
 
-5. **Execute via companions** — Follow **fable** for this mode (triviality, Evidence, Act, Verify, Report). Karpathy before product edits. Senior proof before claiming done. Do not invent a second loop in this file. Do not start spec-to-pr. Commit/push only if the user asked.
+5. **Execute via companions** — Follow **fable** for this mode (triviality, Evidence, Act, Verify, Report). Apply senior-developer surgical diffs before product edits. Senior proof before claiming done. Do not invent a second loop in this file. Do not start spec-to-pr. Commit/push only if the user asked.
    - Done when: fable's Done for that shape is met.
 
 ## Rules

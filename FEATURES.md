@@ -210,7 +210,7 @@ Diagnostics can be persisted under `plans.diagnosticsDir`. `workflow-skills tele
 |-------|--------|
 | `ws-activity-report` | Timesheet entries for a delivery day. Start is the earliest bootstrap file in the plan folder; end is the later of the last PR thread comment or the last delivery commit. Splits human versus agent duration |
 | `ws-pre-daily` | Standup briefing covering the last 36 hours: delivered, made, ongoing, next |
-| `ws-megabrain` | Vibe-coding implementer (no spec required): what-next menu, specialists, consumes fable/senior/karpathy/tdah |
+| `ws-megabrain` | Vibe-coding implementer (no spec required): what-next menu, specialists, consumes fable/senior/tdah |
 | `ws-spec-explain` | Read-only panorama of a spec or US/issue: status, what it does, what it delivered, how to check in the project/UI, and how to test |
 | `ws-spec-archive` | Harvests `{plansDir}` state, artifacts, git/changelog/MEMORY (and optional SCM) into `{specsDir}/index.PRD` Archive, then proposes a commit that removes eligible shipped plan folders |
 | `ws-cleanup` | Lists disposable workflow leftovers (telemetry, `.runtime`, audit logs, shipped plan dirs, untracked orphans under partially tracked shipped plans), confirms via user-gate, deletes only approved untracked paths, and suggests missing `.gitignore` patterns |
@@ -222,13 +222,12 @@ Diagnostics can be persisted under `plans.diagnosticsDir`. `workflow-skills tele
 
 | Skill | Effect |
 |-------|--------|
-| `ws-senior-developer` | Delivery gate: scope control, anti-reinvention, ambiguity stops via user gate, pre-ship proof |
-| `ws-karpathy-guidelines` | Micro diff hygiene — surgical changes, minimal diff footprint, surfaced assumptions |
+| `ws-senior-developer` | Delivery gate: scope control, surgical diff hygiene, anti-reinvention, ambiguity stops via user gate, pre-ship proof |
 | `ws-tdah` | Action-first reply shape and operational judgment |
 | `ws-goal-loop` | Generic convergence primitive: sentinel management, heartbeat and settle timers, re-check control. Backs `ws-goal-fix-pr` |
 | `ws-plan-update` | Post-ship QA delta manager: capture manual findings, plan and execute delta fixes, update the delivery summary |
 
-Autoload set (loaded every prompt when a project opts in via `{sharedDir}/autoload.md`): `ws-senior-developer`, `ws-self-learning`, `ws-changelog`, `ws-fable-method`, `ws-tdah`, `ws-megabrain`, plus `ws-karpathy-guidelines` from the shared-hub mandatory table. Precedence among them is documented and deterministic.
+Autoload set (loaded every prompt when a project opts in via `{sharedDir}/autoload.md`): `ws-senior-developer`, `ws-self-learning`, `ws-changelog`, `ws-fable-method`, `ws-tdah`, `ws-megabrain`. Precedence among them is documented and deterministic.
 
 **Source anonymization:** agents must not name private consumer projects in closing reports, commits, specs, or new tracker issues. Pasted consumer traces stay in-chat for diagnosis; published wording describes the failure class with generic examples.
 
@@ -248,7 +247,7 @@ Project settings live in consumer-owned `.agents/skills/ws-shared/config.json` (
 | `dagThresholds` | Complexity limits that decide sequential versus parallel DAG |
 | `defaults` | Execution mode, test globs, 32 KB context budget, `minVerifyScore` (1–10, default 9), optional parallel verify/review, `gateGranularity` (`step` by default or `phase`), adaptive convergence policy, delivery artifacts, `modelsPreset` / `modelPresets` bundles, optional `stepModels` map, `reviewJury` / `providerCompat` / `contextHygiene`, and legacy per-phase model identifiers |
 | `plans` / `reviews` / `preview` | Artifact roots, `plans.enforceSpecPrefixOrdering` (default false), diagnostics root, and `preview.dryRunCommand` (consumer local dry-run for `/ws-preview`; set via `--section preview`) |
-| `rules` | Guardrail paths: harness, senior developer, karpathy, stack file, changelog file |
+| `rules` | Guardrail paths: harness, senior developer (and karpathy alias), stack file, changelog file |
 | `invariants` | Project-level architectural assertions plus `skipQualityGates` |
 | `fable` | Master toggle plus `autoAudit`, `autoDetectDomain`, `auditVerdictsBlockShip` |
 | `specMemo` / memory flags | Dual routing: `enableMemoryFiles` (local `{sharedDir}/MEMORY.md`) and `enableSpecMemoIntegration` (external vault). `specMemo.*` holds MCP/CLI paths; `ws-spec-memo` is harness bridge only; day-to-day vault ops use `ws-memo` |
@@ -427,7 +426,6 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 |-------|-----|------|
 | [`ws-self-learning`](.agents/skills/ws-self-learning/SKILL.md) | W | Anti-regression memory engine |
 | [`ws-changelog`](.agents/skills/ws-changelog/SKILL.md) | W | Append-only task history writer |
-| [`ws-karpathy-guidelines`](.agents/skills/ws-karpathy-guidelines/SKILL.md) | W | Micro diff hygiene guidelines |
 | [`ws-tdah`](.agents/skills/ws-tdah/SKILL.md) | W | Action-first reply shape and operational judgment |
 
 ### Utility and reporting

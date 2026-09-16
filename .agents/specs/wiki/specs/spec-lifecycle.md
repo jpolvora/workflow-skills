@@ -1,6 +1,6 @@
 # Spec Lifecycle (`specs`)
 
-> Provenance: `.agents/skills/ws-spec-write/SKILL.md`, `.agents/skills/ws-spec-format/scripts/validate_spec.cjs`, `.agents/skills/ws-spec-organizer/scripts/resolve_spec_path.cjs`, `.agents/skills/ws-spec-index/SKILL.md`, living synthesis of specs 0009, 0040, 0045, 0051, 0053, 0065.
+> Provenance: `.agents/skills/ws-spec-write/SKILL.md`, `.agents/skills/ws-spec-format/scripts/validate_spec.cjs`, `.agents/skills/ws-spec-organizer/scripts/resolve_spec_path.cjs`, `.agents/skills/ws-spec-index/SKILL.md`, living synthesis of specs 0009, 0040, 0045, 0051, 0053, 0065, 0084.
 
 ## Feature
 
@@ -8,7 +8,7 @@ Specifications are point-in-time delivery contracts. Operators author them in fr
 
 ## How it works
 
-Authoring mode requires sections for Out of Scope, Assumptions, Definition of Ready, Validation and Observation Notes, and Negative and Failing Test Scenarios. Every stated requirement maps to at least one acceptance criterion or an explicit out-of-scope row. `validate_spec.cjs --mode=authoring` must exit zero before registration proceeds. Gray areas with two or more product options get a `{slug}.context.md` companion that is never empty.
+Authoring mode requires sections for Out of Scope, Assumptions, Definition of Ready, Validation and Observation Notes, and Negative and Failing Test Scenarios. Every stated requirement maps to at least one acceptance criterion or an explicit out-of-scope row. `ws-spec-write` never blind-copies a tracker issue or pasted description: it reformulates the requirement into explicit, testable acceptance criteria, keeps public-issue context verbatim, and strips private consumer names, paths, hostnames, and customer data per the hub's Source anonymization rule. `validate_spec.cjs --mode=authoring` must exit zero before registration proceeds. Gray areas with two or more product options get a `{slug}.context.md` companion that is never empty.
 
 Plans are interrogated against DoR during the plan interview step. Implementation follows failing-tests-first discipline with positive and negative scenario verification. `ws-spec-update` (delta spec drift) and `ws-spec-index sync` (phase status) serve different purposes and must not be interchanged. Prefix ordering is opt-in via `plans.enforceSpecPrefixOrdering`; when true, specs-of-record use `NNNN-{slug}.spec.md` ordered by `specDate`, git first-add, or mtime, while frontmatter `slug` and `{plansDir}/{slug}/step-00` paths stay unprefixed. Reorder runs only through explicit `organize_specs.cjs --apply` with `git mv`; install never auto-renames existing files.
 

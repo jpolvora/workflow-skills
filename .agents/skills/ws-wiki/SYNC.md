@@ -4,7 +4,8 @@ Synchronize shipped code changes to living domain wiki subpages (conditional tem
 
 1. **Discover Context & Evidence**:
    - If `slug` provided: load `{us-dir}/step-00-{slug}.spec.md` (or `{specsDir}/{slug}.spec.md`), committed diff `git diff {baseBranch}...HEAD`, and touched files list.
-   - **Vibe-Coding Mode (no spec)**: When no spec exists, analyze `git diff HEAD~1` (or specified range) and recent commit messages to reverse-engineer business rules, validation constraints, data model changes, and API contracts directly from code.
+   - **Incremental mode (no slug, baseline present)**: when `index.wiki.md` carries a reachable `## Sync Baseline` `Commit:`, analyze `git diff <sha>..HEAD` and `git log --oneline <sha>..HEAD` so every change since the last wiki reconciliation is in scope; advance the watermark only when that complete range was processed (see `SKILL.md` § Incremental baseline).
+   - **Vibe-Coding Mode (no spec, no reachable baseline)**: analyze `git diff HEAD~1` (or specified range) and recent commit messages to reverse-engineer business rules, validation constraints, data model changes, and API contracts directly from code.
 2. **Domain Mapping & Multi-Page Partitioning**:
    - Determine which bounded context domain(s) the feature belongs to (e.g., `identity`, `billing`).
    - If a feature spans multiple modules (e.g. `orders` touches `inventory` and `notifications`), map updates across multiple domain subpages and establish cross-boundary markdown links between them.

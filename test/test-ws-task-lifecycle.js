@@ -90,9 +90,9 @@ assert(
 );
 assert(
   skill.includes('defaults.autoloadTaskLifecycle') &&
-    /on-demand/i.test(skill) &&
-    /opt-in/i.test(skill),
-  'AC51: default invoke on-demand; Always-applied membership opt-in via defaults.autoloadTaskLifecycle',
+    /Always-applied/.test(skill) &&
+    /required by default|opt out/i.test(skill),
+  'AC51: default invoke Always-applied required via defaults.autoloadTaskLifecycle (false opts out)',
 );
 
 const tableMatch = autoload.match(
@@ -101,8 +101,8 @@ const tableMatch = autoload.match(
 const alwaysTable = tableMatch ? tableMatch[1] : '';
 assert(alwaysTable.length > 0, 'autoload.md Always-applied table parsed');
 assert(
-  !/`ws-task-lifecycle`/.test(alwaysTable),
-  'AC33: shipped Always-applied table omits ws-task-lifecycle',
+  /`ws-task-lifecycle`/.test(alwaysTable),
+  'AC33: shipped Always-applied table includes ws-task-lifecycle (required)',
 );
 
 const evalBlob = JSON.stringify(evals);

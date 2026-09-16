@@ -55,7 +55,7 @@ Shims under `ws-fix-pr/scripts/` re-exec the provider scripts; new work should c
 
 ## Checklist per fix
 
-- Surgical changes only (Karpathy guidelines)
+- Surgical changes only (`ws-senior-developer` surgical-diff hygiene)
 - Fix defect class, not just instance: repo-wide sibling sweep per [`scripts/COOPERATIVE_FIX.md`](scripts/COOPERATIVE_FIX.md)
 - Do not resolve a thread that named extra paths until those paths are fixed or exempted (`path + reason`)
 - Validate with `dotnet test` / `npm test` / `npm run build`

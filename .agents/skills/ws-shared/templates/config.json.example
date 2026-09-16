@@ -137,8 +137,8 @@
     "_comment_minVerifyScore": "Integer 1-10. Advance / scoreAndRefine / post-review requiresFix bar. Omitted or invalid → 9. Score below this always runs scoreAndRefine until met (max 3 rounds, then Pause).",
     "autoload": false,
     "_comment_autoload": "When true, consumer intends repo-root AGENTS.md to autoload Always-applied skills from {sharedDir}/autoload.md. Omitted/missing/false → effective false; harness fails closed only when true.",
-    "autoloadTaskLifecycle": false,
-    "_comment_autoloadTaskLifecycle": "When true, --write-autoload includes ws-task-lifecycle in the Always-applied table. Omitted/false → on-demand only. Does not set defaults.autoload.",
+    "autoloadTaskLifecycle": true,
+    "_comment_autoloadTaskLifecycle": "When false, --write-autoload drops ws-task-lifecycle from the Always-applied table (opt-out). Omitted/true → required autoload. Does not set defaults.autoload.",
     "enableDag": false,
     "_comment_enableDag": "When true, break execution plan into multiple parallel tasks. When false (default), execute tasks sequentially one by one in serial order.",
     "verboseMode": true,
@@ -282,10 +282,10 @@
   },
 
   "rules": {
-    "_comment": "Guardrails paths. Resolve per ws-shared/AGENTS.md External dependencies (first match). harness default is the project-local ws-shared/AGENTS.md; on global-hybrid installs resolve via the {globalSkillsRoot} fallback (config-resolution.md Harness entrypoint fallback); installer seeds a thin local pointer when missing. seniorDeveloper = Code review proof checklist source (default packaged ws-senior-developer); set \"\" to disable or point at another guardrail; karpathyGuidelines = surgical-change skill; stackFile = stack companion; changelogFile = append-only history (default under ws-shared/); other keys optional consumer rule paths — leave empty when unused.",
+    "_comment": "Guardrails paths. Resolve per ws-shared/AGENTS.md External dependencies (first match). harness default is the project-local ws-shared/AGENTS.md; on global-hybrid installs resolve via the {globalSkillsRoot} fallback (config-resolution.md Harness entrypoint fallback); installer seeds a thin local pointer when missing. seniorDeveloper = Delivery gate and surgical diffs (default packaged ws-senior-developer); set \"\" to disable or point at another guardrail; karpathyGuidelines = compatibility alias pointing to ws-senior-developer; stackFile = stack companion; changelogFile = append-only history (default under ws-shared/); other keys optional consumer rule paths — leave empty when unused.",
     "harness": ".agents/skills/ws-shared/AGENTS.md",
     "seniorDeveloper": ".agents/skills/ws-senior-developer/SKILL.md",
-    "karpathyGuidelines": ".agents/skills/ws-karpathy-guidelines/SKILL.md",
+    "karpathyGuidelines": ".agents/skills/ws-senior-developer/SKILL.md",
     "viewPatterns": "",
     "efMigrations": "",
     "stackFile": ".agents/skills/ws-shared/STACK.md",

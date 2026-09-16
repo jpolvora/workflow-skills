@@ -171,8 +171,8 @@ try {
   let text = fs.readFileSync(path.join(poisoned, '.agents/skills/ws-shared/autoload.md'), 'utf8');
   if (!text.includes('| `ws-memo` | `{skillsRoot}/ws-memo/SKILL.md` | Session start |')) {
     text = text.replace(
-      '| `ws-megabrain` | `{skillsRoot}/ws-megabrain/SKILL.md` |',
-      '| `ws-memo` | `{skillsRoot}/ws-memo/SKILL.md` | Session start |\n| `ws-megabrain` | `{skillsRoot}/ws-megabrain/SKILL.md` |',
+      '| `ws-tdah` | `{skillsRoot}/ws-tdah/SKILL.md` |',
+      '| `ws-memo` | `{skillsRoot}/ws-memo/SKILL.md` | Session start |\n| `ws-tdah` | `{skillsRoot}/ws-tdah/SKILL.md` |',
     );
   }
   fs.writeFileSync(path.join(poisoned, '.agents/skills/ws-shared/autoload.md'), text, 'utf8');

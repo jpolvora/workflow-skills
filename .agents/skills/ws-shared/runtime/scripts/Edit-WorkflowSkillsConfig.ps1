@@ -1110,7 +1110,7 @@ function Populate-Sections {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'minVerifyScore' -LabelText 'Minimum Step 5 Verification Score (1-10)' -Type 'int' -MinVal 1 -MaxVal 10 -DefaultVal 9
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'gateGranularity' -LabelText 'Gate Prompt Granularity' -Type 'enum' -Options @('step', 'phase') -DefaultVal 'step'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'autoload' -LabelText 'Autoload Skills in Repo Root AGENTS.md' -Type 'bool' -DefaultVal $false
-                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'autoloadTaskLifecycle' -LabelText 'Include ws-task-lifecycle in Autoload' -Type 'bool' -DefaultVal $false
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'autoloadTaskLifecycle' -LabelText 'Require ws-task-lifecycle in Autoload (default true)' -Type 'bool' -DefaultVal $true
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'skipTesting' -LabelText 'Skip Step 7 Testing' -Type 'bool' -DefaultVal $false
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'skipMutationTesting' -LabelText 'Skip Step 7 Mutation Testing' -Type 'bool' -DefaultVal $true
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'parallelVerifyReview' -LabelText 'Parallel Verify & Review (Steps 5 & 6)' -Type 'bool' -DefaultVal $false

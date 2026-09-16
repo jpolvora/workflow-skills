@@ -1,7 +1,7 @@
 ---
 name: ws-show-harness
 description: Session harness snapshot generator — reports active skills, rules, precedence hierarchy, and capabilities for the current session.
-version: 0.4.29
+version: 0.4.31
 disable-model-invocation: true
 invocation_names:
   - ws-show-harness
@@ -20,7 +20,7 @@ Read-only. Emit one report, then **stop**. For integrity/routing audits use [`ws
 
 1. **Collect** — From this turn's context only, list what is loaded:
    - Entry: root `AGENTS.md` when authoring upstream; after install load `skills/ws-shared/AGENTS.md` (optional project root `AGENTS.md` when the host provides one)
-   - Autoload / always-on skills and opt-outs (ws-tdah, karpathy, hooks, etc.)
+   - Autoload / always-on skills and opt-outs (ws-tdah, senior-developer, hooks, etc.)
    - Session-loaded skills (attached, routed, or already Read this turn)
    - Workspace rules + user rules that bind this agent
    - Config / external deps only if already known or a one-line path check (`skills/ws-shared/config.json`)

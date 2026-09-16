@@ -73,10 +73,10 @@ const gitignore = fs.readFileSync(path.join(repoRoot, '.gitignore'), 'utf8');
 assert.match(gitignore, /benchmarks\/runs\//);
 
 // V8/V6/V7/V9: static run
-const skillsMtimeBefore = fs.statSync(path.join(repoRoot, '.agents/skills/ws-karpathy-guidelines/SKILL.md')).mtimeMs;
+const skillsMtimeBefore = fs.statSync(path.join(repoRoot, '.agents/skills/ws-senior-developer/SKILL.md')).mtimeMs;
 const staticRun = run(cli, ['run', '--mode', 'static', '--fixture', 'fx-lite-readme']);
 assert.strictEqual(staticRun.status, 0, staticRun.stderr || staticRun.stdout);
-const skillsMtimeAfter = fs.statSync(path.join(repoRoot, '.agents/skills/ws-karpathy-guidelines/SKILL.md')).mtimeMs;
+const skillsMtimeAfter = fs.statSync(path.join(repoRoot, '.agents/skills/ws-senior-developer/SKILL.md')).mtimeMs;
 assert.strictEqual(skillsMtimeBefore, skillsMtimeAfter, 'static run does not touch SoT skills');
 
 const runsDir = path.join(repoRoot, 'benchmarks/runs');

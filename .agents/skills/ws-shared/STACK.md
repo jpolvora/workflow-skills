@@ -45,7 +45,7 @@ Related upstream authoring (not in verification keys): `npm run generate-integri
 |------|-----------|------|
 | **Harness routing** | `rules.harness` | `.agents/skills/ws-shared/AGENTS.md` |
 | **Engineering guardrails** | `rules.seniorDeveloper` | `.agents/skills/ws-senior-developer/SKILL.md` |
-| **Karpathy guidelines** | `rules.karpathyGuidelines` | `.agents/skills/ws-karpathy-guidelines/SKILL.md` |
+| **Karpathy guidelines** | `rules.karpathyGuidelines` | `.agents/skills/ws-senior-developer/SKILL.md` |
 | **Changelog** | `rules.changelogFile` | `.agents/skills/ws-shared/CHANGELOG.md` |
 | **Stack companion** | `rules.stackFile` | `.agents/skills/ws-shared/STACK.md` |
 
