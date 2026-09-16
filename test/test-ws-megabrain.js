@@ -30,6 +30,7 @@ assert(skill.includes('ws-megabrain loaded.'), 'loaded banner');
 assert(!/`AskQuestion`/.test(skill) && !/`ask_questions`/.test(skill), 'no vendor ask-tool ids');
 assert(skill.includes('../ws-fable-method/SKILL.md'), 'consumes fable');
 assert(skill.includes('../ws-senior-developer/SKILL.md'), 'consumes senior-developer');
+assert(!/karpathy/i.test(skill), 'no karpathy references');
 assert(skill.includes('../ws-tdah/SKILL.md'), 'consumes tdah');
 assert(skill.includes('/ws-megabrain plan'), 'plan mode');
 assert(skill.includes('/ws-megabrain research'), 'research mode');

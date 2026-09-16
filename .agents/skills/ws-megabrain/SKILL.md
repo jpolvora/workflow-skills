@@ -3,7 +3,7 @@ name: ws-megabrain
 version: 0.4.30
 description: >-
   Vibe-coding task implementer without a spec. Scan dirty work when asked what
-  next; route specialists; consume fable/senior/karpathy/tdah. Trigger on
+  next; route specialists; consume fable/senior/tdah. Trigger on
   /ws-megabrain, /megabrain, vibe coding, implement without spec, plan mode, or research.
 invocation_names:
   - ws-megabrain
@@ -79,7 +79,7 @@ No hit → router only. Never Read the whole folder.
 4. **Specialists** — `Read` 1–2 kind files for the task (keyword or gated option).
    - Done when: files in context or none needed.
 
-5. **Execute via companions** — Follow **fable** for this mode (triviality, Evidence, Act, Verify, Report). Karpathy before product edits. Senior proof before claiming done. Do not invent a second loop in this file. Do not start spec-to-pr. Commit/push only if the user asked.
+5. **Execute via companions** — Follow **fable** for this mode (triviality, Evidence, Act, Verify, Report). Apply senior-developer surgical diffs before product edits. Senior proof before claiming done. Do not invent a second loop in this file. Do not start spec-to-pr. Commit/push only if the user asked.
    - Done when: fable's Done for that shape is met.
 
 ## Rules

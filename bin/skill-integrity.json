@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "cb3230dd661620da343c58358eafd22c48faa59e4ea83137450e6f17c85bc386",
+  "fullPackageDigest": "108a4be210a800532dba60c7cb6389227a433441c7dad73d09235d480a6f52d3",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -232,9 +232,9 @@
         "references/REFACTOR.md": "7dfd0773d7695d4665485ed762b18520b9b8292ef4df71cf51897587045ba01f",
         "references/REVERSE.md": "8289ec36324e8ce47413bb185519252f88ed25ce0822db489a3eaf8a23cf5f33",
         "references/REVIEW.md": "a3f71f7906163ac411e3ccbe5e4ad2b59aa1671bfc5256de96f2cee2e3688573",
-        "SKILL.md": "fcabd987a6341a166ebb2a1b2dcc152dbeec8d0bd6d0e917131e989b18cbd393"
+        "SKILL.md": "b7ceda42e4e66a7103b1e22620232caac3e46d3c74dfb1fa7b81ae9acf2f8ef7"
       },
-      "skillDigest": "87b7d4e0c6508da72b7ec906158775bf859eaac3bf87a23aa124a831f0915a95"
+      "skillDigest": "1c4ed9b167be2f3fdc16b9955ea9281186561d0d5235df521bf14f45ae89d2b6"
     },
     "ws-monitor": {
       "files": {
