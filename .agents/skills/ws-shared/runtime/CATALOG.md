@@ -135,7 +135,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Auto-update feature specs after code changes | `ws-spec-update` |
 | Resolve spec path / organize board specs | `ws-spec-organizer` |
 | Manage / route all spec operations (unified front door) | `ws-spec-manager` |
-| Living project feature wiki & domain knowledge base (init, from-code genesis, sync, first-time spec sweep, Phase 2 wiki-vs-code verify and Phase 3 plan/apply) | `ws-wiki` |
+| Living project feature wiki & domain knowledge base (init, from-code genesis, sync, first-time spec sweep/baseline, Phase 2 wiki-vs-code verify and Phase 3 plan/apply) | `ws-wiki` |
 | spec-memo vault setup/bridge / import MEMORY / hybrid fallback | `ws-spec-memo` |
 | Runtime spec-memo vault ops (search, upsert, bootstrap, canvas, doctor) | `ws-memo` (external; skip if missing) |
 | Prompt/session tracking / vault activity (MCP prompt) | `ws-session-tracking` (external; skip if missing) |

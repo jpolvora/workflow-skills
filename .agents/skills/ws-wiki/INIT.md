@@ -9,6 +9,7 @@ Bootstrap the living wiki from existing project context:
    - `## System Vision & Overview`
    - `## Architectural Boundaries`
    - `## Domain Catalog` with empty domain sections or seed placeholders.
+   - `## Sync Baseline` seeded with `- Commit: \`<current full HEAD SHA>\`` and `- Synced: \`<YYYY-MM-DD>\`` (exact names per `SKILL.md` § Incremental baseline); skip the block only when the project is not a git repository.
 4. **Guard**: If `{wikiDir}/index.wiki.md` already exists, do not overwrite without explicit user confirmation. Defer feature subpages until features are delivered.
 5. **Post-init offer**: After a successful init write or confirmed refresh, present `user-gate` based on top-level spec count from `list_wiki_sweep_specs.cjs --json`:
 

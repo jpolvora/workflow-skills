@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-09-16 18:34] Agent: opencode-go/deepseek-v4.1-flash
+- **Prompt**: Update the living wiki from latest PRs/specs/plans with a second pass from code; record the current commit hash in `index.wiki.md` and teach `ws-wiki` to sweep incrementally from that baseline.
+- **Done**: Synced 8 wiki pages through specs 0077-0084 / PRs #332-#337 (0.4.26-0.4.30) and regenerated `docs/wiki` HTML; added `## Sync Baseline` (`7b63fffe`) plus `ws-wiki` § Incremental baseline across SKILL/PHASE-1-SWEEP/SYNC/INIT/UPDATE, CATALOG rows, and `test-wiki` assertions (spec 0087 AC1-AC10).
+- **Result**: `npm run test` exit 0; `tests:harness-efficiency` exit 0; `validate_wiki --check` PASS; `verify-integrity` OK. Learning: recorded trap `catalog-budget-literal-test-assertions` (CATALOG 24000 B cap + literal test substrings).
+
+### [2026-09-16 18:29] Agent: opencode-go/muse-spark-1.3-contributor
+- **Prompt**: create missing plans with ws-spec-write from latest PRs after 0084 (karpathy merge, wait-what, ws-wiki hash baseline).
+- **Done**: Authored and tracked `0085-merge-karpathy-into-senior-developer`, `0086-ws-tdah-wait-what-repitch`, `0087-ws-wiki-sync-baseline`; index.PRD rows 89-91.
+- **Result**: `validate_spec --mode=authoring` PASS for all three (9, 9, 10 ACs); `track_index` status tracked. Learning: N/A (standard implementation).
+
 ### [2026-09-15 20:30] Agent: opencode-go/deepseek-v4.1-flash
 - **Prompt**: Draft spec from plan + register via ws-spec-index + implement via ws-fable-method for `.cursor/plans/pipeline_skill_guardrails_8b7695b2.plan.md`.
 - **Done**: Authored/tracked spec `0084-pipeline-skill-guardrails`; added P0/P1 blast-radius guardrails to 10 pipeline skills (files_touched, no git, Shell-required verify, `force_interview`, probe-only testing, anonymization, portable `localReviewCommand`, lite `read-memory`); deduped handoff boilerplate, memory essays, ScoreAndRefine table, branded reviewer path, and three SCM tables; added `setup.md` anonymization row.

@@ -39,7 +39,26 @@ Existing documents serve distinct roles:
      - `## Backend` (conditional): persistence models, API contracts, backend workflows, side effects.
      - `## Frontend` (conditional): routes, forms, client behavior; omit for pure backend jobs.
      - `## Third-party services` (conditional): external integrations; always present for fiscal/integration domains.
-   - Legacy 3-section pages (`## Feature Overview`, `## Business Rules & Logic`, `## Technical Architecture`) still validate with a deprecation warning; migrate on next touch (`Business Rules & Logic` folds into `How it works` + `Backend`; `Technical Architecture` splits into `Backend` / `Frontend` / `Third-party services`).
+    - Legacy 3-section pages (`## Feature Overview`, `## Business Rules & Logic`, `## Technical Architecture`) still validate with a deprecation warning; migrate on next touch (`Business Rules & Logic` folds into `How it works` + `Backend`; `Technical Architecture` splits into `Backend` / `Frontend` / `Third-party services`).
+
+## Incremental baseline (sync watermark)
+
+`index.wiki.md` carries a `## Sync Baseline` block recording the commit at which the wiki was last reconciled:
+
+```markdown
+## Sync Baseline
+
+- Commit: `<40-char HEAD SHA>`
+- Synced: `<YYYY-MM-DD>`
+```
+
+Read the first `Commit:` value under that heading before scanning code. When the block is present and the SHA is reachable, bound the update to the delta instead of re-sweeping the whole wiki:
+
+1. **List the delta:** `git diff --name-status <sha>..HEAD` plus `git log --oneline <sha>..HEAD`.
+2. **Sweep bounded:** queue only specs added or changed in that range, plus code and docs paths that map to existing pages or new domains; read current code only where the diff touches it.
+3. **Fall back to full sweep/from-code** when the block is missing, the SHA is unreachable (history rewrite, shallow clone, fresh repository), or the delta is dominated by a repository-wide restructure.
+4. **Advance the watermark** only after a run processed the complete `<sha>..HEAD` change set (bounded sweep, full sweep, from-code merge, or an equivalent multi-page update): set `Commit` to the current full `HEAD` SHA and `Synced` to today's date. Targeted flows (`sync [slug]`, `update [target]`) leave the watermark unchanged; `--dry-run` never advances it.
+5. `init` seeds the block when absent. Keep the exact heading and field names so the next run can parse it; `validate` ignores the block.
 
 ## Verbosity (prose style)
 
@@ -57,7 +76,7 @@ Page-writing flows (`from-code`, `sweep`, `sync`, `update`) resolve `verbosity` 
 ```text
 /ws-wiki init                   Scan project documentation to bootstrap initial index.wiki.md
 /ws-wiki from-code              Genesis wiki from code/docs when no spec board (aliases: reverse, reconstruct)
-/ws-wiki sweep                  Phase 1 sweep/backfill from all top-level specs (aliases: first-time, backfill)
+/ws-wiki sweep                  Phase 1 sweep/backfill from all top-level specs, or bounded to the Sync Baseline delta (aliases: first-time, backfill)
 /ws-wiki verify                 Phase 2 wiki-vs-code statement verify (aliases: audit, check-code)
 /ws-wiki apply                  Phase 3 findings plan plus batch apply (aliases: reconcile, phase-3)
 /ws-wiki sync [slug]            Sync delivered feature or commit diff to living domain wiki pages

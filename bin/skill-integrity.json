@@ -5,14 +5,14 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "108a4be210a800532dba60c7cb6389227a433441c7dad73d09235d480a6f52d3",
+  "fullPackageDigest": "16850c8895b64c828cec3b1b25ed3f5217dcc54c5ba8e4b0985ad8e09bb390f1",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
       "runtime/ac-ledger.schema.json": "5184614c30fa70faf50b69eba272dbeee589497b7fb845f8201818e85c7c6e3b",
       "runtime/AGENTS.md": "228d85dc7e58f2965d2fbc42bf08bc909ad0183936d8be25b5a0ea037d4e0c00",
       "runtime/autoload.md": "734328ba5b7cc3ed15d2499e61ca8df32e4489c1077ef06ffefbf9fe6181ebf5",
-      "runtime/CATALOG.md": "592d0f0bfa1500e19246c1e06e6b83f57ee3865dc4871075ef1cee08dbcb2b20",
+      "runtime/CATALOG.md": "4e4847bfd82feb08384c265991320f629849420cd7c71764ba90d1e8db919298",
       "runtime/config-resolution.md": "124e312a494c3b8b6e834d2bff9fcebaed4820001a2e5c83f29080877d90cedf",
       "runtime/config.schema.json": "22bb1547d195303fffe4bfc55a6f24a98f3de9abcf5281f253cae41369ae6c8f",
       "runtime/CROSS-PLATFORM.md": "68cf59d446957bee662ee84327676b6d87ab184b55b87a86710c58ec84057916",
@@ -56,7 +56,7 @@
       "templates/MEMORY.md.template": "5b67274d91cd4507fecd8aa9e3c2ee10d2f7fb90f0d8eb35fb575089bc5664fb",
       "templates/STACK.md.example": "68cff04083447e0f585c48a4e8165cfd02f1d60504f0baced2148579104ad5a8"
     },
-    "skillDigest": "74a5264d6dab2055e286aecd8b022370c5306e204d5d01b7c11d15711edb34a3"
+    "skillDigest": "8ad87cb7521546edbed30151518a6c4bd1253232d14d16922a62b6eb1ee628e3"
   },
   "packageVersion": "0.4.30",
   "skills": {
@@ -572,8 +572,8 @@
     "ws-wiki": {
       "files": {
         "FROM-CODE.md": "44989af66697d1f091dd9997616887a89fa3a0a4358af725224a68ba137c4b51",
-        "INIT.md": "f61124dfa3c3fffca6f6ee1f30b54419f8b14eb59dc56e3e5a321889c2636d32",
-        "PHASE-1-SWEEP.md": "ccca19c1002de9d32eb2b763a2be9f1bf6b0a78b87d44d36f8be06130b362f45",
+        "INIT.md": "7f723abfce75df00a323bc4ea0a7175cb15269556a42e8162d9ea9c4376cc5e5",
+        "PHASE-1-SWEEP.md": "c9ab59ebc10790309832c3bc725ec871f9bdbd94c3d1b4a6d8ceb65c44201fae",
         "PHASE-2-VERIFY.md": "1540a45a187f9474d9990db82dd18bb202540e81c5494350003919d308bfb07c",
         "PHASE-3-APPLY.md": "fcc97f810bd96b42f71cf604cdc521670f8678c4f2caf6cb960647fa35048476",
         "references/VERBOSITY-EXAMPLE.md": "606e23b31cc8e010f7b3c697c74b5b8c606a729d6f6d98aa14a5e415745193aa",
@@ -582,11 +582,11 @@
         "scripts/list_wiki_sweep_specs.cjs": "05e3783a4e3def2303d1d7fbe20a116bb4fa76994931ee7ffb4be875872ca0f4",
         "scripts/sync_wiki_index.cjs": "23fc9c78c4e1ae08103e476860c4ccd3c504615ed5417461d1d2aac1b4732b22",
         "scripts/validate_wiki.cjs": "c9147872256bfe42114421d86f5acaa726267cccaf85100c357374e9b26257f9",
-        "SKILL.md": "455f7ee1e640f7db61ad635297e1164fc5da74f7059e2aac8d4b5fd9cac4d428",
-        "SYNC.md": "a5c2cbbdac21f73b1b90f0c8a0885358547124d46fc3843fc0ecdbe303c080aa",
-        "UPDATE.md": "109b28937601396f642215b3f3821eabc87e8571fb7376150036ebddf3087e37"
+        "SKILL.md": "61721c95fa21f1583c72c0a20591cbf005eaf4897768e1832f751f943d87ebbc",
+        "SYNC.md": "2e167c778752e8ee568ffe2c2298d7c40018dc7b4e6f734779d9c2f2569b7a96",
+        "UPDATE.md": "89149935dbac70aae6264085c7fe0aa22a007d162e0e8c758cd8bc2520af353b"
       },
-      "skillDigest": "74319e575b50f1fb2810529fdcb2c077d247e8c6e9a388d4466c4f3f3c32c199"
+      "skillDigest": "26b1ad5e61ccb29e637bf40d4856c8a9cac504f7a813d2af55795ab7935aee0c"
     },
     "ws-write-a-skill": {
       "files": {
