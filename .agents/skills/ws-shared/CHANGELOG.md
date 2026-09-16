@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-16 18:50] Agent: opencode-go/deepseek-v4.1-flash
+- **Prompt**: `bump` then `ws-ship-pr` + `ws-goal-fix-pr` for the develop release.
+- **Done**: Bumped 0.4.30 -> 0.4.31 (package.json, 54 SKILL.md frontmatter, skill-dependencies, site footer); replaced retired `ws-karpathy-guidelines` pills with `ws-senior-developer` in site steppers and role matrix; GUI `autoloadTaskLifecycle` default true; regenerated integrity; ran prepare checks (`npm run test`, workflow simulation, secrets scan, duplicates/handoff/quoting, GUI parity).
+- **Result**: `npm run test` exit 0; `verify-integrity` OK; `check_workflows.py` 0 issues; secrets scan clean; fable verdict VERIFIED WITH CAVEATS (trap `fable-ship-integrity`). Learning: integrity regen must be the last step before commit.
+
 ### [2026-09-16 18:40] Agent: opencode-go/deepseek-v4.1-flash
 - **Prompt**: `ws-spec-sync` — index sync routed via user-gate to `ws-spec-index sync`.
 - **Done**: Marked specs 0085 (karpathy merge, `cf6f585b` / PR #337), 0086 (ws-tdah wait-what, `cf6f585b` / PR #337), and 0087 (ws-wiki Sync Baseline, `71f90237`) done in `index.PRD` (Feature map checkboxes, Next-specs statuses, Done log) and set spec frontmatter `status: completed`.
