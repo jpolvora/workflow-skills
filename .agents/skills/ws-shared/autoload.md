@@ -8,17 +8,17 @@ Path tokens: expand via [`tools.md`](runtime/tools.md) before tool calls (`{skil
 
 ## Always-applied skills
 
+**Required when root autoload is enabled (`defaults.autoload: true`).** Optional skills live under `## Optional skills` below and are never autoloaded.
+
 When root `AGENTS.md` points here, load each listed `SKILL.md` every prompt (unless the user opted out for that skill). Paths are project-local defaults; hybrid installs may resolve the same id under `{globalSkillsRoot}` when missing locally.
 
 | Skill | Path | Trigger |
 |-------|------|---------|
 | `ws-senior-developer` | `{skillsRoot}/ws-senior-developer/SKILL.md` | Every prompt — delivery gate, surgical diffs / Code review proof |
 | `ws-self-learning` | `{skillsRoot}/ws-self-learning/SKILL.md` | Every mutating task — MEMORY consult + trap write; after each `ws-goal-fix-pr` / `ws-fix-pr` round, record reviewer/CI mistakes |
-| `ws-changelog` | `{skillsRoot}/ws-changelog/SKILL.md` | Every task completion — append-only history |
-| `ws-fable-method` | `{skillsRoot}/ws-fable-method/SKILL.md` | Every prompt — structured investigate/act/verify when non-trivial |
 | `ws-tdah` | `{skillsRoot}/ws-tdah/SKILL.md` | Every prompt — action-first shape + judgment |
-| `ws-megabrain` | `{skillsRoot}/ws-megabrain/SKILL.md` | Every prompt — vibe-coding implementer (no spec required); defer when orch owns the session |
 | `ws-spec-memo` | `{skillsRoot}/ws-spec-memo/SKILL.md` | Config preflight & bridge — wire config.json memory backends & hybrid fallback |
+| `ws-task-lifecycle` | `{skillsRoot}/ws-task-lifecycle/SKILL.md` | Every prompt-driven product task — intake, implement, complete (required) |
 
 Precedence when both root and `{sharedDir}/AGENTS.md` load: root / this file win for **membership of the Always-applied set above**. See [`AGENTS.md`](runtime/AGENTS.md) § Consumer root override.
 
@@ -27,12 +27,21 @@ Precedence when both root and `{sharedDir}/AGENTS.md` load: root / this file win
 1. Explicit user instructions (current turn)
 2. Design / spec / architecture constraints
 3. `ws-senior-developer` (delivery gate, surgical diffs + Code review proof; opt out `stop ws-senior-developer` / `stop ws-karpathy-guidelines`)
-4. `ws-fable-method` (investigate loop; **defer** when orch owns the session or senior already confirmed a plan — see fable Gates)
-5. `ws-tdah` (reply shape; does not override senior proof depth)
-6. `ws-megabrain` (vibe implementer; **consumes** fable — do not duplicate the loop; **defer** when orch owns the session; opt out `stop ws-megabrain`)
-7. `ws-self-learning` / `ws-changelog` (completion gates: Learning then Changelog)
+4. `ws-tdah` (reply shape; does not override senior proof depth)
+5. `ws-task-lifecycle` (prompt-driven intake / implement / complete; loads senior proof before the first product edit)
+6. `ws-self-learning` / `ws-spec-memo` (memory gates: consult traps first, then bridge routing; Learning after traps)
 
-**Fable vs senior (single rule):** Orch or confirmed senior plan → no fable Plan-First / competing plan ceremony. Fable Verify does not replace senior Code review proof.
+**Fable vs senior (single rule):** Orch or confirmed senior plan → no fable Plan-First / competing plan ceremony. Fable Verify does not replace senior Code review proof. `ws-fable-method` is optional on-demand (see below); `ws-spec-to-pr` loads it only when `fable.enabled` is true.
+
+## Optional skills (on-demand, not autoloaded)
+
+Load only when the task needs them. Do not load every prompt.
+
+| Skill | Path | Trigger |
+|-------|------|---------|
+| `ws-changelog` | `{skillsRoot}/ws-changelog/SKILL.md` | Task completion history — invoked by `ws-task-lifecycle` Phase 3 / orch close, not every prompt |
+| `ws-fable-method` | `{skillsRoot}/ws-fable-method/SKILL.md` | Non-trivial investigation — structured investigate / act / verify; orch loads on-demand when `fable.enabled`; defer when orch owns the session or senior already confirmed a plan |
+| `ws-megabrain` | `{skillsRoot}/ws-megabrain/SKILL.md` | Vibe-coding implementer (no spec required) — on-demand; defer when orch owns the session; opt out `stop ws-megabrain` |
 
 ## External companion skills (optional)
 

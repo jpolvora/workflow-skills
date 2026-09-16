@@ -65,9 +65,9 @@ for (const id of [
 }
 
 const autoload = fs.readFileSync(autoloadPath, 'utf8');
-assert(/\| `ws-megabrain` \|/.test(autoload), 'autoload.md Always-applied row');
+assert(/## Optional skills[\s\S]*\| `ws-megabrain` \|/.test(autoload), 'autoload.md Optional row (on-demand, not Always-applied)');
 const configure = fs.readFileSync(configurePy, 'utf8');
-assert(configure.includes('"ws-megabrain"'), 'DEFAULT_ALWAYS_APPLIED includes ws-megabrain');
+assert(!/DEFAULT_ALWAYS_APPLIED[\s\S]*?"ws-megabrain"/.test(configure.split('TASK_LIFECYCLE_ID')[0]), 'DEFAULT_ALWAYS_APPLIED excludes ws-megabrain (optional)');
 
 if (failures) {
   console.error(`\n${failures} failure(s)`);

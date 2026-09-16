@@ -44,12 +44,11 @@ def ensure_utf8_stdio() -> None:
 ensure_utf8_stdio()
 
 DEFAULT_ALWAYS_APPLIED: list[tuple[str, str]] = [
-    ("ws-senior-developer", "Every prompt — delivery gate / Code review proof"),
-    ("ws-self-learning", "Every mutating task — MEMORY consult + trap write"),
-    ("ws-changelog", "Every task completion — append-only history"),
-    ("ws-fable-method", "Every prompt — structured investigate/act/verify when non-trivial"),
+    ("ws-senior-developer", "Every prompt — delivery gate, surgical diffs / Code review proof"),
+    ("ws-self-learning", "Every mutating task — MEMORY consult + trap write; after each `ws-goal-fix-pr` / `ws-fix-pr` round, record reviewer/CI mistakes"),
     ("ws-tdah", "Every prompt — action-first shape + judgment"),
-    ("ws-megabrain", "Every prompt — vibe-coding implementer (no spec required); defer when orch owns the session"),
+    ("ws-spec-memo", "Config preflight & bridge — wire config.json memory backends & hybrid fallback"),
+    ("ws-task-lifecycle", "Every prompt-driven product task — intake, implement, complete (required)"),
 ]
 
 # Author-machine absolute paths (Windows drive, UNC, POSIX home/opt). Never emit these.
@@ -124,19 +123,21 @@ def resolve_effective_autoload(repo_root: Path) -> bool:
 
 
 def resolve_autoload_task_lifecycle(repo_root: Path) -> bool:
-    """True only when defaults.autoloadTaskLifecycle is JSON boolean true."""
+    """True unless defaults.autoloadTaskLifecycle is JSON boolean false (required by default)."""
     data = load_config_json(repo_root)
     if data is None:
-        return False
+        return True
     defaults = data.get("defaults")
     if not isinstance(defaults, dict):
-        return False
-    return defaults.get("autoloadTaskLifecycle") is True
+        return True
+    if "autoloadTaskLifecycle" not in defaults:
+        return True
+    return defaults.get("autoloadTaskLifecycle") is not False
 
 
 TASK_LIFECYCLE_ID = "ws-task-lifecycle"
 TASK_LIFECYCLE_TRIGGER = (
-    "Every prompt-driven product task — intake, implement, complete (opt-in)"
+    "Every prompt-driven product task — intake, implement, complete (required)"
 )
 
 

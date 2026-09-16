@@ -16,7 +16,7 @@ invocation_names:
 
 Coordinator for **prompt-driven** implementation (direct user task). Not a second FSM. Do **not** invoke `ws-spec-to-pr` or `ws-spec-to-pr-lite` from this skill. Do **not** create `{plansDir}/{slug}/` or write `step-00-*.spec.md`.
 
-**Default invoke:** slash / task-router (on-demand). Always-applied membership is opt-in via `defaults.autoloadTaskLifecycle` and `ws-configure-project --section autoload`. Shipped `{sharedDir}/autoload.md` Always-applied table does not list this skill.
+**Default invoke:** slash / task-router (on-demand) plus Always-applied when root autoload is enabled. Required by default via `defaults.autoloadTaskLifecycle` (omitted/`true`); opt out with explicit `false` via `ws-configure-project --section autoload`. Shipped `{sharedDir}/autoload.md` Always-applied table lists this skill as required.
 
 **Specs family:** Role = prompt-task cowork. Drafts → [`ws-spec-write`](../ws-spec-write/SKILL.md). Index checkboxes → [`ws-spec-index`](../ws-spec-index/SKILL.md) conventions. Body drift → [`ws-spec-update`](../ws-spec-update/SKILL.md) (optional, not this bus). Router: [`../ws-shared/runtime/autoload.md`](../ws-shared/runtime/autoload.md).
 

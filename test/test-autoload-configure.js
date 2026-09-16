@@ -78,10 +78,9 @@ function seedConsumerTree(root, { withLocalSkills = true, withAutoload = true } 
   const skills = [
     'ws-senior-developer',
     'ws-self-learning',
-    'ws-changelog',
-    'ws-fable-method',
     'ws-tdah',
-    'ws-megabrain',
+    'ws-spec-memo',
+    'ws-task-lifecycle',
   ];
   if (withLocalSkills) {
     for (const id of skills) {
@@ -172,8 +171,8 @@ function parseJsonOut(result) {
         /\| Skill \| Path \| Trigger \|\r?\n\|[-| ]+\|\r?\n((?:\|[^\r\n]*\|\r?\n)+)/,
       ) || [])[1] || '';
     assert(
-      alwaysTable.length > 0 && !/`ws-task-lifecycle`/.test(alwaysTable),
-      'AC49: omitted autoloadTaskLifecycle → --write-autoload does not add ws-task-lifecycle',
+      alwaysTable.length > 0 && /`ws-task-lifecycle`/.test(alwaysTable),
+      'AC49: omitted autoloadTaskLifecycle → --write-autoload includes ws-task-lifecycle (required by default)',
     );
   }
 }
@@ -185,10 +184,9 @@ function parseJsonOut(result) {
   for (const id of [
     'ws-senior-developer',
     'ws-self-learning',
-    'ws-changelog',
-    'ws-fable-method',
     'ws-tdah',
-    'ws-megabrain',
+    'ws-spec-memo',
+    'ws-task-lifecycle',
   ]) {
     const d = path.join(globalRoot, id);
     fs.mkdirSync(d, { recursive: true });
@@ -812,10 +810,9 @@ function seedConfigExample(root) {
   for (const id of [
     'ws-senior-developer',
     'ws-self-learning',
-    'ws-changelog',
-    'ws-fable-method',
     'ws-tdah',
-    'ws-megabrain',
+    'ws-spec-memo',
+    'ws-task-lifecycle',
   ]) {
     const skillDir = path.join(globalRoot, id);
     fs.mkdirSync(skillDir, { recursive: true });

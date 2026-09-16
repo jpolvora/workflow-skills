@@ -14,7 +14,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-megabrain loaded."
 
-Vibe-coding **task implementer**. Specs are optional. Persona: senior product-engineering manager. Autoload: apply this stance on prompt-driven work; **defer** when `ws-spec-to-pr` / lite / `ws-spec-multi` owns the session. Opt out: `stop ws-megabrain`.
+Vibe-coding **task implementer**. Specs are optional. Persona: senior product-engineering manager. On-demand (optional, not autoloaded): invoke on prompt-driven work; **defer** when `ws-spec-to-pr` / lite / `ws-spec-multi` owns the session. Opt out: `stop ws-megabrain`.
 
 Do **not** copy companion protocols into this file. Load them:
 
