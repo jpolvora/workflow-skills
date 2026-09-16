@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-16 18:59] Agent: opencode-go/deepseek-v4.1-flash
+- **Prompt**: `ws-goal-fix-pr 337` round 1 (thread `PRRT_kwDOTFajc86jHrTf`: retired karpathy skill still advertised).
+- **Done**: Verified the anchor was fixed in `7b63fffe`; proactive class sweep replaced stale karpathy prose with `ws-senior-developer` in `ws-fix-pr` README + COOPERATIVE_FIX heading and `ws-show-harness`; `AUTO_FIX.md` skipped (byte-locked by `test-fix-pr-proactive-class-sweep.js`); regenerated integrity.
+- **Result**: `npm run test` exit 0; `verify-integrity` OK; thread resolved with commit evidence. Learning: trap `retired-skill-reference-sweep`.
+
 ### [2026-09-16 18:50] Agent: opencode-go/deepseek-v4.1-flash
 - **Prompt**: `bump` then `ws-ship-pr` + `ws-goal-fix-pr` for the develop release.
 - **Done**: Bumped 0.4.30 -> 0.4.31 (package.json, 54 SKILL.md frontmatter, skill-dependencies, site footer); replaced retired `ws-karpathy-guidelines` pills with `ws-senior-developer` in site steppers and role matrix; GUI `autoloadTaskLifecycle` default true; regenerated integrity; ran prepare checks (`npm run test`, workflow simulation, secrets scan, duplicates/handoff/quoting, GUI parity).
