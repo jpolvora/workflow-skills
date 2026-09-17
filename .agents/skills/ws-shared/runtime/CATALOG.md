@@ -14,7 +14,7 @@ Path tokens: expand via `.agents/skills/ws-shared/runtime/tools.md` before tool 
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| `ws-check-harness` | `.agents/skills/ws-check-harness/SKILL.md` | Harness integrity audit |
+| `ws-check-harness` | `.agents/skills/ws-check-harness/SKILL.md` | Harness integrity audit (install mode/scope aware) |
 | `ws-check-workflows` | `.agents/skills/ws-check-workflows/SKILL.md` | Deep workflow simulation & validation |
 | `ws-doctor` | `.agents/skills/ws-doctor/SKILL.md` | Install & runtime diagnostics |
 | `ws-write-a-skill` | `.agents/skills/ws-write-a-skill/SKILL.md` | Create/edit/optimize skills (Extra) |
@@ -270,7 +270,7 @@ Print a board after each row (same ✅ / ❌ / ⏭ convention as [`ws-ship-pr/PR
 | 7 | **Integrity digests** | `npm run generate-integrity` && `npm run verify-integrity` | Any hashed install content changed (`bin/skill-integrity.json` must exit 0 on `--check`) |
 | 8 | **Harness audit** | `ws-check-harness` Phases 0–5c → 0 critical | New/changed skills, hubs, routing, links, portability, en-us; Phase 3/4b must cover new skill ids and dependency graph |
 | 9 | **Workflow simulation** | `ws-check-workflows` / `python .agents/skills/ws-check-workflows/scripts/check_workflows.py` | Orchestrator FSM, step dispatch, gates, or simulation docs changed — 0 critical |
-| 10 | **Hub drift** | Sync root `AGENTS.md` + `ws-shared/AGENTS.md` (+ `ws-shared/runtime/autoload.md` when the Always-applied set or specs router changed) | Routing tables or skill index changed |
+| 10 | **Hub drift** | Sync root `AGENTS.md` + `{sharedDir}/AGENTS.md` (+ `{sharedDir}/runtime/autoload.md` when the Always-applied set or specs router changed) | Routing tables or skill index changed |
 | 11 | **Human docs** | `README.md` when install/usage/safety narrative changed | Not required for skill-only doc fixes |
 | 12 | **Ship** | `ws-ship-pr` / `/ship-pr` after rows 1–11 are ✅ or justified ⏭ | Commit → push → create PR |
 | 13 | **Review convergence** | Wait **30s** after PR creation for code-review Action/CI to start, then `ws-goal-fix-pr` (default **300s** heartbeats per [`ws-ship-pr/GOAL-OVERRIDES.md`](.agents/skills/ws-ship-pr/GOAL-OVERRIDES.md)) until `activeThreads == 0` or escalate | Standalone ship-pr Step 6; orch Step 9 when `stopBeforeFixPr` |
@@ -287,7 +287,7 @@ Print a board after each row (same ✅ / ❌ / ⏭ convention as [`ws-ship-pr/PR
 
 ## Local dry-run: agentic code reviewers
 
-Upstream-only verification helper (not part of the portable skill contract). Requires the reviewer’s API key env var. Reviews `develop`…`main` (Custom stack + repo prompt). Active CI: [`.github/workflows/opencode-code-review.yml`](.github/workflows/opencode-code-review.yml) (`opencode` / `opencode-go/muse-spark-1.3-contributor`; `OPENCODE_API_KEY`). Cursor backup [`.github/workflows/cursor-code-review.yml`](.github/workflows/cursor-code-review.yml) is `workflow_dispatch` only. See [`README.md`](README.md) for human-oriented context; Cursor dry-run:
+Upstream-only verification helper (not part of the portable skill contract). Requires the reviewer’s API key env var. Reviews `develop`…`main` (Custom stack + repo prompt). Active CI: [`.github/workflows/opencode-code-review.yml`](../../../../.github/workflows/opencode-code-review.yml) (`opencode` / `opencode-go/muse-spark-1.3-contributor`; `OPENCODE_API_KEY`). Cursor backup [`.github/workflows/cursor-code-review.yml`](../../../../.github/workflows/cursor-code-review.yml) is `workflow_dispatch` only. See [`README.md`](../../../../README.md) for human-oriented context; Cursor dry-run:
 
 ```bash
 # Download to a file first — curl|bash leaves BASH_SOURCE unbound under set -u.

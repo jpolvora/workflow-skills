@@ -260,7 +260,7 @@ Print a board after each row (same ✅ / ❌ / ⏭ convention as [`ws-ship-pr/PR
 
 | # | Check | Command / skill | When required |
 |---|-------|-----------------|---------------|
-| 1 | **Install tests** | `npm run test` (or `npm run tests` during dev) | Always — installer, integrity, tree verification |
+| 1 | **Install tests** | `npm run test` (or `npm run tests` during dev) | Always — installer, integrity, tree checks |
 | 2 | **Website / catalog** | `npm run build-site:bump` when shipping package content; else `node bin/build-site.js` for catalog-only | Skills/hubs/CLI/installer changed → bump + rebuild `docs/index.html`; verify no merge-conflict markers |
 | 3 | **Version** | `package.json` patch bump via step 2; `bin/skill-dependencies.json` → `packageVersion` stays aligned | **CI deploy on `main` never bumps** — bump locally once per release PR before push |
 | 4 | **Installer (Node CLI)** | Review/fix `bin/cli.js`, `bin/install-rules.js` | Install/update/uninstall behavior or hub paths changed |
@@ -268,9 +268,9 @@ Print a board after each row (same ✅ / ❌ / ⏭ convention as [`ws-ship-pr/PR
 | 6 | **Skill dependency graph** | `bin/skill-dependencies.json` (+ `.agents/skills/ws-shared/runtime/skill-dependencies.json` when packaged graph ships) | Skills added/removed/renamed, package membership, or orch dispatch changed |
 | 7 | **Integrity digests** | `npm run generate-integrity` && `npm run verify-integrity` | Any hashed install content changed (`bin/skill-integrity.json` must exit 0 on `--check`) |
 | 7b | **Config GUI sync** | `node test/test-powershell-config-editor.js` | Options, `config.json`, or schema changed → update GUI script |
-| 8 | **Harness audit** | `ws-check-harness` Phases 0–5c → 0 critical | New/changed skills, hubs, routing, links, portability, en-us; Phase 3/4b must cover new skill ids and dependency graph |
-| 9 | **Workflow simulation** | `ws-check-workflows` / `python .agents/skills/ws-check-workflows/scripts/check_workflows.py` | Orchestrator FSM, step dispatch, gates, or simulation docs changed — 0 critical |
-| 10 | **Hub drift** | Sync root `AGENTS.md` + `ws-shared/AGENTS.md` (+ `ws-shared/autoload.md` when the Always-applied set or specs router changed) | Routing tables or skill index changed |
+| 8 | **Harness audit** | `ws-check-harness` Phases 0–5c → 0 critical (+ `test-harness-clean.js`) | New/changed skills, hubs, routing, links, portability, en-us; Phase 3/4b covers skill ids + dependency graph |
+| 9 | **Workflow simulation** | `ws-check-workflows` / `python .agents/skills/ws-check-workflows/scripts/check_workflows.py` | FSM, step dispatch, gates, or simulation docs changed — 0 critical |
+| 10 | **Hub drift** | Sync root `AGENTS.md` + `{sharedDir}/AGENTS.md` (+ `{sharedDir}/autoload.md` when the Always-applied set or specs router changed) | Routing tables or skill index changed |
 | 11 | **Human docs** | `README.md` when install/usage/safety narrative changed | Not required for skill-only doc fixes |
 | 12 | **Ship** | `ws-ship-pr` / `/ship-pr` after rows 1–11 are ✅ or justified ⏭ | Commit → push → create PR |
 | 13 | **Review convergence** | Wait **30s** after PR creation for code-review Action/CI to start, then `ws-goal-fix-pr` (default **300s** heartbeats per [`ws-ship-pr/GOAL-OVERRIDES.md`](.agents/skills/ws-ship-pr/GOAL-OVERRIDES.md)) until `activeThreads == 0` or escalate | Standalone ship-pr Step 6; orch Step 9 when `stopBeforeFixPr` |

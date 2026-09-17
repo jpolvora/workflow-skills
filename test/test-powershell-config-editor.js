@@ -366,13 +366,19 @@ for (const prop of reviewsProps) {
   assert(guiKeys.has(`reviews.${prop}`), `Missing schema property reviews.${prop} in Edit-WorkflowSkillsConfig.ps1`);
 }
 
+// 2b. Verify all properties of 'preview' section are bound
+const previewProps = Object.keys(schema.properties.preview?.properties || {});
+for (const prop of previewProps) {
+  assert(guiKeys.has(`preview.${prop}`), `Missing schema property preview.${prop} in Edit-WorkflowSkillsConfig.ps1`);
+}
+
 // 3. Verify core defaults properties
 const coreDefaults = ['minVerifyScore', 'enableDag', 'verboseMode'];
 for (const prop of coreDefaults) {
   assert(guiKeys.has(`defaults.${prop}`), `Missing schema property defaults.${prop} in Edit-WorkflowSkillsConfig.ps1`);
 }
 
-console.log(`  PASS: Schema-to-GUI parity validated (${guiKeys.size} bound keys, all plans/reviews/defaults verified).`);
+console.log(`  PASS: Schema-to-GUI parity validated (${guiKeys.size} bound keys, all plans/reviews/preview/defaults verified).`);
 
 console.log('\nALL 8 POWERSHELL CONFIG EDITOR TESTS PASSED.');
 

@@ -450,6 +450,11 @@
         "localReviewCommand": {
           "type": "string",
           "description": "Optional local code review runner command (e.g. cursor-reviewer dry-run). When set, ws-code-review offers or executes a pre-PR local review pass before Step 8 ship."
+        },
+        "previewBeforeShip": {
+          "type": "boolean",
+          "default": true,
+          "description": "When true (default if omitted), ws-ship-pr runs preview.dryRunCommand once after commit/push and before Create PR. Non-blocking: failures are reported and shipping continues. Explicit false disables the gate."
         }
       }
     },

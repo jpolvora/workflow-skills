@@ -37,7 +37,7 @@ Human-readable companion to `config.json`. Agents read `config.json` for machine
 
 Related upstream authoring (not in verification keys): `npm run generate-integrity`, `npm run verify-integrity`, `npm run build-site:bump`.
 
-> **Script launchers:** managed skill scripts use explicit `python` / `node` / `bash` (see [`tools.md`](tools.md) § Script launchers).
+> **Script launchers:** managed skill scripts use explicit `python` / `node` / `bash` (see [`runtime/tools.md`](runtime/tools.md) § Script launchers).
 
 ## Project Rules & Skills (from config.json)
 

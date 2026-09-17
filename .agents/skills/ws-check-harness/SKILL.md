@@ -1,8 +1,8 @@
 ---
 name: ws-check-harness
-description: Meta-harness integrity auditor — scans routing, links, portability, integrity digests, instruction duplication, role clarity, and skill composition topology.
+description: Meta-harness integrity auditor — detects install mode/scope (upstream, project-local, global, hybrid) and scans routing, links, portability, integrity digests, instruction duplication, role clarity, and skill composition topology.
 disable-model-invocation: true
-version: 0.4.32
+version: 0.4.33
 invocation_names:
   - check-harness
   - ws-check-harness
@@ -34,7 +34,7 @@ flowchart LR
 
 | Step | Do | Done when |
 |------|-----|-----------|
-| **1 Scan** | Load [`PHASES.md`](PHASES.md); run Phases 0–5c including Phase 5a (`check_duplicates.cjs`, `measure_harness.cjs`, `check_shell_quoting.cjs`, `check_pipeline_handoff.cjs`); collect evidence | Findings table ready; mechanical gates exit 0; **no edits** |
+| **1 Scan** | Load [`PHASES.md`](PHASES.md); run the Phase 0 detector (`detect_install_mode.cjs`) then Phases 0–5c including Phase 5a (`check_duplicates.cjs`, `measure_harness.cjs`, `check_shell_quoting.cjs`, `check_pipeline_handoff.cjs`, `check_harness_links.cjs`); collect evidence | Install mode/scope/scan roots + coexistence recorded; findings table ready; mechanical gates exit 0; **no edits** |
 | **2 Plan** | Emit report per [`REPORT-FORMAT.md`](REPORT-FORMAT.md); `user-gate` unless dry-run | Report delivered; dry-run ends here |
 | **3 Execute** | Apply approved items only; re-run Phase 2 on touched files | User informed of applied vs pending |
 
@@ -67,18 +67,26 @@ Load the token map from project `{sharedDir}/config.json` when present. **Instal
 
 ## Hub resolution & Mixed Install Support (Phase 0)
 
-**Install mode** (`upstream` | `consumer`) selects the primary hub **and** the **Skills scan root** used by Phases 1–5c inventory. Execution **Mode** (`normal` | `dry-run`) is orthogonal — do not rename it.
+**Install mode** (`upstream` | `consumer`) and **Install scope** (`upstream` | `project` | `global` | `hybrid`) select the primary hub **and** the **Skills scan root(s)** used by Phases 1–5c inventory. Execution **Mode** (`normal` | `dry-run`) is orthogonal — do not rename it.
 
-| Install mode | Detection (first match) | Primary hub | Skills scan root |
-|--------------|-------------------------|-------------|------------------|
-| **upstream** | Package markers (`bin/skill-dependencies.json` + `bin/cli.js`) **and** SoT evidence (≥1 `.agents/skills/ws-*/SKILL.md`) | Root `AGENTS.md` (+ dual-hub drift vs `{sharedDir}/AGENTS.md`) | `.agents/skills` |
-| **consumer** | Else (including markers present but SoT absent) | `{sharedDir}/AGENTS.md` | `{skillsRoot}` (+ `{globalSkillsRoot}` hybrid) |
+Run the read-only detector in Phase 0 and record its fields: `node {skillsRoot}/ws-check-harness/scripts/detect_install_mode.cjs --json --repo-root {repoRoot}`.
+
+| Install mode | Install scope | Detection (first match) | Primary hub | Skills scan root(s) |
+|--------------|---------------|-------------------------|-------------|---------------------|
+| **upstream** | `upstream` | Package markers (`bin/skill-dependencies.json` + `bin/cli.js`) **and** SoT evidence (≥1 `.agents/skills/ws-*/SKILL.md`) | Root `AGENTS.md` (+ dual-hub drift vs `{sharedDir}/AGENTS.md`) | `.agents/skills` |
+| **consumer** | `project` | No upstream evidence; `{skillsRoot}` has ws-* skills; `{globalSkillsRoot}` has none | `{sharedDir}/AGENTS.md` | `{skillsRoot}` |
+| **consumer** | `hybrid` | No upstream evidence; both `{skillsRoot}` and `{globalSkillsRoot}` have ws-* skills (local bodies override) | `{sharedDir}/AGENTS.md` | `{skillsRoot}`, then `{globalSkillsRoot}` fallback |
+| **consumer** | `global` | No upstream evidence; `{skillsRoot}` has no ws-* skills; `{globalSkillsRoot}` has ws-* skills | Project `{sharedDir}/AGENTS.md` when present, else `{globalSkillsRoot}/ws-shared/AGENTS.md` | `{globalSkillsRoot}` |
+| **none** | `none` | No ws-* `SKILL.md` in either tree | — | stop; guidance to install or run from a package root |
 
 **Detection notes:**
-- Upstream requires **both** package markers **and** SoT under `.agents/skills/`. Markers without SoT ⇒ hard **Install mode: consumer** for skills inventory; optional one-line informational note only (markers present, SoT absent).
-- Consumer must **not** invent inventory from a stray `src/skills` folder when Install mode is consumer.
+- Upstream requires **both** package markers **and** SoT under `.agents/skills/`. Markers without SoT ⇒ hard **Install mode: consumer**; the detector emits a warning (markers present, SoT absent).
+- Detect global presence from `WORKFLOW_SKILLS_GLOBAL_DIR` or `~/.agents/skills`. Consumer must **not** invent inventory from a stray `src/skills` folder when Install mode is consumer.
+- Detector `coexistence` fields are evidence, not problems: global version drift and global-only ids are informational.
+- **Upstream + machine-global coexistence:** when SoT and a global install both exist, upstream wins; scan **only** `.agents/skills`; never merge inventories or flag duplicate `name:` across the two trees as collisions. Report the global tree under `coexistence` (count, version, drift, ids outside the package) and keep the invoke-vs-edit rule for reading bodies.
+- **Global-only consumer:** hub routing tables may still cite `.agents/skills/...` literals; resolve existence under `{globalSkillsRoot}`. Project hub `config.json` still wins when present; missing project hub → detector warning (`ws-configure-project`).
 - Hub resolution alone is not sufficient for skills SoT; Install mode drives the scan root.
-- **Upstream hub literals:** when Skills scan root is `.agents/skills`, hub citations under `.agents/skills/ws-<id>/…` are filesystem-true (no SoT-id equivalence / dogfood-lag exceptions). Consumer behavior unchanged.
+- **Upstream hub literals:** when Skills scan root is `.agents/skills`, hub citations under `.agents/skills/ws-<id>/…` are filesystem-true (no SoT-id equivalence / dogfood-lag exceptions).
 
 **Global & Mixed Install Rules:**
 - Skills may be installed globally (`{globalSkillsRoot}`) or locally (`{skillsRoot}`).
@@ -99,6 +107,8 @@ Step ↔ Phase: Step 1 = Phases 0–5c · Step 2 = Phase 6 · Step 3 = Phase 7.
 
 Healthy + no unrouted items → **Harness OK**. Else emit full report from [`REPORT-FORMAT.md`](REPORT-FORMAT.md). On explicit persist, write the completed report to a temporary input file and run `node {skillsRoot}/ws-shared/runtime/scripts/persist_diagnostic.cjs --kind harness --input <report>`; the helper stores a timestamped comparable artifact under `plans.diagnosticsDir` (default `.agents/plans/diagnostics`). Default audit remains read-only.
 
+**Upstream self-audit invariant:** a run at the upstream package root must report **zero** findings (coexistence notes are informational, not findings). The deterministic subset is proven by `node test/test-harness-clean.js` (Phase 0 detector + Phase 5a gates + links/paths/shorthand/routing + integrity); `deploy-site.yml` runs it on `main` as a non-blocking job and uploads the report artifact. A finding there is a release defect, not noise.
+
 ## Guardrails
 
 - Edit harness only in Phase 7 after approval; never during scan.
@@ -107,12 +117,14 @@ Healthy + no unrouted items → **Harness OK**. Else emit full report from [`REP
 
 ## Definition of Done
 
-**Scan:** path token map loaded from `{sharedDir}/config.json` when present; Install mode + Skills scan root resolved; Phases 0–5c done (Phase 5a ran `check_duplicates.cjs`, `measure_harness.cjs`, `check_shell_quoting.cjs`, and `check_pipeline_handoff.cjs` to exit 0); § 3b + retired ids checked when `ws-spec-to-pr` present; Phase 4 hub↔disk diff; Phase 5c context report; zero edits.
+**Scan:** path token map loaded from `{sharedDir}/config.json` when present; **Install mode + Install scope + Skills scan root(s)** resolved (detector `detect_install_mode.cjs`, or manual evidence when it is unavailable) and recorded with `coexistence`; Phases 0–5c done (Phase 5a ran `check_duplicates.cjs`, `measure_harness.cjs`, `check_shell_quoting.cjs`, `check_pipeline_handoff.cjs`, and `check_harness_links.cjs` to exit 0); § 3b + retired ids checked when `ws-spec-to-pr` present; Phase 4 hub↔disk diff; Phase 5c context report; zero edits.
 
 **Plan:** severity + evidence + proposed correction; report format; dry-run stops; else `user-gate`.
 
 **Execute (normal):** only approved items; Phase 2 revalidate; report applied vs pending.
 
 **Verification (Install mode — AC10):**
-- At upstream package root (markers + SoT) → report `Install mode: upstream` and Skills scan root `.agents/skills`.
-- In a consumer tree with only `{skillsRoot}` / global install → report `Install mode: consumer` and Skills scan root under `.agents/skills` and/or `{globalSkillsRoot}`.
+- At upstream package root (markers + SoT) → report `Install mode: upstream` · `Install scope: upstream` · Skills scan root `.agents/skills`; when a machine-global install coexists, report it under `coexistence` (informational), never as a collision.
+- Project-local consumer → `Install mode: consumer` · `Install scope: project` or `hybrid` (both trees present) · Skills scan root `{skillsRoot}` first.
+- Global-only consumer → `Install mode: consumer` · `Install scope: global` · Skills scan root `{globalSkillsRoot}` with project-hub config precedence.
+- No skills found → `Install mode: none` and stop with guidance; do not audit an empty inventory.

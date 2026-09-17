@@ -1,7 +1,7 @@
 ---
 name: ws-preview
 description: Run the consumer-configured local pipeline review dry-run command without publishing PR threads.
-version: 0.4.32
+version: 0.4.33
 disable-model-invocation: true
 invocation_names:
   - ws-preview
@@ -16,6 +16,8 @@ invocation_names:
 User-invoked **local pipeline review dry-run**. Resolve the command from the **project** `{sharedDir}/config.json` and run it in the consumer repo root. Complement to [`ws-code-review`](../ws-code-review/SKILL.md) (in-agent pre-push / orch Step 6) — this skill does **not** vendor or name a reviewer product; the consumer owns the recipe.
 
 **Never publish PR threads.** Do not wrap the command through packaged `{skillsRoot}/ws-preview` scripts (none are required).
+
+Also runs automatically inside [`ws-ship-pr`](../ws-ship-pr/SKILL.md) (pre-Create-PR gate) when `preview.previewBeforeShip` is not explicit `false` (default `true`); same never-publish contract.
 
 **Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 

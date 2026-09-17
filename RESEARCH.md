@@ -174,7 +174,7 @@ Research snapshot of this package — verify against live SoT before implementin
 | Orchestrators | `ws-spec-to-pr` (steps 0–9), `ws-spec-to-pr-lite` (0–5) |
 | Harness audit | `ws-check-harness`, `ws-check-workflows` |
 | Dependency graph | `bin/skill-dependencies.json` |
-| Agent routing hub | Root `AGENTS.md` + `ws-shared/AGENTS.md` (dual-hub; root wins for autoload) |
+| Agent routing hub | Root `AGENTS.md` + `{sharedDir}/AGENTS.md` (dual-hub; root wins for autoload) |
 
 ### 4.2 Existing strengths called out in research
 
@@ -309,7 +309,7 @@ Cross-walk research themes to [`SKILL_AUTHORING.md`](.agents/skills/ws-write-a-s
 
 Use this file when drafting specs or `ws-write-a-skill` updates. Suggested workflow:
 
-1. Program of record: [`.agents/specs/research-driven-pipeline-quality.spec.md`](.agents/specs/research-driven-pipeline-quality.spec.md) (JSON state, inter-step handoff, optional jury, memory sanitization).
+1. Program of record: [`.agents/specs/0050-research-driven-pipeline-quality.spec.md`](.agents/specs/0050-research-driven-pipeline-quality.spec.md) (JSON state, inter-step handoff, optional jury, memory sanitization).
 2. Reconcile with portability rules in root `AGENTS.md`.
 3. Prototype in upstream SoT only (`.agents/skills/`).
 4. Run `ws-check-harness` + `npm run test` before ship.

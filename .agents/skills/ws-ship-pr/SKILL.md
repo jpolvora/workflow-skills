@@ -1,7 +1,7 @@
 ---
 name: ws-ship-pr
 description: End-to-end PR shipping manager — drives prepare-to-PR checklists, pushes code, creates PRs, waits for CI, and manages convergence.
-version: 0.4.32
+version: 0.4.33
 disable-model-invocation: true
 invocation_names:
   - ship-pr
@@ -85,6 +85,9 @@ See [`gates.md`](../ws-shared/runtime/gates.md) § Quality gate bypass. Ship/PRE
    - Commit message may say “configured delivery artifacts” (do not hardcode “plan and result”).
    **Standalone only:** then commit remaining ship-scope changes. **Workflow mode:** delivery commit already exists or was skipped at close — push only. `git push -u {gitRemote} {shipHead}` (or dispatch `push-branch`). Skip push when `shipAction: skip` or `dry-run`.
    - Done when: branch pushed with no uncommitted ship-scope changes, or ship explicitly skipped.
+
+4b. **Pipeline review dry-run** (optional, non-blocking): only when Step 5 Create PR will actually run — skip when `shipAction: skip`, `dry-run`, or `push-only`. When `preview.previewBeforeShip` is not explicit `false` (default `true`) **and** `preview.dryRunCommand` is trimmed non-empty (whitespace-only counts as empty), run that command from the consumer repo root (git top-level, else `$PWD`) exactly as [`ws-preview`](../ws-preview/SKILL.md) would (no extra flags; long-lived call ≥600000 ms). Record its summary on the Prepare-to-PR board. On non-zero exit or reported findings: report and continue to Step 5 regardless — this gate never blocks ship and never publishes PR threads (the command is a dry-run by contract).
+   - Done when: dry-run executed and summarized, or skipped with reason (`previewBeforeShip: false`, empty command, or no PR creation).
 
 5. **Create PR**: only when Step 2 is green and `shipAction: create-pr` (or standalone default). Resolve the provider per § SCM Independence & Configuration (`github` or `azure-devops` only for create-pr; STOP if `local` or unresolved — do not invent a client). Run `validate-auth` (STOP on failure), then `create-pr --head {shipHead} --base {baseBranch}` (reuse open PR for same head→base when present). Capture PR id and URL. When workflow state or spec frontmatter has tracker `id`, dispatch provider **`comment-issue`** (alias `close-loop`) with PR URL + one-paragraph summary (`dry-run` when parent is dry-run). Skip when `id` is null / `source: local`.
    - Done when: PR id/URL captured or reused; close-loop dispatched or skipped with reason. If `stopBeforeFixPr` and `shipAction: create-pr`: print URL and STOP (success).

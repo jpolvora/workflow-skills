@@ -32,5 +32,5 @@
 
 ## Non-goals
 
-- Removing `ws-shared/config.json`, MEMORY, stack
+- Removing `.agents/skills/ws-shared/config.json`, MEMORY, stack
 - Interactive uninstall menu (CLI first; may add later)

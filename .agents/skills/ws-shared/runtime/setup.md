@@ -9,7 +9,7 @@ Artifact paths: [`../ws-spec-to-pr/ARTIFACTS.md`](../../ws-spec-to-pr/ARTIFACTS.
 
 ## External dependencies (guardrails)
 
-Resolve `config.json` `rules.*` before assuming a skill or rule file exists. Full portable contract (same meaning): [`AGENTS.md`](AGENTS.md) § External dependencies in this folder · upstream root [`../../../AGENTS.md`](../../../AGENTS.md)#external-dependencies when authoring against the source repo.
+Resolve `config.json` `rules.*` before assuming a skill or rule file exists. Full portable contract (same meaning): [`AGENTS.md`](AGENTS.md) § External dependencies in this folder · upstream root [`../../../../AGENTS.md`](../../../../AGENTS.md)#external-dependencies when authoring against the source repo.
 
 | Key | Role | Resolve (first match) |
 |-----|------|------------------------|

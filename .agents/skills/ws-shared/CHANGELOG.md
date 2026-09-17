@@ -1,5 +1,45 @@
 # Changelog
 
+### [2026-09-17 03:00] Agent: muse-spark
+- **Prompt**: Continue full auto - resume `ws-preview-before-ship-gate` (lite) at Step 2 through ship.
+- **Done**: Verified the Step 4b implementation (AC1-AC9 file evidence, NS1-NS5 linked, full 76-step suite green, integrity regen last); G2 `cea78a7c`; review round 1 clean 9/10 (fable VERIFIED); close result + delivery commit (plan only).
+- **Result**: Steps 2-3 complete; Step 4 close done, ship next (push + live 4b + PR). Learning: recorded (Windows PowerShell CLI quoting trap).
+
+### [2026-09-17 00:00] Agent: opencode-go/muse-spark
+- **Prompt**: Fix the preview-before-ship change (verify Step 4b placement before SCM Create PR; write the missing spec under `.agents/specs`).
+- **Done**: Verified Step 4b runs after commit/push and before provider Create PR (github/ado share the gate); wrote spec `0089-ws-preview-before-ship-gate.spec.md` (authoring PASS, 9 ACs); tightened Step 4b wording (trimmed-empty command, consumer repo root, `preview.previewBeforeShip` key), added the INTERVIEW table row, regenerated integrity.
+- **Result**: `validate_spec --mode=authoring` PASS; GUI tests 8/8; `verify-integrity` OK v0.4.33; `test-harness-clean.js` 0 findings; `test-doc-sync` ok. Learning: N/A (spec backfill plus prose precision, no new project knowledge).
+
+### [2026-09-16 21:03] Agent: opencode-go/deepseek-v4.1-flash
+- **Prompt**: Add optional ws-preview run in ws-ship-pr before Create PR, gated by `previewBeforeShip` (default true) plus `dryRunCommand`; report errors and continue shipping.
+- **Done**: New Step 4b in `ws-ship-pr` (runs only when Create PR will execute; non-blocking); `previewBeforeShip` boolean in schema (default true), template, project config (`true`), and GUI editor; noted in INTERVIEW § Preview, ws-preview SKILL, and FEATURES 0.4.33 row.
+- **Result**: GUI tests 8/8; quality/feature-branch/delivery/hermes suites green; `verify-integrity` OK v0.4.33; harness clean 0 findings. Learning: N/A (small additive gate, no new project knowledge).
+
+### [2026-09-16 20:56] Agent: opencode-go/deepseek-v4.1-flash
+- **Prompt**: Fix the 3 findings from the `/ws-preview` dry-run (unguarded manifest parse, unguarded link decode, hub coverage gap).
+- **Done**: Guarded `detect_install_mode.cjs` manifest parse (structured warning), added safe `decodeURIComponent` fallback and resolved-hub routing files in `check_harness_links.cjs`; added corrupt-manifest and link-gate regression tests, registered the new suite, regenerated integrity.
+- **Result**: New tests green; `test-harness-clean.js` = 0 findings; `verify-integrity` OK v0.4.33. Learning: N/A (review fixes, no new project knowledge).
+
+### [2026-09-16 20:49] Agent: opencode-go/deepseek-v4.1-flash
+- **Prompt**: Explain `localReviewCommand`, recommend a value, and add an npm script running the agentic-code-reviewers dry-run locally.
+- **Done**: Added `review:dry` to `package.json` (same OpenCode reviewer recipe as CI with `--dry-run`, no PR publishing); repointed `preview.dryRunCommand` to `npm run review:dry` (single source of truth, most portable form). Left `preview.localReviewCommand` empty (recommended default until the team wants the enforced LLM gate in ws-code-review).
+- **Result**: JSON parses; `npm pkg get` resolves the script; `verify-integrity` OK v0.4.33. Learning: N/A (config-only addition, no new project knowledge).
+
+### [2026-09-16 20:47] Agent: opencode-go/deepseek-v4.1-flash
+- **Prompt**: Add `preview.dryRunCommand` to config.json based on the agentic-code-reviewers CI action.
+- **Done**: Set `preview.dryRunCommand` in project `config.json` (mirrors `.github/workflows/opencode-code-review.yml` review step: same engine/model/variant/stack/prompt/threshold/patterns, `--dry-run`, no `--gh`/`--pr-id`, same exclude env). Schema/template/GUI already covered `preview`; no GUI or schema change needed.
+- **Result**: JSON parses; `verify-integrity` OK v0.4.33; GUI editor tests 8/8; ws-doctor smoke passed. Learning: N/A (config-only addition, no new project knowledge).
+
+### [2026-09-16 20:40] Agent: opencode-go/deepseek-v4.1-flash
+- **Prompt**: Write a spec for the ws-check-harness install-mode/clean-audit feature as completed.
+- **Done**: Authored `.agents/specs/0088-ws-check-harness-install-mode-clean-audit.spec.md` (12 ACs, `status: completed`, closure tables). `validate_spec.cjs --mode=authoring` PASS; tracked in `index.PRD` row 92; recorded traps `catalog-utf8-byte-budget` and `global-version-representative-sample`.
+- **Result**: Spec of record + index row delivered. Learning: traps `catalog-utf8-byte-budget`, `global-version-representative-sample`.
+
+### [2026-09-16 20:15] Agent: opencode-go/deepseek-v4.1-flash
+- **Prompt**: Make ws-check-harness compatible with upstream/global/project install edge cases; add a release-time proof of the upstream zero-findings invariant with a non-blocking CI report.
+- **Done**: Added `detect_install_mode.cjs` (install mode/scope + coexistence evidence), `check_harness_links.cjs` gate, `test/test-harness-clean.js` and `test/test-check-harness-install-mode.js`; fixed all upstream findings (runtime hub link depth, STACK/README/RESEARCH links, bare shorthand tokenized); wired non-blocking `harness-audit` job with report artifact into `deploy-site.yml`; synced SKILL/PHASES/REPORT-FORMAT/evals/AGENTS/CATALOG/FEATURES; bumped 0.4.33 and regenerated integrity.
+- **Result**: `node test/test-harness-clean.js` = 0 findings; affected suites green; `verify-integrity` OK v0.4.33; commit/PR pending. Learning: traps `catalog-utf8-byte-budget`, `global-version-representative-sample`.
+
 ### [2026-09-16 19:55] Agent: opencode-go/deepseek-v4.1-flash
 - **Prompt**: Installer/updater must always ask which harness/IDE host targets receive the skills; the updater silently reused recorded/detected targets.
 - **Done**: Extracted the host-target picker into `promptSecondaryGlobalTargets`; `update` (now async, new `--yes`) and `install --global` always prompt on TTY with recorded + detected targets pre-selected (Enter keeps them). Piped/`--yes` runs keep reuse + auto-detect. Added `computeTargetPreselectIds` helper with tests; updated CLI help, `README.md`, site snippet, and `FEATURES.md`; bumped 0.4.32.

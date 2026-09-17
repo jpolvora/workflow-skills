@@ -137,6 +137,10 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Merge ws-karpathy-guidelines into ws-senior-developer (`spec: 0085-merge-karpathy-into-senior-developer.spec.md`)
 - [x] ws-tdah wait-what grounded re-pitch (`spec: 0086-ws-tdah-wait-what-repitch.spec.md`)
 - [x] ws-wiki Sync Baseline incremental watermark (`spec: 0087-ws-wiki-sync-baseline.spec.md`)
+- [ ] ws-check-harness install-mode detection and upstream clean-audit invariant (`spec: 0088-ws-check-harness-install-mode-clean-audit.spec.md`)
+- [x] Optional ws-preview dry-run gate in ws-ship-pr before Create PR (`spec: 0089-ws-preview-before-ship-gate.spec.md`)
+
+
 
 
 
@@ -260,6 +264,10 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 
 | 91 | `ws-wiki-sync-baseline` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-wiki Sync Baseline incremental watermark |
 
+| 92 | `ws-check-harness-install-mode-clean-audit` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-check-harness install-mode detection and upstream clean-audit invariant |
+
+| 93 | `ws-preview-before-ship-gate` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Optional ws-preview dry-run gate in ws-ship-pr before Create PR |
+
 ## 9. Inbox
 
 - Advanced multi-repository orchestrator support
@@ -354,6 +362,7 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 | 2026-09-16 | `merge-karpathy-into-senior-developer` | Merge ws-karpathy-guidelines into ws-senior-developer | [PR #337](https://github.com/jpolvora/workflow-skills/pull/337) (`cf6f585b`) |
 | 2026-09-16 | `ws-tdah-wait-what-repitch` | ws-tdah wait-what grounded re-pitch | [PR #337](https://github.com/jpolvora/workflow-skills/pull/337) (`cf6f585b`) |
 | 2026-09-16 | `ws-wiki-sync-baseline` | ws-wiki Sync Baseline incremental watermark | Implemented (`71f90237`, PR pending) |
+| 2026-09-17 | `ws-preview-before-ship-gate` | Optional ws-preview dry-run gate in ws-ship-pr before Create PR | [PR #339](https://github.com/jpolvora/workflow-skills/pull/339) (`cea78a7c`) |
 
 ## 11. Maintenance checklist
 

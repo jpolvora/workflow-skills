@@ -15,8 +15,10 @@ Otherwise — **correction plan** (mandatory before editing):
 
 **Date:** YYYY-MM-DD
 **Mode:** [normal | dry-run] (execution — orthogonal to Install mode)
-**Install mode:** [upstream | consumer]
-**Skills scan root:** [.agents/skills | {skillsRoot} (+ global …)]
+**Install mode:** [upstream | consumer | none]
+**Install scope:** [upstream | project | global | hybrid | none]
+**Skills scan root(s):** [.agents/skills | {skillsRoot} | {globalSkillsRoot} | both (local first)]
+**Coexistence:** [none | machine-global install: N skills, vX (drift: same/ahead/behind), ids outside package: …]
 **Scope:** [full | files: ...]
 **Files inspected:** N
 **Path token map:** `{skillsRoot}=…` `{sharedDir}=…` `{plansDir}=…` `{reviewsDir}=…` (from config `pathTokens` / `plans.dir` / defaults)
@@ -29,6 +31,7 @@ Otherwise — **correction plan** (mandatory before editing):
 - Path-token notes: [healthy tokens expanded | token-in-link-target: N | undeclared ws-shared/ shorthand: N]
 - Redundancies/conflicts: ...
 - Unrouted skills/rules: ...
+- Coexistence: [none | global install present (informational): N skills, vX, drift, ids outside package]
 - Auto-load: N mandatory skills (~L lines), M conditional (~L lines)
 - Detected overlaps: D domains with overlap (S duplicates, C complementary)
 - Simulation alerts: ...
@@ -52,6 +55,7 @@ Otherwise — **correction plan** (mandatory before editing):
 | skill | `example` | `.agents/skills/example/SKILL.md` | #2 |
 
 ### Routing and decision
+- [ ] Install mode/scope detection (`detect_install_mode.cjs`) — [OK: upstream/project/global/hybrid | none → stopped | markers-without-SoT warning]
 - [ ] Optional host entry → AGENTS.md — [OK | absent (OK) | broken redirect]
 - [ ] Progressive disclosure (AGENTS.md does not duplicate bodies) — [OK | inflation]
 - [ ] Skill → skill relationships — [OK | gaps]

@@ -154,7 +154,7 @@ Run this checklist prior to triggering `/ship-pr` or shipping features in a cons
 
 ### Upstream Maintainers (`jpolvora/workflow-skills` source repo only)
 
-See root [`CATALOG.md`](../../../CATALOG.md) § Before ship PR and root [`AGENTS.md`](../../../AGENTS.md) § Upstream developer workflow.
+See root [`CATALOG.md`](../../../../CATALOG.md) § Before ship PR and root [`AGENTS.md`](../../../../AGENTS.md) § Upstream developer workflow.
 
 ---
 

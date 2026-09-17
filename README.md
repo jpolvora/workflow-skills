@@ -43,7 +43,7 @@
 | **Any agent, your repo** | Skills are markdown plus scripts. Paths come from `config.json`. Config, memory, and changelog stay local on update. |
 | **Two speeds, one config** | Standard and lite share `config.json`. Isolated state (`workflowType`); no cross-resume. New runs ask stay-on-branch or `feat/{slug}`. |
 | **One task at a time** | `defaults.enableDag` is `false`. Set `true` for parallel DAG. Fresh `ws-configure-project` / `config.json.example` seed `defaults.verboseMode: true` (reasoned start-of-step preview); omitted or `false` at runtime is silent. To change the orchestrator model: Pause, switch it in the session host, then Resume. |
-| **Reviewer-aligned gates** | Structured stack invariant rules (`ws-shared/runtime/stacks/`), DoR & negative scenario injection, pre-completion static scan (`scan_stack_invariants.cjs`), verify score capping at 7/10 on Critical violations, two-phase adversarial code review (Triage -> 4-part Proof of Exploitability), local review dry-run gate (`localReviewCommand`), and initial framework traps seeded in `MEMORY.md`. |
+| **Reviewer-aligned gates** | Structured stack invariant rules (`.agents/skills/ws-shared/runtime/stacks/`), DoR & negative scenario injection, pre-completion static scan (`scan_stack_invariants.cjs`), verify score capping at 7/10 on Critical violations, two-phase adversarial code review (Triage -> 4-part Proof of Exploitability), local review dry-run gate (`localReviewCommand`), and initial framework traps seeded in `MEMORY.md`. |
 
 ### Roadmap
 
@@ -121,7 +121,7 @@ npx --yes github:jpolvora/workflow-skills uninstall --skills ws-tdah --global --
 | Installed version | `npx --yes github:jpolvora/workflow-skills --version` |
 | Help | `npx --yes github:jpolvora/workflow-skills --help` |
 
-**After install/update:** ask your agent to run `ws-check-harness` (load `.agents/skills/ws-check-harness/SKILL.md`, Phases 0–5c). Optional: `/ws-configure-project` to fill `ws-shared/config.json` via interactive CLI, or launch the desktop GUI editor via `npm run config:gui` (or `.agents\skills\ws-shared\runtime\scripts\Edit-Config.bat` on Windows).
+**After install/update:** ask your agent to run `ws-check-harness` (load `.agents/skills/ws-check-harness/SKILL.md`, Phases 0–5c). Optional: `/ws-configure-project` to fill `.agents/skills/ws-shared/config.json` via interactive CLI, or launch the desktop GUI editor via `npm run config:gui` (or `.agents\skills\ws-shared\runtime\scripts\Edit-Config.bat` on Windows).
 
 #### Hybrid / global installs
 
@@ -213,7 +213,7 @@ Edit only the consumer-owned entries under `.agents/skills/ws-shared/`. The inst
 
 ### Desktop configuration GUI (Windows)
 
-For visual configuration on Windows, a native Windows Forms desktop editor is included in `ws-shared/runtime/scripts/`:
+For visual configuration on Windows, a native Windows Forms desktop editor is included in `.agents/skills/ws-shared/runtime/scripts/`:
 
 ```bash
 # Launch via npm script shortcut
@@ -236,7 +236,7 @@ Installer **never** writes consumer repo-root files. Consumers may add a thin ro
 
 | File | Role |
 |------|------|
-| Root `AGENTS.md` (optional) | Consumer-owned thin pointer to `ws-shared/AGENTS.md`, or project-specific hub that links there |
+| Root `AGENTS.md` (optional) | Consumer-owned thin pointer to `.agents/skills/ws-shared/AGENTS.md`, or project-specific hub that links there |
 | Host pointer (name varies by IDE) | Minimal pointer so agents follow project `AGENTS.md` or load skills from `.agents/skills/` |
 | `rules.changelogFile` target | Append-only history (default under `ws-shared/`; optional root `CHANGELOG.md` when configured) |
 
@@ -255,7 +255,7 @@ The Workflows package includes [`ws-senior-developer`](.agents/skills/ws-senior-
 - **Self-overwrite guard:** remote install into this source repo is blocked (allowed under `test/` only).
 - **This clone vs a global install:** you may have `ws-*` both here (`.agents/skills/`) and under `~/.agents/skills` (`WORKFLOW_SKILLS_GLOBAL_DIR` if set). Edit only this clone. Do not edit, uninstall, or “sync” the global copies from a session in this repo. Details: [This clone vs a global install](#this-clone-vs-a-global-install).
 - **Overwrites:** interactive install confirms once; `update` / `install --yes` overwrite skills and always keep consumer `shared/` files.
-- **Integrity checksums:** `bin/skill-integrity.json` (SHA-256) covers every installable skill tree and managed `ws-shared/runtime/` + `templates/` content. `install` / `update` verify the **source** package before any copy and the **consumer** tree after; mismatch exits non-zero (fail-closed). Post-copy failure does **not** auto-rollback. Unsafe override: `--force-integrity` (still writes `ws-shared/skill-integrity-local.json` from actual digests).
+- **Integrity checksums:** `bin/skill-integrity.json` (SHA-256) covers every installable skill tree and managed `.agents/skills/ws-shared/runtime/` + `templates/` content. `install` / `update` verify the **source** package before any copy and the **consumer** tree after; mismatch exits non-zero (fail-closed). Post-copy failure does **not** auto-rollback. Unsafe override: `--force-integrity` (still writes `.agents/skills/ws-shared/skill-integrity-local.json` from actual digests).
 - **Upstream regenerate (authors):** any change to hashed skill/hub/install inputs must run `npm run generate-integrity` and commit `bin/skill-integrity.json` in the same change; `npm run verify-integrity` must pass before claim complete / PR (see root `AGENTS.md`). `ws-check-harness` and install tests fail closed on a stale manifest.
 - **Audit:** `integrity` recomputes digests for skills listed in `installed-skills.json` and compares to `skill-integrity-local.json` (selective installs only require their closure). `--check` compares semver **and** `fullPackageDigest` when the remote integrity manifest is reachable.
 - **Consumer-owned exclusions:** `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, `CHANGELOG.md`, and `skill-integrity-local.json` are never hashed and never fail integrity when edited.
@@ -363,7 +363,7 @@ This package’s skill source of truth is `.agents/skills/ws-*`. A machine-wide 
 - **Do not** run `npx … install` / `update` against this package root (blocked except under `test/`).
 - There is **no IDE setting** that hides the duplicate. Agents follow root [`AGENTS.md`](AGENTS.md) § Global vs local `ws-*`: invoke the global copy when it exists; author, test, or review a skill against the local tree only.
 
-Consumer projects are unchanged: project-local skills override global; project `ws-shared/config.json` always wins.
+Consumer projects are unchanged: project-local skills override global; project `.agents/skills/ws-shared/config.json` always wins.
 
 Agent obligations (portability, ws-check-harness before `main`): see [`.agents/skills/ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) after install and root [`AGENTS.md`](AGENTS.md) when contributing upstream. Session operating rules for agents in this clone are inlined in root `AGENTS.md` § Upstream session contract (not a separate skill file).
 

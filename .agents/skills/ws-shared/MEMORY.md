@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 
 ---
 
+### [2026-09-17] Windows PowerShell strips JSON CLI args
+- **Layer**: `devops`
+- **Module**: `workflow-state-scripts`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-*/scripts/*.cjs`
+- **Scenario / Context**: Running `update_state.cjs` / `ac_ledger.cjs` from Windows PowerShell with inline JSON flags (`--gate-decision '{...}'`, `--test '{...}'`) fails: the shell strips the double quotes before the native `node.exe` sees them, so parsers receive `{gate:t,...}` and throw. Backslash escapes do not survive either (`--%` and `.cmd` files deliver literal backslashes).
+- **DO NOT**: Pass inline JSON to workflow scripts from PowerShell and retry with more escaping when it fails.
+- **INSTEAD DO**: For `ac_ledger.cjs --test` / `--alias-result` use the supported `key=value,comma-separated` format (no quotes needed). For `update_state.cjs finish`, write the payload to `{us-dir}/.runtime/step-0N-output.json` (auto-discovered `--step-output`) plus repeatable `--created` / `--modified` flags. For `--gate-decision` JSON, run the managed CLI in-process via a temp driver that overrides `process.argv` and requires the managed `update_state.cjs` (same code path, zero shell quoting).
+
 ### [2026-09-16] TTY-only interactive paths are not exercisable from agent shells
 - **Layer**: `tests`
 - **Module**: `installer CLI interactive prompts (bin/cli.js)`
@@ -41,6 +50,24 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: During the 0.4.31 ship, hashed hub content (Edit-WorkflowSkillsConfig.ps1) was edited after `generate-integrity`, so `npm run test` failed with "skill-integrity.json is stale vs current tree"; the suite passed only after regenerating integrity again. The fable-judge audit for the ship-scope tree returned VERIFIED WITH CAVEATS because the deterministic harness scripts and full suite ran, but interactive ws-check-harness Phases 0-5c were not executed end-to-end.
 - **DO NOT**: Regenerate integrity before the last hashed-file edit, or present the deterministic harness subset as a completed full harness audit.
 - **INSTEAD DO**: Make `npm run generate-integrity && npm run verify-integrity` the final step before commit, re-run `npm run test` after any post-regen skill/hub edit, and state the harness-audit scope honestly (deterministic phases plus suite evidence).
+
+### [2026-09-16] Global install version sampling needs representative skills
+- **Layer**: `harness`
+- **Module**: `ws-check-harness install-mode detector`
+- **Severity**: `Low`
+- **PathPattern**: `.agents/skills/ws-check-harness/scripts/detect_install_mode.cjs`;`test/test-check-harness-install-mode.js`
+- **Scenario / Context**: Sampling a global install version from the first alphabetical `ws-*` folder picked an external companion (`ws-memo` 1.0.0) instead of the package version (0.4.30), so drift assertions failed.
+- **DO NOT**: Derive a global install version from an arbitrary or first `ws-*` `SKILL.md`.
+- **INSTEAD DO**: Probe representative ids (`ws-check-harness` → `ws-tdah` → `ws-spec-to-pr` → `ws-senior-developer`), else fall back to the most frequent frontmatter version across the global tree; keep `externalSkills` ids out of package comparisons.
+
+### [2026-09-16] CATALOG.md has a hard normalized 24 KB budget
+- **Layer**: `harness`
+- **Module**: `upstream docs / context budget`
+- **Severity**: `Medium`
+- **PathPattern**: `CATALOG.md`;`test/test-context-budget.js`;`bin/build-site.js`
+- **Scenario / Context**: Adding a release-proof pointer to the Before-ship table pushed `CATALOG.md` over the 24000-byte limit enforced by `test/test-context-budget.js` (`utf8Size` normalizes CRLF to LF). The committed file had only ~6 bytes of headroom, so any net addition fails until wording is reclaimed elsewhere.
+- **DO NOT**: Add net bytes to `CATALOG.md` (or other budgeted docs) without measuring the normalized size first.
+- **INSTEAD DO**: Measure with `Buffer.byteLength(text.replace(/\r\n?/g, '\n'))` before and after; keep additions compact and offset them by tightening adjacent redundant wording; run `node test/test-context-budget.js` before ship.
 
 ### [2026-09-16] Autoload Always-applied heading must stay exact for configure script
 - **Layer**: `harness`

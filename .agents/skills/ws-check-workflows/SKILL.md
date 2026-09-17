@@ -1,7 +1,7 @@
 ---
 name: ws-check-workflows
 description: Workflow FSM simulation runner — validates step continuity, state isolation, provider dispatch, and artifact transitions across standard, lite, and multi-spec pipelines.
-version: 0.4.32
+version: 0.4.33
 disable-model-invocation: true
 invocation_names:
   - check-workflows
@@ -55,7 +55,7 @@ The validation process performs end-to-end simulation across both orchestrators:
 - Asserts that all skills dispatched by `ws-spec-to-pr` and `ws-spec-to-pr-lite` are declared in `bin/skill-dependencies.json`.
 
 ### 4. Config Sharing & State Isolation
-- Verifies that all provider scripts and state handlers target `ws-shared/config.json`.
+- Verifies that all provider scripts and state handlers target `{sharedDir}/config.json`.
 - Confirms state handlers serialize `workflowType` (`standard` vs `lite`).
 
 ### 5. G2-code timing & path-scoped staging
