@@ -337,7 +337,7 @@ function testCleanupProtectsBaseBranches() {
   // AC11: never delete main/master/develop (exact names).
   const scriptDir = path.dirname(SCRIPT).replace(/\\/g, '/');
   const check = cp.spawnSync(
-    process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3'),
+    PYTHON,
     [
       '-c',
       [
