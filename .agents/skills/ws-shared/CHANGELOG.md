@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-17 12:57] Agent: muse-spark
+- **Prompt**: /ship-pr (standalone): ship top-nav removal + portable python test fixes as PR #342, converge review threads, merge.
+- **Done**: Committed feat(docs) nav removal + fix(test) python resolution (12 files) + 2 review-fix commits; answered and resolved 2 reviewer threads; merged #342 after all checks green.
+- **Result**: PR #342 MERGED. Learning: test files hardcoding the `python` binary fail on python3-only hosts — use `process.env.PYTHON || (win32 ? python : python3)`; fixture shell commands must derive from the same constant or sabotage guards silently no-op.
+
 ### [2026-09-17 14:30] Agent: muse-spark
 - **Prompt**: Implement .agents/specs/0091-website-visual-revamp.spec.md (docs-style three-region layout).
 - **Done**: Restructured docs/index.html shell (skip link, grouped sidebar, main landmark, on-this-page TOC, mobile drawer + JS) and appended original docs-layout CSS; all content, anchors, and metadata unchanged; builder --check clean and rebuild deterministic.

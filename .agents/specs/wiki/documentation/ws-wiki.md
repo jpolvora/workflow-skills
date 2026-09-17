@@ -1,6 +1,6 @@
 # Living Feature Wiki & Domain Knowledge Base (`ws-wiki`)
 
-> Provenance: `.agents/skills/ws-wiki/SKILL.md`, companions `FROM-CODE.md`/`PHASE-1-SWEEP.md`/`SYNC.md`/`UPDATE.md`, `scripts/validate_wiki.cjs`, `plans.wikiDir` and `plans.wiki.verbosity` in `{sharedDir}/config.json`.
+> Provenance: `.agents/skills/ws-wiki/SKILL.md`, companions `FROM-CODE.md`/`PHASE-1-SWEEP.md`/`SYNC.md`/`UPDATE.md`, `scripts/validate_wiki.cjs`, `plans.wikiDir` and `plans.wiki.verbosity` in `{sharedDir}/config.json`, living synthesis of specs 0087.
 
 ## Feature
 
@@ -17,6 +17,8 @@ Each page-writing run resolves verbosity as explicit invocation override, then `
 Single-feature `sync` presents diffs in a review gate with Apply recommended, Apply-with-detailed once, or Cancel STOP, then writes, re-indexes through `sync_wiki_index.cjs`, and validates. `update` loads one target page, migrates legacy three-section headings on touch, preserves untouched sections, and validates on save. Phase 2 verify walks pages from `list_wiki_feature_pages.cjs`, classifies statements as `confirmed`, `differs`, `absent`, or `inconclusive` with file-and-line evidence, and checkpoints progress in `verify.state.json`. Phase 3 plans every `differs` or `absent` finding with a per-finding truth gate, then batch-applies wiki edits or emits standalone spec items for code fixes.
 
 Validation accepts the new conditional template and legacy three-section pages with a deprecation warning only. Broken relative links and pages missing all required headings fail with exit code 1. Checkpoint state files are never staged in product commits.
+
+Reconciliation is watermarked so routine runs stay bounded to the delta. `index.wiki.md` carries a `## Sync Baseline` block with the full 40-character HEAD SHA and the calendar-day sync date. When the block is present and the SHA is reachable, sweep queues only the specs added or changed in `<sha>..HEAD` and sync without a slug discovers the same range through `git diff --name-status` plus `git log --oneline`, reading current code only where the diff touches it. The run falls back to a full sweep or from-code genesis when the block is missing, the SHA is unreachable after a history rewrite or shallow clone, or a repository-wide restructure dominates the delta. The watermark advances to the current HEAD only after the complete range is processed, while targeted `sync [slug]` and `update [target]` flows leave it unchanged, dry-run never advances it, `init` seeds the block when absent, and `validate` ignores the block.
 
 ## Backend
 
