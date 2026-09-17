@@ -156,7 +156,11 @@ function detect(repoRoot) {
     warnings.push('Package manifest bin/skill-dependencies.json is unreadable; coexistence outside-package ids unknown.');
   }
   if (markersPresent && !sotPresent) {
-    warnings.push('Package markers present without SoT under .agents/skills; classified consumer (markers alone are not upstream evidence).');
+    warnings.push(
+      mode === 'consumer'
+        ? 'Package markers present without SoT under .agents/skills; classified consumer (markers alone are not upstream evidence).'
+        : 'Package markers present without SoT under .agents/skills and no global install; classified none (no skills found).',
+    );
   }
   if (mode === 'none') {
     warnings.push('No ws-* SKILL.md found under .agents/skills or {globalSkillsRoot}; install the package or run from a package root.');

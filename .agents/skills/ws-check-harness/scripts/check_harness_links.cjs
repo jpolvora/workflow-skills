@@ -128,8 +128,7 @@ function analyze(repoRoot) {
   }
 
   const skillsDir = path.join(repoRoot, '.agents', 'skills');
-  const diskSkills = fs
-    .readdirSync(skillsDir, { withFileTypes: true })
+  const diskSkills = (fs.existsSync(skillsDir) ? fs.readdirSync(skillsDir, { withFileTypes: true }) : [])
     .filter((entry) => entry.isDirectory() && entry.name !== 'ws-shared' && /^ws-/.test(entry.name))
     .filter((entry) => fs.existsSync(path.join(skillsDir, entry.name, 'SKILL.md')))
     .map((entry) => entry.name)
