@@ -130,7 +130,7 @@
 </nav>
 
 <div class="docs-shell">
-  <aside id="site-sidebar" aria-label="Site sections">
+  <aside id="site-sidebar">
     <nav class="sidebar-nav" aria-label="Site sections">
       <div class="sidebar-group">
         <div class="sidebar-group-heading">Start</div>
@@ -2718,9 +2718,9 @@ npx --yes github:jpolvora/workflow-skills --global
 </section>
 
   </main>
-  <aside id="page-toc" aria-label="On this page">
-    <div class="toc-heading">On this page</div>
-    <nav class="toc-nav" aria-label="On this page">
+  <aside id="page-toc">
+    <div class="toc-heading" id="page-toc-heading">On this page</div>
+    <nav class="toc-nav" aria-labelledby="page-toc-heading">
       <a href="#features">Features</a>
       <a href="#specialized-subagents">Subagents</a>
       <a href="#how-it-works">How It Works</a>
@@ -3215,10 +3215,23 @@ npx --yes github:jpolvora/workflow-skills --global
     var overlay = document.getElementById('sidebar-overlay');
     var sidebar = document.getElementById('site-sidebar');
     var mq = window.matchMedia('(max-width: 900px)');
+    var lastActive = null;
     function setOpen(open) {
+      var was = document.body.classList.contains('nav-open');
       document.body.classList.toggle('nav-open', open);
       if (toggle) toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
       if (overlay) overlay.hidden = !open;
+      if (!mq.matches) return;
+      if (open) {
+        lastActive = document.activeElement;
+        document.body.style.overflow = 'hidden';
+        var first = sidebar ? sidebar.querySelector('a') : null;
+        if (first) first.focus();
+      } else if (was) {
+        document.body.style.overflow = '';
+        if (lastActive && lastActive.focus) lastActive.focus();
+        else if (toggle) toggle.focus();
+      }
     }
     if (toggle) {
       toggle.addEventListener('click', function() {

@@ -4248,10 +4248,12 @@ h1, h2, .font-display {
     background: var(--bg-canvas);
     z-index: 600;
     transform: translateX(-102%);
-    transition: transform var(--transition-normal);
+    visibility: hidden;
+    transition: transform var(--transition-normal), visibility var(--transition-normal);
   }
   body.nav-open #site-sidebar {
     transform: none;
+    visibility: visible;
   }
   .sidebar-overlay {
     position: fixed;
