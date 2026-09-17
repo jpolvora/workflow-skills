@@ -4135,6 +4135,17 @@ h1, h2, .font-display {
   background: var(--bg-card);
 }
 
+.sidebar-nav,
+.toc-nav {
+  position: static;
+  padding: 0;
+  background: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-bottom: none;
+  z-index: auto;
+}
+
 .sidebar-nav {
   display: flex;
   flex-direction: column;
