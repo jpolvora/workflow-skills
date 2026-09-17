@@ -4156,7 +4156,7 @@ nav.toc-nav {
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--text-dim);
+  color: var(--text-muted);
   font-weight: 700;
   margin-bottom: 6px;
   padding-left: 10px;
@@ -4191,7 +4191,7 @@ nav.toc-nav {
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--text-dim);
+  color: var(--text-muted);
   font-weight: 700;
   margin-bottom: 10px;
 }
