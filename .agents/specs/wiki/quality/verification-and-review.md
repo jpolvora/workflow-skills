@@ -1,6 +1,6 @@
 # Verification & Review (`quality`)
 
-> Provenance: `.agents/skills/ws-plan-verify/SKILL.md`, `.agents/skills/ws-code-review/SKILL.md`, `.agents/skills/ws-testing/SKILL.md`, `.agents/skills/ws-shared/runtime/scripts/scan_stack_invariants.cjs`, `.agents/skills/ws-fix-pr/SKILL.md`, living synthesis of specs 0004, 0005, 0015, 0028, 0031, 0038, 0044, 0046, 0050, 0067, 0082, 0084.
+> Provenance: `.agents/skills/ws-plan-verify/SKILL.md`, `.agents/skills/ws-code-review/SKILL.md`, `.agents/skills/ws-testing/SKILL.md`, `.agents/skills/ws-shared/runtime/scripts/scan_stack_invariants.cjs`, `.agents/skills/ws-fix-pr/SKILL.md`, living synthesis of specs 0004, 0005, 0015, 0028, 0031, 0038, 0044, 0046, 0050, 0067, 0082, 0084, 0089.
 
 ## Feature
 
@@ -14,7 +14,7 @@ Stack invariants are non-negotiable. Step 6 requires two-phase review proof cove
 
 Proactive class sweep after validating a review thread requires naming the defect class, searching code, MEMORY, PR context, and pattern files, fixing small local siblings immediately, and recording skips with path and reason. Resolving after an anchor-only fix while unrecorded siblings remain is forbidden. Fix-PR convergence follows the surgical-commit contract on a dirty worktree: `preExistingDirty` paths stay unstaged, staged WIP is separated from fix hunks per `tools.md` `commit-code` (`git diff HEAD`, `git diff --cached`, and `git status --porcelain` on the path, `git apply --cached`, `git restore --staged` when the index holds unrelated hunks), and a score 6–10 thread whose anchor cannot be separated stays open or is escalated with `path + reason` instead of being resolved without a landed commit. Verification keys matching `/^_/` are never required aliases; a valid `skipReason` counts as observed without defect caps; genuinely missing required aliases still fail closed.
 
-Preview via `/ws-preview` or `/pipeline-review` is user-only, never model-invoked, always `--dry-run`, includes uncommitted changes, and stops after the summary without shipping.
+Preview via `/ws-preview` or `/pipeline-review` is user-only, never model-invoked, always `--dry-run`, includes uncommitted changes, and stops after the summary without shipping. The same configured dry-run command is additionally reused as the optional non-blocking Step 4b gate inside `ws-ship-pr`, where it runs verbatim after push and before Create PR, reports findings on the Prepare-to-PR board, and always continues shipping regardless of outcome.
 
 ## Backend
 

@@ -206,7 +206,7 @@
       </tr>
       <tr>
         <th>Provenance</th>
-        <td>0001–0075</td>
+        <td>Specs 0087</td>
       </tr>
       <tr>
         <th>Framework</th>
@@ -219,7 +219,7 @@
     </tbody>
   </table>
 </aside>
-<p>&gt; Provenance: <code>.agents/skills/ws-wiki/SKILL.md</code>, companions <code>FROM-CODE.md</code>/<code>PHASE-1-SWEEP.md</code>/<code>SYNC.md</code>/<code>UPDATE.md</code>, <code>scripts/validate_wiki.cjs</code>, <code>plans.wikiDir</code> and <code>plans.wiki.verbosity</code> in <code>{sharedDir}/config.json</code>.</p>
+<p>&gt; Provenance: <code>.agents/skills/ws-wiki/SKILL.md</code>, companions <code>FROM-CODE.md</code>/<code>PHASE-1-SWEEP.md</code>/<code>SYNC.md</code>/<code>UPDATE.md</code>, <code>scripts/validate_wiki.cjs</code>, <code>plans.wikiDir</code> and <code>plans.wiki.verbosity</code> in <code>{sharedDir}/config.json</code>, living synthesis of specs 0087.</p>
 <div class="wiki-toc-box" id="toc" role="navigation" aria-label="Table of contents">
   <div class="wiki-toc-header">
     <span class="wiki-toc-title">Contents</span>
@@ -239,6 +239,7 @@
 <p>Each page-writing run resolves verbosity as explicit invocation override, then <code>{wikiDir}/from-code.state.json</code>, then <code>plans.wiki.verbosity</code> in config, then <code>condensed</code>. Unknown values fail closed to <code>condensed</code> with a warning. The Start gate in from-code and sweep asks via <code>user-gate</code> unless <code>autoMode</code> takes the persisted default without prompting.</p>
 <p>Single-feature <code>sync</code> presents diffs in a review gate with Apply recommended, Apply-with-detailed once, or Cancel STOP, then writes, re-indexes through <code>sync_wiki_index.cjs</code>, and validates. <code>update</code> loads one target page, migrates legacy three-section headings on touch, preserves untouched sections, and validates on save. Phase 2 verify walks pages from <code>list_wiki_feature_pages.cjs</code>, classifies statements as <code>confirmed</code>, <code>differs</code>, <code>absent</code>, or <code>inconclusive</code> with file-and-line evidence, and checkpoints progress in <code>verify.state.json</code>. Phase 3 plans every <code>differs</code> or <code>absent</code> finding with a per-finding truth gate, then batch-applies wiki edits or emits standalone spec items for code fixes.</p>
 <p>Validation accepts the new conditional template and legacy three-section pages with a deprecation warning only. Broken relative links and pages missing all required headings fail with exit code 1. Checkpoint state files are never staged in product commits.</p>
+<p>Reconciliation is watermarked so routine runs stay bounded to the delta. <code>index.wiki.md</code> carries a <code>## Sync Baseline</code> block with the full 40-character HEAD SHA and the calendar-day sync date. When the block is present and the SHA is reachable, sweep queues only the specs added or changed in <code>&lt;sha&gt;..HEAD</code> and sync without a slug discovers the same range through <code>git diff --name-status</code> plus <code>git log --oneline</code>, reading current code only where the diff touches it. The run falls back to a full sweep or from-code genesis when the block is missing, the SHA is unreachable after a history rewrite or shallow clone, or a repository-wide restructure dominates the delta. The watermark advances to the current HEAD only after the complete range is processed, while targeted <code>sync [slug]</code> and <code>update [target]</code> flows leave it unchanged, dry-run never advances it, <code>init</code> seeds the block when absent, and <code>validate</code> ignores the block.</p>
 <h2 id="backend">Backend <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/develop/.agents/specs/wiki/documentation/ws-wiki.md" target="_blank" rel="noopener" title="Edit section: Backend">[edit]</a></span></h2>
 <p>Deterministic helpers include <code>validate_wiki.cjs</code> (link resolution, index presence, new and legacy heading checks, <code>--json</code> and <code>--check</code>), <code>sync_wiki_index.cjs</code> (idempotent index updater), <code>list_wiki_sweep_specs.cjs</code> (prefix order with ambiguous-dual fail-closed), <code>list_wiki_from_code_areas.cjs</code> (canonical investigation order with <code>git-surface</code> always present), and <code>list_wiki_feature_pages.cjs</code> (verify order with containment gating).</p>
 <p>Configuration resolves <code>{wikiDir}</code> from <code>plans.wikiDir</code> (default <code>.agents/specs/wiki</code>) and optional <code>plans.wiki.verbosity</code> (default <code>condensed</code>) in <code>{sharedDir}/config.json</code>. The skill registers in <code>CATALOG.md</code>, <code>ws-shared/autoload.md</code>, and <code>bin/skill-dependencies.json</code>. Post-close lifecycle integration offers <code>/ws-wiki sync</code> alongside index and changelog updates in <code>ws-spec-to-pr</code> Step 8 and lite Step 4 after product code is committed.</p>
