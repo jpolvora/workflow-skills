@@ -24,6 +24,24 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Rewrite tracked file bytes in place from a PowerShell one-liner (regex replace + `WriteAllBytes`/`Set-Content`), assume working-tree CRLF equals stored bytes, or chain test commands with `&&` in PowerShell.
 - **INSTEAD DO**: Make content changes only with the file editing tools; before reasoning about line endings run `git ls-files --eol <paths>` plus `git config core.autocrlf` (here: index blobs are LF, working-tree CRLF is checkout conversion, so LF inserts match the blobs and no normalization is needed). Chain PowerShell commands with `;` plus `if($LASTEXITCODE -ne 0){ exit 1 }`. After any shell file operation, verify byte counts/content before continuing.
 
+### [2026-09-17] Fable caveats on docs-only ship tree (0091 website revamp)
+- **Layer**: `devops`
+- **Module**: `ship audit / ws-fable-judge`
+- **Severity**: `High`
+- **PathPattern**: `docs/**;.agents/skills/ws-shared/CHANGELOG.md`
+- **Scenario / Context**: `VERIFIED WITH CAVEATS` audit of a static-site-only change (new sidebar/TOC/drawer markup plus stylesheet block; content, anchors, and metadata byte-identical to base). No test files touched, full suite green on the final tree, leak scan clean.
+- **DO NOT**: Ship a tree containing another session's uncommitted hunks without naming them in the report and PR body, or present a headless structural check as a rendered visual/keyboard pass.
+- **INSTEAD DO**: Ground every claim in `git diff` plus re-run exit codes; label the browser viewport/keyboard pass UNVERIFIABLE from a headless shell and keep it as a reviewer checklist item; disclose foreign hunks (here: a prior ship's uncommitted `CHANGELOG.md` entry) explicitly so the merge reviewer can confirm they belong.
+
+### [2026-09-17] edit_file find must match on-disk line endings byte-exact
+- **Layer**: `devops`
+- **Module**: `agent file edits`
+- **Severity**: `Medium`
+- **PathPattern**: `docs/**`
+- **Scenario / Context**: While implementing spec 0091, an `edit_file` on `docs/assets/css/style.css` failed with "no exact match found" although the find block was visually identical to the `read_file` output. Root cause: `style.css` has CRLF on disk while the sibling `docs/index.html` is LF, and the read display normalizes endings. Retrying the same LF find text kept failing until the find was re-emitted with CRLF endings.
+- **DO NOT**: Assume read-normalized text equals on-disk bytes, or retry an identical find block after an exact-match failure on a file with mixed-repo endings.
+- **INSTEAD DO**: After one exact-match failure, check `git ls-files --eol <path>` (here: `style.css` CRLF, `index.html` LF) and re-emit the find text with the file's own line endings; keep the anchor block short and unique.
+
 ### [2026-09-16] TTY-only interactive paths are not exercisable from agent shells
 - **Layer**: `tests`
 - **Module**: `installer CLI interactive prompts (bin/cli.js)`

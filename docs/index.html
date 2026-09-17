@@ -76,6 +76,8 @@
 </head>
 <body>
 
+<a class="skip-link" href="#content">Skip to content</a>
+
 <div class="scroll-progress-bar" id="scroll-progress"></div>
 
 <aside class="dot-nav" aria-label="Section navigation">
@@ -91,8 +93,11 @@
   <a href="#faq" class="dot-nav-item"><span class="tooltip">FAQ</span></a>
 </aside>
 
-<nav>
+<nav id="site-header" aria-label="Primary">
   <div class="nav-inner">
+    <button type="button" id="sidebar-toggle" class="sidebar-toggle" aria-controls="site-sidebar" aria-expanded="false" aria-label="Toggle site navigation">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
     <a href="#" class="brand">
       <div class="brand-icon">⚡</div>
       Workflow Skills
@@ -123,6 +128,36 @@
     </div>
   </div>
 </nav>
+
+<div class="docs-shell">
+  <aside id="site-sidebar">
+    <nav class="sidebar-nav" aria-label="Site sections">
+      <div class="sidebar-group">
+        <div class="sidebar-group-heading">Start</div>
+        <a href="#features">Features</a>
+        <a href="#specialized-subagents">Subagents</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#workflows">Workflows</a>
+      </div>
+      <div class="sidebar-group">
+        <div class="sidebar-group-heading">Catalog</div>
+        <a href="#catalog">Catalog</a>
+        <a href="#install-packages">Packages</a>
+      </div>
+      <div class="sidebar-group">
+        <div class="sidebar-group-heading">Project</div>
+        <a href="#install">Installation</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contribute">Contribute</a>
+      </div>
+      <div class="sidebar-group">
+        <div class="sidebar-group-heading">Resources</div>
+        <a href="wiki/">Wiki</a>
+      </div>
+    </nav>
+  </aside>
+  <main id="content" tabindex="-1">
 
 <header class="hero">
   <div style="display:flex;justify-content:center;margin-bottom:14px;">
@@ -2682,6 +2717,25 @@ npx --yes github:jpolvora/workflow-skills --global
   </div>
 </section>
 
+  </main>
+  <aside id="page-toc">
+    <div class="toc-heading" id="page-toc-heading">On this page</div>
+    <nav class="toc-nav" aria-labelledby="page-toc-heading">
+      <a href="#features">Features</a>
+      <a href="#specialized-subagents">Subagents</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#workflows">Workflows</a>
+      <a href="#catalog">Catalog</a>
+      <a href="#install-packages">Packages</a>
+      <a href="#install">Installation</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contribute">Contribute</a>
+    </nav>
+  </aside>
+</div>
+<div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
+
 <footer>
   <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.4.34 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
@@ -3154,6 +3208,61 @@ npx --yes github:jpolvora/workflow-skills --global
       filterFaq();
     });
   }
+
+  /* ─── Sidebar drawer (mobile docs navigation) ─── */
+  (function initSidebarDrawer() {
+    var toggle = document.getElementById('sidebar-toggle');
+    var overlay = document.getElementById('sidebar-overlay');
+    var sidebar = document.getElementById('site-sidebar');
+    var mq = window.matchMedia('(max-width: 900px)');
+    var lastActive = null;
+    function setOpen(open) {
+      var was = document.body.classList.contains('nav-open');
+      var active = open && mq.matches;
+      document.body.classList.toggle('nav-open', active);
+      if (toggle) toggle.setAttribute('aria-expanded', active ? 'true' : 'false');
+      if (overlay) overlay.hidden = !active;
+      document.body.style.overflow = active ? 'hidden' : '';
+      if (active) {
+        lastActive = document.activeElement;
+        var first = sidebar ? sidebar.querySelector('a') : null;
+        if (first) first.focus();
+      } else if (was && mq.matches) {
+        if (lastActive && lastActive.focus) lastActive.focus();
+        else if (toggle) toggle.focus();
+      }
+    }
+    if (toggle) {
+      toggle.addEventListener('click', function() {
+        setOpen(!document.body.classList.contains('nav-open'));
+      });
+    }
+    if (overlay) overlay.addEventListener('click', function() { setOpen(false); });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && document.body.classList.contains('nav-open')) {
+        setOpen(false);
+        if (toggle) toggle.focus();
+      }
+    });
+    if (sidebar) sidebar.addEventListener('click', function(e) {
+      if (mq.matches && e.target.closest('a')) setOpen(false);
+    });
+    if (sidebar) sidebar.addEventListener('keydown', function(e) {
+      if (e.key !== 'Tab' || !document.body.classList.contains('nav-open')) return;
+      var items = sidebar.querySelectorAll('a[href]');
+      if (!items.length) return;
+      var firstItem = items[0];
+      var lastItem = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === firstItem) {
+        e.preventDefault();
+        lastItem.focus();
+      } else if (!e.shiftKey && document.activeElement === lastItem) {
+        e.preventDefault();
+        firstItem.focus();
+      }
+    });
+    if (mq.addEventListener) mq.addEventListener('change', function(e) { if (!e.matches) setOpen(false); });
+  })();
 
 })();
 </script>
