@@ -4078,7 +4078,7 @@ h1, h2, .font-display {
 /* ─── Docs-style three-region layout (0091 website visual revamp) ─── */
 
 .skip-link {
-  position: absolute;
+  position: fixed;
   left: 16px;
   top: -56px;
   z-index: 1000;
@@ -4118,7 +4118,7 @@ h1, h2, .font-display {
   display: grid;
   grid-template-columns: 250px minmax(0, 1fr) 210px;
   gap: 32px;
-  max-width: 1460px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 0 24px;
   align-items: start;
@@ -4135,8 +4135,8 @@ h1, h2, .font-display {
   background: var(--bg-card);
 }
 
-.sidebar-nav,
-.toc-nav {
+nav.sidebar-nav,
+nav.toc-nav {
   position: static;
   padding: 0;
   background: none;
