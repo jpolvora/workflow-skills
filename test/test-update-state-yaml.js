@@ -29,7 +29,7 @@ const VALIDATE_LITE = path.join(
   '.agents/skills/ws-spec-to-pr-lite/scripts/validate_state.py',
 );
 
-const PYTHON = process.env.PYTHON || 'python';
+const PYTHON = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
 const NL = '\n';
 const tmpRoots = [];
 let failures = 0;

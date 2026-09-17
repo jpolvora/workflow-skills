@@ -11,6 +11,7 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(__dirname, '..');
 const SKILLS = path.join(REPO, '.agents/skills');
+const PYTHON = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
 
 let failures = 0;
 
@@ -97,7 +98,7 @@ assert(/prior-work|sabotage|check-pr-status|comment-issue/i.test(catalog), 'cata
 
 // sweep_prior_work dry-run JSON paths (GitHub)
 const sweepDry = spawnSync(
-  'python',
+  PYTHON,
   [
     path.join(SKILLS, 'ws-spec-provider-github/scripts/sweep_prior_work.py'),
     '--dry-run',
@@ -113,7 +114,7 @@ assert(!/^[A-Za-z]:/.test(JSON.stringify(sweepJson)), 'GitHub sweep JSON no driv
 
 // sweep_prior_work dry-run JSON paths (ADO parity)
 const adoSweepDry = spawnSync(
-  'python',
+  PYTHON,
   [
     path.join(SKILLS, 'ws-spec-provider-azure-devops/scripts/sweep_prior_work.py'),
     '--dry-run',
@@ -135,7 +136,7 @@ assert(
 
 // comment_issue skip + dry-run
 const commentSkip = spawnSync(
-  'python',
+  PYTHON,
   [path.join(SKILLS, 'ws-spec-provider-github/scripts/comment_issue.py'), '--id', 'null', '--body', 'x'],
   { cwd: REPO, encoding: 'utf8' },
 );
@@ -167,7 +168,7 @@ fs.writeFileSync(
   path.join(hubDir, 'config.json'),
   JSON.stringify({
     verification: {
-      backendTest: 'python check_pass.py',
+      backendTest: `${PYTHON} check_pass.py`,
       frontendTest: 'exit 0',
     },
   }),
@@ -180,10 +181,10 @@ fs.writeFileSync(
   "import pathlib, sys\nsys.exit(0 if pathlib.Path('sample.txt').read_text(encoding='utf-8').strip() == 'PASS' else 1)\n",
   'utf8',
 );
-const passTest = 'python check_pass.py';
+const passTest = `${PYTHON} check_pass.py`;
 
 const sabotage = spawnSync(
-  'python',
+  PYTHON,
   [
     path.join(SKILLS, 'ws-testing/scripts/run_sabotage.py'),
     '--test',
@@ -202,7 +203,7 @@ assert(fs.readFileSync(fixtureFile, 'utf8') === 'PASS\n', 'fixture restored afte
 assert(fs.readFileSync(otherFile, 'utf8') === 'dirty', 'other dirty tracked file untouched by restore proof');
 
 const sabotageFail = spawnSync(
-  'python',
+  PYTHON,
   [
     path.join(SKILLS, 'ws-testing/scripts/run_sabotage.py'),
     '--test',
@@ -228,7 +229,7 @@ const pyScripts = [
   'ws-testing/scripts/run_sabotage.py',
 ];
 for (const rel of pyScripts) {
-  const c = spawnSync('python', ['-m', 'py_compile', path.join(SKILLS, rel)], { encoding: 'utf8' });
+  const c = spawnSync(PYTHON, ['-m', 'py_compile', path.join(SKILLS, rel)], { encoding: 'utf8' });
   assert(c.status === 0, `py_compile ${rel}`);
 }
 

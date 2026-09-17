@@ -24,7 +24,7 @@ const OUTPUT_MD = path.join(
   '.agents/skills/ws-pre-daily/references/OUTPUT.md',
 );
 const DEPS_JSON = path.join(REPO_ROOT, 'bin/skill-dependencies.json');
-const PYTHON = process.env.PYTHON || 'python';
+const PYTHON = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
 
 const tmpRoots = [];
 let failures = 0;

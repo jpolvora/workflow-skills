@@ -444,13 +444,13 @@ assert(ghThreads.includes('activeThreads'), 'GitHub fetch_threads.cjs returns ac
 assert(adoThreads.includes('activeThreads'), 'Azure collect returns activeThreads');
 
 const ghSweepDry = spawnSync(
-  'python',
+  pythonBin,
   [path.join(SKILLS, 'ws-spec-provider-github/scripts/sweep_prior_work.py'), '--dry-run', '--keywords', 'parity'],
   { encoding: 'utf8', cwd: REPO },
 );
 assert(ghSweepDry.status === 0, 'GitHub sweep_prior_work.py --dry-run exits 0');
 const adoSweepDry = spawnSync(
-  'python',
+  pythonBin,
   [path.join(SKILLS, 'ws-spec-provider-azure-devops/scripts/sweep_prior_work.py'), '--dry-run', '--keywords', 'parity'],
   { encoding: 'utf8', cwd: REPO },
 );
@@ -499,7 +499,7 @@ assert(prRow.sourceRefName === 'feat/x', 'ADO sourceRefName is a bare branch');
 
 for (const skillId of ['ws-spec-provider-github', 'ws-spec-provider-azure-devops']) {
   const skip = spawnSync(
-    'python',
+    pythonBin,
     [path.join(SKILLS, skillId, 'scripts/comment_issue.py'), '--id', 'null', '--body', 'x'],
     { encoding: 'utf8', cwd: REPO },
   );
@@ -508,7 +508,7 @@ for (const skillId of ['ws-spec-provider-github', 'ws-spec-provider-azure-devops
 }
 
 const adoOverride = spawnSync(
-  'python',
+  pythonBin,
   [
     path.join(SKILLS, 'ws-spec-provider-azure-devops', 'scripts/comment_issue.py'),
     '--org',
@@ -538,7 +538,7 @@ const adoOverrideEnv = { ...process.env };
 delete adoOverrideEnv.ADO_PAT;
 delete adoOverrideEnv.AZURE_DEVOPS_PAT;
 const adoOverrideMutating = spawnSync(
-  'python',
+  pythonBin,
   [
     path.join(SKILLS, 'ws-spec-provider-azure-devops', 'scripts/comment_issue.py'),
     '--org',

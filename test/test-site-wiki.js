@@ -163,8 +163,8 @@ x
 function testLandingNavWikiHref() {
   const site = read(path.join(REPO_ROOT, 'docs/index.html'));
   assert(site.includes('href="wiki/"'), 'landing nav includes wiki href');
-  const navLinks = site.match(/<div class="nav-links">[\s\S]*?<\/div>/);
-  assert(navLinks && navLinks[0].includes('href="wiki/"'), 'nav-links has wiki href');
+  const sidebarNav = site.match(/<nav class="sidebar-nav"[\s\S]*?<\/nav>/);
+  assert(sidebarNav && sidebarNav[0].includes('href="wiki/"'), 'sidebar-nav has wiki href');
   const dotNav = site.match(/<aside class="dot-nav"[\s\S]*?<\/aside>/);
   assert(dotNav && dotNav[0].includes('href="wiki/"'), 'dot-nav has wiki href');
 }
