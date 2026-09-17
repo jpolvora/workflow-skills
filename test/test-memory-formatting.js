@@ -8,7 +8,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, "..");
 const scriptPath = path.join(rootDir, ".agents", "skills", "ws-self-learning", "scripts", "self_learning.cjs");
 const pythonTwin = path.join(rootDir, ".agents", "skills", "ws-self-learning", "scripts", "self_learning.py");
-const PYTHON = process.env.PYTHON || "python";
+const PYTHON = process.env.PYTHON || (process.platform === "win32" ? "python" : "python3");
 
 const FIXTURE = [
   "### [2026-07-30] Test Actionable Directives",

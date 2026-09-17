@@ -25,7 +25,7 @@ const MULTI_PROTOCOL = path.join(REPO_ROOT, '.agents/skills/ws-spec-multi/PROTOC
 const STEP_DISPATCH = path.join(REPO_ROOT, '.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md');
 const ARTIFACTS = path.join(REPO_ROOT, '.agents/skills/ws-spec-to-pr/ARTIFACTS.md');
 
-const PYTHON = process.env.PYTHON || 'python';
+const PYTHON = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
 const WID = 'cleanup-test-20260801T180000Z';
 const OTHER = 'other-id-20260801T180000Z';
 const PREFIX = `uswf/${WID}`;
@@ -337,7 +337,7 @@ function testCleanupProtectsBaseBranches() {
   // AC11: never delete main/master/develop (exact names).
   const scriptDir = path.dirname(SCRIPT).replace(/\\/g, '/');
   const check = cp.spawnSync(
-    process.env.PYTHON || 'python',
+    process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3'),
     [
       '-c',
       [

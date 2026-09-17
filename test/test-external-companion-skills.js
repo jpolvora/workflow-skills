@@ -12,7 +12,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '..');
-const PYTHON = process.env.PYTHON || 'python';
+const PYTHON = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
 
 function assert(cond, msg) {
   if (!cond) throw new Error(msg);

@@ -120,17 +120,17 @@ write(path.join(root, 'MEMORY.md'), `## Traps
 - **DO NOT**: bypass the boundary
 - **INSTEAD DO**: use the service
 `);
-const memoryResult = run(memory, ['plan.md', '--json', '--memory', 'MEMORY.md', '--repo-root', root], { command: 'python', cwd: root });
+const memoryResult = run(memory, ['plan.md', '--json', '--memory', 'MEMORY.md', '--repo-root', root], { command: (process.platform === 'win32' ? 'python' : 'python3'), cwd: root });
 assert.strictEqual(memoryResult.status, 2);
 assert.strictEqual(JSON.parse(memoryResult.stdout).force_interview, true);
 
-const softExitResult = run(memory, ['plan.md', '--json', '--soft-exit', '--memory', 'MEMORY.md', '--repo-root', root], { command: 'python', cwd: root });
+const softExitResult = run(memory, ['plan.md', '--json', '--soft-exit', '--memory', 'MEMORY.md', '--repo-root', root], { command: (process.platform === 'win32' ? 'python' : 'python3'), cwd: root });
 assert.strictEqual(softExitResult.status, 0, softExitResult.stderr);
 const softPayload = JSON.parse(softExitResult.stdout);
 assert.strictEqual(softPayload.force_interview, true);
 assert.ok(Array.isArray(softPayload.results.traps) && softPayload.results.traps.length > 0);
 
-const humanSoft = run(memory, ['plan.md', '--soft-exit', '--memory', 'MEMORY.md', '--repo-root', root], { command: 'python', cwd: root });
+const humanSoft = run(memory, ['plan.md', '--soft-exit', '--memory', 'MEMORY.md', '--repo-root', root], { command: (process.platform === 'win32' ? 'python' : 'python3'), cwd: root });
 assert.strictEqual(humanSoft.status, 1, humanSoft.stderr);
 assert.match(humanSoft.stderr, /--soft-exit requires --json/);
 console.log('test-classifier-history: ok');

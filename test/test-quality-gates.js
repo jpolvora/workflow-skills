@@ -47,7 +47,7 @@ const STEP_DISPATCH = path.join(
   '.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md',
 );
 
-const PYTHON = process.env.PYTHON || 'python';
+const PYTHON = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
 const tmpRoots = [];
 let failures = 0;
 

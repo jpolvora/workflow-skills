@@ -15,7 +15,7 @@ const SCRIPT = path.join(
   REPO_ROOT,
   '.agents/skills/ws-activity-report/scripts/infer_human_timing.py',
 );
-const PYTHON = process.env.PYTHON || 'python';
+const PYTHON = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
 
 const tmpRoots = [];
 let failures = 0;

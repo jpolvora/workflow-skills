@@ -15,7 +15,7 @@ const SCRIPT = path.join(
   REPO_ROOT,
   '.agents/skills/ws-configure-project/scripts/configure_autoload.py',
 );
-const PYTHON = process.env.PYTHON || 'python';
+const PYTHON = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
 
 const tmpRoots = [];
 let failures = 0;
