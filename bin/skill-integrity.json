@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "c0dcccf7b22e854053dec01621496f9ad2c3b217e568baf73e56b9b5e55c28ec",
+  "fullPackageDigest": "72f0a65b4cfadeee389f014a28ff06ac42822fa7b42b74f905fdbab2240f9cab",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -40,7 +40,7 @@
       "runtime/scripts/scan_stack_invariants.cjs": "f186e197040142066fa7e78b563b11a171c8dc5a62c8026a135457fa82faf5e7",
       "runtime/scripts/utf8_stdio.py": "b9599c57d16f7e1d05aef96fc4f5768ae4d54e3d32c3b5a8007e0e5f3f1caa31",
       "runtime/scripts/validate_json_schema.cjs": "db5bc07614c6496ae92ad7356b6f4c26cb8df5dd72681cfa228f1c76502bed61",
-      "runtime/scripts/workflow_state.cjs": "10528220c33f2a0f8386a61a0ffa88191a05f119b55de86757ad1381bcf9e4ca",
+      "runtime/scripts/workflow_state.cjs": "9a25dadcf2f4d51b1d5eb2c1081e32f598fac695adb29d9bbbd7663b3edead5c",
       "runtime/setup.md": "39f24667dcbdf499650dfd3f8b1f54e26632710cece4e9ba55ebc69e152703fd",
       "runtime/skill-dependencies.json": "5f1ef3c003950ac1f1f03e090671989792cc219f220bb15ee6761eee63bbbdfc",
       "runtime/stacks/abp-angular.md": "afd0426d06b2e2cd048fae3aa9a120ebed221d261713e3373840ef01f5ac629d",
@@ -48,7 +48,7 @@
       "runtime/stacks/php-laravel.md": "9ab6a66dad32adbf4110e863372c92a47528b1ffb7941b4cdec6339f27df5f1d",
       "runtime/stacks/typescript-node.md": "fb9fb4d49e8f1eb79ced7be656a5ff6a2a2dcfd784a50b77c2766a98b52a73ab",
       "runtime/step-artifact.schema.json": "85a1674590d900df2bbbf818d9f4a4c5ccaf004bdc4a1523fe2c28e4dab554a2",
-      "runtime/telemetry.schema.json": "a74d375451ef1ac982a9bfd453fc0a75341160348626808886105f5553cb94af",
+      "runtime/telemetry.schema.json": "b8d0256e1558524c9f700b19bad265b2aa92a5aa290c6fb536c097793e77eb76",
       "runtime/tools.md": "583eedf9a23040581d632891a8824c0d3301e71206903d71e79b761014f994e9",
       "runtime/workflow-state.schema.json": "5e3b8b2eb8fb7d15155b2a989f983a562378c6dbee70d8e625ec9233e6832247",
       "templates/CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
@@ -56,7 +56,7 @@
       "templates/MEMORY.md.template": "5b67274d91cd4507fecd8aa9e3c2ee10d2f7fb90f0d8eb35fb575089bc5664fb",
       "templates/STACK.md.example": "fb27d90c9fe3462b9d7f06484525703c69fe0e098150dd44c28096a7a2856ca3"
     },
-    "skillDigest": "535f945a5694ab8f230c536207bb0f2260517365c78578d0aa6cec79283439e9"
+    "skillDigest": "3ab9466ab1cd026e1555f68792290a9b68ea80e3d86493592bd908edea67c6f9"
   },
   "packageVersion": "0.4.35",
   "skills": {

@@ -47,6 +47,10 @@ assert(!schema.properties?.defaults?.required?.includes('modelsPreset'), 'schema
 const stateSchema = JSON.parse(fs.readFileSync(path.join(SHARED, 'runtime', 'workflow-state.schema.json'), 'utf8'));
 assert(stateSchema.properties?.modelsPreset?.type === 'string', 'workflow-state schema defines modelsPreset as string');
 
+const telemetrySchema = JSON.parse(fs.readFileSync(path.join(SHARED, 'runtime', 'telemetry.schema.json'), 'utf8'));
+assert(telemetrySchema.properties?.modelsPreset?.type === 'string', 'telemetry schema defines modelsPreset as string');
+assert(telemetrySchema.properties?.presetWarning?.type === 'string', 'telemetry schema defines presetWarning as string');
+
 assert(example.defaults.modelsPreset === 'cursor', 'example sets modelsPreset to cursor');
 assert(
   example.defaults.modelPresets?.default?.plannerModel === 'current',
@@ -582,6 +586,42 @@ assert(
   lastUnknownEvent.presetWarning && /unknown-xyz/.test(lastUnknownEvent.presetWarning),
   'telemetry records presetWarning for unknown preset',
 );
+presetStateJson = JSON.parse(fs.readFileSync(path.join(presetDir, 'preset.state.json'), 'utf8'));
+assert(presetStateJson.modelsPreset === 'cheap', 'unknown preset does not overwrite state.modelsPreset');
+
+// NS2: empty/whitespace preset is treated as unset (falls back to state/config)
+const emptyPreset = spawnSync(
+  process.execPath,
+  [
+    path.join(REPO, '.agents/skills/ws-spec-to-pr/scripts/update_state.cjs'),
+    'dispatch',
+    presetState,
+    '--step',
+    '1',
+    '--preset=',
+    '--repo-root',
+    tempRoot,
+  ],
+  { encoding: 'utf8' },
+);
+assert(emptyPreset.status === 0, `empty --preset= is treated as unset: ${emptyPreset.stderr}`);
+presetStateJson = JSON.parse(fs.readFileSync(path.join(presetDir, 'preset.state.json'), 'utf8'));
+assert(presetStateJson.modelsPreset === 'cheap', 'empty --preset= retains state.modelsPreset');
+
+// Generic inline --key=value form keeps existing flags working
+const inlineStep = spawnSync(
+  process.execPath,
+  [
+    path.join(REPO, '.agents/skills/ws-spec-to-pr/scripts/update_state.cjs'),
+    'dispatch',
+    presetState,
+    '--step=1',
+    '--repo-root',
+    tempRoot,
+  ],
+  { encoding: 'utf8' },
+);
+assert(inlineStep.status === 0, `--step=1 inline form parses: ${inlineStep.stderr}`);
 
 const roleCfg = JSON.parse(fs.readFileSync(path.join(tempShared, 'config.json'), 'utf8'));
 roleCfg.defaults.modelPresets.cheap.executionModel = 'sequential-exec';

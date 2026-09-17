@@ -1361,7 +1361,12 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   state.slug ||= state.us || path.basename(path.dirname(absoluteState));
   state.statePath = paths.statePath;
   if (isNonEmptyModel(options.preset)) {
-    state.modelsPreset = String(options.preset).trim();
+    const requested = String(options.preset).trim();
+    const presets = context.config?.defaults?.modelPresets;
+    const known = presets && typeof presets === 'object' && Boolean(presets[requested]);
+    if (known) {
+      state.modelsPreset = requested;
+    }
   } else if (isNonEmptyModel(state.modelsPreset)) {
     options.preset = state.modelsPreset;
   }

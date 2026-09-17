@@ -14,6 +14,8 @@
     "step": { "type": "integer", "minimum": 0, "maximum": 9 },
     "model": { "type": "string" },
     "configuredModel": { "type": "string" },
+    "modelsPreset": { "type": "string", "minLength": 1 },
+    "presetWarning": { "type": "string", "minLength": 1 },
     "agentType": { "type": "string" },
     "subagentId": { "type": "string" },
     "retries": { "type": "integer", "minimum": 0 },
