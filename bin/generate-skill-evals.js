@@ -581,12 +581,12 @@ const EVALS = {
       },
       {
         id: 3,
-        prompt: 'Dry-run ws-check-harness at this upstream package root and report Install mode + Skills scan root.',
+        prompt: 'Dry-run ws-check-harness at this upstream package root and report Install mode + Install scope + Skills scan root.',
         expected_output:
-          'Install mode: upstream; Skills scan root: .agents/skills; Mode reported separately from Install mode.',
+          'Install mode: upstream; Install scope: upstream; Skills scan root: .agents/skills; Mode reported separately from Install mode.',
         assertions: [
           'Detects package markers (bin/skill-dependencies.json + bin/cli.js) and SoT under .agents/skills/ws-*/SKILL.md',
-          'Reports Install mode upstream with Skills scan root .agents/skills',
+          'Reports Install mode upstream with Install scope upstream and Skills scan root .agents/skills',
           'Does not select src/skills as the upstream skills scan root',
           'Does not conflate execution Mode (normal|dry-run) with Install mode',
         ],
@@ -596,11 +596,25 @@ const EVALS = {
         prompt:
           'Dry-run ws-check-harness in a consumer tree that has only .agents/skills (no bin/skill-dependencies.json package markers).',
         expected_output:
-          'Install mode: consumer; Skills scan root under {skillsRoot} (default .agents/skills) and/or {globalSkillsRoot}; missing root AGENTS.md is OK.',
+          'Install mode: consumer; Install scope: project | hybrid | global; Skills scan root under {skillsRoot} (default .agents/skills) and/or {globalSkillsRoot}; missing root AGENTS.md is OK.',
         assertions: [
           'Reports Install mode consumer when upstream markers/SoT evidence is incomplete',
+          'Classifies scope: project (local only), hybrid (local + global), or global (global only)',
           'Scans {skillsRoot} (and optional global) rather than inventing inventory from stray src/skills',
           'Treats missing root AGENTS.md as OK; audits ws-shared/AGENTS.md as the consumer hub',
+        ],
+      },
+      {
+        id: 5,
+        prompt:
+          'Run ws-check-harness at the upstream develop tree on a machine that also has a global workflow-skills install under $HOME/.agents/skills.',
+        expected_output:
+          'Install mode: upstream; Install scope: upstream; Skills scan root: .agents/skills; global install reported under Coexistence (count, version, drift, ids outside the package) as informational — never as duplicate-id collisions or unrouted findings.',
+        assertions: [
+          'Runs detect_install_mode.cjs and records installMode/installScope/skillsScanRoots/coexistence',
+          'Upstream wins over the coexisting global tree; scan root stays .agents/skills',
+          'Does not flag duplicate ws-* ids across upstream and global trees',
+          'Reports global version drift and global-only ids as informational (installer update prunes retired folders)',
         ],
       },
     ],
