@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-17 03:00] Agent: muse-spark
+- **Prompt**: Continue full auto - resume `ws-preview-before-ship-gate` (lite) at Step 2 through ship.
+- **Done**: Verified the Step 4b implementation (AC1-AC9 file evidence, NS1-NS5 linked, full 76-step suite green, integrity regen last); G2 `cea78a7c`; review round 1 clean 9/10 (fable VERIFIED); close result + delivery commit (plan only).
+- **Result**: Steps 2-3 complete; Step 4 close done, ship next (push + live 4b + PR). Learning: recorded (Windows PowerShell CLI quoting trap).
+
 ### [2026-09-17 00:00] Agent: opencode-go/muse-spark
 - **Prompt**: Fix the preview-before-ship change (verify Step 4b placement before SCM Create PR; write the missing spec under `.agents/specs`).
 - **Done**: Verified Step 4b runs after commit/push and before provider Create PR (github/ado share the gate); wrote spec `0089-ws-preview-before-ship-gate.spec.md` (authoring PASS, 9 ACs); tightened Step 4b wording (trimmed-empty command, consumer repo root, `preview.previewBeforeShip` key), added the INTERVIEW table row, regenerated integrity.

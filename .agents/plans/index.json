@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 11,
-  "generatedAt": "2026-09-15T04:07:17Z",
+  "revision": 13,
+  "generatedAt": "2026-09-17T02:15:56Z",
   "workflows": [
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
@@ -561,7 +561,7 @@
       "stateSha256": "1d1c3e9531ead3562a66518102ce4915f4602ce835289c918d3df9ebe1b081c9",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-09-13T16:35:21Z",
+      "updatedAt": "2026-09-13T16:31:37Z",
       "runPath": ".agents/plans/us-328/us-328-20260913T160800Z.state.json"
     },
     {
@@ -618,6 +618,17 @@
       "currentStep": 10,
       "updatedAt": "2026-08-14T11:23:51Z",
       "runPath": ".agents/plans/ws-doctor-204-205/ws-doctor-204-205-20260814T013818Z.state.json"
+    },
+    {
+      "workflowId": "ws-preview-before-ship-gate-20260917T011747Z",
+      "slug": "ws-preview-before-ship-gate",
+      "pipeline": "lite",
+      "statePath": ".agents/plans/ws-preview-before-ship-gate/ws-preview-before-ship-gate-20260917T011747Z.state.md",
+      "stateSha256": "1100f76d08be6174848fb77ed17a7c5c381a2dea4b25cee079ea219d1a2d1a6e",
+      "status": "completed",
+      "currentStep": 5,
+      "updatedAt": "2026-09-17T02:15:56Z",
+      "runPath": ".agents/plans/ws-preview-before-ship-gate/ws-preview-before-ship-gate-20260917T011747Z.state.json"
     },
     {
       "workflowId": "ws-wiki-20260912T043312Z",
