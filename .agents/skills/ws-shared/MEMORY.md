@@ -15,6 +15,24 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Pass inline JSON to workflow scripts from PowerShell and retry with more escaping when it fails.
 - **INSTEAD DO**: For `ac_ledger.cjs --test` / `--alias-result` use the supported `key=value,comma-separated` format (no quotes needed). For `update_state.cjs finish`, write the payload to `{us-dir}/.runtime/step-0N-output.json` (auto-discovered `--step-output`) plus repeatable `--created` / `--modified` flags. For `--gate-decision` JSON, run the managed CLI in-process via a temp driver that overrides `process.argv` and requires the managed `update_state.cjs` (same code path, zero shell quoting).
 
+### [2026-09-17] Subdued text tokens and dark theme WCAG contrast
+- **Layer**: `application`
+- **Module**: `docs styling / accessibility`
+- **Severity**: `Medium`
+- **PathPattern**: `docs/assets/css/style.css`
+- **Scenario / Context**: When styling small auxiliary labels and headings (e.g. `.sidebar-group-heading`, `.toc-heading` at 0.72rem), using `--text-dim` (#64748b) passed contrast on light theme (4.76:1) but failed WCAG AA minimum 4.5:1 on dark theme against `--bg-card` (3.76:1) and `--bg-body` (4.08:1).
+- **DO NOT**: Use `--text-dim` for small (<18.66px bold / <24px regular) readable text or navigational labels on dark theme surfaces without verifying the contrast ratio against dark backgrounds.
+- **INSTEAD DO**: Use `--text-muted` (#94a3b8, ~7:1 contrast on both `--bg-card` and `--bg-body`) for subdued or auxiliary navigation headings so they maintain hierarchical subtlety while strictly satisfying WCAG AA 4.5:1 across all themes.
+
+### [2026-09-17] Skip link viewport anchoring and themed nav reset specificity
+- **Layer**: `application`
+- **Module**: `docs styling / a11y & theme resets`
+- **Severity**: `Medium`
+- **PathPattern**: `docs/assets/css/style.css`
+- **Scenario / Context**: During the docs layout revamp (PR #341), the skip link was positioned with `position: absolute` inside a `relative` body, causing it to scroll away off-screen when focused while scrolled down. In the same change, the reset `.sidebar-nav, .toc-nav { background: none; }` had specificity (0,1,0), which lost to `[data-theme="light"] nav` (0,1,1) in light theme, painting an unwanted background on sub-navs.
+- **DO NOT**: Use `position: absolute` for skip links whose visibility must remain fixed to the viewport on focus (WCAG 2.4.7/2.4.11), or use low-specificity class-only resets (`.sub-nav`) for elements whose parent type selector has higher-specificity theme variants (`[data-theme="..."] nav`).
+- **INSTEAD DO**: Anchor skip links with `position: fixed` so `:focus` moves them into the visible viewport regardless of page scroll. Qualify semantic element resets with the tag name (e.g. `nav.sidebar-nav, nav.toc-nav`) to tie or exceed the specificity of theme-scoped tag selectors (`[data-theme] nav`).
+
 ### [2026-09-17] Shell byte-rewrite of tracked files and PowerShell chaining
 - **Layer**: `devops`
 - **Module**: `agent file edits / PowerShell`
@@ -23,6 +41,15 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **Scenario / Context**: While implementing spec 0090, a PowerShell one-liner meant to normalize line endings rewrote four tracked files to 9 bytes (the regex pattern itself) because `[regex]'...'.Replace(...)` parsed as `String.Replace` (pattern returned unchanged) and the result was written back with `WriteAllBytes`. Recovery was `git checkout -- <paths>`. Separately, `cmd1 && cmd2` chaining failed: Windows PowerShell has no `&&` operator.
 - **DO NOT**: Rewrite tracked file bytes in place from a PowerShell one-liner (regex replace + `WriteAllBytes`/`Set-Content`), assume working-tree CRLF equals stored bytes, or chain test commands with `&&` in PowerShell.
 - **INSTEAD DO**: Make content changes only with the file editing tools; before reasoning about line endings run `git ls-files --eol <paths>` plus `git config core.autocrlf` (here: index blobs are LF, working-tree CRLF is checkout conversion, so LF inserts match the blobs and no normalization is needed). Chain PowerShell commands with `;` plus `if($LASTEXITCODE -ne 0){ exit 1 }`. After any shell file operation, verify byte counts/content before continuing.
+
+### [2026-09-17] Off-canvas drawer needs visibility + focus + scroll management
+- **Layer**: `application`
+- **Module**: `docs site drawer / accessibility`
+- **Severity**: `High`
+- **PathPattern**: `docs/index.html;docs/assets/css/style.css`
+- **Scenario / Context**: The first version of the mobile docs-nav drawer hid the closed sidebar with `transform` only and left focus/scroll unmanaged, so invisible links stayed in the tab order and background content stayed interactive. A PR reviewer flagged it as a WARNING before merge.
+- **DO NOT**: Ship an off-canvas panel that relies on `transform` alone, moves no focus on open, restores no focus on close, or leaves body scroll unlocked.
+- **INSTEAD DO**: Pair the off-canvas transform with `visibility` (hidden until open, so links leave the tab order and accessibility tree), move focus to the first panel link on open, restore the opener on close, lock `document.body.style.overflow` while open, and give each `nav` exactly one accessible name (no duplicate `aria-label` on wrapping `aside`).
 
 ### [2026-09-17] Fable caveats on docs-only ship tree (0091 website revamp)
 - **Layer**: `devops`
