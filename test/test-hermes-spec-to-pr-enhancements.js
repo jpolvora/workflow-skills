@@ -11,7 +11,7 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(__dirname, '..');
 const SKILLS = path.join(REPO, '.agents/skills');
-const PYTHON = process.platform === 'win32' ? 'python' : 'python3';
+const PYTHON = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
 
 let failures = 0;
 
@@ -168,7 +168,7 @@ fs.writeFileSync(
   path.join(hubDir, 'config.json'),
   JSON.stringify({
     verification: {
-      backendTest: 'python check_pass.py',
+      backendTest: `${PYTHON} check_pass.py`,
       frontendTest: 'exit 0',
     },
   }),
@@ -181,7 +181,7 @@ fs.writeFileSync(
   "import pathlib, sys\nsys.exit(0 if pathlib.Path('sample.txt').read_text(encoding='utf-8').strip() == 'PASS' else 1)\n",
   'utf8',
 );
-const passTest = 'python check_pass.py';
+const passTest = `${PYTHON} check_pass.py`;
 
 const sabotage = spawnSync(
   PYTHON,
