@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-09-17 14:30] Agent: muse-spark
+- **Prompt**: Implement .agents/specs/0091-website-visual-revamp.spec.md (docs-style three-region layout).
+- **Done**: Restructured docs/index.html shell (skip link, grouped sidebar, main landmark, on-this-page TOC, mobile drawer + JS) and appended original docs-layout CSS; all content, anchors, and metadata unchanged; builder --check clean and rebuild deterministic.
+- **Result**: AC verify 29/29 pass; inline script node --check clean; npm run test EXIT=0; integrity --check clean (no regen needed). Learning: recorded trap 2026-09-17-edit-crlf-exact-match (edit_file find must match CRLF bytes).
+
+### [2026-09-17 13:30] Agent: muse-spark
+- **Prompt**: Run ws-ship-pr for next version (bump, integrity, site/docs, commit, push, PR, wait CI, fix threads).
+- **Done**: Shipped 0.4.34 (commit 95590ab8) as PR #340 develop->main; all checks pass, 0 review threads after 1 heartbeat; dry-run review clean.
+- **Result**: Converged, merge pending user decision. Learning: N/A (no reviewer/CI defects to trap).
+
 ### [2026-09-17 13:00] Agent: muse-spark
 - **Prompt**: Add PowerShell command rules to shared AGENTS.md (avoid runtime execution errors + on-the-fly script patching).
 - **Done**: Extended `runtime/AGENTS.md` § Cross-platform runtime with 6 agent-facing PowerShell rules; regenerated integrity.
