@@ -4219,6 +4219,12 @@ h1, h2, .font-display {
   display: none;
 }
 
+@media (min-width: 1281px) {
+  .dot-nav {
+    display: none;
+  }
+}
+
 @media (max-width: 1280px) {
   .docs-shell {
     grid-template-columns: 230px minmax(0, 1fr);
