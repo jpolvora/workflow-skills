@@ -46,7 +46,7 @@ When skills are executed from a global install (`$HOME/.agents/skills` or `WORKF
 
 1. Project-local `{sharedDir}/AGENTS.md` (`.agents/skills/ws-shared/AGENTS.md`) — the installer seeds a thin local pointer here when the file is missing, so the configured `rules.harness` path still resolves.
 2. Global `{globalSkillsRoot}/ws-shared/AGENTS.md` (`~/.agents/skills` or `WORKFLOW_SKILLS_GLOBAL_DIR`) — documented fallback when no local file exists.
-3. Skill bodies via `resolveSkillMdPath` / `resolveConsumerContext` (`ws-shared/runtime/scripts/resolve_consumer_root.cjs`): project `{skillsRoot}/ws-<id>/SKILL.md` first, then `{globalSkillsRoot}/ws-<id>/SKILL.md`.
+3. Skill bodies via `resolveSkillMdPath` / `resolveConsumerContext` (`{sharedDir}/runtime/scripts/resolve_consumer_root.cjs`): project `{skillsRoot}/ws-<id>/SKILL.md` first, then `{globalSkillsRoot}/ws-<id>/SKILL.md`.
 
 An agent reading the configured `rules.harness` path succeeds without manual fallback when either the local pointer or the global hub is present.
 

@@ -6,33 +6,42 @@ Contains: canonical scan inventory (§ Scan scope) and Phases 0–7 methodology.
 
 ## Hub resolution details (Phase 0)
 
-Detect **Install mode** and **Skills scan root** before routing audits (summary also in `SKILL.md`). Execution `Mode` (`normal` | `dry-run`) is orthogonal — do not conflate it with Install mode.
+Detect **Install mode**, **Install scope**, and **Skills scan root(s)** before routing audits (summary also in `SKILL.md`). Execution `Mode` (`normal` | `dry-run`) is orthogonal — do not conflate it with Install mode.
 
-| Install mode | Detection (required evidence) | Primary hub | Skills scan root | Integrity gate |
-|--------------|------------------------------|-------------|------------------|----------------|
-| **upstream** | `bin/skill-dependencies.json` **and** `bin/cli.js` **and** at least one `.agents/skills/ws-*/SKILL.md` | Root `AGENTS.md` (+ dual-hub drift vs `{sharedDir}/AGENTS.md`) | `.agents/skills` | Required (Phase 3 item 7) |
-| **consumer** | Upstream evidence incomplete (markers and/or SoT absent); typically `{sharedDir}/AGENTS.md` present | `{sharedDir}/AGENTS.md` (`.agents/skills/ws-shared/AGENTS.md`) | `{skillsRoot}` (+ optional `{globalSkillsRoot}` hybrid) | Skip / not required |
+Run `node {skillsRoot}/ws-check-harness/scripts/detect_install_mode.cjs --json --repo-root {repoRoot}` (read-only) and record `installMode`, `installScope`, `skillsScanRoots`, `coexistence`, and `warnings` in the Phase 0 notes. Fall back to the manual evidence table below when the script is unavailable.
 
-**Hard rule:** Package markers (`bin/skill-dependencies.json` + `bin/cli.js`) **without** `.agents/skills` SoT ⇒ **Install mode: consumer** for skills inventory. Optional one-line informational note only (markers present, SoT absent) — not a problem-count item. Do **not** select `.agents/skills` as upstream skills scan root without SoT evidence.
+| Install mode | Install scope | Detection (required evidence) | Primary hub | Skills scan root(s) | Integrity gate |
+|--------------|---------------|------------------------------|-------------|---------------------|----------------|
+| **upstream** | `upstream` | `bin/skill-dependencies.json` **and** `bin/cli.js` **and** at least one `.agents/skills/ws-*/SKILL.md` | Root `AGENTS.md` (+ dual-hub drift vs `{sharedDir}/AGENTS.md`) | `.agents/skills` | Required (Phase 3 item 7) |
+| **consumer** | `project` | Upstream evidence incomplete (markers and/or SoT absent); `{skillsRoot}` has ws-* skills; `{globalSkillsRoot}` has none | `{sharedDir}/AGENTS.md` (`.agents/skills/ws-shared/AGENTS.md`) | `{skillsRoot}` | Skip / not required |
+| **consumer** | `hybrid` | Upstream evidence incomplete; `{skillsRoot}` **and** `{globalSkillsRoot}` both have ws-* skills (local override wins) | `{sharedDir}/AGENTS.md` | `{skillsRoot}`, then `{globalSkillsRoot}` fallback | Skip / not required |
+| **consumer** | `global` | Upstream evidence incomplete; `{skillsRoot}` has no ws-* skills; `{globalSkillsRoot}` has ws-* skills | Project `{sharedDir}/AGENTS.md` when present, else `{globalSkillsRoot}/ws-shared/AGENTS.md` | `{globalSkillsRoot}` | Skip / not required |
+| **none** | `none` | No ws-* `SKILL.md` in either tree | — | — | Skip / not required |
+
+**Hard rule:** Package markers (`bin/skill-dependencies.json` + `bin/cli.js`) **without** `.agents/skills` SoT ⇒ **Install mode: consumer** for skills inventory. Record one informational note (markers present, SoT absent) — not a problem-count item. Do **not** select `.agents/skills` as upstream skills scan root without SoT evidence.
+
+**Upstream + machine-global coexistence:** when SoT and `{globalSkillsRoot}` ws-* skills both exist, **Install mode: upstream** wins. Scan only `.agents/skills`; the global tree is a managed consumer copy — never merge inventories, never flag duplicate `name:` across the two trees, and keep `coexistence` (global count, version, drift, ids outside the package) as report evidence only. Pruning those global folders is installer `update`'s job, not a correction-plan item.
+
 
 **Consumer ignores stray `src/skills`:** When Install mode is consumer, do not scan a folder named `src/skills` for Phase 4 inventory even if it exists.
 
-**Verification (Install mode):** At an upstream package root → report `Install mode: upstream` + skills scan root `.agents/skills`. In a consumer tree with only `{skillsRoot}` / global install → `Install mode: consumer` + scan root under `.agents/skills` and/or `{globalSkillsRoot}`.
+**Verification (Install mode):** At an upstream package root → report `Install mode: upstream` + `Install scope: upstream` + skills scan root `.agents/skills` (plus `coexistence` when a global install exists). In a consumer tree with only `{skillsRoot}` / global install → `Install mode: consumer` with `Install scope: project` (local only), `hybrid` (local + global), or `global` (global only) + scan root under `.agents/skills` and/or `{globalSkillsRoot}`. No skills found → `Install mode: none` and stop with guidance.
 
 **Consumer rules:**
 
 - Primary hub is always `.agents/skills/ws-shared/AGENTS.md` when present. Missing root `AGENTS.md` is **OK** when `defaults.autoload` is false/omitted/missing. Thin root pointer is **OK**.
+- Global-only scope: project hub may be absent; resolve the primary hub from `{globalSkillsRoot}/ws-shared/AGENTS.md` (or its `runtime/AGENTS.md`) and treat hub routing literals as install-layout tokens. Project `config.json` still wins when present; missing project hub → **warning** (`ws-configure-project`), not a broken-link finding.
 - Do **not** warn that root lacks skill loading when the ws-shared hub has it.
-- Route Phase 4 against **ws-shared/AGENTS.md** (and root only if it also lists skills).
+- Route Phase 4 against **{sharedDir}/AGENTS.md** (and root only if it also lists skills).
 - If root `AGENTS.md` is absent or product-owned: do **not** emit a correction-plan item **unless** effective `defaults.autoload` is `true` (see flag-gated bullet below). At most a one-line informational note suggesting a thin pointer when the flag is off.
-- Links to `ws-shared/config.json` are healthy when the file exists. Unconfigured seed placeholders → **informational** (`ws-configure-project`), not a correction-plan item.
+- Links to `{sharedDir}/config.json` are healthy when the file exists. Unconfigured seed placeholders → **informational** (`ws-configure-project`), not a correction-plan item.
 - Empty optional rule keys (e.g. `rules.seniorDeveloper: ""`) must **not** appear as numbered correction-plan items.
 - Missing `config.json` when `{sharedDir}/templates/config.json.example` exists → **warning** (seed + ws-configure-project).
 - Pipeline / orch / provider skills may be intentionally omitted from the promoted table when the hub marks them orch-only.
 - Sections titled **Extra package (optional)**: missing Extra skill paths are **intentional omission**. When Extra skills **are** on disk, they must appear in that section (else unrouted warning).
 - **External companion skills** (`skill-dependencies.json` → `externalSkills`): missing local bodies are **intentional omission** (not phantom/critical). Hybrid `{globalSkillsRoot}` presence is OK. Always-applied must not list those ids as mandatory.
 - Phase 5b sprawl on managed upstream skills → **Upstream debt (informational)**; do **not** count toward consumer “Problems found” unless the user asked to optimize those skills.
-- **Dual-hub `ws-senior-developer`:** When consumer root `AGENTS.md` autoloads `ws-senior-developer` while `ws-shared/AGENTS.md` documents on-demand opt-in, treat as **intentional consumer override** — not hub drift, not a correction-plan item. Same when upstream root `AGENTS.md` autoloads for dogfood while ws-shared stays opt-in default.
+- **Dual-hub `ws-senior-developer`:** When consumer root `AGENTS.md` autoloads `ws-senior-developer` while `{sharedDir}/AGENTS.md` documents on-demand opt-in, treat as **intentional consumer override** — not hub drift, not a correction-plan item. Same when upstream root `AGENTS.md` autoloads for dogfood while the shared hub stays opt-in default.
 - **Dual-hub via `autoload.md`:** When root `AGENTS.md` references `{sharedDir}/autoload.md` (or `.agents/skills/ws-shared/autoload.md`) and Always-applied skills differ from shared-hub on-demand defaults, treat as **intentional consumer root override** — not dual-hub drift. Missing root `AGENTS.md` remains **OK** when effective `defaults.autoload` is false/omitted.
 - **`defaults.autoload` flag-gated root check:** Effective value is `true` only when project `config.json` exists and `defaults.autoload` is JSON boolean `true` (omitted/missing/not-true → false). When effective **true**: missing root `AGENTS.md`, or root that does not instruct loading Always-applied via an `autoload.md` reference → **critical** (suggest `ws-configure-project --section autoload`). When effective **false**: missing root remains **OK**. Helper SoT: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --check`.
 - **`autoload.md` Always-applied (when file present):** For each skill id in the Always-applied table, path form must be repo-relative (`.agents/skills/...`) or a declared token (`{skillsRoot}` / `{globalSkillsRoot}`). Absolute author-machine paths → **critical**. If `SKILL.md` is missing from both `{skillsRoot}` and `{globalSkillsRoot}` → **warning** (suggest install skill or remove row). Optional helper: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --check`.
@@ -56,7 +65,7 @@ Go through **all** artifacts below, in harness routing order (progressive disclo
 | File | Role |
 |---------|--------|
 | Resolved hub (§ Hub resolution) | Agent **hub** — skill loading, task router, verification (not human install docs) |
-| Root `AGENTS.md` | Upstream: full hub. Consumer: optional thin pointer to `ws-shared/AGENTS.md` (absent is OK; never required by shipped skills) |
+| Root `AGENTS.md` | Upstream: full hub. Consumer: optional thin pointer to `{sharedDir}/AGENTS.md` (absent is OK; never required by shipped skills) |
 | `.agents/skills/ws-shared/AGENTS.md` | Consumer primary hub (always installed with workflows/full) |
 | `README.md` | Human **README** — install, overview, contribute (not the skill router) |
 | Optional host entry pointer | Thin file pointing at `AGENTS.md` when the consumer/host uses one — verify if present; **not required** |
@@ -79,12 +88,14 @@ Phase 4 detects new or removed skills that diverge from declared routing; treat 
 
 Skill inventory is driven by **Install mode** (§ Hub resolution). Each skill is typically a directory containing a `SKILL.md` with YAML frontmatter (`name:`, `description:`). Standalone `.md` files with frontmatter directly under the scan root are also treated as skills.
 
-| Install mode | Discover `SKILL.md` under | Notes |
-|--------------|---------------------------|-------|
-| **upstream** | `.agents/skills` | Sole skill-content SoT. Hub literals under `.agents/skills/…` are filesystem-true. |
-| **consumer** | `{skillsRoot}` (+ optional `{globalSkillsRoot}` with local override) | Install layout token `{skillsRoot}` (default `.agents/skills`). Ignore stray `src/skills`. |
+| Install mode / scope | Discover `SKILL.md` under | Notes |
+|----------------------|---------------------------|-------|
+| **upstream** / `upstream` | `.agents/skills` | Sole skill-content SoT. Hub literals under `.agents/skills/…` are filesystem-true. Machine-global installs coexist but are out of scan scope. |
+| **consumer** / `project` | `{skillsRoot}` | Install layout token `{skillsRoot}` (default `.agents/skills`). Ignore stray `src/skills`. |
+| **consumer** / `hybrid` | `{skillsRoot}` first, `{globalSkillsRoot}` fallback | Local project skill bodies override global same-id copies; do not report a collision. |
+| **consumer** / `global` | `{globalSkillsRoot}` | Project hub (when present) still owns routing/config; skills inventory comes from the global tree. |
 
-**Phase 4** is the source of truth for the skill inventory: it scans the filesystem for `SKILL.md` under the **skills scan root** resolved in Phase 0, comparing against declared routing in the resolved hub (§ Hub resolution; `ws-shared/AGENTS.md` in consumer mode). Do not rely on hardcoded lists — the skills scan root on disk is the truth.
+**Phase 4** is the source of truth for the skill inventory: it scans the filesystem for `SKILL.md` under the **skills scan root** resolved in Phase 0, comparing against declared routing in the resolved hub (§ Hub resolution; `{sharedDir}/AGENTS.md` in consumer mode). Do not rely on hardcoded lists — the skills scan root on disk is the truth.
 
 > **`name:` collision vs Local Override:** two `SKILL.md` files with the same `name:` within the same scope break skill resolution → report as **warning** and propose renaming one id or consolidating. However, when a local skill in `{skillsRoot}` shares the same `name:` as a global skill in `{globalSkillsRoot}`, the local project skill acts as an **intentional workspace override** → treat as a valid override (do NOT flag as a collision warning). (Consumer / hybrid installs only.)
 
@@ -217,7 +228,7 @@ Run **all** scan phases (0–5c) before assembling the plan (6). Phase 7 only oc
 
 1. Confirm branch and git state (`git status --short`) — uncommitted local changes may explain "missing" paths.
 2. Record date/time and requested scope (full vs. specific file).
-3. **Resolve Install mode + primary hub + skills scan root** per § Hub resolution (`upstream` | `consumer`). Record evidence in Phase 0 notes: which markers matched/failed, whether SoT (`.agents/skills/ws-*/SKILL.md`) was present, resolved `Install mode`, resolved `Skills scan root`, and which hub file(s) will be used for Phase 4 routing.
+3. **Resolve Install mode + Install scope + primary hub + skills scan root(s)** per § Hub resolution. Run `node {skillsRoot}/ws-check-harness/scripts/detect_install_mode.cjs --json --repo-root {repoRoot}` when available. Record evidence in Phase 0 notes: which markers matched/failed, whether SoT (`.agents/skills/ws-*/SKILL.md`) was present, local/global ws-* counts, resolved `Install mode` + `Install scope`, resolved `Skills scan root(s)`, `coexistence` (upstream + global), and which hub file(s) will be used for Phase 4 routing.
 4. **Windows stdio (mandatory when using Python print scans):** skill/hub markdown contains `→` (U+2192) and other non-cp1252 glyphs. Before any Python one-liner that **prints** file contents, force UTF-8 or set `PYTHONIOENCODING=utf-8`. Otherwise Windows consoles raise `UnicodeEncodeError: 'charmap' codec can't encode character '\u2192'`.
 
 ```bash
@@ -278,7 +289,7 @@ For each internal reference (post-expansion when applicable):
 | Absolute path | `C:\Users\...\project\...` — **always** fix to relative or declared token |
 | Bare relative link resolution | Link `docs/faq.md` inside a skill directory resolved from repo root (`docs/faq.md`) instead of containing folder (`.agents/skills/.../docs/faq.md`) → **warning**; resolution must use containing directory |
 | Undeclared shorthand | bare `ws-shared/MEMORY.md` without braces → **warning**; propose `{sharedDir}/MEMORY.md` (not a guessed `../ws-shared/` from an arbitrary skill) |
-| Renamed / retired skill id | Mentions of obsolete pipeline **folder** or path ids from § 3b (e.g. `ws-write-spec`, `ws-write-plan`, `ws-interview`, `ws-verify-plan`, `ws-update-plan-implementation`, `ws-github-provider`, `ws-azure-devops-provider`, `ws-local-spec-provider`, `ws-sync-spec`, `ws-multi-spec`, `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `09-goal-fix-pr`, `10-update-plan-implementation`, `05-verify-sync-plan-us`, `us-workflow`, nested `ws-shared/ws-tdah/` skill folders, retired `ws-caveman`) while the canonical skill lives at the § 3b path — **critical** if in `ws-spec-to-pr` / lite dispatch, Layer 2 hubs, or `bin/skill-dependencies.json`; else **warning**. **Family rule (fail closed):** any packaged skill folder or `skill-dependencies.json` id matching `^ws-(?!spec-)[a-z0-9-]*spec` (token `spec` not immediately after `ws-`) or equal to a retired host-first provider id (`ws-github-provider`, `ws-azure-devops-provider`, `ws-local-spec-provider`) is **critical** everywhere (new skills cannot reintroduce `ws-*-spec`). Executable mirror: `ws-shared/runtime/scripts/retired_artifacts.cjs` `STALE_LIVE_REFERENCE_PATTERNS` (`ws-*-spec family violation`). Exempt: `CHANGELOG.md` history; `{sharedDir}/MEMORY.md` / `memory/*`; `FEATURES.md` version-history rows for shipped releases; FAQ/docs with an explicit LEGACY banner only |
+| Renamed / retired skill id | Mentions of obsolete pipeline **folder** or path ids from § 3b (e.g. `ws-write-spec`, `ws-write-plan`, `ws-interview`, `ws-verify-plan`, `ws-update-plan-implementation`, `ws-github-provider`, `ws-azure-devops-provider`, `ws-local-spec-provider`, `ws-sync-spec`, `ws-multi-spec`, `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `09-goal-fix-pr`, `10-update-plan-implementation`, `05-verify-sync-plan-us`, `us-workflow`, nested utility-skill folders inside `ws-shared/`, retired `ws-caveman`) while the canonical skill lives at the § 3b path — **critical** if in `ws-spec-to-pr` / lite dispatch, Layer 2 hubs, or `bin/skill-dependencies.json`; else **warning**. **Family rule (fail closed):** any packaged skill folder or `skill-dependencies.json` id matching `^ws-(?!spec-)[a-z0-9-]*spec` (token `spec` not immediately after `ws-`) or equal to a retired host-first provider id (`ws-github-provider`, `ws-azure-devops-provider`, `ws-local-spec-provider`) is **critical** everywhere (new skills cannot reintroduce `ws-*-spec`). Executable mirror: `{sharedDir}/runtime/scripts/retired_artifacts.cjs` `STALE_LIVE_REFERENCE_PATTERNS` (`ws-*-spec family violation`). Exempt: `CHANGELOG.md` history; `{sharedDir}/MEMORY.md` / `memory/*`; `FEATURES.md` version-history rows for shipped releases; FAQ/docs with an explicit LEGACY banner only |
 | Step ↔ folder drift | Root / `{sharedDir}/AGENTS.md` Layer 2 row has Step `08` but path still points at `11-ship-pr`, or skill column `ws-fix-pr` paired with `ws-ship-pr` — **critical** |
 | Dual-hub path parity | Root `AGENTS.md` and `{sharedDir}/AGENTS.md` disagree on pipeline folder paths for the same skill id — **critical** |
 | Extra-package optional | Hub links Extra skills that are not on disk → **intentional omission** (not broken/critical) when the section is labeled Extra/optional |
@@ -372,9 +383,13 @@ Compare the **filesystem** against declared routing in the **resolved hub** (§ 
 find .agents/skills -mindepth 2 -maxdepth 2 -name 'SKILL.md' 2>/dev/null
 find .agents/skills -maxdepth 1 -name '*.md' 2>/dev/null
 
-# Install mode consumer ({skillsRoot}, often .agents/skills; + optional {globalSkillsRoot}):
+# Install mode consumer / scope project ({skillsRoot}, often .agents/skills):
 find .agents/skills -mindepth 2 -maxdepth 2 -name 'SKILL.md' 2>/dev/null
 find .agents/skills -maxdepth 1 -name '*.md' 2>/dev/null
+# Install mode consumer / scope hybrid ({skillsRoot} override, {globalSkillsRoot} fallback):
+find "$HOME/.agents/skills" -mindepth 2 -maxdepth 2 -name 'SKILL.md' 2>/dev/null
+# Install mode consumer / scope global (no local ws-* skills):
+find "$HOME/.agents/skills" -mindepth 2 -maxdepth 2 -name 'SKILL.md' 2>/dev/null
 # Do not scan src/skills when Install mode is consumer
 ```
 
@@ -405,7 +420,7 @@ Normalize paths for comparison (file basename + repo-root-relative path).
 |------|-----------|-------------------------|
 | `unrouted_skills[]` | `SKILL.md` exists on disk, but **no** equivalent link/path appears in the **resolved hub** | **warning** |
 | `unrouted_rules[]` | Rule `*.mdc`/`*.md` exists, but **no** equivalent link appears in the resolved hub | **warning** |
-| `phantom_routes[]` | Hub references skill/rule that does **not** exist on disk under the **skills scan root** (upstream: `.agents/skills/ws-<id>/SKILL.md`; consumer: `{skillsRoot}/ws-<id>/…`). | **critical** (already covered in Phase 2/3; revalidate here) — **except** Extra-package optional paths when missing (intentional omission) **and** `externalSkills` ids when missing locally (intentional omission; hybrid `{globalSkillsRoot}` OK) |
+| `phantom_routes[]` | Hub references skill/rule that does **not** exist on disk under the **skills scan root** (upstream: `.agents/skills/ws-<id>/SKILL.md`; consumer project: `{skillsRoot}/ws-<id>/…`; hybrid/global scope: existence is satisfied by `{skillsRoot}` **or** `{globalSkillsRoot}`). | **critical** (already covered in Phase 2/3; revalidate here) — **except** Extra-package optional paths when missing (intentional omission) **and** `externalSkills` ids when missing locally (intentional omission; hybrid `{globalSkillsRoot}` OK) |
 
 **Intentional omission:** if a skill/rule is auxiliary (e.g., only scripts in a subfolder, numbered skill consumed only by `ws-spec-to-pr`, Extra package when not installed, hub marks “orch-only”), record in `intentionally_omitted[]` with justification — **do not** ask the user about these items.
 
@@ -467,12 +482,14 @@ node {skillsRoot}/ws-check-harness/scripts/check_duplicates.cjs --json --repo-ro
 node {skillsRoot}/ws-check-harness/scripts/measure_harness.cjs --scenario standard --json --repo-root {repoRoot}
 node {skillsRoot}/ws-check-harness/scripts/check_shell_quoting.cjs --json --repo-root {repoRoot}
 node {skillsRoot}/ws-check-harness/scripts/check_pipeline_handoff.cjs --json --repo-root {repoRoot}
+node {skillsRoot}/ws-check-harness/scripts/check_harness_links.cjs --json --repo-root {repoRoot}
 ```
 
 - `check_duplicates.cjs`: exit 1 when any normative block (≥ 6 lines) repeats across tracked files outside the allowlist.
 - `measure_harness.cjs`: exit 1 when `fixedPreambleBytes > 18000`, harness reduction is under 45%, artifact-read reduction is under 40%, or `defaults.gateGranularity` is `phase` with more than 5 blocking gates. Resolve each measured skill via `resolveSkillMdPath` (local `.agents/skills/<id>/SKILL.md`, else `{globalSkillsRoot}/<id>/SKILL.md`). Do **not** use wholesale `context.skillsRoot` when a consumer hub folder exists but workflow skills live only globally.
-- `check_shell_quoting.cjs`: exit 1 when skill-tree recipes contain nested-quote `python -c` / `node -e` payloads (both `"` and `'` / `["']` character classes). Severity **critical**. Correction: permanent script + explicit launcher; frontmatter fields → `ws-shared/runtime/scripts/extract_frontmatter_field.cjs`.
+- `check_shell_quoting.cjs`: exit 1 when skill-tree recipes contain nested-quote `python -c` / `node -e` payloads (both `"` and `'` / `["']` character classes). Severity **critical**. Correction: permanent script + explicit launcher; frontmatter fields → `{sharedDir}/runtime/scripts/extract_frontmatter_field.cjs`.
 - `check_pipeline_handoff.cjs`: exit 1 when any of the eleven pipeline SKILL.md files omits the substring `state.handoffs`.
+- `check_harness_links.cjs`: exit 1 on broken internal links, author-machine absolute paths, declared tokens inside link targets, bare `ws-shared/` shorthand (outside rule text and link labels), or skills on disk without routing. Deterministic mirror of Phase 2/4; upstream release proof runs it via `node test/test-harness-clean.js`.
 - Record `defaults.contextBudget` (config) against the JSON `completeDispatchBytes` field in the Phase 6 report. The scripts remain the fail-closed gates; qualitative Phase 5c.1 counts stay informational.
 
 On `--json`, keep the stdout payloads in the scan evidence. Skip neither script in upstream Install mode.

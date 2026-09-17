@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-09-16 20:40] Agent: opencode-go/deepseek-v4.1-flash
+- **Prompt**: Write a spec for the ws-check-harness install-mode/clean-audit feature as completed.
+- **Done**: Authored `.agents/specs/0088-ws-check-harness-install-mode-clean-audit.spec.md` (12 ACs, `status: completed`, closure tables). `validate_spec.cjs --mode=authoring` PASS; tracked in `index.PRD` row 92; recorded traps `catalog-utf8-byte-budget` and `global-version-representative-sample`.
+- **Result**: Spec of record + index row delivered. Learning: traps `catalog-utf8-byte-budget`, `global-version-representative-sample`.
+
+### [2026-09-16 20:15] Agent: opencode-go/deepseek-v4.1-flash
+- **Prompt**: Make ws-check-harness compatible with upstream/global/project install edge cases; add a release-time proof of the upstream zero-findings invariant with a non-blocking CI report.
+- **Done**: Added `detect_install_mode.cjs` (install mode/scope + coexistence evidence), `check_harness_links.cjs` gate, `test/test-harness-clean.js` and `test/test-check-harness-install-mode.js`; fixed all upstream findings (runtime hub link depth, STACK/README/RESEARCH links, bare shorthand tokenized); wired non-blocking `harness-audit` job with report artifact into `deploy-site.yml`; synced SKILL/PHASES/REPORT-FORMAT/evals/AGENTS/CATALOG/FEATURES; bumped 0.4.33 and regenerated integrity.
+- **Result**: `node test/test-harness-clean.js` = 0 findings; affected suites green; `verify-integrity` OK v0.4.33; commit/PR pending. Learning: traps `catalog-utf8-byte-budget`, `global-version-representative-sample`.
+
 ### [2026-09-16 19:55] Agent: opencode-go/deepseek-v4.1-flash
 - **Prompt**: Installer/updater must always ask which harness/IDE host targets receive the skills; the updater silently reused recorded/detected targets.
 - **Done**: Extracted the host-target picker into `promptSecondaryGlobalTargets`; `update` (now async, new `--yes`) and `install --global` always prompt on TTY with recorded + detected targets pre-selected (Enter keeps them). Piped/`--yes` runs keep reuse + auto-detect. Added `computeTargetPreselectIds` helper with tests; updated CLI help, `README.md`, site snippet, and `FEATURES.md`; bumped 0.4.32.

@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.4.26** · 55 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.4.33** · 55 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 ### ws-shared hybrid configuration boundary
 
@@ -160,7 +160,7 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 | Coordinate prompt-driven product work (intake, implement, complete tracking) without a Spec-to-PR plan tree | `ws-task-lifecycle` |
 | Recommend lite versus standard for a ready spec against `dagThresholds` | `ws-classify-complexity` |
 | Interview failing-test audit, implement-tasks red-then-green, verify-plan caps uncovered Negative & Failing Test Scenarios (`negativeScenarios`) at 8 | `ws-plan-interview` / `ws-implement-tasks` / `ws-plan-verify` |
-| Reviewer-aligned implementation gates: structured stack invariant rules (`ws-shared/runtime/stacks/`), DoR & negative scenario injection, pre-completion static scan (`scan_stack_invariants.cjs`), verify score capping at 7/10 on Critical violations, two-phase adversarial code review (Triage -> 4-part Proof of Exploitability), local review dry-run adapter (`localReviewCommand`), and initial framework traps in MEMORY.md | `ws-shared` / `ws-spec-write` / `ws-plan-write` / `ws-implement-tasks` / `ws-plan-verify` / `ws-code-review` / `ws-configure-project` |
+| Reviewer-aligned implementation gates: structured stack invariant rules (`.agents/skills/ws-shared/runtime/stacks/`), DoR & negative scenario injection, pre-completion static scan (`scan_stack_invariants.cjs`), verify score capping at 7/10 on Critical violations, two-phase adversarial code review (Triage -> 4-part Proof of Exploitability), local review dry-run adapter (`localReviewCommand`), and initial framework traps in MEMORY.md | `ws-shared` / `ws-spec-write` / `ws-plan-write` / `ws-implement-tasks` / `ws-plan-verify` / `ws-code-review` / `ws-configure-project` |
 
 Every entry path — free text, local file, GitHub issue, Azure work item — produces the spec of record under `{specsDir}` **before** any plan artifact exists. Re-fetching refuses to clobber a differing spec unless `--force` is passed.
 
@@ -190,7 +190,7 @@ Meta-skills that keep the suite itself honest.
 
 | Skill | What it checks or produces |
 |-------|----------------------------|
-| `ws-check-harness` | Routing, links, portability, integrity digests, instruction duplication, role clarity, skill composition topology |
+| `ws-check-harness` | Install mode/scope detection (upstream, project, global, hybrid) plus routing, links, portability, integrity digests, instruction duplication, role clarity, skill composition topology |
 | `ws-check-workflows` | FSM simulation of standard, lite, and multi-spec pipelines: step continuity, state isolation, provider dispatch, artifact transitions |
 | `ws-doctor` | Read-only diagnosis of path errors, tool recipes, config switches, and missing references across installed skills |
 | `ws-monitor` | Read-only live observation of workflow state, telemetry, expected artifacts, and configured transcript roots |
@@ -285,6 +285,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-09-13).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.4.33** | Sep 16 | **ws-check-harness install-mode detection + clean-run invariant:** `detect_install_mode.cjs` classifies upstream / project-local / global / hybrid installs plus upstream + machine-global coexistence evidence (version drift, ids outside the package); `check_harness_links.cjs` gate + `test/test-harness-clean.js` prove the upstream zero-findings invariant; `deploy-site.yml` publishes a non-blocking harness report artifact on `main` |
 | **0.4.26** | Sep 14 | **ws-fix-pr surgical commit:** dirty worktree OK; snapshot `preExistingDirty` (local harness stays on disk); forbid full-tree stash sandwich; stage only thread-fix paths (`git add --`); never `git add -A` |
 | **0.4.25** | Sep 13 | **State dual-write, git caching & Step 8 gate alignment:** `syncStateDualWrite` guarantees atomic `.state.json` and `.state.md` frontmatter/body synchronization during G2 delivery commits; `gitTrackedSet` subprocess caching with 5000ms TTL eliminates redundant git spawns during step finishes; aligned Step 8 5-option interactive user-gate; single JSON output for `check_memory_conflict.py --soft-exit`; untracked test file probing in `probe_test_surface.cjs` |
 | **0.4.20** | Sep 12 | **Wiki verbosity & richer conditional template (`us-324`):** `ws-wiki` supports `condensed` and `detailed` styles via `plans.wiki.verbosity` config, conditional section headings, and automated wiki index/feature validation |

@@ -17,6 +17,32 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  harness-audit:
+    name: Upstream harness self-audit (non-blocking)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      # Report-only: a finding never blocks the release; the artifact is the record.
+      - name: Run upstream harness clean audit
+        continue-on-error: true
+        run: node test/test-harness-clean.js --report .agents/plans/diagnostics/harness-clean-report.md
+
+      - name: Upload harness audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: harness-clean-report
+          path: .agents/plans/diagnostics/harness-clean-report.md
+          if-no-files-found: warn
+
   build:
     runs-on: ubuntu-latest
     steps:

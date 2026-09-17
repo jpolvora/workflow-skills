@@ -42,6 +42,24 @@ To add new learnings, create a separate markdown file under `{sharedDir}/memory/
 - **DO NOT**: Regenerate integrity before the last hashed-file edit, or present the deterministic harness subset as a completed full harness audit.
 - **INSTEAD DO**: Make `npm run generate-integrity && npm run verify-integrity` the final step before commit, re-run `npm run test` after any post-regen skill/hub edit, and state the harness-audit scope honestly (deterministic phases plus suite evidence).
 
+### [2026-09-16] Global install version sampling needs representative skills
+- **Layer**: `harness`
+- **Module**: `ws-check-harness install-mode detector`
+- **Severity**: `Low`
+- **PathPattern**: `.agents/skills/ws-check-harness/scripts/detect_install_mode.cjs`;`test/test-check-harness-install-mode.js`
+- **Scenario / Context**: Sampling a global install version from the first alphabetical `ws-*` folder picked an external companion (`ws-memo` 1.0.0) instead of the package version (0.4.30), so drift assertions failed.
+- **DO NOT**: Derive a global install version from an arbitrary or first `ws-*` `SKILL.md`.
+- **INSTEAD DO**: Probe representative ids (`ws-check-harness` → `ws-tdah` → `ws-spec-to-pr` → `ws-senior-developer`), else fall back to the most frequent frontmatter version across the global tree; keep `externalSkills` ids out of package comparisons.
+
+### [2026-09-16] CATALOG.md has a hard normalized 24 KB budget
+- **Layer**: `harness`
+- **Module**: `upstream docs / context budget`
+- **Severity**: `Medium`
+- **PathPattern**: `CATALOG.md`;`test/test-context-budget.js`;`bin/build-site.js`
+- **Scenario / Context**: Adding a release-proof pointer to the Before-ship table pushed `CATALOG.md` over the 24000-byte limit enforced by `test/test-context-budget.js` (`utf8Size` normalizes CRLF to LF). The committed file had only ~6 bytes of headroom, so any net addition fails until wording is reclaimed elsewhere.
+- **DO NOT**: Add net bytes to `CATALOG.md` (or other budgeted docs) without measuring the normalized size first.
+- **INSTEAD DO**: Measure with `Buffer.byteLength(text.replace(/\r\n?/g, '\n'))` before and after; keep additions compact and offset them by tightening adjacent redundant wording; run `node test/test-context-budget.js` before ship.
+
 ### [2026-09-16] Autoload Always-applied heading must stay exact for configure script
 - **Layer**: `harness`
 - **Module**: `ws-shared / autoload routing`

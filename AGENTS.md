@@ -86,8 +86,8 @@ Consumer projects keep hybrid rules unchanged: local `{skillsRoot}` overrides `{
 | **`README.md`** | Humans | What this repo is, how to install/update/uninstall, contribute, safety |
 | **`CATALOG.md`** | Agents + site generator | On-demand upstream workflow commands, task router, and bounded skill inventory |
 | **`SKILL_AUTHORING.md`** | Agents & Skill Authors | Mandatory guidelines for designing, pruning, and maintaining lean skills |
-| **`ws-shared/AGENTS.md`** | Agents (consumers) | Installed hub: config, gates, consumer task router, external dependencies |
-| **`ws-shared/autoload.md`** | Agents (consumers + specs router) | Consumer Always-applied set + specs progressive-disclosure router. This repo does **not** follow its Always-applied table (live `ws-*` bodies). Specs vocabulary/router still load on keywords. |
+| **`{sharedDir}/AGENTS.md`** | Agents (consumers) | Installed hub: config, gates, consumer task router, external dependencies |
+| **`{sharedDir}/autoload.md`** | Agents (consumers + specs router) | Consumer Always-applied set + specs progressive-disclosure router. This repo does **not** follow its Always-applied table (live `ws-*` bodies). Specs vocabulary/router still load on keywords. |
 | **`.agents/skills/ws-*/SKILL.md`** | Agents (upstream SoT) | Skill bodies under development / publish — load on demand via router when **authoring or testing** that skill |
 | **Installed `…/skills/*/SKILL.md`** | Agents (consumers) | Progressive disclosure after project-local or global install |
 | **Optional host pointer** | Agents (host-specific) | Thin pointer to this hub if the consumer’s IDE needs one — not required by skills; not a portable dependency |
@@ -100,14 +100,14 @@ When editing harness docs: put **agent obligations** here; put **human install/U
 
 Repo `jpolvora/workflow-skills` is the authoritative upstream for **spec-driven** workflows and pipeline skills. Specs (`{specsDir}/*.spec.md`) are the contract of record; `{plansDir}` holds run artifacts.
 
-- Installed copies via `npx --yes github:jpolvora/workflow-skills` are **managed** (project-local and/or **global**). `update` overwrites skill files and managed `ws-shared/runtime/` plus `templates/`; `uninstall` removes skill folders (cascades unused deps) and never deletes project `ws-shared/` consumer data.
-- **Preserve** under the **project** `.agents/skills/ws-shared/`: `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, optional `CHANGELOG.md` when `rules.changelogFile` points there (consumer-owned; never overwrite from upstream). Project hub **overrides** any global `$HOME/.agents/skills/ws-shared` values. The installer ships no packaged upstream index — the consumer hub is `ws-shared/AGENTS.md`, with its full managed contract in `ws-shared/runtime/AGENTS.md`. Fresh install / `ws-configure-project` seeds `config.json` from `templates/config.json.example`, `MEMORY.md`, `CHANGELOG.md`, and `STACK.md` under the **project** `ws-shared/` when missing. Installer never writes consumer repo-root files.
+- Installed copies via `npx --yes github:jpolvora/workflow-skills` are **managed** (project-local and/or **global**). `update` overwrites skill files and managed `{sharedDir}/runtime/` plus `{sharedDir}/templates/`; `uninstall` removes skill folders (cascades unused deps) and never deletes project `ws-shared/` consumer data.
+- **Preserve** under the **project** `.agents/skills/ws-shared/`: `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, optional `CHANGELOG.md` when `rules.changelogFile` points there (consumer-owned; never overwrite from upstream). Project hub **overrides** any global `$HOME/.agents/skills/ws-shared` values. The installer ships no packaged upstream index — the consumer hub is `{sharedDir}/AGENTS.md`, with its full managed contract in `{sharedDir}/runtime/AGENTS.md`. Fresh install / `ws-configure-project` seeds `config.json` from `templates/config.json.example`, `MEMORY.md`, `CHANGELOG.md`, and `STACK.md` under the **project** `ws-shared/` when missing. Installer never writes consumer repo-root files.
 - **Layout contract:** § [Skill SoT, install scopes & config override](#skill-sot-install-scopes--config-override-mandatory) — upstream SoT `.agents/skills/ws-*`; consumer install `.agents/skills` and/or `$HOME/.agents/skills`; project config always wins.
 - **Latest layout only:** installer does not migrate older folder names or legacy host paths — consumers get the current skill tree and neutral defaults on install/update. See [`README.md`](README.md) § Safety and § [Portability & harness neutrality](#portability--harness-neutrality-mandatory).
 - Lasting skill changes: PR to `develop` → `main` only after **`ws-check-harness`** passes. Authoring rules: [`SKILL_AUTHORING.md`](.agents/skills/ws-write-a-skill/SKILL_AUTHORING.md).
 - **Consumers / CI / Actions:** agents must not silently hygiene-refactor managed skill scripts; lasting fixes → suggest or open an **upstream** PR. See [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) § Managed skills.
 - After install/update in a consumer: run `ws-check-harness`.
-- Skills stay portable: parameterize via `ws-shared/config.json` / stack docs; no project hardcoding; no IDE/agent product coupling. Client data hub: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
+- Skills stay portable: parameterize via `{sharedDir}/config.json` / stack docs; no project hardcoding; no IDE/agent product coupling. Client data hub: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
 - Guardrails resolution: § [External dependencies](#external-dependencies) (consumer install mirror: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md)).
 - **This upstream’s local `.cursor/`:** authoring/plans only for this repo — never the shipped default for consumers.
 - **Upstream developer loop:** § [Upstream developer workflow](#upstream-developer-workflow-this-repo-only) (this package root only — not the portable consumer contract).
@@ -175,7 +175,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 
 ## Upstream session contract (this repo only)
 
-**Not packaged.** Inline here so this repo does not `Read` live `ws-*` SKILL.md for session autoload (those files are the SoT being authored). Compact snapshot of packaged behavior **0.4.30** (`ws-tdah`, `ws-senior-developer`, `ws-fable-method`, `ws-self-learning`, `ws-changelog`, `ws-spec-write`, `ws-spec-format`). When those contracts change and dogfood should follow, update **this section** in the same PR.
+**Not packaged.** Inline here so this repo does not `Read` live `ws-*` SKILL.md for session autoload (those files are the SoT being authored). Compact snapshot of packaged behavior **0.4.33** (`ws-tdah`, `ws-senior-developer`, `ws-fable-method`, `ws-self-learning`, `ws-changelog`, `ws-spec-write`, `ws-spec-format`). When those contracts change and dogfood should follow, update **this section** in the same PR.
 
 Do **not** recreate `.agents/dev-harness/` or any extra `SKILL.md` for this contract. A folder under `.agents/skills/` would be hashed and shipped. Summarize here; invoke live scripts by path; load a live body only when **authoring or testing that skill**. Orchestrators, providers, `ws-check-harness`: task router, one skill at a time.
 
@@ -392,6 +392,8 @@ Intent → skill: [`CATALOG.md`](CATALOG.md) § Task router (includes `ws-spec-e
 ## Verification (before claim complete / commit)
 
 Full ordered checklist (harness → tests → deps → integrity → workflows → site → FEATURES): [`CATALOG.md`](CATALOG.md) § Upstream developer workflow. Integrity regenerate obligation stays in that section and § [Harness change protocol](#harness-change-protocol).
+
+**Upstream self-audit invariant:** `node test/test-harness-clean.js` must report 0 findings at this package root (Phase 0 detector + Phase 5a gates + links/paths/shorthand/routing + integrity). CI `deploy-site.yml` runs it non-blocking on `main` and uploads a report artifact; treat any finding as a release defect, not noise.
 ---
 
 ## Local dry-run: agentic code reviewers
