@@ -85,7 +85,7 @@ jobs:
             -o /tmp/agentic-code-reviewers-run.sh
           bash /tmp/agentic-code-reviewers-run.sh \
             --engine opencode \
-            --model opencode-go/deepseek-v4.1-flash \                    
+            --model opencode-go/deepseek-v4.1-flash \
             --variant low \
             --gh \
             --pr-id "${{ steps.pr.outputs.number }}" \
