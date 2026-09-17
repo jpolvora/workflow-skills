@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-16 19:55] Agent: opencode-go/deepseek-v4.1-flash
+- **Prompt**: Installer/updater must always ask which harness/IDE host targets receive the skills; the updater silently reused recorded/detected targets.
+- **Done**: Extracted the host-target picker into `promptSecondaryGlobalTargets`; `update` (now async, new `--yes`) and `install --global` always prompt on TTY with recorded + detected targets pre-selected (Enter keeps them). Piped/`--yes` runs keep reuse + auto-detect. Added `computeTargetPreselectIds` helper with tests; updated CLI help, `README.md`, site snippet, and `FEATURES.md`; bumped 0.4.32.
+- **Result**: `node --check` clean; smoke install/update non-interactive exit 0; `npm run test` exit 0; `verify-integrity` OK; fable verdict VERIFIED WITH CAVEATS (TTY-only prompt branch not exercisable from a non-TTY shell). Learning: trap `fable-tty-path`.
+
 ### [2026-09-16 18:59] Agent: opencode-go/deepseek-v4.1-flash
 - **Prompt**: `ws-goal-fix-pr 337` round 1 (thread `PRRT_kwDOTFajc86jHrTf`: retired karpathy skill still advertised).
 - **Done**: Verified the anchor was fixed in `7b63fffe`; proactive class sweep replaced stale karpathy prose with `ws-senior-developer` in `ws-fix-pr` README + COOPERATIVE_FIX heading and `ws-show-harness`; `AUTO_FIX.md` skipped (byte-locked by `test-fix-pr-proactive-class-sweep.js`); regenerated integrity.

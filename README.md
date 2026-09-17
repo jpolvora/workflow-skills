@@ -146,14 +146,19 @@ npx --yes github:jpolvora/workflow-skills install --full --global --targets gemi
 # Explicit: every known host (canonical + claude + codex + gemini)
 npx --yes github:jpolvora/workflow-skills install --full --global --targets all --yes
 
-# Bare global install/update auto-detects pre-existing host dirs
-# (e.g. ~/.gemini from Antigravity) when --targets is omitted, then records
-# them in ws-shared/installed-skills.json for future bare updates.
-npx --yes github:jpolvora/workflow-skills install --full --global --yes
+# Interactive global install/update always prompts for host targets with recorded
+# and detected targets pre-selected (Enter keeps them).
+npx --yes github:jpolvora/workflow-skills install --full --global
 npx --yes github:jpolvora/workflow-skills update --global
+
+# Non-interactive (piped stdin or --yes) without --targets reuses recorded targets,
+# then auto-detects pre-existing host dirs (e.g. ~/.gemini from Antigravity) and
+# records them in ws-shared/installed-skills.json for future runs.
+npx --yes github:jpolvora/workflow-skills install --full --global --yes
+npx --yes github:jpolvora/workflow-skills update --global --yes
 ```
 
-Explicit `--targets` (even `--targets canonical`) disables auto-detect for that run.
+Explicit `--targets` (even `--targets canonical`) skips the interactive prompt and auto-detect for that run.
 
 #### ws-shared source-control boundary
 

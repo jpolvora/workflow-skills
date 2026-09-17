@@ -15,6 +15,7 @@ import {
   getGlobalHostTargets,
   resolveHostTargetPath,
   detectExistingSecondaryTargets,
+  computeTargetPreselectIds,
   projectSkillToTarget,
   getGeminiSkillsJsonPath,
   readGeminiSkillsJson,
@@ -530,6 +531,9 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     }
     if (!/\binstall\b/i.test(out) || !/--yes/i.test(out)) {
       fail(`CLI --help missing install / --yes usage.\n${out}`);
+    }
+    if (!/always prompts for host targets/i.test(out)) {
+      fail(`CLI --help missing interactive host-target prompt note.\n${out}`);
     }
     if (/workflow-skills@latest/i.test(out) || /workflow-skills@main/i.test(out)) {
       fail(`CLI --help must not recommend github:…@latest or @main.\n${out}`);
@@ -3083,6 +3087,28 @@ child.on('close', async (code) => {
         encoding: 'utf8',
         env: { ...process.env, HOME: home, USERPROFILE: home, FORCE_COLOR: '0' },
       });
+
+    // 0. computeTargetPreselectIds: union of recorded + detected, filtered to valid ids
+    {
+      const validIds = ['claude', 'codex', 'gemini'];
+      const preselect = computeTargetPreselectIds(['claude', 'gemini'], ['gemini', 'codex'], validIds);
+      if (JSON.stringify(preselect) !== JSON.stringify(['claude', 'gemini', 'codex'])) {
+        fail(`computeTargetPreselectIds must union recorded + detected in order; got ${JSON.stringify(preselect)}`);
+      }
+      ok('computeTargetPreselectIds unions recorded + detected pre-selection ids');
+
+      const filtered = computeTargetPreselectIds(['canonical', 'unknown'], ['claude'], validIds);
+      if (JSON.stringify(filtered) !== JSON.stringify(['claude'])) {
+        fail(`computeTargetPreselectIds must drop canonical/unknown ids; got ${JSON.stringify(filtered)}`);
+      }
+      ok('computeTargetPreselectIds drops canonical and unknown ids');
+
+      const empty = computeTargetPreselectIds(undefined, undefined, validIds);
+      if (!Array.isArray(empty) || empty.length !== 0) {
+        fail('computeTargetPreselectIds must default to an empty array');
+      }
+      ok('computeTargetPreselectIds defaults to empty');
+    }
 
     // 1. Unit: regular file at host root or skills path is not consent
     const unitHome = path.join(__dirname, '.mock-autodetect-home');

@@ -533,6 +533,24 @@ export function detectExistingSecondaryTargets(homeDir = getHomeDir(), symlink =
   return detected;
 }
 
+/**
+ * Computes the pre-selected host target ids for an interactive target prompt.
+ * Union of recorded manifest ids and detected host ids, filtered to the known
+ * secondary target ids; canonical is always primary and never pre-selected.
+ * @param {Array<string>} [recordedIds] - Target ids recorded in installed-skills.json
+ * @param {Array<string>} [detectedIds] - Target ids detected on disk
+ * @param {Array<string>} [validIds] - Known secondary target ids
+ * @returns {Array<string>} De-duplicated ids in recorded-then-detected order
+ */
+export function computeTargetPreselectIds(recordedIds = [], detectedIds = [], validIds = []) {
+  const valid = new Set(validIds);
+  const out = [];
+  for (const id of [...recordedIds, ...detectedIds]) {
+    if (typeof id === 'string' && valid.has(id) && !out.includes(id)) out.push(id);
+  }
+  return out;
+}
+
 function simpleCopyDir(src, dest) {
   if (!fs.existsSync(dest)) {
     if (pathLexists(dest)) {

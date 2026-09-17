@@ -265,7 +265,7 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 | **Zero-dependency CLI** | `bin/cli.js` runs under plain Node; no runtime npm dependencies |
 | **npx install** | `npx --yes github:jpolvora/workflow-skills` — interactive or `--yes` non-interactive |
 | **Three packages** | `f` Full (all skills), `w` Workflows (45 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`, `ws-activity-report`, `ws-fable-domain`, `ws-plan-update`, `ws-run-benchmark`, `ws-benchmarks`) |
-| **Global or project scope** | `--global` / `--project`; project-local skills override global copies |
+| **Global or project scope** | `--global` / `--project`; project-local skills override global copies; interactive `--global` install/update always prompts for host targets (`canonical` + `claude` / `codex` / `gemini`) with recorded/detected targets pre-selected |
 | **Dependency closure** | `skill-dependencies.json` drives install; uninstall cascades dependents and unused deps |
 | **SHA-256 integrity** | `bin/skill-integrity.json` covers every installable tree; install and update verify the source before copying and the consumer after, failing closed on mismatch. LF-canonical hashing keeps CRLF checkouts consistent |
 | **Audit commands** | `integrity` recomputes consumer digests; `--check` compares semver and `fullPackageDigest` against the remote manifest |
