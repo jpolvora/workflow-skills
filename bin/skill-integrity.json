@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "be733fd6e2913553d64d8a917635806cc6dcf8e4a2ab557050a2a5a2da60d4d8",
+  "fullPackageDigest": "eb8ee393044cfd4bc8b5da198ac0467247ebceaf4bc27e4599052ffa2fe1bda9",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -91,14 +91,14 @@
         "PHASES.md": "621c1bf65aa7d491f151d91cac778f713c067229596420ee28660ffc5f0f74c0",
         "REPORT-FORMAT.md": "a54e34f1545924f2a8c84b2d715ba1c537efcec4e51f04a5f81cfd03b4e5a23a",
         "scripts/check_duplicates.cjs": "74605804604d279d958603c28678e176af958fdd5bf2f3168d943f379b2ca265",
-        "scripts/check_harness_links.cjs": "d5fba0da05812bd48f6a3d61516cf1f0b9ad7ec8072d114759864fdf1de3a427",
+        "scripts/check_harness_links.cjs": "bb1ece3b62f0ac851eb853453edb8e5df5c4b18bc387e9f3345e9286fdbaf456",
         "scripts/check_pipeline_handoff.cjs": "91a484dfa6b84d801ff68108e4b9279544102d53071a3f14166829aae49c4084",
         "scripts/check_shell_quoting.cjs": "3db02f1e0601b3250a85a1fff920b724fc6efb5d397ae0d328d55b387b4a0196",
-        "scripts/detect_install_mode.cjs": "e18c4c8c07bdc3f244e2f2abdd85edf23bf6b6ba03a080a1c1653085c42c5c30",
+        "scripts/detect_install_mode.cjs": "e9e1f821d5d44e20f251c82baf58c9073ca9415a81794f17c4474bd07880b9d1",
         "scripts/measure_harness.cjs": "d6aef2ed91a495d4d24ecfbeb89c82ca61f6eb5d1bdf8fdfc218514bff623c94",
         "SKILL.md": "a88d355028169d6c47a3bb06a0d7330f881a441fea4f1715fe6e26cfbf074504"
       },
-      "skillDigest": "2ccdb66cbd1cf79908cd948a61bc01501c7dec3405efed2e9e07c6585166fde0"
+      "skillDigest": "4a6e553ed6fefd964501be5ac0e85053d848937d636d3e0ceaa3e75955fc4e1e"
     },
     "ws-check-workflows": {
       "files": {

@@ -218,6 +218,33 @@ function testNoSkills() {
   assert(report && report.warnings.some((warning) => /No ws-\* SKILL\.md/.test(warning)), 'none mode warns with guidance');
 }
 
+function testCorruptManifestEmitsWarning() {
+  console.log('\n--- testCorruptManifestEmitsWarning ---');
+  const upstream = mkTmp('ws-chk-corrupt-');
+  fs.mkdirSync(path.join(upstream, 'bin'), { recursive: true });
+  fs.writeFileSync(path.join(upstream, 'bin', 'skill-dependencies.json'), '{"packageVersion":', 'utf8');
+  fs.writeFileSync(path.join(upstream, 'bin', 'cli.js'), '#!/usr/bin/env node\n', 'utf8');
+  fs.writeFileSync(path.join(upstream, 'package.json'), JSON.stringify({ version: '0.4.32' }, null, 2), 'utf8');
+  writeProjectHub(upstream);
+  writeLocalSkill(upstream, 'ws-tdah', '0.4.32');
+
+  const globalRoot = mkTmp('ws-chk-corrupt-global-');
+  writeSkill(globalRoot, 'ws-tdah', '0.4.32');
+  writeSkill(globalRoot, 'ws-retired-thing', '0.3.1');
+
+  const { result, report } = detect(upstream, globalRoot);
+  assert(result.status === 0, `detector exit 0 on corrupt manifest (${result.stderr || ''})`);
+  assert(report && report.installMode === 'upstream', 'corrupt manifest still resolves upstream from file evidence');
+  assert(
+    report && report.warnings.some((warning) => /manifest .* unreadable/i.test(warning)),
+    'corrupt manifest emits a structured warning instead of crashing',
+  );
+  assert(
+    report && (report.coexistence.globalIdsOutsidePackage || []).includes('ws-retired-thing'),
+    'outside-package ids still computed without the externalSkills filter',
+  );
+}
+
 function testCurrentRepoIsUpstream() {
   console.log('\n--- testCurrentRepoIsUpstream ---');
   const run = cp.spawnSync(process.execPath, [DETECTOR, '--repo-root', REPO_ROOT], {
@@ -237,6 +264,7 @@ function main() {
   testProjectAndHybridScopes();
   testGlobalOnlyScope();
   testNoSkills();
+  testCorruptManifestEmitsWarning();
   testCurrentRepoIsUpstream();
   cleanup();
   if (failures > 0) {

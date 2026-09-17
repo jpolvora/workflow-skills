@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-16 20:56] Agent: opencode-go/deepseek-v4.1-flash
+- **Prompt**: Fix the 3 findings from the `/ws-preview` dry-run (unguarded manifest parse, unguarded link decode, hub coverage gap).
+- **Done**: Guarded `detect_install_mode.cjs` manifest parse (structured warning), added safe `decodeURIComponent` fallback and resolved-hub routing files in `check_harness_links.cjs`; added corrupt-manifest and link-gate regression tests, registered the new suite, regenerated integrity.
+- **Result**: New tests green; `test-harness-clean.js` = 0 findings; `verify-integrity` OK v0.4.33. Learning: N/A (review fixes, no new project knowledge).
+
 ### [2026-09-16 20:49] Agent: opencode-go/deepseek-v4.1-flash
 - **Prompt**: Explain `localReviewCommand`, recommend a value, and add an npm script running the agentic-code-reviewers dry-run locally.
 - **Done**: Added `review:dry` to `package.json` (same OpenCode reviewer recipe as CI with `--dry-run`, no PR publishing); repointed `preview.dryRunCommand` to `npm run review:dry` (single source of truth, most portable form). Left `preview.localReviewCommand` empty (recommended default until the team wants the enforced LLM gate in ws-code-review).

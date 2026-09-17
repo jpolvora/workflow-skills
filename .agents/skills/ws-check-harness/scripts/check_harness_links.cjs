@@ -97,7 +97,12 @@ function analyze(repoRoot) {
         continue;
       }
       if (/\{[^}]*\}/.test(target)) continue;
-      const decoded = decodeURIComponent(target);
+      let decoded;
+      try {
+        decoded = decodeURIComponent(target);
+      } catch {
+        decoded = target;
+      }
       const fromDir = path.resolve(path.dirname(file), decoded);
       const firstSegment = decoded.split(/[\\/]/)[0];
       const fromRoot = TOP_LEVEL.has(firstSegment) ? path.join(repoRoot, decoded) : null;
@@ -129,7 +134,7 @@ function analyze(repoRoot) {
     .filter((entry) => fs.existsSync(path.join(skillsDir, entry.name, 'SKILL.md')))
     .map((entry) => entry.name)
     .sort();
-  const hubText = ['AGENTS.md', 'CATALOG.md', '.agents/skills/ws-shared/runtime/CATALOG.md', '.agents/skills/ws-shared/autoload.md']
+  const hubText = ['AGENTS.md', 'CATALOG.md', '.agents/skills/ws-shared/AGENTS.md', '.agents/skills/ws-shared/runtime/AGENTS.md', '.agents/skills/ws-shared/runtime/CATALOG.md', '.agents/skills/ws-shared/autoload.md']
     .map((rel) => {
       const full = path.join(repoRoot, rel);
       return fs.existsSync(full) ? fs.readFileSync(full, 'utf8') : '';

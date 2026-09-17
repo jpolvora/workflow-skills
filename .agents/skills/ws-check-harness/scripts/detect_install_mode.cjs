@@ -136,16 +136,25 @@ function detect(repoRoot) {
       coexistence.globalVersionDrift = diff < 0 ? 'behind' : diff > 0 ? 'ahead' : 'same';
     }
   }
+  let manifestUnreadable = false;
   if (globalPresent && markersPresent && sotPresent) {
     const packageIds = new Set(localIds);
-    const externalIds = new Set(
-      (JSON.parse(fs.readFileSync(markers.skillDependencies, 'utf8')).externalSkills || []).map((entry) => entry.id),
-    );
+    let externalIds = new Set();
+    try {
+      externalIds = new Set(
+        (JSON.parse(fs.readFileSync(markers.skillDependencies, 'utf8')).externalSkills || []).map((entry) => entry.id),
+      );
+    } catch {
+      manifestUnreadable = true;
+    }
     coexistence.globalIdsOutsidePackage = globalIds.filter((id) => !packageIds.has(id) && !externalIds.has(id));
   }
 
   const notes = [];
   const warnings = [];
+  if (manifestUnreadable) {
+    warnings.push('Package manifest bin/skill-dependencies.json is unreadable; coexistence outside-package ids unknown.');
+  }
   if (markersPresent && !sotPresent) {
     warnings.push('Package markers present without SoT under .agents/skills; classified consumer (markers alone are not upstream evidence).');
   }
