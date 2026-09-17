@@ -1120,7 +1120,7 @@ function Populate-Sections {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.providerCompat' -Key 'thinkingToolCompat' -LabelText 'Preserve Thinking Text in Tool Turns' -Type 'bool' -DefaultVal $false
             }
             'models' {
-                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'modelsPreset' -LabelText 'Active Models Preset Bundle' -Type 'enum' -Options @('default', 'cursor', 'deepseek', 'opencode', 'cheap', 'custom') -DefaultVal 'default'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'modelsPreset' -LabelText 'Active Models Preset Bundle' -Type 'enum' -Options @('default', 'cursor', 'deepseek', 'opencode', 'cheap', 'muse-spark', 'custom') -DefaultVal 'default'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'plannerModel' -LabelText 'Planner Model (Steps 0-3)' -Type 'string' -Placeholder 'e.g. composer-2.5 | claude-3-7-sonnet'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'executionModel' -LabelText 'Execution Model (Step 4)' -Type 'string' -Placeholder 'e.g. composer-2.5'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'reviewerModel' -LabelText 'Reviewer Model (Steps 5-6)' -Type 'string' -Placeholder 'e.g. cursor-grok-4.6-high'

@@ -110,6 +110,8 @@ Workflows never name concrete session tools. At bootstrap (before the first `use
 
 Legacy neutral flags are derived readouts of this binding (not a separate discovery pass): `hasStructuredChoiceTool` ⟺ `askQuestionTool` bound; `hasSubagentTool` ⟺ `subagentTool` bound; `hasBrowserTool` ⟺ `browserTool` bound.
 
+When `subagentTool` is bound, route all step work through it — never shell out to a background CLI runner or nested CLI invocation for step execution (Tier 2/3 apply only when the binding is `none`). Record the host-declared session posture once alongside the binding (`state.hostBinding`: permission profile, approval mode, sandbox state as declared at session start); when the host declares no posture, fail closed and assume approval is required. Never re-probe or change posture mid-run.
+
 `dispatch-agent` fallback ladder (honor resolved mode; pass discrete context pointers only — never full transcripts):
 
 - **Tier 1 — native-tool:** `subagentTool` is bound. Dispatch steps to that tool with pointers (`{workflow-id}.state.json` → `state.handoffs[String(N-1)]`, `ac-ledger.json`, `plan.index.json`).

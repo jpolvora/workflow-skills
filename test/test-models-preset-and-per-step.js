@@ -80,10 +80,11 @@ assert(
 assert(example.defaults.modelPresets?.deepseek, 'example includes deepseek preset');
 assert(example.defaults.modelPresets?.opencode, 'example includes opencode preset');
 assert(example.defaults.modelPresets?.cheap, 'example includes cheap preset');
+assert(example.defaults.modelPresets?.['muse-spark'], 'example includes muse-spark preset');
 assert(Object.prototype.hasOwnProperty.call(example.defaults.stepModels, 'dag'), 'example stepModels includes dag');
 
 const PHASE_KEYS = ['plannerModel', 'executionModel', 'reviewerModel', 'testingModel'];
-for (const name of ['default', 'cursor', 'deepseek', 'opencode', 'cheap']) {
+for (const name of ['default', 'cursor', 'deepseek', 'opencode', 'cheap', 'muse-spark']) {
   const preset = example.defaults.modelPresets?.[name];
   assert(preset && typeof preset === 'object', `example ${name} preset exists`);
   for (const key of PHASE_KEYS) {

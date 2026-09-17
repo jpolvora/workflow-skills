@@ -1,0 +1,1116 @@
+{
+  "acImplemented": 9,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "cea78a7c81c538f362a7e3cedcd90ee4c008c9e9",
+            "step": 2
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-ship-pr/SKILL.md:L89-L90"
+        ],
+        "files": [
+          {
+            "lineEnd": 90,
+            "lineStart": 89,
+            "path": ".agents/skills/ws-ship-pr/SKILL.md",
+            "sha256": "7d50aff686b16f19c2237d28021f77f2f0fdaae9e1d85584967280d17dc1fa1d"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "g2-commit-cea78a7c81c538f362a7e3cedcd90ee4c008c9e9",
+          "step2-verify"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Harness OK (upstream clean) — 0 findings.",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-09-17T02:00:01.140Z"
+          }
+        ],
+        "text": "Step 4b is positioned after the workflow close phase (workflow runs: `status: completed`, delivery commit already made) and after the `ws-ship-pr` Step 4 commit and push complete, immediately before Step 5 Create PR, so the dry-run observes the final pushed tree and runs before any provider `validate-auth` or `create-pr` call.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "cea78a7c81c538f362a7e3cedcd90ee4c008c9e9",
+            "step": 2
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-ship-pr/SKILL.md:L89-L90"
+        ],
+        "files": [
+          {
+            "lineEnd": 90,
+            "lineStart": 89,
+            "path": ".agents/skills/ws-ship-pr/SKILL.md",
+            "sha256": "7d50aff686b16f19c2237d28021f77f2f0fdaae9e1d85584967280d17dc1fa1d"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "g2-commit-cea78a7c81c538f362a7e3cedcd90ee4c008c9e9",
+          "step2-verify"
+        ],
+        "planSections": [
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Harness OK (upstream clean) — 0 findings.",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-09-17T02:00:01.141Z"
+          }
+        ],
+        "text": "The gate runs only when Step 5 Create PR will actually execute; it skips with a recorded reason when `shipAction` is `skip` or `push-only`, when `dry-run` is set, or in standalone runs that will not create a PR.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "cea78a7c81c538f362a7e3cedcd90ee4c008c9e9",
+            "step": 2
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/config.json:L233-L234",
+          ".agents/skills/ws-shared/runtime/config.schema.json:L454-L458",
+          ".agents/skills/ws-shared/templates/config.json.example:L282-L283",
+          ".agents/skills/ws-ship-pr/SKILL.md:L89-L90"
+        ],
+        "files": [
+          {
+            "lineEnd": 234,
+            "lineStart": 233,
+            "path": ".agents/skills/ws-shared/config.json",
+            "sha256": "b37dc41b2722b41678f9bd5073410fcf10d15810bcbf0238ca6553b046334a13"
+          },
+          {
+            "lineEnd": 458,
+            "lineStart": 454,
+            "path": ".agents/skills/ws-shared/runtime/config.schema.json",
+            "sha256": "afd34c6f9f27b4a3d89a7038bc468120014b2b0da463d2d402b468c988c383fc"
+          },
+          {
+            "lineEnd": 283,
+            "lineStart": 282,
+            "path": ".agents/skills/ws-shared/templates/config.json.example",
+            "sha256": "62c9cda733297993232fdb75b4c877287bd7081e5a653156da9332196f109f64"
+          },
+          {
+            "lineEnd": 90,
+            "lineStart": 89,
+            "path": ".agents/skills/ws-ship-pr/SKILL.md",
+            "sha256": "7d50aff686b16f19c2237d28021f77f2f0fdaae9e1d85584967280d17dc1fa1d"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "g2-commit-cea78a7c81c538f362a7e3cedcd90ee4c008c9e9",
+          "step2-verify"
+        ],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Harness OK (upstream clean) — 0 findings.",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-09-17T02:00:11.981Z"
+          }
+        ],
+        "text": "Enablement resolves as enabled unless `preview.previewBeforeShip` is explicit `false` (key omitted or any non-`false` value means enabled, default `true`); explicit `false` skips the gate without running any command.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "cea78a7c81c538f362a7e3cedcd90ee4c008c9e9",
+            "step": 2
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-ship-pr/SKILL.md:L89-L90"
+        ],
+        "files": [
+          {
+            "lineEnd": 90,
+            "lineStart": 89,
+            "path": ".agents/skills/ws-ship-pr/SKILL.md",
+            "sha256": "7d50aff686b16f19c2237d28021f77f2f0fdaae9e1d85584967280d17dc1fa1d"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "g2-commit-cea78a7c81c538f362a7e3cedcd90ee4c008c9e9",
+          "step2-verify"
+        ],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Harness OK (upstream clean) — 0 findings.",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-09-17T02:00:01.141Z"
+          }
+        ],
+        "text": "A trimmed empty or whitespace-only `preview.dryRunCommand` skips the gate with a recorded reason (`empty command`); no default reviewer backend is invented and nothing is downloaded.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "cea78a7c81c538f362a7e3cedcd90ee4c008c9e9",
+            "step": 2
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-preview/SKILL.md:L20-L20",
+          ".agents/skills/ws-ship-pr/SKILL.md:L89-L90"
+        ],
+        "files": [
+          {
+            "lineEnd": 20,
+            "lineStart": 20,
+            "path": ".agents/skills/ws-preview/SKILL.md",
+            "sha256": "f9b87033998e04bbd35530c5b5e4f622c68f04e1aca43514301181b85aa65341"
+          },
+          {
+            "lineEnd": 90,
+            "lineStart": 89,
+            "path": ".agents/skills/ws-ship-pr/SKILL.md",
+            "sha256": "7d50aff686b16f19c2237d28021f77f2f0fdaae9e1d85584967280d17dc1fa1d"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "g2-commit-cea78a7c81c538f362a7e3cedcd90ee4c008c9e9",
+          "step2-verify"
+        ],
+        "planSections": [
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Harness OK (upstream clean) — 0 findings.",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-09-17T02:00:11.899Z"
+          }
+        ],
+        "text": "When enabled with a non-empty command, the gate runs that command verbatim from the consumer repo root (git top-level, else `$PWD`) with no extra skill-owned flags and a long-lived call (timeout of at least 600000 ms), under the same never-publish-PR-threads contract as `ws-preview`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "cea78a7c81c538f362a7e3cedcd90ee4c008c9e9",
+            "step": 2
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-ship-pr/SKILL.md:L89-L90"
+        ],
+        "files": [
+          {
+            "lineEnd": 90,
+            "lineStart": 89,
+            "path": ".agents/skills/ws-ship-pr/SKILL.md",
+            "sha256": "7d50aff686b16f19c2237d28021f77f2f0fdaae9e1d85584967280d17dc1fa1d"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "g2-commit-cea78a7c81c538f362a7e3cedcd90ee4c008c9e9",
+          "step2-verify"
+        ],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-006",
+          "section-009"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Harness OK (upstream clean) — 0 findings.",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-09-17T02:00:01.142Z"
+          }
+        ],
+        "text": "The run summary is recorded on the Prepare-to-PR board; a non-zero exit or reported findings are reported to the user and shipping continues to Step 5 regardless — the gate never blocks ship, merge, or PR handoff.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "cea78a7c81c538f362a7e3cedcd90ee4c008c9e9",
+            "step": 2
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-ship-pr/SKILL.md:L89-L90"
+        ],
+        "files": [
+          {
+            "lineEnd": 90,
+            "lineStart": 89,
+            "path": ".agents/skills/ws-ship-pr/SKILL.md",
+            "sha256": "7d50aff686b16f19c2237d28021f77f2f0fdaae9e1d85584967280d17dc1fa1d"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [
+          "g2-commit-cea78a7c81c538f362a7e3cedcd90ee4c008c9e9",
+          "step2-verify"
+        ],
+        "planSections": [
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Harness OK (upstream clean) — 0 findings.",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-09-17T02:00:01.142Z"
+          }
+        ],
+        "text": "The gate is SCM-independent: identical behavior for `providers.scm` `github` and `azure-devops`; no provider CLI recipes are embedded in the gate prose.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "cea78a7c81c538f362a7e3cedcd90ee4c008c9e9",
+            "step": 2
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-configure-project/INTERVIEW.md:L149-L149",
+          ".agents/skills/ws-configure-project/INTERVIEW.md:L154-L154",
+          ".agents/skills/ws-shared/config.json:L233-L234",
+          ".agents/skills/ws-shared/runtime/config.schema.json:L454-L458",
+          ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1:L1174-L1174",
+          ".agents/skills/ws-shared/templates/config.json.example:L282-L283"
+        ],
+        "files": [
+          {
+            "lineEnd": 149,
+            "lineStart": 149,
+            "path": ".agents/skills/ws-configure-project/INTERVIEW.md",
+            "sha256": "b3ec1037124a09b09c97d29ee0007876852a75331712f779926adcf98879f684"
+          },
+          {
+            "lineEnd": 154,
+            "lineStart": 154,
+            "path": ".agents/skills/ws-configure-project/INTERVIEW.md",
+            "sha256": "b3ec1037124a09b09c97d29ee0007876852a75331712f779926adcf98879f684"
+          },
+          {
+            "lineEnd": 234,
+            "lineStart": 233,
+            "path": ".agents/skills/ws-shared/config.json",
+            "sha256": "b37dc41b2722b41678f9bd5073410fcf10d15810bcbf0238ca6553b046334a13"
+          },
+          {
+            "lineEnd": 458,
+            "lineStart": 454,
+            "path": ".agents/skills/ws-shared/runtime/config.schema.json",
+            "sha256": "afd34c6f9f27b4a3d89a7038bc468120014b2b0da463d2d402b468c988c383fc"
+          },
+          {
+            "lineEnd": 1174,
+            "lineStart": 1174,
+            "path": ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
+            "sha256": "1fa6650d37834aa762dcc2ccb2b598f296dc4cc4612f9e4967908001bf4f31b2"
+          },
+          {
+            "lineEnd": 283,
+            "lineStart": 282,
+            "path": ".agents/skills/ws-shared/templates/config.json.example",
+            "sha256": "62c9cda733297993232fdb75b4c877287bd7081e5a653156da9332196f109f64"
+          }
+        ],
+        "findings": [],
+        "id": "AC8",
+        "linkEventIds": [
+          "g2-commit-cea78a7c81c538f362a7e3cedcd90ee4c008c9e9",
+          "step2-verify"
+        ],
+        "planSections": [
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Schema-to-GUI key parity",
+            "phase": "observed",
+            "sourceFile": "test/test-powershell-config-editor.js",
+            "timestamp": "2026-09-17T02:00:12.044Z"
+          }
+        ],
+        "text": "Config surfaces stay in sync: schema boolean with default `true`, template seed `true`, project config `true` with `_comment_previewBeforeShip`, GUI checkbox under the preview section defaulting to true, and INTERVIEW § Preview documenting the reuse plus the explicit-`false` opt-out.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "cea78a7c81c538f362a7e3cedcd90ee4c008c9e9",
+            "step": 2
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-ship-pr/SKILL.md:L89-L90"
+        ],
+        "files": [
+          {
+            "lineEnd": 90,
+            "lineStart": 89,
+            "path": ".agents/skills/ws-ship-pr/SKILL.md",
+            "sha256": "7d50aff686b16f19c2237d28021f77f2f0fdaae9e1d85584967280d17dc1fa1d"
+          }
+        ],
+        "findings": [],
+        "id": "AC9",
+        "linkEventIds": [
+          "g2-commit-cea78a7c81c538f362a7e3cedcd90ee4c008c9e9",
+          "step2-verify"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Harness OK (upstream clean) — 0 findings.",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-09-17T02:00:01.142Z"
+          }
+        ],
+        "text": "A failing dry-run (non-zero exit) still ends with Step 5 attempted as configured, and no PR threads are published by the gate in any outcome (negative scenario).",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      }
+    ],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "step2-verify"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Harness OK (upstream clean) — 0 findings.",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-09-17T02:00:17.947Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS:",
+            "phase": "observed",
+            "sourceFile": ".agents/skills/ws-spec-format/scripts/validate_spec.cjs",
+            "timestamp": "2026-09-17T02:00:17.947Z"
+          }
+        ],
+        "text": "NS1: `dryRunCommand` exits non-zero → gate reports the failure on the board and Step 5 Create PR still runs; fail AC6/AC9 if ship stops."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "step2-verify"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Harness OK (upstream clean) — 0 findings.",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-09-17T02:00:17.955Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS:",
+            "phase": "observed",
+            "sourceFile": ".agents/skills/ws-spec-format/scripts/validate_spec.cjs",
+            "timestamp": "2026-09-17T02:00:17.956Z"
+          }
+        ],
+        "text": "NS2: `dryRunCommand` empty or whitespace-only → gate skips with `empty command` reason and runs nothing; fail AC4 if a backend is invented."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "step2-verify"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Harness OK (upstream clean) — 0 findings.",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-09-17T02:00:17.956Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS:",
+            "phase": "observed",
+            "sourceFile": ".agents/skills/ws-spec-format/scripts/validate_spec.cjs",
+            "timestamp": "2026-09-17T02:00:17.956Z"
+          }
+        ],
+        "text": "NS3: `preview.previewBeforeShip: false` with a configured command → gate skips without invoking the command; fail AC3 if it runs."
+      },
+      {
+        "id": "NS4",
+        "linkEventIds": [
+          "step2-verify"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Harness OK (upstream clean) — 0 findings.",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-09-17T02:00:17.956Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS:",
+            "phase": "observed",
+            "sourceFile": ".agents/skills/ws-spec-format/scripts/validate_spec.cjs",
+            "timestamp": "2026-09-17T02:00:17.956Z"
+          }
+        ],
+        "text": "NS4: `shipAction: push-only` (or `skip`, or `dry-run`) → gate skips with `no PR creation` reason even when enabled and configured; fail AC2 if it runs."
+      },
+      {
+        "id": "NS5",
+        "linkEventIds": [
+          "step2-verify"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Harness OK (upstream clean) — 0 findings.",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-09-17T02:00:17.957Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS:",
+            "phase": "observed",
+            "sourceFile": ".agents/skills/ws-spec-format/scripts/validate_spec.cjs",
+            "timestamp": "2026-09-17T02:00:17.957Z"
+          }
+        ],
+        "text": "NS5: Dry-run reports findings with exit 0 → summary recorded, shipping continues, and no PR threads are published; fail AC5/AC6 on extra flags or published threads."
+      }
+    ],
+    "planIndexPath": ".agents/plans/ws-preview-before-ship-gate/.runtime/plan.index.json",
+    "revision": 9,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "pre-step6",
+      "computedAt": "2026-09-17T02:01:15.463Z",
+      "earnedUnits": 90,
+      "errors": [],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "missingEvidence": false,
+      "score": 10,
+      "totalUnits": 90
+    },
+    "slug": "ws-preview-before-ship-gate",
+    "specPath": ".agents/plans/ws-preview-before-ship-gate/step-00-ws-preview-before-ship-gate.spec.md",
+    "testingSkip": null,
+    "workflowId": "ws-preview-before-ship-gate-20260917T011747Z"
+  },
+  "acTotal": 9,
+  "autoMode": true,
+  "baseBranch": "main",
+  "baselineCommit": "a8f5e5158649054059ff8618c05e29e3365b7b79",
+  "branch": "develop",
+  "branchStrategy": "stay",
+  "checkpoints": [
+    {
+      "step": 0,
+      "tag": "uswf/ws-preview-before-ship-gate-20260917T011747Z/before-step-0"
+    }
+  ],
+  "commits": [
+    {
+      "sha": "cea78a7c81c538f362a7e3cedcd90ee4c008c9e9",
+      "step": 2
+    }
+  ],
+  "completedSteps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "currentModel": "muse-spark",
+  "currentStep": 5,
+  "dryRun": false,
+  "endedAt": "2026-09-17T02:12:15Z",
+  "fableVerdict": "VERIFIED",
+  "fullMode": true,
+  "gateDecision": {
+    "choice": "complete-zero-threads",
+    "gate": "fix-pr",
+    "reason": "activeThreads == 0; external reviewer failure recorded, no merge",
+    "round": 1
+  },
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/ws-preview-before-ship-gate/step-00-ws-preview-before-ship-gate.spec.md",
+        ".agents/plans/ws-preview-before-ship-gate/step-00-ws-preview-before-ship-gate.classify.md",
+        ".agents/plans/ws-preview-before-ship-gate/ac-ledger.json",
+        ".agents/specs/0089-ws-preview-before-ship-gate.spec.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "ws-preview-before-ship-gate",
+      "status": "completed",
+      "step": 0,
+      "summary": "Finished step 0",
+      "workflowId": "ws-preview-before-ship-gate-20260917T011747Z",
+      "workflowType": "lite"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/ws-preview-before-ship-gate/step-01-ws-preview-before-ship-gate.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "ws-preview-before-ship-gate",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "ws-preview-before-ship-gate-20260917T011747Z",
+      "workflowType": "lite"
+    },
+    "2": {
+      "acRefs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8",
+        "AC9"
+      ],
+      "artifactPaths": [
+        ".agents/skills/ws-configure-project/INTERVIEW.md",
+        ".agents/skills/ws-preview/SKILL.md",
+        ".agents/skills/ws-shared/CHANGELOG.md",
+        ".agents/skills/ws-shared/config.json",
+        ".agents/skills/ws-shared/runtime/config.schema.json",
+        ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
+        ".agents/skills/ws-shared/templates/config.json.example",
+        ".agents/skills/ws-ship-pr/SKILL.md",
+        "FEATURES.md",
+        "bin/skill-integrity.json",
+        ".agents/plans/ws-preview-before-ship-gate/ac-ledger.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 1,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "ws-preview-before-ship-gate",
+      "status": "completed",
+      "step": 2,
+      "summary": "Step 2 verified the uncommitted Step 4b gate against AC1-AC9/NS1-NS5, linked ledger evidence, ran the full battery green, and regenerated integrity last.",
+      "workflowId": "ws-preview-before-ship-gate-20260917T011747Z",
+      "workflowType": "lite"
+    },
+    "3": {
+      "acRefs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8",
+        "AC9"
+      ],
+      "artifactPaths": [
+        ".agents/plans/ws-preview-before-ship-gate/step-06-ws-preview-before-ship-gate.review.md",
+        ".agents/plans/ws-preview-before-ship-gate/step-06-ws-preview-before-ship-gate.review.r1.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 1,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "ws-preview-before-ship-gate",
+      "status": "completed",
+      "step": 3,
+      "summary": "Step 3 reviewed G2 cea78a7c clean: score 9/10, one accepted Suggestion, fable VERIFIED.",
+      "workflowId": "ws-preview-before-ship-gate-20260917T011747Z",
+      "workflowType": "lite"
+    },
+    "4": {
+      "acRefs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8",
+        "AC9"
+      ],
+      "artifactPaths": [
+        ".agents/plans/ws-preview-before-ship-gate/step-08-ws-preview-before-ship-gate.result.md",
+        ".agents/plans/ws-preview-before-ship-gate/step-01-ws-preview-before-ship-gate.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "ws-preview-before-ship-gate",
+      "status": "completed",
+      "step": 4,
+      "summary": "Step 4 close: implementation complete, delivery committed, changelog updated.",
+      "workflowId": "ws-preview-before-ship-gate-20260917T011747Z",
+      "workflowType": "lite"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 1,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "ws-preview-before-ship-gate",
+      "status": "completed",
+      "step": 5,
+      "summary": "Step 5 Fix-PR: gate plan written, zero threads, external reviewer failure triaged and recorded, no merge.",
+      "workflowId": "ws-preview-before-ship-gate-20260917T011747Z",
+      "workflowType": "lite"
+    }
+  },
+  "hostBinding": {
+    "askQuestionTool": "request_user_input",
+    "backgroundTaskTool": "none",
+    "browserTool": "none",
+    "subagentTool": "subagent_spawn"
+  },
+  "nextAction": "Run step 5",
+  "preExistingDirty": [
+    ".agents/skills/ws-configure-project/INTERVIEW.md",
+    ".agents/skills/ws-preview/SKILL.md",
+    ".agents/skills/ws-shared/CHANGELOG.md",
+    ".agents/skills/ws-shared/config.json",
+    ".agents/skills/ws-shared/runtime/config.schema.json",
+    ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
+    ".agents/skills/ws-shared/templates/config.json.example",
+    ".agents/skills/ws-ship-pr/SKILL.md",
+    "FEATURES.md",
+    "bin/skill-integrity.json"
+  ],
+  "revision": 13,
+  "scoreAndRefine": false,
+  "shipStatus": "pr-open",
+  "skipQualityGates": false,
+  "skipTesting": false,
+  "skipTests": false,
+  "skippedSteps": [],
+  "slug": "ws-preview-before-ship-gate",
+  "specPath": ".agents/specs/0089-ws-preview-before-ship-gate.spec.md",
+  "specSource": "local",
+  "startedAt": "2026-09-17T01:17:47Z",
+  "statePath": ".agents/plans/ws-preview-before-ship-gate/ws-preview-before-ship-gate-20260917T011747Z.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [
+    {
+      "agentType": "inline:session",
+      "dispatchedAt": "2026-09-17T01:21:26Z",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "step": 0
+    },
+    {
+      "agentType": "inline:session",
+      "dispatchedAt": "2026-09-17T01:31:45Z",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "step": 1
+    },
+    {
+      "agentType": "inline:session",
+      "dispatchedAt": "2026-09-17T01:48:21Z",
+      "model": "muse-spark",
+      "step": 2
+    },
+    {
+      "agentType": "inline:session",
+      "dispatchedAt": "2026-09-17T02:02:40Z",
+      "model": "muse-spark",
+      "step": 3
+    },
+    {
+      "agentType": "inline:session",
+      "dispatchedAt": "2026-09-17T02:04:32Z",
+      "model": "muse-spark",
+      "step": 4
+    },
+    {
+      "agentType": "inline:session",
+      "dispatchedAt": "2026-09-17T02:13:49Z",
+      "model": "muse-spark",
+      "step": 5
+    }
+  ],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "completed",
+    "4": "completed",
+    "5": "completed"
+  },
+  "telemetry": {
+    "loc": {
+      "baseline": 0
+    },
+    "steps": [
+      {
+        "N": 0,
+        "agentType": "inline:session",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-17T01:21:26Z",
+        "elapsedSec": 586,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/ws-preview-before-ship-gate/step-00-ws-preview-before-ship-gate.spec.md",
+            ".agents/plans/ws-preview-before-ship-gate/step-00-ws-preview-before-ship-gate.classify.md",
+            ".agents/plans/ws-preview-before-ship-gate/ac-ledger.json",
+            ".agents/specs/0089-ws-preview-before-ship-gate.spec.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-17T01:31:12Z",
+        "label": "Spec",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 1,
+        "agentType": "inline:session",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-17T01:31:45Z",
+        "elapsedSec": 143,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/ws-preview-before-ship-gate/step-01-ws-preview-before-ship-gate.plan.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-17T01:34:08Z",
+        "label": "Planning",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": "inline:session",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-17T01:48:21Z",
+        "elapsedSec": 752,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-configure-project/INTERVIEW.md",
+            ".agents/skills/ws-preview/SKILL.md",
+            ".agents/skills/ws-shared/CHANGELOG.md",
+            ".agents/skills/ws-shared/config.json",
+            ".agents/skills/ws-shared/runtime/config.schema.json",
+            ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
+            ".agents/skills/ws-shared/templates/config.json.example",
+            ".agents/skills/ws-ship-pr/SKILL.md",
+            "FEATURES.md",
+            "bin/skill-integrity.json",
+            ".agents/plans/ws-preview-before-ship-gate/ac-ledger.json"
+          ]
+        },
+        "finishedAt": "2026-09-17T02:00:53Z",
+        "label": "Implementation",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": "inline:session",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-17T02:02:40Z",
+        "elapsedSec": 92,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/ws-preview-before-ship-gate/step-06-ws-preview-before-ship-gate.review.md",
+            ".agents/plans/ws-preview-before-ship-gate/step-06-ws-preview-before-ship-gate.review.r1.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-17T02:04:12Z",
+        "label": "Review",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": "inline:session",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-17T02:04:32Z",
+        "elapsedSec": 463,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/ws-preview-before-ship-gate/step-08-ws-preview-before-ship-gate.result.md"
+          ],
+          "deleted": [],
+          "modified": [
+            ".agents/plans/ws-preview-before-ship-gate/step-01-ws-preview-before-ship-gate.plan.md"
+          ]
+        },
+        "finishedAt": "2026-09-17T02:12:15Z",
+        "label": "Ship",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": "inline:session",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-17T02:13:49Z",
+        "elapsedSec": 127,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-17T02:15:56Z",
+        "label": "Fix-PR",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 2163,
+    "totalTokens": 0,
+    "workflowStartedAt": "2026-09-17T01:17:47Z"
+  },
+  "title": "Optional ws-preview dry-run gate in ws-ship-pr before Create PR",
+  "workflowId": "ws-preview-before-ship-gate-20260917T011747Z",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/ws-preview-before-ship-gate/ac-ledger.json",
+      ".agents/plans/ws-preview-before-ship-gate/step-00-ws-preview-before-ship-gate.classify.md",
+      ".agents/plans/ws-preview-before-ship-gate/step-00-ws-preview-before-ship-gate.spec.md",
+      ".agents/plans/ws-preview-before-ship-gate/step-01-ws-preview-before-ship-gate.plan.md",
+      ".agents/plans/ws-preview-before-ship-gate/step-06-ws-preview-before-ship-gate.review.md",
+      ".agents/plans/ws-preview-before-ship-gate/step-06-ws-preview-before-ship-gate.review.r1.md",
+      ".agents/plans/ws-preview-before-ship-gate/step-08-ws-preview-before-ship-gate.result.md",
+      ".agents/specs/0089-ws-preview-before-ship-gate.spec.md"
+    ],
+    "deleted": [],
+    "modified": [
+      ".agents/plans/ws-preview-before-ship-gate/ac-ledger.json",
+      ".agents/plans/ws-preview-before-ship-gate/step-01-ws-preview-before-ship-gate.plan.md",
+      ".agents/skills/ws-configure-project/INTERVIEW.md",
+      ".agents/skills/ws-preview/SKILL.md",
+      ".agents/skills/ws-shared/CHANGELOG.md",
+      ".agents/skills/ws-shared/config.json",
+      ".agents/skills/ws-shared/runtime/config.schema.json",
+      ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
+      ".agents/skills/ws-shared/templates/config.json.example",
+      ".agents/skills/ws-ship-pr/SKILL.md",
+      "FEATURES.md",
+      "bin/skill-integrity.json"
+    ]
+  },
+  "workflowType": "lite"
+}

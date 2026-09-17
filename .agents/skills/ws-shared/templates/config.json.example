@@ -192,9 +192,15 @@
       "includeCodeReview": false,
       "includeTestingReport": false
     },
-    "_comment_models": "Resolve order when --model is blank: stepModels[role|N] → active preset steps[role|N] → top-level phase key → preset phase key → session. Token \"current\" uses session currentModel (no fallthrough). Empty string falls through. Unknown modelsPreset → preset \"default\" if present, else legacy four keys. Fix-PR roles bypass numeric Step 9: fixPrPlan → reviewerModel; fixPrExec → executionModel. Lite ignores testingModel and all role keys, including fixPrPlan/fixPrExec, while preserving inline plan-before-edit order. Presets are lean phase-key bundles without a steps map; put per-step or per-role overrides in top-level stepModels. The default preset is all current (session-only safe fallback). Switch modelsPreset to a named bundle (cursor, deepseek, opencode, cheap) for host-specific models.",
+    "_comment_models": "Resolve order when --model is blank: stepModels[role|N] → active preset steps[role|N] → top-level phase key → preset phase key → session. Token \"current\" uses session currentModel (no fallthrough). Empty string falls through. Unknown modelsPreset → preset \"default\" if present, else legacy four keys. Fix-PR roles bypass numeric Step 9: fixPrPlan → reviewerModel; fixPrExec → executionModel. Lite ignores testingModel and all role keys, including fixPrPlan/fixPrExec, while preserving inline plan-before-edit order. Presets are lean phase-key bundles without a steps map; put per-step or per-role overrides in top-level stepModels. The default preset is all current (session-only safe fallback). Switch modelsPreset to a named bundle (cursor, deepseek, opencode, cheap, muse-spark) for host-specific models.",
     "modelsPreset": "cursor",
     "modelPresets": {
+      "muse-spark": {
+        "plannerModel": "current",
+        "executionModel": "current",
+        "testingModel": "current",
+        "reviewerModel": "current"
+      },
       "default": {
         "plannerModel": "current",
         "executionModel": "current",
