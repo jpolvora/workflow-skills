@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-09-17 13:00] Agent: muse-spark
+- **Prompt**: Add PowerShell command rules to shared AGENTS.md (avoid runtime execution errors + on-the-fly script patching).
+- **Done**: Extended `runtime/AGENTS.md` § Cross-platform runtime with 6 agent-facing PowerShell rules; regenerated integrity.
+- **Result**: Integrity verify OK; harness-clean 0 findings; doc-sync and context-budget pass. Learning: N/A (doc edit distilling existing traps).
+
+### [2026-09-17 12:30] Agent: muse-spark
+- **Prompt**: Implement `.agents/specs/0090-muse-code-harness-adaptation.spec.md` via fable-method (Task).
+- **Done**: tools.md (native-runner rule + posture record), CROSS-PLATFORM.md (posture/non-interactive section), ws-ship-pr preflight resolution order, `muse-spark` preset in example + project config + GUI enum, preset test extended. gates.md already satisfied AC2 (no churn).
+- **Result**: Pending full suite + integrity regen. Learning: recorded (shell byte-rewrite trap).
+
 ### [2026-09-17 12:00] Agent: muse-spark
 - **Prompt**: Spec that deep-analyzes ws-spec-to-pr* orchestration and adapts instructions/gates/auto modes/auxiliary .md files for the Muse Code harness on muse-spark agents (ship auto-detect, --yolo assume-yes, smooth step transitions, portable).
 - **Done**: Wrote `.agents/specs/0090-muse-code-harness-adaptation.spec.md` (authoring PASS, 9 ACs); tracked on index.PRD (row 94). No workflow register (standalone).

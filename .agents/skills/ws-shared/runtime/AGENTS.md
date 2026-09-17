@@ -138,6 +138,15 @@ Skills under `.agents/skills/` (except consumer-owned `ws-shared/` data) are **m
 
 Load [`CROSS-PLATFORM.md`](CROSS-PLATFORM.md) before creating shell recipes or temporary scripts. It is the canonical UTF-8, quoting, and explicit-launcher contract.
 
+PowerShell rules (avoid runtime errors and on-the-fly script patching):
+
+1. No `&&` / `||` chaining: separate commands with `;` and gate on `$LASTEXITCODE`.
+2. No inline JSON on the command line (the shell strips quotes): use `key=value` flags, payload files, or an in-process driver.
+3. One simple invocation per uncertain call; route nested quotes, JSON, or multiline source through a temp script plus an explicit `node` / `python` launcher.
+4. Content edits go through file tools only; never rewrite tracked file bytes from a shell one-liner, and never bulk-rewrite line endings via shell.
+5. Never patch a managed or installed script to work around a shell error: fix the invocation, or report and stop. Script changes are deliberate source edits with tests, never on-the-fly fixes.
+6. After one failed invocation variant, try at most one different quoting/chaining approach, then report the observed error instead of burning more turns. A repeated shell failure is evidence, not a reason to rewrite the callee.
+
 ---
 
 ## Recommended Feature Delivery Checklist (before push / ship)

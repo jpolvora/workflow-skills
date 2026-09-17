@@ -1,7 +1,7 @@
 ---
 name: ws-ship-pr
 description: End-to-end PR shipping manager — drives prepare-to-PR checklists, pushes code, creates PRs, waits for CI, and manages convergence.
-version: 0.4.33
+version: 0.4.34
 disable-model-invocation: true
 invocation_names:
   - ship-pr
@@ -47,6 +47,10 @@ Workflow: `ws-spec-to-pr` Step 8 or `ws-spec-to-pr-lite` Step 4. Dispatched with
 | `skipQualityGates` | `false` | Orchestrator-set from `--skip-gates` or `config.json` → `invariants.skipQualityGates` |
 
 Before executing, restate commit title, resolved PR head (`shipHead`), base, SCM provider (read from `config.json`), mode, `skipQualityGates`, `stopBeforeFixPr`, max, and `shipAction`. When `skipQualityGates` is active, prefix banners with **`[GATES BYPASSED]`**. Resolve base branch and provider from `{sharedDir}/config.json`; resolve `shipHead` per § PR head resolution.
+
+### Preflight resolution order
+
+Resolve every value in this order before asking: workflow state → git → config → auto-detect → ask. Head comes from § PR head resolution; base/remote/provider from `config.json` (auto-detect base only when unset); commit-title default from the workflow state subject, else the spec title shaped as a conventional commit; the stage set from `files_touched` + `defaults.deliveryCommitArtifacts`. Restate all resolved values before executing. Ask only when genuinely ambiguous: dirty files outside delivery scope, missing upstream auth, a conflicting open PR for the same head→base, or scope the state cannot settle. Never ask for a value resolvable from state, git, or config.
 
 ### PR head resolution
 

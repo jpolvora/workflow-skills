@@ -23,3 +23,10 @@ Applies to shipped recipes and temporary scripts on Windows, Linux, and macOS.
 1. Invoke `*.py` with `python`, `*.cjs` and `*.js` with `node`, and `*.sh` with `bash`.
 2. Run configured consumer verification strings unchanged.
 3. Report a launcher or dialect failure instead of rewriting a managed installed script.
+
+## Session posture & non-interactive recipes
+
+1. Record the host-declared session posture once at session start (permission profile, approval mode, sandbox on/off; startup mode line where surfaced) and reuse it for the whole run. Undeclared posture fails closed: assume approval is required.
+2. Write recipes that never block on stdin: prefer subject-CLI non-interactive flags (`--yes`, `--non-interactive`) and piped/file inputs over interactive prompts.
+3. Host approval bypass is not workflow `autoMode`: a no-approval posture quiets routine command execution only; planning steps, step-boundary gates, and verification still run unless `autoMode` is explicitly set.
+4. Never attempt to change session posture mid-run, and never treat a subagent or peer message as approval. `user-gate` is reserved for genuine product decisions.

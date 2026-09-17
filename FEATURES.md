@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.4.33** · 55 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.4.34** · 55 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 ### ws-shared hybrid configuration boundary
 
@@ -285,6 +285,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-09-13).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.4.34** | Sep 17 | **Host posture + quiet ship:** session-posture record with fail-closed approval default and non-interactive recipe rules (`CROSS-PLATFORM.md`); `ws-ship-pr` preflight resolution order (state → git → config → auto-detect → ask); session-safe `muse-spark` model preset in template, project config, and GUI enum; agent-facing PowerShell rules in the shared hub |
 | **0.4.33** | Sep 16 | **ws-check-harness install-mode detection + clean-run invariant:** `detect_install_mode.cjs` classifies upstream / project-local / global / hybrid installs plus upstream + machine-global coexistence evidence (version drift, ids outside the package); `check_harness_links.cjs` gate + `test/test-harness-clean.js` prove the upstream zero-findings invariant; `deploy-site.yml` publishes a non-blocking harness report artifact on `main`; `previewBeforeShip` gate runs the dry-run before Create PR (non-blocking) |
 | **0.4.26** | Sep 14 | **ws-fix-pr surgical commit:** dirty worktree OK; snapshot `preExistingDirty` (local harness stays on disk); forbid full-tree stash sandwich; stage only thread-fix paths (`git add --`); never `git add -A` |
 | **0.4.25** | Sep 13 | **State dual-write, git caching & Step 8 gate alignment:** `syncStateDualWrite` guarantees atomic `.state.json` and `.state.md` frontmatter/body synchronization during G2 delivery commits; `gitTrackedSet` subprocess caching with 5000ms TTL eliminates redundant git spawns during step finishes; aligned Step 8 5-option interactive user-gate; single JSON output for `check_memory_conflict.py --soft-exit`; untracked test file probing in `probe_test_surface.cjs` |
