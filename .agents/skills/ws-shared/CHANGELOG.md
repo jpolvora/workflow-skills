@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-09-17 00:00] Agent: opencode-go/muse-spark
+- **Prompt**: Fix the preview-before-ship change (verify Step 4b placement before SCM Create PR; write the missing spec under `.agents/specs`).
+- **Done**: Verified Step 4b runs after commit/push and before provider Create PR (github/ado share the gate); wrote spec `0089-ws-preview-before-ship-gate.spec.md` (authoring PASS, 9 ACs); tightened Step 4b wording (trimmed-empty command, consumer repo root, `preview.previewBeforeShip` key), added the INTERVIEW table row, regenerated integrity.
+- **Result**: `validate_spec --mode=authoring` PASS; GUI tests 8/8; `verify-integrity` OK v0.4.33; `test-harness-clean.js` 0 findings; `test-doc-sync` ok. Learning: N/A (spec backfill plus prose precision, no new project knowledge).
+
+### [2026-09-16 21:03] Agent: opencode-go/deepseek-v4.1-flash
+- **Prompt**: Add optional ws-preview run in ws-ship-pr before Create PR, gated by `previewBeforeShip` (default true) plus `dryRunCommand`; report errors and continue shipping.
+- **Done**: New Step 4b in `ws-ship-pr` (runs only when Create PR will execute; non-blocking); `previewBeforeShip` boolean in schema (default true), template, project config (`true`), and GUI editor; noted in INTERVIEW § Preview, ws-preview SKILL, and FEATURES 0.4.33 row.
+- **Result**: GUI tests 8/8; quality/feature-branch/delivery/hermes suites green; `verify-integrity` OK v0.4.33; harness clean 0 findings. Learning: N/A (small additive gate, no new project knowledge).
+
 ### [2026-09-16 20:56] Agent: opencode-go/deepseek-v4.1-flash
 - **Prompt**: Fix the 3 findings from the `/ws-preview` dry-run (unguarded manifest parse, unguarded link decode, hub coverage gap).
 - **Done**: Guarded `detect_install_mode.cjs` manifest parse (structured warning), added safe `decodeURIComponent` fallback and resolved-hub routing files in `check_harness_links.cjs`; added corrupt-manifest and link-gate regression tests, registered the new suite, regenerated integrity.

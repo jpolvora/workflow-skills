@@ -146,11 +146,12 @@ Each user-gate: **Accept suggestion (Recommended)** / **Keep current** / **Edit�
 
 ## Preview (`preview.dryRunCommand`)
 
-Optional. Feeds [`ws-preview`](../ws-preview/SKILL.md). Empty/unset → `/ws-preview` stops until configured. Never invent a reviewer product or download a backend during this interview.
+Optional. Feeds [`ws-preview`](../ws-preview/SKILL.md). Empty/unset → `/ws-preview` stops until configured. Never invent a reviewer product or download a backend during this interview. `ws-ship-pr` reuses `preview.dryRunCommand` before Create PR unless `preview.previewBeforeShip` is explicit `false` (failures reported, shipping continues).
 
 | Key | Type | Default | Meaning |
 |-----|------|---------|---------|
 | `preview.dryRunCommand` | string | `""` | Shell command run from the consumer repo root by `/ws-preview` |
+| `preview.previewBeforeShip` | bool | `true` | Run the dry-run in `ws-ship-pr` before Create PR (failures reported, shipping continues; explicit `false` disables) |
 
 ### Scan list (infer before the gate)
 

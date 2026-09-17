@@ -229,7 +229,9 @@
     "_comment_dryRunCommand": "Local dry-run mirror of .github/workflows/opencode-code-review.yml via `npm run review:dry` (same engine/model/variant/stack/prompt/threshold/patterns, --dry-run, --target-branch refs/heads/main, no --gh/--pr-id, so no PR threads are published). Requires network (downloads run.sh) and OPENCODE_API_KEY at run time.",
     "dryRunCommand": "npm run review:dry",
     "_comment_localReviewCommand": "Examples: cursor-reviewer --dry-run | python scripts/cursor-reviewer/cli.py --dry-run",
-    "localReviewCommand": ""
+    "localReviewCommand": "",
+    "_comment_previewBeforeShip": "When true (default if omitted), ws-ship-pr runs the dry-run once after commit/push and before Create PR; failures are reported, shipping continues. Explicit false disables the gate.",
+    "previewBeforeShip": true
   },
   "rules": {
     "_comment": "Guardrails paths. Resolve per ws-shared/AGENTS.md External dependencies (first match). seniorDeveloper = Delivery gate and surgical diffs (default packaged ws-senior-developer); set \"\" to disable or point at another guardrail; karpathyGuidelines = compatibility alias pointing to ws-senior-developer; stackFile = stack companion; changelogFile = append-only history (default under ws-shared/); other keys optional consumer rule paths — leave empty when unused.",

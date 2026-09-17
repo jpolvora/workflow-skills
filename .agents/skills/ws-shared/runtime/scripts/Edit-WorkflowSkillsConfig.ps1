@@ -1171,6 +1171,7 @@ function Populate-Sections {
             'integrations' {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'preview' -Key 'dryRunCommand' -LabelText 'Pipeline Review Dry-Run Command' -Type 'string' -Placeholder 'e.g. npm run review:dry'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'preview' -Key 'localReviewCommand' -LabelText 'Local Review Command' -Type 'string' -Placeholder 'cursor-reviewer --dry-run'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'preview' -Key 'previewBeforeShip' -LabelText 'Run Preview Before Ship (preview.previewBeforeShip)' -Type 'bool' -DefaultVal $true
 
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'specMemo' -Key 'enabled' -LabelText 'Enable External spec-memo Vault Bridge' -Type 'bool' -DefaultVal $false
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'specMemo' -Key 'mode' -LabelText 'spec-memo Storage Mode' -Type 'enum' -Options @('vault', 'hybrid', 'local', 'disabled') -DefaultVal 'vault'

@@ -17,6 +17,8 @@ User-invoked **local pipeline review dry-run**. Resolve the command from the **p
 
 **Never publish PR threads.** Do not wrap the command through packaged `{skillsRoot}/ws-preview` scripts (none are required).
 
+Also runs automatically inside [`ws-ship-pr`](../ws-ship-pr/SKILL.md) (pre-Create-PR gate) when `preview.previewBeforeShip` is not explicit `false` (default `true`); same never-publish contract.
+
 **Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
 ## Invocation

@@ -278,7 +278,9 @@
     "_comment_dryRunCommand": "Examples: npm run review:dry | bash scripts/pipeline-review-dry-run.sh | node tools/local-review-dry-run.cjs",
     "dryRunCommand": "",
     "_comment_localReviewCommand": "Examples: cursor-reviewer --dry-run | python scripts/cursor-reviewer/cli.py --dry-run",
-    "localReviewCommand": ""
+    "localReviewCommand": "",
+    "_comment_previewBeforeShip": "When true (default if omitted), ws-ship-pr runs the dry-run once after commit/push and before Create PR; failures are reported, shipping continues. Explicit false disables the gate.",
+    "previewBeforeShip": true
   },
 
   "rules": {
