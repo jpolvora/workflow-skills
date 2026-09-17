@@ -750,18 +750,25 @@ function parseArgs(argv) {
     }
     if (!token.startsWith('--')) positional.push(token);
     else {
-      const key = token.slice(2).replace(/-([a-z])/g, (_, character) => character.toUpperCase());
+      let rawKey = token.slice(2);
+      let inlineValue;
+      const eqIdx = rawKey.indexOf('=');
+      if (eqIdx >= 0) {
+        inlineValue = rawKey.slice(eqIdx + 1);
+        rawKey = rawKey.slice(0, eqIdx);
+      }
+      const key = rawKey.replace(/-([a-z])/g, (_, character) => character.toUpperCase());
       if (key === 'preAdvance') {
-        const next = argv[index + 1];
-        if (next === undefined || String(next).startsWith('--')) {
+        const next = inlineValue !== undefined ? inlineValue : argv[index + 1];
+        if (next === undefined || (inlineValue === undefined && String(next).startsWith('--'))) {
           throw new Error('--pre-advance requires a step number (1-9)');
         }
-        options.preAdvance = argv[++index];
+        options.preAdvance = inlineValue !== undefined ? inlineValue : argv[++index];
         continue;
       }
-      if (['json', 'estimated'].includes(key) && (index + 1 >= argv.length || argv[index + 1].startsWith('--'))) options[key] = true;
+      if (['json', 'estimated'].includes(key) && inlineValue === undefined && (index + 1 >= argv.length || argv[index + 1].startsWith('--'))) options[key] = true;
       else {
-        const value = argv[++index];
+        const value = inlineValue !== undefined ? inlineValue : argv[++index];
         if (FILE_LIST_FLAGS.has(key) && options[key] !== undefined) {
           if (Array.isArray(options[key])) options[key].push(value);
           else options[key] = [options[key], value];
@@ -837,6 +844,16 @@ function commonEvent(state, pipeline, step, type, timestamp, options, context) {
   }
   if (options.subagentId && String(options.subagentId).trim()) {
     event.subagentId = String(options.subagentId).trim();
+  }
+  const activePreset = isNonEmptyModel(options.preset)
+    ? String(options.preset).trim()
+    : (isNonEmptyModel(state.modelsPreset) ? String(state.modelsPreset).trim() : null);
+  if (activePreset) {
+    event.modelsPreset = activePreset;
+    const presets = context.config?.defaults?.modelPresets;
+    if (presets && typeof presets === 'object' && !presets[activePreset]) {
+      event.presetWarning = `unknown-models-preset: ${activePreset}`;
+    }
   }
   return event;
 }
@@ -1079,9 +1096,13 @@ function normalizeSubstep(value) {
   return KNOWN_SUBSTEPS.has(role) ? role : null;
 }
 
-function getActivePreset(defaults) {
+function getActivePreset(defaults, presetOverride) {
   const presets = defaults?.modelPresets;
   if (!presets || typeof presets !== 'object') return null;
+  const candidate = isNonEmptyModel(presetOverride) ? String(presetOverride).trim() : null;
+  if (candidate && presets[candidate]) {
+    return presets[candidate];
+  }
   const selected = defaults.modelsPreset;
   if (isNonEmptyModel(selected) && presets[String(selected).trim()]) {
     return presets[String(selected).trim()];
@@ -1157,11 +1178,11 @@ function finalizeResolvedModel(value, sessionModel) {
   return sessionModel || 'unknown';
 }
 
-function resolvePhaseModel(defaults, { step, role, pipeline = 'standard', sessionModel = 'unknown' }) {
+function resolvePhaseModel(defaults, { step, role, pipeline = 'standard', sessionModel = 'unknown', preset: presetOverride }) {
   const stepNum = Number(step);
   const stepKey = String(step);
   const normalizedRole = pipeline === 'lite' ? null : normalizeSubstep(role);
-  const preset = getActivePreset(defaults || {});
+  const preset = getActivePreset(defaults || {}, presetOverride);
   const override = resolveStepOverride(defaults || {}, preset, stepKey, normalizedRole, pipeline);
   if (override) return finalizeResolvedModel(override, sessionModel);
 
@@ -1231,11 +1252,15 @@ function resolveRecordedModelDetails(options, context, state, pipeline, step) {
     const prior = (state.stepDispatches || []).find((item) => Number(item.step) === Number(step));
     role = prior?.substep;
   }
+  const presetOverride = isNonEmptyModel(options.preset)
+    ? String(options.preset).trim()
+    : (isNonEmptyModel(state.modelsPreset) ? String(state.modelsPreset).trim() : undefined);
   const phaseModel = resolvePhaseModel(context.config?.defaults || {}, {
     step,
     role,
     pipeline,
     sessionModel,
+    preset: presetOverride,
   });
   const configuredModel = isNonEmptyModel(options.configuredModel)
     ? String(options.configuredModel).trim()
@@ -1335,6 +1360,11 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   state.workflowId ||= path.basename(absoluteState, '.state.md');
   state.slug ||= state.us || path.basename(path.dirname(absoluteState));
   state.statePath = paths.statePath;
+  if (isNonEmptyModel(options.preset)) {
+    state.modelsPreset = String(options.preset).trim();
+  } else if (isNonEmptyModel(state.modelsPreset)) {
+    options.preset = state.modelsPreset;
+  }
   state.completedSteps = Array.isArray(state.completedSteps) ? state.completedSteps : [];
   state.skippedSteps = Array.isArray(state.skippedSteps) ? state.skippedSteps : [];
   state.stepStatus = state.stepStatus && typeof state.stepStatus === 'object' ? state.stepStatus : {};

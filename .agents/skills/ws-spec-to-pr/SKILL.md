@@ -1,7 +1,7 @@
 ---
 name: ws-spec-to-pr
 description: End-to-end Spec-to-PR (steps 0–9). Verify score ≥ `defaults.minVerifyScore` (default 9) before review. Trigger for full/standard delivery.
-version: 0.4.34
+version: 0.4.35
 disable-model-invocation: true
 invocation_names:
   - spec-to-pr
@@ -41,7 +41,7 @@ Subagents return parseable `step-output`. Gate contexts: transitions, entry/resu
 2. **Auth:** Gate required for G1+. Cancel → HS-1. Commit → G2 + menu (HS-2).
 3. **Isolation:** Subagent per step. Checkpoint tag `uswf/{id}/before-step-{N}`. Branch-direct default; worktree when `plans.useWorktrees=true`.
 4. **State / Memory:** Hygiene → asserts → board (fail → HS-5). `{workflow-id}.state.json` is machine SoT (`.state.md` is the render); `{sharedDir}/MEMORY.md` generalizable.
-5. **Mode Flags:** `dryRun` (no code/push/browser writes); `autoMode` (auto-gate 0); `skipQualityGates` (`[GATES BYPASSED]` banner, bypass telemetry); `fullMode` (commit plan+result then create PR). Subagent models resolve from `defaults.modelsPreset` / `modelPresets`, optional `stepModels` (numeric + `dag` / `scoreAndRefine` / `reviewFix` / `fixPrPlan` / `fixPrExec`), and legacy phase keys — pass the resolved id on `dispatch-agent` and `--model` / `--substep` to `update_state.cjs`. Step 7: `testingModel` → `executionModel` → session after overrides; `reviewerModel` is Steps 5–6 only. Internal Step 9 roles resolve `fixPrPlan` → `reviewerModel` and `fixPrExec` → `executionModel`, never numeric `"9"`; capture the session fallback before either dispatch, append both ordered dispatch events, and let only the outer Step 9 call `finish`. **Config switches (not invocation flags):** `defaults.enableDag` (when `false` [default], forces sequential task execution; when `true`, enables parallel DAG tasks per `dagThresholds`); `defaults.verboseMode` (explicit `true` → executing model reasons and prints a start-of-step `*` list; omitted/`false` → silent; schema/`ws-configure-project` seed writes `true`); `defaults.providerCompat` (optional host hints only); `defaults.contextHygiene` (`pruneAfterStep` default true; `backgroundVerboseSteps` falls back to blocking `dispatch-agent`); `defaults.reviewJury.size` 1–3 (size > 1 is standard Step 6 only).
+5. **Mode Flags:** `dryRun` (no code/push/browser writes); `autoMode` (auto-gate 0); `skipQualityGates` (`[GATES BYPASSED]` banner, bypass telemetry); `fullMode` (commit plan+result then create PR). Subagent models resolve from `defaults.modelsPreset` (overridable via invocation parameter `preset=<name>` / `--preset`, persisted in `state.modelsPreset`) / `modelPresets`, optional `stepModels` (numeric + `dag` / `scoreAndRefine` / `reviewFix` / `fixPrPlan` / `fixPrExec`), and legacy phase keys — pass the resolved id on `dispatch-agent` and `--model` / `--substep` to `update_state.cjs`. Step 7: `testingModel` → `executionModel` → session after overrides; `reviewerModel` is Steps 5–6 only. Internal Step 9 roles resolve `fixPrPlan` → `reviewerModel` and `fixPrExec` → `executionModel`, never numeric `"9"`; capture the session fallback before either dispatch, append both ordered dispatch events, and let only the outer Step 9 call `finish`. **Config switches (not invocation flags):** `defaults.enableDag` (when `false` [default], forces sequential task execution; when `true`, enables parallel DAG tasks per `dagThresholds`); `defaults.verboseMode` (explicit `true` → executing model reasons and prints a start-of-step `*` list; omitted/`false` → silent; schema/`ws-configure-project` seed writes `true`); `defaults.providerCompat` (optional host hints only); `defaults.contextHygiene` (`pruneAfterStep` default true; `backgroundVerboseSteps` falls back to blocking `dispatch-agent`); `defaults.reviewJury.size` 1–3 (size > 1 is standard Step 6 only).
 
 ### autoMode ≠ skip planning
 
@@ -85,7 +85,7 @@ See [`gates.md`](../ws-shared/runtime/gates.md) § Quality gate bypass. Active v
 ## Invocation
 
 ```
-/ws-spec-to-pr [flags] [US {issue_id} | {name}.spec.md | "description"]
+/ws-spec-to-pr [flags] [preset=<name>] [US {issue_id} | {name}.spec.md | "description"]
 ```
 
 ## Exit & Handoff

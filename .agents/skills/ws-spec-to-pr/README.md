@@ -68,10 +68,11 @@ Flags combinable, e.g. `full auto dry-run` — see [`setup.md`](../ws-shared/run
 /ws-spec-to-pr auto dry-run full 2338
 /ws-spec-to-pr auto skip-testing 2338
 /ws-spec-to-pr auto skip-tests skip-testing 2338
+/ws-spec-to-pr auto preset=cursor 2338
 /ws-spec-to-pr soft-delete for suppliers
 ```
 
-State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipTesting`, `skipTests`, `fullMode`, `scoreAndRefine`). Mutation opt-in is **config-only** (`defaults.skipMutationTesting` + `verification.mutationTest`) — not a state.md field.
+State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipTesting`, `skipTests`, `fullMode`, `scoreAndRefine`, `modelsPreset`). Mutation opt-in is **config-only** (`defaults.skipMutationTesting` + `verification.mutationTest`) — not a state.md field.
 
 ### Flags
 
@@ -84,12 +85,13 @@ State: `{plansDir}/us-{id}/{workflow-id}.state.md` (`dryRun`, `autoMode`, `skipT
 | `full` | Step 8 Recommended = commit plan+result then create PR |
 | `strict` | Full verification matrix at Step 5 |
 | `score-and-refine` | Optional extra polish when Step 5 score is already ≥ `defaults.minVerifyScore` (default 9) (aliases: `analyze-second-pass`, `score-refine`): wide-context overengineering sweep plus unused workflow-introduced artifact removal. Score below `defaults.minVerifyScore` always runs this loop until ≥ `defaults.minVerifyScore` (default 9) |
+| `preset=<name>` | Override `defaults.modelsPreset` for this workflow run (e.g. `cursor`, `muse-spark`, `deepseek`, `cheap`, `default`); alias: `--preset=<name>` |
 
 **Combined switches:** any mix supported (e.g. `full` + `auto` + `dry-run` for automated end-to-end dry-run). Documented in [`setup.md`](../ws-shared/runtime/setup.md).
 
 ### Model selection
 
-The orchestrator session always executes under the active session model (`currentModel`). Subagent models resolve from `defaults.modelsPreset` / `modelPresets`, optional `stepModels`, and legacy phase keys in `config.json` → `defaults`. Pass the resolved id on `dispatch-agent` and record with `--model` / optional `--substep` on `update_state.cjs`. Step 9 keeps one outer numeric model but each Fix-PR batch dispatches `fixPrPlan` (`reviewerModel`) before `fixPrExec` (`executionModel`); those internal roles bypass numeric `"9"` and never finish the outer step. Manual switching of the orchestrator session via Pause → session host → Resume is supported when desired. Fallback to the captured active model if a subagent model switch fails.
+The orchestrator session always executes under the active session model (`currentModel`). Subagent models resolve from `defaults.modelsPreset` (overridable via invocation parameter `preset=<name>` / `--preset`, persisted in `state.modelsPreset`) / `modelPresets`, optional `stepModels`, and legacy phase keys in `config.json` → `defaults`. Pass the resolved id on `dispatch-agent` and record with `--model` / optional `--substep` on `update_state.cjs`. Step 9 keeps one outer numeric model but each Fix-PR batch dispatches `fixPrPlan` (`reviewerModel`) before `fixPrExec` (`executionModel`); those internal roles bypass numeric `"9"` and never finish the outer step. Manual switching of the orchestrator session via Pause → session host → Resume is supported when desired. Fallback to the captured active model if a subagent model switch fails.
 
 ### Evidence runtime
 

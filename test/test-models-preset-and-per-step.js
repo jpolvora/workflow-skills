@@ -44,6 +44,9 @@ assert(defaultsProps.stepModels?.properties?.fixPrPlan?.type === 'string', 'sche
 assert(defaultsProps.stepModels?.properties?.fixPrExec?.type === 'string', 'schema stepModels includes fixPrExec');
 assert(!schema.properties?.defaults?.required?.includes('modelsPreset'), 'schema does not require modelsPreset');
 
+const stateSchema = JSON.parse(fs.readFileSync(path.join(SHARED, 'runtime', 'workflow-state.schema.json'), 'utf8'));
+assert(stateSchema.properties?.modelsPreset?.type === 'string', 'workflow-state schema defines modelsPreset as string');
+
 assert(example.defaults.modelsPreset === 'cursor', 'example sets modelsPreset to cursor');
 assert(
   example.defaults.modelPresets?.default?.plannerModel === 'current',
@@ -112,6 +115,21 @@ assert(
   resolvePhaseModel(baseDefaults, { step: 0, pipeline: 'standard', sessionModel: session }) ===
     'cursor-grok-4.6-high',
   'preset step 0 uses cursor-grok-4.6-high',
+);
+assert(
+  resolvePhaseModel(baseDefaults, { step: 0, pipeline: 'standard', sessionModel: session, preset: 'deepseek' }) ===
+    'opencode-go/deepseek-v4-pro',
+  'preset option overrides baseDefaults.modelsPreset for step 0',
+);
+assert(
+  resolvePhaseModel(baseDefaults, { step: 4, pipeline: 'standard', sessionModel: session, preset: 'cheap' }) ===
+    'composer-2.5',
+  'preset option overrides baseDefaults.modelsPreset for step 4',
+);
+assert(
+  resolvePhaseModel(baseDefaults, { step: 0, pipeline: 'standard', sessionModel: session, preset: 'nonexistent-preset' }) ===
+    'cursor-grok-4.6-high',
+  'unknown preset falls back to baseDefaults.modelsPreset',
 );
 assert(
   resolvePhaseModel(baseDefaults, { step: 4, pipeline: 'standard', sessionModel: session }) === 'composer-2.5',
@@ -363,6 +381,22 @@ assert(
   'lite SKILL ignores Fix-PR model switches but keeps plan-before-edit',
 );
 
+const setupDoc = read('.agents/skills/ws-shared/runtime/setup.md');
+assert(/preset=<name>/.test(setupDoc), 'setup.md documents preset=<name>');
+assert(/modelsPreset/.test(setupDoc), 'setup.md documents modelsPreset in init banner');
+
+const specSkill = read('.agents/skills/ws-spec-to-pr/SKILL.md');
+assert(/preset=<name>/.test(specSkill), 'ws-spec-to-pr SKILL.md documents preset=<name>');
+
+const specReadme = read('.agents/skills/ws-spec-to-pr/README.md');
+assert(/preset=<name>/.test(specReadme), 'ws-spec-to-pr README.md documents preset=<name>');
+
+const specProtocols = read('.agents/skills/ws-spec-to-pr/PROTOCOLS.md');
+assert(/preset=<name>/.test(specProtocols), 'ws-spec-to-pr PROTOCOLS.md documents preset=<name>');
+
+assert(/preset=<name>/.test(dispatch), 'STEP-DISPATCH documents preset=<name>');
+assert(/preset=<name>/.test(liteSkill), 'ws-spec-to-pr-lite SKILL.md documents preset=<name>');
+
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-models-preset-'));
 const tempShared = path.join(tempRoot, '.agents/skills/ws-shared');
 fs.mkdirSync(tempShared, { recursive: true });
@@ -372,7 +406,10 @@ fs.writeFileSync(
     plans: { dir: '.agents/plans' },
     defaults: {
       modelsPreset: 'cheap',
-      modelPresets: { cheap: { plannerModel: 'cheap-planner' } },
+      modelPresets: {
+        cheap: { plannerModel: 'cheap-planner', executionModel: 'cheap-exec' },
+        deepseek: { plannerModel: 'deepseek-planner', executionModel: 'deepseek-exec' },
+      },
     },
   }),
 );
@@ -413,6 +450,138 @@ assert(dispatchRun.status === 0, `temp consumer dispatch: ${dispatchRun.stderr}`
 assert(dispatchRun.status === 0, 'temp consumer plans index starts empty and accepts dispatch');
 const updated = fs.readFileSync(stateFile, 'utf8');
 assert(/currentModel: cheap-planner/.test(updated), 'CJS --repo-root resolves preset from temp consumer hub');
+
+const presetDir = path.join(tempRoot, '.agents/plans/preset-flow');
+fs.mkdirSync(presetDir, { recursive: true });
+const presetState = path.join(presetDir, 'preset.state.md');
+const presetJsonl = path.join(presetDir, 'telemetry.jsonl');
+fs.writeFileSync(
+  presetState,
+  `---
+workflowId: wf-preset
+slug: preset-flow
+status: active
+currentStep: 0
+currentModel: temp-session
+revision: 0
+completedSteps: []
+---
+`,
+);
+const presetDispatch0 = spawnSync(
+  process.execPath,
+  [
+    path.join(REPO, '.agents/skills/ws-spec-to-pr/scripts/update_state.cjs'),
+    'dispatch',
+    presetState,
+    '--step',
+    '0',
+    '--preset',
+    'deepseek',
+    '--jsonl-out',
+    path.relative(tempRoot, presetJsonl),
+    '--repo-root',
+    tempRoot,
+  ],
+  { encoding: 'utf8' },
+);
+assert(presetDispatch0.status === 0, `preset dispatch exits 0: ${presetDispatch0.stderr}`);
+let presetStateMd = fs.readFileSync(presetState, 'utf8');
+assert(/modelsPreset: deepseek/.test(presetStateMd), 'dispatch --preset deepseek records modelsPreset in state.md');
+assert(/currentModel: deepseek-planner/.test(presetStateMd), 'dispatch --preset deepseek resolves deepseek-planner');
+let presetStateJson = JSON.parse(fs.readFileSync(path.join(presetDir, 'preset.state.json'), 'utf8'));
+assert(presetStateJson.modelsPreset === 'deepseek', 'dispatch --preset deepseek records modelsPreset in state.json');
+
+const presetFinish0 = spawnSync(
+  process.execPath,
+  [
+    path.join(REPO, '.agents/skills/ws-spec-to-pr/scripts/update_state.cjs'),
+    'finish',
+    presetState,
+    '--step',
+    '0',
+    '--jsonl-out',
+    path.relative(tempRoot, presetJsonl),
+    '--repo-root',
+    tempRoot,
+  ],
+  { encoding: 'utf8' },
+);
+assert(presetFinish0.status === 0, `preset finish exits 0: ${presetFinish0.stderr}`);
+presetStateJson = JSON.parse(fs.readFileSync(path.join(presetDir, 'preset.state.json'), 'utf8'));
+assert(presetStateJson.modelsPreset === 'deepseek', 'finish retains modelsPreset in state.json');
+
+const presetDispatch1 = spawnSync(
+  process.execPath,
+  [
+    path.join(REPO, '.agents/skills/ws-spec-to-pr/scripts/update_state.cjs'),
+    'dispatch',
+    presetState,
+    '--step',
+    '1',
+    '--jsonl-out',
+    path.relative(tempRoot, presetJsonl),
+    '--repo-root',
+    tempRoot,
+  ],
+  { encoding: 'utf8' },
+);
+assert(presetDispatch1.status === 0, `preset dispatch 1 exits 0: ${presetDispatch1.stderr}`);
+presetStateMd = fs.readFileSync(presetState, 'utf8');
+assert(/modelsPreset: deepseek/.test(presetStateMd), 'step 1 dispatch retains modelsPreset in state.md');
+assert(/currentModel: deepseek-planner/.test(presetStateMd), 'step 1 dispatch resolves using retained deepseek');
+
+const presetDispatchUpdate = spawnSync(
+  process.execPath,
+  [
+    path.join(REPO, '.agents/skills/ws-spec-to-pr/scripts/update_state.cjs'),
+    'dispatch',
+    presetState,
+    '--step',
+    '1',
+    '--preset=cheap',
+    '--jsonl-out',
+    path.relative(tempRoot, presetJsonl),
+    '--repo-root',
+    tempRoot,
+  ],
+  { encoding: 'utf8' },
+);
+assert(presetDispatchUpdate.status === 0, `inline --preset=cheap dispatch exits 0: ${presetDispatchUpdate.stderr}`);
+presetStateMd = fs.readFileSync(presetState, 'utf8');
+assert(/modelsPreset: cheap/.test(presetStateMd), 'inline --preset=cheap updates modelsPreset in state.md');
+assert(/currentModel: cheap-planner/.test(presetStateMd), 'inline --preset=cheap resolves cheap-planner');
+presetStateJson = JSON.parse(fs.readFileSync(path.join(presetDir, 'preset.state.json'), 'utf8'));
+assert(presetStateJson.modelsPreset === 'cheap', 'inline --preset=cheap updates modelsPreset in state.json');
+
+const presetEvents = fs.readFileSync(presetJsonl, 'utf8').trim().split(/\r?\n/).map((l) => JSON.parse(l));
+assert(presetEvents.some((e) => e.modelsPreset === 'deepseek'), 'telemetry records modelsPreset: deepseek');
+assert(presetEvents.some((e) => e.modelsPreset === 'cheap'), 'telemetry records modelsPreset: cheap');
+
+const presetDispatchUnknown = spawnSync(
+  process.execPath,
+  [
+    path.join(REPO, '.agents/skills/ws-spec-to-pr/scripts/update_state.cjs'),
+    'dispatch',
+    presetState,
+    '--step',
+    '1',
+    '--preset',
+    'unknown-xyz',
+    '--jsonl-out',
+    path.relative(tempRoot, presetJsonl),
+    '--repo-root',
+    tempRoot,
+  ],
+  { encoding: 'utf8' },
+);
+assert(presetDispatchUnknown.status === 0, `unknown preset dispatch exits 0: ${presetDispatchUnknown.stderr}`);
+const eventsAfterUnknown = fs.readFileSync(presetJsonl, 'utf8').trim().split(/\r?\n/).map((l) => JSON.parse(l));
+const lastUnknownEvent = eventsAfterUnknown[eventsAfterUnknown.length - 1];
+assert(
+  lastUnknownEvent.presetWarning && /unknown-xyz/.test(lastUnknownEvent.presetWarning),
+  'telemetry records presetWarning for unknown preset',
+);
 
 const roleCfg = JSON.parse(fs.readFileSync(path.join(tempShared, 'config.json'), 'utf8'));
 roleCfg.defaults.modelPresets.cheap.executionModel = 'sequential-exec';
