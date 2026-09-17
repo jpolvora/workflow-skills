@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-17 12:00] Agent: muse-spark
+- **Prompt**: Spec that deep-analyzes ws-spec-to-pr* orchestration and adapts instructions/gates/auto modes/auxiliary .md files for the Muse Code harness on muse-spark agents (ship auto-detect, --yolo assume-yes, smooth step transitions, portable).
+- **Done**: Wrote `.agents/specs/0090-muse-code-harness-adaptation.spec.md` (authoring PASS, 9 ACs); tracked on index.PRD (row 94). No workflow register (standalone).
+- **Result**: Spec of record ready for planning; index.PRD updated. Learning: N/A (standard implementation).
+
 ### [2026-09-17 03:00] Agent: muse-spark
 - **Prompt**: Continue full auto - resume `ws-preview-before-ship-gate` (lite) at Step 2 through ship.
 - **Done**: Verified the Step 4b implementation (AC1-AC9 file evidence, NS1-NS5 linked, full 76-step suite green, integrity regen last); G2 `cea78a7c`; review round 1 clean 9/10 (fable VERIFIED); close result + delivery commit (plan only).
