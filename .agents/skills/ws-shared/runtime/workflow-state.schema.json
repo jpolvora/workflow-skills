@@ -90,6 +90,7 @@
     },
     "currentModel": { "type": "string" },
     "configuredModel": { "type": "string" },
+    "modelsPreset": { "type": "string" },
     "nextAction": { "type": "string" },
     "pendingGate": { "type": ["object", "null"] },
     "acTotal": { "type": "integer", "minimum": 0 },

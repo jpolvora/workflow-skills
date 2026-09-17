@@ -1,6 +1,6 @@
 ---
 name: ws-spec-to-pr-lite
-version: 0.4.34
+version: 0.4.35
 description: Fast Spec-to-PR (steps 0–5). Plan, implement, commit, review, ship. Trigger for lite/fast delivery.
 disable-model-invocation: true
 invocation_names:
@@ -29,7 +29,7 @@ Aliases: [`tools.md`](../ws-shared/runtime/tools.md). Host mode: resolve the hos
 3. **State & Telemetry:** Run `node {skillsRoot}/ws-spec-to-pr-lite/scripts/update_state.cjs dispatch` before each inline step and `finish` afterward with `--jsonl-out {plansDir}/{slug}/telemetry.jsonl`; elapsed time is derived from those timestamps and authored `--elapsed` is rejected. Missing telemetry → **HS-5**.
 4. **Artifacts:** `step-00` spec · `step-01` plan · `step-08` result (shared names with standard).
 5. **Commits & Cleanup:** Required **G2-code after Step 2 before Step 3**; second G2-code after Step 3 review-fix if product files remain (`commit-code`, path-scoped `files_touched` — [`gates.md`](../ws-shared/runtime/gates.md) § Required G2-code save points). Configured delivery artifacts at Step 4 close gate (G2-delivery / [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8). **Close** sets `status: completed`, `endedAt`, `shipStatus: pending` before any push/PR. Phase A git cleanup when **shipping is terminal** — see [`artifact-cleanup.md`](../ws-spec-to-pr/protocols/artifact-cleanup.md): `python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}`.
-6. **Auto Mode Models:** `ws-spec-to-pr-lite` dispatches no `dispatch-agent` subagents (Invariant 2); the session executes inline under `{currentModel}` without session model switching. Resolve models from `defaults.modelsPreset` / `modelPresets`, optional `stepModels` `"0"`–`"5"`, and phase buckets 0–1 / `plannerModel`, 2 / `executionModel`, 3 / `reviewerModel` (Step 3), 4–5 session unless step override — **telemetry / banner only**. Do **not** read or apply `defaults.testingModel` or role keys `dag`, `scoreAndRefine`, `reviewFix`, `fixPrPlan`, or `fixPrExec`, even if set. Lite Step 3 review-fix stays on numeric Step `3`; Fix-PR runs gate-only plan then execute inline on `currentModel`, while numeric Step `5` remains the only outer telemetry row.
+6. **Auto Mode Models:** `ws-spec-to-pr-lite` dispatches no `dispatch-agent` subagents (Invariant 2); the session executes inline under `{currentModel}` without session model switching. Resolve models from `defaults.modelsPreset` (overridable via invocation parameter `preset=<name>` / `--preset`, persisted in `state.modelsPreset`) / `modelPresets`, optional `stepModels` `"0"`–`"5"`, and phase buckets 0–1 / `plannerModel`, 2 / `executionModel`, 3 / `reviewerModel` (Step 3), 4–5 session unless step override — **telemetry / banner only**. Do **not** read or apply `defaults.testingModel` or role keys `dag`, `scoreAndRefine`, `reviewFix`, `fixPrPlan`, or `fixPrExec`, even if set. Lite Step 3 review-fix stays on numeric Step `3`; Fix-PR runs gate-only plan then execute inline on `currentModel`, while numeric Step `5` remains the only outer telemetry row.
 7. **Fable & Score/Refine:** Optional `fable.enabled` (domain@1, judge@3, verify@4). Optional `scoreAndRefine` (task score 0–10 in `step-05`, 2nd pass report in `step-08`; wide-context simplify per [`gates.md`](../ws-shared/runtime/gates.md) § Score & Refine).
 8. **Config Entry Check:** Verify local project `$PWD/.agents/skills/ws-shared/config.json`. If missing or unconfigured, prompt `user-gate` to run [`ws-configure-project`](../ws-configure-project/SKILL.md).
 9. **MEMORY Consult:** In Steps 1, 2, and 3: route through [`tools.md`](../ws-shared/runtime/tools.md) **`read-memory`** (both enabled backends — local files and/or spec-memo vault) for 3–8 plan/spec keywords before coding; record `memory_consult` in step outputs.
@@ -75,5 +75,5 @@ See [`gates.md`](../ws-shared/runtime/gates.md) § Quality gate bypass. Active v
 ## Triggers
 
 ```
-/ws-spec-to-pr-lite [flags] [US {issue_id} | {name}.spec.md | "description"]
+/ws-spec-to-pr-lite [flags] [preset=<name>] [US {issue_id} | {name}.spec.md | "description"]
 ```

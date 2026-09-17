@@ -64,7 +64,11 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
    - Write to `.agents/skills/ws-shared/STACK.md` (or the resolved `rules.stackFile` when it already lives under `.agents/skills/ws-shared/`). Do **not** create a repo-root stack file.
    - If auto-detection is incomplete or ambiguous (multiple possible stacks), present findings to the user and ask for clarification on uncertain items.
    - Log: `stack companion bootstrapped: {stackFile}`.
-2. **Parse flags**: `auto`, `dry-run`, `skip-testing`, `skip-tests`, `skip-gates`, `full`, `strict`, `score-and-refine` (aliases: `analyze-second-pass`, `score-refine`, `scoreAndRefine`).
+2. **Parse flags & parameters**: `auto`, `dry-run`, `skip-testing`, `skip-tests`, `skip-gates`, `full`, `strict`, `score-and-refine` (aliases: `analyze-second-pass`, `score-refine`, `scoreAndRefine`).
+   - **Preset parameter override:** `preset=<name>` (aliases: `--preset=<name>`, `--preset <name>`) overrides `defaults.modelsPreset` for this workflow run.
+     - Precedence: invocation `preset=<name>` > `config.json` `defaults.modelsPreset`.
+     - Persist `modelsPreset: {resolvedPreset}` in state frontmatter and `{workflow-id}.state.json`.
+     - Graceful fallback: if `<name>` is not defined in `config.json` `defaults.modelPresets`, log a warning in telemetry and Init banner, and fall back to `defaults.modelsPreset` (or preset `default`).
    - **Combined Switches:** These switches can be used individually or combined in any configuration (e.g. `full` + `auto` + `dry-run` to run a fully automated dry-run simulation of the entire workflow for testing).
    - Map: `skip-testing` → `skipTesting: true`; `skip-tests` → `skipTests: true`; `skip-gates` → `skipQualityGates: true`; `score-and-refine` / `analyze-second-pass` / `score-refine` / `scoreAndRefine` → `scoreAndRefine: true`.
    - When `skipQualityGates` is true (flag or `config.json` → `invariants.skipQualityGates`), quality gates are bypassed (classifier enforcement, fable quality visibility except `auditVerdictsBlockShip` + REFUTED, pre-advance CI, telemetry soft gates). Build, test, security, SCM, and HS-1..HS-4 still run.
@@ -89,6 +93,7 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
    | `skipTests` | `{true/false}` |
    | `skipQualityGates` | `{true/false}` |
    | `currentModel` | `{session model}` |
+   | `modelsPreset` | `{resolvedPreset}` ({override: preset={name}|from config.json}) |
    | `slug` | `{slug}` |
    | `workflowId` | `{workflow-id}` |
    | `branch` | `{branch}` |
@@ -198,7 +203,7 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
      - Cancel for now
      ```
    - **Non-Existent State:** If no matching completed or unfinished workflow exists, start fresh from **Zero** (Step 0).
-4. Resume: load `{workflow-id}.state.json` (machine SoT with embedded handoffs), `ac-ledger.json`, and `git log -5 --oneline` on the working branch. Do not reload every `step-0*.md` up front. Then `status: active`, skip bootstrap (including **5b Feature branch gate** — do not re-run), jump to `currentStep` gate.
+4. Resume: load `{workflow-id}.state.json` (machine SoT with embedded handoffs), `ac-ledger.json`, and `git log -5 --oneline` on the working branch. Retain `state.modelsPreset` if present so subsequent steps continue using the overridden preset without requiring the parameter to be re-passed. Do not reload every `step-0*.md` up front. Then `status: active`, skip bootstrap (including **5b Feature branch gate** — do not re-run), jump to `currentStep` gate.
 4b. **Branch resume (HEAD mismatch):** after skip-bootstrap, if `git rev-parse --abbrev-ref HEAD` ≠ `state.branch` → STOP. `user-gate`:
    - **Check out `{state.branch}` (Recommended)**
    - **Cancel (HS-1)**

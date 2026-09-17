@@ -141,6 +141,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Optional ws-preview dry-run gate in ws-ship-pr before Create PR (`spec: 0089-ws-preview-before-ship-gate.spec.md`)
 - [ ] Muse Code harness adaptation for ws-spec-to-pr workflows on muse-spark agents (`spec: 0090-muse-code-harness-adaptation.spec.md`)
 - [ ] Revamp website visual and template with docs-style layout (`spec: 0091-website-visual-revamp.spec.md`)
+- [ ] ws-spec-to-pr: parameter override for modelsPreset on workflow invocation (`spec: 0092-models-preset-override.spec.md`)
+
 
 
 
@@ -275,6 +277,8 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 | 94 | `muse-code-harness-adaptation` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Muse Code harness adaptation for ws-spec-to-pr workflows on muse-spark agents |
 
 | 95 | `website-visual-revamp` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Revamp website visual and template with docs-style layout |
+
+| 96 | `models-preset-override` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-to-pr: parameter override for modelsPreset on workflow invocation |
 
 ## 9. Inbox
 
