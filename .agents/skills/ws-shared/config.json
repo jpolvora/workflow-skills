@@ -224,6 +224,13 @@
     "_comment": "Optional local review artifact root (fix-pr / ws-goal-fix-pr round reports).",
     "dir": ".agents/codereviews"
   },
+  "preview": {
+    "_comment": "Optional. /ws-preview runs preview.dryRunCommand from the consumer repo root — no packaged reviewer backend. Prefer /ws-configure-project --section preview (infers from AGENTS.md, README, MEMORY, rules.*, package.json scripts, and local skills) or set the string below. Empty → /ws-preview stops until configured.",
+    "_comment_dryRunCommand": "Local dry-run mirror of .github/workflows/opencode-code-review.yml via `npm run review:dry` (same engine/model/variant/stack/prompt/threshold/patterns, --dry-run, no --gh/--pr-id, so no PR threads are published). Requires network (downloads run.sh) and OPENCODE_API_KEY at run time.",
+    "dryRunCommand": "npm run review:dry",
+    "_comment_localReviewCommand": "Examples: cursor-reviewer --dry-run | python scripts/cursor-reviewer/cli.py --dry-run",
+    "localReviewCommand": ""
+  },
   "rules": {
     "_comment": "Guardrails paths. Resolve per ws-shared/AGENTS.md External dependencies (first match). seniorDeveloper = Delivery gate and surgical diffs (default packaged ws-senior-developer); set \"\" to disable or point at another guardrail; karpathyGuidelines = compatibility alias pointing to ws-senior-developer; stackFile = stack companion; changelogFile = append-only history (default under ws-shared/); other keys optional consumer rule paths — leave empty when unused.",
     "harness": ".agents/skills/ws-shared/AGENTS.md",

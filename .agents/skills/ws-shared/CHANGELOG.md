@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-09-16 20:49] Agent: opencode-go/deepseek-v4.1-flash
+- **Prompt**: Explain `localReviewCommand`, recommend a value, and add an npm script running the agentic-code-reviewers dry-run locally.
+- **Done**: Added `review:dry` to `package.json` (same OpenCode reviewer recipe as CI with `--dry-run`, no PR publishing); repointed `preview.dryRunCommand` to `npm run review:dry` (single source of truth, most portable form). Left `preview.localReviewCommand` empty (recommended default until the team wants the enforced LLM gate in ws-code-review).
+- **Result**: JSON parses; `npm pkg get` resolves the script; `verify-integrity` OK v0.4.33. Learning: N/A (config-only addition, no new project knowledge).
+
+### [2026-09-16 20:47] Agent: opencode-go/deepseek-v4.1-flash
+- **Prompt**: Add `preview.dryRunCommand` to config.json based on the agentic-code-reviewers CI action.
+- **Done**: Set `preview.dryRunCommand` in project `config.json` (mirrors `.github/workflows/opencode-code-review.yml` review step: same engine/model/variant/stack/prompt/threshold/patterns, `--dry-run`, no `--gh`/`--pr-id`, same exclude env). Schema/template/GUI already covered `preview`; no GUI or schema change needed.
+- **Result**: JSON parses; `verify-integrity` OK v0.4.33; GUI editor tests 8/8; ws-doctor smoke passed. Learning: N/A (config-only addition, no new project knowledge).
+
 ### [2026-09-16 20:40] Agent: opencode-go/deepseek-v4.1-flash
 - **Prompt**: Write a spec for the ws-check-harness install-mode/clean-audit feature as completed.
 - **Done**: Authored `.agents/specs/0088-ws-check-harness-install-mode-clean-audit.spec.md` (12 ACs, `status: completed`, closure tables). `validate_spec.cjs --mode=authoring` PASS; tracked in `index.PRD` row 92; recorded traps `catalog-utf8-byte-budget` and `global-version-representative-sample`.
