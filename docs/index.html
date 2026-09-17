@@ -3218,17 +3218,16 @@ npx --yes github:jpolvora/workflow-skills --global
     var lastActive = null;
     function setOpen(open) {
       var was = document.body.classList.contains('nav-open');
-      document.body.classList.toggle('nav-open', open);
-      if (toggle) toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-      if (overlay) overlay.hidden = !open;
-      if (!mq.matches) return;
-      if (open) {
+      var active = open && mq.matches;
+      document.body.classList.toggle('nav-open', active);
+      if (toggle) toggle.setAttribute('aria-expanded', active ? 'true' : 'false');
+      if (overlay) overlay.hidden = !active;
+      document.body.style.overflow = active ? 'hidden' : '';
+      if (active) {
         lastActive = document.activeElement;
-        document.body.style.overflow = 'hidden';
         var first = sidebar ? sidebar.querySelector('a') : null;
         if (first) first.focus();
-      } else if (was) {
-        document.body.style.overflow = '';
+      } else if (was && mq.matches) {
         if (lastActive && lastActive.focus) lastActive.focus();
         else if (toggle) toggle.focus();
       }
@@ -3247,6 +3246,20 @@ npx --yes github:jpolvora/workflow-skills --global
     });
     if (sidebar) sidebar.addEventListener('click', function(e) {
       if (mq.matches && e.target.closest('a')) setOpen(false);
+    });
+    if (sidebar) sidebar.addEventListener('keydown', function(e) {
+      if (e.key !== 'Tab' || !document.body.classList.contains('nav-open')) return;
+      var items = sidebar.querySelectorAll('a[href]');
+      if (!items.length) return;
+      var firstItem = items[0];
+      var lastItem = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === firstItem) {
+        e.preventDefault();
+        lastItem.focus();
+      } else if (!e.shiftKey && document.activeElement === lastItem) {
+        e.preventDefault();
+        firstItem.focus();
+      }
     });
     if (mq.addEventListener) mq.addEventListener('change', function(e) { if (!e.matches) setOpen(false); });
   })();
