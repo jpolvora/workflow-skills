@@ -1163,7 +1163,8 @@ function Populate-Sections {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'seniorDeveloper' -LabelText 'Senior Developer Gate Rule Path' -Type 'path-file' -DefaultVal '.agents/skills/ws-senior-developer/SKILL.md'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'karpathyGuidelines' -LabelText 'Karpathy Diff Hygiene Rule Path' -Type 'path-file' -DefaultVal '.agents/skills/ws-karpathy-guidelines/SKILL.md'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'stackFile' -LabelText 'Project Stack File' -Type 'path-file' -DefaultVal '.agents/skills/ws-shared/STACK.md'
-                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'changelogFile' -LabelText 'Project Changelog File' -Type 'path-file' -DefaultVal '.agents/skills/ws-shared/CHANGELOG.md'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'changelogFile' -LabelText 'Project Changelog File' -Type 'path-file' -DefaultVal 'CHANGELOG.md'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'memoryDir' -LabelText 'Memory Files Directory ({memoryDir})' -Type 'path-folder' -DefaultVal '.'
 
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'invariants' -Key 'skipQualityGates' -LabelText 'Skip Soft Quality Gates (CLI --skip-gates)' -Type 'bool' -DefaultVal $false
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'invariants' -Key 'commitPlanFilesOnlyAtStep8' -LabelText 'Stage Plan Files Only at Step 8 Close' -Type 'bool' -DefaultVal $true

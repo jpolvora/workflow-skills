@@ -1,7 +1,7 @@
 ---
 name: ws-senior-developer
 description: Engineering delivery gate for scope control, anti-reinvention, ambiguity stops via user-gate, surgical diff hygiene, and pre-ship proof. Invoke via rules.seniorDeveloper, /senior-developer, or /karpathy-guidelines.
-version: 0.4.35
+version: 0.4.36
 invocation_names:
   - senior-developer
   - ws-senior-developer
@@ -22,7 +22,7 @@ When config-resolved: if `$PWD/.agents/skills/ws-shared/config.json` is missing,
 ## Core Directives
 
 1. **Think and surface assumptions:** Don't guess or hide confusion. State assumptions and trade-offs explicitly. If multiple interpretations exist, present them via `user-gate`; never pick silently. If unclear, stop, name what is confusing, and ask. Push back if overcomplicated or a simpler approach exists.
-2. **Consult MEMORY first:** Inspect `{sharedDir}/MEMORY.md` (via [`ws-self-learning`](../ws-self-learning/SKILL.md)) for task keywords and matching DO NOT / INSTEAD DO directives before inventing a new approach.
+2. **Consult MEMORY first:** Inspect the effective `{memoryDir}/MEMORY.md` (via [`ws-self-learning`](../ws-self-learning/SKILL.md)) for task keywords and matching DO NOT / INSTEAD DO directives before inventing a new approach.
 3. **Simplicity and anti-reinvention:** Minimum code to solve the ask; zero speculative flexibility, single-use abstractions, or impossible-scenario error handling. Inspect existing helpers, stdlib, and project patterns before writing custom logic. If 200 lines could be 50, rewrite.
 4. **Scope enclosure:** Never implement unasked features, refactors, or enhancements. Present opportunistic improvements via `user-gate` and wait for approval.
 5. **Surgical diffs:** Touch only what the request requires. Don't improve adjacent code, comments, or formatting. Don't refactor unbroken code. Match existing style. Mention unrelated dead code; don't delete it. Remove orphan imports, variables, and functions that your changes created. Every changed line must trace directly to the request.
@@ -64,7 +64,7 @@ Before branch or PR handoff, complete this Code review proof checklist:
 - [ ] Run configured secrets checking; resolve or report findings.
 - [ ] Assess relevant documentation and specification-index updates.
 - [ ] Review changed scope for correctness, regressions, policy compliance, and requested scope only.
-- [ ] **Self-learning / Failure reflection:** If >= 2 tool, build, or test failures occurred before passing, record a new memory entry in `{sharedDir}/memory/` with root cause and trap avoided; `Learning: N/A` is strictly forbidden when session friction >= 2.
+- [ ] **Self-learning / Failure reflection:** If >= 2 tool, build, or test failures occurred before passing, record a new memory entry in the effective `{memoryDir}/memory/` with root cause and trap avoided; `Learning: N/A` is strictly forbidden when session friction >= 2.
 - [ ] Report command evidence, outcomes, remaining risks, and blockers.
 
 Use configured aliases (`build-backend`, `test-backend`, etc.); never hardcode consumer commands.

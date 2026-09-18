@@ -1,6 +1,6 @@
 ---
 name: ws-configure-project
-version: 0.4.35
+version: 0.4.36
 description: Project configuration wizard — detects project settings and interviews config.json sections (including preview.dryRunCommand and optional specMemo).
 invocation_names:
   - configure-project
@@ -60,7 +60,7 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 5. **Stack companion & Framework Traps** — Default `rules.stackFile` = `.agents/skills/ws-shared/STACK.md` (installer-seeded; consumer-owned). Prefer that path. Do **not** require or create a repo-root stack file. Skip when `--section autoload`, `--section specMemo`, or `--section preview`.
    - If shared `STACK.md` exists but config points at a missing root file: suggest set `rules.stackFile` → `.agents/skills/ws-shared/STACK.md` (**Recommended**) / Keep current / Skip.
    - If the resolved target is missing: offer **Generate** into `.agents/skills/ws-shared/STACK.md` (setup 1b heuristics) / **Skip**. Write only under `.agents/skills/ws-shared/` unless the user explicitly chose another path.
-   - **Framework Anti-Regression Traps:** When configuring project stack, `auto_configure.cjs` automatically detects the framework (`abp-angular`, `nextjs-react`, `typescript-node`, `php-laravel`) and seeds the initial framework traps into `{sharedDir}/MEMORY.md` (idempotent, skipping if already present).
+   - **Framework Anti-Regression Traps:** When configuring project stack, `auto_configure.cjs` automatically detects the framework (`abp-angular`, `nextjs-react`, `typescript-node`, `php-laravel`) and seeds the initial framework traps into the effective `{memoryDir}/MEMORY.md` (idempotent, skipping if already present).
    - Done when: config points at an existing companion, framework traps seeded if detected, or user skipped.
 
 5b. **Preview dry-run command (optional)** — Run when full interview reaches optional extras (after verification), or immediately for `--section preview`. See [`INTERVIEW.md`](INTERVIEW.md) § Preview. Skip core project interview when `--section preview` only.
@@ -121,7 +121,7 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 - Prefer detect + suggest over blank prompts.
 - Do not invent org/repo secrets; leave PAT/env keys as env-var names only.
 - `providers.scm` never `local`; hybrid `active=local` + `scm=github|azure-devops` allowed.
-- Artifact defaults: `plans.dir` → `.agents/plans`, `plans.specsDir` → `.agents/specs` (prefer existing repo-root `specs/`), `plans.wikiDir` → `.agents/specs/wiki`, `plans.wiki.verbosity` → `condensed` (`condensed` terse default; `detailed` paragraph walkthrough), `reviews.dir` → `.agents/codereviews`, `rules.changelogFile` → `.agents/skills/ws-shared/CHANGELOG.md` unless user picks otherwise.
+- Artifact defaults: `plans.dir` → `.agents/plans`, `plans.specsDir` → `.agents/specs` (prefer existing repo-root `specs/`), `plans.wikiDir` → `.agents/specs/wiki`, `plans.wiki.verbosity` → `condensed` (`condensed` terse default; `detailed` paragraph walkthrough), `reviews.dir` → `.agents/codereviews`, `rules.changelogFile` → `CHANGELOG.md` (repo root), `rules.memoryDir` → `.` (repo root) unless user picks otherwise.
 - Hub source control: track `config.json` and maintained consumer-owned companions such as `STACK.md`; ignore managed `runtime/` and `templates/` copies, generated root `AGENTS.md` / `autoload.md`, memory/history, and installer metadata. Use `auto_configure.cjs --json` for the manifest-derived report; credentials remain environment references.
 - Delivery commit artifacts (`defaults.deliveryCommitArtifacts`): interview under `defaults` / `--section defaults` per [`INTERVIEW.md`](INTERVIEW.md); recommended = refined plan on, delivery result off, opt-ins off (see [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8).
 - Models (`defaults` / `--section defaults`): pick `modelsPreset` from shipped `config.json.example` sample keys, then optional `stepModels` (`"0"`–`"9"`, `dag`, `scoreAndRefine`, `reviewFix`, `fixPrPlan`, `fixPrExec`); keep empty legacy phase keys unless the user wants an advanced override. Token `"current"` uses the session model. Explain that `fixPrPlan` falls back to `reviewerModel`, `fixPrExec` falls back to `executionModel`, both bypass numeric `"9"`, and lite ignores role model switches while preserving plan-before-edit.

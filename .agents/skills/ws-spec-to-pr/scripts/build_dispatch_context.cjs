@@ -7,6 +7,7 @@ const path = require('path');
 const {
   resolveConsumerContext,
   resolveConfiguredPath,
+  resolveEffectiveMemoryPaths,
   resolveSkillMdPath,
   toRepoRelative,
 } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
@@ -81,7 +82,11 @@ function indexedSlices(context, indexFile, acIds) {
 
 function memorySlice(context, paths) {
   if (!paths.length) return '';
-  const memory = path.join(context.sharedDir, 'MEMORY.md');
+  const memory = resolveEffectiveMemoryPaths({
+    repoRoot: context.repoRoot,
+    sharedDir: context.sharedDir,
+    config: context.config,
+  }).indexFile;
   if (!fs.existsSync(memory)) return '';
   const entries = fs.readFileSync(memory, 'utf8').replace(/\r\n?/g, '\n').split(/(?=^### \[)/m);
   const normalized = paths.map((item) => item.replace(/\\/g, '/').toLowerCase());

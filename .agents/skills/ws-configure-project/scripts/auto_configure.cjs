@@ -27,7 +27,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
-const { resolveConsumerContext, toRepoRelative } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
+const { resolveConsumerContext, toRepoRelative, resolveEffectiveMemoryPaths } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 
 const SCRIPT_FILE = __filename;
 
@@ -340,12 +340,12 @@ function detectFrameworkStack(repoRoot, pkg) {
   return null;
 }
 
-function seedFrameworkTraps(sharedDir, framework, dryRun) {
+function seedFrameworkTraps(memoryTargetDir, framework, dryRun) {
   if (!framework || !FRAMEWORK_TRAPS[framework]) return false;
   const trap = FRAMEWORK_TRAPS[framework];
-  const memoryDir = path.join(sharedDir, 'memory');
+  const memoryDir = path.join(memoryTargetDir, 'memory');
   const trapFile = path.join(memoryDir, trap.filename || `framework-trap-${framework}.md`);
-  const memoryFile = path.join(sharedDir, 'MEMORY.md');
+  const memoryFile = path.join(memoryTargetDir, 'MEMORY.md');
 
   let memoryContent = '';
   if (fs.existsSync(memoryFile)) {
@@ -526,7 +526,7 @@ function buildWanted(repoRoot, example, schema) {
   wantFallback('reviews.dir');
 
   // -- rules (concrete installer paths) --
-  for (const k of ['harness', 'seniorDeveloper', 'karpathyGuidelines', 'stackFile', 'changelogFile']) {
+  for (const k of ['harness', 'seniorDeveloper', 'karpathyGuidelines', 'stackFile', 'changelogFile', 'memoryDir']) {
     wantFallback(`rules.${k}`);
   }
 
@@ -890,7 +890,8 @@ function main() {
       ? 'global execution writes only consumer configuration'
       : null;
   if (ctx.executionScope !== 'global' && (!args.section || args.section === 'stack')) {
-    trapsSeeded = seedFrameworkTraps(sharedDir, detectedFramework, args.dryRun);
+    const effectiveMemory = resolveEffectiveMemoryPaths({ repoRoot, sharedDir, config });
+    trapsSeeded = seedFrameworkTraps(effectiveMemory.dir, detectedFramework, args.dryRun);
   }
 
   const result = {

@@ -1,7 +1,7 @@
 ---
 name: ws-monitor
 description: Read-only live observer for active Spec-to-PR and multi-spec workflow runs, memory vault status, telemetry, artifacts, and multi-host transcripts.
-version: 0.4.35
+version: 0.4.36
 disable-model-invocation: true
 invocation_names:
   - monitor
@@ -19,7 +19,7 @@ Observe active `ws-spec-to-pr`, `ws-spec-to-pr-lite`, and `ws-spec-multi` runs w
 
 - Read `{plansDir}/{slug}/` state JSON/Markdown, `{plansDir}/ws-spec-multi/` batch runner state, `telemetry.jsonl`, expected step artifacts, and memory vault records.
 - State and telemetry (`stepDispatches` in state files, `telemetry.jsonl`) are the canonical source of truth for dispatch provenance (`subagentId`, `agentType`, `model`). Memory vault records and transcripts are secondary observational signals.
-- Check project memory vault (`spec-memo` MCP/CLI or local `{sharedDir}/memory/`) to discover and cross-reference running workflows for the current project.
+- Check project memory vault (`spec-memo` MCP/CLI or local `{memoryDir}/memory/`) to discover and cross-reference running workflows for the current project.
 - Read transcript roots from configured `monitor.transcriptRoots`, workspace candidate roots (`.agents/transcripts/`, `.cursor/`, `.opencode/`), and host locations when requested via `--transcript-root` or `--discover-host-transcripts`.
 - Report missing artifacts, state drift, empty telemetry fields, path failures, rejected models, interrupted turns, batch queue stalls, and memory vault synchronization gaps.
 - Write a Markdown report only when the caller passes `--report`.
@@ -85,7 +85,7 @@ The monitor checks project memory vault records to identify running or active wo
   - Via MCP: Call `spec-memo` tool `search` with `{ "kinds": ["state"], "status": "active", "cwd": "{repoRoot}" }` or `get` by `{ "kind": "state", "slug": "{slug}" }`.
   - Via CLI: Run `{specMemo.cli || 'memo'} search --kinds state --status active --cwd {repoRoot} --json`.
   - Active project records: extract workflow state records, active slug, recorded run checkpoints, and session tags.
-- **Local memory files:** When local memory is active, inspect `{sharedDir}/memory/*.md` and `{sharedDir}/MEMORY.md` for active workflow markers, traps, and decision logs.
+- **Local memory files:** When local memory is active, inspect `{memoryDir}/memory/*.md` and `{memoryDir}/MEMORY.md` for active workflow markers, traps, and decision logs.
 - **Reconciliation:** Compare vault records with on-disk state under `{plansDir}`. If the vault lists a workflow as active that is missing on disk, report `vault-unreconciled-workflow`.
 
 ## Host Agent Transcript Collection (Cursor, OpenCode, Antigravity)

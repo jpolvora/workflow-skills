@@ -1375,8 +1375,8 @@ child.on('close', async (code) => {
     fs.rmSync(niDir, { recursive: true, force: true });
   }
 
-  // --- Phase 9: consumer MEMORY isolation under ws-shared/ ---
-  console.log('\n[Phase 9] Consumer ws-shared/MEMORY.md isolation...');
+  // --- Phase 9: consumer MEMORY/CHANGELOG default to repo root; legacy ws-shared/ preserved ---
+  console.log('\n[Phase 9] Consumer MEMORY/CHANGELOG root defaults + legacy preserve...');
   {
     const memDir = path.join(__dirname, '.pkg-memory');
     fs.rmSync(memDir, { recursive: true, force: true });
@@ -1404,34 +1404,32 @@ child.on('close', async (code) => {
     const destAutoload = path.join(memDir, '.agents', 'skills', 'ws-shared', 'autoload.md');
     const destScmContract = path.join(memDir, '.agents', 'skills', 'ws-shared', 'runtime', 'scm-provider-contract.md');
     const destRootAgents = path.join(memDir, 'AGENTS.md');
-    if (!fs.existsSync(destMem)) fail('Fresh install must seed ws-shared/MEMORY.md');
+    const memEntries = path.join(memDir, '.agents', 'skills', 'ws-shared', 'memory');
     if (!fs.existsSync(destStack)) fail('Fresh install must seed ws-shared/STACK.md');
     if (!fs.existsSync(destConfig)) fail('Fresh install must seed ws-shared/config.json');
-    if (!fs.existsSync(destChangelog)) fail('Fresh install must seed ws-shared/CHANGELOG.md');
+    if (fs.existsSync(destMem)) fail('Fresh install must not seed legacy ws-shared/MEMORY.md');
+    if (fs.existsSync(memEntries)) fail('Fresh install must not create legacy ws-shared/memory/');
+    if (fs.existsSync(destChangelog)) fail('Fresh install must not seed legacy ws-shared/CHANGELOG.md');
     if (!fs.existsSync(destAutoload)) fail('Fresh install must copy ws-shared/autoload.md from hub whitelist');
     if (!fs.existsSync(destScmContract)) fail('Fresh install must copy ws-shared/runtime/scm-provider-contract.md from hub whitelist');
     if (fs.existsSync(destRootAgents)) {
       fail('Installer must not write consumer root AGENTS.md');
     }
-    const seeded = fs.readFileSync(destMem, 'utf8');
-    if (/Trap Avoided|Promote Shared Installer|Curl install-skills/i.test(seeded)) {
-      fail('Upstream hub MEMORY.md content leaked into consumer install');
-    }
-    if (!/# Memory - Anti-Regression Knowledge/.test(seeded)) {
-      fail('Seeded MEMORY.md missing expected empty template header');
+    if (fs.existsSync(path.join(memDir, 'MEMORY.md')) || fs.existsSync(path.join(memDir, 'CHANGELOG.md')) || fs.existsSync(path.join(memDir, 'memory'))) {
+      fail('Installer must not write repo-root MEMORY/CHANGELOG (skills create them on first use)');
     }
     const seededConfig = fs.readFileSync(destConfig, 'utf8');
     if (!/"\$schema"/.test(seededConfig) || !/"providers"/.test(seededConfig)) {
       fail('Seeded config.json missing expected schema/providers from example');
     }
-    const memEntries = path.join(memDir, '.agents', 'skills', 'ws-shared', 'memory');
-    if (fs.existsSync(memEntries)) {
-      const leaked = fs.readdirSync(memEntries).filter((n) => n.endsWith('.md'));
-      if (leaked.length > 0) {
-        fail(`Upstream memory/*.md leaked to consumer: ${leaked.join(', ')}`);
-      }
+    const seededRules = JSON.parse(seededConfig).rules || {};
+    if (seededRules.changelogFile !== 'CHANGELOG.md') {
+      fail(`Seeded config.json rules.changelogFile must default to repo root (got ${JSON.stringify(seededRules.changelogFile)})`);
     }
-    ok('Fresh install seeds config.json, MEMORY.md, CHANGELOG.md, STACK.md under ws-shared/ only (no root AGENTS.md)');
+    if (seededRules.memoryDir !== '.') {
+      fail(`Seeded config.json rules.memoryDir must default to repo root (got ${JSON.stringify(seededRules.memoryDir)})`);
+    }
+    ok('Fresh install seeds config.json + STACK.md only (MEMORY/CHANGELOG default to root, created on first use)');
 
     const marker = '### [2099-01-01] Consumer local trap\n- **Trap Avoided**: keep me\n';
     fs.writeFileSync(destMem, `# Memory - Anti-Regression Knowledge\n\n---\n\n${marker}`);
@@ -1626,7 +1624,11 @@ child.on('close', async (code) => {
     }
     // Hybrid edge: local hub without AGENTS.md while rules.harness points locally (AC3 pre-fix).
     fs.rmSync(path.join(shared, 'AGENTS.md'), { force: true });
-    // Consumer-owned snapshots for preservation check (AC5).
+    // Consumer-owned snapshots for preservation check (AC5). Fresh installs no
+    // longer seed legacy MEMORY/CHANGELOG under ws-shared/, so simulate a
+    // pre-move consumer by writing them before snapshotting.
+    fs.writeFileSync(path.join(shared, 'MEMORY.md'), '# Memory - Anti-Regression Knowledge\n\n### [2099-01-01] hybrid probe\n');
+    fs.writeFileSync(path.join(shared, 'CHANGELOG.md'), '# Changelog\n\n### [2099-01-01 00:00] hybrid probe\n');
     const ownedFiles = ['config.json', 'STACK.md', 'MEMORY.md', 'CHANGELOG.md'];
     const before = new Map(ownedFiles.map((f) => [f, fs.readFileSync(path.join(shared, f), 'utf8')]));
     const runUpdate = () =>

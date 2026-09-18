@@ -50,10 +50,10 @@ Run `node {skillsRoot}/ws-check-harness/scripts/detect_install_mode.cjs --json -
 
 Canonical contract: [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md) § Path tokens.
 
-1. If the cited string contains `{skillsRoot}` / `{sharedDir}` / `{plansDir}` / `{reviewsDir}` / `{us-dir}`, substitute from the map (nested: expand `{sharedDir}` after `{skillsRoot}` if needed).
+1. If the cited string contains `{skillsRoot}` / `{sharedDir}` / `{plansDir}` / `{reviewsDir}` / `{memoryDir}` / `{us-dir}`, substitute from the map (nested: expand `{sharedDir}` after `{skillsRoot}` if needed).
 2. Result is **repo-root-relative**. Check existence from **repo root**, not from the citing file’s directory.
 3. If braces remain after known-token substitution, treat as **template** — do **not** flag broken.
-4. Undeclared shorthand `ws-shared/MEMORY.md` → **warning** (prefer `{sharedDir}/MEMORY.md`).
+4. Undeclared shorthand `ws-shared/MEMORY.md` → **warning** (prefer `{memoryDir}/MEMORY.md`).
 5. Markdown link targets `(...)`: real relative or repo-root paths only (no brace tokens).
 
 ## Scan scope (canonical inventory)
@@ -128,7 +128,7 @@ Phase 4 still **discovers** inventory from the **skills scan root** (§ 3). When
 4. **Orchestrator dispatch** (`ws-spec-to-pr/STEP-DISPATCH.md`, orch `SKILL.md`): use `ws-*` folder ids. STEP-DISPATCH is **standard-only** (0–9); lite keeps its own 0–5 table.
 5. **Upstream `bin/skill-dependencies.json`:** workflow package skill ids must match folder names on disk under the skills scan root (`.agents/skills/` when Install mode is upstream; `{skillsRoot}/` when consumer).
 
-**Forbidden folder / path ids** (**critical** in orch dispatch / Layer 2 / `skill-dependencies.json` / live skill bodies; **warning** in human FAQ with an explicit LEGACY banner). Exempt: `CHANGELOG.md` history; `{sharedDir}/MEMORY.md` / `memory/*` trap docs; FAQ/docs with an explicit LEGACY banner only:
+**Forbidden folder / path ids** (**critical** in orch dispatch / Layer 2 / `skill-dependencies.json` / live skill bodies; **warning** in human FAQ with an explicit LEGACY banner). Exempt: `CHANGELOG.md` history; `{memoryDir}/MEMORY.md` / `memory/*` trap docs; FAQ/docs with an explicit LEGACY banner only:
 
 | Forbidden (do not use as path or install id) | Canonical |
 |----------------------------------------------|-----------|
@@ -247,7 +247,7 @@ export PYTHONIOENCODING=utf-8
 
 For each inventory file (§ Scope):
 
-1. Extract Markdown links `(...)` and inline mentions of paths (`.md`, `.mdc`, `.py`/`.cjs`/`.sh` scripts), including brace tokens (`{skillsRoot}`, `{sharedDir}`, `{plansDir}`, `{reviewsDir}`, `{us-dir}`).
+1. Extract Markdown links `(...)` and inline mentions of paths (`.md`, `.mdc`, `.py`/`.cjs`/`.sh` scripts), including brace tokens (`{skillsRoot}`, `{sharedDir}`, `{plansDir}`, `{reviewsDir}`, `{memoryDir}`, `{us-dir}`).
 2. Normalize: strip anchors (`#`), query strings, `file://` prefixes.
 3. Classify each reference:
    - **Path token** — contains a declared brace token → expand via § Path token map (repo-root existence later)
@@ -275,7 +275,7 @@ rg -n '\.agents/|\.cursor/' AGENTS.md .agents/ 2>/dev/null || true
 
 ### Phase 2 — Existence and path format validation
 
-**Before each check:** if the citation is a path token or mixed token path, **expand** per § Path token map. Never treat `{sharedDir}/MEMORY.md` as a filesystem-relative path from the citing file (that produces false `../` “fixes”).
+**Before each check:** if the citation is a path token or mixed token path, **expand** per § Path token map. Never treat `{memoryDir}/MEMORY.md` as a filesystem-relative path from the citing file (that produces false `../` “fixes”).
 
 For each internal reference (post-expansion when applicable):
 
@@ -288,8 +288,8 @@ For each internal reference (post-expansion when applicable):
 | Case / separator | `\` vs `/` in text paths |
 | Absolute path | `C:\Users\...\project\...` — **always** fix to relative or declared token |
 | Bare relative link resolution | Link `docs/faq.md` inside a skill directory resolved from repo root (`docs/faq.md`) instead of containing folder (`.agents/skills/.../docs/faq.md`) → **warning**; resolution must use containing directory |
-| Undeclared shorthand | bare `ws-shared/MEMORY.md` without braces → **warning**; propose `{sharedDir}/MEMORY.md` (not a guessed `../ws-shared/` from an arbitrary skill) |
-| Renamed / retired skill id | Mentions of obsolete pipeline **folder** or path ids from § 3b (e.g. `ws-write-spec`, `ws-write-plan`, `ws-interview`, `ws-verify-plan`, `ws-update-plan-implementation`, `ws-github-provider`, `ws-azure-devops-provider`, `ws-local-spec-provider`, `ws-sync-spec`, `ws-multi-spec`, `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `09-goal-fix-pr`, `10-update-plan-implementation`, `05-verify-sync-plan-us`, `us-workflow`, nested utility-skill folders inside `ws-shared/`, retired `ws-caveman`) while the canonical skill lives at the § 3b path — **critical** if in `ws-spec-to-pr` / lite dispatch, Layer 2 hubs, or `bin/skill-dependencies.json`; else **warning**. **Family rule (fail closed):** any packaged skill folder or `skill-dependencies.json` id matching `^ws-(?!spec-)[a-z0-9-]*spec` (token `spec` not immediately after `ws-`) or equal to a retired host-first provider id (`ws-github-provider`, `ws-azure-devops-provider`, `ws-local-spec-provider`) is **critical** everywhere (new skills cannot reintroduce `ws-*-spec`). Executable mirror: `{sharedDir}/runtime/scripts/retired_artifacts.cjs` `STALE_LIVE_REFERENCE_PATTERNS` (`ws-*-spec family violation`). Exempt: `CHANGELOG.md` history; `{sharedDir}/MEMORY.md` / `memory/*`; `FEATURES.md` version-history rows for shipped releases; FAQ/docs with an explicit LEGACY banner only |
+| Undeclared shorthand | bare `ws-shared/MEMORY.md` without braces → **warning**; propose `{memoryDir}/MEMORY.md` (not a guessed `../ws-shared/` from an arbitrary skill) |
+| Renamed / retired skill id | Mentions of obsolete pipeline **folder** or path ids from § 3b (e.g. `ws-write-spec`, `ws-write-plan`, `ws-interview`, `ws-verify-plan`, `ws-update-plan-implementation`, `ws-github-provider`, `ws-azure-devops-provider`, `ws-local-spec-provider`, `ws-sync-spec`, `ws-multi-spec`, `07-integration-validation`, `11-ship-pr`, `08-fix-pr`, `09-goal-fix-pr`, `10-update-plan-implementation`, `05-verify-sync-plan-us`, `us-workflow`, nested utility-skill folders inside `ws-shared/`, retired `ws-caveman`) while the canonical skill lives at the § 3b path — **critical** if in `ws-spec-to-pr` / lite dispatch, Layer 2 hubs, or `bin/skill-dependencies.json`; else **warning**. **Family rule (fail closed):** any packaged skill folder or `skill-dependencies.json` id matching `^ws-(?!spec-)[a-z0-9-]*spec` (token `spec` not immediately after `ws-`) or equal to a retired host-first provider id (`ws-github-provider`, `ws-azure-devops-provider`, `ws-local-spec-provider`) is **critical** everywhere (new skills cannot reintroduce `ws-*-spec`). Executable mirror: `{sharedDir}/runtime/scripts/retired_artifacts.cjs` `STALE_LIVE_REFERENCE_PATTERNS` (`ws-*-spec family violation`). Exempt: `CHANGELOG.md` history; `{memoryDir}/MEMORY.md` / `memory/*`; `FEATURES.md` version-history rows for shipped releases; FAQ/docs with an explicit LEGACY banner only |
 | Step ↔ folder drift | Root / `{sharedDir}/AGENTS.md` Layer 2 row has Step `08` but path still points at `11-ship-pr`, or skill column `ws-fix-pr` paired with `ws-ship-pr` — **critical** |
 | Dual-hub path parity | Root `AGENTS.md` and `{sharedDir}/AGENTS.md` disagree on pipeline folder paths for the same skill id — **critical** |
 | Extra-package optional | Hub links Extra skills that are not on disk → **intentional omission** (not broken/critical) when the section is labeled Extra/optional |

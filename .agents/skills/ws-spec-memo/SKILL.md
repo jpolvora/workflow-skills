@@ -1,6 +1,6 @@
 ---
 name: ws-spec-memo
-version: 0.4.35
+version: 0.4.36
 disable-model-invocation: true
 description: >-
   workflow-skills ↔ spec-memo bridge only: wire config.json memory backends, import/migrate
@@ -116,7 +116,7 @@ Expand path tokens from [`tools.md`](../ws-shared/runtime/tools.md) before shell
 
 If MCP `user-spec-memo` / `spec-memo` is already registered, load **`/ws-memo`** `bootstrap` and skip this subcommand.
 
-1. Read `{sharedDir}/config.json` routing (`enableSpecMemoIntegration` / `enableMemoryFiles` / `specMemo.mode`). When vault is not enabled, consult in-repo MEMORY via `ws-self-learning` (`Grep`/`Read` `{sharedDir}/MEMORY.md`).
+1. Read `{sharedDir}/config.json` routing (`enableSpecMemoIntegration` / `enableMemoryFiles` / `specMemo.mode`). When vault is not enabled, consult in-repo MEMORY via `ws-self-learning` (`Grep`/`Read` `{memoryDir}/MEMORY.md`).
 2. When vault is enabled and MCP is down: run `{specMemo.cli} bootstrap` with optional `--slug` / `--path` from invocation (CLI only; protocol details stay in `/ws-memo`).
 3. On CLI failure and hybrid mode: warn once and consult in-repo MEMORY. On vault-only failure: report actionable fix (install CLI, register MCP, run setup) and STOP.
    - Done when: brief (<8 KB) printed, MEMORY consult completed, or `/ws-memo` took over.
@@ -140,7 +140,7 @@ If MCP `user-spec-memo` / `spec-memo` is already registered, load **`/ws-memo`**
    node {skillsRoot}/ws-spec-memo/scripts/configure_spec_memo.cjs --repo-root {repoRoot} --apply --json --enabled false
    ```
    Preserve other `specMemo.*` keys; never delete vault data.
-2. Tell the user in-repo `{sharedDir}/MEMORY.md` / `memory/*` paths are active again when local files were restored.
+2. Tell the user in-repo `{memoryDir}/MEMORY.md` / `memory/*` paths are active again when local files were restored.
    - Done when: `specMemo.enabled` is explicit `false` and summary printed.
 
 **Next:** When re-enabling vault later, run setup again then **`/ws-memo`** for runtime ops.
@@ -155,13 +155,13 @@ Other skills keep their contracts. This bridge owns **which backends** run; **`/
 | New trap, failure reflection, fable REFUTED/CAVEATS, fix-pr defect | `update-memory` | `memory/*.md` + `--compile` | `/ws-memo` upsert (`kind: trap`; frontmatter `severity` lowercase) |
 | Task-done history | `update-ws-changelog` | `{rules.changelogFile}` | `/ws-memo` append |
 
-Dual: vault first on read; persist to both. Vault write succeeded → do not also write `{sharedDir}/memory/*` unless dual-mode (both flags true). Hybrid + vault fail → local files once, warn.
+Dual: vault first on read; persist to both. Vault write succeeded → do not also write `{memoryDir}/memory/*` unless dual-mode (both flags true). Hybrid + vault fail → local files once, warn.
 
 ## Rules
 
 - Never commit `{sharedDir}/config.json`.
 - Never write `specMemo.*` from `/ws-memo`; never run vault tool encyclopedia from this skill.
 - Never vendor spec-memo `SURFACE.md` or count/list MCP tool parameters here (drift trap).
-- Never write `{plansDir}`, `{sharedDir}/memory/*`, or agent changelogs into the product tree when vault-only mode is active.
+- Never write `{plansDir}`, local memory files (`{memoryDir}/memory/*`), or agent changelogs when vault-only mode is active.
 - Explicit launchers: `node` for skill scripts; `{specMemo.cli}` for vault CLI (fallback bootstrap/import only).
 - Source anonymization: generic wording in reports; no private consumer hostnames in new issues.

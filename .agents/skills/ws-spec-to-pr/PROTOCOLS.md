@@ -143,7 +143,7 @@ At step start, the subagent uses the injected MEMORY slice (orchestrator path-sc
 
 All recorded learnings and memory entries must use clear, direct, and actionable directives (e.g. "When dealing with X: DO NOT use Y because Z; INSTEAD DO W"). Avoid vague or passive descriptions so that humans and agents instantly understand what pattern to avoid and what pattern to execute.
 
-**Step 8 sweep:** Promote generalizable patterns to `{sharedDir}/memory/*.md` + run `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile`. Criteria: technical, generalizable, non-duplicate, concise. `dryRun`: log in `## Doc consolidation log` only.
+**Step 8 sweep:** Promote generalizable patterns to `{memoryDir}/memory/*.md` + run `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile`. Criteria: technical, generalizable, non-duplicate, concise. `dryRun`: log in `## Doc consolidation log` only.
 
 ### Specification Protocol
 

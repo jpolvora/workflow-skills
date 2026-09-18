@@ -7,7 +7,8 @@ Usage:
     python check_memory_conflict.py <plan_file> --json    (JSON output)
 
 Given a *.plan.md or *.exec.md, extracts layers, modules, entities and file paths
-from the plan, then compares against structured entries in `.agents/skills/ws-shared/MEMORY.md`.
+from the plan, then compares against structured entries in the effective
+`MEMORY.md` (`rules.memoryDir`, default repo root, legacy `ws-shared/` fallback).
 
 Returns:
   - Exit 0: no overlaps found, or MEMORY.md is absent (consult skipped)
@@ -56,13 +57,21 @@ def resolve_memory_path(
 ) -> Path:
     if explicit_memory:
         return Path(explicit_memory).expanduser().resolve()
-    if explicit_shared_dir:
-        return Path(explicit_shared_dir).expanduser().resolve() / "MEMORY.md"
 
-    from resolve_consumer_root import resolve_repo_root, shared_dir
+    from resolve_consumer_root import (
+        load_config,
+        resolve_effective_memory_paths,
+        resolve_repo_root,
+        shared_dir,
+    )
 
     root = resolve_repo_root(repo_root, script_file=__file__)
-    return shared_dir(root) / "MEMORY.md"
+    hub = Path(explicit_shared_dir).expanduser().resolve() if explicit_shared_dir else shared_dir(root)
+    try:
+        config = load_config(root)
+    except ValueError:
+        config = {}
+    return resolve_effective_memory_paths(root, hub, config)["index_file"]
 
 
 # Portable default: no project-specific domain vocabulary.

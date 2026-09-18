@@ -7,7 +7,7 @@
       "expected_output": "memory entry + compile via scripts/self_learning.cjs.",
       "assertions": [
         "Agent loads self-learning",
-        "Writes to {sharedDir}/memory/ not changelog",
+        "Writes to {memoryDir}/memory/ not changelog",
         "Uses node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile"
       ]
     },

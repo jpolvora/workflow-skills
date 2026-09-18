@@ -60,7 +60,7 @@ workflow-skills stores agent working state in-repo by default:
 
 | Artifact | Default path | Skill |
 |----------|--------------|-------|
-| Anti-regression traps | `{sharedDir}/memory/*.md` → `MEMORY.md` | `ws-self-learning` |
+| Anti-regression traps | `{memoryDir}/memory/*.md` → `{memoryDir}/MEMORY.md` | `ws-self-learning` |
 | Task history | `{rules.changelogFile}` | `ws-changelog` |
 | Feature specs (of record) | `{specsDir}/*.spec.md` | `ws-spec-write`, providers |
 | Workflow run artifacts | `{plansDir}/{slug}/` | `ws-spec-to-pr*` |
@@ -74,7 +74,7 @@ workflow-skills stores agent working state in-repo by default:
 
 | Key | Default | Role |
 |-----|---------|------|
-| `enableMemoryFiles` | `true` | When `true`, write traps/learnings to `{sharedDir}/memory/*.md` and compiled `MEMORY.md` |
+| `enableMemoryFiles` | `true` | When `true`, write traps/learnings to `{memoryDir}/memory/*.md` and compiled `{memoryDir}/MEMORY.md` (legacy `{sharedDir}` fallback) |
 | `enableSpecMemoIntegration` | `false` | When `true`, route memory reads/writes to spec-memo MCP or `{specMemo.cli}` |
 | `specMemo.mode` | (`local` when files-only) | Persisted label: `local` \| `vault` \| `hybrid` \| `disabled`. When either boolean flag is **absent**, `resolveMemoryRouting` derives both flags from `mode` (incomplete merges must not silently re-enable local files). Explicit boolean flags always win. |
 | `specMemo.cli` | `memo` | CLI launcher (`memo` or `npx -y spec-memo`) — always expand this token; never hardcode `memo` |
@@ -88,7 +88,7 @@ workflow-skills stores agent working state in-repo by default:
 
 | `enableMemoryFiles` | `enableSpecMemoIntegration` | Mode Name | Read Behavior (`read-memory`) | Write Behavior (`update-memory`) |
 |---|---|---|---|---|
-| `true` | `false` | Local Files Only (Default) | `Grep`/`Read` `{sharedDir}/MEMORY.md` | Write `{sharedDir}/memory/*.md` + `--compile` |
+| `true` | `false` | Local Files Only (Default) | `Grep`/`Read` `{memoryDir}/MEMORY.md` | Write `{memoryDir}/memory/*.md` + `--compile` |
 | `false` | `true` | Spec-Memo Only (Vault) | `/ws-memo` bootstrap or search | `/ws-memo` upsert `kind: trap` (no local files created) |
 | `true` | `true` | Dual Mode (Both) | Query vault first, supplement with `MEMORY.md` | Persist to both local markdown files and vault |
 | `false` | `false` | Disabled (None) | Returns empty results (no error) | Skips persistence; records `Learning: N/A` |
@@ -102,7 +102,7 @@ workflow-skills hooks stay named `read-memory` / `update-memory` / `update-ws-ch
 | Session start (`bootstrapOnSession`) | `Grep`/`Read` `MEMORY.md` | Prefer `/ws-memo` bootstrap when MCP is up. When MCP is down: `/ws-spec-memo bootstrap` → `{specMemo.cli} bootstrap` (any vault mode); CLI fail + hybrid → local MEMORY; CLI fail + vault-only → STOP |
 | Pre-plan / fix-pr / implement consult (`read-memory`) | `ws-self-learning` `--match-paths` / `Grep` `MEMORY.md` — **same evidence class as code** | `/ws-memo` bootstrap / search `kinds: ["trap"]` — **required when this flag is true**; dual → vault first then local |
 | New trap | Write `memory/YYYY-MM-DD-*.md` + `--compile` | `/ws-memo` upsert `kind: trap` with DO NOT / INSTEAD DO; MCP frontmatter `severity`: `low`\|`medium`\|`high`\|`critical` (lowercase only — Title-Case `High` fails vault validation) |
-| Failure reflection ($\ge 2$ friction) | Mandatory trap in `{sharedDir}/memory/` | Mandatory vault upsert |
+| Failure reflection ($\ge 2$ friction) | Mandatory trap in `{memoryDir}/memory/` | Mandatory vault upsert |
 | Adversarial audit (`REFUTED` / `CAVEATS`) | Mandatory reflection in `memory/` when files enabled | High/Critical vault upsert when vault enabled |
 | Task done changelog | Append `{changelogFile}` | `/ws-memo` append (`event`) |
 | Fix-PR learning | `memory/*` + compile | `/ws-memo` upsert `kind: trap` |
@@ -110,7 +110,7 @@ workflow-skills hooks stay named `read-memory` / `update-memory` / `update-ws-ch
 | Pollution scan | `ws-cleanup` | Harness: `check_spec_memo.cjs`. Vault residue: `/ws-memo` doctor |
 | Promote ADR to product | Edit `docs/` manually | `/ws-memo` promote (formats live in that skill) |
 
-After a vault trap write succeeds, do **not** also write `{sharedDir}/memory/*.md` unless **dual** (both flags true). Hybrid fallback writes local files only when the vault write **failed**.
+After a vault trap write succeeds, do **not** also write `{memoryDir}/memory/*.md` unless **dual** (both flags true). Hybrid fallback writes local files only when the vault write **failed**.
 
 ## Import mapping (`memo import`)
 
@@ -119,7 +119,7 @@ spec-memo importer scans (first match wins per category):
 | Legacy source | Vault destination |
 |---------------|---------------------|
 | `{specsDir}/`, `specs/` | `projects/<id>/specs/` |
-| `{sharedDir}/memory/`, `memory/` | `traps/` (+ decisions when frontmatter matches) |
+| `{memoryDir}/memory/` (legacy: `{sharedDir}/memory/`) | `traps/` (+ decisions when frontmatter matches) |
 | `{plansDir}/` | `plans/` |
 | `{rules.changelogFile}` | `logs/` |
 
@@ -129,7 +129,7 @@ Specs of record may remain in `{specsDir}` for Spec-to-PR register flow; vault h
 
 **May stay in product git:** `{specsDir}/*.spec.md`, `index.PRD`, product source, hub `config.json` (gitignored locally).
 
-**Must not be committed when vault mode is active:** `{plansDir}/`, `{sharedDir}/MEMORY.md`, `{sharedDir}/memory/*`, agent changelogs, `.state.md`, `telemetry.jsonl`.
+**Must not be committed when vault mode is active:** `{plansDir}/`, `{memoryDir}/MEMORY.md`, `{memoryDir}/memory/*`, agent changelogs, `.state.md`, `telemetry.jsonl`.
 
 Setup may offer `memo hook install` to block accidental commits of those paths. Bypass: `SKIP_MEMO_HOOK=1`. Do not invent a custom hook script.
 
