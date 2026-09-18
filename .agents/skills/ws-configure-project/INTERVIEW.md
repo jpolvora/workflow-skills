@@ -251,7 +251,7 @@ Configure memory storage backends: local markdown files (`enableMemoryFiles`) an
 | `{memoryDir}/memory/` (or legacy `{sharedDir}/memory/`) or `{plansDir}/` populated | Offer **Import legacy tree** on spec-memo enable |
 | `check_spec_memo.cjs` → `pollution` non-empty | Mention import + write-block hook when spec-memo vault is sole backend |
 | `cli.available: false` | **Local files only (Recommended)** until CLI installed |
-| Memory backend selection? | **Local markdown files only (Recommended)** / **Spec-memo integration only** / **Both (dual-mode)** / **None (disabled)** |
+| Memory backend selection? | Q1 intent (≤3): **Local markdown files only (Recommended)** / **Spec-memo vault involved** / **None (disabled)**; Q2 only when vault: **Spec-memo integration only** / **Both (dual-mode)** |
 
 **Preflight (mandatory before gates):**
 

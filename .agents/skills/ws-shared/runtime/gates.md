@@ -193,31 +193,37 @@ Optional More-options **Commit** at Step 4 / other boundaries does not replace t
 
 ## Step 8 combined gate (standard Step 8 / lite Step 4)
 
-**Before any push or PR.** Ends spec/plan implementation; sets `status: completed`, `endedAt`, `shipStatus: pending`. Step 8 presents **one combined menu; state still records close then `shipStatus` (two phases, one prompt)**.
+**Before any push or PR.** Ends spec/plan implementation; sets `status: completed`, `endedAt`, `shipStatus: pending`. Step 8 presents a **primary question plus overflow** (rule 8: at most 3 options per question); state still records close then `shipStatus` (two phases).
+
+**Primary question:**
 
 1. **Commit configured delivery artifacts and Create PR** (Recommended when `fullMode`)
 2. **Commit configured delivery artifacts and Push only**
-3. **Commit configured delivery artifacts and Skip shipping**
-4. **Skip delivery commit and Create PR** (PR will lack delivery artifacts; use only when delivery commit was already done or explicitly unwanted)
-5. **More options / Separate gates / Pause** (restores the legacy close-then-ship two-prompt flow)
+3. **More options…**
 
-When `fullMode` is true, Recommended (interactive index 0) = **Commit configured delivery artifacts and Create PR** (option 1). When `fullMode` is false, interactive Recommended is option 3 (commit delivery artifacts, skip shipping) unless the user explicitly wants a PR without delivery artifacts; **auto-gate index 0** is skip delivery commit **and** skip shipping (mechanical; not a numbered interactive option). Do not auto-create a PR when `fullMode` is false.
+**Under More options…** (second user-gate only if the user picked More):
 
-**Mechanical mapping (options 1–4):** run close phase (G2-delivery per option, MEMORY + changelog, `status: completed`, `shipStatus: pending`) then ship phase (`shipAction` from the paired intent). Options **1, 2, 4** dispatch `ws-ship-pr`. Option **3** skips remote ship after close. Option **5** does not advance; user may resume with separate close then ship menus. Auto-gate not-`fullMode` closes without G2-delivery and sets `shipAction: skip` / `shipStatus: skipped`.
+- **Commit configured delivery artifacts and Skip shipping**
+- **Skip delivery commit and Create PR** (PR will lack delivery artifacts; use only when delivery commit was already done or explicitly unwanted)
+- **Separate gates / Pause** (restores the legacy close-then-ship two-prompt flow)
+
+When `fullMode` is true, Recommended (interactive index 0) = **Commit configured delivery artifacts and Create PR** (primary option 1). When `fullMode` is false, interactive Recommended is **More options… → Commit configured delivery artifacts and Skip shipping** unless the user explicitly wants a PR without delivery artifacts; **auto-gate index 0** is skip delivery commit **and** skip shipping (mechanical; not a numbered interactive option). Do not auto-create a PR when `fullMode` is false.
+
+**Mechanical mapping (primary + overflow):** run close phase (G2-delivery per choice, MEMORY + changelog, `status: completed`, `shipStatus: pending`) then ship phase (`shipAction` from the paired intent). **Create PR** and **Push only** (primary 1–2) plus overflow **Skip delivery commit and Create PR** dispatch `ws-ship-pr`. Overflow **Commit configured delivery artifacts and Skip shipping** skips remote ship after close. **Separate gates / Pause** does not advance; user may resume with separate close then ship menus. Auto-gate not-`fullMode` closes without G2-delivery and sets `shipAction: skip` / `shipStatus: skipped`.
 
 G2-delivery stages only artifacts enabled by `defaults.deliveryCommitArtifacts` — algorithm and toggle map in [`ARTIFACTS.md`](../../ws-spec-to-pr/ARTIFACTS.md) § Step 8 (refined-plan fallback preserved when `includeRefinedPlan` is true; delivery result not staged by default).
 
-After successful close (options 1–4): MEMORY.md / ws-self-learning sweep, then `ws-changelog`. Set `status: completed`, `endedAt`, `shipStatus: pending`. Optional Phase B plan-dir temp delete (see [`artifact-cleanup.md`](../../ws-spec-to-pr/protocols/artifact-cleanup.md)).
+After successful close (any close-advancing choice): MEMORY.md / ws-self-learning sweep, then `ws-changelog`. Set `status: completed`, `endedAt`, `shipStatus: pending`. Optional Phase B plan-dir temp delete (see [`artifact-cleanup.md`](../../ws-spec-to-pr/protocols/artifact-cleanup.md)).
 
 `ws-spec-index sync` on close uses **implementation** evidence only — not merged/shipped.
 
 Pass the selected ship intent into `ws-ship-pr` as `shipAction: create-pr|push-only|skip` with `workflowMode: true`, `stopBeforeFixPr: true`. Update `shipStatus` per outcome (`pushed`, `pr-open`, `skipped`, `stopped`). `ws-ship-pr` in `workflowMode` does **not** own delivery commit or workflow completion.
 
-**Legacy separate menus (option 5 only):**
+**Legacy separate menus (Separate gates / Pause only):**
 
 *Close implementation:* (1) Commit configured delivery artifacts, (2) Skip delivery commit, (3) Pause.
 
-*Ship after close:* (1) Create PR, (2) Push only, (3) Skip PR, (4) Skip shipping entirely, (5) Pause.
+*Ship after close:* primary — (1) Create PR, (2) Push only, (3) More ship options…; overflow — (1) Skip PR, (2) Skip shipping entirely, (3) Pause.
 
 ---
 

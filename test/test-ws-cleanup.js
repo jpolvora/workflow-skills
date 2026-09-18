@@ -211,6 +211,11 @@ try {
     json.gitignoreSuggestions.some((g) => g.pattern.endsWith('audit-*.log.md')),
     'gitignore suggests audit log pattern',
   );
+  assert(
+    json.gitignoreSuggestions.some((g) => g.pattern === 'MEMORY.md') &&
+      json.gitignoreSuggestions.some((g) => g.pattern === 'memory/'),
+    'gitignore suggests root memory patterns',
+  );
 
   const pathsFile = path.join(tmp, 'approved.json');
   fs.writeFileSync(
