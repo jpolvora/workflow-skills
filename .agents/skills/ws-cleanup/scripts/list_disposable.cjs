@@ -418,8 +418,8 @@ function main() {
     `${reviewsPosix}/PR*.md`,
     '.tmp-*/',
     '.tmp-ws-cleanup-approved.json',
-    'MEMORY.md',
-    'memory/',
+    '/MEMORY.md',
+    '/memory/',
   ];
   const gitignoreSuggestions = suggestPatterns.map((pattern) => ({
     pattern,

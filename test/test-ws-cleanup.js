@@ -212,9 +212,9 @@ try {
     'gitignore suggests audit log pattern',
   );
   assert(
-    json.gitignoreSuggestions.some((g) => g.pattern === 'MEMORY.md') &&
-      json.gitignoreSuggestions.some((g) => g.pattern === 'memory/'),
-    'gitignore suggests root memory patterns',
+    json.gitignoreSuggestions.some((g) => g.pattern === '/MEMORY.md') &&
+      json.gitignoreSuggestions.some((g) => g.pattern === '/memory/'),
+    'gitignore suggests anchored root memory patterns',
   );
 
   const pathsFile = path.join(tmp, 'approved.json');
