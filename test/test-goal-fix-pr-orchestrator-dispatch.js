@@ -46,6 +46,18 @@ assert(
   'AC1 sessionOwnsLoopInline: session never plans/fixes when dispatch available',
 );
 
+// AC1/lite posture — inline-only callers must NOT dispatch a batch worker and run the pair inline.
+assert(
+  /Lite \/ inline posture:.*do not dispatch a batch worker/i.test(goalFix) &&
+    /run the ordered `fixPrPlan` → `fixPrExec` pair inline on the captured session model/i.test(goalFix),
+  'AC1 liteInlinePosture: lite/inline runs the pair inline without a batch worker',
+);
+// Lite/inline runs must not emit internal role telemetry.
+assert(
+  /Lite\/inline runs emit none/i.test(goalFix),
+  'AC4 liteInlinePosture: lite/inline emits no internal role telemetry',
+);
+
 // AC2 — freshWorkerPerRound: batch-worker reading verbatim (F1).
 assert(
   goalFix.includes(
