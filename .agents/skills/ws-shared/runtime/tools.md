@@ -14,14 +14,14 @@ Canonical tool names every agent uses. Project-specific parameters from `config.
 | `{specsDir}` | `plans.specsDir` | `.agents/specs` |
 | `{wikiDir}` | `plans.wikiDir` | `.agents/specs/wiki` |
 | `{reviewsDir}` | `reviews.dir` | `.agents/codereviews` |
-| `{memoryDir}` | `rules.memoryDir` | `.` (repo root) |
+| `{memoryDir}` | `rules.memoryDir` | `.` (repo root; effective dir — legacy `{sharedDir}` fallback when only it holds entries) |
 | `{us-dir}` | `{plansDir}/{slug}/` | (slug from workflow) |
 | `{globalSkillsRoot}` | `WORKFLOW_SKILLS_GLOBAL_DIR` (if set) | `~/.agents/skills` |
 
 **Agent contract:**
 
 1. Load `config.json` (`read-config`) then this file (`toolsFile`, default `tools.md`) early in the session.
-2. Expand tokens **before** tool calls. Example: `{memoryDir}/MEMORY.md` → `MEMORY.md` (default root).
+2. Expand tokens **before** tool calls. Example: `{plansDir}/x.md` → `.agents/plans/x.md`. For `{memoryDir}` / `rules.changelogFile`, resolve the **effective** path first (configured wins with entries, else legacy `{sharedDir}` with entries, else configured); do not read/write the raw configured path when legacy still holds entries.
 3. **Forbidden:** bare `ws-shared/MEMORY.md` or other undeclared shorthands (do not Grep those literals).
 4. **Shell recipes:** expand tokens before paste, or write the Default path literally (copy-paste safe).
 5. **Markdown links** in skill files: use real relative paths (`../ws-shared/…`), never brace tokens (GitHub/ws-check-harness cannot expand them).
@@ -29,7 +29,7 @@ Canonical tool names every agent uses. Project-specific parameters from `config.
 7. `{skillsRoot}` / `{sharedDir}` are **fixed install layout**, not relocatable consumer knobs (unlike `plans.dir` / `plans.specsDir` / `reviews.dir` / `rules.memoryDir`).
 8. Spec skills: standalone drafts under `{specsDir}`; workflow copy under `{us-dir}/step-00-*.spec.md` after register/provider. Specs intent without a named skill → load [`autoload.md`](autoload.md) § Specs skill router first (progressive disclosure).
 9. Consumer root autoload: `ws-configure-project --section autoload` (helper `configure_autoload.py`) may emit `.agents/skills/...` or `{globalSkillsRoot}/...` into `autoload.md` / root `AGENTS.md` — never absolute filesystem paths. Harness Phase 2 validates Always-applied path forms when `autoload.md` is present.
-10. **Skill-script path expand (hybrid):** for managed script recipes, resolve `{skillsRoot}/ws-<id>/scripts/...` when that path exists under the consumer project; otherwise `{globalSkillsRoot}/ws-<id>/scripts/...` (same local-first rule as `configure_autoload.py` `emit_skill_path`). Runtime consumer config (`config.json`, `STACK.md`) always comes from `$PWD/{sharedDir}` — never from `../ws-shared/` relative links inside a globally installed `SKILL.md` (those point at the global hub on disk). MEMORY/changelog come from `{memoryDir}` / `rules.changelogFile` (defaults: repo root).
+10. **Skill-script path expand (hybrid):** for managed script recipes, resolve `{skillsRoot}/ws-<id>/scripts/...` when that path exists under the consumer project; otherwise `{globalSkillsRoot}/ws-<id>/scripts/...` (same local-first rule as `configure_autoload.py` `emit_skill_path`). Runtime consumer config (`config.json`, `STACK.md`) always comes from `$PWD/{sharedDir}` — never from `../ws-shared/` relative links inside a globally installed `SKILL.md` (those point at the global hub on disk). MEMORY/changelog come from the effective `{memoryDir}` / `rules.changelogFile` (defaults: repo root; legacy `{sharedDir}` fallback).
 
 ## Core tools
 

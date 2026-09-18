@@ -58,6 +58,7 @@ Canonical: [`tools.md`](../ws-shared/runtime/tools.md) § Path tokens · [`confi
 | `{sharedDir}` | `pathTokens.sharedDir` | `.agents/skills/ws-shared` |
 | `{plansDir}` | `plans.dir` | `.agents/plans` |
 | `{reviewsDir}` | `reviews.dir` | `.agents/codereviews` |
+| `{memoryDir}` | `rules.memoryDir` | `.` (repo root) |
 | `{us-dir}` | `{plansDir}/{slug}/` | skip existence if slug unknown |
 | `{globalSkillsRoot}` | `WORKFLOW_SKILLS_GLOBAL_DIR` / `~/.agents/skills` | `~/.agents/skills` |
 

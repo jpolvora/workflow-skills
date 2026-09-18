@@ -10,6 +10,7 @@ const TOKENS = {
   '{sharedDir}': '.agents/skills/ws-shared',
   '{plansDir}': '.agents/plans',
   '{reviewsDir}': '.agents/codereviews',
+  '{memoryDir}': '.',
   '{specsDir}': '.agents/specs',
 };
 const EXCLUDED_MD = /(^|[\\/])(CHANGELOG\.md|MEMORY\.md|memory[\\/]|evals[\\/])/;
