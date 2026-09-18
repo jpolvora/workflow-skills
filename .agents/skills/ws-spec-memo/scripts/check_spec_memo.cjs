@@ -11,6 +11,7 @@ const {
   resolveConsumerContext,
   resolveConfiguredPath,
   resolveGlobalSkillsRoot,
+  resolveMemoryPaths,
   resolveMemoryRouting,
   toRepoRelative,
 } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
@@ -83,11 +84,13 @@ function detectCli(cliSetting) {
   };
 }
 
-function scanPollution(repoRoot, sharedDirAbs, plansDirAbs) {
+function scanPollution(repoRoot, memoryLocations, plansDirAbs) {
   const findings = [];
   const checks = [
-    { abs: path.join(sharedDirAbs, 'MEMORY.md'), kind: 'memory-index' },
-    { abs: path.join(sharedDirAbs, 'memory'), kind: 'memory-dir' },
+    ...memoryLocations.flatMap((loc) => [
+      { abs: loc.indexFile, kind: 'memory-index' },
+      { abs: loc.entriesDir, kind: 'memory-dir' },
+    ]),
     { abs: plansDirAbs, kind: 'plans-dir' },
   ];
   for (const c of checks) {
@@ -180,7 +183,14 @@ function main() {
   const doctor = cli.available
     ? runDoctor(specMemo.cli || 'memo', repoRoot)
     : { ok: false, error: 'CLI not available' };
-  const pollution = scanPollution(repoRoot, ctx.sharedDir, plansDirAbs);
+  const memoryPaths = resolveMemoryPaths({ repoRoot, sharedDir: ctx.sharedDir, config });
+  const memoryLocations = memoryPaths.dir === memoryPaths.legacyDir
+    ? [{ indexFile: memoryPaths.indexFile, entriesDir: memoryPaths.entriesDir }]
+    : [
+        { indexFile: memoryPaths.indexFile, entriesDir: memoryPaths.entriesDir },
+        { indexFile: memoryPaths.legacyIndexFile, entriesDir: memoryPaths.legacyEntriesDir },
+      ];
+  const pollution = scanPollution(repoRoot, memoryLocations, plansDirAbs);
   const vaultReady = cli.available && doctor.ok;
   const vaultActive = memoryRouting.enableSpecMemoIntegration;
   const healthy = vaultActive ? vaultReady : true;

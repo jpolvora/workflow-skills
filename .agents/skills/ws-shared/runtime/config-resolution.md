@@ -110,8 +110,9 @@ Load early with `toolsFile` (default `tools.md` § Path tokens).
 | `{specsDir}` | `plans.specsDir` | `.agents/specs` |
 | `{wikiDir}` | `plans.wikiDir` | `.agents/specs/wiki` |
 | `{reviewsDir}` | `reviews.dir` | `.agents/codereviews` |
+| `{memoryDir}` | `rules.memoryDir` | `.` (repo root) |
 
-Expand before tool calls. `{skillsRoot}` / `{sharedDir}` are **fixed install layout** (optional `pathTokens` in config for discoverability; not relocatable). `{plansDir}` / `{specsDir}` / `{wikiDir}` / `{reviewsDir}` remain consumer-configurable.
+Expand before tool calls. `{skillsRoot}` / `{sharedDir}` are **fixed install layout** (optional `pathTokens` in config for discoverability; not relocatable). `{plansDir}` / `{specsDir}` / `{wikiDir}` / `{reviewsDir}` / `{memoryDir}` remain consumer-configurable.
 
 ---
 

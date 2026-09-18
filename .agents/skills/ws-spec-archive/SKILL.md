@@ -1,6 +1,6 @@
 ---
 name: ws-spec-archive
-version: 0.4.35
+version: 0.4.36
 disable-model-invocation: true
 description: >-
   Harvests plansDir delivery facts into specsDir/index.PRD, then proposes
@@ -39,7 +39,7 @@ archive plans
 
 ## Steps
 
-1. **Resolve** — Read `{sharedDir}/config.json`. Expand `{plansDir}` / `{specsDir}` / `{sharedDir}` / `{skillsRoot}` from [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md). Changelog path ← `rules.changelogFile` (default `{sharedDir}/CHANGELOG.md`).
+1. **Resolve** — Read `{sharedDir}/config.json`. Expand `{plansDir}` / `{specsDir}` / `{sharedDir}` / `{skillsRoot}` / `{memoryDir}` from [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md). Changelog path ← `rules.changelogFile` (default repo-root `CHANGELOG.md`, legacy `{sharedDir}/CHANGELOG.md` fallback when only it holds entries).
    - Done when: roots are fixed (missing config → defaults `.agents/plans`, `.agents/specs`).
 
 2. **Scan** — Run:
@@ -49,7 +49,7 @@ archive plans
    Add `--slug {slug}` when requested. Require exit 0 and `ok: true`.
    - Done when: inventory JSON (`plans`, `eligible`, git hits, existing index flags) is in context.
 
-3. **Enrich** — For each plan, fill `summary` / `prDisplay` / `commitSha` from inventory first, then Grep changelog + `{sharedDir}/MEMORY.md` for the slug, then `git log` hits already in the JSON. If `providers.scm` is set and a PR/issue id is known, load **one** provider and call `sweep-prior-work` (keywords = slug + title). Auth failure → gap `scm-skipped`. Write the enriched inventory to a short uncommitted temp JSON.
+3. **Enrich** — For each plan, fill `summary` / `prDisplay` / `commitSha` from inventory first, then Grep changelog + the effective `{memoryDir}/MEMORY.md` for the slug, then `git log` hits already in the JSON. If `providers.scm` is set and a PR/issue id is known, load **one** provider and call `sweep-prior-work` (keywords = slug + title). Auth failure → gap `scm-skipped`. Write the enriched inventory to a short uncommitted temp JSON.
    - Done when: every plan has outcome + one-line summary or `—`; gaps listed; temp inventory on disk.
 
 4. **Preview index** — Run:

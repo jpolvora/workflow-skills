@@ -75,7 +75,7 @@ Pipeline and dependency skills are owned **here**. Consumer installs are managed
 1. Change this repo → PR to `develop`
 2. After merge, in the consumer: `npx --yes github:jpolvora/workflow-skills update`
 
-**Always preserved** under `.agents/skills/ws-shared/`: `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, optional `CHANGELOG.md` (when `rules.changelogFile` points there). Managed package content is split into `runtime/` and `templates/`, classified by `runtime/hub-layout.json`. The consumer agent contract is [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md), with the full runtime contract in [`ws-shared/runtime/AGENTS.md`](.agents/skills/ws-shared/runtime/AGENTS.md). The installer ships no separate packaged index and never writes repo-root files. Do not treat in-place skill edits in a consumer as permanent.
+**Always preserved** under `.agents/skills/ws-shared/`: `config.json`, `STACK.md`, `installed-skills.json`, plus legacy `MEMORY.md`, `memory/*`, `CHANGELOG.md` when present. Managed package content is split into `runtime/` and `templates/`, classified by `runtime/hub-layout.json`. The consumer agent contract is [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md), with the full runtime contract in [`ws-shared/runtime/AGENTS.md`](.agents/skills/ws-shared/runtime/AGENTS.md). The installer ships no separate packaged index and never writes repo-root files. Do not treat in-place skill edits in a consumer as permanent.
 
 ---
 
@@ -202,14 +202,14 @@ Edit only the consumer-owned entries under `.agents/skills/ws-shared/`. The inst
 |------|------|
 | `config.json` | Project identity, stack, verification, providers, and optional path tokens. **Fresh install seeds** from `templates/config.json.example`; fill via `/ws-configure-project`. New runtime controls include test globs, context budget, optional parallel verify/review, step or phase gates, adaptive convergence, diagnostics storage, portable phase-model identifiers, optional provider-compat host hints, inter-step prune (`contextHygiene`), optional review jury, and opt-in specialized-subagent host projections (`defaults.specializedSubagents`, disabled by default). `fable.auditVerdictsBlockShip` defaults to `"refuted"`; `"caveats"` is an explicit stricter policy. Track when non-secret. |
 | `STACK.md` | Human stack notes (seeded from `templates/STACK.md.example`); track when maintained |
-| `MEMORY.md` | Anti-regression index (`ws-self-learning`) |
-| `memory/*.md` | Individual memory entries |
+| `MEMORY.md` (legacy) | Anti-regression index fallback (`ws-self-learning`; default location is now `rules.memoryDir`) |
+| `memory/*.md` (legacy) | Individual memory entries (default location is now `rules.memoryDir`) |
 | `installed-skills.json` | Managed skill list for `update` / `uninstall` |
 | `skill-integrity-local.json` | Local digest record after install/update (gitignored; never overwritten from upstream) |
 | `AGENTS.md` | Consumer hub entrypoint; full skill loading, config, gates, and external dependencies are in `runtime/AGENTS.md` |
 | `runtime/` | Managed workflow contracts, schemas, scripts, stacks, and `hub-layout.json`; do not hand-edit in consumers |
 | `templates/` | Managed setup-only seeds such as `config.json.example`, `STACK.md.example`, and `hub.gitignore` |
-| `CHANGELOG.md` | Append-only history (seeded empty; `rules.changelogFile` defaults here) |
+| `CHANGELOG.md` (legacy) | Append-only history fallback (`rules.changelogFile` defaults to repo-root `CHANGELOG.md`) |
 
 ### Desktop configuration GUI (Windows)
 
@@ -232,13 +232,14 @@ npm run config:gui
 
 ### Optional root / host configuration
 
-Installer **never** writes consumer repo-root files. Consumers may add a thin root `AGENTS.md` pointing at `.agents/skills/ws-shared/AGENTS.md` so their IDE discovers the hub; ws-check-harness may suggest this. Host pointers are **optional**. Workflow history defaults to `.agents/skills/ws-shared/CHANGELOG.md` via `rules.changelogFile` (set to `CHANGELOG.md` only if you want a repo-root file). Prefer putting lasting guidance in skills / the shared hub, not host-private rule files.
+Installer **never** writes consumer repo-root files. Consumers may add a thin root `AGENTS.md` pointing at `.agents/skills/ws-shared/AGENTS.md` so their IDE discovers the hub; ws-check-harness may suggest this. Host pointers are **optional**. Workflow history defaults to repo-root `CHANGELOG.md` via `rules.changelogFile`, and memory defaults to repo-root `MEMORY.md` + `memory/` via `rules.memoryDir`; both files are created on first use, with legacy `ws-shared/` copies as fallback when they hold entries. Prefer putting lasting guidance in skills / the shared hub, not host-private rule files.
 
 | File | Role |
 |------|------|
 | Root `AGENTS.md` (optional) | Consumer-owned thin pointer to `.agents/skills/ws-shared/AGENTS.md`, or project-specific hub that links there |
 | Host pointer (name varies by IDE) | Minimal pointer so agents follow project `AGENTS.md` or load skills from `.agents/skills/` |
-| `rules.changelogFile` target | Append-only history (default under `ws-shared/`; optional root `CHANGELOG.md` when configured) |
+| `rules.changelogFile` target | Append-only history (default repo-root `CHANGELOG.md`; legacy `ws-shared/` fallback) |
+| `rules.memoryDir` target | Anti-regression memory (default repo root: `MEMORY.md` + `memory/`; legacy `ws-shared/` fallback) |
 
 Set `plans.dir` / `plans.specsDir` / `reviews.dir` in `.agents/skills/ws-shared/config.json` (defaults: `.agents/plans`, `.agents/specs`, `.agents/codereviews`). Skill tokens: `{plansDir}` ← `plans.dir`, `{specsDir}` ← `plans.specsDir`, `{reviewsDir}` ← `reviews.dir`. Existing repo-root `specs/` is kept when already present and `plans.specsDir` is omitted. Optional `pathTokens` documents fixed install roots for agents (`{skillsRoot}` / `{sharedDir}`); see [`tools.md`](.agents/skills/ws-shared/runtime/tools.md) § Path tokens — not relocatable like `plans.dir`.
 

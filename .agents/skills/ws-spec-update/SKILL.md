@@ -1,7 +1,7 @@
 ---
 name: ws-spec-update
 description: Feature spec updater — updates feature specifications after prompt-driven code changes to prevent spec drift, with optional self-learning memory recording.
-version: 0.4.35
+version: 0.4.36
 invocation_names:
   - spec-update
   - ws-spec-update
@@ -63,7 +63,7 @@ Run after task completion (alongside `ws-changelog` and `ws-self-learning`).
 
 6. **Self-Learning Memory Hook (AC11)**:
    - Assess the root cause of the spec update:
-     - **Correction / fix that ACs missed:** write a `ws-self-learning` memory entry documenting the missed requirement, formatted with explicit `DO NOT` and `INSTEAD DO` directives, append to `{sharedDir}/memory/`, and run memory compilation.
+     - **Correction / fix that ACs missed:** write a `ws-self-learning` memory entry documenting the missed requirement, formatted with explicit `DO NOT` and `INSTEAD DO` directives, append to `{memoryDir}/memory/`, and run memory compilation.
      - **Wording-only / alignment edit:** skip memory recording and explicitly report: `"Self-learning memory skipped: wording-only alignment."`
    - **Done when:** Memory entry recorded and compiled, or skip reason explicitly reported.
 

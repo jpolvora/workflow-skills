@@ -349,22 +349,23 @@ try {
   const abpAutoJson = JSON.parse(abpAuto.stdout);
   assert(abpAutoJson.detectedFramework === 'abp-angular', 'detected ABP Angular framework');
   assert(abpAutoJson.trapsSeeded === true, 'trapsSeeded is true for ABP Angular');
-  const abpMemory = fs.readFileSync(path.join(abpProj, '.agents', 'skills', 'ws-shared', 'MEMORY.md'), 'utf8');
+  const abpMemory = fs.readFileSync(path.join(abpProj, 'MEMORY.md'), 'utf8');
   assert(abpMemory.includes('ABP / Angular: Avoid sync-over-async'), 'ABP traps present in MEMORY.md');
-  const abpTrapFile = path.join(abpProj, '.agents', 'skills', 'ws-shared', 'memory', 'framework-trap-abp-angular.md');
+  assert(!fs.existsSync(path.join(abpProj, '.agents', 'skills', 'ws-shared', 'MEMORY.md')), 'no legacy ws-shared MEMORY.md written');
+  const abpTrapFile = path.join(abpProj, 'memory', 'framework-trap-abp-angular.md');
   assert(fs.existsSync(abpTrapFile), 'framework trap file created under memory/ for ABP Angular');
 
   // Verify self_learning compile succeeds and retains the trap
   const compileRes = cp.spawnSync(NODE, [SELF_LEARNING_SCRIPT, '--compile', '--repo-root', abpProj], { encoding: 'utf8' });
   assert(compileRes.status === 0, `self_learning.cjs --compile succeeds after framework trap seeding: ${compileRes.stderr}`);
-  const abpCompiledMemory = fs.readFileSync(path.join(abpProj, '.agents', 'skills', 'ws-shared', 'MEMORY.md'), 'utf8');
+  const abpCompiledMemory = fs.readFileSync(path.join(abpProj, 'MEMORY.md'), 'utf8');
   assert(abpCompiledMemory.includes('ABP / Angular: Avoid sync-over-async'), 'ABP traps preserved in MEMORY.md after self_learning compile');
 
   // Idempotency check: running again does not duplicate
   const abpAuto2 = cp.spawnSync(NODE, [AUTO_CONFIG_SCRIPT, '--repo-root', abpProj, '--json'], { encoding: 'utf8' });
   const abpAutoJson2 = JSON.parse(abpAuto2.stdout);
   assert(abpAutoJson2.trapsSeeded === false, 'trapsSeeded is false when already present');
-  const abpMemory2 = fs.readFileSync(path.join(abpProj, '.agents', 'skills', 'ws-shared', 'MEMORY.md'), 'utf8');
+  const abpMemory2 = fs.readFileSync(path.join(abpProj, 'MEMORY.md'), 'utf8');
   const matches = (abpMemory2.match(/ABP \/ Angular: Avoid sync-over-async/g) || []).length;
   assert(matches === 1, 'ABP trap block is not duplicated in MEMORY.md');
 
@@ -380,7 +381,7 @@ try {
   assert(nextAuto.status === 0, `auto_configure for Next.js succeeds: ${nextAuto.stderr}`);
   const nextAutoJson = JSON.parse(nextAuto.stdout);
   assert(nextAutoJson.detectedFramework === 'nextjs-react', 'detected Next.js framework');
-  const nextMemory = fs.readFileSync(path.join(nextProj, '.agents', 'skills', 'ws-shared', 'MEMORY.md'), 'utf8');
+  const nextMemory = fs.readFileSync(path.join(nextProj, 'MEMORY.md'), 'utf8');
   assert(nextMemory.includes('Next.js / React: Prevent client credential leak'), 'Next.js traps present in MEMORY.md');
 
   // 3. PHP Laravel detection
@@ -396,7 +397,7 @@ try {
   assert(phpAuto.status === 0, `auto_configure for PHP succeeds: ${phpAuto.stderr}`);
   const phpAutoJson = JSON.parse(phpAuto.stdout);
   assert(phpAutoJson.detectedFramework === 'php-laravel', 'detected PHP Laravel framework');
-  const phpMemory = fs.readFileSync(path.join(phpProj, '.agents', 'skills', 'ws-shared', 'MEMORY.md'), 'utf8');
+  const phpMemory = fs.readFileSync(path.join(phpProj, 'MEMORY.md'), 'utf8');
   assert(phpMemory.includes('PHP / Laravel: Enforce policy authorization'), 'PHP traps present in MEMORY.md');
 
   // 4. TypeScript / Node detection
@@ -411,7 +412,7 @@ try {
   assert(tsAuto.status === 0, `auto_configure for TS succeeds: ${tsAuto.stderr}`);
   const tsAutoJson = JSON.parse(tsAuto.stdout);
   assert(tsAutoJson.detectedFramework === 'typescript-node', 'detected TS Node framework');
-  const tsMemory = fs.readFileSync(path.join(tsProj, '.agents', 'skills', 'ws-shared', 'MEMORY.md'), 'utf8');
+  const tsMemory = fs.readFileSync(path.join(tsProj, 'MEMORY.md'), 'utf8');
   assert(tsMemory.includes('TypeScript / Node: Avoid unchecked any'), 'TS traps present in MEMORY.md');
 
 } finally {

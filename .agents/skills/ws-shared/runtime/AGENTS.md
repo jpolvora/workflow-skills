@@ -7,8 +7,8 @@
 > This folder is **not** an installable skill package. The installer copies this managed runtime and the sibling setup templates when a workflow or Full package is selected.
 >
 > **Consumer-owned** (preserved on update; never overwritten by upstream):
-> `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `installed-skills.json`, and `CHANGELOG.md` (when `rules.changelogFile` points under `ws-shared/`).
-> Fresh install seeds `config.json` from `../templates/config.json.example`, empty `MEMORY.md` / `CHANGELOG.md` from templates, and `STACK.md` from `../templates/STACK.md.example`. Prefer [`ws-configure-project`](../../ws-configure-project/SKILL.md) to fill placeholders. The installer writes `installed-skills.json` for update/uninstall tracking.
+> `config.json`, `STACK.md`, `installed-skills.json`, plus legacy `MEMORY.md`, `memory/*`, and `CHANGELOG.md` when present under `ws-shared/`.
+> Fresh install seeds `config.json` from `../templates/config.json.example` and `STACK.md` from `../templates/STACK.md.example`. `MEMORY.md` + `memory/` and `CHANGELOG.md` default to the repo root (`rules.memoryDir` / `rules.changelogFile`) and are created on first use; legacy `ws-shared/` copies are used as fallback when they hold entries. Prefer [`ws-configure-project`](../../ws-configure-project/SKILL.md) to fill placeholders. The installer writes `installed-skills.json` for update/uninstall tracking.
 >
 > **Installer scope:** skill packages install to **project-local** `.agents/skills/` and/or **global** `$HOME/.agents/skills/` (`--global` / `WORKFLOW_SKILLS_GLOBAL_DIR`). This `ws-shared/` hub under the **project** is where `ws-configure-project` writes consumer data. Never creates or overwrites consumer repo-root files (root `AGENTS.md`, host pointers). Optional root/host pointers stay consumer-owned; ws-check-harness may suggest them.
 >
@@ -37,8 +37,8 @@
 | [`autoload.md`](autoload.md) | Always-applied list, specs skill router, hub contracts (SCM, verify score) |
 | [`STACK.md.example`](../templates/STACK.md.example) | Template for human-readable stack companion — seeds `STACK.md` |
 | [`setup.md`](setup.md) | Bootstrap & entry logic shared by `ws-spec-to-pr` and `ws-spec-to-pr-lite` |
-| [`MEMORY.md.template`](../templates/MEMORY.md.template) | Empty memory index template — seeds `MEMORY.md` |
-| [`CHANGELOG.md.template`](../templates/CHANGELOG.md.template) | Empty ws-changelog stub — seeds `CHANGELOG.md` |
+| [`MEMORY.md.template`](../templates/MEMORY.md.template) | Empty memory index template (legacy reference; fresh memory is created at `rules.memoryDir` on first use) |
+| [`CHANGELOG.md.template`](../templates/CHANGELOG.md.template) | Empty ws-changelog stub (legacy reference; fresh changelog is created at `rules.changelogFile` on first use) |
 | [`skill-dependencies.json`](skill-dependencies.json) | Install graph + **`packageVersion`** + single **`upstream`** ownership block (no per-skill `upstream:` in SKILL.md) |
 | [`scripts/`](scripts/) | [`resolve_consumer_root.cjs`](scripts/resolve_consumer_root.cjs) (Node SoT) and [`resolve_consumer_root.py`](scripts/resolve_consumer_root.py) (Python imports). `--repo-root` → cwd hub. |
 
@@ -48,9 +48,9 @@
 |------|---------|
 | `config.json` | Project identity, stack, verification, providers (track when non-secret) |
 | `STACK.md` | Human-readable companion to `config.json` (track when maintained) |
-| `MEMORY.md` | Compiled anti-regression index (`ws-self-learning` skill) |
-| `memory/*.md` | Individual memory entries (compile into `MEMORY.md`) |
-| `CHANGELOG.md` | Append-only history (`ws-changelog` skill; default `rules.changelogFile`) |
+| `MEMORY.md` (legacy) | Compiled anti-regression index when it holds entries (default location is now `rules.memoryDir`) |
+| `memory/*.md` (legacy) | Individual memory entries (default location is now `rules.memoryDir`) |
+| `CHANGELOG.md` (legacy) | Append-only history when it holds entries (default location is now `rules.changelogFile`) |
 | `installed-skills.json` | Managed skill list for `update` / `uninstall` (installer-written) |
 
 ---
@@ -61,7 +61,7 @@
 |-------|------|---------|
 | `ws-senior-developer` | [`../ws-senior-developer/SKILL.md`](../../ws-senior-developer/SKILL.md) | Every prompt or `rules.seniorDeveloper` — delivery gate and surgical diffs |
 | `ws-changelog` | [`../ws-changelog/SKILL.md`](../../ws-changelog/SKILL.md) | Every task completion |
-| `ws-self-learning` | [`../ws-self-learning/SKILL.md`](../../ws-self-learning/SKILL.md) | Before plan/code/fix: consult `{sharedDir}/MEMORY.md` (keywords + path matching); on completion: write traps / failure reflection → compile; after each `ws-goal-fix-pr` / `ws-fix-pr` round: record reviewer/CI mistakes |
+| `ws-self-learning` | [`../ws-self-learning/SKILL.md`](../../ws-self-learning/SKILL.md) | Before plan/code/fix: consult the effective `{memoryDir}/MEMORY.md` (keywords + path matching); on completion: write traps / failure reflection → compile; after each `ws-goal-fix-pr` / `ws-fix-pr` round: record reviewer/CI mistakes |
 
 `ws-tdah` is **on-demand** here (invoke `/ws-tdah` · `/tdah` · `start ws-tdah`). Upstream root `AGENTS.md` inlines a compact session contract for dogfood (does not `Read` live `ws-tdah`); that is not the consumer default.
 

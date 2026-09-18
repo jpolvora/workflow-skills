@@ -1,6 +1,6 @@
 ---
 name: ws-self-learning
-version: 0.4.35
+version: 0.4.36
 description: Anti-regression memory engine — consults shared MEMORY before planning/coding and records newly discovered traps into the project knowledge hub.
 invocation_names:
   - self-learning
@@ -15,11 +15,11 @@ invocation_names:
 
 **Bidirectional gate** — MEMORY is both input (avoid known traps) and output (record new ones).
 
-Expand path tokens first ([`tools.md`](../ws-shared/runtime/tools.md) § Path tokens): `{sharedDir}` → `.agents/skills/ws-shared`, `{skillsRoot}` → `.agents/skills`.
+Expand path tokens first ([`tools.md`](../ws-shared/runtime/tools.md) § Path tokens): `{sharedDir}` → `.agents/skills/ws-shared`, `{skillsRoot}` → `.agents/skills`, `{memoryDir}` → `rules.memoryDir` (default repo root `.`).
 
 Consumer-owned memory routing is configured via `config.json` (`enableMemoryFiles` and `enableSpecMemoIntegration`):
 
-- **Local markdown files (`enableMemoryFiles: true`)**: entries in `{sharedDir}/memory/YYYY-MM-DD-[slug].md`, compiled index in `{sharedDir}/MEMORY.md`.
+- **Local markdown files (`enableMemoryFiles: true`)**: entries in `{memoryDir}/memory/YYYY-MM-DD-[slug].md`, compiled index in `{memoryDir}/MEMORY.md`. Effective dir is `resolveEffectiveMemoryPaths` (configured wins with entries, else legacy `{sharedDir}` with entries, else configured). Scripts create missing dirs on write; `--compile` always `mkdir -p`s the entries dir. Teams that do not track generated memory should gitignore `{memoryDir}/MEMORY.md` + `{memoryDir}/memory/`.
 - **Spec-memo vault (`enableSpecMemoIntegration: true`)**: records queried/persisted via **`/ws-memo`** (`bootstrap`, `search`, `upsert --kind trap`) or `{specMemo.cli}`. Setup/disable → `ws-spec-memo`.
 - Both can be enabled (dual-mode) or both disabled. Routing map: [`ws-spec-memo/references/INTEGRATION.md`](../ws-spec-memo/references/INTEGRATION.md).
 
@@ -27,10 +27,10 @@ Consumer-owned memory routing is configured via `config.json` (`enableMemoryFile
 
 | Moment | Action |
 |--------|--------|
-| **Before plan / before code / before fix** | **Consult (`read-memory`):** if `enableSpecMemoIntegration`: query MCP/CLI `bootstrap` or `search`. If `enableMemoryFiles`: `Grep` / `Read` `{sharedDir}/MEMORY.md` for task keywords AND query touched paths with `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --match-paths <files>`. Apply matching **DO NOT** and **INSTEAD DO** directives. |
-| Implementation hit a trap/pitfall/race | **Write (`update-memory`):** if `enableMemoryFiles`: run `node {skillsRoot}/ws-self-learning/scripts/sanitize_memory.cjs <draft>` (non-zero → revise body), create `{sharedDir}/memory/YYYY-MM-DD-[slug].md`, then `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile`. If `enableSpecMemoIntegration`: same sanitizer before `upsert --kind trap` via MCP/CLI. |
-| Session had $\ge 2$ tool/test/build failures | **Write (Mandatory):** Failure Reflection Hook — record Root Cause & Trap in `{sharedDir}/memory/` (and/or `upsert --kind trap` via MCP/CLI); `Learning: N/A` is strictly forbidden |
-| `ws-fable-judge` audit yields `REFUTED` / `CAVEATS` | **Write (Mandatory):** Adversarial Reflection — record `Severity: High` or `Critical` trap in `{sharedDir}/memory/` and/or vault |
+| **Before plan / before code / before fix** | **Consult (`read-memory`):** if `enableSpecMemoIntegration`: query MCP/CLI `bootstrap` or `search`. If `enableMemoryFiles`: `Grep` / `Read` `{memoryDir}/MEMORY.md` for task keywords AND query touched paths with `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --match-paths <files>`. Apply matching **DO NOT** and **INSTEAD DO** directives. |
+| Implementation hit a trap/pitfall/race | **Write (`update-memory`):** if `enableMemoryFiles`: run `node {skillsRoot}/ws-self-learning/scripts/sanitize_memory.cjs <draft>` (non-zero → revise body), create `{memoryDir}/memory/YYYY-MM-DD-[slug].md`, then `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile`. If `enableSpecMemoIntegration`: same sanitizer before `upsert --kind trap` via MCP/CLI. |
+| Session had $\ge 2$ tool/test/build failures | **Write (Mandatory):** Failure Reflection Hook — record Root Cause & Trap in `{memoryDir}/memory/` (and/or `upsert --kind trap` via MCP/CLI); `Learning: N/A` is strictly forbidden |
+| `ws-fable-judge` audit yields `REFUTED` / `CAVEATS` | **Write (Mandatory):** Adversarial Reflection — record `Severity: High` or `Critical` trap in `{memoryDir}/memory/` and/or vault |
 | **After each `ws-fix-pr` / `ws-goal-fix-pr` round** | **Write (when a reviewer or CI defect was a real agent mistake):** follow § Post fix-pr round. `Learning: N/A` is forbidden for those defects. |
 | Standard feature/bug fix, no new trap & $<2$ failures | Proof line: `Learning: N/A (standard implementation)` after confirming no new pitfall and session friction $<2$ |
 | Pure Q&A, no durable insight | Proof line: `Learning: N/A (no new project knowledge)` |
@@ -45,7 +45,7 @@ Resolve routing via `resolveMemoryRouting` / [`tools.md`](../ws-shared/runtime/t
 1. Identify 3–8 keywords and touched file paths from the task (e.g. `bash`, `CRLF`, `launcher`, `verify.sh`, `managed skill`, `encoding`, touched files like `src/Controllers/Auth.cs` or `bin/cli.js`).
 2. Query matching memories **per enabled backend** (skip a backend only when its flag is false or the store is unavailable — record that skip; do not skip an enabled backend):
    - **`enableSpecMemoIntegration: true`:** **`/ws-memo`** `bootstrap` / `search` (prefer host namespace `spec-memo` / `user-spec-memo` / `specMemo.mcpServerName`) or `{specMemo.cli}` with the same keywords/paths. Do not load `ws-spec-memo` for this consult.
-   - **`enableMemoryFiles: true`:** Keyword grep in `{sharedDir}/MEMORY.md` or `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --query <keyword>`; path match with `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --match-paths <touched_files...>`.
+   - **`enableMemoryFiles: true`:** Keyword grep in `{memoryDir}/MEMORY.md` or `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --query <keyword>`; path match with `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --match-paths <touched_files...>`.
    - **Both true (dual):** vault first, then supplement with local files. **Both false:** no hits; continue without inventing traps from empty consult.
 3. If a hit is Severity Medium+, fold its **DO NOT** / **INSTEAD DO** directives into the plan or first edit. Do not re-discover the same failure mode.
 4. For scripts/skills specifically, also apply the preflight in memory entry **Script/skill authoring preflight** (launchers, LF, Windows Python `\r\n`, no shell bridges) when that entry appears in either backend.
@@ -55,12 +55,12 @@ Resolve routing via `resolveMemoryRouting` / [`tools.md`](../ws-shared/runtime/t
 Agents often attempt to save turn tokens by defaulting to `Learning: N/A`. To ensure continuous learning:
 - If `dotnet build`, `npm test`, linters, or any verification command/tool failed $\ge 2$ times during the session before succeeding, the session experienced non-trivial friction.
 - In this scenario, **`Learning: N/A` is strictly FORBIDDEN**.
-- You MUST analyze the root cause of the friction (e.g., misconfigured path, missing flag, unexpected type error, stale cache) and persist a new trap via **`update-memory`** with concrete **DO NOT** and **INSTEAD DO** directives (local `{sharedDir}/memory/YYYY-MM-DD-[slug].md` + compile and/or vault upsert per routing).
+- You MUST analyze the root cause of the friction (e.g., misconfigured path, missing flag, unexpected type error, stale cache) and persist a new trap via **`update-memory`** with concrete **DO NOT** and **INSTEAD DO** directives (local `{memoryDir}/memory/YYYY-MM-DD-[slug].md` + compile and/or vault upsert per routing).
 
 ## Adversarial Reflection Trigger (`ws-fable-judge`)
 
 When [`ws-fable-judge`](../ws-fable-judge/SKILL.md) audits work and returns a verdict of **`REFUTED`** or **`VERIFIED WITH CAVEATS`** (due to weakened assertions, false completion, scope creep, or unauthorized actions):
-1. Persist via **`update-memory`** (local `{sharedDir}/memory/YYYY-MM-DD-fable-[slug].md` + compile when `enableMemoryFiles`; **`/ws-memo`** `upsert --kind trap` when `enableSpecMemoIntegration`; dual → both). Skip the local file when files are disabled.
+1. Persist via **`update-memory`** (local `{memoryDir}/memory/YYYY-MM-DD-fable-[slug].md` + compile when `enableMemoryFiles`; **`/ws-memo`** `upsert --kind trap` when `enableSpecMemoIntegration`; dual → both). Skip the local file when files are disabled.
 2. Set `Severity: High` (for caveats/scope creep) or `Severity: Critical` (for refuted fraud/regressions). Vault frontmatter `severity` must be lowercase (`high` / `critical`).
 3. Document the precise mechanism of divergence in **DO NOT** and the verified invariant in **INSTEAD DO**.
 
@@ -70,7 +70,7 @@ After each `ws-fix-pr` pass, including every `ws-goal-fix-pr` Act round, record 
 
 1. Collect **accepted defects**: threads scored 6–10 that received a code fix, plus `check-pr-status` **diff-regression** failures this round fixed.
 2. Skip: score 0–5 no-change threads, baseline noise, infra-flake, wrong reviewer claims justified with no code change, and classes already covered by a Medium+ hit from the **`read-memory`** consult (local and/or vault).
-3. For each remaining class: persist via [`tools.md`](../ws-shared/runtime/tools.md) **`update-memory`** (local `{sharedDir}/memory/YYYY-MM-DD-fix-pr-[slug].md` + `--compile` when `enableMemoryFiles`; vault `upsert --kind trap` when `enableSpecMemoIntegration`; dual → both). Concrete **DO NOT** / **INSTEAD DO** required.
+3. For each remaining class: persist via [`tools.md`](../ws-shared/runtime/tools.md) **`update-memory`** (local `{memoryDir}/memory/YYYY-MM-DD-fix-pr-[slug].md` + `--compile` when `enableMemoryFiles`; vault `upsert --kind trap` when `enableSpecMemoIntegration`; dual → both). Concrete **DO NOT** / **INSTEAD DO** required.
 4. Round report `Learning:` must list new entry titles. **Forbidden:** `Learning: N/A` when step 1 had any accepted defect that was not already covered by `read-memory`.
 5. `dry-run`: skip memory writes (analysis-only).
 
@@ -80,7 +80,7 @@ Follow [`tools.md`](../ws-shared/runtime/tools.md) **`update-memory`**: skip ste
 
 1. **Analyze context** — What did we try that failed? What non-obvious constraint or pitfall did we hit?
 2. **Sanitize draft body** — Run `node {skillsRoot}/ws-self-learning/scripts/sanitize_memory.cjs <draft>` (non-zero exit → revise body to remove injection-only patterns or unescaped tool calls).
-3. **Write to `{sharedDir}/memory/`** (files backend only) — New file `{sharedDir}/memory/YYYY-MM-DD-[slug].md`. **ONLY** traps/pitfalls. **DO NOT** use as a ws-changelog or to record patterns an LLM already knows.
+3. **Write to `{memoryDir}/memory/`** (files backend only) — New file `{memoryDir}/memory/YYYY-MM-DD-[slug].md` (create parent dirs when missing). **ONLY** traps/pitfalls. **DO NOT** use as a ws-changelog or to record patterns an LLM already knows.
 4. **Compile `MEMORY.md`** (files backend only) — Expand tokens, then run (only after the memory file exists on disk; never in the same parallel tool batch as the `Write`):
    ```bash
    node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile
@@ -95,7 +95,7 @@ If `MEMORY.md` merge-conflicts on pull/merge, **do not** resolve by hand. Run:
 ```bash
 node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile
 ```
-This rebuilds a clean index from `{sharedDir}/memory/` (per-file entries do not conflict).
+This rebuilds a clean index from `{memoryDir}/memory/` (per-file entries do not conflict).
 
 ## Individual Memory File Template
 

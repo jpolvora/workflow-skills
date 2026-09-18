@@ -2,7 +2,7 @@
 name: ws-check-harness
 description: Meta-harness integrity auditor — detects install mode/scope (upstream, project-local, global, hybrid) and scans routing, links, portability, integrity digests, instruction duplication, role clarity, and skill composition topology.
 disable-model-invocation: true
-version: 0.4.35
+version: 0.4.36
 invocation_names:
   - check-harness
   - ws-check-harness
@@ -58,10 +58,11 @@ Canonical: [`tools.md`](../ws-shared/runtime/tools.md) § Path tokens · [`confi
 | `{sharedDir}` | `pathTokens.sharedDir` | `.agents/skills/ws-shared` |
 | `{plansDir}` | `plans.dir` | `.agents/plans` |
 | `{reviewsDir}` | `reviews.dir` | `.agents/codereviews` |
+| `{memoryDir}` | `rules.memoryDir` | `.` (repo root) |
 | `{us-dir}` | `{plansDir}/{slug}/` | skip existence if slug unknown |
 | `{globalSkillsRoot}` | `WORKFLOW_SKILLS_GLOBAL_DIR` / `~/.agents/skills` | `~/.agents/skills` |
 
-Expand braces before any broken-link claim. Remaining unknown braces → template (skip). Bare `ws-shared/MEMORY.md` → warning (prefer `{sharedDir}/MEMORY.md`). Token-only prose outside links is healthy; Markdown `(...)` targets must be real paths.
+Expand braces before any broken-link claim. Remaining unknown braces → template (skip). Bare `ws-shared/MEMORY.md` → warning (prefer `{memoryDir}/MEMORY.md`). Token-only prose outside links is healthy; Markdown `(...)` targets must be real paths.
 
 Load the token map from project `{sharedDir}/config.json` when present. **Install mode** may set a separate audit field **Skills scan root** (`.agents/skills` upstream); that does **not** redefine `{skillsRoot}` for consumer install layout.
 

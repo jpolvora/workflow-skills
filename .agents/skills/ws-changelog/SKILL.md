@@ -1,6 +1,6 @@
 ---
 name: ws-changelog
-version: 0.4.35
+version: 0.4.36
 description: Summarized task history writer — appends concise, structured task completion records to the project changelog file.
 invocation_names:
   - changelog
@@ -23,14 +23,14 @@ Run at the end of every implementation task to maintain a historical record of w
 
 ## Path resolution
 
-Resolve the target file from `{sharedDir}/config.json`:
+Resolve the target file from `{sharedDir}/config.json` (`resolveChangelogPath` in `resolve_consumer_root.cjs` is the SoT):
 
 | Source | Path |
 |--------|------|
 | `rules.changelogFile` when set | that path (repo-relative) |
-| Default | `{sharedDir}/CHANGELOG.md` |
+| Default | `CHANGELOG.md` (repo root) |
 
-Do **not** create or require a repo-root `CHANGELOG.md` unless the consumer explicitly set `rules.changelogFile` to that path (e.g. `"CHANGELOG.md"`).
+**Legacy fallback:** when the configured file holds no `### [` entries and `{sharedDir}/CHANGELOG.md` does, keep appending to the legacy file. To migrate, move the legacy file to the configured path.
 
 **Vault dual-write:** when `enableSpecMemoIntegration: true`, also follow [`tools.md`](../ws-shared/runtime/tools.md) **`update-ws-changelog`** (vault `append` via **`/ws-memo`**). Do not load `ws-spec-memo` for the append itself. Skip the in-repo file when `enableMemoryFiles` is false and vault-only mode is active.
 

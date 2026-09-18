@@ -133,6 +133,96 @@ function resolveMinVerifyScore(config) {
   return n;
 }
 
+const DEFAULT_CHANGELOG_FILE = 'CHANGELOG.md';
+const DEFAULT_MEMORY_DIR = '.';
+
+function rulesValue(config, key, fallback) {
+  const raw = config?.rules?.[key];
+  if (typeof raw !== 'string') return fallback;
+  const trimmed = raw.trim();
+  return trimmed === '' ? fallback : trimmed;
+}
+
+function resolveMemoryDirValue(config) {
+  return rulesValue(config, 'memoryDir', DEFAULT_MEMORY_DIR);
+}
+
+function resolveChangelogFileValue(config) {
+  return rulesValue(config, 'changelogFile', DEFAULT_CHANGELOG_FILE);
+}
+
+function fileHasEntryHeadings(file) {
+  try {
+    return /^###\s+\[/m.test(fs.readFileSync(file, 'utf8'));
+  } catch {
+    return false;
+  }
+}
+
+function entriesDirHasEntries(dir) {
+  try {
+    return fs.readdirSync(dir).some((name) => !name.startsWith('.') && name.toLowerCase().endsWith('.md'));
+  } catch {
+    return false;
+  }
+}
+
+function memoryLocationHasContent(indexFile, entriesDir) {
+  return fileHasEntryHeadings(indexFile) || entriesDirHasEntries(entriesDir);
+}
+
+function resolveMemoryPaths({ repoRoot, sharedDir: hub, config } = {}) {
+  const root = path.resolve(repoRoot || process.cwd());
+  const hubDir = path.resolve(hub || sharedDir(root));
+  const configuredValue = resolveMemoryDirValue(config);
+  const dir = resolveConfiguredPath(root, configuredValue, DEFAULT_MEMORY_DIR);
+  return {
+    configuredValue,
+    dir,
+    indexFile: path.join(dir, 'MEMORY.md'),
+    entriesDir: path.join(dir, 'memory'),
+    legacyDir: hubDir,
+    legacyIndexFile: path.join(hubDir, 'MEMORY.md'),
+    legacyEntriesDir: path.join(hubDir, 'memory'),
+  };
+}
+
+// Effective memory location: configured wins when it holds entries; legacy
+// {sharedDir} wins only when it holds entries and configured does not
+// (pre-move consumers keep working); otherwise configured (fresh default root).
+function resolveEffectiveMemoryPaths(options = {}) {
+  const paths = resolveMemoryPaths(options);
+  if (paths.dir === paths.legacyDir) return { ...paths, source: 'configured' };
+  if (memoryLocationHasContent(paths.indexFile, paths.entriesDir)) {
+    return { ...paths, source: 'configured' };
+  }
+  if (memoryLocationHasContent(paths.legacyIndexFile, paths.legacyEntriesDir)) {
+    return {
+      ...paths,
+      dir: paths.legacyDir,
+      indexFile: paths.legacyIndexFile,
+      entriesDir: paths.legacyEntriesDir,
+      source: 'legacy',
+    };
+  }
+  return { ...paths, source: 'configured' };
+}
+
+function resolveChangelogPath({ repoRoot, sharedDir: hub, config } = {}) {
+  const root = path.resolve(repoRoot || process.cwd());
+  const hubDir = path.resolve(hub || sharedDir(root));
+  const configuredValue = resolveChangelogFileValue(config);
+  const file = resolveConfiguredPath(root, configuredValue, DEFAULT_CHANGELOG_FILE);
+  const legacyFile = path.join(hubDir, 'CHANGELOG.md');
+  if (file === legacyFile || fileHasEntryHeadings(file)) {
+    return { configuredValue, file, legacyFile, source: 'configured' };
+  }
+  if (fileHasEntryHeadings(legacyFile)) {
+    return { configuredValue, file: legacyFile, legacyFile, source: 'legacy' };
+  }
+  return { configuredValue, file, legacyFile, source: 'configured' };
+}
+
 function resolveMemoryRouting(config) {
   const specMemo = config?.specMemo || {};
   let enableMemoryFiles = config?.enableMemoryFiles ?? specMemo.enableMemoryFiles;
@@ -423,5 +513,15 @@ module.exports = {
   normalizeConfig,
   resolveMinVerifyScore,
   resolveMemoryRouting,
+  DEFAULT_CHANGELOG_FILE,
+  DEFAULT_MEMORY_DIR,
+  resolveMemoryDirValue,
+  resolveChangelogFileValue,
+  fileHasEntryHeadings,
+  entriesDirHasEntries,
+  memoryLocationHasContent,
+  resolveMemoryPaths,
+  resolveEffectiveMemoryPaths,
+  resolveChangelogPath,
   resolveSpecializedSubagentsDirectory,
 };

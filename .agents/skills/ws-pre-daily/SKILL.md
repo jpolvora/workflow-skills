@@ -1,6 +1,6 @@
 ---
 name: ws-pre-daily
-version: 0.4.35
+version: 0.4.36
 disable-model-invocation: true
 description: Standup briefing of the last 36 hours — delivered, made, ongoing, next.
 invocation_names:
@@ -33,7 +33,7 @@ Timesheet clocks → [`ws-activity-report`](../ws-activity-report/SKILL.md) when
 
 ## Steps
 
-1. **Resolve window** — Hours, author filter, `$PWD` git root. From `$PWD/.agents/skills/ws-shared/config.json` when present: `{plansDir}`, `{sharedDir}`, `{skillsRoot}`, changelog ← `rules.changelogFile` else `{sharedDir}/CHANGELOG.md`. Missing config → git-only, `{plansDir}`=`.agents/plans` if that dir exists, gap `config-missing`.
+1. **Resolve window** — Hours, author filter, `$PWD` git root. From `$PWD/.agents/skills/ws-shared/config.json` when present: `{plansDir}`, `{sharedDir}`, `{skillsRoot}`, changelog ← `rules.changelogFile` else repo-root `CHANGELOG.md` (legacy `{sharedDir}/CHANGELOG.md` fallback when only it holds entries). Missing config → git-only, `{plansDir}`=`.agents/plans` if that dir exists, gap `config-missing`.
    - Done when: hours, author mode, and paths are fixed.
 
 2. **Collect evidence** — Run (hybrid path: `{skillsRoot}` then `{globalSkillsRoot}`):

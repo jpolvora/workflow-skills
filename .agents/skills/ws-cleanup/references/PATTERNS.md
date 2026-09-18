@@ -67,6 +67,8 @@ Suggest when matching debris exists or patterns are recommended and absent from 
 .agents/codereviews/PR*.md
 .tmp-*/
 .tmp-ws-cleanup-approved.json
+/MEMORY.md
+/memory/
 ```
 
 Use configured `{plansDir}` / `{reviewsDir}` segments when they differ from the defaults.

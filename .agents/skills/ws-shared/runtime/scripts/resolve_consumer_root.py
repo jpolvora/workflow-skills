@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import os
 import json
+import re
 from pathlib import Path
 
 HUB_REL = Path(".agents") / "skills" / "ws-shared"
@@ -190,6 +191,122 @@ def resolve_skills_root(
     local_root = repo_root.resolve() / ".agents" / "skills"
     probe = local_root / skill_id if skill_id else local_root
     return local_root if probe.exists() else (global_skills_root or resolve_global_skills_root())
+
+
+DEFAULT_CHANGELOG_FILE = "CHANGELOG.md"
+DEFAULT_MEMORY_DIR = "."
+
+
+def _rules_value(config, key, fallback):
+    rules = (config or {}).get("rules") or {}
+    raw = rules.get(key)
+    if not isinstance(raw, str):
+        return fallback
+    return raw.strip() or fallback
+
+
+def resolve_memory_dir_value(config=None):
+    return _rules_value(config, "memoryDir", DEFAULT_MEMORY_DIR)
+
+
+def resolve_changelog_file_value(config=None):
+    return _rules_value(config, "changelogFile", DEFAULT_CHANGELOG_FILE)
+
+
+def _resolve_configured_path(repo_root, value, fallback):
+    raw = str(value or fallback or "")
+    candidate = Path(raw).expanduser()
+    if candidate.is_absolute():
+        return candidate.resolve()
+    return (repo_root.resolve() / raw).resolve()
+
+
+_ENTRY_HEADING_RE = re.compile(r"^###\s+\[", re.MULTILINE)
+
+
+def file_has_entry_headings(file) -> bool:
+    try:
+        return bool(_ENTRY_HEADING_RE.search(Path(file).read_text(encoding="utf-8")))
+    except OSError:
+        return False
+
+
+def entries_dir_has_entries(directory) -> bool:
+    try:
+        return any(
+            entry.suffix.lower() == ".md" and not entry.name.startswith(".")
+            for entry in Path(directory).iterdir()
+        )
+    except OSError:
+        return False
+
+
+def memory_location_has_content(index_file, entries_dir) -> bool:
+    return file_has_entry_headings(index_file) or entries_dir_has_entries(entries_dir)
+
+
+def resolve_memory_paths(repo_root, hub=None, config=None) -> dict:
+    root = Path(repo_root).resolve()
+    legacy_dir = Path(hub).resolve() if hub else shared_dir(root)
+    configured_value = resolve_memory_dir_value(config)
+    directory = _resolve_configured_path(root, configured_value, DEFAULT_MEMORY_DIR)
+    return {
+        "configured_value": configured_value,
+        "dir": directory,
+        "index_file": directory / "MEMORY.md",
+        "entries_dir": directory / "memory",
+        "legacy_dir": legacy_dir,
+        "legacy_index_file": legacy_dir / "MEMORY.md",
+        "legacy_entries_dir": legacy_dir / "memory",
+    }
+
+
+def resolve_effective_memory_paths(repo_root, hub=None, config=None) -> dict:
+    """Mirror of the Node SoT: configured wins with entries, else legacy with
+    entries, else configured (fresh default repo root)."""
+    paths = resolve_memory_paths(repo_root, hub, config)
+    if paths["dir"] == paths["legacy_dir"]:
+        return {**paths, "source": "configured"}
+    if memory_location_has_content(paths["index_file"], paths["entries_dir"]):
+        return {**paths, "source": "configured"}
+    if memory_location_has_content(paths["legacy_index_file"], paths["legacy_entries_dir"]):
+        return {
+            **paths,
+            "dir": paths["legacy_dir"],
+            "index_file": paths["legacy_index_file"],
+            "entries_dir": paths["legacy_entries_dir"],
+            "source": "legacy",
+        }
+    return {**paths, "source": "configured"}
+
+
+def resolve_changelog_path(repo_root, hub=None, config=None) -> dict:
+    """Mirror of the Node SoT: configured changelog wins with entries, else
+    legacy ws-shared file with entries, else configured (default root)."""
+    root = Path(repo_root).resolve()
+    legacy_file = (Path(hub).resolve() if hub else shared_dir(root)) / "CHANGELOG.md"
+    configured_value = resolve_changelog_file_value(config)
+    selected = _resolve_configured_path(root, configured_value, DEFAULT_CHANGELOG_FILE)
+    if selected == legacy_file or file_has_entry_headings(selected):
+        return {
+            "configured_value": configured_value,
+            "file": selected,
+            "legacy_file": legacy_file,
+            "source": "configured",
+        }
+    if file_has_entry_headings(legacy_file):
+        return {
+            "configured_value": configured_value,
+            "file": legacy_file,
+            "legacy_file": legacy_file,
+            "source": "legacy",
+        }
+    return {
+        "configured_value": configured_value,
+        "file": selected,
+        "legacy_file": legacy_file,
+        "source": "configured",
+    }
 
 
 def to_repo_relative(

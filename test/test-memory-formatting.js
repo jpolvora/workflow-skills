@@ -62,7 +62,7 @@ const templateContent = fs.readFileSync(
   path.join(rootDir, ".agents", "skills", "ws-shared", "templates", "MEMORY.md.template"),
   "utf-8",
 );
-assert(templateContent.includes("under `{sharedDir}/memory/`"), "MEMORY.md.template missing canonical path token");
+assert(templateContent.includes("under `{memoryDir}/memory/`"), "MEMORY.md.template missing canonical path token");
 assert(templateContent.includes("self_learning.cjs --compile"), "MEMORY.md.template must mention self_learning.cjs --compile");
 
 const isolated = tmpRoot();
@@ -89,7 +89,7 @@ try {
     compiledContent.includes("- **INSTEAD DO**: State explicit DO NOT and INSTEAD DO actionable instructions"),
     "Compiled MEMORY.md missing INSTEAD DO field",
   );
-  assert(compiledContent.includes("under `{sharedDir}/memory/`"), "Compiled MEMORY.md header missing canonical path token");
+  assert(compiledContent.includes("under `.agents/skills/ws-shared/memory/`"), "Compiled MEMORY.md header must name the effective entries dir");
   assert(
     !compiledContent.includes("under `shared/memory/`") && !compiledContent.includes("under `ws-shared/memory/`"),
     "Compiled MEMORY.md header contains obsolete memory directory shorthand",

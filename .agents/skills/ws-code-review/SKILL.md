@@ -1,7 +1,7 @@
 ---
 name: ws-code-review
 description: Local two-phase code review with fix → re-review loops (max 3). Trigger when reviewing a branch/diff before ship, or when orch Step 6 / lite Step 3 runs.
-version: 0.4.35
+version: 0.4.36
 disable-model-invocation: true
 invocation_names:
   - code-review
@@ -83,7 +83,7 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
    - Done when: sibling occurrences beyond the diff are searched and reported (or none found).
 
 5. **Sweep MEMORY**:
-   - Read compiled `{sharedDir}/MEMORY.md` entries (titles, Module/Layer tags, and `DO NOT` / `INSTEAD DO` directives) against the in-scope modified file list and plan keywords; report confirmed violations as Warning or Critical by severity.
+   - Read compiled `{memoryDir}/MEMORY.md` entries (titles, Module/Layer tags, and `DO NOT` / `INSTEAD DO` directives) against the in-scope modified file list and plan keywords; report confirmed violations as Warning or Critical by severity.
    - Done when: memory entries have been swept against the diff, and any confirmed violations are listed.
 
 6. **Check invariants & Local Reviewer Dry-Run**:

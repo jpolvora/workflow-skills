@@ -536,7 +536,7 @@ def ensure_autoload_md(
 
 LOCAL_HUB_POINTER_MD = """# Shared - Workflow Config & Consumer Data Hub (local pointer)
 
-This project-local pointer keeps the consumer hub stable for global-hybrid installs. Managed hub runtime is resolved from the project-local `runtime/` when present, otherwise from `{globalSkillsRoot}/ws-shared/runtime/`. Project consumer data lives in this folder (`config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `CHANGELOG.md`, `installed-skills.json`).
+This project-local pointer keeps the consumer hub stable for global-hybrid installs. Managed hub runtime is resolved from the project-local `runtime/` when present, otherwise from `{globalSkillsRoot}/ws-shared/runtime/`. Project consumer data lives in this folder (`config.json`, `STACK.md`, `installed-skills.json`); MEMORY/changelog live at their configured locations (defaults: repo-root `MEMORY.md` + `memory/`, repo-root `CHANGELOG.md`).
 
 - Full hub contract: `runtime/AGENTS.md` (resolve the managed runtime locally or from `{globalSkillsRoot}/ws-shared/runtime/`).
 - Config always resolves project-local first: `$PWD/.agents/skills/ws-shared/config.json` overrides the global hub.

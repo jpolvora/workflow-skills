@@ -11,6 +11,7 @@ const {
   resolveMinVerifyScore,
   resolveResolvedContext,
   resolveMemoryRouting,
+  resolveEffectiveMemoryPaths,
   toRepoRelative,
 } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 const { parseFrontmatter } = require('../../ws-shared/runtime/scripts/workflow_state.cjs');
@@ -492,7 +493,11 @@ function queryMemoryVault(context, options = {}) {
   } else if (routing.enableMemoryFiles) {
     result.enabled = true;
     result.backend = 'local-memory-files';
-    const memoryDir = path.join(context.sharedDir || '', 'memory');
+    const memoryDir = resolveEffectiveMemoryPaths({
+      repoRoot: context.repoRoot,
+      sharedDir: context.sharedDir,
+      config: context.config,
+    }).entriesDir;
     if (fs.existsSync(memoryDir)) {
       try {
         const entries = fs.readdirSync(memoryDir).filter((f) => f.endsWith('.md'));

@@ -881,7 +881,7 @@ const EVALS = {
         expected_output: 'memory entry + compile via scripts/self_learning.cjs.',
         assertions: [
           'Agent loads self-learning',
-          'Writes to {sharedDir}/memory/ not changelog',
+          'Writes to {memoryDir}/memory/ not changelog',
           'Uses node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile',
         ],
       },
@@ -1004,7 +1004,7 @@ const EVALS = {
           'The delivery gate reads applicable project context and MEMORY, then requires a confirmed multi-file plan before implementation.',
         assertions: [
           'Classifies the free-text request as non-trivial multi-file work',
-          'Reads configured project context, applicable rules, and {sharedDir}/MEMORY.md',
+          'Reads configured project context, applicable rules, and {memoryDir}/MEMORY.md',
           'Requires a confirmed plan with scope and verification before implementation',
           'Uses {plansDir} or installed workflow/specification capabilities for the plan handoff',
         ],

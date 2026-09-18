@@ -1,7 +1,7 @@
 ---
 name: ws-spec-write
 description: Local spec authoring & reformulation — drafts and enhances structured *.spec.md feature specifications under {specsDir} from free-text requirements or remote tracker issues.
-version: 0.4.35
+version: 0.4.36
 disable-model-invocation: true
 invocation_names:
   - spec-write
@@ -69,7 +69,7 @@ When writing a spec derived from a remote tracker issue or raw human description
 
 ## Steps
 
-1. **Lookup (before any `user-gate`)** — Resolve discoverable facts from the codebase, `{sharedDir}/MEMORY.md`, and the stack file (`config.json` → `rules.stackFile`, default `{sharedDir}/STACK.md`). Do **not** present a `user-gate` until this lookup has run.
+1. **Lookup (before any `user-gate`)** — Resolve discoverable facts from the codebase, the effective `{memoryDir}/MEMORY.md`, and the stack file (`config.json` → `rules.stackFile`, default `{sharedDir}/STACK.md`). Do **not** present a `user-gate` until this lookup has run.
    - Done when: lookup notes exist (hits or none) for code, MEMORY, and stack.
 
 2. **Parse & Ingest** — Infer or parse title, url-safe `slug`, and origin (`source`). For tracker issues, extract metadata (`id`, `url`, `labels`, `workItemType`).

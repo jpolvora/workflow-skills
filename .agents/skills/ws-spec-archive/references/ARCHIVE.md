@@ -44,7 +44,7 @@ Keep: `active` · `paused` · missing state (unless `.archive` folder) · `{spec
 2. Delivery artifacts: `step-08-*.result.md` / lite `step-04-*.result.md`.
 3. `{specsDir}/{slug}.spec.md` title when state title is empty.
 4. `git log --all` on the plan path + spec of record, then `--grep={slug}`.
-5. `{sharedDir}/CHANGELOG.md` and `{sharedDir}/MEMORY.md` (slug hits; one-line facts only — do not copy MEMORY DO NOT blocks into the index).
+5. Effective changelog (`rules.changelogFile`) and effective `{memoryDir}/MEMORY.md` (slug hits; one-line facts only — do not copy MEMORY DO NOT blocks into the index).
 6. One SCM provider `sweep-prior-work` when `providers.scm` is set and a PR/issue id is known. Auth failure → gap `scm-skipped`.
 
 Invent nothing. Missing field → `—` or omit from Summary.

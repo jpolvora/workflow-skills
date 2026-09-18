@@ -14,7 +14,7 @@ Config: [`.agents/skills/ws-shared/config.json`](../config.json) only — see [`
 |------|--------|
 | **Shared skills are workflow-agnostic** | Pipeline `ws-*` skills (`ws-spec-write`…`ws-fix-pr`, `ws-goal-fix-pr`), providers, `ws-goal-loop` never assume full vs lite step numbers. Orch passes mode, paths, and flags. `ws-plan-update` is optional Extra (invoke when installed). |
 | **`workflowType`** | `standard` (full) or `lite`. Resume filters by type — never cross-resume. |
-| **Close then ship (one combined menu)** | Orchestrator presents **one combined Step 8 user-gate** at standard Step 8 / lite Step 4 (five options; state still records close then `shipStatus` in two phases). Close sets `status: completed` before push/PR. [`ws-ship-pr`](../../ws-ship-pr/SKILL.md) in workflow mode **executes** the ship intent (push/PR only) — does **not** re-ask delivery commit or workflow close. Option 5 restores separate close-then-ship prompts. Standalone `/ship-pr` may ask. |
+| **Close then ship (primary + overflow, one logical menu)** | Orchestrator presents the Step 8 gate at standard Step 8 / lite Step 4 as a **primary question** (Commit+Create PR / Commit+Push only / More options…) plus an **overflow second gate** when More is chosen (Commit+Skip shipping / Skip commit+Create PR / Separate gates / Pause); state still records close then `shipStatus` in two phases. Close sets `status: completed` before push/PR. [`ws-ship-pr`](../../ws-ship-pr/SKILL.md) in workflow mode **executes** the ship intent (push/PR only) — does **not** re-ask delivery commit or workflow close. The overflow **Separate gates / Pause** restores separate close-then-ship prompts. Standalone `/ship-pr` may ask. Never emit a single question with more than 3 options (rule 8). |
 | **Fix-PR is separate** | Standard Step 9 / lite Step 5 — **not** inside ship. `ws-ship-pr` receives `stopBeforeFixPr: true`. |
 | **Artifact names** | Delivery result is `step-08-{slug}.result.md` for **both** workflows. Plan is `step-01-{slug}.plan.md`. |
 | **Step ranges** | Standard: Steps 0–9. Lite: Steps 0–5. |
@@ -29,13 +29,14 @@ Config: [`.agents/skills/ws-shared/config.json`](../config.json) only — see [`
 Portable alias: `user-gate`. Gate placement follows `defaults.gateGranularity`; hard stops are unchanged.
 Host binding: [`tools.md`](tools.md) § Host-tool binding & dispatch tiers (`askQuestionTool`).
 
-1. Every normal-mode gate: use `user-gate` with ≥2 options; recommended first. Prefer the host's structured multiple-choice UI when available; map to portable `user-gate` vocabulary in logs.
+1. Every normal-mode gate: use `user-gate` with 2–3 options per question (rule 8); recommended first. Prefer the host's structured multiple-choice UI when available; map to portable `user-gate` vocabulary in logs.
 2. In normal mode, when the cached `askQuestionTool` binding (Step 0 probe or `{sharedDir}/host-capabilities.json` hit for the current `hostId::orchestratorModel` key) resolves to a concrete tool, the orchestrator and shared skills MUST invoke that tool for all `user-gate` occurrences rather than falling back to text. Log `user-gate-modal | {gate} | ISO`.
 3. If `askQuestionTool` binds `none` → present the **same options** as a short markdown list; wait for user reply. Log: `user-gate-fallback | {gate} | ISO`.
 4. Markdown fallback turn-yielding (mandatory): when a `user-gate` is presented as text/markdown, output ONLY the question and options and MUST NOT emit any tool calls in the same response turn — immediately yield the turn to wait for user input. Emitting a gate plus Step N+1 tool calls in one turn violates this gate.
 5. Cancelled / dismissed → **HS-1** (STOP; re-present; never infer yes).
 6. `autoMode` → zero `user-gate` prompts of any kind (neither modal tool nor markdown) at **every** boundary — entry, transition, G2-code, close, ship, fix-PR; use orch auto-gate table (index 0) to automatically select the recommended option and proceed to the next step without pausing. **`autoMode` never waives planning for `standard`/`complex`:** the full FSM 0→9 still runs; only gates are automatic. `complexityClass: simple` (scripted stub Step 1, skip 2/3) **does** apply in `autoMode`. An existing parent feature branch (e.g. `feat/{parent}`) plus a child bug/task slug does not waive Steps 1–3 for the **child slug** — only an explicit user override may shorten planning.
 7. Gate continuation (all gates, every step boundary 0→1 through 8→9 / lite 0→1 through 4→5): a native modal `user-gate` return is already explicit confirmation — selecting the recommended advance option (Next / Accept / Commit then advance / Reach-10 advance / close / ship intent) MUST continue in the same turn (record the decision, run the gated action, present the next gate or dispatch next). A markdown fallback gate MUST yield the turn per rule 4; the user's next reply is consumed as that gate's decision before any other tool call. This applies equally to transition gates and intermediate gates (classifier, safety valve, Reach-10, scoreAndRefine, G2-code, close, ship).
+8. Option-count portability: never emit one question with more options than the bound `askQuestionTool` accepts — the portable ceiling is **at most 3 options per question** (some hosts reject more). When candidates exceed 3, chunk instead of truncating: ask intent first, then page the pick list with **More…** navigation so every candidate stays reachable. Cancel stays dismiss (HS-1, rule 5) — never a numbered option on capped hosts. Menus authored with more than 3 options MUST be presented through this chunking where the host cap applies.
 
 ## Interactive execution cadence (One Step Per Turn)
 
@@ -192,31 +193,37 @@ Optional More-options **Commit** at Step 4 / other boundaries does not replace t
 
 ## Step 8 combined gate (standard Step 8 / lite Step 4)
 
-**Before any push or PR.** Ends spec/plan implementation; sets `status: completed`, `endedAt`, `shipStatus: pending`. Step 8 presents **one combined menu; state still records close then `shipStatus` (two phases, one prompt)**.
+**Before any push or PR.** Ends spec/plan implementation; sets `status: completed`, `endedAt`, `shipStatus: pending`. Step 8 presents a **primary question plus overflow** (rule 8: at most 3 options per question); state still records close then `shipStatus` (two phases).
+
+**Primary question:**
 
 1. **Commit configured delivery artifacts and Create PR** (Recommended when `fullMode`)
 2. **Commit configured delivery artifacts and Push only**
-3. **Commit configured delivery artifacts and Skip shipping**
-4. **Skip delivery commit and Create PR** (PR will lack delivery artifacts; use only when delivery commit was already done or explicitly unwanted)
-5. **More options / Separate gates / Pause** (restores the legacy close-then-ship two-prompt flow)
+3. **More options…**
 
-When `fullMode` is true, Recommended (interactive index 0) = **Commit configured delivery artifacts and Create PR** (option 1). When `fullMode` is false, interactive Recommended is option 3 (commit delivery artifacts, skip shipping) unless the user explicitly wants a PR without delivery artifacts; **auto-gate index 0** is skip delivery commit **and** skip shipping (mechanical; not a numbered interactive option). Do not auto-create a PR when `fullMode` is false.
+**Under More options…** (second user-gate only if the user picked More):
 
-**Mechanical mapping (options 1–4):** run close phase (G2-delivery per option, MEMORY + changelog, `status: completed`, `shipStatus: pending`) then ship phase (`shipAction` from the paired intent). Options **1, 2, 4** dispatch `ws-ship-pr`. Option **3** skips remote ship after close. Option **5** does not advance; user may resume with separate close then ship menus. Auto-gate not-`fullMode` closes without G2-delivery and sets `shipAction: skip` / `shipStatus: skipped`.
+- **Commit configured delivery artifacts and Skip shipping**
+- **Skip delivery commit and Create PR** (PR will lack delivery artifacts; use only when delivery commit was already done or explicitly unwanted)
+- **Separate gates / Pause** (restores the legacy close-then-ship two-prompt flow)
+
+When `fullMode` is true, Recommended (interactive index 0) = **Commit configured delivery artifacts and Create PR** (primary option 1). When `fullMode` is false, interactive Recommended is **More options… → Commit configured delivery artifacts and Skip shipping** unless the user explicitly wants a PR without delivery artifacts; **auto-gate index 0** is skip delivery commit **and** skip shipping (mechanical; not a numbered interactive option). Do not auto-create a PR when `fullMode` is false.
+
+**Mechanical mapping (primary + overflow):** run close phase (G2-delivery per choice, MEMORY + changelog, `status: completed`, `shipStatus: pending`) then ship phase (`shipAction` from the paired intent). **Create PR** and **Push only** (primary 1–2) plus overflow **Skip delivery commit and Create PR** dispatch `ws-ship-pr`. Overflow **Commit configured delivery artifacts and Skip shipping** skips remote ship after close. **Separate gates / Pause** does not advance; user may resume with separate close then ship menus. Auto-gate not-`fullMode` closes without G2-delivery and sets `shipAction: skip` / `shipStatus: skipped`.
 
 G2-delivery stages only artifacts enabled by `defaults.deliveryCommitArtifacts` — algorithm and toggle map in [`ARTIFACTS.md`](../../ws-spec-to-pr/ARTIFACTS.md) § Step 8 (refined-plan fallback preserved when `includeRefinedPlan` is true; delivery result not staged by default).
 
-After successful close (options 1–4): MEMORY.md / ws-self-learning sweep, then `ws-changelog`. Set `status: completed`, `endedAt`, `shipStatus: pending`. Optional Phase B plan-dir temp delete (see [`artifact-cleanup.md`](../../ws-spec-to-pr/protocols/artifact-cleanup.md)).
+After successful close (any close-advancing choice): MEMORY.md / ws-self-learning sweep, then `ws-changelog`. Set `status: completed`, `endedAt`, `shipStatus: pending`. Optional Phase B plan-dir temp delete (see [`artifact-cleanup.md`](../../ws-spec-to-pr/protocols/artifact-cleanup.md)).
 
 `ws-spec-index sync` on close uses **implementation** evidence only — not merged/shipped.
 
 Pass the selected ship intent into `ws-ship-pr` as `shipAction: create-pr|push-only|skip` with `workflowMode: true`, `stopBeforeFixPr: true`. Update `shipStatus` per outcome (`pushed`, `pr-open`, `skipped`, `stopped`). `ws-ship-pr` in `workflowMode` does **not** own delivery commit or workflow completion.
 
-**Legacy separate menus (option 5 only):**
+**Legacy separate menus (Separate gates / Pause only):**
 
 *Close implementation:* (1) Commit configured delivery artifacts, (2) Skip delivery commit, (3) Pause.
 
-*Ship after close:* (1) Create PR, (2) Push only, (3) Skip PR, (4) Skip shipping entirely, (5) Pause.
+*Ship after close:* primary — (1) Create PR, (2) Push only, (3) More ship options…; overflow — (1) Skip PR, (2) Skip shipping entirely, (3) Pause.
 
 ---
 

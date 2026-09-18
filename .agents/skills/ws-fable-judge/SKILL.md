@@ -1,7 +1,7 @@
 ---
 name: ws-fable-judge
 description: Adversarial audit of claimed work against git diffs and re-run verifications. Trigger after claimed completion, during local review, or before merge.
-version: 0.4.35
+version: 0.4.36
 invocation_names:
   - ws-fable-judge
   - /ws-fable-judge
@@ -67,7 +67,7 @@ The shipping policy is a strict tri-state: `false`, `"refuted"` (packaged defaul
 
 When an audit produces a **`REFUTED`** or **`VERIFIED WITH CAVEATS`** verdict (due to weakened checks, false completion, scope creep, unauthorized action, or divergence between claims and diffs):
 
-1. **Mandatory Memory Entry**: Create a new reflection file in `{sharedDir}/memory/YYYY-MM-DD-fable-[slug].md` via [`ws-self-learning`](../ws-self-learning/SKILL.md).
+1. **Mandatory Memory Entry**: Create a new reflection file in `{memoryDir}/memory/YYYY-MM-DD-fable-[slug].md` via [`ws-self-learning`](../ws-self-learning/SKILL.md).
 2. **Severity**:
    - `Severity: Critical` for `REFUTED` verdicts (frauds, broken assertions, regressions).
    - `Severity: High` for `VERIFIED WITH CAVEATS` (unverified scope, boundary creep, friction).

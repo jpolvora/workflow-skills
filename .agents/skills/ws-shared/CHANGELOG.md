@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-09-18 13:30] Agent: Muse Code
+- **Prompt**: Change default CHANGELOG.md target to project root folder; add config key for MEMORY files target dir, default also repo root.
+- **Done**: New `rules.memoryDir` (default `.`) + `rules.changelogFile` default `CHANGELOG.md`; `resolveEffectiveMemoryPaths`/`resolveChangelogPath` in Node SoT + Python mirror with legacy ws-shared fallback (configured wins with entries, else legacy with entries, else configured); `{memoryDir}` token in tools.md/config-resolution.md; retargeted self_learning, check_memory_conflict, build_dispatch_context, monitor_snapshot, check_spec_memo, auto_configure; installer stops fresh-seeding legacy MEMORY/CHANGELOG (preserves existing, never writes root); GUI + INTERVIEW + hub docs + README + AGENTS.md + FEATURES.md + wiki synced; new test/test-memory-dir-resolution.js registered; integrity regenerated; site/wiki rebuilt.
+- **Result**: 45 suites green incl. install --local, harness-clean 0 findings, doc-sync, wiki, hybrid-consumer-root (legacy fallback), backends, layout, monitor, dispatch-provenance. Learning: recorded trap 2026-09-18-eval-regenerator-deletes-hand-evals. Bumped 0.4.35 → 0.4.36.
+
+### [2026-09-18 12:46] Agent: Muse Code
+- **Prompt**: Investigate `request_user_input` failure `question resume-select must have 2-3 options, got 4`, then review and apply fix.
+- **Done**: Rewrote setup.md Unfinished Workflow Check as two-stage resume gate (Q1 intent 2 options, Q2 pick paged at most 3 with More workflows, N==1 shortcut); added gates.md rule 8 portable ceiling (at most 3 options per question, chunk don't truncate, Cancel via dismiss); tightened tools.md user-gate row and root AGENTS.md snapshot; added test/test-user-gate-option-cap.js (registered in tests + tests:remote); regenerated + verified integrity.
+- **Result**: New test failed 8 assertions pre-fix, passes post-fix; resume-gate, feature-branch-gate, score-refine, quality-gates, reviewer-aligned, convergence, transition-continuation, research-pipeline, check-harness-links, ws-shared-layout, runtime-portability, doc-sync all green; harness-clean 0 findings. Learning: recorded trap 2026-09-18-user-gate-option-cap.
+
 ### [2026-09-17 12:57] Agent: muse-spark
 - **Prompt**: /ship-pr (standalone): ship top-nav removal + portable python test fixes as PR #342, converge review threads, merge.
 - **Done**: Committed feat(docs) nav removal + fix(test) python resolution (12 files) + 2 review-fix commits; answered and resolved 2 reviewer threads; merged #342 after all checks green.

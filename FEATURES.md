@@ -172,7 +172,7 @@ The suite accumulates project knowledge instead of relearning it each session.
 
 | Capability | Skill | Storage |
 |------------|-------|---------|
-| Anti-regression traps: consult before planning, record after discovering | `ws-self-learning` | `{sharedDir}/MEMORY.md` + `memory/*.md` |
+| Anti-regression traps: consult before planning, record after discovering | `ws-self-learning` | `{memoryDir}/MEMORY.md` + `memory/*.md` (default repo root; legacy `{sharedDir}` fallback) |
 | Failure reflection hook — forbids `Learning: N/A` when session friction is high | `ws-self-learning` | same |
 | Path-pattern querying (`--match-paths`) so traps surface only for relevant files | `ws-self-learning` | same |
 | Fail-closed compile: exit 1 and skip rewriting `MEMORY.md` when any entry lacks a dated heading or DO NOT + INSTEAD DO; Python twin execs the Node SoT | `ws-self-learning` | same |
@@ -247,10 +247,10 @@ Project settings live in consumer-owned `.agents/skills/ws-shared/config.json` (
 | `dagThresholds` | Complexity limits that decide sequential versus parallel DAG |
 | `defaults` | Execution mode, test globs, 32 KB context budget, `minVerifyScore` (1–10, default 9), optional parallel verify/review, `gateGranularity` (`step` by default or `phase`), adaptive convergence policy, delivery artifacts, `modelsPreset` / `modelPresets` bundles, optional `stepModels` map, `reviewJury` / `providerCompat` / `contextHygiene`, and legacy per-phase model identifiers |
 | `plans` / `reviews` / `preview` | Artifact roots, `plans.enforceSpecPrefixOrdering` (default false), diagnostics root, and `preview.dryRunCommand` (consumer local dry-run for `/ws-preview`; set via `--section preview`) |
-| `rules` | Guardrail paths: harness, senior developer (and karpathy alias), stack file, changelog file |
+| `rules` | Guardrail paths: harness, senior developer (and karpathy alias), stack file, changelog file, memory dir |
 | `invariants` | Project-level architectural assertions plus `skipQualityGates` |
 | `fable` | Master toggle plus `autoAudit`, `autoDetectDomain`, `auditVerdictsBlockShip` |
-| `specMemo` / memory flags | Dual routing: `enableMemoryFiles` (local `{sharedDir}/MEMORY.md`) and `enableSpecMemoIntegration` (external vault). `specMemo.*` holds MCP/CLI paths; `ws-spec-memo` is harness bridge only; day-to-day vault ops use `ws-memo` |
+| `specMemo` / memory flags | Dual routing: `enableMemoryFiles` (local `{memoryDir}/MEMORY.md`) and `enableSpecMemoIntegration` (external vault). `specMemo.*` holds MCP/CLI paths; `ws-spec-memo` is harness bridge only; day-to-day vault ops use `ws-memo` |
 
 **Per-phase model switching:** the orchestrator session always runs under the active model. Named presets (`modelsPreset` / `modelPresets`), optional per-step/role `stepModels`, and legacy phase keys resolve the subagent model for standard `dispatch-agent` dispatches only, with graceful fallback when a switch fails. Fix-PR resolves `fixPrPlan` through `reviewerModel` and `fixPrExec` through `executionModel`; both bypass numeric Step 9, which remains outer-only. Lite ignores role switches and runs plan then execute inline.
 

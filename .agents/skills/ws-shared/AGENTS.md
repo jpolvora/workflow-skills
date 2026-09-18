@@ -6,9 +6,9 @@ Project-specific data stays at this directory root:
 
 - `config.json`
 - `STACK.md`
-- `MEMORY.md` and `memory/*`
-- `CHANGELOG.md`
 - installer metadata and local caches
+
+`MEMORY.md` + `memory/*` and `CHANGELOG.md` live at their configured locations (`rules.memoryDir` / `rules.changelogFile`, both defaulting to the repo root); legacy copies under this directory remain as fallback when they hold entries.
 
 Managed runtime files are under [`runtime/`](runtime/), and setup-only seed files are under [`templates/`](templates/). A global-hybrid install may contain only this entrypoint and consumer-owned configuration; its managed runtime is resolved from `{globalSkillsRoot}/ws-shared/runtime/`.
 

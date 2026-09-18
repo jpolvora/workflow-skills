@@ -1,7 +1,7 @@
 ---
 name: ws-plan-interview
 description: Interactive plan interrogation engine — audits implementation plans to uncover hidden assumptions, resolve ambiguities, and refine technical designs.
-version: 0.4.35
+version: 0.4.36
 disable-model-invocation: true
 invocation_names:
   - plan-interview
@@ -38,7 +38,7 @@ Workflow (ws-spec-to-pr Step 2): dispatched when the orchestrator does not skip 
 
 1. **Project-context sweep first** — before asking or applying an ungrounded default, search project sources for the best answer (as applicable to the gap):
    - Related specs: `{specsDir}/**/*.spec.md`, `{plansDir}/**/step-00-*.spec.md`, current US `step-00`
-   - Memory: `{sharedDir}/MEMORY.md` and `{sharedDir}/memory/*` (honor **DO NOT** / **INSTEAD DO**)
+   - Memory: the effective `{memoryDir}/MEMORY.md` and `{memoryDir}/memory/*` (honor **DO NOT** / **INSTEAD DO**)
    - Codebase and established design patterns (layers from `config.json`)
    - Architecture / domain: `domain.architectureSpec`, `domain.glossaryFile`, `rules.stackFile`, ADRs, schema when present
    - Rules / guides: `config.json` → `rules.*`, hub `AGENTS.md`, configured standards skills

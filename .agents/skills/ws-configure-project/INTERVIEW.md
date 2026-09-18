@@ -34,14 +34,14 @@ Scan consumer **repo root** (not this skill package alone):
 | Top-level `src/`, `web/`, `tests/` | `stack.backend.srcDir` / frontend `sourceDir` / test paths |
 | `.agents/skills/ws-shared/STACK.md` (preferred) | `rules.stackFile` → that path |
 | Root `STACK.md` / `stack.md` (legacy optional) | Keep only if user already uses it; do not create or require |
-| `.agents/skills/ws-shared/CHANGELOG.md` (preferred) | `rules.changelogFile` → that path |
-| Repo-root `CHANGELOG.md` | Only if user sets `rules.changelogFile: "CHANGELOG.md"` |
+| Repo-root `CHANGELOG.md` (preferred default) | `rules.changelogFile` → `CHANGELOG.md` |
+| `.agents/skills/ws-shared/CHANGELOG.md` with entries | Keep as legacy fallback; offer move to the configured path |
 | Existing repo-root `specs/` | Keep `plans.specsDir: "specs"` |
 | No specs dir yet | Suggest `plans.specsDir: ".agents/specs"` |
 | Fable skills in `{skillsRoot}` | Suggest `fable.enabled: true` (**Recommended**), `autoAudit: true`, `autoDetectDomain: true`, `auditVerdictsBlockShip: "refuted"` |
 | Session host exposes subagent model identifiers | Offer those portable identifiers as `defaults.modelPresets` field values and optional `defaults.stepModels` overrides; still allow empty legacy phase keys. Mention `"current"` and unknown-`modelsPreset` fallback to preset `default`. If the host exposes no identifiers, recommend sample keys from `config.json.example` or Skip. |
 | Existing `config.json` placeholders `<…>` | Treat as gaps |
-| Existing `{sharedDir}/memory/` or `{plansDir}/` with content | Suggest **Import legacy tree** when enabling vault |
+| Existing `{memoryDir}/memory/` (or legacy `{sharedDir}/memory/`) or `{plansDir}/` with content | Suggest **Import legacy tree** when enabling vault |
 | `memo` or `npx spec-memo` on PATH | `specMemo.cli` → `memo` (Recommended) |
 | CLI missing | Recommend `npm install -g spec-memo` or `specMemo.cli: "npx -y spec-memo"` before enable |
 | Non-empty `preview.dryRunCommand` already set | Keep current (**Recommended** unless `--force`) |
@@ -162,7 +162,7 @@ Read/Grep in this order (stop early when a high-confidence recipe is found; stil
 3. Repo `scripts/`, `tools/`, `.agents/scripts/` — filenames matching those patterns
 4. Consumer-owned skills under project `.agents/skills/` and `{globalSkillsRoot}/` (skip packaged `ws-preview` / `ws-code-review` SoT bodies used only as docs)
 5. Harness / instruction surfaces (repo-relative):
-   - Root `AGENTS.md`, `{sharedDir}/AGENTS.md`, `{sharedDir}/STACK.md`, `{sharedDir}/MEMORY.md`, `{sharedDir}/memory/*.md`
+   - Root `AGENTS.md`, `{sharedDir}/AGENTS.md`, `{sharedDir}/STACK.md`, `{memoryDir}/MEMORY.md`, `{memoryDir}/memory/*.md`
    - Root `README.md`, `FEATURES.md` (when present)
    - `config.json` → `rules.*` path values that exist on disk (e.g. `rules.harness`, `rules.seniorDeveloper`, other consumer rule files)
    - Host-private rule folders only when already present in the consumer tree (do not require or create them); treat as additional Grep targets if found
@@ -237,7 +237,8 @@ Configure memory storage backends: local markdown files (`enableMemoryFiles`) an
 
 | Key | Type | Default | Meaning |
 |-----|------|---------|---------|
-| `enableMemoryFiles` | boolean | `true` | When `true`, write traps/learnings to `{sharedDir}/memory/*.md` and `MEMORY.md` |
+| `enableMemoryFiles` | boolean | `true` | When `true`, write traps/learnings to `{memoryDir}/memory/*.md` and `{memoryDir}/MEMORY.md` (default repo root; legacy `{sharedDir}` fallback) |
+| `rules.memoryDir` | string (dir) | `.` | Local memory target dir holding `MEMORY.md` + `memory/` |
 | `enableSpecMemoIntegration` | boolean | `false` | When `true`, route memory ops to `spec-memo` MCP server / CLI |
 | `specMemo.cli` | string | `memo` | CLI launcher (`memo` or `npx -y spec-memo`) |
 | `specMemo.bootstrapOnSession` | boolean | `true` | Recommend `/ws-memo` bootstrap at session start when enabled |
@@ -247,10 +248,10 @@ Configure memory storage backends: local markdown files (`enableMemoryFiles`) an
 
 | Signal | Suggest |
 |--------|---------|
-| `{sharedDir}/memory/` or `{plansDir}/` populated | Offer **Import legacy tree** on spec-memo enable |
+| `{memoryDir}/memory/` (or legacy `{sharedDir}/memory/`) or `{plansDir}/` populated | Offer **Import legacy tree** on spec-memo enable |
 | `check_spec_memo.cjs` → `pollution` non-empty | Mention import + write-block hook when spec-memo vault is sole backend |
 | `cli.available: false` | **Local files only (Recommended)** until CLI installed |
-| Memory backend selection? | **Local markdown files only (Recommended)** / **Spec-memo integration only** / **Both (dual-mode)** / **None (disabled)** |
+| Memory backend selection? | Q1 intent (≤3): **Local markdown files only (Recommended)** / **Spec-memo vault involved** / **None (disabled)**; Q2 only when vault: **Spec-memo integration only** / **Both (dual-mode)** |
 
 **Preflight (mandatory before gates):**
 
