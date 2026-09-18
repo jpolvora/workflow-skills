@@ -181,7 +181,7 @@ Do **not** recreate `.agents/dev-harness/` or any extra `SKILL.md` for this cont
 
 Hub files (`config.json`, `tools.md`, `gates.md`) are not skills. Specs keywords → `{sharedDir}/autoload.md` § Specs vocabulary + router only (not that file’s Always-applied table). Config missing → `user-gate` → `ws-configure-project` (do not load that skill unless running the wizard). Duplicate `ws-*` ids: § [Global vs local `ws-*` (this repo only — mandatory)](#global-vs-local-ws--this-repo-only--mandatory).
 
-`user-gate`: host structured choice (≥2 options, recommended first); markdown fallback; cancel → STOP, never infer yes.
+`user-gate`: host structured choice (2–3 options per question, recommended first; chunk longer lists); markdown fallback; cancel → STOP, never infer yes.
 
 ### 1. Delivery gate & surgical diffs (`ws-senior-developer`)
 

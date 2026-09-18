@@ -189,19 +189,17 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
      ```
      Choosing Option 1 sets `scoreAndRefine: true` and dispatches Score Analysis / 2nd Pass execution (wide-context overengineering sweep per [`gates.md`](gates.md) § Score & Refine).
    - **Implementation closed, shipping pending:** If `status: completed` but `shipStatus` is `pending`, `pushed`, or `pr-open` (or Step 8 in `completedSteps` without terminal ship), treat as **unfinished** — resume at ship gate or Step 9 (same as active resume for that `currentStep`).
-   - **Unfinished Workflow Check:** Filter `status: active` or `status: paused`, **or** `status: completed` with non-terminal `shipStatus`. Present as **selectable list** via user-gate:
+   - **Unfinished Workflow Check:** Filter `status: active` or `status: paused`, **or** `status: completed` with non-terminal `shipStatus`. Present via `user-gate` in two stages so every question carries **at most 3 options per question** ([`gates.md`](gates.md) rule 8):
+     - **Q1 — intent** (2 options): **Resume an existing workflow** (Recommended) / **Start new workflow from zero**. Dismiss → Cancel (HS-1); never add Cancel as a numbered option here.
+     - **Q2 — pick** (only when Q1 resumes and `N ≥ 2`): one workflow per option, at most 3 per question. Question text lists the page detail lines; options are short pick labels:
      ```text
-     Found {N} unfinished workflow(s):
-     
-     1. US {us} — {slug} — Step {currentStep} — started {startedAt} — [{autoMode ? 'AUTO' : 'normal'}] (Recommended)
+     Resume which workflow (page {p} of {P})?
+
+     1. US {us} — {slug} — Step {currentStep} — started {startedAt} — [{autoMode ? 'AUTO' : 'normal'}]
      2. US {us} — {slug} — Step {currentStep} — started {startedAt} — [{autoMode ? 'AUTO' : 'normal'}]
-     
-     Options:
-     - Resume workflow #1 (Recommended)
-     - Resume workflow #2
-     - Start new workflow from zero
-     - Cancel for now
      ```
+     When workflows remain beyond the current page, the last slot is **More workflows…** (next page); the final page lists only workflows (≤3). Every workflow stays reachable; dismiss re-presents per HS-1.
+     - When Q1 resumes and `N == 1`, skip Q2 and resume that workflow directly (name it in the progress board).
    - **Non-Existent State:** If no matching completed or unfinished workflow exists, start fresh from **Zero** (Step 0).
 4. Resume: load `{workflow-id}.state.json` (machine SoT with embedded handoffs), `ac-ledger.json`, and `git log -5 --oneline` on the working branch. Retain `state.modelsPreset` if present so subsequent steps continue using the overridden preset without requiring the parameter to be re-passed. Do not reload every `step-0*.md` up front. Then `status: active`, skip bootstrap (including **5b Feature branch gate** — do not re-run), jump to `currentStep` gate.
 4b. **Branch resume (HEAD mismatch):** after skip-bootstrap, if `git rev-parse --abbrev-ref HEAD` ≠ `state.branch` → STOP. `user-gate`:

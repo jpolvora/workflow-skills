@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-18 12:46] Agent: Muse Code
+- **Prompt**: Investigate `request_user_input` failure `question resume-select must have 2-3 options, got 4`, then review and apply fix.
+- **Done**: Rewrote setup.md Unfinished Workflow Check as two-stage resume gate (Q1 intent 2 options, Q2 pick paged at most 3 with More workflows, N==1 shortcut); added gates.md rule 8 portable ceiling (at most 3 options per question, chunk don't truncate, Cancel via dismiss); tightened tools.md user-gate row and root AGENTS.md snapshot; added test/test-user-gate-option-cap.js (registered in tests + tests:remote); regenerated + verified integrity.
+- **Result**: New test failed 8 assertions pre-fix, passes post-fix; resume-gate, feature-branch-gate, score-refine, quality-gates, reviewer-aligned, convergence, transition-continuation, research-pipeline, check-harness-links, ws-shared-layout, runtime-portability, doc-sync all green; harness-clean 0 findings. Learning: recorded trap 2026-09-18-user-gate-option-cap.
+
 ### [2026-09-17 12:57] Agent: muse-spark
 - **Prompt**: /ship-pr (standalone): ship top-nav removal + portable python test fixes as PR #342, converge review threads, merge.
 - **Done**: Committed feat(docs) nav removal + fix(test) python resolution (12 files) + 2 review-fix commits; answered and resolved 2 reviewer threads; merged #342 after all checks green.

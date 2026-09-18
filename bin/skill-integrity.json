@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "72f0a65b4cfadeee389f014a28ff06ac42822fa7b42b74f905fdbab2240f9cab",
+  "fullPackageDigest": "7c347c7d707b76116570e1ece466c304bfbf3e26afebcb5a7908bc961c0c78e2",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -17,7 +17,7 @@
       "runtime/config.schema.json": "e17991de38dc799177e9794bc5072c8a958b472c890f6455688894e8450fbdac",
       "runtime/CROSS-PLATFORM.md": "1790b12b2c2add0942a2544c2c8e75f1aa794410e6861b84c052583954074d27",
       "runtime/evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
-      "runtime/gates.md": "218e30a4129ad09ac618988a52c33c42062cdf1f8689358392897a179cdf2c26",
+      "runtime/gates.md": "73e59066987c21f98e0b5e54bfed325191199fdb00cb1bf54e194de9bc790dd4",
       "runtime/host-dispatch.md": "7bf9d7963adc7d7143ac31b219b6872d4c07b9832064dbab8178b69a1cf2a1e5",
       "runtime/hub-layout.json": "2d018faa3180d2a2b25cdd7fd15c5cf7c2390f496d3ebe7c1c01604d3ce2f8ba",
       "runtime/plan-index.schema.json": "36df14cc8d9ba17413c456baf6550662b6218465cdf28d9981d624dac9ab4c7f",
@@ -41,7 +41,7 @@
       "runtime/scripts/utf8_stdio.py": "b9599c57d16f7e1d05aef96fc4f5768ae4d54e3d32c3b5a8007e0e5f3f1caa31",
       "runtime/scripts/validate_json_schema.cjs": "db5bc07614c6496ae92ad7356b6f4c26cb8df5dd72681cfa228f1c76502bed61",
       "runtime/scripts/workflow_state.cjs": "9a25dadcf2f4d51b1d5eb2c1081e32f598fac695adb29d9bbbd7663b3edead5c",
-      "runtime/setup.md": "39f24667dcbdf499650dfd3f8b1f54e26632710cece4e9ba55ebc69e152703fd",
+      "runtime/setup.md": "d16de96b48337962c000af8222085108510b65322e1eda38fc93ea5b1717b58d",
       "runtime/skill-dependencies.json": "5f1ef3c003950ac1f1f03e090671989792cc219f220bb15ee6761eee63bbbdfc",
       "runtime/stacks/abp-angular.md": "afd0426d06b2e2cd048fae3aa9a120ebed221d261713e3373840ef01f5ac629d",
       "runtime/stacks/nextjs-react.md": "32526a07aa999291084ac4f89711b023882b01a8ca4e9153f01d58b3ea6bfeac",
@@ -49,14 +49,14 @@
       "runtime/stacks/typescript-node.md": "fb9fb4d49e8f1eb79ced7be656a5ff6a2a2dcfd784a50b77c2766a98b52a73ab",
       "runtime/step-artifact.schema.json": "85a1674590d900df2bbbf818d9f4a4c5ccaf004bdc4a1523fe2c28e4dab554a2",
       "runtime/telemetry.schema.json": "b8d0256e1558524c9f700b19bad265b2aa92a5aa290c6fb536c097793e77eb76",
-      "runtime/tools.md": "583eedf9a23040581d632891a8824c0d3301e71206903d71e79b761014f994e9",
+      "runtime/tools.md": "0e52528e783dff3ec83a8a9f947ef5e085fd4652b3a5cc8afe0bb6fc04e3d0dc",
       "runtime/workflow-state.schema.json": "5e3b8b2eb8fb7d15155b2a989f983a562378c6dbee70d8e625ec9233e6832247",
       "templates/CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
       "templates/config.json.example": "7aee95c482f6c28f945eefeb8a46166130a359dd1ea889f70bf2de33dc7f05b4",
       "templates/MEMORY.md.template": "5b67274d91cd4507fecd8aa9e3c2ee10d2f7fb90f0d8eb35fb575089bc5664fb",
       "templates/STACK.md.example": "fb27d90c9fe3462b9d7f06484525703c69fe0e098150dd44c28096a7a2856ca3"
     },
-    "skillDigest": "3ab9466ab1cd026e1555f68792290a9b68ea80e3d86493592bd908edea67c6f9"
+    "skillDigest": "31410de74973599f8c289772df4d67176398b09eec3e92a80cd5147738c6505d"
   },
   "packageVersion": "0.4.35",
   "skills": {
