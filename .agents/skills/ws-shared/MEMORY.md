@@ -15,6 +15,51 @@ To add new learnings, create a separate markdown file under `.agents/skills/ws-s
 - **DO NOT**: Render one user-gate question with an unbounded or 4+ option list (resume pickers, combined menus), or add Cancel as a numbered option where dismiss already means HS-1.
 - **INSTEAD DO**: Keep at most 3 options per question (gates.md rule 8): ask intent first, then page picks with More workflows navigation; N==1 resumes directly; Cancel stays dismiss (HS-1). Lock the template with test/test-user-gate-option-cap.js and keep every documented branch reachable across the chunked stages.
 
+### [2026-09-18] Token contracts must state effective resolution when a fallback exists
+- **Layer**: `application`
+- **Module**: `ws-shared/runtime/tools.md`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/tools.md, .agents/skills/ws-check-harness/SKILL.md`
+- **Scenario / Context**: A path token (example: `{memoryDir}`) gains a legacy fallback (effective dir), but the token table still documents mechanical expansion to the configured path. Agents following the table miss legacy entries on read and corrupt the effective source on write. A related gap: token references added to skill prose without extending every token map (doc map + executable checker mirror), so audits silently skip them.
+- **DO NOT**: Document a token with fallback as mechanical configured-path expansion, and do not add token references without extending all maps.
+- **INSTEAD DO**: State the effective-resolution precedence in the token contract (configured wins with entries, else legacy with entries, else configured), and extend the doc map and the executable checker TOKENS mirror together.
+
+### [2026-09-18] subagent dispatch turn-continuation after verbose preview
+- **Layer**: `harness`
+- **Module**: `ws-spec-to-pr orch dispatch`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/plans/*`
+- **Scenario / Context**: A Step 6 review subagent printed the VerboseMode `Starting step N` preview, then ended its turn with an in_progress JSON block and zero tool calls, producing no report. The orch detected the missing artifact on disk, re-dispatched with an explicit turn rule, and the retry completed. Root cause: the prompt ordered preview-before-tools but never forbade ending the turn after the preview, and the OUTPUT FORMAT example looked like a valid final message.
+- **DO NOT**: Dispatch a subagent with a verbose-preview instruction plus an output-format example and no turn-continuation rule; do not accept a step result whose summary is only the preview text — verify the artifact exists on disk before finish.
+- **INSTEAD DO**: Add a structural turn rule to every dispatch: the child's FIRST response must contain BOTH the preview text AND at least 2 tool calls (a response with no tool calls ends the turn = failure); require the final message to start with DONE plus completed/failed step-output JSON; verify the artifact exists on disk before finish; re-dispatch once when a child ends with no tool calls (observed 2/6 dispatches even with a same-turn rule).
+
+### [2026-09-18] Stale test expectations after intentional default change
+- **Layer**: `tests`
+- **Module**: `test/*`
+- **Severity**: `High`
+- **PathPattern**: `test/*.js`
+- **Scenario / Context**: A PR intentionally changes a default path or behavior (example: framework-trap seeding moves from `ws-shared/` to the repo-root effective memory dir) and updates the implementation plus new-contract tests, but an older test file asserting the legacy location is left untouched. CI fails on HEAD while the same file passes on the base branch.
+- **DO NOT**: Treat a failing-but-unmodified test file as baseline noise, and do not revert the intentional feature to satisfy the stale expectation.
+- **INSTEAD DO**: Classify via base-vs-head: pass on base + fail on head means diff-regression by stale expectation. Update the old test to the new contract in the same fix batch, and assert the legacy location stays empty to lock the contract against silent dual-write regressions.
+
+### [2026-09-18] Restructured contracts need a quoting-file sweep
+- **Layer**: `application`
+- **Module**: `ws-shared/runtime/gates.md`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/**/*.md`
+- **Scenario / Context**: A gate contract was restructured (example: Step 8 five-option menu chunked into primary + overflow), but dispatch tables, protocol docs, and FAQ entries quoting the old shape were left stale — each stale copy re-introduces the exact stall the restructure fixed.
+- **DO NOT**: Restructure a contract file without sweeping its quoters, and do not trust the reviewer's file list as complete — run your own grep for the retired phrasing.
+- **INSTEAD DO**: After any contract restructure, grep the skills tree for the retired tokens (old menu text, option numbers, combined-menu phrasing) and reconcile every quoter (dispatch tables, protocols, FAQ) in the same batch; assert zero residual hits before committing.
+
+### [2026-09-18] Moving generated-file defaults must move ignore coverage too
+- **Layer**: `application`
+- **Module**: `ws-cleanup`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-cleanup/references/PATTERNS.md, .agents/skills/ws-cleanup/scripts/list_disposable.cjs`
+- **Scenario / Context**: A default output location moved (example: generated MEMORY.md + memory/ from the managed hub dir to the repo root). The old location was covered by the managed hub .gitignore, which cannot reach the new parent dir, and the installer never writes repo-root files — so fresh consumers showed generated files as untracked with no suggestion mechanism listing them.
+- **DO NOT**: Move a generated-file default without updating ignore coverage, and do not fix only the advisory doc while the hardcoded suggestion mirror in the cleanup script still omits the new paths.
+- **INSTEAD DO**: Ship the new ignore patterns in both mirrors together (advisory PATTERNS.md fence + list_disposable.cjs suggestPatterns) and lock them with a test assertion on the emitted suggestions.
+
 ### [2026-09-18] Eval bulk regenerator deletes hand-added evals
 - **Layer**: `Tests`
 - **Module**: `SkillEvals`
@@ -23,6 +68,15 @@ To add new learnings, create a separate markdown file under `.agents/skills/ws-s
 - **Scenario / Context**: When updating eval assertions (e.g. path-token renames), refreshing eval JSON files with the bulk generator.
 - **DO NOT**: Run `node bin/generate-skill-evals.js` to refresh evals — the generator is stale relative to committed evals.json files and deletes hand-added eval cases (observed: 233 lines dropped across 7 unrelated files, e.g. ws-fix-pr ids 3-4).
 - **INSTEAD DO**: Hand-edit the specific evals.json assertions, update the generator source strings identically when they exist there, and verify with `git diff --stat` that only intended eval files changed; revert collateral with `git checkout -- <paths>`.
+
+### [2026-09-18] Anchor root gitignore suggestions to the repo root
+- **Layer**: `application`
+- **Module**: `ws-cleanup`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-cleanup/references/PATTERNS.md, .agents/skills/ws-cleanup/scripts/list_disposable.cjs`
+- **Scenario / Context**: Root-targeted gitignore suggestions were emitted unanchored (`MEMORY.md`, `memory/`), so accepting them ignored same-named paths at every depth (example: `src/memory/`) and legitimate source silently never got committed.
+- **DO NOT**: Suggest bare filenames or dir names for root-targeted ignores, and do not add suggestion patterns without asserting their exact anchored form in tests.
+- **INSTEAD DO**: Anchor root suggestions with a leading slash (`/MEMORY.md`, `/memory/`) in both the advisory doc fence and the executable suggestion mirror, and assert the anchored strings in the cleanup test.
 
 ### [2026-09-17] Windows PowerShell strips JSON CLI args
 - **Layer**: `devops`

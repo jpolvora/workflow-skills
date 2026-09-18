@@ -1,7 +1,7 @@
 ---
 name: ws-testing
 description: Pre-PR test suite executor — plans and executes unit, integration, E2E, coverage, and optional mutation-testing batteries with quality verification.
-version: 0.4.36
+version: 0.4.37
 disable-model-invocation: true
 invocation_names:
   - testing
