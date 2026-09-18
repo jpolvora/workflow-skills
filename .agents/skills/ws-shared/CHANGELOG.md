@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-18 16:45] Agent: Muse Code
+- **Prompt**: us-347 close (ws-goal-fix-pr orchestrator dispatch).
+- **Done**: Verify 10/10, review clean, testing PASS; delivery commit with refined plan; status completed, ship to PR next.
+- **Result**: All 8 ACs delivered, product diff 61 files (+466/-178), v0.4.37. Learning: traps dag-disabled-no-dispatch-no-stub, index-rebuild-diff-before-accept, index-hash-after-manual-edit.
+
 ### [2026-09-18 15:35] Agent: Muse Code
 - **Prompt**: Step 9 goal-fix-pr convergence for PR 346.
 - **Done**: 3 fixPrPlan to fixPrExec batches closed 13 threads (stale AC8 diff-regression, option-cap chunking, stale Step 8 refs); commits 8c597a04, 256cd5f9, 46200d50; CI 3 SUCCESS; merged PR 346 at 51b31016; issue 344 close-looped (left open); orch audit verified merge/threads/scope/traps; outer finish, Phase A tag cleanup, index rebuild.

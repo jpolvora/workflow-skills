@@ -51,6 +51,42 @@ To add new learnings, create a separate markdown file under `.agents/skills/ws-s
 - **DO NOT**: Restructure a contract file without sweeping its quoters, and do not trust the reviewer's file list as complete — run your own grep for the retired phrasing.
 - **INSTEAD DO**: After any contract restructure, grep the skills tree for the retired tokens (old menu text, option numbers, combined-menu phrasing) and reconcile every quoter (dispatch tables, protocols, FAQ) in the same batch; assert zero residual hits before committing.
 
+### [2026-09-18] Restated ownership needs a whole-file sweep, not a section sweep
+- **Layer**: `application`
+- **Module**: `ws-* skill contracts`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-*/SKILL.md`
+- **Scenario / Context**: `ws-goal-fix-pr` states batch-worker ownership in three sections (Steps, Round-batch dispatch, Subagent contract). Two fix-pr batches swept only the dispatch section and each missed same-class unconditional statements elsewhere (telemetry bullet, then the Learning-ownership clause in Steps + Ownership split + Subagent contract), causing three review waves on one PR. Each wave's fix was correct; the sweep scope was wrong.
+- **DO NOT**: Scope a proactive sweep to the section you restructured when the contract restates the same ownership or rule in other sections — a section-scoped sweep guarantees a follow-up wave for each restatement you skipped.
+- **INSTEAD DO**: When a contract restates ownership in multiple sections, grep the ENTIRE file for the owner tokens (`batch worker`, `dispatched worker`, `worker-reported`, `every batch`) and render an explicit fix-or-skip verdict on every hit in the same batch; assert zero residual unconditional hits before committing.
+
+### [2026-09-18] refresh the plans index hash after manual state edits
+- **Layer**: `harness`
+- **Module**: `ws-spec-to-pr orch / plans index`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/plans/index.json`
+- **Scenario / Context**: Manual `state.json` edits (flag flips, commits append) changed the state sha without touching the plans index, so pre-advance 6 failed fail-closed with "plans index state hash mismatch". The mismatch was correct behavior — the orch had skipped the sync step.
+- **DO NOT**: Hand-edit `state.json` and proceed to a pre-advance check without refreshing the index row; never run a full rebuild-index to fix one row (it can prune legacy rows — see companion trap).
+- **INSTEAD DO**: After any manual state edit, update that workflow's `stateSha256` + `updatedAt` in `.agents/plans/index.json` surgically, then re-run the pre-advance check.
+
+### [2026-09-18] re-sweep product dirt after verify before review
+- **Layer**: `harness`
+- **Module**: `ws-spec-to-pr orch G2 / review preflight`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/commit_g2_code.cjs`
+- **Scenario / Context**: Step 4 recorded `files_touched`, but `test/package.json` was modified afterwards (test tgz re-pointed at the bumped version during verify). G2-code staged only the recorded set, leaving one workflow product file uncommitted — which the fail-closed Step 6 dirty preflight would have STOPped on. Caught by an orch `git status` sweep and committed as a supplement with AC linkage.
+- **DO NOT**: Treat the step-4 `files_touched` list as frozen through verify; never enter Step 6 review with uncommitted workflow product files.
+- **INSTEAD DO**: After verify and before review, re-sweep `git status` for product-path dirt; when the stage set missed workflow files, commit the supplement path-scoped with the same message family and link its sha to the AC rows before the preflight.
+
+### [2026-09-18] New contract carve-outs need same-batch regression assertions
+- **Layer**: `tests`
+- **Module**: `ws-goal-fix-pr dispatch contract + dispatch test`
+- **Severity**: `Medium`
+- **PathPattern**: `test/test-*.js; .agents/skills/ws-*/SKILL.md`
+- **Scenario / Context**: Three fix batches added Lite/inline carve-out prose to the ws-goal-fix-pr dispatch contract without locking the new branch in the dispatch test (zero lite matches), so a fourth review wave flagged the unasserted branch as a silent-regression risk: a future edit could drop the carve-out and every existing assertion would still pass.
+- **DO NOT**: Ship a new behavioral branch or carve-out in a contract file without asserting that branch in its regression test in the same batch; do not adopt reviewer-suggested test regexes without running them against the actual text, and never reword the contract to fit a test.
+- **INSTEAD DO**: In the same batch that adds the carve-out, add additive assertions naming the branch (do-not-dispatch + pair-inline-on-captured-model + no-internal-telemetry); verify each suggested regex passes via node before committing, drop or re-anchor any that fail, and keep every existing assertion green.
+
 ### [2026-09-18] Moving generated-file defaults must move ignore coverage too
 - **Layer**: `application`
 - **Module**: `ws-cleanup`
@@ -68,6 +104,33 @@ To add new learnings, create a separate markdown file under `.agents/skills/ws-s
 - **Scenario / Context**: When updating eval assertions (e.g. path-token renames), refreshing eval JSON files with the bulk generator.
 - **DO NOT**: Run `node bin/generate-skill-evals.js` to refresh evals — the generator is stale relative to committed evals.json files and deletes hand-added eval cases (observed: 233 lines dropped across 7 unrelated files, e.g. ws-fix-pr ids 3-4).
 - **INSTEAD DO**: Hand-edit the specific evals.json assertions, update the generator source strings identically when they exist there, and verify with `git diff --stat` that only intended eval files changed; revert collateral with `git checkout -- <paths>`.
+
+### [2026-09-18] Dispatch-contract prose must mirror posture carve-outs and keep test-locked phrasing
+- **Layer**: `application`
+- **Module**: `ws-goal-fix-pr dispatch contract`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-*/SKILL.md`
+- **Scenario / Context**: A new normative dispatch section shipped two review-blocking defects: (1) an unconditional fresh-worker-per-round rule with no lite/inline carve-out, contradicting five other places that document lite as inline-only (lite SKILL.md invariant + Step 5 row, tools.md role-key rule, ws-fix-pr model section); a lite run on a subagent-capable host would have dispatched per-round workers with role models. (2) A Tier-3-fallback bullet triggering on "no bound subagent tool", skipping Tier 2 for CLI-runner hosts and misstating the cited host-dispatch.md ladder. Both were fixed surgically, but the reviewer's literal diffs had to be rejected: one replaced a test phrase-locked bullet, the other broke an AC test regex adjacency.
+- **DO NOT**: Write a new unconditional dispatch/fallback rule without sweeping the existing posture carve-outs (lite-inline, tier ladder) it must mirror; do not accept a reviewer diff verbatim when spec ACs or test regexes lock the surrounding phrasing.
+- **INSTEAD DO**: Before finalizing new contract prose, grep the skills tree for the posture exemptions (lite inline, Tier 1-3 ladder) and add the matching carve-out in the same batch (ADD a bullet, never replace a phrase-locked one); when a reviewer diff conflicts with a locked test or spec AC, reword the trigger narrowly so every existing regex still passes, and record why the literal diff was rejected.
+
+### [2026-09-18] diff the plans index before accepting a rebuild
+- **Layer**: `harness`
+- **Module**: `ws-spec-to-pr orch / plans index`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/plans/index.json`
+- **Scenario / Context**: A Step 4 implementer ran `validate_state.cjs rebuild-index`; it silently dropped 8 legacy multi-spec rows with empty `workflowId` (62 entries vs 69 at HEAD). The orch audit caught it with a count-vs-HEAD check and restored the exact rows; because index JSON is order-sensitive, the restore re-appended then re-sorted to HEAD order so the final diff stays additive.
+- **DO NOT**: Accept a rebuilt `index.json` without comparing entry count and ids against HEAD; never assume rebuild preserves legacy or schema-drifted rows.
+- **INSTEAD DO**: After any rebuild-index, diff workflow ids vs HEAD, restore dropped rows verbatim, and keep ordering stable so the index diff stays additive.
+
+### [2026-09-18] dag-disabled means skip step 3, never dispatch plus stub
+- **Layer**: `harness`
+- **Module**: `ws-spec-to-pr orch step 3 / step 4 gate`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md`
+- **Scenario / Context**: With `defaults.enableDag: false`, the orch dispatched `ws-plan-to-tasks` (wrote an unneeded tasks.md), finished step 3 as completed, then ran `write_simple_plan_stub.cjs` with the refined plan as `--plan` — destroying an 18KB `step-02-*.plan.refined.md` by overwrite (the script writes a simple-path stub into `--plan`). Pre-advance 4 failed on the missing exec plan, which exposed the chain. Recovery cost a file removal, a re-finish, and a full repair re-dispatch.
+- **DO NOT**: Dispatch `ws-plan-to-tasks` or run `write_simple_plan_stub.cjs` when `enableDag` is false; never pass a real plan file as `--plan` to the stub writer (it overwrites `--plan` unconditionally); never finish step 3 as completed in sequential mode.
+- **INSTEAD DO**: Follow STEP-DISPATCH Step 3 row literally for `enableDag: false` — no dispatch, no stubs, `update_state finish --step 3 --status skipped --reason dag-disabled` (pre-advance 4 explicitly exempts `skippedReason 3 == dag-disabled`). Reserve `write_simple_plan_stub.cjs` for `complexityClass: simple` only, with `--plan` pointing at a NEW `step-01-*.plan.md` path.
 
 ### [2026-09-18] Anchor root gitignore suggestions to the repo root
 - **Layer**: `application`

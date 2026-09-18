@@ -146,7 +146,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] ws-wiki: verbosity/prose-style option + richer conditional page template (`spec: 0080-us-324.spec.md`)
 - [x] Fix stale autoload keyword-map prose for scm-provider-contract path (`spec: 0081-us-328.spec.md`)
 - [x] change website cta / main slug/slogan (`spec: 0093-us-344.spec.md`)
-- [ ] ws-goal-fix-pr as orchestrator with per-round subagent dispatch (`spec: 0095-us-347.spec.md`)
+- [x] ws-goal-fix-pr as orchestrator with per-round subagent dispatch (`spec: 0095-us-347.spec.md`)
 
 
 
@@ -292,7 +292,7 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 
 | 97 | `step-baton-multi-agent-runs` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Step-Level Baton Handoffs for Multi-CLI Workflow Runs |
 
-| 101 | `us-347` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-goal-fix-pr as orchestrator with per-round subagent dispatch |
+| 101 | `us-347` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-goal-fix-pr as orchestrator with per-round subagent dispatch |
 
 ## 9. Inbox
 
@@ -392,6 +392,7 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 | 2026-09-13 | `us-324` | ws-wiki: verbosity/prose-style option + richer conditional page template | Implemented |
 | 2026-09-13 | `us-328` | Fix stale autoload keyword-map prose for scm-provider-contract path | Implemented |
 | 2026-09-18 | `us-344` | change website cta / main slug/slogan | [PR #346](https://github.com/jpolvora/workflow-skills/pull/346) |
+| 2026-09-18 | `us-347` | ws-goal-fix-pr as orchestrator with per-round subagent dispatch | [PR #349](https://github.com/jpolvora/workflow-skills/pull/349) |
 
 ## 11. Maintenance checklist
 
