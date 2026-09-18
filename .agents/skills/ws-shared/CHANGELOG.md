@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-09-18 15:35] Agent: Muse Code
+- **Prompt**: Step 9 goal-fix-pr convergence for PR 346.
+- **Done**: 3 fixPrPlan to fixPrExec batches closed 13 threads (stale AC8 diff-regression, option-cap chunking, stale Step 8 refs); commits 8c597a04, 256cd5f9, 46200d50; CI 3 SUCCESS; merged PR 346 at 51b31016; issue 344 close-looped (left open); orch audit verified merge/threads/scope/traps; outer finish, Phase A tag cleanup, index rebuild.
+- **Result**: us-344 completed 0 to 9, ship merged. Learning: 5 fix-PR traps compiled (stale-test-after-default-move, token-contract-effective-resolution, gitignore-mirror-on-default-move, anchor-root-gitignore, sweep-quoters-after-restructure).
+
+### [2026-09-18 14:40] Agent: Muse Code
+- **Prompt**: Resume us-344 (issue 344 slogan workflow) at Step 6 and ship.
+- **Done**: Resumed active standard workflow at Step 6; re-ran pre-advance 6 (HS-5: foreign hash drift dropped derived score to 7 + zero-diff linkage rule inapplicable); user authorized re-anchor + bypass path; verifier re-pass re-linked AC2/AC3/AC4/AC7 evidence (score 9, errors []); Step 6 review clean (No feedback, fable VERIFIED); Step 7 PASS (T1-T10 green, AC7 Implemented); Step 8 close with G2-delivery commit d61cac6d (plan only per toggles).
+- **Result**: KEEP `From Spec to Delivery` verified end to end, zero product diff, status completed, ship to PR next. Learning: recorded trap 2026-09-18-subagent-turn-continuation (failure reflection: wasted Step 6 dispatch round).
+
 ### [2026-09-18 13:30] Agent: Muse Code
 - **Prompt**: Change default CHANGELOG.md target to project root folder; add config key for MEMORY files target dir, default also repo root.
 - **Done**: New `rules.memoryDir` (default `.`) + `rules.changelogFile` default `CHANGELOG.md`; `resolveEffectiveMemoryPaths`/`resolveChangelogPath` in Node SoT + Python mirror with legacy ws-shared fallback (configured wins with entries, else legacy with entries, else configured); `{memoryDir}` token in tools.md/config-resolution.md; retargeted self_learning, check_memory_conflict, build_dispatch_context, monitor_snapshot, check_spec_memo, auto_configure; installer stops fresh-seeding legacy MEMORY/CHANGELOG (preserves existing, never writes root); GUI + INTERVIEW + hub docs + README + AGENTS.md + FEATURES.md + wiki synced; new test/test-memory-dir-resolution.js registered; integrity regenerated; site/wiki rebuilt.
@@ -9,6 +19,11 @@
 - **Prompt**: Investigate `request_user_input` failure `question resume-select must have 2-3 options, got 4`, then review and apply fix.
 - **Done**: Rewrote setup.md Unfinished Workflow Check as two-stage resume gate (Q1 intent 2 options, Q2 pick paged at most 3 with More workflows, N==1 shortcut); added gates.md rule 8 portable ceiling (at most 3 options per question, chunk don't truncate, Cancel via dismiss); tightened tools.md user-gate row and root AGENTS.md snapshot; added test/test-user-gate-option-cap.js (registered in tests + tests:remote); regenerated + verified integrity.
 - **Result**: New test failed 8 assertions pre-fix, passes post-fix; resume-gate, feature-branch-gate, score-refine, quality-gates, reviewer-aligned, convergence, transition-continuation, research-pipeline, check-harness-links, ws-shared-layout, runtime-portability, doc-sync all green; harness-clean 0 findings. Learning: recorded trap 2026-09-18-user-gate-option-cap.
+
+### [2026-09-18 12:00] Agent: Muse Code
+- **Prompt**: Brainstorm step-level baton/handoff for multi-CLI ws-spec-to-pr runs (run config mapping steps to CLIs, coordinator, state-file signaling) and draft a spec, informed by spec-memo 0036 session-handoff-baton.
+- **Done**: Wrote .agents/specs/0094-step-baton-multi-agent-runs.spec.md (17 ACs, authoring PASS) + .context.md companion (peer-polling vs coordinator decision, deferred ideas).
+- **Result**: Spec of record ready at 0094; recommends coordinator-owned loop over LLM peer polling, state file as sole turn signal. Learning: N/A (standard implementation).
 
 ### [2026-09-17 12:57] Agent: muse-spark
 - **Prompt**: /ship-pr (standalone): ship top-nav removal + portable python test fixes as PR #342, converge review threads, merge.

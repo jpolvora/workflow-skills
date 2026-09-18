@@ -142,6 +142,16 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] Muse Code harness adaptation for ws-spec-to-pr workflows on muse-spark agents (`spec: 0090-muse-code-harness-adaptation.spec.md`)
 - [ ] Revamp website visual and template with docs-style layout (`spec: 0091-website-visual-revamp.spec.md`)
 - [ ] ws-spec-to-pr: parameter override for modelsPreset on workflow invocation (`spec: 0092-models-preset-override.spec.md`)
+- [ ] Step-Level Baton Handoffs for Multi-CLI Workflow Runs (`spec: 0094-step-baton-multi-agent-runs.spec.md`)
+- [x] ws-wiki: verbosity/prose-style option + richer conditional page template (`spec: 0080-us-324.spec.md`)
+- [x] Fix stale autoload keyword-map prose for scm-provider-contract path (`spec: 0081-us-328.spec.md`)
+- [x] change website cta / main slug/slogan (`spec: 0093-us-344.spec.md`)
+- [ ] ws-goal-fix-pr as orchestrator with per-round subagent dispatch (`spec: 0095-us-347.spec.md`)
+
+
+
+
+
 
 
 
@@ -280,6 +290,10 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 
 | 96 | `models-preset-override` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-to-pr: parameter override for modelsPreset on workflow invocation |
 
+| 97 | `step-baton-multi-agent-runs` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Step-Level Baton Handoffs for Multi-CLI Workflow Runs |
+
+| 101 | `us-347` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-goal-fix-pr as orchestrator with per-round subagent dispatch |
+
 ## 9. Inbox
 
 - Advanced multi-repository orchestrator support
@@ -375,6 +389,9 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 | 2026-09-16 | `ws-tdah-wait-what-repitch` | ws-tdah wait-what grounded re-pitch | [PR #337](https://github.com/jpolvora/workflow-skills/pull/337) (`cf6f585b`) |
 | 2026-09-16 | `ws-wiki-sync-baseline` | ws-wiki Sync Baseline incremental watermark | Implemented (`71f90237`, PR pending) |
 | 2026-09-17 | `ws-preview-before-ship-gate` | Optional ws-preview dry-run gate in ws-ship-pr before Create PR | [PR #339](https://github.com/jpolvora/workflow-skills/pull/339) (`cea78a7c`) |
+| 2026-09-13 | `us-324` | ws-wiki: verbosity/prose-style option + richer conditional page template | Implemented |
+| 2026-09-13 | `us-328` | Fix stale autoload keyword-map prose for scm-provider-contract path | Implemented |
+| 2026-09-18 | `us-344` | change website cta / main slug/slogan | [PR #346](https://github.com/jpolvora/workflow-skills/pull/346) |
 
 ## 11. Maintenance checklist
 

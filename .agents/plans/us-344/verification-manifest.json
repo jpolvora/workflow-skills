@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-09-18T12:08:04.063Z",
+  "filesTouched": {
+    "created": [
+      ".agents/plans/us-344/ac-ledger.json",
+      ".agents/plans/us-344/step-00-us-344.spec.md",
+      ".agents/plans/us-344/step-01-us-344.plan.md"
+    ],
+    "modified": [],
+    "deleted": []
+  },
+  "filesHash": "8a3aac13411fc8e2eaadfc408d8396ce772562eb728e3f29b391185fbf2c51ce",
+  "aliasResults": [],
+  "sabotage": "not-required",
+  "reuse": "Steps 5/6/7 re-run alias/stack/sabotage commands only if files_touched changed; AC scoring, review, and tests still run. Compare current workflowManifest sorted hash to filesHash; match means reuse aliasResults/sabotage, mismatch means re-run."
+}
