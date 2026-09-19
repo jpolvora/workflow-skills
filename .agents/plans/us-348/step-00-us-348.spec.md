@@ -1,0 +1,145 @@
+---
+id: 348
+slug: us-348
+title: enhance host capabilities - detect tools & cache it
+source: github
+specDate: 2026-09-18
+issueState: open
+issueUrl: "https://github.com/jpolvora/workflow-skills/issues/348"
+step: 0
+workflowId: us-348
+status: completed
+startedAt: "2026-09-18T20:42:26.631Z"
+endedAt: "2026-09-18T20:42:26.631Z"
+acRefs: []
+---
+# Specification — enhance host capabilities - detect tools & cache it
+
+## Description
+
+Extend the existing neutral host-capability binding (`.agents/skills/ws-shared/runtime/host-dispatch.md` §2,
+`.agents/skills/ws-shared/runtime/tools.md` § Host-tool binding & dispatch tiers) so orchestrator and subagent
+sessions can detect **native file and shell capabilities** — read file, write/create file, edit/update file,
+shell exec — and map them to **portable aliases**, cached per `hostId::orchestratorModel` key in the
+consumer-local gitignored `{sharedDir}/host-capabilities.json`.
+
+Background: today the binding covers `askQuestionTool`, `subagentTool`, `backgroundTaskTool`, `browserTool`
+with order config-override → disk-cache hit → one active probe, upserting only the current key. File operations
+still fall back to shell-quoting workarounds (observed: "Writing the spec with the Write tool to avoid shell
+quoting issues"). This spec refines that gap: probe native file/shell tools once at bootstrap, reuse the binding
+for the whole run, prefer native file tools over `bash`/`pwsh` custom scripts, and keep a neutral pre-mapped
+registry of common tool/model names so agents stop reinventing the wheel. Expected gains: speed (no per-step
+re-probe) and predictability (one quoting-safe write path).
+
+System boundaries: changes live in shared-runtime contracts (`host-dispatch.md`, `tools.md`), the probe/cache
+helpers, and the neutral alias registry. No host product names enter skill bodies (harness neutrality); no
+dispatch-tier semantics change; no browser-verification change.
+
+## Acceptance Criteria
+
+- AC1: Bootstrap probe maps each native file/shell capability (read file, write/create file, edit/update file,
+  shell exec) to a portable alias or `none`; unknown tool names bind `none` without failure and skill bodies
+  name no host products.
+- AC2: Binding is cached per `hostId::orchestratorModel` key in consumer-local gitignored
+  `{sharedDir}/host-capabilities.json`; cache misses upsert only the current key preserving others, and a
+  missing/unreadable cache behaves as a miss (local candidate stays source of record, no silent global fallback).
+- AC3: File writes prefer the bound native write/edit tool when available; shell fallback runs only when the
+  alias is `none`, using the documented quoting-safe recipe.
+- AC4: A neutral pre-mapped registry of common tool/model names (portable alias names only, no host tool IDs
+  as contract) ships with the runtime docs and is consulted before the active probe.
+- AC5: The resolved binding is logged once at bootstrap (`host-capability-bind | {json} | {hit|probe} | ISO`
+  to step telemetry JSONL) and persisted as `state.hostBinding`; no per-step re-probe unless toolset change,
+  explicit rebind, or key change.
+- AC6: Corrupt cache content (invalid JSON) is treated as a miss with a `config-unreadable`-style report
+  naming candidate paths, never as silent acceptance of stale data.
+
+## Original Issue Context
+
+To avoid tool callings that use bash/pwsh commands/tools/custom scripts, improve the tools availability in sessions (orchestrator and subagents). when starting workflows today we detect model+toolkit host cabilities .json file and map and cache when needed.
+Today I saw this message: Writing the spec with the Write tool to avoid shell quoting issues
+
+detect write tools, read tools, updata files tools, etc the most common tools, shell exec etc
+used to bring native capabilities to agents avoiding reinventing the wheel.
+
+brainstorm this feature, decide if need refine or abandon it.
+
+I think we can gain speed, previsibility on running commands.
+
+If approved the plan, we need to scan all skills and tool calls, map it and replace with token {readFile} etc and query the host capabilities .json cache file.
+
+The repository can have most common models and tools names, function names like dispatch agents pre mapped.
+
+### Prior Work Sweep
+
+Provider `sweep-prior-work` (`--issue 348`, keywords `host capabilities`, `detect tools`, `cache`) returned
+4 merged PRs and 0 commits. Hits for search `#348` (PR #77 refactor check-harness, PR #277 release 0.3.61,
+PR #193 release 0.3.10) and keyword search (PR #270 release develop-to-main) are search noise — all MERGED,
+none implements issue 348, none is an open PR for the same tracker id. No duplicate risk; proceed.
+
+### Design Intent
+
+Skipped with reason: this is a new-capability brainstorm proposal, not a behavior-gap or regression report, so
+there is no symbol to trace via `git log -p -S` / `git log -L`. Greenfield enhancement of the existing
+host-binding contracts.
+
+## Notes
+
+- Triage recommendation: **refine (scoped)**, not abandon — the cache/binding skeleton already exists, so this
+  is an incremental extension (new alias rows + registry + write-preference rule), not a new subsystem.
+- The `{readFile}`-style tokens suggested in the issue must be defined as **portable aliases** in `tools.md`
+  (harness neutrality forbids host-only tool IDs as the contract).
+- Follow-up (not this spec): scan all skills and replace shell-based file workarounds with the new aliases;
+  tracked separately after the contract lands.
+- Stack: Node skills package — `typescript-node` invariants apply to probe/cache script changes (no floating
+  promises, validate `hostId`/model key inputs, path containment on cache writes).
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Changing dispatch-tier semantics (Tier 1/2/3 ladder) | Binding extension only; tier routing already contracted in `host-dispatch.md` |
+| Browser verification tooling | Separate `browserTool` surface, untouched by file/shell detection |
+| Specialized-subagent compiler changes | Projection compiling is orthogonal to capability probing |
+| Bulk rewrite of existing skills to the new aliases | Follow-up migration after the contract lands, not this spec |
+| Server-side or host-product changes | Consumer harness cannot change host tool inventory |
+
+## Assumptions & Open Questions
+
+| Assumption | Chosen default | Rationale | Confirmed |
+|------------|----------------|-----------|-----------|
+| Host exposes its tool inventory to the session for the active probe | Active-probe question maps each alias to a concrete tool or `none` | Matches the existing binding protocol in `tools.md`; no host API change required | y |
+| Refine vs abandon triage | Refine, scoped to binding + registry + write-preference rule | Cache/binding skeleton exists; incremental cost, addresses observed quoting workaround | n |
+| Cache location and key shape | `{sharedDir}/host-capabilities.json`, key `hostId::orchestratorModel` | Already contracted; this spec reuses it for the new aliases | y |
+| Absent implicit dimensions (idempotency, auth/rate limits, concurrency, TTL, external-dependency failover, state transitions) | `N/A because` this is a read-only local capability cache with no network calls, no shared mutable state, and no lifecycle beyond upsert-on-miss | No dimension is obviously present for a local JSON capability cache | y |
+
+## Definition of Ready (DoR)
+
+| Readiness Item | Requirement | Verification Method |
+|----------------|-------------|---------------------|
+| Bounded scope | Only binding rows, registry, and write-preference rule; tier ladder untouched | `git diff --stat` shows runtime contracts + probe/cache helpers only |
+| Atomic ACs | AC1–AC6 each independently checkable | Reviewer checks each AC against the diff |
+| Failure modes defined | Miss, corrupt cache, unknown tool, shell-fallback quoting each specified | Negative scenarios below all reproducible |
+| Observation telemetry | Bootstrap bind log + `state.hostBinding` present | Grep telemetry JSONL for `host-capability-bind` |
+| Zero open blockers | Triage refine/abandon resolved to refine-scoped | This spec records the decision |
+| Stack invariants (typescript-node) | No floating promises in probe/cache code; `hostId`/key inputs validated; cache writes path-contained | `node .agents/skills/ws-shared/runtime/scripts/scan_stack_invariants.cjs --stack typescript-node` |
+| Authoring validation | `validate_spec.cjs --mode=authoring` exits 0 | Run validator before register |
+
+## Validation & Observation Notes
+
+### Telemetry & Observable Signals
+
+- `host-capability-bind | {json} | {hit|probe} | ISO` line in step telemetry JSONL at Step 0 bootstrap.
+- `state.hostBinding` persisted binding (aliases incl. new file/shell rows) observable via `read-state`.
+- `npm run test` (config `verification.backendTest`) passes for touched helpers.
+
+### Negative & Failing Test Scenarios
+
+- Corrupt `host-capabilities.json` (invalid JSON) → treated as miss with candidate paths reported; workflow
+  proceeds via active probe (AC6).
+- Host with no native file tools (all aliases `none`) → shell fallback path used with quoting-safe recipe, no
+  failure (AC3).
+- Unknown tool name in probe answer → binds `none` without failure; skill bodies still contain no host product
+  names (AC1).
+- Missing/unreadable cache file → miss, upsert current key only, other keys preserved (AC2).
+- Stack safety: probe script with an un-awaited async cache write must fail the invariant scan before merge
+  (typescript-node zero-floating-promises rule).
