@@ -1,3 +1,8 @@
+---
+stackFingerprint: 5da7b34f46f8f1262dbbd4128fd452e311191fe695839a46b56976892ca30bd2
+stackFingerprintVersion: 1
+---
+
 # Stack Definition
 
 Human-readable companion to `config.json`. Agents read `config.json` for machine-readable values; this doc explains structure and conventions.
