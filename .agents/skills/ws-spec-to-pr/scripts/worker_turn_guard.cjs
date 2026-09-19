@@ -31,7 +31,7 @@ function isNonEmptyFile(file) {
 // caller falls back to the artifact check instead of guessing).
 function extractToolCalls(text) {
   if (!text) return null;
-  const match = String(text).match(/["']?toolCalls["']?\s*[:=]\s*(\d+)/);
+  const match = String(text).match(/(?:^|[^A-Za-z0-9_])["']?toolCalls["']?\s*[:=]\s*(\d+)/);
   if (!match) return null;
   const value = Number(match[1]);
   return Number.isInteger(value) && value >= 0 ? value : null;

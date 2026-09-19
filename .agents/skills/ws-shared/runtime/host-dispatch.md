@@ -148,7 +148,7 @@ INSTRUCTIONS:
 2. Execute the actions required for Step {N} per {skillsRoot}/ws-spec-to-pr/STEP-DISPATCH.md.
 3. Validate changes against configured verification commands.
 4. Output a parseable step-output block upon completion.
-5. Turn rule: the FIRST response must contain BOTH the verbose preview AND at least 2 tool calls; a response with zero tool calls ends the turn as failed delivery. The OUTPUT FORMAT example below is a shape reference, not a valid final message on its own — the final message starts with DONE plus the step-output envelope, and required artifacts must exist on disk before finish. Full text: `{skillsRoot}/ws-spec-to-pr/WORKER-TURN-RULES.md`.
+5. Turn rule: the FIRST response must contain BOTH the verbose preview AND at least 2 tool calls; a response with zero tool calls ends the turn as failed delivery. The OUTPUT FORMAT example below is a shape reference, not a valid final message on its own — the final message starts with DONE plus the step-output envelope, and required artifacts must exist on disk before finish. Full text: `../ws-spec-to-pr/WORKER-TURN-RULES.md`.
 
 OUTPUT FORMAT:
 ```json
