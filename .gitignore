@@ -25,13 +25,8 @@ credentials.json
 .aws/
 config/credentials
 
-# Backup files
-*.bak_*
-*.bak
 
 # Temporary files & Logs
-*.log
-.tmp-*/
 audit_results.txt
 __pycache__/
 **/__pycache__/
@@ -60,6 +55,3 @@ check-workflows-report.md
 # Harness benchmark full run reports (upstream maintainer only)
 benchmarks/runs/
 .active-session-id
-
-# Upstream dogfood probe cache (consumer-local gitignored state, never shipped upstream)
-.ws/host-capabilities.json
