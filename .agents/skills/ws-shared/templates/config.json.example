@@ -352,5 +352,10 @@
     "autoAudit": true,
     "autoDetectDomain": true,
     "auditVerdictsBlockShip": "refuted"
+  },
+
+  "ws-goal-fix-pr": {
+    "_comment": "Per-skill section for the fix-PR convergence loop (seeds the one-parent-section-per-skill convention). useSubAgents false (default when omitted) runs the plan/fix loop inline in the current turn with zero subagent dispatches; true dispatches one fresh worker per round batch. One key gates the whole fix path (ws-fix-pr, ws-goal-fix-pr, ws-ship-pr pre-ship convergence).",
+    "useSubAgents": false
   }
 }

@@ -1245,6 +1245,20 @@ function resolvePhaseModel(defaults, { step, role, pipeline = 'standard', sessio
   return sessionModel || 'unknown';
 }
 
+/**
+ * Fix-PR loop execution site (us-352). Single gate for the whole fix path
+ * (ws-fix-pr, ws-goal-fix-pr, ws-ship-pr pre-ship convergence), read from the
+ * per-skill section `ws-goal-fix-pr.useSubAgents` in config.json.
+ * Returns 'subagent' only on strict boolean true; every other shape
+ * (absent section/key, false, null, non-boolean) fails closed to 'inline'
+ * (legacy loop with zero subagent dispatches).
+ */
+function resolveFixPrDispatchMode(config) {
+  const section = config && typeof config === 'object' ? config['ws-goal-fix-pr'] : undefined;
+  const flag = section && typeof section === 'object' ? section.useSubAgents : undefined;
+  return flag === true ? 'subagent' : 'inline';
+}
+
 function collectModelIds(value, target) {
   if (!value) return;
   if (Array.isArray(value)) {
@@ -2152,6 +2166,7 @@ module.exports = {
   resolveStepAgentType,
   performUpdate,
   resolvePhaseModel,
+  resolveFixPrDispatchMode,
   validateSnapshot,
   runUpdateCli,
   runValidateCli,
