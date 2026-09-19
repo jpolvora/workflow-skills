@@ -1,0 +1,124 @@
+---
+id: 352
+slug: us-352
+title: Add config.json key for ws-ship-pr enable/disable subagent dispatch loop for fix (default inline loop)
+source: github
+specDate: 2026-09-19
+issueState: open
+issueUrl: "https://github.com/jpolvora/workflow-skills/issues/352"
+step: 0
+workflowId: us-352
+status: completed
+startedAt: "2026-09-19T08:49:46.388Z"
+endedAt: "2026-09-19T08:49:46.388Z"
+acRefs: []
+---
+# Specification — Add config.json key for ws-ship-pr enable/disable subagent dispatch loop for fix (default inline loop)
+
+## Description
+
+Running the fix-PR loop with dispatched subagents on every plan/fix cycle slows the fix-PR review CI/CD process significantly. Both modes must be available:
+
+- **Inline mode (legacy, default):** the fix loop runs inline in the current turn, the way it historically worked.
+- **Subagent mode (new):** each plan/fix loop iteration dispatches subagents.
+
+Add a `config.json` key (default inline). The issue proposes a per-skill section, starting with the fix-PR skill family:
+
+```json
+{
+  "ws-goal-fix-pr": {
+    "useSubAgents": false
+  }
+}
+```
+
+This establishes the pattern of one parent config section per skill for skill-specific options, beginning with the fix-PR loop. The plan must reconcile the issue's section naming (`ws-goal-fix-pr`) against the actual owning skill(s): the loop slowness is observed on the fix-PR path, which spans `ws-fix-pr` (single batch) and `ws-goal-fix-pr` (repeat-until-clean), with `ws-ship-pr` invoking the loop pre-ship. The config key must gate all subagent-dispatch loop iterations on that path with a single default.
+
+System boundaries: config schema + fix-PR loop dispatch decision. Architecture touchpoints: `config.json` / `config.schema.json`, the config GUI editor (per repo protocol, schema changes must sync the GUI tool), the fix-PR loop runner(s), and docs (`README.md`, hub docs per the harness change protocol).
+
+## Acceptance Criteria
+
+- AC1: A documented `config.json` key selects inline (default `false` = inline legacy loop) vs subagent dispatch for the fix-PR plan/fix loop — verified by reading schema + docs and by runtime behavior in both positions.
+- AC2: Default (key absent or `false`) runs the full fix-PR loop inline with zero subagent dispatches — verified by a test asserting no dispatch occurs on the fix path with default config.
+- AC3: Explicit opt-in (`true`) restores per-iteration subagent dispatch with behavior identical to the current implementation — verified by a dispatch-count test on the fix path.
+- AC4: Schema, GUI config editor, and docs are updated atomically with the runtime gate (no schema/docs drift) — verified by the repo's config-editor test (`node test/test-powershell-config-editor.js`) and harness checks.
+
+## Original Issue Context
+
+I noticed that running ws-fix-pr loop with dispatching subagents every cycle/loop iteration kind of slow very much the fix-pr review ci/cd process.
+
+We will make both modes available
+
+inline mode: the old legacy way
+subagent mode: the newly implemented feature that dispatches subagents every plan/fix loop
+
+the config.json key:
+
+```json
+{
+    "ws-goal-fix-pr": {
+         useSubAgents: false //default
+     }
+}
+```
+
+In the future we will have a parent config key for each skill, starting now by ws-goal-fix-pr skill with its own section key for its specific configuration options.
+
+### Prior Work Sweep
+
+- Provider `sweep-prior-work` for issue 352 (keywords: ship, fix, subagent, config): no open PR for the same tracker id; keyword hits are merged historical PRs (#256, #199, #219, #249, #270); no duplicate risk.
+- The subagent-dispatch loop is recent work on the fix-PR path (us-347 orchestrator dispatch family); the inline legacy behavior is the pre-dispatch implementation the plan can recover behind the flag.
+- Config-schema changes in this repo must also update the GUI editor and site/docs per the harness change protocol — the plan must include those touchpoints.
+
+### Design Intent
+
+- Per-iteration subagent dispatch on the fix loop is the intentional current behavior (finer isolation per cycle); its latency cost on review CI/CD is the accidental consequence motivating this spec. The fix is a mode gate, not a revert — both modes stay supported.
+- A per-skill parent config section is new convention (no prior `ws-goal-fix-pr` top-level key exists); the plan owns reconciling the issue's proposed section name against the actual loop owner (`ws-fix-pr` vs `ws-goal-fix-pr` vs shared runner) so one key gates the whole fix path.
+
+## Notes
+
+- The loop slowness is wall-clock dispatch overhead per cycle, not fix quality — keep fix semantics identical between modes; only the execution site changes.
+- If `ws-fix-pr` and `ws-goal-fix-pr` share a loop runner, gate once in the runner rather than per skill to avoid mode skew.
+- Keep the key name forward-compatible with the planned per-skill-section convention so later skills reuse the pattern.
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Per-skill sections for skills beyond the fix-PR loop | Future convention; this spec seeds only the fix-path key |
+| Changing default to subagent mode | Issue mandates inline default; performance data could revisit later |
+| Removing the subagent loop implementation | Both modes stay available; the key only selects between them |
+
+## Assumptions & Open Questions
+
+| Assumption | Chosen default | Rationale | Confirmed |
+|------------|----------------|-----------|-----------|
+| Key default is inline (`false`) when absent | Absent key behaves as `useSubAgents: false` | Issue JSON shows `false //default`; fail-closed to legacy behavior | y |
+| One key gates the whole fix path | Plan maps the key to every dispatch site on the fix-PR loop (fix, goal-fix, ship pre-check) | Otherwise the flag leaks dispatches on adjacent entry points | y |
+| Section placement follows existing config conventions | Plan picks the section home (top-level per-skill vs nested) and updates schema + GUI + docs together | Repo protocol requires schema/GUI/docs sync | n |
+| Input validation and bounds | N/A because the key is a boolean mode switch with fail-closed default | No ranges or free input involved | y |
+
+## Definition of Ready (DoR)
+
+| Readiness Item | Requirement | Verification Method |
+|----------------|-------------|---------------------|
+| Bounded scope | Config key + loop gate + schema/GUI/docs sync only | Plan file list matches AC touchpoints |
+| Atomic acceptance criteria | AC1–AC4 each independently testable (behavior + schema + editor) | `validate_spec.cjs --mode=authoring` passes |
+| Failure modes covered | Default dispatches, opt-in stays inline, schema/GUI drift each have a negative scenario | Negative scenarios section lists all three |
+| Observation telemetry | Dispatch counts per fix-loop run observable in tests/logs | Telemetry section names the signals |
+| Zero open blockers | Section-home decision is plan-owned; loop sites enumerated | Assumptions table shows plan-owned default |
+
+## Validation & Observation Notes
+
+### Telemetry & Observable Signals
+
+- Fix-loop run with default config emits zero subagent dispatches (dispatch counter / test spy).
+- Fix-loop run with opt-in emits per-iteration dispatches matching the current implementation count.
+- `node test/test-powershell-config-editor.js` passes (GUI reflects the new key).
+- Harness checks (`ws-check-harness` / `test/test-harness-clean.js`) pass with schema + docs updated.
+
+### Negative & Failing Test Scenarios
+
+- Default config fix-loop run that dispatches any subagent must fail — red before the gate lands.
+- Opt-in config fix-loop run that stays inline (or changes fix semantics) must fail — red on behavior drift.
+- Schema updated without GUI editor sync must fail `test/test-powershell-config-editor.js` — red on docs/schema drift.

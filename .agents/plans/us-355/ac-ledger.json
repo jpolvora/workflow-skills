@@ -1,0 +1,217 @@
+{
+  "schemaVersion": 1,
+  "revision": 2,
+  "workflowId": "us-355-20260919T085224Z",
+  "slug": "us-355",
+  "specPath": ".agents/plans/us-355/step-00-us-355.spec.md",
+  "planIndexPath": null,
+  "declaredGaps": [],
+  "aliasResults": [],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "The Step 3 exec-artifact rule is unambiguous: either sequential mode requires `step-03-<slug>.plan.exec.md` before `completed`, or the artifact is declared optional in sequential mode and the state/monitor no longer treat its absence as a signal — verified by reading the owning skill contract plus a state-machine test.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [
+        {
+          "name": "test-step-completion-contracts",
+          "sourceFile": "test/test-step-completion-contracts.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T15:02:40.133Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "us-355-verify-test-step-completion-contracts"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "A mutating Step 4 cannot report `completed` with empty `filesTouched` unless the step genuinely modified nothing (explicit no-op declaration); otherwise completion is withheld or flagged — verified by a telemetry/handoff test.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [
+        {
+          "name": "test-step-completion-contracts",
+          "sourceFile": "test/test-step-completion-contracts.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T15:02:40.134Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "us-355-verify-test-step-completion-contracts"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "`ws-monitor` flags both violation classes (missing mandatory artifact on a completed step; empty `filesTouched` on a completed mutating step) in its snapshot — verified by fixtures reproducing both signals.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [
+        {
+          "name": "test-step-completion-contracts",
+          "sourceFile": "test/test-step-completion-contracts.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T15:02:40.134Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "us-355-verify-test-step-completion-contracts"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "Existing historical runs without the artifact are classified (grandfathered vs violation) so the monitor does not flood on old batches — verified by a compat-mode fixture test.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [
+        {
+          "name": "test-step-completion-contracts",
+          "sourceFile": "test/test-step-completion-contracts.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T15:02:40.134Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "us-355-verify-test-step-completion-contracts"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Step 3 `completed` without the exec artifact (when required) must fail the contract test — red before the fix.",
+      "tests": [
+        {
+          "name": "test-step-completion-contracts",
+          "sourceFile": "test/test-step-completion-contracts.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T15:02:40.134Z"
+        }
+      ],
+      "linkEventIds": [
+        "us-355-verify-test-step-completion-contracts"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Mutating Step 4 `completed` with empty `filesTouched` and no no-op declaration must fail — red before the fix.",
+      "tests": [
+        {
+          "name": "test-step-completion-contracts",
+          "sourceFile": "test/test-step-completion-contracts.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T15:02:40.134Z"
+        }
+      ],
+      "linkEventIds": [
+        "us-355-verify-test-step-completion-contracts"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Monitor against the `ms-20260919T043606Z` fixture shape must raise both flags — red before detection lands.",
+      "tests": [
+        {
+          "name": "test-step-completion-contracts",
+          "sourceFile": "test/test-step-completion-contracts.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T15:02:40.135Z"
+        }
+      ],
+      "linkEventIds": [
+        "us-355-verify-test-step-completion-contracts"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "Monitor against pre-fix historical runs must classify (not flood) under compat mode — red on unclassified flood.",
+      "tests": [
+        {
+          "name": "test-step-completion-contracts",
+          "sourceFile": "test/test-step-completion-contracts.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T15:02:40.135Z"
+        }
+      ],
+      "linkEventIds": [
+        "us-355-verify-test-step-completion-contracts"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 2,
+    "earnedUnits": 8,
+    "totalUnits": 40,
+    "knownDefect": false,
+    "missingEvidence": true,
+    "errors": [
+      "configured verification alias lacks observed result: backendTest"
+    ],
+    "invariantViolations": [],
+    "computedAt": "2026-09-19T15:02:40.135Z"
+  }
+}

@@ -1,88 +1,8 @@
 {
   "schemaVersion": 1,
-  "revision": 42,
-  "generatedAt": "2026-09-18T21:52:26Z",
+  "revision": 11,
+  "generatedAt": "2026-09-19T05:37:50Z",
   "workflows": [
-    {
-      "workflowId": "",
-      "pipeline": "ws-multi-spec",
-      "statePath": ".agents/plans/ws-multi-spec/ms-20260812T191636Z.state.md",
-      "stateSha256": "8c996d503a63fd115ff8de0a12478f12b4acfe7a50cc9389fcb965a858580864",
-      "status": "completed",
-      "currentStep": 0,
-      "updatedAt": "2026-08-12T20:43:00Z",
-      "runPath": ".agents/plans/ws-multi-spec/ms-20260812T191636Z.state.json"
-    },
-    {
-      "workflowId": "",
-      "pipeline": "ws-multi-spec",
-      "statePath": ".agents/plans/ws-multi-spec/ms-20260812T204614Z.state.md",
-      "stateSha256": "fd5ac96efdea7646792ba05c72a78f59eaa441c34bf19fa042662fd61dad2dfb",
-      "status": "completed",
-      "currentStep": 0,
-      "updatedAt": "2026-08-12T20:47:00Z",
-      "runPath": ".agents/plans/ws-multi-spec/ms-20260812T204614Z.state.json"
-    },
-    {
-      "workflowId": "",
-      "pipeline": "ws-multi-spec",
-      "statePath": ".agents/plans/ws-multi-spec/ms-20260815T171347Z.state.md",
-      "stateSha256": "335b36e5c5ae3dfc7af26664b8bfc7d2df8f6269d14b3edb163c8fde1e18417a",
-      "status": "completed",
-      "currentStep": 0,
-      "updatedAt": "2026-08-15T19:12:13Z",
-      "runPath": ".agents/plans/ws-multi-spec/ms-20260815T171347Z.state.json"
-    },
-    {
-      "workflowId": "",
-      "pipeline": "ws-multi-spec",
-      "statePath": ".agents/plans/ws-multi-spec/ms-20260822T204000Z.state.md",
-      "stateSha256": "cf3437a6a688799461c9c02caf0d0c49e24607697bdc598685d895145be2a9e8",
-      "status": "implemented",
-      "currentStep": 0,
-      "updatedAt": "2026-08-22T21:30:00Z",
-      "runPath": ".agents/plans/ws-multi-spec/ms-20260822T204000Z.state.json"
-    },
-    {
-      "workflowId": "",
-      "pipeline": "ws-multi-spec",
-      "statePath": ".agents/plans/ws-multi-spec/ms-20260823T151035Z.state.md",
-      "stateSha256": "23d18a3c58a17ba8dc458e21f424c880fe5e5e7da2e8cd8c1c07c2128fed3f5f",
-      "status": "completed",
-      "currentStep": 0,
-      "updatedAt": "2026-08-23T16:32:00Z",
-      "runPath": ".agents/plans/ws-multi-spec/ms-20260823T151035Z.state.json"
-    },
-    {
-      "workflowId": "",
-      "pipeline": "ws-spec-multi",
-      "statePath": ".agents/plans/ws-spec-multi/ms-20260903T104720Z.state.md",
-      "stateSha256": "1285043432fa2082993d10751124dc222b35b1b5eb2293c74c435d910692a863",
-      "status": "completed",
-      "currentStep": 0,
-      "updatedAt": "2026-09-03T11:20:45Z",
-      "runPath": ".agents/plans/ws-spec-multi/ms-20260903T104720Z.state.json"
-    },
-    {
-      "workflowId": "",
-      "pipeline": "ws-spec-multi",
-      "statePath": ".agents/plans/ws-spec-multi/ms-20260905T015320Z.state.md",
-      "stateSha256": "fb217d59a08e9d35393de9a5d96a9ea294d07ac30d9a8cf52a82e518f185ba18",
-      "status": "completed",
-      "currentStep": 0,
-      "updatedAt": "2026-09-05T01:53:20Z",
-      "runPath": ".agents/plans/ws-spec-multi/ms-20260905T015320Z.state.json"
-    },
-    {
-      "workflowId": "",
-      "pipeline": "ws-spec-multi",
-      "statePath": ".agents/plans/ws-spec-multi/ms-20260911T034316Z.state.md",
-      "stateSha256": "af8a5e75b975e2e72250f86f8c24d106c7072286599220cb71de77beec485f25",
-      "status": "completed",
-      "currentStep": 0,
-      "updatedAt": "2026-09-11T04:35:00Z",
-      "runPath": ".agents/plans/ws-spec-multi/ms-20260911T034316Z.state.json"
-    },
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
       "slug": "agents-skills-as-sot",
@@ -665,6 +585,17 @@
       "currentStep": 9,
       "updatedAt": "2026-09-18T21:01:02Z",
       "runPath": ".agents/plans/us-347/us-347-20260918T194831Z.state.json"
+    },
+    {
+      "workflowId": "us-353-20260919T043606Z",
+      "slug": "us-353",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/us-353/us-353-20260919T043606Z.state.md",
+      "stateSha256": "8fc7300a57ed39907bad7aaea02ae8c12ad0e7c16e34d58deed4367c9fcb76d1",
+      "status": "active",
+      "currentStep": 6,
+      "updatedAt": "2026-09-19T05:37:50Z",
+      "runPath": ".agents/plans/us-353/us-353-20260919T043606Z.state.json"
     },
     {
       "workflowId": "us-global-vs-project-skill-installation",
