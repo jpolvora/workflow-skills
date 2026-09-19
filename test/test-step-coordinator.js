@@ -74,8 +74,8 @@ function makeRepo({ currentStep, completedSteps, stepRunners, runners, stepBaton
   };
   if (baton !== undefined) state.baton = baton;
   write(stateFile, JSON.stringify(state, null, 2));
-  // Seed the shared artifact-table entry for step 3 so multi-turn runs verify.
-  write(path.join(usDir, `step-03-${slug}.plan.exec.md`), 'exec plan fixture\n');
+  // Seed the lite step-3 review artifact so multi-turn runs verify (lite never emits plan.exec).
+  write(path.join(usDir, `step-06-${slug}.review.md`), 'review fixture\n');
   return { root, usDir, stateFile, slug, receiptsFile };
 }
 
@@ -338,6 +338,50 @@ function workerCommand(fixture, timeoutSeconds = 60) {
   state = JSON.parse(fs.readFileSync(repo.stateFile, 'utf8'));
   if (state.baton.holder !== null) throw new Error('owner release must clear the holder');
   if (state.baton.revision !== 8) throw new Error('owner release must bump the revision');
+}
+
+// Failure reported via finish --status failed must not count as advancement.
+{
+  const repo = makeRepo({
+    currentStep: 4, completedSteps: [0, 1, 2, 3],
+    stepRunners: { 4: 'runner-a' }, runners: { 'runner-a': workerCommand('worker-failed-finish.cjs') },
+    stepBaton: { pollIntervalSeconds: 30, maxAttempts: 1 },
+  });
+  const result = runCoordinator(repo, ['--once']);
+  if (result.status !== 2) throw new Error(`failed finish should exit 2 (blocked), got ${result.status}: ${result.stderr || result.stdout}`);
+  if (!/WORKER_NO_FINISH/.test(result.stdout || '')) throw new Error('failed finish must log WORKER_NO_FINISH');
+  const state = readState(repo);
+  if (state.status !== 'blocked') throw new Error('failed finish must block the run for an operator');
+  if (state.handoffs['4']?.status !== 'failed') throw new Error('failed handoff status must be preserved in state');
+  if (/baton_released/.test(readTelemetry(repo).map((event) => event.type).join(','))) {
+    throw new Error('failed finish must not emit a release for an unadvanced step');
+  }
+}
+
+// verifyAdvancement: lite step 3 expects the review artifact, not plan.exec.
+{
+  const repo = makeRepo({ currentStep: 3, completedSteps: [0, 1, 2], stepRunners: {}, runners: {} });
+  const check = coordinator.verifyAdvancement({
+    usDir: repo.usDir, slug: repo.slug, pipeline: 'lite', step: 3, beforeCurrentStep: 3,
+    afterState: { currentStep: 4, completedSteps: [0, 1, 2, 3], handoffs: { 3: handoffFor(3, repo.slug, 'wf-coord') } },
+  });
+  if (!check.advanced) throw new Error(`lite step 3 with the review artifact must advance: ${check.detail}`);
+}
+
+// verifyAdvancement: failed handoffs never advance; reason-gated skips still do.
+{
+  const repo = makeRepo({ currentStep: 4, completedSteps: [0, 1, 2, 3], stepRunners: {}, runners: {} });
+  const base = { usDir: repo.usDir, slug: repo.slug, pipeline: 'lite', step: 4, beforeCurrentStep: 4 };
+  const failed = handoffFor(4, repo.slug, 'wf-coord');
+  failed.status = 'failed';
+  const denied = coordinator.verifyAdvancement({ ...base, afterState: { currentStep: 5, completedSteps: [0, 1, 2, 3, 4], handoffs: { 4: failed } } });
+  if (denied.advanced || denied.reason !== 'missing-finish' || !/failed/.test(denied.detail)) {
+    throw new Error(`failed handoff must not advance: ${JSON.stringify(denied)}`);
+  }
+  const skipped = handoffFor(4, repo.slug, 'wf-coord');
+  skipped.status = 'skipped';
+  const allowed = coordinator.verifyAdvancement({ ...base, afterState: { currentStep: 5, completedSteps: [0, 1, 2, 3, 4], handoffs: { 4: skipped } } });
+  if (!allowed.advanced) throw new Error(`skipped handoff must still advance: ${allowed.detail}`);
 }
 
 console.log('PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)');

@@ -470,6 +470,14 @@ function artifactStampFields(state, step, now, stepFinishStatus) {
 }
 
 function finishArtifactNames(slug, step, pipeline = 'standard') {
+  if (pipeline === 'lite') {
+    const lite = {
+      0: `step-00-${slug}.spec.md`,
+      1: `step-01-${slug}.plan.md`,
+      3: `step-06-${slug}.review.md`,
+    };
+    return lite[step] ? [lite[step]] : [];
+  }
   const names = {
     0: `step-00-${slug}.spec.md`,
     1: `step-01-${slug}.plan.md`,

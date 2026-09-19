@@ -107,7 +107,7 @@ try {
       },
     },
   }, null, 2));
-  write(path.join(coordDir, `step-03-${coordSlug}.plan.exec.md`), 'exec plan fixture\n');
+  write(path.join(coordDir, `step-06-${coordSlug}.review.md`), 'review fixture\n');
   config.defaults.runners['runner-a'] = {
     command: `node ${fixtures}/worker-ok.cjs --prompt "{prompt}" --cwd "{cwd}" --slug {slug} --step {step} --state "${coordState}" --updater "${updater}" --receipt "${path.join(root, 'worker-receipts.jsonl')}"`,
     timeoutSeconds: 60,

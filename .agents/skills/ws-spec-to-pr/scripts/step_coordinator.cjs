@@ -330,6 +330,9 @@ function verifyAdvancement({ usDir, slug, pipeline, step, beforeCurrentStep, aft
   if (!handoff) {
     return { advanced: false, reason: 'missing-finish', detail: `no handoff recorded for step ${step}` };
   }
+  if (handoff.status !== 'completed' && handoff.status !== 'skipped') {
+    return { advanced: false, reason: 'missing-finish', detail: `step ${step} handoff is not completed (${handoff.status})` };
+  }
   const afterStep = Number(afterState.currentStep);
   const isCloseOrLast = Number(step) >= maxStep;
   const stepped = afterStep > Number(beforeCurrentStep) || (isCloseOrLast && Array.isArray(afterState.completedSteps) && afterState.completedSteps.map(Number).includes(Number(step)));
