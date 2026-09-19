@@ -1,6 +1,6 @@
 ---
 name: ws-wiki
-version: 0.4.38
+version: 0.4.41
 disable-model-invocation: true
 description: Living project feature wiki and domain knowledge base manager — initializes, synchronizes, and validates living feature documentation, business rules, and technical architecture.
 invocation_names:
@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-wiki loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check. When project configuration (`.agents/skills/ws-shared/config.json`) is missing or unconfigured, prompt via `user-gate` recommending running `ws-configure-project` before continuing.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check. When project configuration (`.ws/config.json`) is missing or unconfigured, prompt via `user-gate` recommending running `ws-configure-project` before continuing.
 
 Authoritative manager for living project feature wikis and domain knowledge bases within the `workflow-skills` harness.
 

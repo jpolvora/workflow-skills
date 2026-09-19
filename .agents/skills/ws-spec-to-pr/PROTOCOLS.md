@@ -314,6 +314,7 @@ Proof: step-output must include `memory_consult` (see schema).
 Anchor: uswf/{workflow-id}/before-step-{STEP} @ {sha} · CWD: {repo-root | worktree}
 Role: fresh; no resume. files_touched required (revert). model: {resolvedSubagentModel}.
 Rules: no `{plansDir}/` in git-add except Step 8 G2-delivery; needs_user: ≥2 choices, recommended first.
+Turn rule: the worker's FIRST response must contain BOTH the verbose preview AND at least 2 tool calls; a response with zero tool calls ends the turn as failed delivery. The OUTPUT FORMAT example is not a valid final message on its own. Final message starts with DONE plus the step-output envelope; required artifacts must exist on disk before finish. Full text: `WORKER-TURN-RULES.md`.
 Learning: use ## Step outputs (compact) plus at most two prior full outputs. Do NOT repeat broken approaches.
 Telemetry is stamped by the orchestrator (`dispatchedAt`/`finishedAt`); do not author elapsedSec.
 End with ```step-output(status, step, artifacts, files_touched, verification, refine, summary, evidence, decisions, doc_consolidation, needs_user, errors, retry_hint, learning, memory_consult{keywords, hits}, model)
@@ -323,7 +324,7 @@ End with ```step-output(status, step, artifacts, files_touched, verification, re
 **VerboseMode addendum** (append to the body **only** when `defaults.verboseMode` is explicit `true`; omitted/`false` → skip):
 
 ```markdown
-VerboseMode: analyze THIS run (skill contract, state, files on disk, skip rules, config). Before any tool call, print `Starting step {STEP} ({Label}):` plus 4–8 `*` bullets covering goal, lookups, actions, conditional writes, and how the next step becomes ready. Then do the work. Do not copy a canned list.
+VerboseMode: analyze THIS run (skill contract, state, files on disk, skip rules, config). Before any tool call, print `Starting step {STEP} ({Label}):` plus 4–8 `*` bullets covering goal, lookups, actions, conditional writes, and how the next step becomes ready. Then do the work — then immediately continue with tool calls in the same response; never end the turn after the preview. Do not copy a canned list. Turn rule: the FIRST response must hold BOTH that preview AND at least 2 tool calls — stopping right after the preview is failed delivery, never a complete turn.
 ```
 
 

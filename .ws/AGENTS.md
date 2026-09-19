@@ -1,6 +1,6 @@
 # Shared — Workflow Config & Consumer Data Hub
 
-This is the project-local entrypoint for the shared hub. The managed consumer hub contract is in [`runtime/AGENTS.md`](runtime/AGENTS.md).
+This is the project-local entrypoint for the shared hub (`.ws/`). The managed consumer hub contract is in [`runtime/AGENTS.md`](runtime/AGENTS.md) (installed managed copy in consumers; authoring source of truth at [`.agents/skills/ws-shared/runtime/AGENTS.md`](../.agents/skills/ws-shared/runtime/AGENTS.md) in this upstream package).
 
 Project-specific data stays at this directory root:
 
@@ -10,7 +10,7 @@ Project-specific data stays at this directory root:
 
 `MEMORY.md` + `memory/*` and `CHANGELOG.md` live at their configured locations (`rules.memoryDir` / `rules.changelogFile`, both defaulting to the repo root); legacy copies under this directory remain as fallback when they hold entries.
 
-Managed runtime files are under [`runtime/`](runtime/), and setup-only seed files are under [`templates/`](templates/). A global-hybrid install may contain only this entrypoint and consumer-owned configuration; its managed runtime is resolved from `{globalSkillsRoot}/ws-shared/runtime/`.
+Managed runtime files are under [`runtime/`](runtime/) in consumers (installed copies), and setup-only seed files are under [`templates/`](templates/). A global-hybrid install may contain only this entrypoint and consumer-owned configuration; its managed runtime is resolved from `{globalSkillsRoot}/ws-shared/runtime/`.
 
 Generated hub-root `autoload.md` uses root-relative links, while `ws-doctor` resolves the active local or global runtime before validating config and hub files.
 

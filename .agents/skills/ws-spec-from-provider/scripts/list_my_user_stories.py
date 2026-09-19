@@ -3,7 +3,7 @@
 
   python list_my_user_stories.py [--repo-root PATH] [--limit N]
 
-Reads issueTrackers.azureDevOps from ws-shared/config.json.
+Reads issueTrackers.azureDevOps from .ws/config.json.
 WIQL: User Story, not Closed/Removed/Done, Assigned To = @Me.
 """
 from __future__ import annotations
@@ -18,7 +18,13 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-_SHARED_SCRIPTS = Path(__file__).resolve().parents[2] / "ws-shared" / "runtime" / "scripts"
+# us-351: managed runtime loads from its installed location: the upstream
+# package / global skills tree (<skills>/ws-shared) or the project consumer
+# hub (<repo>/.ws). Mirrors resolveConsumerContext runtimeSource precedence.
+_SKILLS_DIR = Path(__file__).resolve().parents[2]
+_PACKAGED_SCRIPTS = _SKILLS_DIR / "ws-shared" / "runtime" / "scripts"
+_PROJECT_SCRIPTS = _SKILLS_DIR.parent.parent / ".ws" / "runtime" / "scripts"
+_SHARED_SCRIPTS = _PACKAGED_SCRIPTS if _PACKAGED_SCRIPTS.is_dir() else _PROJECT_SCRIPTS
 if str(_SHARED_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SHARED_SCRIPTS))
 from resolve_consumer_root import resolve_repo_root, resolve_config_path  # noqa: E402
@@ -155,7 +161,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="List open ADO User Stories assigned to @Me as JSON"
     )
-    parser.add_argument("--repo-root", help="Project root owning ws-shared/config.json")
+    parser.add_argument("--repo-root", help="Project root owning .ws/config.json")
     parser.add_argument("--limit", type=int, default=0, help="Max stories (0 = all)")
     parser.add_argument("--org", default="", help="Override issueTrackers.azureDevOps.org")
     parser.add_argument(

@@ -8,7 +8,7 @@ const { loadJsonSchema, validateNode } = require(path.join(repoRoot, '.agents/sk
 const ledgerScript = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs');
 const reviewScript = path.join(repoRoot, '.agents/skills/ws-code-review/scripts/write_review_round.cjs');
 const root = temp('ws-ac-ledger-');
-write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({ verification: {}, plans: { dir: '.agents/plans' }, fable: { auditVerdictsBlockShip: 'refuted' } }));
+write(path.join(root, '.ws/config.json'), JSON.stringify({ verification: {}, plans: { dir: '.agents/plans' }, fable: { auditVerdictsBlockShip: 'refuted' } }));
 write(path.join(root, 'feature.spec.md'), '## Acceptance Criteria\n- AC1: First behavior.\n- AC2: Second behavior.\n');
 write(path.join(root, 'impl.js'), 'export const value = 1;\n');
 write(path.join(root, 'feature.test.js'), 'test("first behavior", () => {});\ntest("second behavior", () => {});\n');
@@ -55,7 +55,7 @@ assert.match(fs.readFileSync(path.join(rounds, 'step-06-feature.review.md'), 'ut
 
 // AC1 / AC14 — underscore verification keys are not required aliases
 const aliasRoot = temp('ws-ac-ledger-alias-');
-write(path.join(aliasRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+write(path.join(aliasRoot, '.ws/config.json'), JSON.stringify({
   verification: {
     _comment_mutationTest: 'Optional mutation runner documentation only.',
     backendTest: 'npm run test',
@@ -92,7 +92,7 @@ assert.notStrictEqual(invalidSkip.status, 0, 'invalid skipReason rejected at lin
 
 // AC4 / AC5 / AC6 — skip counts as observed; non-zero exit with skip does not set knownDefect
 const skipRoot = temp('ws-ac-ledger-skip-');
-write(path.join(skipRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+write(path.join(skipRoot, '.ws/config.json'), JSON.stringify({
   verification: { backendFormat: 'npm run lint', backendTest: 'npm run test' },
   plans: { dir: '.agents/plans' },
   fable: { auditVerdictsBlockShip: 'refuted' },
@@ -149,7 +149,7 @@ assert.ok(
 );
 
 const nsRoot = temp('ws-ac-ledger-ns-');
-write(path.join(nsRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({ verification: {}, plans: { dir: '.agents/plans' } }));
+write(path.join(nsRoot, '.ws/config.json'), JSON.stringify({ verification: {}, plans: { dir: '.agents/plans' } }));
 write(path.join(nsRoot, 'ns.spec.md'), [
   '## Acceptance Criteria',
   '- AC1: First behavior.',
@@ -190,7 +190,7 @@ assert.strictEqual(nsSchemaErrors.length, 0, nsSchemaErrors.join('; '));
 
 // V9 — inline AC backticks must not steal Notes ingest; start-of-line section wins (3 bullets)
 const stealRoot = temp('ws-ac-ledger-steal-');
-write(path.join(stealRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({ verification: {}, plans: { dir: '.agents/plans' } }));
+write(path.join(stealRoot, '.ws/config.json'), JSON.stringify({ verification: {}, plans: { dir: '.agents/plans' } }));
 write(path.join(stealRoot, 'steal.spec.md'), [
   '## Acceptance Criteria',
   '- AC1: `ws-spec-format/FORMAT.md` documents `## Validation & Observation Notes` before the real section.',
@@ -228,7 +228,7 @@ assert.match(stealLedger.negativeScenarios[0].text, /First steal-case negative s
 
 // Test sync-plan-index and plan_index auto-sync
 const syncRoot = temp('ws-ac-ledger-sync-');
-write(path.join(syncRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({ verification: {}, plans: { dir: '.agents/plans' } }));
+write(path.join(syncRoot, '.ws/config.json'), JSON.stringify({ verification: {}, plans: { dir: '.agents/plans' } }));
 write(path.join(syncRoot, 'sync.spec.md'), '## Acceptance Criteria\n- AC1: Task mapped criterion.\n');
 write(path.join(syncRoot, 'plan.index.json'), JSON.stringify({
   acceptanceCriteria: [
@@ -256,7 +256,7 @@ let linkedPlanLedger = JSON.parse(fs.readFileSync(path.join(syncRoot, 'ac-ledger
 assert.deepStrictEqual(linkedPlanLedger.acceptanceCriteria[0].tasks, ['T01']);
 // Test commit parsing (JSON and key=value) & scoped event-id deduplication
 const commitTestRoot = temp('ws-ac-ledger-commit-');
-write(path.join(commitTestRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({ verification: {}, plans: { dir: '.agents/plans' } }));
+write(path.join(commitTestRoot, '.ws/config.json'), JSON.stringify({ verification: {}, plans: { dir: '.agents/plans' } }));
 write(path.join(commitTestRoot, 'commit.spec.md'), '## Acceptance Criteria\n- AC1: First.\n- AC2: Second.\n');
 write(path.join(commitTestRoot, 'plan.index.json'), JSON.stringify({
   acceptanceCriteria: [

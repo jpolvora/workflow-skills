@@ -2,7 +2,7 @@
 name: ws-check-harness
 description: Meta-harness integrity auditor — detects install mode/scope (upstream, project-local, global, hybrid) and scans routing, links, portability, integrity digests, instruction duplication, role clarity, and skill composition topology.
 disable-model-invocation: true
-version: 0.4.38
+version: 0.4.41
 invocation_names:
   - check-harness
   - ws-check-harness
@@ -55,7 +55,7 @@ Canonical: [`tools.md`](../ws-shared/runtime/tools.md) § Path tokens · [`confi
 | Token | Resolve (first match) | Default |
 |-------|----------------------|---------|
 | `{skillsRoot}` | `pathTokens.skillsRoot` | `.agents/skills` |
-| `{sharedDir}` | `pathTokens.sharedDir` | `.agents/skills/ws-shared` |
+| `{sharedDir}` | `pathTokens.sharedDir` | `.ws` |
 | `{plansDir}` | `plans.dir` | `.agents/plans` |
 | `{reviewsDir}` | `reviews.dir` | `.agents/codereviews` |
 | `{memoryDir}` | `rules.memoryDir` | `.` (repo root) |

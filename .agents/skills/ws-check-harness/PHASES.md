@@ -13,7 +13,7 @@ Run `node {skillsRoot}/ws-check-harness/scripts/detect_install_mode.cjs --json -
 | Install mode | Install scope | Detection (required evidence) | Primary hub | Skills scan root(s) | Integrity gate |
 |--------------|---------------|------------------------------|-------------|---------------------|----------------|
 | **upstream** | `upstream` | `bin/skill-dependencies.json` **and** `bin/cli.js` **and** at least one `.agents/skills/ws-*/SKILL.md` | Root `AGENTS.md` (+ dual-hub drift vs `{sharedDir}/AGENTS.md`) | `.agents/skills` | Required (Phase 3 item 7) |
-| **consumer** | `project` | Upstream evidence incomplete (markers and/or SoT absent); `{skillsRoot}` has ws-* skills; `{globalSkillsRoot}` has none | `{sharedDir}/AGENTS.md` (`.agents/skills/ws-shared/AGENTS.md`) | `{skillsRoot}` | Skip / not required |
+| **consumer** | `project` | Upstream evidence incomplete (markers and/or SoT absent); `{skillsRoot}` has ws-* skills; `{globalSkillsRoot}` has none | `{sharedDir}/AGENTS.md` (`.ws/AGENTS.md`) | `{skillsRoot}` | Skip / not required |
 | **consumer** | `hybrid` | Upstream evidence incomplete; `{skillsRoot}` **and** `{globalSkillsRoot}` both have ws-* skills (local override wins) | `{sharedDir}/AGENTS.md` | `{skillsRoot}`, then `{globalSkillsRoot}` fallback | Skip / not required |
 | **consumer** | `global` | Upstream evidence incomplete; `{skillsRoot}` has no ws-* skills; `{globalSkillsRoot}` has ws-* skills | Project `{sharedDir}/AGENTS.md` when present, else `{globalSkillsRoot}/ws-shared/AGENTS.md` | `{globalSkillsRoot}` | Skip / not required |
 | **none** | `none` | No ws-* `SKILL.md` in either tree | — | — | Skip / not required |
@@ -29,7 +29,7 @@ Run `node {skillsRoot}/ws-check-harness/scripts/detect_install_mode.cjs --json -
 
 **Consumer rules:**
 
-- Primary hub is always `.agents/skills/ws-shared/AGENTS.md` when present. Missing root `AGENTS.md` is **OK** when `defaults.autoload` is false/omitted/missing. Thin root pointer is **OK**.
+- Primary hub is always `.ws/AGENTS.md` when present. Missing root `AGENTS.md` is **OK** when `defaults.autoload` is false/omitted/missing. Thin root pointer is **OK**.
 - Global-only scope: project hub may be absent; resolve the primary hub from `{globalSkillsRoot}/ws-shared/AGENTS.md` (or its `runtime/AGENTS.md`) and treat hub routing literals as install-layout tokens. Project `config.json` still wins when present; missing project hub → **warning** (`ws-configure-project`), not a broken-link finding.
 - Do **not** warn that root lacks skill loading when the ws-shared hub has it.
 - Route Phase 4 against **{sharedDir}/AGENTS.md** (and root only if it also lists skills).
@@ -42,7 +42,7 @@ Run `node {skillsRoot}/ws-check-harness/scripts/detect_install_mode.cjs --json -
 - **External companion skills** (`skill-dependencies.json` → `externalSkills`): missing local bodies are **intentional omission** (not phantom/critical). Hybrid `{globalSkillsRoot}` presence is OK. Always-applied must not list those ids as mandatory.
 - Phase 5b sprawl on managed upstream skills → **Upstream debt (informational)**; do **not** count toward consumer “Problems found” unless the user asked to optimize those skills.
 - **Dual-hub `ws-senior-developer`:** When consumer root `AGENTS.md` autoloads `ws-senior-developer` while `{sharedDir}/AGENTS.md` documents on-demand opt-in, treat as **intentional consumer override** — not hub drift, not a correction-plan item. Same when upstream root `AGENTS.md` autoloads for dogfood while the shared hub stays opt-in default.
-- **Dual-hub via `autoload.md`:** When root `AGENTS.md` references `{sharedDir}/autoload.md` (or `.agents/skills/ws-shared/autoload.md`) and Always-applied skills differ from shared-hub on-demand defaults, treat as **intentional consumer root override** — not dual-hub drift. Missing root `AGENTS.md` remains **OK** when effective `defaults.autoload` is false/omitted.
+- **Dual-hub via `autoload.md`:** When root `AGENTS.md` references `{sharedDir}/autoload.md` (or `.ws/autoload.md`) and Always-applied skills differ from shared-hub on-demand defaults, treat as **intentional consumer root override** — not dual-hub drift. Missing root `AGENTS.md` remains **OK** when effective `defaults.autoload` is false/omitted.
 - **`defaults.autoload` flag-gated root check:** Effective value is `true` only when project `config.json` exists and `defaults.autoload` is JSON boolean `true` (omitted/missing/not-true → false). When effective **true**: missing root `AGENTS.md`, or root that does not instruct loading Always-applied via an `autoload.md` reference → **critical** (suggest `ws-configure-project --section autoload`). When effective **false**: missing root remains **OK**. Helper SoT: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --check`.
 - **`autoload.md` Always-applied (when file present):** For each skill id in the Always-applied table, path form must be repo-relative (`.agents/skills/...`) or a declared token (`{skillsRoot}` / `{globalSkillsRoot}`). Absolute author-machine paths → **critical**. If `SKILL.md` is missing from both `{skillsRoot}` and `{globalSkillsRoot}` → **warning** (suggest install skill or remove row). Optional helper: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --check`.
 
@@ -66,7 +66,7 @@ Go through **all** artifacts below, in harness routing order (progressive disclo
 |---------|--------|
 | Resolved hub (§ Hub resolution) | Agent **hub** — skill loading, task router, verification (not human install docs) |
 | Root `AGENTS.md` | Upstream: full hub. Consumer: optional thin pointer to `{sharedDir}/AGENTS.md` (absent is OK; never required by shipped skills) |
-| `.agents/skills/ws-shared/AGENTS.md` | Consumer primary hub (always installed with workflows/full) |
+| `.ws/AGENTS.md` | Consumer primary hub (always installed with workflows/full) |
 | `README.md` | Human **README** — install, overview, contribute (not the skill router) |
 | Optional host entry pointer | Thin file pointing at `AGENTS.md` when the consumer/host uses one — verify if present; **not required** |
 
@@ -153,9 +153,9 @@ Phase 4 still **discovers** inventory from the **skills scan root** (§ 3). When
 | Nested `ws-shared/<utility-skill>/` as skill folders | Top-level `.agents/skills/<skill>/` |
 | `us-workflow` | `ws-spec-to-pr` |
 | `writing-great-skills` | `ws-write-a-skill` |
-| `.agents/skills/shared` / `skills/shared/` (retired hub folder) | `.agents/skills/ws-shared` / `skills/ws-shared/` |
+| `.agents/skills/shared` / `skills/shared/` / `.agents/skills/ws-shared` (retired hub folders) | `.ws` |
 | `hub.dir: "shared"` in `skill-dependencies.json` | `hub.dir: "ws-shared"` |
-| `pathTokens.sharedDir` default `.agents/skills/shared` | `.agents/skills/ws-shared` |
+| `pathTokens.sharedDir` default `.agents/skills/shared` | `.ws` |
 | `session_lease.cjs` / `defaults.sessionLeases` / `session-lease.schema.json` / `{plansDir}/.runtime/git.lock` (lease mutex) | **Retired 0.3.38** — run `update` to prune consumer leftovers; use `plans.useWorktrees` for parallel isolation |
 | `ws-patterns` / `ws-patterns-backend` / `ws-patterns-frontend` | **Retired 0.3.38** — use `ws-self-learning` MEMORY; run `update` to remove stale folders |
 | `ws-audit` / `defaults.enableAuditing` | **Retired 0.3.37** — use `ws-check-harness` / `ws-check-workflows`; run `update` to prune config keys |
@@ -372,7 +372,7 @@ Check:
 
 ### Phase 4 — Skills/rules not routed in the resolved hub
 
-Compare the **filesystem** against declared routing in the **resolved hub** (§ Hub resolution; [`ws-shared/AGENTS.md`](../ws-shared/AGENTS.md) in consumer mode, or root `AGENTS.md` in upstream mode). This phase is **mandatory** in every full audit.
+Compare the **filesystem** against declared routing in the **resolved hub** (§ Hub resolution; [`.ws/AGENTS.md`](../../../.ws/AGENTS.md) in consumer mode, or root `AGENTS.md` in upstream mode). This phase is **mandatory** in every full audit.
 
 #### 4a. Discover artifacts on disk
 
@@ -407,7 +407,7 @@ Go through **all** tables that route skills or docs in the **primary hub** (§ H
 |-------|---------------|
 | `§ Skill loading (mandatory)` | auto-load and per-task skills |
 | Layer / Skill index / Promoted tables | skill ids and paths |
-| `{sharedDir}/AGENTS.md` (`.agents/skills/ws-shared/AGENTS.md`) Skill loading / Promoted / Task router tables | always extract when present (consumer primary hub); compare to root hub when both exist (dual-hub drift) |
+| `{sharedDir}/AGENTS.md` (`.ws/AGENTS.md`) Skill loading / Promoted / Task router tables | always extract when present (consumer primary hub); compare to root hub when both exist (dual-hub drift) |
 | `§ Task router` | skills and project docs per task |
 | Layer 3 / External deps / project docs | links to project docs (e.g., CONTEXT, DESIGN, README, MEMORY, CHANGELOG) |
 | Upstream `bin/skill-dependencies.json` (when present) | workflow package skill **folder** ids must exist under skills scan root: `.agents/skills/` (upstream) or `{skillsRoot}` / `.agents/skills/` (consumer) |

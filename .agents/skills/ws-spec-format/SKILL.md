@@ -1,7 +1,7 @@
 ---
 name: ws-spec-format
 description: Specification schema & validator — defines canonical *.spec.md format, section hierarchy, and acceptance criteria rules.
-version: 0.4.38
+version: 0.4.41
 invocation_names:
   - spec-format
   - ws-spec-format
@@ -48,5 +48,5 @@ CLI: `node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs [--help] [--mod
 
 `ws-spec-to-pr`, `ws-plan-write`, `ws-plan-interview`, `ws-plan-verify`, `ws-testing` read **`{us-dir}/step-00-{slug}.spec.md`** only — never live tracker APIs or `*.issue.json`. See [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md).
 
-Providers: [ws-spec-provider-github](../ws-spec-provider-github/SKILL.md) · [ws-spec-provider-azure-devops](../ws-spec-provider-azure-devops/SKILL.md) · [ws-spec-provider-local](../ws-spec-provider-local/SKILL.md) · [ws-spec-write](../ws-spec-write/SKILL.md). Hub: [`AGENTS.md`](../ws-shared/AGENTS.md).
+Providers: [ws-spec-provider-github](../ws-spec-provider-github/SKILL.md) · [ws-spec-provider-azure-devops](../ws-spec-provider-azure-devops/SKILL.md) · [ws-spec-provider-local](../ws-spec-provider-local/SKILL.md) · [ws-spec-write](../ws-spec-write/SKILL.md). Hub: [`AGENTS.md`](../../../.ws/AGENTS.md).
 

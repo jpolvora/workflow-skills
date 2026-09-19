@@ -10,7 +10,7 @@
     "enableMemoryFiles": {
       "type": "boolean",
       "default": true,
-      "description": "When true (default), write memory.md traps/issues/learnings to local memory structure files (.agents/skills/ws-shared/memory/*.md and compiled MEMORY.md)."
+      "description": "When true (default), write memory.md traps/issues/learnings to local memory structure files (.ws/memory/*.md and compiled MEMORY.md)."
     },
     "enableSpecMemoIntegration": {
       "type": "boolean",
@@ -29,8 +29,8 @@
         },
         "sharedDir": {
           "type": "string",
-          "default": ".agents/skills/ws-shared",
-          "description": "Expand {sharedDir}. Usually {skillsRoot}/shared."
+          "default": ".ws",
+          "description": "Expand {sharedDir}. Project hub root; explicit value wins, no legacy fallback."
         }
       }
     },
@@ -524,6 +524,27 @@
         }
       }
     },
+    "monitor": {
+      "type": "object",
+      "description": "Opt-in ws-monitor host transcript discovery (us-356). Default runs perform zero host-store reads.",
+      "additionalProperties": true,
+      "properties": {
+        "discoverHostTranscripts": {
+          "type": "boolean",
+          "default": false,
+          "description": "Opt-in host transcript discovery for ws-monitor (same as --discover-host-transcripts). Default false performs zero host-store reads."
+        },
+        "hostHome": {
+          "type": "string",
+          "description": "Override user home for host-store discovery and path sanitizing (CI/sandbox/isolated profiles). Empty/unset uses the OS home."
+        },
+        "transcriptRoots": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Explicit transcript roots scanned by ws-monitor in addition to workspace candidates."
+        }
+      }
+    },
     "rules": { "type": "object" },
     "specMemo": {
       "type": "object",
@@ -538,7 +559,7 @@
         "enableMemoryFiles": {
           "type": "boolean",
           "default": true,
-          "description": "When true (default), write memory.md traps/issues/learnings to local memory structure files (.agents/skills/ws-shared/memory/*.md and compiled MEMORY.md)."
+          "description": "When true (default), write memory.md traps/issues/learnings to local memory structure files (.ws/memory/*.md and compiled MEMORY.md)."
         },
         "enableSpecMemoIntegration": {
           "type": "boolean",
@@ -606,6 +627,18 @@
           "enum": [false, "refuted", "caveats"],
           "default": "refuted",
           "description": "REFUTED always blocks. caveats additionally blocks VERIFIED WITH CAVEATS."
+        }
+      }
+    },
+    "ws-goal-fix-pr": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Per-skill section for the fix-PR convergence loop (ws-goal-fix-pr). Seeds the one-parent-section-per-skill convention for skill-specific options.",
+      "properties": {
+        "useSubAgents": {
+          "type": "boolean",
+          "default": false,
+          "description": "Fix-PR plan/fix loop execution site. false (default when omitted): run the loop inline in the current turn (legacy behavior) with zero subagent dispatches. true: dispatch one fresh subagent worker per round batch (fixPrPlan then fixPrExec) as documented in ws-goal-fix-pr. One key gates the whole fix path (ws-fix-pr, ws-goal-fix-pr, ws-ship-pr pre-ship convergence); fix semantics are identical in both modes."
         }
       }
     }

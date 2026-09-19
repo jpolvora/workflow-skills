@@ -10,7 +10,7 @@ const persist = path.join(repoRoot, '.agents/skills/ws-shared/runtime/scripts/pe
 const updateState = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/update_state.cjs');
 const root = temp('ws-telemetry-');
 const plans = path.join(root, '.agents/plans');
-write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+write(path.join(root, '.ws/config.json'), JSON.stringify({
   plans: { dir: '.agents/plans', diagnosticsDir: '.agents/plans/diagnostics' },
   defaults: {},
   verification: {},

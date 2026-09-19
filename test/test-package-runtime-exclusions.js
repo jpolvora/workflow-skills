@@ -20,7 +20,7 @@ for (const pattern of [
   /\/\.runtime\//,
   /\/\.audit-session-[^/]+\.json$/,
   /\/\.finding-step-[^/]+\.json$/,
-  /^\.agents\/skills\/ws-shared\/(?:config\.json|STACK\.md|MEMORY\.md|CHANGELOG\.md|installed-skills\.json)$/,
+  /^\.ws\/(?:config\.json|STACK\.md|MEMORY\.md|CHANGELOG\.md|installed-skills\.json)$/,
 ]) assert.ok(!files.some((file) => pattern.test(file)), `tarball excludes ${pattern}`);
 assert.ok(files.includes('.agents/skills/ws-spec-to-pr/scripts/update_state.py'), 'frozen Python helper remains packaged');
 assert.ok(files.includes('.agents/skills/ws-spec-to-pr/scripts/update_state.cjs'), 'Node orchestrator surface is packaged');

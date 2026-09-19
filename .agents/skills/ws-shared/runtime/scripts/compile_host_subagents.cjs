@@ -145,7 +145,7 @@ const PATH_TOKENS_NOTE_BLOCK = [
   '## Path tokens (expand before use)',
   '',
   'Brace tokens below follow the harness install contract:',
-  '`{skillsRoot}` = `.agents/skills`, `{sharedDir}` = `.agents/skills/ws-shared`.',
+  '`{skillsRoot}` = `.agents/skills`, `{sharedDir}` = `.ws`.',
   'Skill-relative links (`../ws-…`) and sibling links (`references/…`, `*.md`) were compiled',
   'from the canonical skill directory to point back to `.agents/skills/<skill>/`.',
   'Resolve them against `.agents/skills/<skill>/`, or prefer the repo-relative',

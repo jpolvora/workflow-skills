@@ -6,7 +6,7 @@ stackFingerprintVersion: 1
 
 Human-readable companion to `config.json`. Agents read `config.json` for machine-readable values; this doc explains structure and conventions.
 
-> **Source of truth:** `.agents/skills/ws-shared/config.json` — project identity, stack, verification, invariants. `tools.md` — tool aliases. This `STACK.md` is the human-readable guide.
+> **Source of truth:** `.ws/config.json` — project identity, stack, verification, invariants. `tools.md` — tool aliases. This `STACK.md` is the human-readable guide.
 >
 > Fresh installs seed this file from `STACK.md.example`. Run [`ws-configure-project`](../ws-configure-project/SKILL.md) to replace placeholders with your project’s real stack.
 
@@ -64,7 +64,7 @@ Paths from `config.json.rules` and domain keys:
 
 | Area | Config key | Notes |
 |------|-----------|-------|
-| **Harness routing** | `rules.harness` | Consumer hub (usually `.agents/skills/ws-shared/AGENTS.md` or root pointer) |
+| **Harness routing** | `rules.harness` | Consumer hub (usually `.ws/AGENTS.md` or root pointer) |
 | **Engineering guardrails** | `rules.seniorDeveloper` | Code review proof source (default `.agents/skills/ws-senior-developer/SKILL.md`) |
 | **Karpathy guidelines** | `rules.karpathyGuidelines` | Surgical changes, simplicity |
 | **UI patterns** | `rules.viewPatterns` | Optional |

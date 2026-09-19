@@ -24,7 +24,7 @@ function makeRepo({ integration }) {
   const fixtures = path.join(repoRoot, 'test/fixtures/step-baton');
   const updater = path.join(repoRoot, '.agents/skills/ws-spec-to-pr-lite/scripts/update_state.cjs');
   const callsFile = path.join(root, 'vault-calls.jsonl');
-  write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(root, '.ws/config.json'), JSON.stringify({
     project: { name: 'memo-test', baseBranch: 'main' },
     plans: { dir: '.agents/plans' },
     verification: {},

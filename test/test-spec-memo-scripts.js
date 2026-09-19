@@ -36,7 +36,7 @@ function runNode(script, args, opts = {}) {
   });
 }
 
-function seedHub(root, { sharedRel = '.agents/skills/ws-shared' } = {}) {
+function seedHub(root, { sharedRel = '.ws' } = {}) {
   const shared = path.join(root, sharedRel);
   fs.mkdirSync(path.join(shared, 'templates'), { recursive: true });
   fs.copyFileSync(EXAMPLE, path.join(shared, 'templates', 'config.json.example'));
@@ -52,7 +52,7 @@ try {
   assert(typeof report.cli === 'object', 'check JSON includes cli');
   assert(typeof report.doctor === 'object', 'check JSON includes doctor');
   assert(typeof report.vault === 'object' && typeof report.vault.ok === 'boolean', 'check JSON includes vault.ok alias');
-  assert(report.sharedDir === '.agents/skills/ws-shared', 'check resolves default sharedDir');
+  assert(report.sharedDir === '.ws', 'check resolves default sharedDir');
   assert(report.ok === (report.config.enabled ? report.cli.available && report.vault.ok : true), 'check report.ok reflects vault-active health only');
   assert(checkDefault.status === (report.ok ? 0 : 1), 'check_spec_memo exit code matches health');
 

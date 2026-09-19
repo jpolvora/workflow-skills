@@ -123,7 +123,7 @@ if (Object.keys(empty.stepRunners).length !== 0) throw new Error('empty map shou
 {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'baton-empty-'));
   try {
-    write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    write(path.join(root, '.ws/config.json'), JSON.stringify({
       project: { name: 'empty-test', baseBranch: 'main' },
       plans: { dir: '.agents/plans' },
       verification: {},

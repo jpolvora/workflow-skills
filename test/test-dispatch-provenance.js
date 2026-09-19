@@ -35,7 +35,7 @@ function cleanup() {
 process.on('exit', cleanup);
 
 // Setup mock consumer structure
-const sharedDir = path.join(tempRoot, '.agents/skills/ws-shared');
+const sharedDir = path.join(tempRoot, '.ws');
 const plansDir = path.join(tempRoot, '.agents/plans');
 const slug = 'prov-demo';
 const usDir = path.join(plansDir, slug);
@@ -164,6 +164,7 @@ const finishRes = spawnSync(
     'finish',
     stateFile,
     '--step', '4',
+    '--noop', 'provenance fixture touches no product files',
     '--repo-root', tempRoot,
   ],
   { encoding: 'utf8' },

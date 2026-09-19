@@ -78,7 +78,7 @@ assert(site.includes('defaults.minVerifyScore'), 'docs/index.html names defaults
 // Classify Pass 1: score below configured bar (but > 6) must bias toward standard
 {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'mvs-classify-'));
-  const shared = path.join(root, '.agents/skills/ws-shared');
+  const shared = path.join(root, '.ws');
   fs.mkdirSync(shared, { recursive: true });
   fs.writeFileSync(
     path.join(shared, 'config.json'),

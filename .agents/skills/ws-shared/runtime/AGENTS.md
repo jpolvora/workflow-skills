@@ -12,7 +12,7 @@
 >
 > **Installer scope:** skill packages install to **project-local** `.agents/skills/` and/or **global** `$HOME/.agents/skills/` (`--global` / `WORKFLOW_SKILLS_GLOBAL_DIR`). This `ws-shared/` hub under the **project** is where `ws-configure-project` writes consumer data. Never creates or overwrites consumer repo-root files (root `AGENTS.md`, host pointers). Optional root/host pointers stay consumer-owned; ws-check-harness may suggest them.
 >
-> **Hybrid / override (mandatory):** Agents may load `ws-*` skill bodies from the global skills root while reading **project** `$PWD/.agents/skills/ws-shared/config.json`. **Local (project) config always overrides global hub config.** Upstream skill SoT is `.agents/skills/ws-*` (see root `AGENTS.md` § Skill SoT, install scopes & config override).
+> **Hybrid / override (mandatory):** Agents may load `ws-*` skill bodies from the global skills root while reading **project** `$PWD/.ws/config.json`. **Local (project) config always overrides global hub config.** Upstream skill SoT is `.agents/skills/ws-*` (see root `AGENTS.md` § Skill SoT, install scopes & config override).
 
 > **Layout / source control:** `runtime/` is managed workflow content, `../templates/` is managed setup content, and `hub-layout.json` is the classification manifest. Track non-secret `config.json` and a maintained `STACK.md`; ignore generated memory/history and installer metadata. A global-hybrid configure run may keep only the consumer root locally and resolve this runtime from the global hub.
 
@@ -157,9 +157,9 @@ PowerShell rules (avoid runtime errors and on-the-fly script patching):
 
 Run this checklist prior to triggering `/ship-pr` or shipping features in a consumer project:
 
-- [ ] **1. Run Tests & Verification**: Execute local test commands (`verification.backendTest` / `verification.frontendTest` or project test scripts) and stack invariant scan (`node .agents/skills/ws-shared/runtime/scripts/scan_stack_invariants.cjs`).
+- [ ] **1. Run Tests & Verification**: Execute local test commands (`verification.backendTest` / `verification.frontendTest` or project test scripts) and stack invariant scan (`node .ws/runtime/scripts/scan_stack_invariants.cjs`).
 - [ ] **2. Harness & Workflow Audit**: Run `ws-check-harness` / `ws-check-workflows` to ensure 0 critical findings.
-- [ ] **3. Configure & Verify Project**: Verify `.agents/skills/ws-shared/config.json` settings and stack definitions.
+- [ ] **3. Configure & Verify Project**: Verify `.ws/config.json` settings and stack definitions.
 - [ ] **4. Clean Docs & Artifacts**: Ensure documentation files have no merge conflict markers or uncommitted scratch files.
 - [ ] **5. Ship via `ship-pr`**: Execute `/ship-pr` (runs Prepare Board, commits, pushes, creates PR).
 

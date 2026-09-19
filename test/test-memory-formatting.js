@@ -27,7 +27,7 @@ function tmpRoot() {
 }
 
 function writeHub(repoRoot, files = {}) {
-  const shared = path.join(repoRoot, ".agents", "skills", "ws-shared");
+  const shared = path.join(repoRoot, ".ws");
   const memoryDir = path.join(shared, "memory");
   fs.mkdirSync(memoryDir, { recursive: true });
   fs.writeFileSync(path.join(shared, "config.json"), "{}\n", "utf8");
@@ -89,7 +89,7 @@ try {
     compiledContent.includes("- **INSTEAD DO**: State explicit DO NOT and INSTEAD DO actionable instructions"),
     "Compiled MEMORY.md missing INSTEAD DO field",
   );
-  assert(compiledContent.includes("under `.agents/skills/ws-shared/memory/`"), "Compiled MEMORY.md header must name the effective entries dir");
+  assert(compiledContent.includes("under `.ws/memory/`"), "Compiled MEMORY.md header must name the effective entries dir");
   assert(
     !compiledContent.includes("under `shared/memory/`") && !compiledContent.includes("under `ws-shared/memory/`"),
     "Compiled MEMORY.md header contains obsolete memory directory shorthand",

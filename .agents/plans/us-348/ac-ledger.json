@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 1,
+  "revision": 4,
+  "workflowId": "us-348",
+  "slug": "us-348",
+  "specPath": ".agents/plans/us-348/step-00-us-348.spec.md",
+  "planIndexPath": null,
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "016215c5c28c3f13ffdf614a4d52f8d9141ce274918e5d3e276b2b12efa7165b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "A documented brainstorm decision (refine-and-implement vs abandon-with-reason) is recorded — verified by reading the decision note.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [
+        {
+          "sha": "6edf5be8",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "host-capabilities",
+          "sourceFile": "test/test-host-capabilities.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-19T09:04:17.379Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "backend-test-green",
+        "g2-commit-6edf5be8",
+        "hostcaps-test-green"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "On approval, workflow/session start detects common native tools (read, write/update, shell exec, dispatch) and caches them in the host-capabilities `.json` — verified by a cache-content test on at least two host shapes.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [
+        {
+          "sha": "6edf5be8",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "host-capabilities",
+          "sourceFile": "test/test-host-capabilities.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-19T09:04:17.380Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "backend-test-green",
+        "g2-commit-6edf5be8",
+        "hostcaps-test-green"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "Skill guidance maps tool calls to capability tokens (e.g. `{readFile}`) with cache-query-first ordering, so agents prefer native tools over shell equivalents — verified by grepping the vocabulary plus a scenario test where file work uses the native tool.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [
+        {
+          "sha": "6edf5be8",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "host-capabilities",
+          "sourceFile": "test/test-host-capabilities.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-19T09:04:17.380Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "backend-test-green",
+        "g2-commit-6edf5be8",
+        "hostcaps-test-green"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "Cached detection is reused across steps (no per-step re-probing) with a documented invalidation rule — verified by a probe-count test over a multi-step run.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [
+        {
+          "sha": "6edf5be8",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "host-capabilities",
+          "sourceFile": "test/test-host-capabilities.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-19T09:04:17.380Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "backend-test-green",
+        "g2-commit-6edf5be8",
+        "hostcaps-test-green"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "Pre-mapped model/tool names ship in the repo for the most common hosts (including dispatch-agent variants) — verified by reading the map for named entries.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [
+        {
+          "sha": "6edf5be8",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "host-capabilities",
+          "sourceFile": "test/test-host-capabilities.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-19T09:04:17.381Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "backend-test-green",
+        "g2-commit-6edf5be8",
+        "hostcaps-test-green"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "File operation via shell when the native tool is cached-available must fail the tool-choice test — red before token guidance lands.",
+      "tests": [
+        {
+          "name": "host-capabilities",
+          "sourceFile": "test/test-host-capabilities.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-19T09:04:17.381Z"
+        }
+      ],
+      "linkEventIds": [
+        "hostcaps-test-green"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Multi-step run that re-probes per step must fail the probe-count test — red on cache bypass.",
+      "tests": [
+        {
+          "name": "host-capabilities",
+          "sourceFile": "test/test-host-capabilities.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-19T09:04:17.381Z"
+        }
+      ],
+      "linkEventIds": [
+        "hostcaps-test-green"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Unknown-host fixture must degrade to the minimal capability set without failing startup — red on hard failure.",
+      "tests": [
+        {
+          "name": "host-capabilities",
+          "sourceFile": "test/test-host-capabilities.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-19T09:04:17.381Z"
+        }
+      ],
+      "linkEventIds": [
+        "hostcaps-test-green"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "Host from the pre-mapped list resolving to unmapped tool names must fail the map-coverage test — red on map gaps.",
+      "tests": [
+        {
+          "name": "host-capabilities",
+          "sourceFile": "test/test-host-capabilities.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-19T09:04:17.381Z"
+        }
+      ],
+      "linkEventIds": [
+        "hostcaps-test-green"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "pre-step6",
+    "score": 0,
+    "earnedUnits": 0,
+    "totalUnits": 50,
+    "knownDefect": false,
+    "missingEvidence": true,
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-19T09:05:29.024Z"
+  }
+}

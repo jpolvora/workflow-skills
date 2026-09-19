@@ -10,7 +10,7 @@ const { assert, path, repoRoot, temp, run, write } = utils;
 const registerNode = path.join(repoRoot, '.agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs');
 const probe = path.join(repoRoot, '.agents/skills/ws-testing/scripts/probe_test_surface.cjs');
 const root = temp('ws-runtime-portability-');
-write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+write(path.join(root, '.ws/config.json'), JSON.stringify({
   plans: { dir: '.agents/plans', specsDir: '.agents/specs' },
   defaults: { testGlobs: ['test/**/*.js'] },
   verification: { backendTest: 'node --test' },
@@ -36,7 +36,7 @@ assert.strictEqual(resolver.resolveConsumerContext({ repoRoot: root }).config.fa
 let surface = run(probe, ['--repo-root', root]);
 assert.strictEqual(surface.status, 0, surface.stderr);
 assert.strictEqual(JSON.parse(surface.stdout).hasTestSurface, true, 'non-empty configured test alias is a machine test surface');
-write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+write(path.join(root, '.ws/config.json'), JSON.stringify({
   plans: { dir: '.agents/plans' },
   defaults: { testGlobs: ['test/**/*.js'] },
   verification: { backendTest: '' },
@@ -59,7 +59,7 @@ assert.strictEqual(JSON.parse(surface.stdout).hasTestSurface, true);
 
 {
   const g2Root = temp('ws-commit-g2-dual-');
-  write(path.join(g2Root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(g2Root, '.ws/config.json'), JSON.stringify({
     plans: { dir: '.agents/plans' },
   }));
   spawnSync('git', ['init'], { cwd: g2Root });
@@ -150,7 +150,7 @@ assert.strictEqual(JSON.parse(surface.stdout).hasTestSurface, true);
 
 {
   const gitRoot = temp('ws-probe-untracked-');
-  write(path.join(gitRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(gitRoot, '.ws/config.json'), JSON.stringify({
     plans: { dir: '.agents/plans' },
     defaults: { testGlobs: ['test/**/*.js'] },
     verification: { backendTest: '' },
@@ -168,7 +168,7 @@ assert.strictEqual(JSON.parse(surface.stdout).hasTestSurface, true);
 
 {
   const ignoreOnly = temp('ws-probe-ignored-only-');
-  write(path.join(ignoreOnly, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(ignoreOnly, '.ws/config.json'), JSON.stringify({
     plans: { dir: '.agents/plans' },
     defaults: { testGlobs: ['test/**/*.js'] },
     verification: { backendTest: '' },

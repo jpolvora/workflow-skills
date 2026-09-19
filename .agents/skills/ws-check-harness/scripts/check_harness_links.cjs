@@ -7,7 +7,7 @@ const path = require('path');
 const TOP_LEVEL = new Set(['.agents', '.github', 'bin', 'docs', 'scripts', 'specs', 'test']);
 const TOKENS = {
   '{skillsRoot}': '.agents/skills',
-  '{sharedDir}': '.agents/skills/ws-shared',
+  '{sharedDir}': '.ws',
   '{plansDir}': '.agents/plans',
   '{reviewsDir}': '.agents/codereviews',
   '{memoryDir}': '.',
@@ -134,7 +134,7 @@ function analyze(repoRoot) {
     .filter((entry) => fs.existsSync(path.join(skillsDir, entry.name, 'SKILL.md')))
     .map((entry) => entry.name)
     .sort();
-  const hubText = ['AGENTS.md', 'CATALOG.md', '.agents/skills/ws-shared/AGENTS.md', '.agents/skills/ws-shared/runtime/AGENTS.md', '.agents/skills/ws-shared/runtime/CATALOG.md', '.agents/skills/ws-shared/autoload.md']
+  const hubText = ['AGENTS.md', 'CATALOG.md', '.ws/AGENTS.md', '.ws/runtime/AGENTS.md', '.ws/runtime/CATALOG.md', '.ws/autoload.md', '.agents/skills/ws-shared/runtime/AGENTS.md', '.agents/skills/ws-shared/runtime/CATALOG.md']
     .map((rel) => {
       const full = path.join(repoRoot, rel);
       return fs.existsSync(full) ? fs.readFileSync(full, 'utf8') : '';

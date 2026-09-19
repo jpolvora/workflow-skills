@@ -1,0 +1,456 @@
+{
+  "schemaVersion": 1,
+  "revision": 26,
+  "workflowId": "us-353-20260919T043606Z",
+  "slug": "us-353",
+  "specPath": ".agents/plans/us-353/step-00-us-353.spec.md",
+  "planIndexPath": ".agents/plans/us-353/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    },
+    {
+      "alias": "contractTests",
+      "commandHash": "f2016cbab42f754865ac3a707f5620b8be251556380d54333b8ab4409e9d78b8",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    },
+    {
+      "alias": "stackScan",
+      "commandHash": "4fa1fcd346c527722ec1a5b94268b0e646876a2a595474550b020aafa8f2a6ab",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "`ws-spec-to-pr/PROTOCOLS.md` Base Prompt Prefix and `STEP-DISPATCH.md` each state that after printing the VerboseMode start-of-step preview the model must immediately continue with tool calls in the same response and never end the turn after the preview.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/PROTOCOLS.md:L327-L327",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L41-L41"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/PROTOCOLS.md",
+          "lineStart": 327,
+          "lineEnd": 327,
+          "sha256": "a70b51096970bced69efa8e28156aa6cb9250957682625906533e93a46f565a1"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+          "lineStart": 41,
+          "lineEnd": 41,
+          "sha256": "31941c937cbd3a4a48bb76c96dd382ba017a7a98acecf41494ffcbc2b04cac90"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3d2829bb840d038490613e796c288444be622c44",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "us-353 AC1 PROTOCOLS.md VerboseMode addendum pins the same-response continuation mandate",
+          "sourceFile": "test/test-worker-turn-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T05:21:13.309Z"
+        },
+        {
+          "name": "us-353 AC1 STEP-DISPATCH.md verbose block pins the same-response continuation mandate",
+          "sourceFile": "test/test-worker-turn-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T05:21:13.372Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-3d2829bb",
+        "g2-commit-3d2829bb840d038490613e796c288444be622c44",
+        "verify-ac1",
+        "verify-ac1b"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "`ws-goal-fix-pr/SKILL.md` (or its referenced protocol file) documents a loop liveness watchdog: what signals the parent checks (round-log freshness, session-log mtime / log silence after worker-result delivery), the thresholds or checks used, and the resume-takeover procedure (fresh loop dispatch with handoff brief, fallback to parent-driven inline batches).",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-goal-fix-pr/SKILL.md:L67-L82"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-goal-fix-pr/SKILL.md",
+          "lineStart": 67,
+          "lineEnd": 82,
+          "sha256": "9c496a120cd758c1ccef1135295caa432401cae15921342eadc50b184636def1"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3d2829bb840d038490613e796c288444be622c44",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "us-353 watchdog: section exists",
+          "sourceFile": "test/test-goal-fix-pr-orchestrator-dispatch.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T05:21:13.423Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-3d2829bb",
+        "g2-commit-3d2829bb840d038490613e796c288444be622c44",
+        "verify-ac2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "All `update_state dispatch` examples reachable from the `ws-goal-fix-pr` loop path show the state-path form; no example shows a bare workflow-id invocation that fails with `state file not found`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-goal-fix-pr/SKILL.md:L67-L82"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-goal-fix-pr/SKILL.md",
+          "lineStart": 67,
+          "lineEnd": 82,
+          "sha256": "9c496a120cd758c1ccef1135295caa432401cae15921342eadc50b184636def1"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3d2829bb840d038490613e796c288444be622c44",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "us-353 statePath: watchdog shows the state-path dispatch form",
+          "sourceFile": "test/test-goal-fix-pr-orchestrator-dispatch.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T05:21:30.598Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-3d2829bb",
+        "g2-commit-3d2829bb840d038490613e796c288444be622c44",
+        "verify-ac3"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "The `ws-goal-fix-pr` batch-worker dispatch contract bounds the result payload delivered back to the loop session (worker writes full output to an artifact and returns a summary plus artifact pointers); the contract states a size or shape limit and where the full transcript lives.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-goal-fix-pr/SKILL.md:L114-L114"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-goal-fix-pr/SKILL.md",
+          "lineStart": 114,
+          "lineEnd": 114,
+          "sha256": "9c496a120cd758c1ccef1135295caa432401cae15921342eadc50b184636def1"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3d2829bb840d038490613e796c288444be622c44",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "us-353 boundedHandoff: worker returns summary plus artifact pointers",
+          "sourceFile": "test/test-goal-fix-pr-orchestrator-dispatch.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T05:21:30.665Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-3d2829bb",
+        "g2-commit-3d2829bb840d038490613e796c288444be622c44",
+        "verify-ac4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "New or changed contract wordings are locked by dispatch/contract tests (existing `ws-goal-fix-pr` dispatch test extended or new assertions), and `npm run test` passes.",
+      "status": "Implemented",
+      "evidence": [
+        "test/test-goal-fix-pr-orchestrator-dispatch.js:L286-L318"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": "test/test-goal-fix-pr-orchestrator-dispatch.js",
+          "lineStart": 286,
+          "lineEnd": 318,
+          "sha256": "942723a70bc075059624ba535a66a56b433d665fe530e4c269f472bd8157386b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3d2829bb840d038490613e796c288444be622c44",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "us-353 watchdog: section exists",
+          "sourceFile": "test/test-goal-fix-pr-orchestrator-dispatch.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T05:34:05.078Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-3d2829bb",
+        "g2-commit-3d2829bb840d038490613e796c288444be622c44",
+        "verify-ac5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "`validate_spec.cjs --mode=authoring` passes on this spec and every changed skill doc stays en-us with no host product names and no hardcoded consumer paths.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-goal-fix-pr/SKILL.md:L67-L82"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-goal-fix-pr/SKILL.md",
+          "lineStart": 67,
+          "lineEnd": 82,
+          "sha256": "9c496a120cd758c1ccef1135295caa432401cae15921342eadc50b184636def1"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3d2829bb840d038490613e796c288444be622c44",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "NS5 harnessNeutrality: portable dispatch-agent alias used",
+          "sourceFile": "test/test-goal-fix-pr-orchestrator-dispatch.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T05:36:18.131Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-3d2829bb",
+        "g2-commit-3d2829bb840d038490613e796c288444be622c44",
+        "verify-ac6",
+        "verify-ac6t"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Preview-only regression: a dispatch prompt fixture containing the preview line without the continuation mandate fails the contract test (red before AC1, green after).",
+      "tests": [
+        {
+          "name": "us-353 AC1 PROTOCOLS.md VerboseMode addendum pins the same-response continuation mandate",
+          "sourceFile": "test/test-worker-turn-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T05:34:11.316Z"
+        }
+      ],
+      "linkEventIds": [
+        "verify-ns1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Silent wedge undetected: a watchdog-procedure doc test or review checklist missing round-log/session-log freshness checks is flagged in Step 5 verification.",
+      "tests": [
+        {
+          "name": "us-353 watchdog: detection signals are round-log freshness and session-log mtime",
+          "sourceFile": "test/test-goal-fix-pr-orchestrator-dispatch.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T05:34:11.372Z"
+        }
+      ],
+      "linkEventIds": [
+        "verify-ns2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Bare workflow-id dispatch: any `update_state dispatch` example without a state path fails grep-based contract assertion (red before AC3, green after).",
+      "tests": [
+        {
+          "name": "us-353 statePath: watchdog shows the state-path dispatch form",
+          "sourceFile": "test/test-goal-fix-pr-orchestrator-dispatch.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T05:34:11.444Z"
+        }
+      ],
+      "linkEventIds": [
+        "verify-ns3"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "Oversized worker result: a batch-worker handoff fixture returning a full transcript instead of summary + pointers fails the payload-shape assertion (red before AC4, green after).",
+      "tests": [
+        {
+          "name": "us-353 boundedHandoff: worker returns summary plus artifact pointers",
+          "sourceFile": "test/test-goal-fix-pr-orchestrator-dispatch.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T05:34:11.521Z"
+        }
+      ],
+      "linkEventIds": [
+        "verify-ns4"
+      ]
+    },
+    {
+      "id": "NS5",
+      "text": "Stack invariant violation: an async test helper with a floating promise fails the invariant scan before merge.",
+      "tests": [
+        {
+          "name": "scan_stack_invariants exits 1 on floating promises",
+          "sourceFile": "test/test-reviewer-aligned-gates.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T05:35:34.693Z"
+        }
+      ],
+      "linkEventIds": [
+        "verify-ns5"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "pre-step6",
+    "score": 10,
+    "earnedUnits": 60,
+    "totalUnits": 60,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-19T05:38:01.987Z"
+  }
+}

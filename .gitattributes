@@ -5,3 +5,20 @@
 .agents/skills/**/SKILL.md text eol=lf
 # Integrity --check compares raw file bytes to LF stable-stringify
 bin/skill-integrity.json text eol=lf
+# Installer entry is multi-edited across scopes; keep WT LF so blob-exact matching holds
+bin/cli.js text eol=lf
+bin/skill-integrity-lib.js text eol=lf
+.agents/skills/ws-shared/runtime/config.schema.json text eol=lf
+test/test-install.js text eol=lf
+test/test-autoload-configure.js text eol=lf
+test/test-runtime-portability.js text eol=lf
+test/test-workflow-state-contract.js text eol=lf
+test/test-wiki.js text eol=lf
+test/test-ws-doctor.js text eol=lf
+package.json text eol=lf
+test/test-specialized-subagents-compiler.js text eol=lf
+test/test-step-baton-claim.js text eol=lf
+test/test-step-baton-config.js text eol=lf
+test/test-step-baton-monitor.js text eol=lf
+test/test-step-baton-specmemo.js text eol=lf
+test/test-step-coordinator.js text eol=lf

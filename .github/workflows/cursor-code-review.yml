@@ -1,9 +1,11 @@
 name: Agentic Code Review (Cursor)
 
-# Disabled for automatic PR reviews. Active reviewer is opencode-code-review.yml.
-# Kept as workflow_dispatch backup (requires CURSOR_API_KEY). Re-enable pull_request here
-# only after disabling opencode-code-review.yml pull_request triggers.
+# Active PR reviewer (Cursor, composer-2.5). Uses CURSOR_API_KEY repository secret.
+# opencode-code-review.yml is workflow_dispatch-only backup until re-enabled.
 on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
     inputs:
       pr_number:

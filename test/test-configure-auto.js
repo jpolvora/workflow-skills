@@ -72,7 +72,7 @@ function parseJson(result, what) {
 }
 
 function seedHub(root, { withConfig = false } = {}) {
-  const shared = path.join(root, '.agents', 'skills', 'ws-shared');
+  const shared = path.join(root, '.ws');
   fs.mkdirSync(path.join(shared, 'templates'), { recursive: true });
   fs.mkdirSync(path.join(shared, 'runtime'), { recursive: true });
   fs.mkdirSync(path.join(shared, 'runtime'), { recursive: true });
@@ -98,12 +98,12 @@ function seedHub(root, { withConfig = false } = {}) {
 }
 
 function readConfig(root) {
-  return JSON.parse(fs.readFileSync(path.join(root, '.agents', 'skills', 'ws-shared', 'config.json'), 'utf8'));
+  return JSON.parse(fs.readFileSync(path.join(root, '.ws', 'config.json'), 'utf8'));
 }
 
 function writeConfig(root, config) {
   fs.writeFileSync(
-    path.join(root, '.agents', 'skills', 'ws-shared', 'config.json'),
+    path.join(root, '.ws', 'config.json'),
     `${JSON.stringify(config, null, 2)}\n`,
     'utf8',
   );
@@ -207,12 +207,12 @@ function writeConfig(root, config) {
 {
   const root = mkTmp('ws-auto-dry-');
   seedHub(root, { withConfig: false });
-  const before = fs.readdirSync(path.join(root, '.agents', 'skills', 'ws-shared'));
+  const before = fs.readdirSync(path.join(root, '.ws'));
   const result = runAuto(['--repo-root', root, '--dry-run', '--json']);
   const data = parseJson(result, '--dry-run');
   if (data) {
     assert(data.written === false, 'dry-run writes nothing');
-    const after = fs.readdirSync(path.join(root, '.agents', 'skills', 'ws-shared'));
+    const after = fs.readdirSync(path.join(root, '.ws'));
     assert(!after.includes('config.json') && JSON.stringify(before) === JSON.stringify(after), 'dry-run leaves hub untouched');
   }
 }

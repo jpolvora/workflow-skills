@@ -22,7 +22,7 @@ Shipped skills in this harness are **agent- and IDE-neutral**. Core workflows de
 
 ## 2. Host Capability Discovery (neutral matrix)
 
-Orchestrators resolve the binding at bootstrap (before the first `user-gate` or `dispatch-agent`) in this order: config override `defaults.hostAdapter.mode` when non-`auto` → disk-cache hit in `{sharedDir}/host-capabilities.json` for the current `hostId::orchestratorModel` key → one active probe. Cache misses upsert only the current key (preserving others); missing/unreadable cache behaves as a miss. Log `host-capability-bind | {json} | {hit|probe} | ISO` to step telemetry JSONL during Step 0. Alias table and full protocol: [`tools.md`](tools.md) § Host-tool binding & dispatch tiers.
+Orchestrators resolve the binding at bootstrap (before the first `user-gate` or `dispatch-agent`) in this order: config override `defaults.hostAdapter.mode` when non-`auto` → disk-cache hit in `{sharedDir}/host-capabilities.json` for the current `hostId::orchestratorModel` key → one active probe via `node {skillsRoot}/ws-shared/runtime/scripts/probe_host_capabilities.cjs --key {hostId::orchestratorModel} [--declare token=name,...]` (the session declares any native tools it exposes; host-declared names outrank the pre-map, pre-mapped host shapes in `host-tool-map.json` fill the gaps, unknown hosts degrade to the minimal safe set, never a startup failure). Cache misses upsert only the current key (preserving others); missing/unreadable cache behaves as a miss. Log `host-capability-bind | {json} | {hit|probe} | ISO` to step telemetry JSONL during Step 0. The cached entry is reused across every step — no per-step re-probing; re-probe only on explicit `--refresh`, host/toolset change, explicit rebind, or a different session key. Capability-token vocabulary and the full invalidation rule: [`host-capability-tokens.md`](host-capability-tokens.md). Alias table and full protocol: [`tools.md`](tools.md) § Host-tool binding & dispatch tiers.
 
 | Alias | Binding meaning |
 |---|---|
@@ -73,8 +73,8 @@ Legacy neutral flags (`hasStructuredChoiceTool` / `hasSubagentTool` / `hasBrowse
 - **When:** both `subagentTool` and `backgroundTaskTool` are `none`, or resolved mode is `inline-isolated`.
 - **How:** The session model temporarily adopts the specific step persona (e.g. Coder for Step 4, Reviewer for Step 6) within a strict context boundary:
   1. Load **only** the pointed artifacts (`{workflow-id}.state.json` → `state.handoffs[String(N-1)]`, `plan.index.json`, `ac-ledger.json`, spec/plan of record).
-  2. Execute the step actions (reading, modifying via native file tools, running configured verification).
-  3. Emit the structured `step-output` block (`status`, `files_touched`, `notes`, `next_step_ready`).
+  2. Execute the step actions (reading, modifying via native file tools, running configured verification). The FIRST response carries BOTH the verbose preview AND at least 2 tool calls; never end the turn right after the preview.
+  3. Emit the structured `step-output` block (`status`, `files_touched`, `notes`, `next_step_ready`). The final message starts with DONE; required artifacts must exist on disk before finish — an unwritten-artifact finish resolves as failed, never completed.
   4. Call `node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs finish --step {N} ...`.
 - **Telemetry:** log `inline-isolated-step | step {N} | ISO`.
 - **Invariant reconciliation:** while the orchestrator persona never edits code, the session model executing under the step temporary persona IS authorized to edit product files with native file tools in this tier only.
@@ -88,7 +88,7 @@ Legacy neutral flags (`hasStructuredChoiceTool` / `hasSubagentTool` / `hasBrowse
 
 ## 4. Configurable Host Dispatch Adapter (`config.json`)
 
-Projects can configure and customize subagent dispatch behavior in `.agents/skills/ws-shared/config.json` under `defaults.hostAdapter`:
+Projects can configure and customize subagent dispatch behavior in `.ws/config.json` under `defaults.hostAdapter`:
 
 ```json
 {
@@ -122,7 +122,7 @@ Legacy named host values (if present in older configs) resolve to neutral tiers:
 
 ### Probe cache file (`{sharedDir}/host-capabilities.json`)
 
-Consumer-local, gitignored (see `hub.gitignore`), never shipped upstream. JSON object mapping each `hostId::orchestratorModel` key to `{ binding: { askQuestionTool, subagentTool, backgroundTaskTool, browserTool, supportedModels?: string[] }, probedAt: ISO, hostAdapterMode: string }`. `supportedModels` is optional host capability data used for fail-soft model selection. Key segments are runtime data values; skill contract tables keep neutral alias names only.
+Consumer-local, gitignored (see `hub.gitignore`), never shipped upstream. JSON object mapping each `hostId::orchestratorModel` key to `{ binding: { askQuestionTool, subagentTool, backgroundTaskTool, browserTool, supportedModels?: string[] }, capabilities: { readFile, writeFile, editFile, shellExec, dispatchAgent, askQuestion, browserVerify }, declared: { token: name }, hostShape: string, knownShape: boolean, probedAt: ISO, hostAdapterMode: string }`. `supportedModels` is optional host capability data used for fail-soft model selection. Key segments are runtime data values; skill contract tables keep neutral alias names only.
 
 ---
 
@@ -148,6 +148,7 @@ INSTRUCTIONS:
 2. Execute the actions required for Step {N} per {skillsRoot}/ws-spec-to-pr/STEP-DISPATCH.md.
 3. Validate changes against configured verification commands.
 4. Output a parseable step-output block upon completion.
+5. Turn rule: the FIRST response must contain BOTH the verbose preview AND at least 2 tool calls; a response with zero tool calls ends the turn as failed delivery. The OUTPUT FORMAT example below is a shape reference, not a valid final message on its own — the final message starts with DONE plus the step-output envelope, and required artifacts must exist on disk before finish. Full text: `../ws-spec-to-pr/WORKER-TURN-RULES.md`.
 
 OUTPUT FORMAT:
 ```json
@@ -195,6 +196,7 @@ When creating or modifying workflow skills:
 A deterministic coordinator process (`ws-spec-to-pr/scripts/step_coordinator.cjs`, plain Node, no LLM) may drive one run (`workflowId`) across several CLI processes on the same machine and repository. The coordinator is a durable driver around the Tier 2 one-shot mechanism (§3 Tier 2), not a new dispatch tier: unmapped steps keep Tier 1/2/3 plus `stepModels`, and lite inline execution keeps its clean-context-pointer boundary.
 
 - **Turn signal:** the workflow state file only. The baton holder for `currentStep` (`state.baton`, plus the terse `state.handoffs` entry per step) is the only runner allowed to act.
+- **Liveness probe contract (never-ping-mid-batch):** the parent never sends a message into a running worker turn — an injected status ping can become the turn's terminal output and kill progressing work. The sanctioned progress signal is a read-only poll of the workflow state file (revision, `currentStep`, step handoffs, e.g. the coordinator `pollIntervalSeconds` external-advancement detection): it injects no message and cannot terminate the probed turn.
 - **Worker spawn vocabulary:** runner command templates substitute `{prompt}`, `{cwd}`, `{slug}`, `{step}`. Effective resolution: `{prompt}` is the coordinator-written dispatch-prompt file path (`{us-dir}/.runtime/step-{N}-dispatch-prompt.md`), `{cwd}` the repo root, `{slug}` the run slug, `{step}` the step number. Templates are tokenized to argv and spawned without a shell.
-- **Worker contract:** one-shot per turn with the Tier 2 sparse-pointer payload plus a baton envelope (`step`, `holder`, `leaseUntil`, `attempt`); the worker calls `finish` for its step before exit and never polls, idles, or emits gates.
+- **Worker contract:** one-shot per turn with the Tier 2 sparse-pointer payload plus a baton envelope (`step`, `holder`, `leaseUntil`, `attempt`); the worker calls `finish` for its step before exit and never polls, idles, or emits gates. The worker's FIRST response carries BOTH the verbose preview AND at least 2 tool calls (zero tool calls = failed delivery); a continuation worker recovering an interrupted turn reuses the intact worktree progress (read `git status` first, then verify, commit, resolve, push, report) instead of rebuilding context from scratch.
 - **Gates:** all Transition Gates and `user-gate` prompts surface at the coordinator (pause-and-prompt, or index 0 in `autoMode`); see [`gates.md`](gates.md) § Coordinator gate surfacing.

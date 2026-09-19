@@ -1,7 +1,7 @@
 ---
 name: ws-plan-to-tasks
 description: Task DAG breakdown generator — transforms approved implementation plans into atomic, dependency-mapped task execution graphs.
-version: 0.4.38
+version: 0.4.41
 disable-model-invocation: true
 invocation_names:
   - plan-to-tasks
@@ -26,7 +26,7 @@ Standalone:
 /plan-to-tasks <plan-path> [thresholds=<path>]
 ```
 
-Workflow (ws-spec-to-pr Step 3): dispatched **only** when `defaults.enableDag` is `true`. When `enableDag` is false (default), the orchestrator writes the sequential stub with `write_sequential_dag.cjs` and does not load this skill. When dispatched, the orchestrator passes `planPath` (`step-02-*.plan.refined.md` or `step-01-*.plan.md`) from state.
+Workflow (ws-spec-to-pr Step 3): dispatched **only** when `defaults.enableDag` is `true`. When `enableDag` is false (default), the orchestrator finishes Step 3 as skipped (`dag-disabled`), writes no stub files, and does not load this skill. When dispatched, the orchestrator passes `planPath` (`step-02-*.plan.refined.md` or `step-01-*.plan.md`) from state.
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|
@@ -68,7 +68,7 @@ Workflow (ws-spec-to-pr Step 3): dispatched **only** when `defaults.enableDag` i
 
 - Do not write product code: only structure the plan into tasks. No `git`, state, or ledger writes — return artifact paths only.
 - Strict isolation: tasks in the same parallel level never share files (prevents worktree merge conflicts).
-- Do not invent stubs or a DAG when not dispatched for it; when `enableDag` is false the orchestrator owns the sequential stub.
+- Do not invent stubs or a DAG when not dispatched for it; when `enableDag` is false the orchestrator finishes Step 3 skipped (`dag-disabled`) and no stubs are written.
 - Consult `config.json` for layer boundaries and project paths.
 
 ## Subagent contract

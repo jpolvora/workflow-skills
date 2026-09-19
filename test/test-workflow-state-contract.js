@@ -9,12 +9,12 @@ const ledgerScript = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/a
 const update = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/update_state.cjs');
 const validate = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/validate_state.cjs');
 const root = temp('ws-state-contract-');
-fs.mkdirSync(path.join(root, '.agents/skills/ws-shared/runtime'), { recursive: true });
+fs.mkdirSync(path.join(root, '.ws/runtime'), { recursive: true });
 fs.copyFileSync(
   path.join(repoRoot, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
-  path.join(root, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
+  path.join(root, '.ws/runtime/skill-dependencies.json'),
 );
-write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+write(path.join(root, '.ws/config.json'), JSON.stringify({
   plans: { dir: '.agents/plans' },
   verification: {},
   defaults: {},
@@ -133,7 +133,7 @@ function setupPreAdvance6Fixture(options = {}) {
   const usDir = path.join(pa6Root, '.agents/plans', slug);
   const defaults = {};
   if (options.minVerifyScore !== undefined) defaults.minVerifyScore = options.minVerifyScore;
-  write(path.join(pa6Root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(pa6Root, '.ws/config.json'), JSON.stringify({
     plans: { dir: '.agents/plans' },
     verification: { backendFormat: 'npm run lint', backendTest: 'npm run test' },
     defaults,
@@ -280,7 +280,7 @@ verificationScore: 9
 {
   const runtimeRoot = temp('ws-state-runtime-');
   const runtimeStateRel = '.agents/plans/rt/wf.state.md';
-  write(path.join(runtimeRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(runtimeRoot, '.ws/config.json'), JSON.stringify({
     plans: { dir: '.agents/plans' },
     verification: {},
     fable: { auditVerdictsBlockShip: 'refuted' },
@@ -325,7 +325,7 @@ acImplemented: 0
 {
   const hashRoot = temp('ws-state-hash-');
   const hashStateRel = '.agents/plans/hash/wf.state.md';
-  write(path.join(hashRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(hashRoot, '.ws/config.json'), JSON.stringify({
     plans: { dir: '.agents/plans' },
     verification: {},
     fable: { auditVerdictsBlockShip: 'refuted' },
@@ -376,7 +376,7 @@ acImplemented: 0
 {
   const commitRoot = temp('ws-state-commit-');
   const commitStateRel = '.agents/plans/cm/wf.state.md';
-  write(path.join(commitRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(commitRoot, '.ws/config.json'), JSON.stringify({
     plans: { dir: '.agents/plans' },
     verification: {},
     fable: { auditVerdictsBlockShip: 'refuted' },
@@ -417,7 +417,7 @@ acImplemented: 0
 
 const skipRoot = temp('ws-state-skip-');
 const skipStateRel = '.agents/plans/skip/wf.state.md';
-write(path.join(skipRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+write(path.join(skipRoot, '.ws/config.json'), JSON.stringify({
   plans: { dir: '.agents/plans' },
   verification: {},
   defaults: {},
@@ -538,7 +538,7 @@ const liteValidate = path.join(repoRoot, '.agents/skills/ws-spec-to-pr-lite/scri
 const liteUpdate = path.join(repoRoot, '.agents/skills/ws-spec-to-pr-lite/scripts/update_state.cjs');
 const liteRoot = temp('ws-state-lite-');
 const liteStateRel = '.agents/plans/lite/wf.state.md';
-write(path.join(liteRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+write(path.join(liteRoot, '.ws/config.json'), JSON.stringify({
   plans: { dir: '.agents/plans' },
   verification: {},
   defaults: {},
@@ -630,7 +630,7 @@ assert.strictEqual(run(liteValidate, [liteStateRel, '--pre-advance', '5', '--rep
 
 const stdRoot = temp('ws-state-std-close-');
 const stdStateRel = '.agents/plans/std/wf.state.md';
-write(path.join(stdRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+write(path.join(stdRoot, '.ws/config.json'), JSON.stringify({
   plans: { dir: '.agents/plans' }, verification: {}, defaults: {}, fable: { auditVerdictsBlockShip: 'refuted' },
 }));
 write(path.join(stdRoot, stdStateRel), `---
@@ -669,7 +669,7 @@ assert.strictEqual(helpOut.status, 0, 'validate --help exits 0');
 assert.match(helpOut.stdout, /Usage:/);
 
 const indexGapRoot = temp('ws-state-index-gap-');
-write(path.join(indexGapRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+write(path.join(indexGapRoot, '.ws/config.json'), JSON.stringify({
   plans: { dir: '.agents/plans' },
   verification: {},
   defaults: {},
@@ -707,7 +707,7 @@ assert.strictEqual(
 
 {
   const stampRoot = temp('ws-state-index-stamp-');
-  write(path.join(stampRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(stampRoot, '.ws/config.json'), JSON.stringify({
     plans: { dir: '.agents/plans' },
     verification: {},
     defaults: {},
@@ -821,7 +821,7 @@ updatedAt: "${memoTs}"
 
 {
   const idempRoot = temp('ws-state-idemp-');
-  write(path.join(idempRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(idempRoot, '.ws/config.json'), JSON.stringify({
     plans: { dir: '.agents/plans' },
     verification: {},
     defaults: {},
@@ -904,12 +904,12 @@ acImplemented: 0
   const workflowId = 'wf-outdisc';
   const stateRel = `.agents/plans/${slug}/wf.state.md`;
   const usDir = path.join(testRoot, '.agents/plans', slug);
-  fs.mkdirSync(path.join(testRoot, '.agents/skills/ws-shared/runtime'), { recursive: true });
+  fs.mkdirSync(path.join(testRoot, '.ws/runtime'), { recursive: true });
   fs.copyFileSync(
     path.join(repoRoot, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
-    path.join(testRoot, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
+    path.join(testRoot, '.ws/runtime/skill-dependencies.json'),
   );
-  write(path.join(testRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(testRoot, '.ws/config.json'), JSON.stringify({
     plans: { dir: '.agents/plans' },
     specs: { dir: '.agents/specs' },
     verification: {},
@@ -979,12 +979,12 @@ acImplemented: 0
   const workflowId2 = 'wf-artfb';
   const stateRel2 = `.agents/plans/${slug2}/wf.state.md`;
   const usDir2 = path.join(testRoot2, '.agents/plans', slug2);
-  fs.mkdirSync(path.join(testRoot2, '.agents/skills/ws-shared/runtime'), { recursive: true });
+  fs.mkdirSync(path.join(testRoot2, '.ws/runtime'), { recursive: true });
   fs.copyFileSync(
     path.join(repoRoot, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
-    path.join(testRoot2, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
+    path.join(testRoot2, '.ws/runtime/skill-dependencies.json'),
   );
-  write(path.join(testRoot2, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(testRoot2, '.ws/config.json'), JSON.stringify({
     plans: { dir: '.agents/plans' },
     specs: { dir: '.agents/specs' },
     verification: {},
@@ -1035,7 +1035,7 @@ acImplemented: 0
   const workflowId = 'wf-pa4miss';
   const stateRel = `.agents/plans/${slug}/wf.state.md`;
   const usDir = path.join(pa4Root, '.agents/plans', slug);
-  write(path.join(pa4Root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(pa4Root, '.ws/config.json'), JSON.stringify({
     plans: { dir: '.agents/plans' },
     verification: {},
     defaults: {},
@@ -1100,7 +1100,7 @@ Dogfood: plan must exist before product-path edits outside {plansDir}.
   const workflowId = 'wf-pa4noref';
   const stateRel = `.agents/plans/${slug}/wf.state.md`;
   const usDir = path.join(pa4Root, '.agents/plans', slug);
-  write(path.join(pa4Root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(pa4Root, '.ws/config.json'), JSON.stringify({
     plans: { dir: '.agents/plans' },
     verification: {},
     defaults: {},
@@ -1191,7 +1191,7 @@ T00 implements AC1 in \`src/noref.js\` with V1:noref-test.
   const workflowId = 'wf-pa4skip1';
   const stateRel = `.agents/plans/${slug}/wf.state.md`;
   const usDir = path.join(pa4Root, '.agents/plans', slug);
-  write(path.join(pa4Root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(pa4Root, '.ws/config.json'), JSON.stringify({
     plans: { dir: '.agents/plans' },
     verification: {},
     defaults: {},
@@ -1252,7 +1252,7 @@ Step 1 skip cannot waive plan-of-record.
 
 function seedPa4PlanningFiles(pa4Root, slug, workflowId, opts = {}) {
   const usDir = path.join(pa4Root, '.agents/plans', slug);
-  write(path.join(pa4Root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(pa4Root, '.ws/config.json'), JSON.stringify({
     plans: { dir: '.agents/plans' },
     verification: {},
     defaults: {},
@@ -1412,7 +1412,7 @@ acImplemented: 0
   const workflowId = 'wf-interview-artifact';
   const stateRel = `.agents/plans/${slug}/wf.state.md`;
   const usDir = path.join(interviewRoot, '.agents/plans', slug);
-  write(path.join(interviewRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(interviewRoot, '.ws/config.json'), JSON.stringify({
     plans: { dir: '.agents/plans' },
     defaults: {},
   }));
@@ -1458,7 +1458,7 @@ workflowManifest: {"created":[],"modified":[],"deleted":[]}
   const workflowId = 'wf-guards5';
   const stateRel = `.agents/plans/${slug}/wf.state.md`;
   const common = ['--repo-root', guardRoot, '--jsonl-out', `.agents/plans/${slug}/telemetry.jsonl`];
-  write(path.join(guardRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(guardRoot, '.ws/config.json'), JSON.stringify({
     project: { name: 'guard' },
     defaults: { minVerifyScore: 9 },
   }));
@@ -1518,7 +1518,7 @@ for (const [name, scoreLine, shouldPass] of [
 ]) {
   const scoreRoot = temp(`ws-state-guard-s6-${name}-`);
   const scoreStateRel = '.agents/plans/guards6/wf.state.md';
-  write(path.join(scoreRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(scoreRoot, '.ws/config.json'), JSON.stringify({
     project: { name: 'guard' },
     defaults: { minVerifyScore: 9 },
   }));
@@ -1558,7 +1558,7 @@ ${scoreLine}
   const stateRel = `.agents/plans/${slug}/wf.state.md`;
   const usDir = path.join(s5Root, '.agents/plans', slug);
   const common = ['--repo-root', s5Root, '--jsonl-out', `.agents/plans/${slug}/telemetry.jsonl`];
-  write(path.join(s5Root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(s5Root, '.ws/config.json'), JSON.stringify({
     project: { name: 'derive' },
     plans: { dir: '.agents/plans' },
     defaults: { minVerifyScore: 9 },
@@ -1644,7 +1644,7 @@ ${initialScoreLine}
   const emptyRoot = temp('ws-state-guard-s4empty-');
   const slug = 'guardempty';
   const stateRel = `.agents/plans/${slug}/wf.state.md`;
-  write(path.join(emptyRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(emptyRoot, '.ws/config.json'), JSON.stringify({
     project: { name: 'guard' },
     defaults: { minVerifyScore: 9 },
   }));
@@ -1676,7 +1676,7 @@ acImplemented: 0
   const fixRoot = temp('ws-state-guard-fixpr-');
   const slug = 'guardfixpr';
   const stateRel = `.agents/plans/${slug}/wf.state.md`;
-  write(path.join(fixRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(fixRoot, '.ws/config.json'), JSON.stringify({
     project: { name: 'guard' },
     defaults: { minVerifyScore: 9 },
   }));
@@ -1716,7 +1716,7 @@ verificationScore: 9
   const slug = 'guardcorrupt';
   const stateRel = `.agents/plans/${slug}/wf.state.md`;
   const usDir = path.join(corruptRoot, '.agents/plans', slug);
-  write(path.join(corruptRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(corruptRoot, '.ws/config.json'), JSON.stringify({
     project: { name: 'guard' },
     defaults: { minVerifyScore: 9 },
   }));
@@ -1764,7 +1764,7 @@ status: completed
   const stateRel = `.agents/plans/${slug}/wf.state.md`;
   const usDir = path.join(skipRoot, '.agents/plans', slug);
   fs.mkdirSync(path.join(usDir, '.runtime'), { recursive: true });
-  write(path.join(skipRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(skipRoot, '.ws/config.json'), JSON.stringify({
     project: { name: 'skipfallback' },
     defaults: { minVerifyScore: 9 },
   }));

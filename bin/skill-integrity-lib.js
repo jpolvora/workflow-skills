@@ -333,8 +333,9 @@ export function verifyHubOnDisk(sharedRoot, expectedHub) {
  * @param {object} opts.manifest - upstream skill-integrity.json
  * @param {string[]} opts.skillIds - closure to verify
  * @param {boolean} opts.includeHub
+ * @param {string} [opts.hubDir] - consumer hub root (defaults to skillsDir/ws-shared)
  */
-export function verifyClosure({ skillsDir, manifest, skillIds, includeHub }) {
+export function verifyClosure({ skillsDir, manifest, skillIds, includeHub, hubDir }) {
   const mismatches = [];
   const actualSkills = {};
 
@@ -356,7 +357,7 @@ export function verifyClosure({ skillsDir, manifest, skillIds, includeHub }) {
 
   let actualHub = null;
   if (includeHub) {
-    const sharedRoot = path.join(skillsDir, HUB_DIR);
+    const sharedRoot = hubDir || path.join(skillsDir, HUB_DIR);
     const result = verifyHubOnDisk(sharedRoot, manifest.hub);
     actualHub = result.actual;
     mismatches.push(...result.mismatches);
@@ -401,8 +402,8 @@ export function buildLocalRecord({
   };
 }
 
-export function localIntegrityPath(skillsDir) {
-  return path.join(skillsDir, HUB_DIR, SKILL_INTEGRITY_LOCAL_FILE);
+export function localIntegrityPath(skillsDir, hubDir) {
+  return path.join(hubDir || path.join(skillsDir, HUB_DIR), SKILL_INTEGRITY_LOCAL_FILE);
 }
 
 /**

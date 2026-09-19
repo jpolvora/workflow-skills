@@ -1,7 +1,7 @@
 ---
 name: ws-implement-tasks
 description: Task implementation & fix executor — builds planned features following task DAGs or applies surgical defect fixes from code review findings.
-version: 0.4.38
+version: 0.4.41
 disable-model-invocation: true
 invocation_names:
   - implement-tasks
@@ -59,6 +59,7 @@ Workflow (ws-spec-to-pr Step 4 build; Step 5 `scoreAndRefine` second pass; Step 
 
 8. **Report** — Return the modified/created file lists and test output details.
    - Done when: the step-output below is populated.
+   - When the build genuinely modified nothing (verification-only retry, already-applied change), say so explicitly in `summary` with the reason: the orchestrator records it as an explicit no-op declaration, since a completed build with empty `files_touched` and no declaration withholds completion.
 
 ## Fix mode
 

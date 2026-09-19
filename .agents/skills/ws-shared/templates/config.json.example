@@ -6,7 +6,7 @@
   "pathTokens": {
     "_comment": "Fixed install layout (not relocatable). Expand brace tokens before Read/Grep/Shell. Full contract: runtime/tools.md § Path tokens. plansDir/reviewsDir still resolve from plans.dir / reviews.dir.",
     "skillsRoot": ".agents/skills",
-    "sharedDir": ".agents/skills/ws-shared"
+    "sharedDir": ".ws"
   },
 
   "project": {
@@ -305,13 +305,13 @@
   },
 
   "rules": {
-    "_comment": "Guardrails paths. Resolve per ws-shared/AGENTS.md External dependencies (first match). harness default is the project-local ws-shared/AGENTS.md; on global-hybrid installs resolve via the {globalSkillsRoot} fallback (config-resolution.md Harness entrypoint fallback); installer seeds a thin local pointer when missing. seniorDeveloper = Delivery gate and surgical diffs (default packaged ws-senior-developer); set \"\" to disable or point at another guardrail; karpathyGuidelines = compatibility alias pointing to ws-senior-developer; stackFile = stack companion; changelogFile = append-only history (default repo-root CHANGELOG.md; legacy ws-shared/CHANGELOG.md used only when it holds entries and the configured file does not); memoryDir = local memory target dir holding MEMORY.md + memory/ (default repo root \".\"; same legacy fallback); other keys optional consumer rule paths — leave empty when unused.",
-    "harness": ".agents/skills/ws-shared/AGENTS.md",
+    "_comment": "Guardrails paths. Resolve per ws-shared/AGENTS.md External dependencies (first match). harness default is the project-local .ws/AGENTS.md; on global-hybrid installs resolve via the {globalSkillsRoot} fallback (config-resolution.md Harness entrypoint fallback); installer seeds a thin local pointer when missing. seniorDeveloper = Delivery gate and surgical diffs (default packaged ws-senior-developer); set \"\" to disable or point at another guardrail; karpathyGuidelines = compatibility alias pointing to ws-senior-developer; stackFile = stack companion; changelogFile = append-only history (default repo-root CHANGELOG.md; legacy .ws/CHANGELOG.md used only when it holds entries and the configured file does not); memoryDir = local memory target dir holding MEMORY.md + memory/ (default repo root \".\"; same legacy fallback); other keys optional consumer rule paths — leave empty when unused.",
+    "harness": ".ws/AGENTS.md",
     "seniorDeveloper": ".agents/skills/ws-senior-developer/SKILL.md",
     "karpathyGuidelines": ".agents/skills/ws-senior-developer/SKILL.md",
     "viewPatterns": "",
     "efMigrations": "",
-    "stackFile": ".agents/skills/ws-shared/STACK.md",
+    "stackFile": ".ws/STACK.md",
     "changelogFile": "CHANGELOG.md",
     "memoryDir": "."
   },
@@ -330,6 +330,13 @@
     "_comment": "ws-task-lifecycle Completion walk. featuresMdEnabled default true when omitted; set false to disable the features file entirely. Absent or empty canonicalFiles → auto-detected features file (repo-root FEATURES.md when it exists, else {specsDir}/index.PRD), PLAN.md, PRODUCT.PRD.",
     "featuresMdEnabled": true,
     "canonicalFiles": []
+  },
+
+  "monitor": {
+    "_comment": "Opt-in ws-monitor host transcript discovery (us-356). discoverHostTranscripts default false (zero host-store reads); hostHome overrides the home used for discovery/sanitizing (CI/sandbox); transcriptRoots adds explicit roots.",
+    "discoverHostTranscripts": false,
+    "hostHome": "",
+    "transcriptRoots": []
   },
 
   "specMemo": {
@@ -352,5 +359,10 @@
     "autoAudit": true,
     "autoDetectDomain": true,
     "auditVerdictsBlockShip": "refuted"
+  },
+
+  "ws-goal-fix-pr": {
+    "_comment": "Per-skill section for the fix-PR convergence loop (seeds the one-parent-section-per-skill convention). useSubAgents false (default when omitted) runs the plan/fix loop inline in the current turn with zero subagent dispatches; true dispatches one fresh worker per round batch. One key gates the whole fix path (ws-fix-pr, ws-goal-fix-pr, ws-ship-pr pre-ship convergence).",
+    "useSubAgents": false
   }
 }

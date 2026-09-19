@@ -1,0 +1,446 @@
+{
+  "schemaVersion": 1,
+  "revision": 16,
+  "workflowId": "us-354",
+  "slug": "us-354",
+  "specPath": ".agents/plans/us-354/step-00-us-354.spec.md",
+  "planIndexPath": null,
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "d42cf5f7750185a66239f73d7a931508e0b18b9552f8dcc247aeb27f1f646531",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "Every dispatch path (standard `dispatch-agent`, step-baton coordinator, inline-isolated) carries a structural turn rule stating the first response must contain BOTH the verbose preview AND at least 2 tool calls, and a response with zero tool calls ends the turn as failed delivery — verified by grepping the dispatch prompt sources for the rule text.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/host-dispatch.md:L151-L151",
+        ".agents/skills/ws-spec-to-pr/PROTOCOLS.md:L317-L317",
+        ".agents/skills/ws-spec-to-pr/WORKER-TURN-RULES.md:L5-L12",
+        ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs:L266-L266"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/host-dispatch.md",
+          "lineStart": 151,
+          "lineEnd": 151,
+          "sha256": "aca84abc329f3315e89c2ab9e4416658ec46c5bee4a08625b601f8e4e8d1cee6"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/PROTOCOLS.md",
+          "lineStart": 317,
+          "lineEnd": 317,
+          "sha256": "c4ac6bd2669c97164a00f67aead3756ad6f821bd44b6d967337e66df37a5c9f9"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+          "lineStart": 266,
+          "lineEnd": 266,
+          "sha256": "b8693a6eb0b8599896835bc7b9cf98a11b34adbd411b6b1772c1b98868c82084"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/WORKER-TURN-RULES.md",
+          "lineStart": 5,
+          "lineEnd": 12,
+          "sha256": "1e7ca515e50b9fa7a2b177deb042dd8549434b94ce315260c561cee9f988a35d"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "fa46304960935c232d015c8917c938366194a02b",
+          "step": 5
+        },
+        {
+          "sha": "a34d352b4092b5f47cf7bb9a69205f259a41508e",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "Pins the shared turn rule on every dispatch",
+          "sourceFile": "test/test-worker-turn-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T04:58:17.537Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-a34d352b",
+        "g2-commit-fa463049",
+        "step5-AC1"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "A worker turn ending with zero tool calls emits an explicit non-success signal (failed step-output envelope and/or telemetry event), so the parent fails fast without waiting on artifact timeouts — verified by a regression test simulating a preview-only turn.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs:L726-L745",
+        ".agents/skills/ws-spec-to-pr/scripts/worker_turn_guard.cjs:L40-L60"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+          "lineStart": 726,
+          "lineEnd": 745,
+          "sha256": "b8693a6eb0b8599896835bc7b9cf98a11b34adbd411b6b1772c1b98868c82084"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/worker_turn_guard.cjs",
+          "lineStart": 40,
+          "lineEnd": 60,
+          "sha256": "95e9843ed4540b4d2508dd2b3599b1d1b541535c598da4e8dea516b06dc28b7f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "fa46304960935c232d015c8917c938366194a02b",
+          "step": 5
+        },
+        {
+          "sha": "a34d352b4092b5f47cf7bb9a69205f259a41508e",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC2 zero-tool-call turn verdict is failed",
+          "sourceFile": "test/test-worker-turn-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T04:57:58.479Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-a34d352b",
+        "g2-commit-fa463049",
+        "step5-AC2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "A worker turn ending with required step artifacts unwritten (e.g. `step-05-*.plan.report.md`, round report) emits an explicit non-success signal instead of resolving `completed` — verified by a regression test asserting the artifact-presence check runs before finish.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs:L726-L745",
+        ".agents/skills/ws-spec-to-pr/scripts/worker_turn_guard.cjs:L61-L80"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+          "lineStart": 726,
+          "lineEnd": 745,
+          "sha256": "b8693a6eb0b8599896835bc7b9cf98a11b34adbd411b6b1772c1b98868c82084"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/worker_turn_guard.cjs",
+          "lineStart": 61,
+          "lineEnd": 80,
+          "sha256": "95e9843ed4540b4d2508dd2b3599b1d1b541535c598da4e8dea516b06dc28b7f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "fa46304960935c232d015c8917c938366194a02b",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC3 unwritten-artifact turn verdict is failed",
+          "sourceFile": "test/test-worker-turn-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T04:57:58.539Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-fa463049",
+        "step5-AC3"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "Parent liveness probing of long workers cannot terminate the probed turn: either a read-only status poll that injects no terminal message, or a documented never-ping-mid-batch contract plus a non-messaging progress signal — verified by code showing no mid-batch ping path remains in the parent dispatch loop.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/host-dispatch.md:L199-L199",
+        ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs:L311-L320"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/host-dispatch.md",
+          "lineStart": 199,
+          "lineEnd": 199,
+          "sha256": "aca84abc329f3315e89c2ab9e4416658ec46c5bee4a08625b601f8e4e8d1cee6"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+          "lineStart": 311,
+          "lineEnd": 320,
+          "sha256": "b8693a6eb0b8599896835bc7b9cf98a11b34adbd411b6b1772c1b98868c82084"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "fa46304960935c232d015c8917c938366194a02b",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC4 coordinator spawns workers with stdin ignored",
+          "sourceFile": "test/test-worker-turn-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T04:57:58.594Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-fa463049",
+        "step5-AC4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "A continuation worker recovering an interrupted turn reuses the intact worktree partial progress (verify, commit, resolve, push, report) instead of rebuilding context from scratch — verified by an end-to-end or fixture test of the resume path.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/host-dispatch.md:L201-L201",
+        ".agents/skills/ws-spec-to-pr/WORKER-TURN-RULES.md:L30-L40"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/host-dispatch.md",
+          "lineStart": 201,
+          "lineEnd": 201,
+          "sha256": "aca84abc329f3315e89c2ab9e4416658ec46c5bee4a08625b601f8e4e8d1cee6"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/WORKER-TURN-RULES.md",
+          "lineStart": 30,
+          "lineEnd": 40,
+          "sha256": "1e7ca515e50b9fa7a2b177deb042dd8549434b94ce315260c561cee9f988a35d"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "fa46304960935c232d015c8917c938366194a02b",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC5 continuation over intact worktree progress verifies completed",
+          "sourceFile": "test/test-worker-turn-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T04:57:58.648Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-fa463049",
+        "step5-AC5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "Regression coverage pins each failure mode (preview-only no-op, ping-mid-batch, unwritten-artifact completion) so a future prompt edit that drops the guard fails the suite — verified by `npm run test` green with the new fixtures.",
+      "status": "Implemented",
+      "evidence": [
+        "package.json:L23-L23",
+        "test/test-worker-turn-guard.js:L1-L20"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": "package.json",
+          "lineStart": 23,
+          "lineEnd": 23,
+          "sha256": "1c2ec871b468f676792e40dca44eb281a44386036ffd36cc60ade35cd4086d85"
+        },
+        {
+          "path": "test/test-worker-turn-guard.js",
+          "lineStart": 1,
+          "lineEnd": 20,
+          "sha256": "c10400d7906f9fb5bf67f5ed91c43de56e22a226dce16144171300e9ec2c381d"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "fa46304960935c232d015c8917c938366194a02b",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "All worker-turn-guard checks passed",
+          "sourceFile": "test/test-worker-turn-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T04:57:58.699Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "g2-commit-fa463049",
+        "step5-AC6",
+        "step5-sabotage"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Preview-only worker (preview text, zero tool calls) must resolve as failure, never `completed` — red before the fix, green after.",
+      "tests": [
+        {
+          "name": "NS1 preview-only stdout carries no toolCalls envelope",
+          "sourceFile": "test/test-worker-turn-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T04:57:58.752Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-NS1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "A status ping delivered mid-batch must not terminate the worker turn (fixture) — or, under the never-ping contract, the parent must emit no ping while a batch worker is active.",
+      "tests": [
+        {
+          "name": "AC4 no ping path remains in the coordinator dispatch loop",
+          "sourceFile": "test/test-worker-turn-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T04:57:58.801Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-NS2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Worker finishing with the step report unwritten must signal failure instead of `completed`.",
+      "tests": [
+        {
+          "name": "AC3 CLI unwritten-artifact turn exits 2 (failed)",
+          "sourceFile": "test/test-worker-turn-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T04:57:58.840Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-NS3"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "Continuation worker must pick up intact worktree progress (uncommitted fixes present) rather than starting empty.",
+      "tests": [
+        {
+          "name": "AC5 fixture partial progress is preserved",
+          "sourceFile": "test/test-worker-turn-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T04:57:58.892Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-NS4"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "pre-step6",
+    "score": 6,
+    "earnedUnits": 39,
+    "totalUnits": 60,
+    "knownDefect": false,
+    "missingEvidence": true,
+    "errors": [
+      "AC1: linked file hash changed: .agents/skills/ws-shared/runtime/host-dispatch.md",
+      "AC2: linked file hash changed: .agents/skills/ws-spec-to-pr/scripts/worker_turn_guard.cjs",
+      "AC3: linked file hash changed: .agents/skills/ws-spec-to-pr/scripts/worker_turn_guard.cjs",
+      "AC4: linked file hash changed: .agents/skills/ws-shared/runtime/host-dispatch.md",
+      "AC5: linked file hash changed: .agents/skills/ws-shared/runtime/host-dispatch.md"
+    ],
+    "invariantViolations": [],
+    "computedAt": "2026-09-19T05:00:01.405Z"
+  }
+}

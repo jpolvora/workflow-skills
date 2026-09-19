@@ -3,11 +3,23 @@
 
 const fs = require('fs');
 const path = require('path');
+// us-351: managed runtime loads from its installed location: the upstream
+// package / global skills tree (<skills>/ws-shared) or the project consumer
+// hub (<repo>/.ws). Mirrors resolveConsumerContext runtimeSource precedence.
+const HUB_SCRIPTS_DIR = (() => {
+  const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
+  try {
+    require.resolve(path.join(packaged, 'resolve_consumer_root.cjs'));
+    return packaged;
+  } catch {
+    return path.resolve(__dirname, '..', '..', '..', '..', '.ws', 'runtime', 'scripts');
+  }
+})();
 const {
   resolveConsumerContext,
   resolveConfiguredPath,
   toRepoRelative,
-} = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
+} = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
 
 function parseArgs(argv) {
   const args = { json: false, ensure: false };

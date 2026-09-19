@@ -9,28 +9,35 @@ issueUrl: "https://github.com/jpolvora/workflow-skills/issues/351"
 step: 0
 workflowId: us-351
 status: completed
-startedAt: "2026-09-19T04:23:30.025Z"
-endedAt: "2026-09-19T04:23:30.025Z"
+startedAt: "2026-09-19T08:49:46.437Z"
+endedAt: "2026-09-19T08:49:46.437Z"
 acRefs: []
 ---
 # Specification — change/update/move ws-shared folder location to {projectRoot}/.ws
 
 ## Description
 
-Relocate the shared workflow hub from `{projectRoot}/.agents/skills/ws-shared` to `{projectRoot}/.ws`, keeping the same tree structure, and update every reference in skills, shared runtime scripts, and configuration. Resolution changes from `{projectRoot}/.agents/skills/ws-shared/config.json` to `{projectRoot}/.ws/config.json`.
+Move the consumer shared-data folder from `{projectRoot}/.agents/skills/ws-shared` to `{projectRoot}/.ws`, keeping the same tree structure. Update every reference in skills, shared runtime scripts, and configuration that points at the old location:
 
-Agentic scope: the move is a deliberate architecture change against the current contract (`tools.md` § Path tokens states `{skillsRoot}`/`{sharedDir}` are fixed install layout, not relocatable) — the plan must update that contract plus every quoter. Touchpoints: `tools.md` path-token table, `config-resolution.md` (config path + precedence matrix + hybrid fallback), `resolve_consumer_root.cjs` / `resolve_consumer_root.py`, all `ws-*` skill bodies and script path recipes referencing `ws-shared/`, the installer (`bin/cli.js`, `install-skills.sh`, templates, `installed-skills.json`, `skill-dependencies.json`), integrity generation/verification (hashed paths), `ws-check-harness` / `ws-doctor` path assertions, `ws-configure-project` seeding, and the shipped `.gitignore` defaults.
+- Old: `{projectRoot}/.agents/skills/ws-shared/config.json`
+- New: `{projectRoot}/.ws/config.json`
 
-Constraints from the issue: the new folder is committable and git source-controlled — do not ignore by default; the consumer opts out via their own `.gitignore` entry. The layout must stay compatible with both local (project `.agents/skills`) and global (`$HOME/.agents/skills` / `WORKFLOW_SKILLS_GLOBAL_DIR`) skill installs. Hub root per install scope: project-local installs resolve the hub at `{projectRoot}/.ws`; global installs resolve the hub at the user home directory, i.e. `~/.ws` (`$HOME/.ws`), which acts as the project root for that scope.
+Requirements from the issue:
+
+1. **Same tree structure** under the new root (config, runtime, templates, memory/history as today).
+2. **Committable by default**: the new folder is git source-controlled and NOT ignored by default — if a user wants it ignored, they add it to `.gitignore` themselves (reverses the current ws-shared gitignore posture).
+3. **Install compatibility**: the new layout must keep working with both local (project) and global (machine-wide) workflow-skills installations.
+4. **Full reference sweep**: update all skill bodies, scripts, docs, and hub manifests that resolve the old shared-folder location.
+
+System boundaries: installer, path-token resolution, every skill/script referencing `{sharedDir}`, hub layout manifest, integrity data, site/docs, and `.gitignore` templates. Architecture touchpoints: `pathTokens.sharedDir`, `runtime/hub-layout.json`, `config-resolution.md`, `tools.md` path tokens, installer scripts (`install-skills.sh`, `bin/cli.js`), integrity generation/verification, and the config GUI editor.
 
 ## Acceptance Criteria
 
-- AC1: Fresh install and `ws-configure-project` write project config to `{projectRoot}/.ws/config.json` (same tree structure as before) — verified by running the installer/configure flow in a fixture repo and asserting the config path.
-- AC2: Config resolution (`resolve_consumer_root` Node + Python) returns `{projectRoot}/.ws` as `{sharedDir}` with local-first precedence intact — verified by unit tests for local, global-hybrid, and missing-config cases.
-- AC3: Zero residual references to the old `.agents/skills/ws-shared` hub path remain in skill bodies, runtime scripts, templates, and docs (excluding explicit legacy-fallback shims only if the plan adopts them) — verified by grep asserting zero hits.
-- AC4: Local installs resolve the project hub from `{projectRoot}/.ws`, and global installs resolve it from `~/.ws` (`$HOME/.ws`); hybrid (global bodies + project hub) still prefers the project-local `.ws/` when present — verified by a compatibility test matrix covering local, global, and hybrid.
-- AC5: The new hub path is tracked by default (installer `.gitignore` does not exclude `.ws/`); consumer opt-out is documented — verified by inspecting shipped `.gitignore` templates and install output.
-- AC6: Existing consumers have a documented migration path (move hub, update references, regenerate integrity) with a dry-run affordance — verified by following the documented steps on a fixture repo with the old layout.
+- AC1: Fresh configure/install writes consumer shared data (config, hub files) under `{projectRoot}/.ws` with the same tree structure — verified by running the configure flow in a fixture repo and listing the tree.
+- AC2: All skill bodies, runtime scripts, docs, and manifests resolve the shared dir from the new location with zero remaining references to the old default path — verified by grepping the repo for the old path segments (allowlisted historical/compat notes only).
+- AC3: Local and global installs both work against the new location (local project hub wins; global fallback only when the project hub is absent) — verified by hybrid-mode install tests.
+- AC4: The new folder is committable by default (not in default `.gitignore`; installer does not ignore it) — verified by installer output plus `git status` showing the folder as candidate changes.
+- AC5: Integrity generation/verification and harness checks pass on the new layout — verified by `npm run generate-integrity`, `npm run verify-integrity`, and `test/test-harness-clean.js` exit 0.
 
 ## Original Issue Context
 
@@ -53,59 +60,61 @@ Update references in all skilss pointing to new workflow skill shared folder loc
 
 ### Prior Work Sweep
 
-- Provider `sweep-prior-work` for issue 351 (keywords: ws-shared, folder, location, move, project, root): one related merged PR — #289 `fix(us-288): treat spec-memo runtime skills as external companions` (shared-layout boundary precedent; MERGED). No open PR for the same tracker id — no duplicate risk; continue.
-- No local commits touching the hub path for this id; the current layout (`.agents/skills/ws-shared`) is the intentional fixed-layout contract being deliberately replaced.
+- Provider `sweep-prior-work` for issue 351 (keywords: shared, folder, config, path): no open PR for the same tracker id; keyword hits are merged historical PRs (#289, #267, #290, #335, #319, #248, #339, #257); no duplicate risk.
+- The shared-hub layout has evolved across installer PRs (local/global/hybrid resolution in `config-resolution.md`, `hub-layout.json` manifest); this spec replaces the layout root, so the plan must inventory every consumer of `pathTokens.sharedDir` and the hub manifest.
+- No prior migration-shim convention exists (harness rules forbid legacy path aliases) — the plan must decide clean-cut vs one-time relocation handling for repos already on the old layout.
 
 ### Design Intent
 
-- The current `.agents/skills/ws-shared` location plus the "fixed install layout, not relocatable" rule in `tools.md` § Path tokens is intentional existing design, not accidental drift — this spec deliberately replaces it, so the plan must update the contract and all its quoters rather than treating old-path references as stale typos.
-- The installer currently seeds consumer data under the project `ws-shared/`; moving the hub root preserves that consumer-owned semantics (config, STACK, memory/changelog fallbacks) under `.ws/`.
-- Global-hybrid compatibility (global bodies + project hub) is an existing guarantee the move must preserve, per the issue's explicit local/global requirement.
+- `.agents/skills/ws-shared` as the consumer hub root is the intentional current layout (skills-root co-location, documented in AGENTS.md layers and `hub-layout.json`); moving it to `{projectRoot}/.ws` is a deliberate layout change, not a bug fix — the plan must treat every old-path reference as in-scope for the sweep.
+- The harness portability rule ("no legacy path aliases, migration shims, or dual defaults") constrains the migration design: the plan must either cut cleanly to the new root or justify a narrow one-time relocation exception; silent dual-path support is not the default.
+- Git-ignoring shared hub data was intentional (generated memory/history, installer metadata); flipping to committable-by-default is a deliberate policy change owned by this spec — the plan must split still-generated content (caches, history) from committed content explicitly.
 
 ## Notes
 
-- "Same tree structure" means the hub contents (`config.json`, `STACK.md`, `runtime/`, `templates/`, consumer data) move unchanged; only the root moves.
-- Path-token vocabulary (`{sharedDir}`) stays; only its default binding changes: `.ws` under the project root for local installs, `~/.ws` (`$HOME/.ws`) for global installs.
-- Coordinate with the harness test suites (`ws-check-harness`, `ws-doctor`, `test-harness-clean.js`) — they assert hub paths and must move in the same batch.
+- This is the highest-blast-radius item in the batch: path-token consumers span skills, scripts, tests, site builder, and docs. The plan must enumerate them from the dependency graph, not from memory.
+- Decide early: clean cut vs assisted relocation for existing consumers (installer move step, pointer file, or documented manual move). Whichever is chosen, it must be a single documented behavior, not silent fallback.
+- The `{skillsRoot}` token (skill bodies) is unaffected — only the shared-data root moves. Keep the two tokens independent in the new resolution code.
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Moving skill bodies (`ws-*`) out of `.agents/skills` | Issue moves the shared hub only; skill install roots are unchanged |
-| Changing `{plansDir}` / `{specsDir}` defaults | Unrelated artifact roots; untouched by this move |
-| Auto-migrating downstream consumer repos | Upstream ships the new layout + migration docs; consumers migrate on update |
+| Moving skill bodies (`ws-*`) out of `.agents/skills` | Only the shared-data hub moves; skill SoT stays |
+| Legacy dual-path support as a permanent feature | Harness rules forbid permanent migration shims; one behavior only |
+| Changing config schema keys or skill contracts | Path relocation only; no functional config changes |
 
 ## Assumptions & Open Questions
 
 | Assumption | Chosen default | Rationale | Confirmed |
 |------------|----------------|-----------|-----------|
-| Legacy-path fallback (read old hub when `.ws/` absent) | Plan decides: hard move vs fallback shim; hard move preferred | Issue states the new location outright; a shim would prolong dual-path support | n |
-| Migration tooling (move command vs docs-only) | Documented steps with dry-run; script only if plan shows wide breakage | AC6 requires at least a verified documented path | n |
-| Concurrency / ordering | N/A because this is a file-layout move with no runtime concurrency surface | No concurrent writers to the hub path | y |
+| Tree structure under the new root is identical | Same relative layout, only the root changes | Issue states "same tree structure" | y |
+| New folder committable by default | Installer and templates stop ignoring it | Issue states "do not ignore by default" | y |
+| Still-generated content stays untracked | Caches/history keep ignore rules at file level, not folder level | Preserves the generated-vs-consumer split from `hub-layout.json` | n |
+| Migration for existing consumers is plan-owned | Plan picks clean-cut vs relocation assist | Needs evidence from installer and hybrid-mode tests | n |
 
 ## Definition of Ready (DoR)
 
 | Readiness Item | Requirement | Verification Method |
 |----------------|-------------|---------------------|
-| Bounded scope | Hub root move, resolution, references, installer, integrity, harness checks, migration docs | Plan file list matches AC touchpoints |
-| Atomic acceptance criteria | AC1–AC6 each independently testable | `validate_spec.cjs --mode=authoring` passes |
-| Failure modes covered | Missing hub, legacy-layout repo, global-hybrid resolution, gitignored hub | Negative scenarios list all four |
-| Observation telemetry | Installer/configure log the resolved hub path per run | Telemetry section names the signals |
-| Zero open blockers | Fallback-vs-hard-move decision is plan-owned | Assumptions table shows plan-owned defaults |
+| Bounded scope | Path-token resolution, installer, hub manifest, reference sweep, ignore policy | Plan file list matches AC touchpoints |
+| Atomic acceptance criteria | AC1–AC5 each independently testable (tree, grep, install, git, checks) | `validate_spec.cjs --mode=authoring` passes |
+| Failure modes covered | Stale reference, broken hybrid install, ignored-by-default, integrity mismatch each have a negative scenario | Negative scenarios section lists all four |
+| Observation telemetry | Install/configure outputs and harness check results are named signals | Telemetry section names the commands |
+| Zero open blockers | Migration-shape and generated-content split are plan-owned | Assumptions table shows plan-owned defaults |
 
 ## Validation & Observation Notes
 
 ### Telemetry & Observable Signals
 
-- Installer and `ws-configure-project` log resolved hub path (`hub: {projectRoot}/.ws`) per run.
-- `npm run test` green, including updated consumer-root resolution fixtures and the zero-residual-reference grep assertion.
-- `npm run generate-integrity` + `npm run verify-integrity` pass against the new hashed layout.
-- `ws-check-harness` Phases 0–5c pass with the new hub root.
+- Fixture configure/install run lists the `.ws` tree (config + runtime + templates present).
+- Repo-wide grep for old shared-path segments returns only allowlisted historical notes.
+- Hybrid install matrix (local-only, global-only, both) resolves the hub from the new root.
+- `npm run generate-integrity` + `npm run verify-integrity` + `node test/test-harness-clean.js` all exit 0.
 
 ### Negative & Failing Test Scenarios
 
-- Fixture repo with only the legacy `.agents/skills/ws-shared` hub must resolve per the plan's fallback decision (fallback read or explicit migration error), never silently use an empty config.
-- Global-hybrid fixture (global bodies, project `.ws/` hub) must resolve project config from the project `.ws/`, never from the global `~/.ws` copy; a global-scope run with no project hub must resolve `~/.ws` (`$HOME/.ws`).
-- Shipped `.gitignore` must not exclude `.ws/` by default (red if the hub is ignored out of the box).
-- Any skill body or script still referencing the old hub path fails the residual-reference assertion.
+- Any non-allowlisted reference to the old shared path must fail the sweep test — red until the last reference moves.
+- Global-only install resolving a project hub from the old location must fail — red on stale fallback.
+- Installer run that git-ignores `.ws` by default must fail — red on policy regression.
+- Integrity verification against the old layout manifest must fail after regeneration — red on manifest skew.

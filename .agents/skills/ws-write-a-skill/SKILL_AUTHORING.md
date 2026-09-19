@@ -140,8 +140,8 @@ When skills are installed globally (`$HOME/.agents/skills` or `WORKFLOW_SKILLS_G
 
 1. **Config-Dependent Skills:**
    - Skills that require project identity, verification commands, SCM providers, stack companions, or artifact output paths (e.g. `ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-spec-multi`, `ws-plan-write`, `ws-implement-tasks`, `ws-code-review`, `ws-testing`, `ws-ship-pr`, `ws-fix-pr`, `ws-spec-provider-github`, `ws-spec-provider-azure-devops`, `ws-configure-project`).
-   - **Mandatory Entry Gate:** Must check if `$PWD/.agents/skills/ws-shared/config.json` exists in the consuming repository.
-   - **Missing Config Protocol:** If missing or unconfigured, the skill MUST trigger a `user-gate` telling the user to run `ws-configure-project` (or offer an option/gate to invoke `ws-configure-project` immediately to seed and configure `.agents/skills/ws-shared/config.json`).
+   - **Mandatory Entry Gate:** Must check if `$PWD/.ws/config.json` exists in the consuming repository.
+   - **Missing Config Protocol:** If missing or unconfigured, the skill MUST trigger a `user-gate` telling the user to run `ws-configure-project` (or offer an option/gate to invoke `ws-configure-project` immediately to seed and configure `.ws/config.json`).
 2. **Config-Independent / Standalone Skills:**
    - Pure utility or governance skills that operate without project hub config (e.g. `ws-secrets-leak-review`, `ws-tdah`, `ws-write-a-skill`, `ws-spec-format`, `ws-check-harness`).
    - Can execute directly in any repository without prompting for `ws-configure-project`.

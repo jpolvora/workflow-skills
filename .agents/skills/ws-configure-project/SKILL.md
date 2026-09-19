@@ -1,6 +1,6 @@
 ---
 name: ws-configure-project
-version: 0.4.38
+version: 0.4.41
 description: Project configuration wizard — detects project settings and interviews config.json sections (including preview.dryRunCommand and optional specMemo).
 invocation_names:
   - configure-project
@@ -57,9 +57,9 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 **Step 4b. Auto mode** — When `--auto` is explicit, run `node {skillsRoot}/ws-configure-project/scripts/auto_configure.cjs --repo-root {repoRoot} --json` after resolving the execution scope. It fills only missing, empty-required, or placeholder values, preserves existing consumer files, skips framework memory seeding for global execution, and reports `runtimeSource`, `templateSource`, `layoutManifest`, `copiedPaths`, and the manifest-derived source-control matrix.
    - Done when: the command exits 0 for the requested scope, or reports unresolved required gaps with exit 1; never continue after exit 2.
 
-5. **Stack companion & Framework Traps** — Default `rules.stackFile` = `.agents/skills/ws-shared/STACK.md` (installer-seeded; consumer-owned). Prefer that path. Do **not** require or create a repo-root stack file. Skip when `--section autoload`, `--section specMemo`, or `--section preview`.
-   - If shared `STACK.md` exists but config points at a missing root file: suggest set `rules.stackFile` → `.agents/skills/ws-shared/STACK.md` (**Recommended**) / Keep current / Skip.
-   - If the resolved target is missing: offer **Generate** into `.agents/skills/ws-shared/STACK.md` (setup 1b heuristics) / **Skip**. Write only under `.agents/skills/ws-shared/` unless the user explicitly chose another path.
+5. **Stack companion & Framework Traps** — Default `rules.stackFile` = `.ws/STACK.md` (installer-seeded; consumer-owned). Prefer that path. Do **not** require or create a repo-root stack file. Skip when `--section autoload`, `--section specMemo`, or `--section preview`.
+   - If shared `STACK.md` exists but config points at a missing root file: suggest set `rules.stackFile` → `.ws/STACK.md` (**Recommended**) / Keep current / Skip.
+   - If the resolved target is missing: offer **Generate** into `.ws/STACK.md` (setup 1b heuristics) / **Skip**. Write only under `.ws/` unless the user explicitly chose another path.
    - **Framework Anti-Regression Traps:** When configuring project stack, `auto_configure.cjs` automatically detects the framework (`abp-angular`, `nextjs-react`, `typescript-node`, `php-laravel`) and seeds the initial framework traps into the effective `{memoryDir}/MEMORY.md` (idempotent, skipping if already present).
    - Done when: config points at an existing companion, framework traps seeded if detected, or user skipped.
 

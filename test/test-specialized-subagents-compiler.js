@@ -116,7 +116,7 @@ function runAutoConfigure(args, cwd = REPO_ROOT, env = process.env) {
 
 function setupMockRepo(mockRoot, { withCursor = true, withConfig = false, subagentsConfig = null } = {}) {
   // Create minimal structure mirroring repo
-  const sharedDir = path.join(mockRoot, '.agents', 'skills', 'ws-shared');
+  const sharedDir = path.join(mockRoot, '.ws');
   const templatesDir = path.join(sharedDir, 'templates');
   const runtimeDir = path.join(sharedDir, 'runtime');
   const runtimeScriptsDir = path.join(runtimeDir, 'scripts');
@@ -444,7 +444,7 @@ function testAutoConfigureIntegration() {
   const json1 = JSON.parse(res1.stdout || '{}');
   assert(json1.ok === true && json1.sectionOk === true, 'Section configuration succeeded');
 
-  const configPath = path.join(mockRepo, '.agents', 'skills', 'ws-shared', 'config.json');
+  const configPath = path.join(mockRepo, '.ws', 'config.json');
   const updatedConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   assert(updatedConfig.defaults?.specializedSubagents, 'defaults.specializedSubagents written to config.json');
   assert(updatedConfig.defaults.specializedSubagents.enabled === false, 'enabled defaults to false');
@@ -562,7 +562,7 @@ function testCleanHostLabel() {
 function testAutoConfigurePreservesEnabled() {
   console.log('\n--- Test 15: auto_configure preserves enabled:true ---');
   const mockRepo = setupMockRepo(createTmpDir('ws-preserve-test-'), { withCursor: true, withConfig: true });
-  const configPath = path.join(mockRepo, '.agents', 'skills', 'ws-shared', 'config.json');
+  const configPath = path.join(mockRepo, '.ws', 'config.json');
   const base = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   base.defaults = base.defaults || {};
   base.defaults.specializedSubagents = { enabled: true, targetHost: 'generic', agentPrefix: 'ws' };
@@ -626,7 +626,7 @@ function testAutoConfigurePreservesDirectory() {
   const mockRepo = setupMockRepo(createTmpDir('ws-dir-preserve-'), { withCursor: true, withConfig: true });
   const mockHome = createTmpDir('ws-dir-preserve-home-');
   const env = { ...process.env, USERPROFILE: mockHome, HOME: mockHome };
-  const configPath = path.join(mockRepo, '.agents', 'skills', 'ws-shared', 'config.json');
+  const configPath = path.join(mockRepo, '.ws', 'config.json');
   const base = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   base.defaults = base.defaults || {};
   base.defaults.specializedSubagents = { enabled: true, targetHost: 'cursor', agentPrefix: 'ws', directory: 'userLevel' };
@@ -641,7 +641,7 @@ function testAutoConfigurePreservesDirectory() {
 function testDirectoryScopeConflict() {
   console.log('\n--- Test 19: Conflicting directory and scope rejection ---');
   const mockRepo = createTmpDir('ws-conflict-repo-');
-  const sharedDir = path.join(mockRepo, '.agents', 'skills', 'ws-shared');
+  const sharedDir = path.join(mockRepo, '.ws');
   fs.mkdirSync(sharedDir, { recursive: true });
   fs.writeFileSync(
     path.join(sharedDir, 'config.json'),

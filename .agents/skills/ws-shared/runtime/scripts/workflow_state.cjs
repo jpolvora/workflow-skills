@@ -12,7 +12,18 @@ const {
   inside,
   resolveMinVerifyScore,
 } = require('./resolve_consumer_root.cjs');
-const { scoreLedger } = require('../../../ws-spec-to-pr/scripts/ac_ledger.cjs');
+// us-351: ac_ledger ships with the ws-spec-to-pr skill: beside the runtime in
+// the upstream package / global skills tree, under {skillsRoot} for project
+// consumer hubs (<repo>/.ws).
+const { scoreLedger } = require((() => {
+  const packaged = path.resolve(__dirname, '..', '..', '..', 'ws-spec-to-pr', 'scripts', 'ac_ledger.cjs');
+  try {
+    require.resolve(packaged);
+    return packaged;
+  } catch {
+    return path.resolve(__dirname, '..', '..', '..', '..', '.agents', 'skills', 'ws-spec-to-pr', 'scripts', 'ac_ledger.cjs');
+  }
+})());
 const { syncAcCountsFromLedger } = require('./ac_counts.cjs');
 const { loadJsonSchema, validateNode } = require('./validate_json_schema.cjs');
 const { releaseBaton } = require('./step_baton.cjs');
@@ -1234,6 +1245,20 @@ function resolvePhaseModel(defaults, { step, role, pipeline = 'standard', sessio
   return sessionModel || 'unknown';
 }
 
+/**
+ * Fix-PR loop execution site (us-352). Single gate for the whole fix path
+ * (ws-fix-pr, ws-goal-fix-pr, ws-ship-pr pre-ship convergence), read from the
+ * per-skill section `ws-goal-fix-pr.useSubAgents` in config.json.
+ * Returns 'subagent' only on strict boolean true; every other shape
+ * (absent section/key, false, null, non-boolean) fails closed to 'inline'
+ * (legacy loop with zero subagent dispatches).
+ */
+function resolveFixPrDispatchMode(config) {
+  const section = config && typeof config === 'object' ? config['ws-goal-fix-pr'] : undefined;
+  const flag = section && typeof section === 'object' ? section.useSubAgents : undefined;
+  return flag === true ? 'subagent' : 'inline';
+}
+
 function collectModelIds(value, target) {
   if (!value) return;
   if (Array.isArray(value)) {
@@ -1541,6 +1566,14 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
         throw new Error(`cannot finish step 2: required artifacts missing: ${missing.join(', ')}`);
       }
     }
+    if (pipeline === 'standard' && step === 3 && status === 'completed') {
+      const execStepSlug = state.slug || state.us;
+      const missing = [`step-03-${execStepSlug}.plan.exec.md`, `step-03-${execStepSlug}.exec.dag.json`]
+        .filter((name) => !isNonEmptyFile(path.join(paths.usDir, name)));
+      if (missing.length) {
+        throw new Error(`cannot finish step 3: required artifacts missing: ${missing.join(', ')} (sequential runs finish step 3 as skipped with reason dag-disabled)`);
+      }
+    }
     if (status === 'skipped') {
       if (!SKIP_REASONS.has(options.reason)) throw new Error(`skip reason must be one of: ${[...SKIP_REASONS].join(', ')}`);
       state.skippedSteps = [...(Array.isArray(state.skippedSteps) ? state.skippedSteps : []).filter((item) => Number(item.step) !== step), {
@@ -1553,6 +1586,11 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       state.completedSteps = [...new Set([...(state.completedSteps || []).map(Number), step])].sort((a, b) => a - b);
       state.stepStatus[String(step)] = status;
       state.currentStep = Math.min(maxStep, step + 1);
+      // A skipped step is not a completion: keep the skip record as the single
+      // source of truth so completion checks cannot read it as completed.
+      if (status === 'skipped') {
+        state.completedSteps = state.completedSteps.map(Number).filter((item) => item !== step);
+      }
     } else {
       state.currentStep = step;
       state.stepStatus[String(step)] = 'active';
@@ -1578,6 +1616,15 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       fallbackArtifacts.push(path.join(paths.usDir, 'ac-ledger.json'));
     }
     const { created, modified, deleted, phantoms } = normalizeFilesTouched(output, options, context.repoRoot, fallbackArtifacts);
+    const finishNoop = options.noop === undefined || options.noop === null ? '' : String(options.noop).trim();
+    if (options.noop !== undefined && options.noop !== null && (!finishNoop || finishNoop.startsWith('--'))) {
+      throw new Error('finish --noop requires a non-empty reason (e.g. --noop "verification-only retry touched nothing")');
+    }
+    if (pipeline === 'standard' && step === 4 && status === 'completed' && !isInternalSubstep) {
+      if (!created.length && !modified.length && !deleted.length && !finishNoop) {
+        throw new Error('cannot finish step 4: filesTouched is empty and no explicit no-op was declared (pass --noop "<reason>" when the step genuinely modified nothing)');
+      }
+    }
     const promptTokens = tokenCount(options, output, 'promptTokens');
     const completionTokens = tokenCount(options, output, 'completionTokens');
     applyFinishTelemetry(state, labels, step, {
@@ -1620,6 +1667,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       promptTokens,
       completionTokens,
       filesTouched: { created, modified, deleted },
+      ...(finishNoop ? { noop: finishNoop } : {}),
       phantoms: Array.isArray(phantoms) ? phantoms : [],
       phantomCount: Array.isArray(phantoms) ? phantoms.length : 0,
       gateDecision,
@@ -1943,6 +1991,7 @@ function runUpdateCli(config) {
     if (options.help) {
       process.stdout.write('Usage: update_state.cjs dispatch|finish|finish-batch|bypass <state> --step N [options]\n');
       process.stdout.write('  finish-batch <state> --steps "2:skipped:interview-not-required,3:skipped:dag-disabled"\n');
+      process.stdout.write('  finish <state> --step 4 --noop "<reason>" (explicit no-op when a completed mutating step touched nothing)\n');
       return;
     }
     const [operation, stateFile] = positional;
@@ -2141,6 +2190,7 @@ module.exports = {
   resolveStepAgentType,
   performUpdate,
   resolvePhaseModel,
+  resolveFixPrDispatchMode,
   validateSnapshot,
   runUpdateCli,
   runValidateCli,

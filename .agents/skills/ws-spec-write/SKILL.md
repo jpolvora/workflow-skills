@@ -1,7 +1,7 @@
 ---
 name: ws-spec-write
 description: Local spec authoring & reformulation — drafts and enhances structured *.spec.md feature specifications under {specsDir} from free-text requirements or remote tracker issues.
-version: 0.4.38
+version: 0.4.41
 disable-model-invocation: true
 invocation_names:
   - spec-write
@@ -127,7 +127,7 @@ When writing a spec derived from a remote tracker issue or raw human description
 
 - Anonymize pasted consumer traces and externally visible spec output: strip private project names, paths, hostnames, and customer data; describe the failure class, not the originating app. Public tracker-issue `## Original Issue Context` stays verbatim; private consumer pastes must be paraphrased with generic wording per hub `AGENTS.md` § Source anonymization.
 - Do not overwrite an existing differing spec of record without explicit overwrite intent; write only the resolved `SPEC_PATH` (and lazy `context.md`).
-- Contract: hub [`AGENTS.md`](../ws-shared/AGENTS.md) § Source anonymization · [`ws-spec-format`](../ws-spec-format/SKILL.md).
+- Contract: hub [`AGENTS.md`](../../../.ws/AGENTS.md) § Source anonymization · [`ws-spec-format`](../ws-spec-format/SKILL.md).
 
 ## Subagent contract
 

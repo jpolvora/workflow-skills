@@ -162,7 +162,7 @@ spawnSync('git', ['add', relFixture, 'other.txt'], { cwd: fixtureDir, encoding: 
 spawnSync('git', ['commit', '-m', 'init'], { cwd: fixtureDir, encoding: 'utf8' });
 fs.writeFileSync(otherFile, 'dirty', 'utf8');
 
-const hubDir = path.join(fixtureDir, '.agents', 'skills', 'ws-shared');
+const hubDir = path.join(fixtureDir, '.ws');
 fs.mkdirSync(hubDir, { recursive: true });
 fs.writeFileSync(
   path.join(hubDir, 'config.json'),

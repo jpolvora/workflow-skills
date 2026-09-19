@@ -1,5 +1,19 @@
 # Changelog
 
+### [2026-09-19 12:10] Agent: Muse Code
+- **Prompt**: us-356 worker (standard): host adapters for transcript/session discovery in ws-monitor (Steps 0-8, ship PR, no merge).
+- **Done**: Per-OS adapter table (Cursor, OpenCode, Antigravity, Muse) behind opt-in flag, session correlation, WAL-safe bounded reads, sanitizer, transcriptSource per workflow, worker-session-stall signal; new references/host-adapters.md + test-ws-monitor-us356.js; package.json chain registration; integrity regen; G2 c0750bc0 + delivery 98076a6a; PR 364 to main.
+- **Result**: AC1-AC6 delivered, verify 9/10, harness-clean 0 findings. Learning: recorded trap 2026-09-19-us356-edit-tooling (failure reflection: CRLF multi-line edit misses + patcher-template interpolation faults).
+
+### [2026-09-19 11:30] Agent: Muse Code
+- **Prompt**: us-355 worker (standard): tighten Step 3/Step 4 completion contracts plus read-only monitor detection flags (Steps 0-8, ship PR, no merge).
+- **Done**: Definition-side Step 3 ruling (artifact optional in sequential; completed requires both exec files fail-closed; skips leave completedSteps); contract-side Step 4 (empty filesTouched needs explicit --noop, recorded on telemetry); monitor missing-exec-artifact + noop-aware empty-files-touched with dag-disabled compat silence; fixed plan-to-tasks stub drift; new test-step-completion-contracts.js; three stale suites updated with --noop; full npm run tests green; bump 0.4.40 to 0.4.41; G2 016f64ad + review-fix 0554fd6b; PR to main.
+- **Result**: AC1-AC4 delivered, NS1-NS4 asserted, harness-clean 0 findings, integrity v0.4.41 verified. Learning: recorded trap 2026-09-19-step-completion-gate-fixtures (failure reflection: fixture seeds must satisfy the full guard chain; gate changes need full-list runs).
+
+### [2026-09-19 09:08] Agent: Muse Code
+- **Prompt**: us-348 worker (standard): host capabilities detect tools & cache (Steps 0-8, ship PR, no merge).
+- **Done**: Brainstorm refine-and-implement; tokens doc + tool map + probe script + tools/host-dispatch edits + test-host-capabilities.js; verify 10/10; review clean; sabotage bit+restored; full npm run test green; bump 0.4.39 to 0.4.40; G2 6edf5be8 + delivery commit; PR to main.
+- **Result**: AC1-AC5 delivered, NS1-NS4 asserted, harness-clean 0 findings, integrity v0.4.40 verified. Learning: recorded trap 2026-09-19-dashed-cli-flag-normalization (failure reflection: dashed CLI flags silently ignored until test caught it).
 ### [2026-09-19 00:30] Agent: Muse Code
 - **Prompt**: /ws-spec-sync (spec index sync).
 - **Done**: Synced 4 shipped specs to `[x]`/`done` with Done-log rows + `status: completed` frontmatter (0088→PR #339, 0090→PR #340, 0091→PR #341, 0092→PR #345); us-348 skipped (unmapped, no ship signal — needs `track`, not `sync`).

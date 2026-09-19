@@ -128,7 +128,7 @@ ${extraFm}---
 }
 
 function writeValidateHub(root) {
-  const shared = path.join(root, '.agents/skills/ws-shared');
+  const shared = path.join(root, '.ws');
   fs.mkdirSync(shared, { recursive: true });
   fs.writeFileSync(
     path.join(shared, 'config.json'),

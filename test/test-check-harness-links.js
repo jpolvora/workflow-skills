@@ -82,7 +82,7 @@ function testResolvedHubCountsForRouting() {
   const skillDir = path.join(fixture, '.agents', 'skills', 'ws-foo');
   fs.mkdirSync(skillDir, { recursive: true });
   fs.writeFileSync(path.join(skillDir, 'SKILL.md'), '---\nname: ws-foo\n---\n\n# ws-foo\n', 'utf8');
-  const sharedDir = path.join(fixture, '.agents', 'skills', 'ws-shared');
+  const sharedDir = path.join(fixture, '.ws');
   fs.mkdirSync(sharedDir, { recursive: true });
   fs.writeFileSync(
     path.join(sharedDir, 'AGENTS.md'),
@@ -92,7 +92,7 @@ function testResolvedHubCountsForRouting() {
 
   const { result, report } = check(fixture);
   assert(result.status === 0, `hub-only routing exits 0 (${result.stderr || JSON.stringify(report && report.findings)})`);
-  assert(report && (report.findings.unrouted || []).length === 0, 'skill routed only via ws-shared hub is not unrouted');
+  assert(report && (report.findings.unrouted || []).length === 0, 'skill routed only via the consumer hub is not unrouted');
 }
 
 function main() {

@@ -25,7 +25,7 @@ The machine-readable classification source is [`.agents/skills/ws-shared/runtime
 | [`README.md`](README.md) | Install, update, uninstall, safety, contribute |
 | [`AGENTS.md`](AGENTS.md) | Agent routing contract (upstream authoring) |
 | [`CATALOG.md`](CATALOG.md) | On-demand skill inventory, task router, and upstream ship checklist |
-| [`.agents/skills/ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) | Consumer hub after install |
+| [`.ws/AGENTS.md`](.ws/AGENTS.md) | Consumer hub after install |
 | [`CHANGELOG.md`](CHANGELOG.md) | Dated history of every change |
 
 ---
@@ -240,7 +240,7 @@ Autoload set (loaded every prompt when a project opts in via `{sharedDir}/autolo
 
 ## 10. Configuration surface
 
-Project settings live in consumer-owned `.agents/skills/ws-shared/config.json` (seeded from `templates/config.json.example`, validated by `runtime/config.schema.json`, filled by `ws-configure-project` or the native desktop GUI editor `npm run config:gui` / `Edit-Config.bat`). Track it when non-secret; keep generated memory/history and installer metadata local. Managed execution content is under `runtime/`, and setup-only seeds are under `templates/`.
+Project settings live in consumer-owned `.ws/config.json` (seeded from `templates/config.json.example`, validated by `runtime/config.schema.json`, filled by `ws-configure-project` or the native desktop GUI editor `npm run config:gui` / `Edit-Config.bat`). Track it when non-secret; keep generated memory/history and installer metadata local. Managed execution content is under `runtime/`, and setup-only seeds are under `templates/`.
 
 | Section | Controls |
 |---------|----------|
@@ -457,7 +457,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 
 ### Hub (not a skill)
 
-[`ws-shared`](.agents/skills/ws-shared/AGENTS.md) — consumer-owned hub holding `config.json`, `autoload.md`, `gates.md`, `tools.md`, `scm-provider-contract.md`, `config-resolution.md`, `MEMORY.md`, `backend.md`, `frontend.md`, `STACK.md`, and `CHANGELOG.md`.
+[`.ws`](.ws/AGENTS.md) — consumer-owned hub holding `config.json`, `autoload.md`, `gates.md`, `tools.md`, `scm-provider-contract.md`, `config-resolution.md`, `MEMORY.md`, `backend.md`, `frontend.md`, `STACK.md`, and `CHANGELOG.md`.
 
 ---
 

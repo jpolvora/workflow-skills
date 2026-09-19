@@ -4,7 +4,19 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
-const { resolveConsumerContext, toRepoRelative } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
+// us-351: managed runtime loads from its installed location: the upstream
+// package / global skills tree (<skills>/ws-shared) or the project consumer
+// hub (<repo>/.ws). Mirrors resolveConsumerContext runtimeSource precedence.
+const HUB_SCRIPTS_DIR = (() => {
+  const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
+  try {
+    require.resolve(path.join(packaged, 'resolve_consumer_root.cjs'));
+    return packaged;
+  } catch {
+    return path.resolve(__dirname, '..', '..', '..', '..', '.ws', 'runtime', 'scripts');
+  }
+})();
+const { resolveConsumerContext, toRepoRelative } = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
 
 function parseArgs(argv) {
   const options = { paths: [], minLines: 6, json: false };
@@ -25,7 +37,13 @@ function parseArgs(argv) {
 function shippedMarkdown(context) {
   const generatedHubMarkdown = new Set();
   try {
-    const layoutPath = path.join(context.runtimeSource, 'hub-layout.json');
+    // us-351: installed hubs may lag the SoT manifest; the generatedLocal
+    // classification is package-level, so fall back to the SoT copy.
+    const layoutCandidates = [
+      path.join(context.runtimeSource, 'hub-layout.json'),
+      path.join(context.repoRoot, '.agents', 'skills', 'ws-shared', 'runtime', 'hub-layout.json'),
+    ];
+    const layoutPath = layoutCandidates.find((file) => fs.existsSync(file));
     const layout = JSON.parse(fs.readFileSync(layoutPath, 'utf8'));
     for (const entry of layout.categories?.generatedLocal?.paths || []) {
       if (String(entry).toLowerCase().endsWith('.md')) generatedHubMarkdown.add(String(entry));
@@ -36,29 +54,36 @@ function shippedMarkdown(context) {
   const roots = ['AGENTS.md', 'CATALOG.md', 'README.md', 'FEATURES.md']
     .map((item) => path.join(context.repoRoot, item))
     .filter((item) => fs.existsSync(item));
+  const hubRel = toRepoRelative(context.repoRoot, context.sharedDir).replace(/\\/g, '/');
+  const hubOutside = hubRel === '..' || hubRel.startsWith('../');
+  const hubPrefix = hubOutside ? null : `${hubRel}/`;
+  const hubEsc = hubOutside ? null : hubRel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const hubFileRe = hubOutside ? null : new RegExp(`^${hubEsc}/(?:MEMORY|CHANGELOG|STACK|backend|frontend)\\.md$`);
+  const hubMemoryRe = hubOutside ? null : new RegExp(`^${hubEsc}/memory(?:/|$)`);
   const skills = path.join(context.repoRoot, '.agents', 'skills');
   const stack = fs.existsSync(skills) ? [skills] : [];
+  if (!hubOutside && fs.existsSync(context.sharedDir)) stack.push(context.sharedDir);
   while (stack.length) {
     const current = stack.pop();
     for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
       const full = path.join(current, entry.name);
       const relative = toRepoRelative(context.repoRoot, full);
       if (entry.isDirectory()) {
-        if (!/^\.agents\/skills\/ws-shared\/memory(?:\/|$)/.test(relative)) stack.push(full);
+        if (!hubMemoryRe || !hubMemoryRe.test(relative)) stack.push(full);
       } else if (entry.name.endsWith('.md')) {
-        if (relative.startsWith('.agents/skills/ws-shared/')) {
-          const hubRelative = relative.slice('.agents/skills/ws-shared/'.length);
+        if (hubPrefix && relative.startsWith(hubPrefix)) {
+          const hubRelative = relative.slice(hubPrefix.length);
           if (generatedHubMarkdown.has(hubRelative)) continue;
         }
         if (
-          !/^\.agents\/skills\/ws-shared\/(?:MEMORY|CHANGELOG|STACK|backend|frontend)\.md$/.test(relative)
+          !(hubFileRe && hubFileRe.test(relative))
         ) {
           roots.push(full);
         }
       }
     }
   }
-  return roots.map((item) => toRepoRelative(context.repoRoot, item)).sort();
+  return [...new Set(roots.map((item) => toRepoRelative(context.repoRoot, item)))].sort();
 }
 
 function normativeBlocks(text, minLines) {

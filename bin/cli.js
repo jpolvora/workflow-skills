@@ -93,6 +93,21 @@ function setScope(isGlobal, customDir = process.cwd()) {
 
 const CONFIG_FILE = 'config.json';
 const HUB_DIR = 'ws-shared';
+const PROJECT_HUB_DIR = '.ws';
+function consumerHubDir() {
+  if (isGlobalScope) return path.join(targetSkillsDir, HUB_DIR);
+  return path.join(path.resolve(targetDir), PROJECT_HUB_DIR);
+}
+function legacyHubDir() {
+  return path.join(targetSkillsDir, HUB_DIR);
+}
+function hubPresent() {
+  if (fs.existsSync(consumerHubDir())) return true;
+  return !isGlobalScope && fs.existsSync(legacyHubDir());
+}
+function hubDisplay() {
+  return isGlobalScope ? 'ws-shared/' : '.ws/';
+}
 if (HUB_DIR !== INTEGRITY_HUB_DIR) {
   throw new Error('HUB_DIR mismatch between cli and skill-integrity-lib');
 }
@@ -106,16 +121,16 @@ function packageHubPath(categoryName, relativePath) {
 }
 
 /**
- * Consumer-owned artifacts under ws-shared/ — never copy upstream content into consumers.
+ * Consumer-owned artifacts under the project hub (.ws/) — never copy upstream content into consumers.
  * Fresh install seeds config.json + STACK.md; existing consumer files are preserved.
  * MEMORY.md / CHANGELOG.md default to the repo root (rules.memoryDir / rules.changelogFile);
- * legacy ws-shared/ copies are preserved as fallback but never seeded fresh.
+ * legacy hub copies are preserved as fallback but never seeded fresh.
  * Installer never writes consumer repo-root files (e.g. root AGENTS.md) — host/consumer-owned only.
  */
 
 /**
  * Thin local hub pointer for global-hybrid trees (us-272 AC3).
- * Seeded only when the project-local ws-shared/ hub exists without AGENTS.md
+ * Seeded only when the project-local hub exists without AGENTS.md
  * (e.g. hand-stripped local hub beside a global install). Normal updates
  * already refresh AGENTS.md from HUB_WHITELIST; this covers the residual
  * missing-file edge. Portable tokens only — no absolute paths.
@@ -124,9 +139,9 @@ const LOCAL_HUB_POINTER_MD = `# Shared — Workflow Config & Consumer Data Hub (
 
 This is the project-local pointer for global-hybrid installs. Managed hub runtime is resolved from the project-local \`runtime/\` when present, otherwise from \`{globalSkillsRoot}/ws-shared/runtime/\`. Project consumer data lives in this folder (\`config.json\`, \`STACK.md\`, \`installed-skills.json\`); MEMORY/changelog live at their configured locations (defaults: repo-root \`MEMORY.md\` + \`memory/\`, repo-root \`CHANGELOG.md\`).
 
-- Full hub contract: \`runtime/AGENTS.md\` (resolve the managed runtime locally or from \`{globalSkillsRoot}/ws-shared/runtime/\`; resolve skill bodies via \`resolveSkillMdPath\` / \`resolveConsumerContext\` in \`ws-shared/runtime/scripts/resolve_consumer_root.cjs\`).
-- Config always resolves project-local first: \`$PWD/.agents/skills/ws-shared/config.json\` overrides the global hub.
-- \`rules.harness\` default (\`.agents/skills/ws-shared/AGENTS.md\`) resolves to this file; follow the canonical runtime link above. Run installer \`update\` to refresh this pointer.
+- Full hub contract: \`runtime/AGENTS.md\` (resolve the managed runtime locally or from \`{globalSkillsRoot}/ws-shared/runtime/\`; resolve skill bodies via \`resolveSkillMdPath\` / \`resolveConsumerContext\` in \`.ws/runtime/scripts/resolve_consumer_root.cjs\`).
+- Config always resolves project-local first: \`$PWD/.ws/config.json\` overrides the global hub.
+- \`rules.harness\` default (\`.ws/AGENTS.md\`) resolves to this file; follow the canonical runtime link above. Run installer \`update\` to refresh this pointer.
 `;
 
 function renderConsumerAutoloadText(text) {
@@ -204,7 +219,7 @@ function resolveTransitiveDeps(skillName, graph = loadSkillGraph(), seen = new S
 }
 
 function installedSkillsManifestPath() {
-  return path.join(targetSkillsDir, HUB_DIR, INSTALLED_SKILLS_FILE);
+  return path.join(consumerHubDir(), INSTALLED_SKILLS_FILE);
 }
 
 /** Disk scan: top-level skill folders with SKILL.md (excludes ws-shared/).
@@ -255,7 +270,7 @@ function mergeGlobalTargets(existing = [], incoming = []) {
 }
 
 function writeInstalledSkillsManifest(skillNames, selectedNames = null, globalTargets = null) {
-  const destShared = path.join(targetSkillsDir, HUB_DIR);
+  const destShared = consumerHubDir();
   ensureWriteableDir(destShared);
   const skills = excludeExternalSkillIds(
     [...new Set(skillNames.filter((s) => s && s !== HUB_DIR))]
@@ -597,10 +612,16 @@ function ensurePathTokensInConfig(configPath) {
     _comment:
       'Fixed install layout — expand brace tokens before tool calls. See runtime/tools.md § Path tokens.',
     skillsRoot: '.agents/skills',
-    sharedDir: '.agents/skills/ws-shared',
+    sharedDir: '.ws',
   };
   const prev = cfg.pathTokens && typeof cfg.pathTokens === 'object' ? cfg.pathTokens : null;
   if (prev && typeof prev.skillsRoot === 'string' && prev.skillsRoot && typeof prev.sharedDir === 'string' && prev.sharedDir) {
+    if (prev.sharedDir === '.agents/skills/ws-shared') {
+      prev.sharedDir = '.ws';
+      cfg.pathTokens = { ...prev };
+      fs.writeFileSync(configPath, `${JSON.stringify(cfg, null, 2)}\n`);
+      console.log(`    Migrated pathTokens.sharedDir from legacy ws-shared/ to .ws/`);
+    }
     return;
   }
   cfg.pathTokens = {
@@ -610,7 +631,7 @@ function ensurePathTokensInConfig(configPath) {
     sharedDir: (prev && prev.sharedDir) || defaults.sharedDir,
   };
   fs.writeFileSync(configPath, `${JSON.stringify(cfg, null, 2)}\n`);
-  console.log(`    Ensured ws-shared/config.json pathTokens ({skillsRoot}, {sharedDir})`);
+  console.log(`    Ensured ${hubDisplay()}config.json pathTokens ({skillsRoot}, {sharedDir})`);
 }
 
 function deepMergeConfig(templateObj, userObj) {
@@ -663,27 +684,57 @@ function upgradeConfigToLatestFormat(templateObj, userObj) {
   }
 
   const prevTokens = (userObj && typeof userObj === 'object' && userObj.pathTokens) || {};
+  const prevSharedDir = prevTokens.sharedDir === '.agents/skills/ws-shared' ? '.ws' : prevTokens.sharedDir;
   merged.pathTokens = {
     _comment:
       'Fixed install layout (not relocatable). Expand brace tokens before Read/Grep/Shell. Full contract: runtime/tools.md § Path tokens. plansDir/reviewsDir still resolve from plans.dir / reviews.dir.',
     skillsRoot: prevTokens.skillsRoot || '.agents/skills',
-    sharedDir: prevTokens.sharedDir || '.agents/skills/ws-shared',
+    sharedDir: prevSharedDir || '.ws',
     ...(merged.pathTokens || {}),
   };
+  if (merged.pathTokens.sharedDir === '.agents/skills/ws-shared') merged.pathTokens.sharedDir = '.ws';
 
   const { cfg: stripped } = stripRetiredConfigKeys(merged);
   return stripped;
 }
 
 /**
- * Seed/preserve consumer-owned hub artifacts under ws-shared/:
+ * Seed/preserve consumer-owned hub artifacts under the project hub (.ws/):
  * config.json, STACK.md, plus legacy MEMORY.md / memory/ / CHANGELOG.md when present.
- * Fresh installs do not seed MEMORY/CHANGELOG under ws-shared/ (defaults are repo-root);
+ * Fresh installs do not seed MEMORY/CHANGELOG under the hub (defaults are repo-root);
  * the skills create those files on first use. Existing legacy copies are preserved as fallback.
  * Never writes consumer repo-root files (root AGENTS.md stays host/consumer-owned).
  */
+function relocateLegacyHub() {
+  if (isGlobalScope) return;
+  const legacy = legacyHubDir();
+  const dest = consumerHubDir();
+  if (!fs.existsSync(legacy)) return;
+  if (path.resolve(legacy) === path.resolve(dest)) return;
+  if (fs.existsSync(dest)) {
+    console.log('    Legacy ws-shared/ hub present alongside .ws/; leaving both in place (remove the legacy dir manually once verified).');
+    return;
+  }
+  fs.mkdirSync(dest, { recursive: true });
+  const moved = [];
+  for (const name of fs.readdirSync(legacy)) {
+    fs.renameSync(path.join(legacy, name), path.join(dest, name));
+    moved.push(name);
+  }
+  console.log(`    Relocated legacy ws-shared/ hub to .ws/ (${moved.length} entries)`);
+  try {
+    if (fs.readdirSync(legacy).length === 0) {
+      fs.rmdirSync(legacy);
+      console.log('    Removed emptied legacy ws-shared/ hub dir');
+    } else {
+      console.log('    Legacy ws-shared/ hub dir still holds files; remove it manually once verified.');
+    }
+  } catch {
+    /* leave the legacy dir in place when it cannot be inspected */
+  }
+}
 function ensureSharedConsumerArtifacts(mode = 'install') {
-  const destShared = path.join(targetSkillsDir, HUB_DIR);
+  const destShared = consumerHubDir();
   ensureWriteableDir(destShared);
 
   const memoryDir = path.join(destShared, 'memory');
@@ -699,12 +750,12 @@ function ensureSharedConsumerArtifacts(mode = 'install') {
       rawConfig = fs.readFileSync(configPath, 'utf8');
       existingConfig = JSON.parse(rawConfig);
     } catch (err) {
-      console.warn(`    Warning: Could not parse ws-shared/config.json as JSON: ${err.message}`);
+      console.warn(`    Warning: Could not parse ${hubDisplay()}config.json as JSON: ${err.message}`);
     }
 
     if (rawConfig) {
       fs.writeFileSync(configBakPath, rawConfig);
-      console.log(`    Backed up ws-shared/config.json → ws-shared/config.json.bak`);
+      console.log(`    Backed up ${hubDisplay()}config.json → ${hubDisplay()}config.json.bak`);
     }
 
     let templateConfig = null;
@@ -719,14 +770,14 @@ function ensureSharedConsumerArtifacts(mode = 'install') {
     if (existingConfig && templateConfig) {
       const upgraded = upgradeConfigToLatestFormat(templateConfig, existingConfig);
       fs.writeFileSync(configPath, `${JSON.stringify(upgraded, null, 2)}\n`);
-      console.log(`    Updated ws-shared/config.json to latest format (preserved user values)`);
+      console.log(`    Updated ${hubDisplay()}config.json to latest format (preserved user values)`);
     } else {
-      console.log(`    Preserved existing ws-shared/config.json`);
+      console.log(`    Preserved existing ${hubDisplay()}config.json`);
     }
   } else {
     if (fs.existsSync(templatePath)) {
       fs.copyFileSync(templatePath, configPath);
-      console.log(`    Seeded ws-shared/config.json from config.json.example (run ws-configure-project to fill)`);
+      console.log(`    Seeded ${hubDisplay()}config.json from config.json.example (run ws-configure-project to fill)`);
       ensurePathTokensInConfig(configPath);
     }
   }
@@ -734,7 +785,7 @@ function ensureSharedConsumerArtifacts(mode = 'install') {
   const memMd = path.join(destShared, 'MEMORY.md');
   if (fs.existsSync(memMd) || fs.existsSync(memoryDir)) {
     ensureWriteableDir(memoryDir);
-    console.log(`    Preserved existing ws-shared/MEMORY.md + memory/ (legacy fallback; default memory dir is now repo root)`);
+    console.log(`    Preserved existing ${hubDisplay()}MEMORY.md + memory/ (legacy fallback; default memory dir is now repo root)`);
   }
 
   const stackPath = path.join(destShared, 'STACK.md');
@@ -743,25 +794,25 @@ function ensureSharedConsumerArtifacts(mode = 'install') {
     const names = fs.readdirSync(destShared);
     if (names.includes('stack.md') && !names.includes('STACK.md')) {
       fs.renameSync(path.join(destShared, 'stack.md'), stackPath);
-      console.log(`    Renamed ws-shared/stack.md → ws-shared/STACK.md`);
+      console.log(`    Renamed ${hubDisplay()}stack.md → ${hubDisplay()}STACK.md`);
     } else if (names.includes('stack.md') && names.includes('STACK.md')) {
       fs.unlinkSync(path.join(destShared, 'stack.md'));
-      console.log(`    Removed obsolete ws-shared/stack.md`);
+      console.log(`    Removed obsolete ${hubDisplay()}stack.md`);
     }
   }
   if (fs.existsSync(stackPath)) {
-    console.log(`    Preserved existing ws-shared/STACK.md`);
+    console.log(`    Preserved existing ${hubDisplay()}STACK.md`);
   } else {
     const example = packageHubPath('templates', 'STACK.md.example');
     if (fs.existsSync(example)) {
       fs.copyFileSync(example, stackPath);
-      console.log(`    Seeded ws-shared/STACK.md from STACK.md.example`);
+      console.log(`    Seeded ${hubDisplay()}STACK.md from STACK.md.example`);
     }
   }
 
   const changelogPath = path.join(destShared, 'CHANGELOG.md');
   if (fs.existsSync(changelogPath)) {
-    console.log(`    Preserved existing ws-shared/CHANGELOG.md (legacy fallback; default is now repo-root CHANGELOG.md)`);
+    console.log(`    Preserved existing ${hubDisplay()}CHANGELOG.md (legacy fallback; default is now repo-root CHANGELOG.md)`);
   }
 }
 
@@ -772,7 +823,7 @@ function afterSkillCopy(skillName, destPath) {
   // Also seed when installing ws-self-learning alone so memory works without a workflow.
   if (skillName === 'ws-self-learning') {
     ensureSharedHubInstalled(
-      fs.existsSync(path.join(targetSkillsDir, HUB_DIR)) ? 'update' : 'install'
+      hubPresent() ? 'update' : 'install'
     );
   }
 }
@@ -887,14 +938,14 @@ function migrateLegacyFlatHub(destShared) {
     const retiredPath = path.join(destShared, retiredName);
     if (fs.existsSync(retiredPath)) {
       fs.rmSync(retiredPath, { recursive: true, force: true });
-      console.log(`    Removed obsolete ws-shared/${retiredName}`);
+      console.log(`    Removed obsolete ${hubDisplay()}${retiredName}`);
     }
   }
   for (const name of fs.readdirSync(destShared)) {
     if (!isHubBackupArtifact(name)) continue;
     const artifactPath = path.join(destShared, name);
     fs.rmSync(artifactPath, { recursive: true, force: true });
-    console.log(`    Removed ws-shared backup artifact: ${name}`);
+    console.log(`    Removed ${hubDisplay()}backup artifact: ${name}`);
   }
   const allowedRootNames = new Set([
     'runtime',
@@ -939,27 +990,28 @@ function migrateLegacyFlatHub(destShared) {
     if (!fs.existsSync(move.source)) continue;
     if (move.removeOnly) {
       fs.rmSync(move.source, { recursive: true, force: true });
-      console.log(`    Removed obsolete flat ws-shared/${path.relative(destShared, move.source).replace(/\\/g, '/')}`);
+      console.log(`    Removed obsolete flat ${hubDisplay()}${path.relative(destShared, move.source).replace(/\\/g, '/')}`);
       continue;
     }
     fs.mkdirSync(path.dirname(move.destination), { recursive: true });
     fs.renameSync(move.source, move.destination);
     console.log(
-      `    Migrated ws-shared/${path.relative(destShared, move.source).replace(/\\/g, '/')} → ` +
-      `ws-shared/${path.relative(destShared, move.destination).replace(/\\/g, '/')}`
+      `    Migrated ${hubDisplay()}${path.relative(destShared, move.source).replace(/\\/g, '/')} → ` +
+      `${hubDisplay()}${path.relative(destShared, move.destination).replace(/\\/g, '/')}`
     );
   }
 }
 
 /**
- * Install/update ws-shared/ hub (templates/docs). Preserves consumer-owned hub files.
+ * Install/update the consumer hub (templates/docs). Preserves consumer-owned hub files.
  * Seeds config.json + STACK.md when missing; preserves legacy MEMORY.md / CHANGELOG.md.
  * Never overwrites existing consumer config/MEMORY/STACK/CHANGELOG.
  * Never writes outside `.agents/skills/` (no consumer root AGENTS.md / host pointers).
  */
 function ensureSharedHubInstalled(mode = 'install') {
   const srcShared = path.join(packageSkillsDir, HUB_DIR);
-  const destShared = path.join(targetSkillsDir, HUB_DIR);
+  relocateLegacyHub();
+  const destShared = consumerHubDir();
   if (!fs.existsSync(srcShared)) return;
 
   fs.mkdirSync(destShared, { recursive: true });
@@ -974,7 +1026,7 @@ function ensureSharedHubInstalled(mode = 'install') {
       copyDirSync(srcPath, destPath);
       pruneManagedSkillExtras(srcPath, destPath);
     } else if (CONSUMER_OWNED_HUB_FILES.has(destName) && fs.existsSync(destPath)) {
-      console.log(`    Skipped (preserved): ws-shared/${destName}`);
+      console.log(`    Skipped (preserved): ${hubDisplay()}${destName}`);
     } else {
       fs.copyFileSync(srcPath, destPath);
     }
@@ -1003,7 +1055,7 @@ function ensureSharedHubInstalled(mode = 'install') {
     const names = fs.readdirSync(destShared);
     if (names.includes('stack.md.example') && names.includes('STACK.md.example')) {
       fs.unlinkSync(path.join(destShared, 'stack.md.example'));
-      console.log(`    Removed obsolete ws-shared/stack.md.example`);
+      console.log(`    Removed obsolete ${hubDisplay()}stack.md.example`);
     }
   }
 
@@ -1018,23 +1070,23 @@ function ensureSharedHubInstalled(mode = 'install') {
     });
   if (fs.existsSync(autoloadSource) && (!fs.existsSync(autoloadPath) || staleAutoload)) {
     fs.writeFileSync(autoloadPath, renderConsumerAutoload(autoloadSource));
-    if (staleAutoload) console.log('    Refreshed stale ws-shared/autoload.md');
+    if (staleAutoload) console.log(`    Refreshed stale ${hubDisplay()}autoload.md`);
   } else if (fs.existsSync(autoloadPath)) {
     const currentAutoload = fs.readFileSync(autoloadPath, 'utf8');
     const renderedAutoload = renderConsumerAutoloadText(currentAutoload);
     if (renderedAutoload !== currentAutoload) {
       fs.writeFileSync(autoloadPath, renderedAutoload);
-      console.log('    Refreshed ws-shared/autoload.md links');
+      console.log(`    Refreshed ${hubDisplay()}autoload.md links`);
     }
   }
-  pruneRetiredConsumerArtifacts(fs, path, { skillsDir: targetSkillsDir });
+  pruneRetiredConsumerArtifacts(fs, path, { skillsDir: targetSkillsDir, sharedDir: destShared });
   // Global-hybrid edge (us-272 AC3): seed a thin local pointer when the
   // project hub lacks AGENTS.md. The HUB_WHITELIST copy above already
   // refreshes it on normal updates; this covers the residual missing-file
   // edge only. Never writes outside `.agents/skills/`.
   if (!fs.existsSync(path.join(destShared, 'AGENTS.md'))) {
     fs.writeFileSync(path.join(destShared, 'AGENTS.md'), LOCAL_HUB_POINTER_MD);
-    console.log('    Seeded thin local ws-shared/AGENTS.md pointer to the global hub');
+    console.log(`    Seeded thin local ${hubDisplay()}AGENTS.md pointer to the global hub`);
   }
   if (!isGlobalScope) {
     const globalDir = resolveGlobalSkillsDir();
@@ -1048,7 +1100,7 @@ function ensureSharedHubInstalled(mode = 'install') {
   }
 
   console.log(
-    `  ws-shared/ hub ${mode === 'update' ? 'updated' : 'installed'} (consumer config/MEMORY/stack/CHANGELOG preserved)`
+    `  ${hubDisplay()} hub ${mode === 'update' ? 'updated' : 'installed'} (consumer config/MEMORY/stack/CHANGELOG preserved)`
   );
 }
 
@@ -1092,7 +1144,7 @@ function loadUpstreamIntegrityManifest() {
 
 function willIncludeHub(selectedNames) {
   return (
-    shouldEnsureHub(selectedNames) || fs.existsSync(path.join(targetSkillsDir, HUB_DIR))
+    shouldEnsureHub(selectedNames) || hubPresent()
   );
 }
 
@@ -1142,6 +1194,7 @@ function postVerifyAndWriteLocal(skillIds, { includeHub, force, manifest }) {
     manifest: expected,
     skillIds,
     includeHub,
+    hubDir: consumerHubDir(),
   });
 
   if (result.ok) {
@@ -1154,11 +1207,11 @@ function postVerifyAndWriteLocal(skillIds, { includeHub, force, manifest }) {
       actualSkills: result.actualSkills,
       actualHub: result.actualHub,
     });
-    const destShared = path.join(targetSkillsDir, HUB_DIR);
+    const destShared = consumerHubDir();
     if (fs.existsSync(destShared) || includeHub) {
       fs.mkdirSync(destShared, { recursive: true });
-      writeJsonStable(localIntegrityPath(targetSkillsDir), record);
-      console.log(`Integrity: wrote ws-shared/${SKILL_INTEGRITY_LOCAL_FILE}`);
+      writeJsonStable(localIntegrityPath(targetSkillsDir, destShared), record);
+      console.log(`Integrity: wrote ${hubDisplay()}${SKILL_INTEGRITY_LOCAL_FILE}`);
     }
     console.log(
       `Integrity: consumer OK (${skillIds.length} skill(s)${includeHub ? ' + hub' : ''})`
@@ -1177,8 +1230,8 @@ function postVerifyAndWriteLocal(skillIds, { includeHub, force, manifest }) {
       if (fs.existsSync(root)) actualSkills[id] = buildSkillEntry(root);
     }
     let actualHub = null;
-    if (includeHub && fs.existsSync(path.join(targetSkillsDir, HUB_DIR))) {
-      actualHub = buildHubEntry(path.join(targetSkillsDir, HUB_DIR));
+    if (includeHub && fs.existsSync(consumerHubDir())) {
+      actualHub = buildHubEntry(consumerHubDir());
     }
     const isFull =
       listInstallableSkills(packageSkillsDir).length === skillIds.length && includeHub;
@@ -1189,11 +1242,11 @@ function postVerifyAndWriteLocal(skillIds, { includeHub, force, manifest }) {
       actualSkills,
       actualHub,
     });
-    const destShared = path.join(targetSkillsDir, HUB_DIR);
+    const destShared = consumerHubDir();
     if (fs.existsSync(destShared) || includeHub) {
       fs.mkdirSync(destShared, { recursive: true });
-      writeJsonStable(localIntegrityPath(targetSkillsDir), record);
-      console.log(`Integrity: wrote ws-shared/${SKILL_INTEGRITY_LOCAL_FILE}`);
+      writeJsonStable(localIntegrityPath(targetSkillsDir, destShared), record);
+      console.log(`Integrity: wrote ${hubDisplay()}${SKILL_INTEGRITY_LOCAL_FILE}`);
     }
     console.warn('Integrity: recorded actual digests due to --force-integrity (unsafe)');
     return;
@@ -1204,8 +1257,8 @@ function postVerifyAndWriteLocal(skillIds, { includeHub, force, manifest }) {
 
 /** Rewrite local integrity record for remaining installed skills (uninstall). */
 function rewriteLocalIntegrityForRemaining(remainingSkillIds) {
-  const localPath = localIntegrityPath(targetSkillsDir);
-  const sharedExists = fs.existsSync(path.join(targetSkillsDir, HUB_DIR));
+  const localPath = localIntegrityPath(targetSkillsDir, consumerHubDir());
+  const sharedExists = fs.existsSync(consumerHubDir());
   if (!sharedExists) {
     if (fs.existsSync(localPath)) fs.unlinkSync(localPath);
     return;
@@ -1230,7 +1283,7 @@ function rewriteLocalIntegrityForRemaining(remainingSkillIds) {
     const root = path.join(targetSkillsDir, id);
     if (fs.existsSync(root)) actualSkills[id] = buildSkillEntry(root);
   }
-  const actualHub = includeHub ? buildHubEntry(path.join(targetSkillsDir, HUB_DIR)) : null;
+  const actualHub = includeHub ? buildHubEntry(consumerHubDir()) : null;
   const record = buildLocalRecord({
     packageVersion: prior?.packageVersion || getLocalVersion(),
     fullPackageDigest: null,
@@ -1239,7 +1292,7 @@ function rewriteLocalIntegrityForRemaining(remainingSkillIds) {
     actualHub,
   });
   writeJsonStable(localPath, record);
-  console.log(`Integrity: rewrote ws-shared/${SKILL_INTEGRITY_LOCAL_FILE} for remaining skills`);
+  console.log(`Integrity: rewrote ${hubDisplay()}${SKILL_INTEGRITY_LOCAL_FILE} for remaining skills`);
 }
 
 function fetchRemoteJson(url) {
@@ -1265,9 +1318,9 @@ function fetchRemoteJson(url) {
 }
 
 function runIntegrityAudit() {
-  const localPath = localIntegrityPath(targetSkillsDir);
+  const localPath = localIntegrityPath(targetSkillsDir, consumerHubDir());
   if (!fs.existsSync(localPath)) {
-    console.error(`Error: missing ws-shared/${SKILL_INTEGRITY_LOCAL_FILE}`);
+    console.error(`Error: missing ${hubDisplay()}${SKILL_INTEGRITY_LOCAL_FILE}`);
     console.error('Run install or update first to create the local integrity record.');
     process.exit(1);
   }
@@ -1306,7 +1359,7 @@ function runIntegrityAudit() {
 
   // Skills in record but not installed → skip (AC7)
   if (record.hub != null) {
-    const actualHub = buildHubEntry(path.join(targetSkillsDir, HUB_DIR));
+    const actualHub = buildHubEntry(consumerHubDir());
     for (const rel of Object.keys(record.hub.files || {}).sort()) {
       if (!actualHub.files[rel]) {
         mismatches.push({ path: `hub/${rel}`, reason: 'missing' });
@@ -1378,13 +1431,13 @@ function printHelp() {
   npx --yes github:jpolvora/workflow-skills install --full --yes
   npx --yes github:jpolvora/workflow-skills install --package workflows --yes
   npx --yes github:jpolvora/workflow-skills install --skills ws-spec-to-pr,ws-goal-fix-pr --yes
-  npx --yes github:jpolvora/workflow-skills update       Update installed skills (from ws-shared/installed-skills.json)
+  npx --yes github:jpolvora/workflow-skills update       Update installed skills (from the hub installed-skills.json)
   npx --yes github:jpolvora/workflow-skills update --include-new
       Also install upstream skill folders not yet present locally
   update --global [--targets <csv>] [--yes] [--symlink|--no-symlink]
       Interactive runs always prompt for host targets; --targets/--yes skip the prompt
   npx --yes github:jpolvora/workflow-skills uninstall --skills <csv> [--yes]
-      Remove skills (+ cascade unused deps); never deletes ws-shared/ consumer data
+      Remove skills (+ cascade unused deps); never deletes consumer hub data
   npx --yes github:jpolvora/workflow-skills --version    Print installed version
   npx --yes github:jpolvora/workflow-skills --check      Compare version + fullPackageDigest vs main
   npx --yes github:jpolvora/workflow-skills integrity    Audit installed skills vs local integrity record
@@ -1402,7 +1455,7 @@ Curl shim (same argv; requires Node.js):
 
 Non-interactive install:
   install --full|--package <key>|--skills <csv> [--yes] [--force-integrity] [--global] [--targets <csv>] [--symlink|--no-symlink]
-  --yes  Overwrite existing skill dirs without prompts; always preserves ws-shared/ consumer data
+  --yes  Overwrite existing skill dirs without prompts; always preserves consumer hub data
   --force-integrity  Unsafe: skip source/consumer integrity gates (still writes local record)
   --global, -g       Install globally into user home directory (~/.agents/skills)
   --targets <csv>    Global host targets: canonical, claude, codex, gemini, or custom paths (requires --global)
@@ -1418,10 +1471,10 @@ Non-interactive install:
 Non-interactive uninstall:
   uninstall --skills <csv> [--yes]
   Removes named skills and any deps no longer required by remaining installed skills.
-  Always preserves ws-shared/ (config.json, MEMORY.md, STACK.md, CHANGELOG.md, installed-skills.json).
+  Always preserves the consumer hub (config.json, MEMORY.md, STACK.md, CHANGELOG.md, installed-skills.json).
 
 Interactive package shortcuts:
-  f  Full package (all installable skills + ws-shared/ hub)
+  f  Full package (all installable skills + consumer hub)
   w  Workflows package (orchestrators + pipeline deps + hub)
   e  Extra package (ws-write-a-skill, ws-show-harness, ws-preview, ws-run-benchmark)
   a  Select/deselect all
@@ -1432,21 +1485,21 @@ Notes:
   - Prefer: npx --yes github:jpolvora/workflow-skills (do NOT use github:…@latest or @main — npm exit 128).
   - Cache bust: clear the npx cache, then re-run with npx --yes (no @latest suffix on github:).
   - Skills under .agents/skills/ are overwritten on update/install --yes.
-  - ws-shared/ hub is installed with workflows/full (and when ws-self-learning is installed).
-  - Consumer-owned under ws-shared/ (never copied from upstream): config.json, STACK.md, installed-skills.json, skill-integrity-local.json, plus legacy MEMORY.md, memory/*, CHANGELOG.md when present.
+  - Consumer hub (.ws/ project-local, ws-shared/ under the global skills root) is installed with workflows/full (and when ws-self-learning is installed).
+  - Consumer-owned under the hub (never copied from upstream): config.json, STACK.md, installed-skills.json, skill-integrity-local.json, plus legacy MEMORY.md, memory/*, CHANGELOG.md when present.
     Fresh install seeds config.json (from example) and STACK.md when missing; MEMORY/CHANGELOG default to the repo root and are created on first use; existing files are always preserved.
     installed-skills.json tracks managed skills for update/uninstall (bootstrapped from disk when missing).
     skill-integrity-local.json records digests after successful install/update (gitignored; never hashed).
   - Integrity: install/update verify source digests before copy and consumer digests after; mismatch exits ≠0 (no silent continue; --force-integrity is unsafe override). Post-copy failure does not auto-rollback.
-  - Audit: integrity compares on-disk managed files to ws-shared/skill-integrity-local.json. --check also compares fullPackageDigest when remote manifest is available (same trust as remote package.json).
-  - Installer only writes under .agents/skills/ (skills + shared hub). Never creates/overwrites consumer repo-root files (root AGENTS.md, host pointers).
+  - Audit: integrity compares on-disk managed files to the hub skill-integrity-local.json. --check also compares fullPackageDigest when remote manifest is available (same trust as remote package.json).
+  - Installer writes skills under .agents/skills/ and the consumer hub under .ws/ (project-local). Never creates/overwrites other consumer repo-root files (root AGENTS.md, host pointers).
   - Artifact paths (plans/reviews) come from consumer config.json (defaults: .agents/plans, .agents/codereviews) — not host-private folders.
-  - Path tokens: config.json pathTokens.skillsRoot / sharedDir (defaults .agents/skills, .agents/skills/ws-shared). Agents expand {skillsRoot}/{sharedDir}/{plansDir} per ws-shared/runtime/tools.md before Read/Grep/Shell. Not relocatable.
+  - Path tokens: config.json pathTokens.skillsRoot / sharedDir (defaults .agents/skills, .ws). Agents expand {skillsRoot}/{sharedDir}/{plansDir} per the hub runtime/tools.md before Read/Grep/Shell. Not relocatable.
   - Optional host pointer files are consumer-owned. Changelog defaults to repo-root CHANGELOG.md (rules.changelogFile); memory defaults to the repo root (rules.memoryDir).
   - Dependency map: bin/skill-dependencies.json (update when installer graph changes).
-  - Consumer agent contract: skills/ws-shared/AGENTS.md (installed with the ws-shared hub; no separate packaged index is copied).
+  - Consumer agent contract: .ws/AGENTS.md (installed with the consumer hub; no separate packaged index is copied).
   - After installing or updating, run the "ws-check-harness" skill to validate the harness.
-  - Optional: run the "ws-configure-project" skill to interview/detect and fill ws-shared/config.json placeholders.
+  - Optional: run the "ws-configure-project" skill to interview/detect and fill .ws/config.json placeholders.
   - Install copies skip __pycache__ / *.pyc (not part of the skill surface).
   - Workflows use the executing session model at gates; switch via Pause → IDE/agent host → Resume (no --model/--model-chain).
   - install-skills.sh is a curl/bash shim that execs this CLI (or npx); prefer calling npx directly.
@@ -1625,14 +1678,15 @@ function installSelectedSkills(
     installedCount++;
   }
 
+  relocateLegacyHub();
   if (shouldEnsureHub(selectedNames)) {
     ensureSharedHubInstalled(
-      fs.existsSync(path.join(targetSkillsDir, HUB_DIR)) ? 'update' : 'install'
+      hubPresent() ? 'update' : 'install'
     );
     hubEnsured = true;
   }
 
-  if (!hubEnsured && fs.existsSync(path.join(targetSkillsDir, HUB_DIR))) {
+  if (!hubEnsured && hubPresent()) {
     ensureSharedHubInstalled('update');
   }
 
@@ -1649,14 +1703,14 @@ function installSelectedSkills(
     fs.existsSync(path.join(targetSkillsDir, n))
   );
   postVerifyAndWriteLocal(verifiedIds, {
-    includeHub: includeHub || fs.existsSync(path.join(targetSkillsDir, HUB_DIR)),
+    includeHub: includeHub || hubPresent(),
     force: forceIntegrity,
     manifest,
   });
 
   if (secondaryTargets.length > 0) {
     const skillsToProject = [...selectedNames];
-    if (fs.existsSync(path.join(targetSkillsDir, HUB_DIR))) {
+    if (isGlobalScope && fs.existsSync(consumerHubDir())) {
       skillsToProject.push(HUB_DIR);
     }
     projectSkillsToSecondaryTargets(skillsToProject, secondaryTargets);
@@ -1672,7 +1726,7 @@ async function confirmOverwriteExisting(existingNames) {
       `Error: ${existingNames.length} existing skill(s) would be overwritten, but stdin is not a TTY.`
     );
     console.error(
-      'Re-run with non-interactive flags, e.g. install --full --yes (ws-shared/ consumer data is always preserved).'
+      'Re-run with non-interactive flags, e.g. install --full --yes (consumer hub data is always preserved).'
     );
     process.exit(1);
   }
@@ -1855,11 +1909,11 @@ async function runInstall(skills, opts) {
   console.log('');
   if (installedCount > 0) {
     console.log(`Successfully installed ${installedCount} skill(s) into ${targetSkillsDir}`);
-    console.log(`Note: Existing '${CONFIG_FILE}' and ws-shared/ consumer files were preserved and NOT overwritten.`);
+    console.log(`Note: Existing '${CONFIG_FILE}' and consumer hub files were preserved and NOT overwritten.`);
     console.log('\n\u26a0\ufe0f  After installing, run the `ws-check-harness` skill to validate the harness:');
     console.log('   Load `.agents/skills/ws-check-harness/SKILL.md` and execute Phases 0\u20135c.');
-    console.log('   Optional: run `ws-configure-project` to interview/detect and fill `.agents/skills/ws-shared/config.json`.');
-    console.log('   Path tokens: `.agents/skills/ws-shared/runtime/tools.md` § Path tokens (`pathTokens` in config.json).');
+    console.log('   Optional: run `ws-configure-project` to interview/detect and fill `.ws/config.json`.');
+    console.log('   Path tokens: `.ws/runtime/tools.md` § Path tokens (`pathTokens` in config.json).');
   } else {
     console.log('No skills were installed.');
   }
@@ -2112,7 +2166,7 @@ async function runUninstall(_upstreamSkills, argv) {
     console.log(`(includes ${cascaded.length} cascaded dependent/orphan skill(s))`);
   }
   console.log(`Remaining: ${keep.length}`);
-  console.log('ws-shared/ consumer data will be preserved.');
+  console.log('Consumer hub data will be preserved.');
 
   let confirmed = !!opts.yes;
   if (!confirmed) {
@@ -2175,7 +2229,7 @@ async function runUninstall(_upstreamSkills, argv) {
 
   console.log('');
   console.log(`Uninstalled ${removedCount} skill folder(s). Manifest now lists ${keep.length} skill(s).`);
-  console.log(`Note: ws-shared/ (${CONFIG_FILE}, MEMORY.md, STACK.md, ${INSTALLED_SKILLS_FILE}) was preserved.`);
+  console.log(`Note: consumer hub (${CONFIG_FILE}, MEMORY.md, STACK.md, ${INSTALLED_SKILLS_FILE}) was preserved.`);
   process.exit(0);
 }
 
@@ -2231,10 +2285,11 @@ async function runUpdate(skills, includeNew, forceIntegrity = false, updateOpts 
     ...existingSkills,
     ...(includeNew ? missingNew : []),
   ];
+  relocateLegacyHub();
   const includeHub =
     skillsToCopy.length > 0
       ? willIncludeHub(skillsToCopy)
-      : fs.existsSync(path.join(targetSkillsDir, HUB_DIR));
+      : hubPresent();
 
   let manifest = null;
   if (skillsToCopy.length > 0 || includeHub) {
@@ -2261,7 +2316,7 @@ async function runUpdate(skills, includeNew, forceIntegrity = false, updateOpts 
   }
 
   // Always refresh hub if present on consumer (config-preserving)
-  if (!hubEnsured && fs.existsSync(path.join(targetSkillsDir, HUB_DIR))) {
+  if (!hubEnsured && hubPresent()) {
     ensureSharedHubInstalled('update');
   }
 
@@ -2295,7 +2350,7 @@ async function runUpdate(skills, includeNew, forceIntegrity = false, updateOpts 
     const stale = synced ? listRetiredManifestIds(synced) : [];
     if (stale.length > 0) {
       console.error(
-        `Error: retired skill id(s) remain in ws-shared/${INSTALLED_SKILLS_FILE} after update: ${stale.join(', ')}`,
+        `Error: retired skill id(s) remain in ${hubDisplay()}${INSTALLED_SKILLS_FILE} after update: ${stale.join(', ')}`,
       );
       process.exit(1);
     }
@@ -2307,7 +2362,7 @@ async function runUpdate(skills, includeNew, forceIntegrity = false, updateOpts 
     : skillsToCopy.filter((n) => fs.existsSync(path.join(targetSkillsDir, n)));
   if (verifyIds.length > 0) {
     postVerifyAndWriteLocal(verifyIds, {
-      includeHub: includeHub || fs.existsSync(path.join(targetSkillsDir, HUB_DIR)),
+      includeHub: includeHub || hubPresent(),
       force: forceIntegrity,
       manifest: manifest || loadUpstreamIntegrityManifest(),
     });
@@ -2376,7 +2431,7 @@ async function runUpdate(skills, includeNew, forceIntegrity = false, updateOpts 
     if (targetsToSync.length > 0) {
       const skillsToProject = [
         ...(afterManifest?.skills || existingSkills),
-        ...(fs.existsSync(path.join(targetSkillsDir, HUB_DIR)) ? [HUB_DIR] : []),
+        ...(fs.existsSync(consumerHubDir()) ? [HUB_DIR] : []),
       ];
       projectSkillsToSecondaryTargets(skillsToProject, targetsToSync);
       if (explicitTargets || promptedTargets || autoDetectedCount > 0) {
@@ -2386,15 +2441,15 @@ async function runUpdate(skills, includeNew, forceIntegrity = false, updateOpts 
   }
 
   console.log('\nUpdate complete!');
-  console.log(`Note: Existing '${CONFIG_FILE}' and ws-shared/ consumer files were preserved and NOT overwritten.`);
+  console.log(`Note: Existing '${CONFIG_FILE}' and consumer hub files were preserved and NOT overwritten.`);
   console.log(
-    `Note: Consumer ws-shared/MEMORY.md, memory/, STACK.md, config.json, and ${INSTALLED_SKILLS_FILE} are never overwritten by upstream.`
+    `Note: Consumer hub MEMORY.md, memory/, STACK.md, config.json, and ${INSTALLED_SKILLS_FILE} are never overwritten by upstream.`
   );
   console.log('\n\u26a0\ufe0f  After updating, run the `ws-check-harness` skill to scan the harness:');
   console.log('   Load `.agents/skills/ws-check-harness/SKILL.md` and execute Phases 0\u20135c.');
   console.log('   This detects phantom skills, broken links, stale references, and fixes routing/indexes.');
-  console.log('   Optional: run `ws-configure-project` if ws-shared/config.json still has placeholders.');
-  console.log('   Path tokens: `.agents/skills/ws-shared/runtime/tools.md` § Path tokens (`pathTokens` in config.json).');
+  console.log('   Optional: run `ws-configure-project` if .ws/config.json still has placeholders.');
+  console.log('   Path tokens: `.ws/runtime/tools.md` § Path tokens (`pathTokens` in config.json).');
   process.exit(0);
 }
 
@@ -2547,12 +2602,12 @@ async function runInteractive(skills, forceIntegrity = false) {
   console.log('');
   if (installedCount > 0) {
     console.log(`Successfully installed ${installedCount} skill(s) into ${targetSkillsDir}`);
-    console.log(`Note: Existing '${CONFIG_FILE}' and ws-shared/ consumer files were preserved and NOT overwritten.`);
+    console.log(`Note: Existing '${CONFIG_FILE}' and consumer hub files were preserved and NOT overwritten.`);
     console.log('\n\u26a0\ufe0f  After installing, run the `ws-check-harness` skill to validate the harness:');
     console.log('   Load `.agents/skills/ws-check-harness/SKILL.md` and execute Phases 0\u20135c.');
     console.log('   This detects phantom skills, broken links, stale references, and fixes routing/indexes.');
-    console.log('   Optional: run `ws-configure-project` to interview/detect and fill `.agents/skills/ws-shared/config.json`.');
-    console.log('   Path tokens: `.agents/skills/ws-shared/runtime/tools.md` § Path tokens (`pathTokens` in config.json).');
+    console.log('   Optional: run `ws-configure-project` to interview/detect and fill `.ws/config.json`.');
+    console.log('   Path tokens: `.ws/runtime/tools.md` § Path tokens (`pathTokens` in config.json).');
   } else {
     console.log('No skills were installed.');
   }

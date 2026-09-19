@@ -46,7 +46,7 @@ try {
 
   const plans = path.join(tmp, '.agents', 'plans');
   const specs = path.join(tmp, '.agents', 'specs');
-  const shared = path.join(tmp, '.agents', 'skills', 'ws-shared');
+  const shared = path.join(tmp, '.ws');
   fs.mkdirSync(shared, { recursive: true });
   fs.mkdirSync(specs, { recursive: true });
   fs.writeFileSync(
@@ -294,7 +294,7 @@ try {
     git(prefixedTmp, 'config', 'user.name', 'test');
     const prefixedPlans = path.join(prefixedTmp, '.agents', 'plans');
     const prefixedSpecs = path.join(prefixedTmp, '.agents', 'specs');
-    const prefixedShared = path.join(prefixedTmp, '.agents', 'skills', 'ws-shared');
+    const prefixedShared = path.join(prefixedTmp, '.ws');
     fs.mkdirSync(prefixedShared, { recursive: true });
     fs.mkdirSync(prefixedSpecs, { recursive: true });
     fs.writeFileSync(

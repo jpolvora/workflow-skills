@@ -3,10 +3,22 @@
 
 const fs = require('fs');
 const path = require('path');
+// us-351: managed runtime loads from its installed location: the upstream
+// package / global skills tree (<skills>/ws-shared) or the project consumer
+// hub (<repo>/.ws). Mirrors resolveConsumerContext runtimeSource precedence.
+const HUB_SCRIPTS_DIR = (() => {
+  const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
+  try {
+    require.resolve(path.join(packaged, 'resolve_consumer_root.cjs'));
+    return packaged;
+  } catch {
+    return path.resolve(__dirname, '..', '..', '..', '..', '.ws', 'runtime', 'scripts');
+  }
+})();
 const { spawn, spawnSync } = require('child_process');
 const {
   resolveConsumerContext,
-} = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
+} = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
 const {
   syncStateDualWrite,
   parseFrontmatter,
@@ -16,7 +28,7 @@ const {
   resolvePackageVersion,
   validateSnapshot,
   plansIndexPath,
-} = require('../../ws-shared/runtime/scripts/workflow_state.cjs');
+} = require(path.join(HUB_SCRIPTS_DIR, 'workflow_state.cjs'));
 const {
   validateRunConfig,
   resolveMappedRunner,
@@ -31,7 +43,8 @@ const {
   buildBatonEnvelope,
   computeLeaseUntil,
   createError,
-} = require('../../ws-shared/runtime/scripts/step_baton.cjs');
+} = require(path.join(HUB_SCRIPTS_DIR, 'step_baton.cjs'));
+const guard = require('./worker_turn_guard.cjs');
 
 const EXIT_OK = 0;
 const EXIT_BLOCKED = 2;
@@ -262,6 +275,8 @@ function buildWorkerPrompt({ usDir, step, slug, workflowId, state, envelope }) {
     `2. Execute the actions required for step ${step}.`,
     `3. Call finish for step ${step} before exit (update_state finish --step ${step}).`,
     '4. Do not emit gates or prompts; the coordinator owns all user-gate surfacing.',
+    '5. Turn rule: the FIRST response must contain BOTH the verbose preview AND at least 2 tool calls; a response with zero tool calls ends the turn as failed delivery. Do not end the turn after the preview.',
+    '6. The final message starts with DONE plus the step-output envelope; required step artifacts must exist on disk before finish. The parent never pings a running turn; progress is observed via state writes only.',
     '',
   ];
   return { promptPath: path.join(usDir, '.runtime', `step-${step}-dispatch-prompt.md`), content: lines.join('\n') };
@@ -718,6 +733,31 @@ async function runCoordinator(argv) {
     emitTelemetry(telemetryFile, context, loadStateDisk(jsonPath, mdPath).state, pipeline, 'runner_exited', {
       step: currentStep, holder: runnerId, attempt, exitCode: result.exitCode,
     });
+
+    // Worker-turn guard (fail fast): a preview-only (zero-tool-call) or
+    // unwritten-artifact turn resolves as failed with a named signal, never
+    // completed, instead of a generic no-finish after artifact timeouts.
+    const turnVerdict = guard.classifyTurn({
+      toolCalls: guard.extractToolCalls(combinedOutput),
+      requiredArtifacts: finishArtifactNames(String(loadStateDisk(jsonPath, mdPath).state.slug || ''), currentStep, pipeline),
+      usDir,
+    });
+    if (turnVerdict.verdict === 'failed') {
+      emitTelemetry(telemetryFile, context, loadStateDisk(jsonPath, mdPath).state, pipeline, turnVerdict.signal, {
+        step: currentStep, holder: runnerId, attempt, cause: turnVerdict.reason,
+      });
+      attempts.set(currentStep, attempt);
+      process.stdout.write(`coordinator: worker turn guard failed on step ${currentStep}: ${turnVerdict.reason} (${turnVerdict.signal})\n`);
+      if (attempt >= runConfig.maxAttempts) {
+        const blocked = loadStateDisk(jsonPath, mdPath).state;
+        blocked.status = 'blocked';
+        persist(blocked);
+        return { exitCode: EXIT_BLOCKED };
+      }
+      releaseOwnBaton(mdPath, jsonPath, runnerId, indexSync);
+      sleepSync(computeBackoffMs(attempt, 100, 2000));
+      continue;
+    }
 
     // Post-exit verification: revision guard + advancement + artifacts.
     const after = loadStateDisk(jsonPath, mdPath).state;

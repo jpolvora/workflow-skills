@@ -4,6 +4,18 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+// us-351: managed runtime loads from its installed location: the upstream
+// package / global skills tree (<skills>/ws-shared) or the project consumer
+// hub (<repo>/.ws). Mirrors resolveConsumerContext runtimeSource precedence.
+const HUB_SCRIPTS_DIR = (() => {
+  const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
+  try {
+    require.resolve(path.join(packaged, 'resolve_consumer_root.cjs'));
+    return packaged;
+  } catch {
+    return path.resolve(__dirname, '..', '..', '..', '..', '.ws', 'runtime', 'scripts');
+  }
+})();
 const { spawnSync } = require('child_process');
 const {
   resolveConsumerContext,
@@ -13,11 +25,237 @@ const {
   resolveMemoryRouting,
   resolveEffectiveMemoryPaths,
   toRepoRelative,
-} = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
-const { parseFrontmatter } = require('../../ws-shared/runtime/scripts/workflow_state.cjs');
+} = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
+const { parseFrontmatter } = require(path.join(HUB_SCRIPTS_DIR, 'workflow_state.cjs'));
 
 const MUTATING_STEPS = new Set([0, 1, 2, 3, 4, 6, 7, 8]);
 const DEFAULT_INTERVAL_SECONDS = 10;
+
+// us-356: bounded, read-only host transcript access. Host specifics are
+// adapter data (see references/host-adapters.md), never portable contract.
+const TRANSCRIPT_LIMITS = {
+  maxBytesPerFile: 262144, // 256KB tail per file — recent window only, no full-history scans
+  maxFilesPerTick: 200,
+  maxTotalBytes: 4 * 1024 * 1024,
+  maxMsPerTick: 2000,
+  stallWindowMs: 10 * 60 * 1000, // session idle beyond this while active = stall evidence
+};
+const SQLITE_FAMILY = /\.(db|sqlite|sqlite3|vscdb)$/i;
+
+function getHostHome(config) {
+  const override = config?.monitor?.hostHome;
+  if (typeof override === 'string' && override.trim()) return override;
+  return os.homedir();
+}
+
+// Per-OS default session locations per host adapter. Resolved lazily so no
+// host store is touched unless the caller opts in via --discover-host-transcripts.
+// us-356: Muse Code sessions live under the XDG data dir
+// (~/.local/share/muse/sessions/YYYY/MM/DD/<session-id>/session.jsonl),
+// never under ~/.claude. Honor $XDG_DATA_HOME when set.
+function resolveMuseSessionsRoot(posixHome) {
+  // Honor $XDG_DATA_HOME only when resolving the real OS home: an explicit
+  // monitor.hostHome sandbox override always anchors discovery under itself,
+  // never the ambient XDG store.
+  const normalizedHome = String(posixHome).replace(/\\/g, '/');
+  const osHome = String(os.homedir()).replace(/\\/g, '/');
+  const xdg = typeof process.env.XDG_DATA_HOME === 'string' ? process.env.XDG_DATA_HOME.trim() : '';
+  const honorXdg = Boolean(xdg) && normalizedHome === osHome;
+  const base = honorXdg ? xdg.replace(/\\/g, '/').replace(/\/+$/, '') : `${normalizedHome}/.local/share`;
+  return `${base}/muse/sessions`;
+}
+
+// us-356: Muse nests sessions YYYY/MM/DD/<session-id>/ under its root.
+// Session ids are opaque, so the bounded slice selects by session.jsonl
+// mtime (newest first), not lex order; Y/M/D traversal stays name-sorted.
+// Falls back to the root when the layout differs.
+function expandMuseSessionDirs(root, limit = 50) {
+  const candidates = [];
+  const walkCap = 500;
+  const listDirs = (dir) => {
+    try {
+      return fs.readdirSync(dir, { withFileTypes: true })
+        .filter((entry) => entry.isDirectory())
+        .sort((a, b) => b.name.localeCompare(a.name))
+        .map((entry) => entry.name);
+    } catch {
+      return [];
+    }
+  };
+  for (const year of listDirs(root)) {
+    if (candidates.length >= walkCap) break;
+    for (const month of listDirs(path.join(root, year))) {
+      if (candidates.length >= walkCap) break;
+      for (const day of listDirs(path.join(root, year, month))) {
+        if (candidates.length >= walkCap) break;
+        for (const session of listDirs(path.join(root, year, month, day))) {
+          if (candidates.length >= walkCap) break;
+          candidates.push(path.join(root, year, month, day, session));
+        }
+      }
+    }
+  }
+  return candidates
+    .map((dir) => {
+      const sessionFile = path.join(dir, 'session.jsonl');
+      let mtimeMs = 0;
+      try {
+        if (fs.existsSync(sessionFile)) mtimeMs = fs.statSync(sessionFile).mtimeMs;
+      } catch {
+        // Unreadable stats sort last.
+      }
+      return { dir, mtimeMs };
+    })
+    .sort((a, b) => b.mtimeMs - a.mtimeMs)
+    .slice(0, limit)
+    .map((entry) => entry.dir);
+}
+
+function getHostAdapters(platform = process.platform, home = os.homedir()) {
+  const posixHome = String(home).replace(/\\/g, '/');
+  const appData = platform === 'win32'
+    ? `${posixHome}/AppData/Roaming`
+    : platform === 'darwin'
+      ? `${posixHome}/Library/Application Support`
+      : `${posixHome}/.config`;
+  return [
+    {
+      id: 'cursor',
+      storeKind: 'sqlite',
+      locations: [
+        { locationClass: 'user', path: `${appData}/Cursor/User/workspaceStorage` },
+      ],
+      matchers: ['.cursor', 'cursor'],
+    },
+    {
+      id: 'opencode',
+      storeKind: 'file',
+      locations: [
+        { locationClass: 'user', path: `${posixHome}/.opencode/sessions` },
+      ],
+      matchers: ['.opencode'],
+    },
+    {
+      id: 'antigravity',
+      storeKind: 'file',
+      locations: [
+        { locationClass: 'user', path: `${posixHome}/.gemini/antigravity-ide/brain` },
+      ],
+      matchers: ['antigravity', '.gemini', '.system_generated'],
+    },
+    {
+      id: 'muse',
+      storeKind: 'file',
+      locations: [
+        { locationClass: 'user', path: resolveMuseSessionsRoot(posixHome) },
+      ],
+      matchers: ['.local/share/muse', '/muse/sessions'],
+    },
+  ];
+}
+
+const SECRET_PATTERNS = [
+  /sk-[A-Za-z0-9\-_]{8,}/g,
+  /gh[pousr]_[A-Za-z0-9]{8,}/g,
+  /xox[bpas]-[A-Za-z0-9\-]{8,}/g,
+  /AKIA[A-Z0-9]{16}/g,
+  /Bearer\s+[A-Za-z0-9\-._~+/=]{8,}/gi,
+  /api[_-]?key\s*[:=]\s*['"]?[^'"\s,}]{4,}['"]?/gi,
+  /client[_-]?secret\s*[:=]\s*['"]?[^'"\s,}]{4,}['"]?/gi,
+  /password\s*[:=]\s*['"]?[^'"\s,}]{4,}['"]?/gi,
+];
+
+// us-356: collapse both the configured host home and the real OS home, so a
+// hostHome override never leaves os.homedir() substrings in reported output.
+function collapseHomePaths(value, home) {
+  let out = String(value || '');
+  const osHome = os.homedir();
+  // Longest prefix first: a short hostHome that is a string prefix of the OS
+  // home (e.g. /srv/ci vs /srv/ci-agent) must not split the longer path.
+  const prefixes = [...new Set([home, osHome].filter(Boolean))].sort((a, b) => b.length - a.length);
+  for (const prefix of prefixes) {
+    out = out.split(prefix).join('<home>');
+  }
+  return out.replace(/[A-Za-z]:\\Users\\[^\\/:*?"<>|]+/g, '<home>');
+}
+
+function sanitizeTranscriptText(text, home = os.homedir()) {
+  let redacted = String(text || '');
+  for (const pattern of SECRET_PATTERNS) {
+    pattern.lastIndex = 0;
+    redacted = redacted.replace(pattern, '[REDACTED]');
+  }
+  return collapseHomePaths(redacted, home);
+}
+
+function sanitizeReportPath(reportPath, home = os.homedir()) {
+  return collapseHomePaths(String(reportPath || ''), home).replace(/<home>/g, '~');
+}
+
+// Strictly read-only, bounded tail read. Files are opened read-only and only
+// the recent-window tail is read — SQLite-family stores (Cursor
+// workspaceStorage, other app databases) are never copied, locked, or
+// modified; their -wal/-shm sidecars are tail-read in place alongside the
+// primary so WAL-only commits stay visible. Returns
+// { text, bytesRead, reason } — reason is set when the store is unreadable.
+function readBoundedTailText(file, maxBytes = TRANSCRIPT_LIMITS.maxBytesPerFile) {
+  const base = path.basename(String(file)).toLowerCase();
+  // SQLite sidecars are tail-read in place with the primary, never standalone.
+  if (base.endsWith('-wal') || base.endsWith('-shm')) {
+    return { text: null, bytesRead: 0, reason: 'wal-sidecar-skipped' };
+  }
+  const isDatabase = SQLITE_FAMILY.test(base);
+  // us-356: never copy whole stores — tail-read the live files through
+  // read-only fds (no locks, no temp churn, bounded by maxBytes per part).
+  const tailTargets = isDatabase
+    ? [file, `${file}-wal`, `${file}-shm`].filter((candidate) => fs.existsSync(candidate))
+    : [file];
+  const tailChunks = [];
+  let totalBytes = 0;
+  try {
+    for (const tailTarget of tailTargets) {
+      const handle = fs.openSync(tailTarget, 'r');
+      try {
+        const stat = fs.fstatSync(handle);
+        const length = Math.min(stat.size, maxBytes);
+        const start = Math.max(0, stat.size - length);
+        const buffer = Buffer.alloc(length);
+        fs.readSync(handle, buffer, 0, length, start);
+        tailChunks.push(buffer);
+        totalBytes += length;
+      } finally {
+        fs.closeSync(handle);
+      }
+    }
+    return { text: Buffer.concat(tailChunks).toString('utf8'), bytesRead: totalBytes, reason: null };
+  } catch (error) {
+    return { text: null, bytesRead: 0, reason: error.message };
+  }
+}
+
+function normalizeCorrelationKey(value) {
+  return String(value || '').toLowerCase().replace(/\\/g, '/').trim();
+}
+
+// us-356: boundary-aware correlation so a short id (wf-us356) never matches
+// inside a longer sibling id (wf-us356-lonely). Both sides are normalized
+// before matching. The boundary class is identifier characters only: '/' is
+// a separator (path-embedded keys must match), while '-', '_', '.' keep
+// sibling ids/files distinct.
+function correlationMatches(haystack, key) {
+  const needle = normalizeCorrelationKey(key);
+  if (!needle) return false;
+  const escaped = needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`(?:^|[^a-z0-9._-])${escaped}(?:$|[^a-z0-9._-])`).test(normalizeCorrelationKey(haystack));
+}
+
+function guessTranscriptAdapter(file) {
+  const lowered = normalizeCorrelationKey(file);
+  for (const adapter of getHostAdapters()) {
+    if (adapter.matchers.some((matcher) => lowered.includes(matcher))) return adapter.id;
+  }
+  return 'custom-root';
+}
 
 function parseArgs(argv) {
   const options = { transcriptRoots: [] };
@@ -204,7 +442,12 @@ function expectedArtifacts(state, workflowDir, minVerifyScore, repoRoot = workfl
     add(`step-02-${slug}.plan-interview.md`, 'Step 2 interview completed');
     add(`step-02-${slug}.plan.refined.md`, 'Step 2 interview completed');
   }
-  if (Number(state.currentStep) >= 4 || isCompleted(state, 3)) add(`step-03-${slug}.plan.exec.md`, 'Step 3 completed');
+  // A dag-disabled Step 3 skip is the designed sequential shape (no stubs written):
+  // grandfathered, never an exec-artifact signal. Only a true completion needs the file.
+  const step3SkippedDagDisabled = skippedReason(state, 3) === 'dag-disabled';
+  if (!step3SkippedDagDisabled && (Number(state.currentStep) >= 4 || isCompleted(state, 3))) {
+    add(`step-03-${slug}.plan.exec.md`, 'Step 3 completed');
+  }
   if (Number(state.currentStep) >= 6 || isCompleted(state, 5)) add(`step-05-${slug}.plan.report.md`, 'Step 5 completed');
   if (Number(state.currentStep) >= 7 || isCompleted(state, 6)) add(`step-06-${slug}.review.md`, 'Step 6 completed');
   const testingSkipped = ['testing-disabled', 'no-test-surface'].includes(skippedReason(state, 7));
@@ -225,7 +468,8 @@ function classifyWorkflow(state, workflowDir, telemetry, minVerifyScore, repoRoo
   const findings = [];
   const missing = expectedArtifacts(state, workflowDir, minVerifyScore, repoRoot).filter((item) => !item.present);
   for (const artifact of missing) {
-    addFinding(findings, 'critical', 'missing-artifact', `${artifact.name} is missing (${artifact.reason})`, [artifact.path]);
+    const code = artifact.name.endsWith('.plan.exec.md') ? 'missing-exec-artifact' : 'missing-artifact';
+    addFinding(findings, 'critical', code, `${artifact.name} is missing (${artifact.reason})`, [artifact.path]);
   }
   if (Number(state.currentStep) > 5 && Number(state.verificationScore) < minVerifyScore) {
     addFinding(
@@ -244,7 +488,9 @@ function classifyWorkflow(state, workflowDir, telemetry, minVerifyScore, repoRoo
     const rawTouched = event.filesTouched ?? event.files_touched;
     const touched = Array.isArray(rawTouched) ? { created: rawTouched } : (rawTouched || {});
     const hasTouched = ['created', 'modified', 'deleted'].some((key) => Array.isArray(touched[key]) && touched[key].length);
-    if (event.type === 'finish' && event.step !== 5 && MUTATING_STEPS.has(Number(event.step)) && event.skipReason == null && !hasTouched) {
+    // An explicit no-op declaration (finish --noop) is the only completed-with-empty
+    // shape that stays silent; any skipReason also suppresses (skipped steps are not completions).
+    if (event.type === 'finish' && event.step !== 5 && MUTATING_STEPS.has(Number(event.step)) && event.skipReason == null && event.noop == null && !hasTouched) {
       addFinding(findings, 'warning', 'empty-files-touched', `Completed mutating Step ${event.step} reported no filesTouched`, []);
     }
   }
@@ -534,28 +780,53 @@ function resolveCandidateTranscriptRoots(context, explicitRoots = [], options = 
     path.join(context.repoRoot, '.opencode', 'sessions'),
     path.join(context.repoRoot, '.opencode', 'logs'),
     path.join(context.repoRoot, '.system_generated', 'logs'),
+    // Generic repo-local candidate (content-correlated, not adapter-gated);
+    // kept after the Claude-to-Muse adapter rename for existing checkouts.
+    path.join(context.repoRoot, '.claude', 'sessions'),
   ];
   for (const candidate of workspaceCandidates) {
     if (fs.existsSync(candidate)) {
       roots.push(candidate);
     }
   }
-  // Host user-level roots (when explicitly requested or enabled in config)
+  // Host user-level roots (us-356): strictly opt-in. Without the flag (or the
+  // config equivalent) no host store is probed — zero host-store reads.
   const checkHostRoots = options.discoverHostTranscripts || context.config?.monitor?.discoverHostTranscripts;
   if (checkHostRoots) {
-    const home = os.homedir();
-    const opencodeUser = path.join(home, '.opencode', 'sessions');
-    if (fs.existsSync(opencodeUser)) roots.push(opencodeUser);
-    const geminiBrain = path.join(home, '.gemini', 'antigravity-ide', 'brain');
-    if (fs.existsSync(geminiBrain)) {
-      try {
-        const convos = fs.readdirSync(geminiBrain, { withFileTypes: true })
-          .filter((d) => d.isDirectory())
-          .map((d) => path.join(geminiBrain, d.name, '.system_generated', 'logs'))
-          .filter((p) => fs.existsSync(p));
-        roots.push(...convos.slice(0, 10));
-      } catch {
-        // ignore
+    const home = getHostHome(context.config);
+    for (const adapter of getHostAdapters(process.platform, home)) {
+      for (const location of adapter.locations) {
+        const resolved = path.normalize(location.path);
+        if (adapter.id === 'antigravity' && fs.existsSync(resolved)) {
+          try {
+            const convos = fs.readdirSync(resolved, { withFileTypes: true })
+              .filter((d) => d.isDirectory())
+              .map((d) => {
+                const logsDir = path.join(resolved, d.name, '.system_generated', 'logs');
+                let mtimeMs = 0;
+                try {
+                  if (fs.existsSync(logsDir)) mtimeMs = fs.statSync(logsDir).mtimeMs;
+                } catch {
+                  // Unreadable stats sort last; the exists filter below still applies.
+                }
+                return { logsDir, mtimeMs };
+              })
+              .filter((entry) => fs.existsSync(entry.logsDir))
+              .sort((a, b) => b.mtimeMs - a.mtimeMs)
+              .slice(0, 10)
+              .map((entry) => entry.logsDir);
+            roots.push(...convos);
+          } catch {
+            // ignore
+          }
+          continue;
+        }
+        if (adapter.id === 'muse' && fs.existsSync(resolved)) {
+          const sessions = expandMuseSessionDirs(resolved, 50);
+          roots.push(...(sessions.length > 0 ? sessions : [resolved]));
+          continue;
+        }
+        if (fs.existsSync(resolved)) roots.push(resolved);
       }
     }
   }
@@ -563,10 +834,15 @@ function resolveCandidateTranscriptRoots(context, explicitRoots = [], options = 
 }
 
 function scanTranscriptRoots(context, roots, filter = {}) {
+  // us-356: per-tick budget (time/read caps, recent-window tails only).
+  const startedAt = Date.now();
+  // us-356: collapse host-private paths against the configured host home,
+  // not just the OS home, so isolated homes never leak into output.
+  const hostHome = getHostHome(context?.config);
   const findings = [];
   const files = [];
   const visit = (directory, depth = 0) => {
-    if (depth > 6 || !fs.existsSync(directory)) return;
+    if (depth > 6 || files.length >= TRANSCRIPT_LIMITS.maxFilesPerTick || !fs.existsSync(directory)) return;
     let entries;
     try {
       entries = fs.readdirSync(directory, { withFileTypes: true });
@@ -574,30 +850,48 @@ function scanTranscriptRoots(context, roots, filter = {}) {
       return;
     }
     for (const entry of entries) {
+      if (files.length >= TRANSCRIPT_LIMITS.maxFilesPerTick) break;
       const full = path.join(directory, entry.name);
       if (entry.isDirectory()) visit(full, depth + 1);
-      else if (/\.(jsonl|log|txt|md)$/i.test(entry.name)) files.push(full);
+      else if (/-(wal|shm)$/i.test(entry.name)) continue; // SQLite sidecars: co-copied with the primary, never read standalone
+      else if (/\.(jsonl|log|txt|md|db|sqlite3?|vscdb)$/i.test(entry.name)) files.push(full);
     }
   };
   for (const root of roots) visit(root);
   let filesScanned = 0;
-  for (const file of files.slice(0, 5000)) {
-    let text;
-    try {
-      text = fs.readFileSync(file, 'utf8').slice(0, 2_000_000);
-    } catch {
-      continue;
+  let bytesRead = 0;
+  let capped = files.length >= TRANSCRIPT_LIMITS.maxFilesPerTick;
+  const scannedFiles = [];
+  const repoRootResolved = path.resolve(context.repoRoot);
+  for (const file of files) {
+    if (Date.now() - startedAt > TRANSCRIPT_LIMITS.maxMsPerTick || bytesRead >= TRANSCRIPT_LIMITS.maxTotalBytes) {
+      capped = true;
+      break;
     }
+    // Correlate on the raw tail, then sanitize before any pattern matching so
+    // tokens, prompt content, and host-private paths never drive reporting.
+    const read = readBoundedTailText(file);
+    if (read.text === null) continue;
+    const rawText = read.text;
     if (filter && (filter.workflowId || filter.slug)) {
-      const matchesWf = Boolean(filter.workflowId && (file.includes(filter.workflowId) || text.includes(filter.workflowId)));
-      const matchesSlug = Boolean(filter.slug && (file.includes(filter.slug) || text.includes(filter.slug)));
+      const matchesWf = Boolean(filter.workflowId && (correlationMatches(file, filter.workflowId) || correlationMatches(rawText, filter.workflowId)));
+      const matchesSlug = Boolean(filter.slug && (correlationMatches(file, filter.slug) || correlationMatches(rawText, filter.slug)));
       const pass = filter.workflowId && filter.slug
         ? (matchesWf && matchesSlug)
         : (matchesWf || matchesSlug);
       if (!pass) continue;
     }
+    const text = sanitizeTranscriptText(rawText, hostHome);
     filesScanned += 1;
-    const evidence = toRepoRelative(context.repoRoot, file, { allowOutside: true });
+    bytesRead += read.bytesRead;
+    let mtimeMs = null;
+    try {
+      mtimeMs = fs.statSync(file).mtimeMs;
+    } catch {
+      // mtime is liveness-only; unreadable stats stay observable via scan, not here.
+    }
+    scannedFiles.push({ file, mtimeMs, tail: text.slice(-8000) });
+    const evidence = sanitizeReportPath(toRepoRelative(context.repoRoot, file, { allowOutside: true }), hostHome);
     if (/ENOENT|build_dispatch_context/i.test(text)) {
       addFinding(findings, 'critical', 'hybrid-path-resolution', 'Transcript contains a missing-skill or dispatch-context path failure', [evidence]);
     }
@@ -627,7 +921,47 @@ function scanTranscriptRoots(context, roots, filter = {}) {
       }
     }
   }
-  return { filesScanned, findings };
+  const hostStoreReads = scannedFiles.filter((item) => !path.resolve(item.file).startsWith(repoRootResolved)).length;
+  return {
+    filesScanned,
+    findings,
+    files: scannedFiles,
+    bytesRead,
+    elapsedMs: Date.now() - startedAt,
+    capped,
+    hostStoreReads,
+  };
+}
+
+// us-356: session-to-workflow correlation over already-scanned tails.
+// Keys are normalized (case, separators) before matching to avoid false
+// stall signals. Never touches the host store beyond the bounded scan above.
+function resolveTranscriptSource(workflow, scannedFiles, discoveryEnabled, repoRoot, scanMeta = {}) {
+  if (!discoveryEnabled) {
+    return { status: 'transcript-unavailable', reason: 'discovery-disabled' };
+  }
+  const keys = [workflow.slug, workflow.workflowId]
+    .map(normalizeCorrelationKey)
+    .filter((key) => key && key !== 'ws-spec-multi');
+  const repoRootResolved = path.resolve(repoRoot);
+  const candidates = (scannedFiles || []).filter((item) => {
+    const haystack = normalizeCorrelationKey(item.file + String.fromCharCode(10) + item.tail);
+    return keys.some((key) => correlationMatches(haystack, key));
+  });
+  if (candidates.length === 0) {
+    return {
+      status: 'transcript-unavailable',
+      reason: scanMeta.capped ? 'scan-capped' : 'no-matching-session',
+    };
+  }
+  candidates.sort((a, b) => (b.mtimeMs || 0) - (a.mtimeMs || 0));
+  const best = candidates[0];
+  return {
+    status: 'available',
+    adapter: guessTranscriptAdapter(best.file),
+    locationClass: path.resolve(best.file).startsWith(repoRootResolved) ? 'workspace' : 'user',
+    sessionMtime: best.mtimeMs ? new Date(best.mtimeMs).toISOString() : null,
+  };
 }
 
 function snapshot(options) {
@@ -772,11 +1106,44 @@ function snapshot(options) {
   }
 
   const transcriptRoots = resolveCandidateTranscriptRoots(context, options.transcriptRoots, options);
+  const hostHome = getHostHome(context.config);
   const transcript = scanTranscriptRoots(context, transcriptRoots, {
     workflowId: options.workflowId || null,
     slug: options.slug || null,
   });
 
+  // us-356: transcript source per workflow + worker-session liveness.
+  const discoveryEnabled = Boolean(options.discoverHostTranscripts || context.config?.monitor?.discoverHostTranscripts);
+  const snapshotNow = Date.now();
+  for (const workflow of workflows) {
+    if (workflow.multiSpec) {
+      workflow.transcriptSource = null;
+      continue;
+    }
+    workflow.transcriptSource = resolveTranscriptSource(
+      { slug: workflow.slug, workflowId: workflow.workflowId },
+      transcript.files,
+      discoveryEnabled,
+      context.repoRoot,
+      { capped: transcript.capped },
+    );
+    const source = workflow.transcriptSource;
+    const isActive = ['active', 'blocked', 'in_progress'].includes(workflow.status);
+    if (source.status === 'available' && isActive && source.sessionMtime) {
+      const idleMs = snapshotNow - Date.parse(source.sessionMtime);
+      if (Number.isFinite(idleMs) && idleMs > TRANSCRIPT_LIMITS.stallWindowMs) {
+        addFinding(
+          workflow.findings,
+          'warning',
+          'worker-session-stall',
+          'worker session shows no recent activity while the workflow is active (possible stall)',
+          [],
+        );
+      }
+    }
+  }
+
+  for (const scanned of transcript.files) delete scanned.tail;
   const findings = [
     ...contextFindings,
     ...workflows.flatMap((workflow) => workflow.findings),
@@ -801,8 +1168,12 @@ function snapshot(options) {
       findings: memoryVault.findings,
     },
     transcript: {
-      roots: transcriptRoots.map((root) => toRepoRelative(context.repoRoot, root, { allowOutside: true })),
+      roots: transcriptRoots.map((root) => sanitizeReportPath(toRepoRelative(context.repoRoot, root, { allowOutside: true }), hostHome)),
       filesScanned: transcript.filesScanned,
+      bytesRead: transcript.bytesRead,
+      elapsedMs: transcript.elapsedMs,
+      capped: transcript.capped,
+      hostStoreReads: transcript.hostStoreReads,
     },
     workflows,
   };
@@ -870,6 +1241,7 @@ function markdownReport(report) {
       `- Mapped runner: ${workflow.mappedRunner || 'single-host'}`,
       `- State: \`${workflow.statePath}\``,
       `- Telemetry events: ${workflow.telemetry.eventCount}`,
+    '- Transcript: ' + (workflow.transcriptSource ? workflow.transcriptSource.status : 'unknown') + (workflow.transcriptSource && workflow.transcriptSource.adapter ? ' via ' + workflow.transcriptSource.adapter + ' (' + workflow.transcriptSource.locationClass + ')' : ' (' + ((workflow.transcriptSource && workflow.transcriptSource.reason) || 'unknown') + ')'),
       '',
       'Expected artifacts:',
     );
@@ -882,7 +1254,7 @@ function markdownReport(report) {
     '## Transcript scan',
     '',
     `- Roots: ${report.transcript.roots.length ? report.transcript.roots.join(', ') : 'none configured'}`,
-    `- Files scanned: ${report.transcript.filesScanned}`,
+    `- Files scanned: ${report.transcript.filesScanned} (${report.transcript.bytesRead} bytes, ${report.transcript.elapsedMs}ms, host-store reads: ${report.transcript.hostStoreReads}${report.transcript.capped ? ', capped' : ''})`,
     '',
     '## Upstream filing guardrail',
     '',
@@ -964,4 +1336,16 @@ module.exports = {
   markdownReport,
   snapshot,
   scanTranscriptRoots,
+  TRANSCRIPT_LIMITS,
+  getHostAdapters,
+  getHostHome,
+  sanitizeTranscriptText,
+  sanitizeReportPath,
+  readBoundedTailText,
+  resolveTranscriptSource,
+  guessTranscriptAdapter,
+  resolveMuseSessionsRoot,
+  expandMuseSessionDirs,
+  collapseHomePaths,
+  correlationMatches,
 };

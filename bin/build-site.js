@@ -543,10 +543,10 @@ if (fs.existsSync(depMapPath)) {
         <span class="package-shortcut">Shortcut: <code>${full.shortcut || 'f'}</code></span>
       </div>
       <h4>Full Package</h4>
-      <p class="package-desc">${full.label || 'Full package'} — selects every installable top-level skill and initializes the <code>ws-shared/</code> config/docs hub.</p>
+      <p class="package-desc">${full.label || 'Full package'} — selects every installable top-level skill and initializes the consumer (<code>.ws/</code>) config/docs hub.</p>
       <div class="package-features">
         <div class="pkg-feat"><span>✓</span> Every top-level skill</div>
-        <div class="pkg-feat"><span>✓</span> Full <code>ws-shared/</code> config & docs hub</div>
+        <div class="pkg-feat"><span>✓</span> Full consumer (<code>.ws/</code>) config & docs hub</div>
         <div class="pkg-feat"><span>✓</span> Best for complete team environments</div>
       </div>
     </div>
@@ -557,7 +557,7 @@ if (fs.existsSync(depMapPath)) {
         <span class="package-shortcut">Shortcut: <code>${workflows.shortcut || 'w'}</code></span>
       </div>
       <h4>Workflows Package</h4>
-      <p class="package-desc">${workflows.label || 'Workflows package'} — ${wfCount} skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>ws-shared/</code> hub.</p>
+      <p class="package-desc">${workflows.label || 'Workflows package'} — ${wfCount} skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the consumer (<code>.ws/</code>) hub.</p>
       <div class="package-preview">
         <strong>Included core skills:</strong> ${wfPreview}
       </div>

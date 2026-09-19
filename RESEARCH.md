@@ -170,7 +170,7 @@ Research snapshot of this package — verify against live SoT before implementin
 | Area | Current layout |
 |------|----------------|
 | Skills SoT | `.agents/skills/ws-*/SKILL.md` |
-| Config hub | `.agents/skills/ws-shared/config.json` (consumer-owned) |
+| Config hub | `.ws/config.json` (consumer-owned) |
 | Orchestrators | `ws-spec-to-pr` (steps 0–9), `ws-spec-to-pr-lite` (0–5) |
 | Harness audit | `ws-check-harness`, `ws-check-workflows` |
 | Dependency graph | `bin/skill-dependencies.json` |
@@ -189,7 +189,7 @@ The original text used pre-refactor paths. Do **not** implement against these wi
 
 | Research cited | Current equivalent |
 |----------------|-------------------|
-| `.agents/skills/shared/config.json` | `.agents/skills/ws-shared/config.json` |
+| `.agents/skills/shared/config.json` | `.ws/config.json` |
 | `.agents/skills/spec-to-pr/` | `.agents/skills/ws-spec-to-pr/` |
 | `check-workflows/SKILL.md` | `ws-check-workflows/SKILL.md` |
 | "Replace AGENTS.md with `.cursor/rules` only" | **Rejected for shipped contract** — portable hub stays `AGENTS.md` / `ws-shared`; `.cursor/` is upstream dogfood only |

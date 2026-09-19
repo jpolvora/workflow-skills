@@ -95,7 +95,7 @@ assert.ok(fs.readFileSync(path.join(runsDir, latestRun, 'report.md'), 'utf8').in
 // V21: snapshot slim baseline into a temp tree (do not rewrite tracked baselines/)
 const snapRoot = temp('hb-snap-');
 write(path.join(snapRoot, 'package.json'), JSON.stringify({ version: '0.0.0' }));
-write(path.join(snapRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({ plans: { dir: '.agents/plans' } }));
+write(path.join(snapRoot, '.ws/config.json'), JSON.stringify({ plans: { dir: '.agents/plans' } }));
 const snap = run(cli, ['snapshot', '--from', reportPath, '--name', 'test-slim-baseline', '--repo-root', snapRoot]);
 assert.strictEqual(snap.status, 0, snap.stderr);
 const baselinePath = path.join(snapRoot, 'benchmarks/baselines/test-slim-baseline.json');
@@ -157,7 +157,7 @@ fs.rmSync(sandboxRoot, { recursive: true, force: true });
 
 // V12: collect uses ledger verify not markdown score
 const collectRoot = temp('hb-collect-');
-write(path.join(collectRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+write(path.join(collectRoot, '.ws/config.json'), JSON.stringify({
   verification: { backendTest: 'exit 0' },
   plans: { dir: '.agents/plans', specsDir: '.agents/specs' },
   defaults: { dryRun: true, autoMode: true },
@@ -199,7 +199,7 @@ assert.ok(collectReport.perAc.some((row) => row.score === 0 && row.evidence === 
 const { detectFrauds, mapVerdict } = require(path.join(repoRoot, 'scripts/harness-benchmark/lib/judge-checks.cjs'));
 const { resolveConsumerContext } = require(path.join(repoRoot, '.agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs'));
 const judgeRoot = temp('hb-judge-');
-write(path.join(judgeRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+write(path.join(judgeRoot, '.ws/config.json'), JSON.stringify({
   verification: { backendTest: 'exit 0' },
   plans: { dir: '.agents/plans', specsDir: '.agents/specs' },
 }));
@@ -223,7 +223,7 @@ assert.ok(collectReport.dimensions.honesty != null);
 
 // V14b: re-run verification aliases catches false-completion
 const verifyRoot = temp('hb-judge-verify-');
-write(path.join(verifyRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+write(path.join(verifyRoot, '.ws/config.json'), JSON.stringify({
   verification: { backendTest: 'exit 1' },
   plans: { dir: '.agents/plans' },
 }));
@@ -246,7 +246,7 @@ assert.ok(
 
 // V14c: unauthorized-action fraud from git history
 const authRoot = temp('hb-judge-auth-');
-write(path.join(authRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({ plans: { dir: '.agents/plans' } }));
+write(path.join(authRoot, '.ws/config.json'), JSON.stringify({ plans: { dir: '.agents/plans' } }));
 write(path.join(authRoot, 'impl.js'), 'module.exports = {};\n');
 spawnSync('git', ['init'], { cwd: authRoot, encoding: 'utf8' });
 spawnSync('git', ['config', 'user.email', 't@e.com'], { cwd: authRoot });
@@ -318,7 +318,7 @@ fs.rmSync(sensorScratch, { recursive: true, force: true });
 // table: version-over-version markdown from baselines
 const tableRoot = temp('hb-table-');
 write(path.join(tableRoot, 'package.json'), JSON.stringify({ version: '0.0.0' }));
-write(path.join(tableRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({ plans: { dir: '.agents/plans' } }));
+write(path.join(tableRoot, '.ws/config.json'), JSON.stringify({ plans: { dir: '.agents/plans' } }));
 const tableBaseDir = path.join(tableRoot, 'benchmarks/baselines');
 const slim = (version, index, wallSec) => ({
   meta: {
@@ -365,7 +365,7 @@ assert.match(catalog, /collect --sandbox/);
 
 // V27: record-lessons off by default; writes on regression when flag set
 const lessonsDir = temp('hb-lessons-');
-const sharedHub = path.join(lessonsDir, '.agents/skills/ws-shared');
+const sharedHub = path.join(lessonsDir, '.ws');
 fs.mkdirSync(path.join(sharedHub, 'memory'), { recursive: true });
 write(path.join(sharedHub, 'config.json'), JSON.stringify({ plans: { dir: '.agents/plans' } }));
 const memBefore = fs.readdirSync(path.join(sharedHub, 'memory')).length;

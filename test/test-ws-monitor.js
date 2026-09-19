@@ -75,7 +75,7 @@ tempRoots.push(root);
 const slug = 'monitor-demo';
 const workflowDir = path.join(root, '.agents', 'plans', slug);
 write(
-  path.join(root, '.agents/skills/ws-shared/config.json'),
+  path.join(root, '.ws/config.json'),
   JSON.stringify({
     project: { name: 'monitor-test', baseBranch: 'main' },
     plans: { dir: '.agents/plans' },
@@ -209,6 +209,7 @@ if (result.status !== 0) {
 const report = JSON.parse(result.stdout);
 const codes = new Set(report.findings.map((finding) => finding.code));
 if (!codes.has('missing-artifact')) throw new Error('monitor did not detect missing artifacts');
+if (!codes.has('missing-exec-artifact')) throw new Error('monitor did not flag the missing exec artifact on the completed Step 3');
 if (!codes.has('step-drift')) throw new Error('monitor did not detect Step 5 score drift');
 if (!codes.has('empty-files-touched')) throw new Error('monitor did not detect empty filesTouched');
 if (!codes.has('hybrid-path-resolution')) throw new Error('monitor did not scan transcript path failures');
@@ -460,7 +461,7 @@ if (msWf.multiSpec.shippedCount !== 1 || msWf.multiSpec.pendingCount !== 1) {
 // Test memory vault query helper
 const memContext = {
   repoRoot: root,
-  sharedDir: path.join(root, '.agents', 'skills', 'ws-shared'),
+  sharedDir: path.join(root, '.ws'),
   config: {
     specMemo: {
       enableMemoryFiles: true,

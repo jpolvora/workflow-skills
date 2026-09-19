@@ -81,9 +81,9 @@ function runNode(script, args, opts = {}) {
 }
 
 function seedConsumer(dir) {
-  fs.mkdirSync(path.join(dir, '.agents/skills/ws-shared'), { recursive: true });
+  fs.mkdirSync(path.join(dir, '.ws'), { recursive: true });
   fs.writeFileSync(
-    path.join(dir, '.agents/skills/ws-shared/config.json'),
+    path.join(dir, '.ws/config.json'),
     JSON.stringify({ plans: { dir: '.agents/plans' }, fable: { auditVerdictsBlockShip: 'refuted' } }),
   );
 }

@@ -61,7 +61,7 @@ function prepareSandbox(options = {}) {
   const specSrc = path.join(paths.fixturesRoot, options.fixture, 'spec.md');
   fs.copyFileSync(specSrc, path.join(specsDir, `${options.fixture}.spec.md`));
 
-  const hubConfigPath = path.join(sandboxRoot, '.agents/skills/ws-shared/config.json');
+  const hubConfigPath = path.join(sandboxRoot, '.ws/config.json');
   if (fs.existsSync(hubConfigPath)) {
     const config = JSON.parse(fs.readFileSync(hubConfigPath, 'utf8'));
     config.defaults = { ...(config.defaults || {}), dryRun: true, autoMode: true };

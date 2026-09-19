@@ -159,23 +159,23 @@ try {
   }
 
   const poisoned = path.join(tmp, 'poison-autoload');
-  fs.mkdirSync(path.join(poisoned, '.agents', 'skills', 'ws-shared', 'runtime'), { recursive: true });
+  fs.mkdirSync(path.join(poisoned, '.ws', 'runtime'), { recursive: true });
   fs.copyFileSync(
     path.join(repoRoot, '.agents/skills/ws-shared/runtime/autoload.md'),
-    path.join(poisoned, '.agents/skills/ws-shared/autoload.md'),
+    path.join(poisoned, '.ws/autoload.md'),
   );
   fs.copyFileSync(
     path.join(repoRoot, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
-    path.join(poisoned, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
+    path.join(poisoned, '.ws/runtime/skill-dependencies.json'),
   );
-  let text = fs.readFileSync(path.join(poisoned, '.agents/skills/ws-shared/autoload.md'), 'utf8');
+  let text = fs.readFileSync(path.join(poisoned, '.ws/autoload.md'), 'utf8');
   if (!text.includes('| `ws-memo` | `{skillsRoot}/ws-memo/SKILL.md` | Session start |')) {
     text = text.replace(
       '| `ws-tdah` | `{skillsRoot}/ws-tdah/SKILL.md` |',
       '| `ws-memo` | `{skillsRoot}/ws-memo/SKILL.md` | Session start |\n| `ws-tdah` | `{skillsRoot}/ws-tdah/SKILL.md` |',
     );
   }
-  fs.writeFileSync(path.join(poisoned, '.agents/skills/ws-shared/autoload.md'), text, 'utf8');
+  fs.writeFileSync(path.join(poisoned, '.ws/autoload.md'), text, 'utf8');
   assert(text.includes('| `ws-memo` | `{skillsRoot}/ws-memo/SKILL.md` | Session start |'), 'poison insert failed');
   const script = path.join(
     repoRoot,

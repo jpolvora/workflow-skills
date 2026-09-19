@@ -1,7 +1,7 @@
 ---
 name: ws-fix-pr
 description: Single-pass PR thread fixer — resolves active GitHub or ADO PR review threads, applying targeted code fixes and posting progress reports.
-version: 0.4.38
+version: 0.4.41
 disable-model-invocation: true
 invocation_names:
   - fix-pr
@@ -94,3 +94,14 @@ When an orchestrator owns the run and `dispatch-agent` is available, append orde
 - Never rewrite managed `ws-*` skill files unless the batch names that file. Anonymize resolution comments and round reports (generic class wording; no private paths or hosts).
 - Return gate path plus fix evidence in `step-output`.
 - Handoff: recorded under `state.handoffs` — see [`PROTOCOLS.md`](../ws-spec-to-pr/PROTOCOLS.md) § Base Prompt Prefix.
+
+## Fix-loop execution mode (shared key)
+
+Standalone batches consult the same single key that gates the whole fix path:
+`ws-goal-fix-pr.useSubAgents` in `{sharedDir}/config.json` (machine helper:
+`resolveFixPrDispatchMode` in `{skillsRoot}/ws-shared/runtime/scripts/workflow_state.cjs`).
+Absent or `false` (default) runs the ordered `fixPrPlan` → `fixPrExec` pair
+inline on the captured session model with identical gate/learning contracts and
+zero subagent dispatches; explicit `true` keeps the two-role dispatch above.
+Fix semantics are identical in both modes. There is no separate `ws-fix-pr`
+key — one key, one default, no mode skew.
