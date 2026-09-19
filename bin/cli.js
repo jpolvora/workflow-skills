@@ -1913,7 +1913,7 @@ async function runInstall(skills, opts) {
     console.log('\n\u26a0\ufe0f  After installing, run the `ws-check-harness` skill to validate the harness:');
     console.log('   Load `.agents/skills/ws-check-harness/SKILL.md` and execute Phases 0\u20135c.');
     console.log('   Optional: run `ws-configure-project` to interview/detect and fill `.ws/config.json`.');
-    console.log('   Path tokens: `.ws/runtime/tools.md` § Path tokens (`pathTokens` in config.json).');
+    console.log('   Path tokens: `{skillsRoot}/ws-shared/runtime/tools.md` § Path tokens (`pathTokens` in config.json).');
   } else {
     console.log('No skills were installed.');
   }
@@ -2449,7 +2449,7 @@ async function runUpdate(skills, includeNew, forceIntegrity = false, updateOpts 
   console.log('   Load `.agents/skills/ws-check-harness/SKILL.md` and execute Phases 0\u20135c.');
   console.log('   This detects phantom skills, broken links, stale references, and fixes routing/indexes.');
   console.log('   Optional: run `ws-configure-project` if .ws/config.json still has placeholders.');
-  console.log('   Path tokens: `.ws/runtime/tools.md` § Path tokens (`pathTokens` in config.json).');
+  console.log('   Path tokens: `{skillsRoot}/ws-shared/runtime/tools.md` § Path tokens (`pathTokens` in config.json).');
   process.exit(0);
 }
 
@@ -2607,7 +2607,7 @@ async function runInteractive(skills, forceIntegrity = false) {
     console.log('   Load `.agents/skills/ws-check-harness/SKILL.md` and execute Phases 0\u20135c.');
     console.log('   This detects phantom skills, broken links, stale references, and fixes routing/indexes.');
     console.log('   Optional: run `ws-configure-project` to interview/detect and fill `.ws/config.json`.');
-    console.log('   Path tokens: `.ws/runtime/tools.md` § Path tokens (`pathTokens` in config.json).');
+    console.log('   Path tokens: `{skillsRoot}/ws-shared/runtime/tools.md` § Path tokens (`pathTokens` in config.json).');
   } else {
     console.log('No skills were installed.');
   }
