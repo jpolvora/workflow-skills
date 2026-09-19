@@ -25,6 +25,7 @@ const {
   expandMuseSessionDirs,
   collapseHomePaths,
   correlationMatches,
+  guessTranscriptAdapter,
   TRANSCRIPT_LIMITS,
 } = require(script);
 
@@ -108,6 +109,19 @@ function makeWorkflow(root, slug, workflowId) {
   const skillDoc = fs.readFileSync(path.join(repoRoot, '.agents', 'skills', 'ws-monitor', 'SKILL.md'), 'utf8');
   if (!skillDoc.includes('~/.gemini/antigravity-ide/brain')) {
     throw new Error('us-356 AC2: SKILL.md Antigravity path drifts from the adapter');
+  }
+  for (const [label, doc] of [['adapter table', text], ['SKILL.md', skillDoc]]) {
+    if (doc.includes('copy-then-read')) {
+      throw new Error(`us-356 AC2: stale copy-then-read wording in ${label}`);
+    }
+  }
+  // Adapter attribution: a bare session.jsonl filename never implies Muse;
+  // only Muse store paths do. Legacy workspace layouts stay custom-root.
+  if (guessTranscriptAdapter(path.join('repo', '.claude', 'sessions', 'us356-demo', 'session.jsonl')) !== 'custom-root') {
+    throw new Error('us-356 AC2: legacy workspace session misattributed to muse');
+  }
+  if (guessTranscriptAdapter(path.join('home', 'tester', '.local', 'share', 'muse', 'sessions', '2026', '09', '19', 'abc', 'session.jsonl')) !== 'muse') {
+    throw new Error('us-356 AC2: muse store session not attributed to muse');
   }
   // Default-root assertions must not see ambient XDG_DATA_HOME from the runner.
   const savedXdg = process.env.XDG_DATA_HOME;

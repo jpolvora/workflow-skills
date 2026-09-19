@@ -23,9 +23,9 @@ OS home and the configured `monitor.hostHome`) are redacted before reporting.
 
 | Host | OS | Default location | Class | Store |
 |------|----|------------------|-------|-------|
-| Cursor | Windows | `<appData>/Cursor/User/workspaceStorage/` | user | sqlite (`state.vscdb`, WAL-safe copy-then-read) |
-| Cursor | Linux | `~/.config/Cursor/User/workspaceStorage/` | user | sqlite (WAL-safe copy-then-read) |
-| Cursor | macOS | `~/Library/Application Support/Cursor/User/workspaceStorage/` | user | sqlite (WAL-safe copy-then-read) |
+| Cursor | Windows | `<appData>/Cursor/User/workspaceStorage/` | user | sqlite (`state.vscdb`, in-place tail-read; WAL sidecars merged) |
+| Cursor | Linux | `~/.config/Cursor/User/workspaceStorage/` | user | sqlite (in-place tail-read; WAL sidecars merged) |
+| Cursor | macOS | `~/Library/Application Support/Cursor/User/workspaceStorage/` | user | sqlite (in-place tail-read; WAL sidecars merged) |
 | Cursor | any | `<repo>/.cursor/transcripts/`, `<repo>/.cursor/chats/` | workspace | file |
 | OpenCode | any | `~/.opencode/sessions/` | user | file (JSONL) |
 | OpenCode | any | `<repo>/.opencode/transcripts/`, `<repo>/.opencode/sessions/`, `<repo>/.opencode/logs/` | workspace | file |

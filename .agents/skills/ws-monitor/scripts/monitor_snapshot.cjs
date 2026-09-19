@@ -149,7 +149,7 @@ function getHostAdapters(platform = process.platform, home = os.homedir()) {
       locations: [
         { locationClass: 'user', path: resolveMuseSessionsRoot(posixHome) },
       ],
-      matchers: ['.local/share/muse', '/muse/sessions', 'session.jsonl'],
+      matchers: ['.local/share/muse', '/muse/sessions'],
     },
   ];
 }
