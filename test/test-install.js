@@ -56,6 +56,8 @@ const ignoredPatterns = [
   /(^|[\\/])ws-shared[\\/]templates[\\/]hub\.gitignore$/,
   /(^|[\\/])ws-shared[\\/]AGENTS\.md$/,
   /(^|[\\/])ws-shared[\\/]autoload\.md$/,
+  /(^|[\\/])ws-shared[\\/]runtime([\\/]|$)/,
+  /(^|[\\/])ws-shared[\\/]templates([\\/]|$)/,
   /(^|[\\/])ws-self-learning[\\/]MEMORY\.md$/,
   /(^|[\\/])ws-self-learning[\\/]memory([\\/]|$)/
 ];
@@ -185,8 +187,8 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     '!.agents/skills/ws-shared/CHANGELOG.md',
     '!.agents/skills/ws-shared/installed-skills.json',
   ]) {
-    if (!filesField.includes(negation)) {
-      fail(`package.json files must exclude consumer hub path (${negation})`);
+    if (filesField.includes(negation)) {
+      fail(`package.json files must not exclude relocated consumer hub path (${negation})`);
     }
   }
   const required = [
@@ -201,7 +203,6 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     '.agents/skills/ws-spec-to-pr/ws-spec-to-pr-run-test.md',
     '.agents/skills/ws-spec-to-pr/SKILL.md',
     '.agents/skills/ws-check-harness/SKILL.md',
-    '.agents/skills/ws-shared/AGENTS.md',
     // Spec-source / SCM provider skills (packed under .agents/skills/)
     '.agents/skills/ws-spec-provider-github/SKILL.md',
     '.agents/skills/ws-spec-provider-azure-devops/SKILL.md',
@@ -219,6 +220,11 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     if (!fs.existsSync(primary)) {
       fail(`Missing required file: ${rel}`);
     }
+  }
+  // us-351: the SoT ships no hub-root AGENTS.md; project consumers get the
+  // generated local pointer (LOCAL_HUB_POINTER_MD) at .ws/AGENTS.md instead.
+  if (fs.existsSync(path.join(parentDir, '.agents/skills/ws-shared/AGENTS.md'))) {
+    fail('SoT must not ship .agents/skills/ws-shared/AGENTS.md (relocated to generated .ws/AGENTS.md pointer)');
   }
   // Promoted skills must not remain nested under ws-shared/
   for (const slug of [
@@ -689,6 +695,50 @@ child.on('close', async (code) => {
     console.error(`❌ ... and ${contentMismatchCount - 5} more content mismatch(es).`);
   }
 
+  // us-351: managed hub content (runtime/ + templates/) installs at the
+  // consumer .ws/ root instead of the legacy skills-tree hub. Verify it
+  // mirrors the SoT and that the consumer entrypoint files were seeded.
+  const testWsDir = path.join(__dirname, '.ws');
+  const hubPairs = [
+    ['runtime', path.join(rootSkillsDir, 'ws-shared', 'runtime'), path.join(testWsDir, 'runtime')],
+    ['templates', path.join(rootSkillsDir, 'ws-shared', 'templates'), path.join(testWsDir, 'templates')],
+  ];
+  for (const [label, srcDir, destDir] of hubPairs) {
+    if (!fs.existsSync(destDir)) {
+      console.error(`❌ Mismatch: Missing managed hub dir in target installation: .ws/${label}`);
+      mismatch = true;
+      continue;
+    }
+    const srcFiles = getFilesRecursive(srcDir).filter((item) => !item.isDir)
+      .map((item) => path.relative(srcDir, item.path))
+      // Compiled caches never install (package files[] excludes them) and the
+      // hub.gitignore alias source installs as .ws/.gitignore instead.
+      .filter((rel) => !rel.split(path.sep).includes('__pycache__')
+        && !(label === 'templates' && rel === 'hub.gitignore'))
+      .sort();
+    const destFiles = new Set(getFilesRecursive(destDir).filter((item) => !item.isDir)
+      .map((item) => path.relative(destDir, item.path)));
+    for (const rel of srcFiles) {
+      if (!destFiles.has(rel)) {
+        console.error(`❌ Mismatch: Missing managed hub file in target: .ws/${label}/${rel}`);
+        mismatch = true;
+      } else {
+        const a = fs.readFileSync(path.join(srcDir, rel), 'utf8').replace(/\r\n/g, '\n');
+        const b = fs.readFileSync(path.join(destDir, rel), 'utf8').replace(/\r\n/g, '\n');
+        if (a !== b) {
+          console.error(`❌ Content mismatch in managed hub file: .ws/${label}/${rel}`);
+          mismatch = true;
+        }
+      }
+    }
+  }
+  for (const seed of ['AGENTS.md', 'autoload.md', 'config.json', 'STACK.md', 'installed-skills.json']) {
+    if (!fs.existsSync(path.join(testWsDir, seed))) {
+      console.error(`❌ Mismatch: Missing consumer hub file in target: .ws/${seed}`);
+      mismatch = true;
+    }
+  }
+
   if (mismatch) {
     console.error('\n❌ Directory verification failed.');
     if (!useLocal) {
@@ -702,7 +752,7 @@ child.on('close', async (code) => {
 
   // --- Phase 2: config.json preserve on update ---
   console.log('\n[Phase 2] Update preserves config.json...');
-  const usConfigDir = path.join(testSkillsDir, 'ws-spec-to-pr');
+  const usConfigDir = testWsDir;
   const consumerConfig = path.join(usConfigDir, 'config.json');
   const marker = {
     project: { name: 'consumer-marker-project', baseBranch: 'main', workingBranch: 'feature/x' },
@@ -757,18 +807,18 @@ child.on('close', async (code) => {
   if (after.project?.name !== 'consumer-marker-project') {
     fail('config.json project.name not preserved on update');
   }
-  const hubConfig = path.join(testSkillsDir, 'ws-shared', 'config.json');
+  const hubConfig = path.join(testWsDir, 'config.json');
   if (!fs.existsSync(hubConfig + '.bak')) {
-    fail('ws-shared/config.json.bak was not created on update');
+    fail('.ws/config.json.bak was not created on update');
   }
   const hubAfter = JSON.parse(fs.readFileSync(hubConfig, 'utf8'));
   if (hubAfter.toolsFile !== 'runtime/tools.md') {
-    fail('ws-shared/config.json toolsFile not normalized on update');
+    fail('.ws/config.json toolsFile not normalized on update');
   }
   if (!hubAfter.pathTokens?.sharedDir) {
-    fail('ws-shared/config.json pathTokens not populated on update');
+    fail('.ws/config.json pathTokens not populated on update');
   }
-  ok('config.json preserved across update and ws-shared/config.json backed up to config.json.bak');
+  ok('config.json preserved across update and .ws/config.json backed up to config.json.bak');
 
   if (removedForIncludeNew) {
     if (!fs.existsSync(path.join(testSkillsDir, removedForIncludeNew))) {
@@ -781,7 +831,7 @@ child.on('close', async (code) => {
 
   // --- Phase 2b: update with repo-local custom skills ---
   {
-    const installedManifestPath = path.join(testSkillsDir, 'ws-shared', 'installed-skills.json');
+    const installedManifestPath = path.join(__dirname, '.ws', 'installed-skills.json');
     const customSkillDir = path.join(testSkillsDir, 'custom-local-skill');
     fs.mkdirSync(customSkillDir, { recursive: true });
     fs.writeFileSync(
@@ -842,10 +892,10 @@ child.on('close', async (code) => {
   if (strayDocs.length) {
     fail(`Installer must only write under .agents/skills/; found stray docs: ${strayDocs.join(', ')}`);
   }
-  const sharedAgents = path.join(testSkillsDir, 'ws-shared', 'AGENTS.md');
-  const sharedRuntimeAgents = path.join(testSkillsDir, 'ws-shared', 'runtime', 'AGENTS.md');
+  const sharedAgents = path.join(__dirname, '.ws', 'AGENTS.md');
+  const sharedRuntimeAgents = path.join(__dirname, '.ws', 'runtime', 'AGENTS.md');
   if (!fs.existsSync(sharedAgents) || !fs.existsSync(sharedRuntimeAgents)) {
-    fail('ws-shared/AGENTS.md not installed into consumer test/.agents/skills/ws-shared/');
+    fail('.ws/AGENTS.md not installed into consumer test/.ws/');
   }
   const sharedAgentsBody = fs.readFileSync(sharedAgents, 'utf8');
   const sharedRuntimeBody = fs.readFileSync(sharedRuntimeAgents, 'utf8');
@@ -861,13 +911,22 @@ child.on('close', async (code) => {
   if (!/ws-check-harness/i.test(sharedRuntimeBody) || !/ws-check-workflows/i.test(sharedRuntimeBody)) {
     fail('Consumer ws-shared/runtime/AGENTS.md must route ws-check-harness and ws-check-workflows');
   }
-  ok('ws-check-harness + ws-shared/AGENTS.md hub shipped to consumer (no stray docs above .agents/skills/)');
+  ok('ws-check-harness + .ws/AGENTS.md hub shipped to consumer (no stray docs above .agents/skills/)');
   for (const name of ['ws-spec-provider-github', 'ws-spec-provider-azure-devops', 'ws-spec-provider-local']) {
     if (!fs.existsSync(path.join(testSkillsDir, name, 'SKILL.md'))) {
       fail(`Provider SKILL.md missing after install/update: ${name}/SKILL.md`);
     }
   }
-  // AC9 shims + local-spec scripts must ship to consumers
+  // AC9 shims + local-spec scripts must ship to consumers.
+  // us-351: managed hub scripts install at <consumer>/.ws/, not the skills dir.
+  for (const rel of [
+    path.join('runtime', 'scripts', 'Edit-WorkflowSkillsConfig.ps1'),
+    path.join('runtime', 'scripts', 'Edit-Config.bat')
+  ]) {
+    if (!fs.existsSync(path.join(testWsDir, rel))) {
+      fail(`Provider/shim script missing in consumer install: .ws/${rel}`);
+    }
+  }
   for (const rel of [
     path.join('ws-spec-to-pr', 'scripts', 'github-issue-to-spec.py'),
     path.join('ws-spec-to-pr', 'scripts', 'ado-workitem-to-spec.py'),
@@ -876,8 +935,6 @@ child.on('close', async (code) => {
     path.join('ws-fix-pr', 'scripts', 'fetch_threads.cjs'),
     path.join('ws-fix-pr', 'scripts', 'resolve_thread.cjs'),
     path.join('ws-fix-pr', 'scripts', 'fix_pr_azure_context.py'),
-    path.join('ws-shared', 'runtime', 'scripts', 'Edit-WorkflowSkillsConfig.ps1'),
-    path.join('ws-shared', 'runtime', 'scripts', 'Edit-Config.bat')
   ]) {
     if (!fs.existsSync(path.join(testSkillsDir, rel))) {
       fail(`Provider/shim script missing in consumer install: ${rel}`);
@@ -1012,10 +1069,10 @@ child.on('close', async (code) => {
     const py = process.platform === 'win32' ? 'python' : 'python3';
     const scratch = path.join(__dirname, '.tmp-specs-first');
     fs.rmSync(scratch, { recursive: true, force: true });
-    fs.mkdirSync(path.join(scratch, '.agents', 'skills', 'ws-shared'), { recursive: true });
+    fs.mkdirSync(path.join(scratch, '.ws'), { recursive: true });
     fs.mkdirSync(path.join(scratch, 'inbox'), { recursive: true });
     fs.writeFileSync(
-      path.join(scratch, '.agents', 'skills', 'ws-shared', 'config.json'),
+      path.join(scratch, '.ws', 'config.json'),
       JSON.stringify({ plans: { dir: '.agents/plans', specsDir: '.agents/specs' } }, null, 2)
     );
     fs.writeFileSync(
@@ -1064,7 +1121,7 @@ child.on('close', async (code) => {
   ok(`Pipeline + provider skills present (${installedAfter.length} dirs; source has ${sourceSkills.length})`);
   // --- Phase 3: packed file smoke (local only) ---
   if (useLocal) {
-    const schemaInTest = path.join(testSkillsDir, 'ws-shared', 'runtime', 'config.schema.json');
+    const schemaInTest = path.join(testWsDir, 'runtime', 'config.schema.json');
     const artifactsInTest = path.join(testSkillsDir, 'ws-spec-to-pr', 'ARTIFACTS.md');
     if (!fs.existsSync(schemaInTest)) fail('config.schema.json not installed into consumer');
     if (!fs.existsSync(artifactsInTest)) fail('ARTIFACTS.md not installed into consumer');
@@ -1084,15 +1141,15 @@ child.on('close', async (code) => {
       if (!fs.existsSync(path.join(testSkillsDir, slug, 'SKILL.md'))) {
         fail(`Promoted skill missing at top-level: ${slug}/SKILL.md`);
       }
-      if (fs.existsSync(path.join(testSkillsDir, 'ws-shared', slug))) {
-        fail(`Promoted skill still nested under ws-shared/ in consumer: ${slug}`);
+      if (fs.existsSync(path.join(testWsDir, slug))) {
+        fail(`Promoted skill still nested under .ws/ in consumer: ${slug}`);
       }
     }
-    if (!fs.existsSync(path.join(testSkillsDir, 'ws-shared', 'templates', 'config.json.example'))) {
-      fail('ws-shared/ hub missing config.json.example after install');
+    if (!fs.existsSync(path.join(testWsDir, 'templates', 'config.json.example'))) {
+      fail('.ws/ hub missing config.json.example after install');
     }
-    if (fs.existsSync(path.join(testSkillsDir, 'ws-shared', 'ws-self-learning'))) {
-      fail('ws-shared/ws-self-learning should not exist after promotion');
+    if (fs.existsSync(path.join(testWsDir, 'ws-self-learning'))) {
+      fail('.ws/ws-self-learning should not exist after promotion');
     }
     ok('Promoted skills top-level; shared/ is hub-only');
   }
@@ -1150,8 +1207,11 @@ child.on('close', async (code) => {
         fail(`Workflows package did not install ${rel}`);
       }
     }
-    if (!fs.existsSync(path.join(pkgSkills, 'ws-shared', 'templates', 'config.json.example'))) {
-      fail('Workflows package did not install ws-shared/ hub');
+    if (!fs.existsSync(path.join(pkgDir, '.ws', 'templates', 'config.json.example'))) {
+      fail('Workflows package did not install .ws/ hub templates');
+    }
+    if (!fs.existsSync(path.join(pkgDir, '.ws', 'runtime', 'config.schema.json'))) {
+      fail('Workflows package did not install .ws/ hub runtime');
     }
     if (fs.existsSync(path.join(pkgSkills, 'security-review'))) {
       fail('Workflows package must not install Extra-only security-review');
@@ -1250,9 +1310,9 @@ child.on('close', async (code) => {
     fs.writeFileSync(path.join(seedSkill, 'config.json'), JSON.stringify(seedConfig, null, 2), 'utf8');
 
     // Also seed shared hub config
-    const seedShared = path.join(niDir, '.agents', 'skills', 'ws-shared');
+    const seedShared = path.join(niDir, '.ws');
     fs.mkdirSync(seedShared, { recursive: true });
-    const hubMarker = { _hubMarker: 'ws-shared-config-preserve', project: { name: 'hub-ni' } };
+    const hubMarker = { _hubMarker: 'ws-hub-config-preserve', project: { name: 'hub-ni' } };
     fs.writeFileSync(path.join(seedShared, 'config.json'), JSON.stringify(hubMarker, null, 2), 'utf8');
 
     const fullInstall = cp.spawnSync(
@@ -1286,10 +1346,10 @@ child.on('close', async (code) => {
       fail('skill config.json not preserved on install --yes');
     }
     const afterHubCfg = JSON.parse(
-      fs.readFileSync(path.join(niDir, '.agents', 'skills', 'ws-shared', 'config.json'), 'utf8')
+      fs.readFileSync(path.join(niDir, '.ws', 'config.json'), 'utf8')
     );
-    if (afterHubCfg._hubMarker !== 'ws-shared-config-preserve') {
-      fail('ws-shared/config.json not preserved on install --yes');
+    if (afterHubCfg._hubMarker !== 'ws-hub-config-preserve') {
+      fail('.ws/config.json not preserved on install --yes');
     }
     ok('install --package workflows --yes refreshes skills and preserves config.json');
 
@@ -1397,21 +1457,21 @@ child.on('close', async (code) => {
       console.error(`${fresh.stdout || ''}${fresh.stderr || ''}`);
       fail(`ws-self-learning install for MEMORY isolation exited ${fresh.status}`);
     }
-    const destMem = path.join(memDir, '.agents', 'skills', 'ws-shared', 'MEMORY.md');
-    const destStack = path.join(memDir, '.agents', 'skills', 'ws-shared', 'STACK.md');
-    const destConfig = path.join(memDir, '.agents', 'skills', 'ws-shared', 'config.json');
-    const destChangelog = path.join(memDir, '.agents', 'skills', 'ws-shared', 'CHANGELOG.md');
-    const destAutoload = path.join(memDir, '.agents', 'skills', 'ws-shared', 'autoload.md');
-    const destScmContract = path.join(memDir, '.agents', 'skills', 'ws-shared', 'runtime', 'scm-provider-contract.md');
+    const destMem = path.join(memDir, '.ws', 'MEMORY.md');
+    const destStack = path.join(memDir, '.ws', 'STACK.md');
+    const destConfig = path.join(memDir, '.ws', 'config.json');
+    const destChangelog = path.join(memDir, '.ws', 'CHANGELOG.md');
+    const destAutoload = path.join(memDir, '.ws', 'autoload.md');
+    const destScmContract = path.join(memDir, '.ws', 'runtime', 'scm-provider-contract.md');
     const destRootAgents = path.join(memDir, 'AGENTS.md');
-    const memEntries = path.join(memDir, '.agents', 'skills', 'ws-shared', 'memory');
-    if (!fs.existsSync(destStack)) fail('Fresh install must seed ws-shared/STACK.md');
-    if (!fs.existsSync(destConfig)) fail('Fresh install must seed ws-shared/config.json');
-    if (fs.existsSync(destMem)) fail('Fresh install must not seed legacy ws-shared/MEMORY.md');
-    if (fs.existsSync(memEntries)) fail('Fresh install must not create legacy ws-shared/memory/');
-    if (fs.existsSync(destChangelog)) fail('Fresh install must not seed legacy ws-shared/CHANGELOG.md');
-    if (!fs.existsSync(destAutoload)) fail('Fresh install must copy ws-shared/autoload.md from hub whitelist');
-    if (!fs.existsSync(destScmContract)) fail('Fresh install must copy ws-shared/runtime/scm-provider-contract.md from hub whitelist');
+    const memEntries = path.join(memDir, '.ws', 'memory');
+    if (!fs.existsSync(destStack)) fail('Fresh install must seed .ws/STACK.md');
+    if (!fs.existsSync(destConfig)) fail('Fresh install must seed .ws/config.json');
+    if (fs.existsSync(destMem)) fail('Fresh install must not seed .ws/MEMORY.md (created on first use)');
+    if (fs.existsSync(memEntries)) fail('Fresh install must not create .ws/memory/ (created on first use)');
+    if (fs.existsSync(destChangelog)) fail('Fresh install must not seed .ws/CHANGELOG.md (created on first use)');
+    if (!fs.existsSync(destAutoload)) fail('Fresh install must copy .ws/autoload.md from hub whitelist');
+    if (!fs.existsSync(destScmContract)) fail('Fresh install must copy .ws/runtime/scm-provider-contract.md from hub whitelist');
     if (fs.existsSync(destRootAgents)) {
       fail('Installer must not write consumer root AGENTS.md');
     }
@@ -1454,25 +1514,25 @@ child.on('close', async (code) => {
     }
     const after = fs.readFileSync(destMem, 'utf8');
     if (!after.includes('Consumer local trap')) {
-      fail('Consumer ws-shared/MEMORY.md was overwritten on update');
+      fail('Consumer .ws/MEMORY.md was overwritten on update');
     }
     if (!fs.existsSync(consumerEntry)) {
-      fail('Consumer ws-shared/memory/*.md entry was removed on update');
+      fail('Consumer .ws/memory/*.md entry was removed on update');
     }
     if (!fs.readFileSync(destStack, 'utf8').includes('keep-me')) {
-      fail('Consumer ws-shared/STACK.md was overwritten on update');
+      fail('Consumer .ws/STACK.md was overwritten on update');
     }
     if (!fs.readFileSync(destConfig, 'utf8').includes('consumer-preserve-me')) {
-      fail('Consumer ws-shared/config.json was overwritten on update');
+      fail('Consumer .ws/config.json was overwritten on update');
     }
     if (!fs.readFileSync(destChangelog, 'utf8').includes('keep-ws-changelog')) {
-      fail('Consumer ws-shared/CHANGELOG.md was overwritten on update');
+      fail('Consumer .ws/CHANGELOG.md was overwritten on update');
     }
     if (!fs.readFileSync(destRootAgents, 'utf8').includes('keep-root-pointer')) {
       fail('Installer must not overwrite consumer root AGENTS.md on update');
     }
     fs.rmSync(memDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
-    ok('Update preserves ws-shared consumer data and never rewrites root AGENTS.md');
+    ok('Update preserves .ws consumer data and never rewrites root AGENTS.md');
   }
 
   // --- Phase 9b: update prunes retired session-lease / patterns leftovers ---
@@ -1497,7 +1557,7 @@ child.on('close', async (code) => {
       fail(`workflows install for prune test exited ${inst.status}`);
     }
     const skills = path.join(pruneDir, '.agents', 'skills');
-    const shared = path.join(skills, 'ws-shared');
+    const shared = path.join(pruneDir, '.ws');
     const configPath = path.join(shared, 'config.json');
     const cfg = JSON.parse(fs.readFileSync(configPath, 'utf8'));
     cfg.defaults = { ...(cfg.defaults || {}), sessionLeases: true, patterns: true, _comment_patterns: 'stale' };
@@ -1588,7 +1648,7 @@ child.on('close', async (code) => {
       fail(`workflows install for hybrid fixture exited ${inst.status}`);
     }
     const skills = path.join(hybridDir, '.agents', 'skills');
-    const shared = path.join(skills, 'ws-shared');
+    const shared = path.join(hybridDir, '.ws');
     const retiredWsIds = [
       'ws-write-spec',
       'ws-sync-spec',
@@ -1733,13 +1793,11 @@ child.on('close', async (code) => {
 
     const manifestPath = path.join(
       uDir,
-      '.agents',
-      'skills',
-      'ws-shared',
+      '.ws',
       'installed-skills.json'
     );
     if (!fs.existsSync(manifestPath)) {
-      fail('install must write ws-shared/installed-skills.json');
+      fail('install must write .ws/installed-skills.json');
     }
     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
     for (const need of ['ws-goal-fix-pr', 'ws-fix-pr', 'ws-goal-loop']) {
@@ -1793,7 +1851,7 @@ child.on('close', async (code) => {
     }
     ok('integrity/update ignore and remove external companion ids from legacy manifests');
 
-    const markerCfg = path.join(uDir, '.agents', 'skills', 'ws-shared', 'config.json');
+    const markerCfg = path.join(uDir, '.ws', 'config.json');
     fs.writeFileSync(
       markerCfg,
       JSON.stringify({ project: { name: 'uninstall-preserve-me' } }, null, 2)
@@ -1833,13 +1891,13 @@ child.on('close', async (code) => {
       fail(`manifest still lists removed skills: ${afterManifest.skills.join(',')}`);
     }
     if (!fs.existsSync(markerCfg)) {
-      fail('uninstall must preserve ws-shared/config.json');
+      fail('uninstall must preserve .ws/config.json');
     }
     const cfg = JSON.parse(fs.readFileSync(markerCfg, 'utf8'));
     if (cfg.project?.name !== 'uninstall-preserve-me') {
-      fail('uninstall overwrote ws-shared/config.json');
+      fail('uninstall overwrote .ws/config.json');
     }
-    ok('uninstall cascades dependents/orphans and preserves ws-shared/config.json');
+    ok('uninstall cascades dependents/orphans and preserves .ws/config.json');
 
     fs.rmSync(uDir, { recursive: true, force: true });
   }
@@ -2076,9 +2134,7 @@ child.on('close', async (code) => {
     }
     const localRecord = path.join(
       iDir,
-      '.agents',
-      'skills',
-      'ws-shared',
+      '.ws',
       'skill-integrity-local.json'
     );
     if (!fs.existsSync(localRecord)) fail('post-install must write skill-integrity-local.json');
@@ -2086,8 +2142,8 @@ child.on('close', async (code) => {
     if (!local.verifiedAt || !local.installedClosureDigest || !local.skills) {
       fail('local integrity record missing required fields');
     }
-    const memPath = path.join(iDir, '.agents', 'skills', 'ws-shared', 'MEMORY.md');
-    const cfgPath = path.join(iDir, '.agents', 'skills', 'ws-shared', 'config.json');
+    const memPath = path.join(iDir, '.ws', 'MEMORY.md');
+    const cfgPath = path.join(iDir, '.ws', 'config.json');
     const cfgBefore = fs.readFileSync(cfgPath, 'utf8');
     ok('post-install writes local integrity record');
 
@@ -2204,7 +2260,7 @@ child.on('close', async (code) => {
       fs.mkdirSync(customNewSkillDir, { recursive: true });
       const staleInNew = path.join(customNewSkillDir, 'stale-leftover.txt');
       fs.writeFileSync(staleInNew, 'stale\n', 'utf8');
-      const manifestPath = path.join(iDir, '.agents', 'skills', 'ws-shared', 'installed-skills.json');
+      const manifestPath = path.join(iDir, '.ws', 'installed-skills.json');
       if (fs.existsSync(manifestPath)) {
         const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
         manifest.skills = (manifest.skills || []).filter((s) => s !== 'ws-preview');

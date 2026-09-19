@@ -45,7 +45,13 @@ def ensure_utf8_stdio() -> None:
 ensure_utf8_stdio()
 
 
-_SHARED_SCRIPTS = Path(__file__).resolve().parents[2] / "ws-shared" / "runtime" / "scripts"
+# us-351: managed runtime loads from its installed location: the upstream
+# package / global skills tree (<skills>/ws-shared) or the project consumer
+# hub (<repo>/.ws). Mirrors resolveConsumerContext runtimeSource precedence.
+_SKILLS_DIR = Path(__file__).resolve().parents[2]
+_PACKAGED_SCRIPTS = _SKILLS_DIR / "ws-shared" / "runtime" / "scripts"
+_PROJECT_SCRIPTS = _SKILLS_DIR.parent.parent / ".ws" / "runtime" / "scripts"
+_SHARED_SCRIPTS = _PACKAGED_SCRIPTS if _PACKAGED_SCRIPTS.is_dir() else _PROJECT_SCRIPTS
 if str(_SHARED_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SHARED_SCRIPTS))
 
@@ -443,7 +449,7 @@ def main():
     parser.add_argument("--json", action="store_true", help="Output JSON instead of human-readable report")
     parser.add_argument("--soft-exit", action="store_true", help="Exit 0 when traps overlap; requires --json so callers parse force_interview (fail-closed without --json)")
     parser.add_argument("--memory", default=None, help="Explicit path to MEMORY.md")
-    parser.add_argument("--shared-dir", default=None, help="Explicit path to ws-shared directory")
+    parser.add_argument("--shared-dir", default=None, help="Explicit path to the shared hub directory (.ws by default)")
     parser.add_argument("--repo-root", default=None, help="Explicit path to repository root")
     args = parser.parse_args()
 

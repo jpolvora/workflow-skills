@@ -15,7 +15,7 @@ Resolve `config.json` `rules.*` before assuming a skill or rule file exists. Ful
 |-----|------|------------------------|
 | `rules.seniorDeveloper` | Optional engineering guardrails; delivery gate, surgical diffs, and **Code review proof** source | config path when set (on-demand default; root `AGENTS.md` may promote autoload — see [`AGENTS.md`](AGENTS.md) § Consumer root override) → local `senior-developer` skill → global/user skill |
 | `rules.karpathyGuidelines` | Surgical-change guidelines (compatibility alias) | config path → shipped `../ws-senior-developer/SKILL.md` → global skill |
-| `rules.stackFile` | Human-readable stack companion | config path (default `.agents/skills/ws-shared/STACK.md`); bootstrap may create under `ws-shared/` if missing (see 1b below) — never require repo-root files |
+| `rules.stackFile` | Human-readable stack companion | config path (default `.ws/STACK.md`); bootstrap may create under `.ws/` if missing (see 1b below) — never require repo-root files |
 | Other `rules.*` | Optional consumer rules (e.g. `efMigrations`, `viewPatterns`) | Use path from config when set; do not invent filenames |
 | Source anonymization | Externally visible output (specs, PRs, comments, commits) | Hub [`AGENTS.md`](AGENTS.md) § Source anonymization — strip private consumer names, paths, and hosts; never copy them into tracked artifacts |
 
@@ -45,13 +45,13 @@ Same entry paths for **standard** and **lite**. Resolve provider from `config.js
 Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDir`, default `.agents/specs`); the workflow `step-00-{slug}.spec.md` under `{us-dir}` is created by register (or provider fetch) when a run starts. Downstream workflow skills **always** read `step-00-{slug}.spec.md` under `{us-dir}` — never `{specsDir}` and never `*.issue.json`.
 
 
-1. **Config check**: Check if `.agents/skills/ws-shared/config.json` exists (fresh install normally seeds it from `templates/config.json.example`).
-   - If missing: `cp .agents/skills/ws-shared/templates/config.json.example .agents/skills/ws-shared/config.json`.
-   - Load path tokens early ([`tools.md`](tools.md) § Path tokens): `pathTokens.skillsRoot` / `sharedDir` (defaults `.agents/skills` / `.agents/skills/ws-shared`) plus `{plansDir}` ← `plans.dir`, `{specsDir}` ← `plans.specsDir`. Expand braces before Read/Grep/Shell.
+1. **Config check**: Check if `.ws/config.json` exists (fresh install normally seeds it from `templates/config.json.example`).
+   - If missing: `cp .ws/templates/config.json.example .ws/config.json`.
+   - Load path tokens early ([`tools.md`](tools.md) § Path tokens): `pathTokens.skillsRoot` / `sharedDir` (defaults `.agents/skills` / `.ws`) plus `{plansDir}` ← `plans.dir`, `{specsDir}` ← `plans.specsDir`. Expand braces before Read/Grep/Shell.
    - User-gate: **Configure now (Recommended)** / **Skip**.
    - If **Configure now** (or config exists but required fields are placeholders/`<…>` / empty): load and run [`ws-configure-project`](../../ws-configure-project/SKILL.md) (same session). Pass `--section` only when fixing one area mid-workflow.
    - If **Skip**: continue with example defaults; warn that providers/verification may be wrong until ws-configure-project runs.
-1b. **Stack file bootstrap**: Read `config.json.rules.stackFile` (default: `.agents/skills/ws-shared/STACK.md`). Prefer ws-configure-project step 5 when that skill just ran. If config still points at a missing root `STACK.md`/`stack.md` while `.agents/skills/ws-shared/STACK.md` exists, set `rules.stackFile` to the shared path (no root file required). Else `Shell` `test -f {stackFile}`. If missing:
+1b. **Stack file bootstrap**: Read `config.json.rules.stackFile` (default: `.ws/STACK.md`). Prefer ws-configure-project step 5 when that skill just ran. If config still points at a missing root `STACK.md`/`stack.md` while `.ws/STACK.md` exists, set `rules.stackFile` to the shared path (no root file required). Else `Shell` `test -f {stackFile}`. If missing:
    - Auto-detect the project stack by scanning the repository:
      - **Language/Framework**: Look for `package.json` (Node/React/Next), `*.csproj`/`*.sln`/`*.slnx` (.NET), `pyproject.toml`/`requirements.txt` (Python), `go.mod` (Go), `Cargo.toml` (Rust), `pom.xml`/`build.gradle` (Java), `Gemfile` (Ruby), etc.
      - **Frontend framework**: Check `package.json` `dependencies` for `next`, `react`, `vue`, `angular`, `svelte`, `vite`, `tailwindcss`, etc.
@@ -61,7 +61,7 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
      - **Tool versions**: `node --version`, `dotnet --version`, `python --version`, `go version` (if installed).
      - **Build/test commands**: Check `package.json` `scripts` (`build`, `test`, `lint`, `dev`), `Makefile` targets, existing CI configs (`.github/workflows/`, `.gitlab-ci.yml`).
    - Generate companion from the detected information using [`STACK.md.example`](../templates/STACK.md.example) as format reference.
-   - Write to `.agents/skills/ws-shared/STACK.md` (or the resolved `rules.stackFile` when it already lives under `.agents/skills/ws-shared/`). Do **not** create a repo-root stack file.
+   - Write to `.ws/STACK.md` (or the resolved `rules.stackFile` when it already lives under `.ws/`). Do **not** create a repo-root stack file.
    - If auto-detection is incomplete or ambiguous (multiple possible stacks), present findings to the user and ask for clarification on uncertain items.
    - Log: `stack companion bootstrapped: {stackFile}`.
 2. **Parse flags & parameters**: `auto`, `dry-run`, `skip-testing`, `skip-tests`, `skip-gates`, `full`, `strict`, `score-and-refine` (aliases: `analyze-second-pass`, `score-refine`, `scoreAndRefine`).

@@ -3,7 +3,19 @@
 
 const fs = require('fs');
 const path = require('path');
-const { HUB_REL, resolveGlobalSkillsRoot } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
+// us-351: managed runtime loads from its installed location: the upstream
+// package / global skills tree (<skills>/ws-shared) or the project consumer
+// hub (<repo>/.ws). Mirrors resolveConsumerContext runtimeSource precedence.
+const HUB_SCRIPTS_DIR = (() => {
+  const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
+  try {
+    require.resolve(path.join(packaged, 'resolve_consumer_root.cjs'));
+    return packaged;
+  } catch {
+    return path.resolve(__dirname, '..', '..', '..', '..', '.ws', 'runtime', 'scripts');
+  }
+})();
+const { HUB_REL, resolveGlobalSkillsRoot } = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
 
 const LOCAL_SKILLS_REL = path.join('.agents', 'skills');
 const SKILL_ID_RE = /^ws-[a-z0-9][a-z0-9-]*$/;
@@ -166,7 +178,7 @@ function detect(repoRoot) {
     warnings.push('No ws-* SKILL.md found under .agents/skills or {globalSkillsRoot}; install the package or run from a package root.');
   }
   if (mode === 'consumer' && projectHubFiles.length === 0 && globalHubFiles.length === 0) {
-    warnings.push('No ws-shared hub found (project or global); run ws-configure-project after install.');
+    warnings.push('No shared hub found (.ws/ project hub or global ws-shared); run ws-configure-project after install.');
   }
   if (mode === 'consumer' && scope === 'global') {
     notes.push('Global-only install: skill bodies resolve from {globalSkillsRoot}; project hub config still wins when present.');

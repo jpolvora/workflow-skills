@@ -9,7 +9,7 @@
 | Uninstall scope | Skills only — never delete `ws-shared/` hub wholesale |
 | Orphans | Always cascade: remove dependents of named skills, then drop unused deps |
 | Existing installs | Bootstrap manifest from disk on next install/update |
-| Storage | `.agents/skills/ws-shared/installed-skills.json` (consumer-owned) |
+| Storage | `.ws/installed-skills.json` (consumer-owned) |
 
 ## Manifest shape
 
@@ -32,5 +32,5 @@
 
 ## Non-goals
 
-- Removing `.agents/skills/ws-shared/config.json`, MEMORY, stack
+- Removing `.ws/config.json`, MEMORY, stack
 - Interactive uninstall menu (CLI first; may add later)

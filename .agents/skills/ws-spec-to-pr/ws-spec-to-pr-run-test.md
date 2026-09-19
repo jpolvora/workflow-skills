@@ -15,7 +15,7 @@ Verify the ws-spec-to-pr FSM executes without error in simulated mode, covering 
 
 ## Prerequisites
 
-1. **BOOTSTRAP** section in [`setup.md`](../ws-shared/runtime/setup.md) — ensure `.agents/skills/ws-shared/config.json` points at this repo. If absent, create one:
+1. **BOOTSTRAP** section in [`setup.md`](../ws-shared/runtime/setup.md) — ensure `.ws/config.json` points at this repo. If absent, create one:
 
     ```json
     {
@@ -35,7 +35,7 @@ Verify the ws-spec-to-pr FSM executes without error in simulated mode, covering 
         "description": "Documentation-only repo (markdown)",
         "srcDir": ".",
         "rules": {
-          "stackFile": ".agents/skills/ws-shared/STACK.md"
+          "stackFile": ".ws/STACK.md"
         },
         "layers": [{ "name": "docs", "path": ".", "role": "skills, specs, docs" }]
       },
@@ -167,7 +167,7 @@ Or reuse for the next dry-run iteration (workflow auto-detects and resumes).
 
 | Symptom | Likely cause | Fix |
 |---------|-------------|-----|
-| `.agents/skills/ws-shared/config.json` not found | Config not in skill directory | Create minimal config (see prerequisites) |
+| `.ws/config.json` not found | Config not in project hub | Create minimal config (see prerequisites) |
 | Step 1/2 not skipped with simple spec | Dynamic Execution threshold not met | Expected — workflow still runs correctly, just slower |
 | Step 7 tries browser | `dry-run` / `auto` not parsed | Confirm flags precede spec path |
 | Step 8 PR not reached | `full` flag absent | Add `full` before spec path |

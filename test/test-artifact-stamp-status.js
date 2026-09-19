@@ -12,7 +12,7 @@ const reviewRound = path.join(repoRoot, '.agents/skills/ws-code-review/scripts/w
 
 function seedFixture(prefix) {
   const root = temp(prefix);
-  write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(root, '.ws/config.json'), JSON.stringify({
     plans: { dir: '.agents/plans', specsDir: '.agents/specs' },
     verification: {},
     defaults: {},

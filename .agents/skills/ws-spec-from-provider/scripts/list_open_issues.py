@@ -3,7 +3,7 @@
 
   python list_open_issues.py [--repo-root PATH] [--limit N] [--owner ORG] [--repo NAME]
 
-Reads issueTrackers.github from ws-shared/config.json. Requires `gh` on PATH.
+Reads issueTrackers.github from .ws/config.json. Requires `gh` on PATH.
 Uncapped runs use `gh api --paginate` so results are not silently truncated at 1000.
 """
 from __future__ import annotations
@@ -15,7 +15,13 @@ import subprocess
 import sys
 from pathlib import Path
 
-_SHARED_SCRIPTS = Path(__file__).resolve().parents[2] / "ws-shared" / "runtime" / "scripts"
+# us-351: managed runtime loads from its installed location: the upstream
+# package / global skills tree (<skills>/ws-shared) or the project consumer
+# hub (<repo>/.ws). Mirrors resolveConsumerContext runtimeSource precedence.
+_SKILLS_DIR = Path(__file__).resolve().parents[2]
+_PACKAGED_SCRIPTS = _SKILLS_DIR / "ws-shared" / "runtime" / "scripts"
+_PROJECT_SCRIPTS = _SKILLS_DIR.parent.parent / ".ws" / "runtime" / "scripts"
+_SHARED_SCRIPTS = _PACKAGED_SCRIPTS if _PACKAGED_SCRIPTS.is_dir() else _PROJECT_SCRIPTS
 if str(_SHARED_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SHARED_SCRIPTS))
 from resolve_consumer_root import resolve_repo_root, resolve_config_path  # noqa: E402
@@ -162,7 +168,7 @@ def list_via_issue_list(owner: str, repo: str, limit: int) -> list[dict]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="List open GitHub issues as JSON")
-    parser.add_argument("--repo-root", help="Project root owning ws-shared/config.json")
+    parser.add_argument("--repo-root", help="Project root owning .ws/config.json")
     parser.add_argument("--owner", default="", help="Override issueTrackers.github.owner")
     parser.add_argument("--repo", default="", help="Override issueTrackers.github.repo")
     parser.add_argument("--limit", type=int, default=0, help="Max issues (0 = all)")

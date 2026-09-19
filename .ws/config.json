@@ -5,7 +5,7 @@
   "pathTokens": {
     "_comment": "Fixed install layout (not relocatable). Expand brace tokens before Read/Grep/Shell. Full contract: runtime/tools.md § Path tokens. plansDir/reviewsDir still resolve from plans.dir / reviews.dir.",
     "skillsRoot": ".agents/skills",
-    "sharedDir": ".agents/skills/ws-shared"
+    "sharedDir": ".ws"
   },
   "project": {
     "name": "workflow-skills",
@@ -240,14 +240,14 @@
     "previewBeforeShip": true
   },
   "rules": {
-    "_comment": "Guardrails paths. Resolve per ws-shared/AGENTS.md External dependencies (first match). seniorDeveloper = Delivery gate and surgical diffs (default packaged ws-senior-developer); set \"\" to disable or point at another guardrail; karpathyGuidelines = compatibility alias pointing to ws-senior-developer; stackFile = stack companion; changelogFile = append-only history (default under ws-shared/); other keys optional consumer rule paths — leave empty when unused.",
-    "harness": ".agents/skills/ws-shared/AGENTS.md",
+    "_comment": "Guardrails paths. Resolve per .ws/AGENTS.md External dependencies (first match). seniorDeveloper = Delivery gate and surgical diffs (default packaged ws-senior-developer); set \"\" to disable or point at another guardrail; karpathyGuidelines = compatibility alias pointing to ws-senior-developer; stackFile = stack companion; changelogFile = append-only history (default under .ws/); other keys optional consumer rule paths — leave empty when unused.",
+    "harness": ".ws/AGENTS.md",
     "seniorDeveloper": ".agents/skills/ws-senior-developer/SKILL.md",
     "karpathyGuidelines": ".agents/skills/ws-senior-developer/SKILL.md",
     "viewPatterns": "",
     "efMigrations": "",
-    "stackFile": ".agents/skills/ws-shared/STACK.md",
-    "changelogFile": ".agents/skills/ws-shared/CHANGELOG.md"
+    "stackFile": ".ws/STACK.md",
+    "changelogFile": ".ws/CHANGELOG.md"
   },
   "invariants": {
     "entitiesAreClassNotRecord": false,

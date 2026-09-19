@@ -75,7 +75,7 @@ tempRoots.push(root);
 const slug = 'monitor-demo';
 const workflowDir = path.join(root, '.agents', 'plans', slug);
 write(
-  path.join(root, '.agents/skills/ws-shared/config.json'),
+  path.join(root, '.ws/config.json'),
   JSON.stringify({
     project: { name: 'monitor-test', baseBranch: 'main' },
     plans: { dir: '.agents/plans' },
@@ -460,7 +460,7 @@ if (msWf.multiSpec.shippedCount !== 1 || msWf.multiSpec.pendingCount !== 1) {
 // Test memory vault query helper
 const memContext = {
   repoRoot: root,
-  sharedDir: path.join(root, '.agents', 'skills', 'ws-shared'),
+  sharedDir: path.join(root, '.ws'),
   config: {
     specMemo: {
       enableMemoryFiles: true,

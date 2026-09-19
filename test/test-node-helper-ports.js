@@ -5,7 +5,7 @@ const { assert, path, repoRoot, temp, run, write } = utils;
 const localScripts = path.join(repoRoot, '.agents/skills/ws-spec-provider-local/scripts');
 const memoryScript = path.join(repoRoot, '.agents/skills/ws-self-learning/scripts/self_learning.cjs');
 const root = temp('ws-node-ports-');
-write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+write(path.join(root, '.ws/config.json'), JSON.stringify({
   plans: { dir: '.agents/plans', specsDir: '.agents/specs' },
   fable: { auditVerdictsBlockShip: 'refuted' },
 }));
@@ -33,7 +33,7 @@ assert.match(
 );
 
 const prefixedRoot = temp('ws-node-ports-prefixed-');
-write(path.join(prefixedRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+write(path.join(prefixedRoot, '.ws/config.json'), JSON.stringify({
   plans: { dir: '.agents/plans', specsDir: '.agents/specs' },
 }));
 const specsDir = path.join(prefixedRoot, '.agents/specs');
@@ -74,7 +74,7 @@ assert.match(
   /Prefix demo updated/,
 );
 
-write(path.join(root, '.agents/skills/ws-shared/memory/2026-08-21-port.md'), `### [2026-08-21] Node port
+write(path.join(root, '.ws/memory/2026-08-21-port.md'), `### [2026-08-21] Node port
 - **Layer**: Runtime
 - **Module**: Helpers
 - **Severity**: Medium
@@ -84,7 +84,7 @@ write(path.join(root, '.agents/skills/ws-shared/memory/2026-08-21-port.md'), `##
 - **INSTEAD DO**: invoke the CJS surface
 `);
 assert.strictEqual(run(memoryScript, ['--compile', '--repo-root', root]).status, 0);
-assert.match(fs.readFileSync(path.join(root, '.agents/skills/ws-shared/MEMORY.md'), 'utf8'), /Node port/);
+assert.match(fs.readFileSync(path.join(root, '.ws/MEMORY.md'), 'utf8'), /Node port/);
 
 for (const relative of [
   '.agents/skills/ws-spec-provider-local/scripts/register_local_spec.py',

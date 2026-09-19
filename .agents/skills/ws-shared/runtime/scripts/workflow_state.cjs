@@ -12,7 +12,18 @@ const {
   inside,
   resolveMinVerifyScore,
 } = require('./resolve_consumer_root.cjs');
-const { scoreLedger } = require('../../../ws-spec-to-pr/scripts/ac_ledger.cjs');
+// us-351: ac_ledger ships with the ws-spec-to-pr skill: beside the runtime in
+// the upstream package / global skills tree, under {skillsRoot} for project
+// consumer hubs (<repo>/.ws).
+const { scoreLedger } = require((() => {
+  const packaged = path.resolve(__dirname, '..', '..', '..', 'ws-spec-to-pr', 'scripts', 'ac_ledger.cjs');
+  try {
+    require.resolve(packaged);
+    return packaged;
+  } catch {
+    return path.resolve(__dirname, '..', '..', '..', '..', '.agents', 'skills', 'ws-spec-to-pr', 'scripts', 'ac_ledger.cjs');
+  }
+})());
 const { syncAcCountsFromLedger } = require('./ac_counts.cjs');
 const { loadJsonSchema, validateNode } = require('./validate_json_schema.cjs');
 const { releaseBaton } = require('./step_baton.cjs');

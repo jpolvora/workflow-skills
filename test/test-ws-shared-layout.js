@@ -1,5 +1,5 @@
 /**
- * ws-shared runtime/templates layout and global-hybrid configure contract.
+ * Consumer hub (.ws) layout and global-hybrid configure contract.
  */
 import fs from 'fs';
 import os from 'os';
@@ -97,12 +97,12 @@ try {
   assert(resolver.status === 0, resolver.stderr || 'global resolver failed');
   const resolved = JSON.parse(resolver.stdout);
   assert(resolved.executionScope === 'global', 'global execution scope is reported');
-  assert(resolved.sharedDir === path.join(consumerRoot, '.agents', 'skills', 'ws-shared'), 'global execution targets consumer sharedDir');
+  assert(resolved.sharedDir === path.join(consumerRoot, '.ws'), 'global execution targets consumer sharedDir');
   assert(resolved.runtimeSource === path.join(globalShared, 'runtime'), 'global runtime source is selected');
   assert(resolved.templateSource === path.join(globalShared, 'templates'), 'global template source is selected');
   assert(resolved.configSource === 'global', 'global template is the config fallback');
 
-  const localConfig = path.join(consumerRoot, '.agents', 'skills', 'ws-shared', 'config.json');
+  const localConfig = path.join(consumerRoot, '.ws', 'config.json');
   fs.mkdirSync(path.dirname(localConfig), { recursive: true });
   fs.writeFileSync(localConfig, '{"project":{"name":"local"}}\n', 'utf8');
   const precedence = cp.spawnSync(
@@ -158,10 +158,10 @@ try {
   assert(configureResult.executionScope === 'global', 'global configure reports global scope');
   assert(
     configureResult.copiedPaths.length === 1 &&
-      configureResult.copiedPaths[0].endsWith('.agents/skills/ws-shared/config.json'),
+      configureResult.copiedPaths[0].endsWith('.ws/config.json'),
     'global configure reports only consumer config materialization',
   );
-  const consumerShared = path.join(configureConsumerRoot, '.agents', 'skills', 'ws-shared');
+  const consumerShared = path.join(configureConsumerRoot, '.ws');
   assert(fs.existsSync(path.join(consumerShared, 'config.json')), 'global configure writes consumer config');
   assert(!fs.existsSync(path.join(consumerShared, 'runtime')), 'global configure does not copy runtime');
   assert(!fs.existsSync(path.join(consumerShared, 'templates')), 'global configure does not copy templates');
@@ -179,6 +179,7 @@ try {
   const legacyRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-layout-legacy-'));
   tempRoots.push(legacyRoot);
   const legacyShared = path.join(legacyRoot, '.agents', 'skills', 'ws-shared');
+  const newShared = path.join(legacyRoot, '.ws');
   fs.mkdirSync(legacyShared, { recursive: true });
   const preserved = {
     'config.json': '{"toolsFile":"tools.md","project":{"name":"legacy-consumer"},"defaults":{"sessionLeases":true}}\n',
@@ -202,59 +203,82 @@ try {
     { cwd: legacyRoot, encoding: 'utf8', env: { ...process.env, FORCE_COLOR: '0' } },
   );
   assert(install.status === 0, `${install.stdout || ''}${install.stderr || ''}`);
-  assert(fs.existsSync(path.join(legacyShared, 'runtime', 'tools.md')), 'migration moves flat runtime files');
-  assert(fs.existsSync(path.join(legacyShared, 'templates', 'config.json.example')), 'migration installs templates');
+  assert(!fs.existsSync(legacyShared), 'relocation removes the emptied legacy hub dir');
+  assert(fs.existsSync(path.join(newShared, 'runtime', 'tools.md')), 'migration moves flat runtime files');
+  assert(fs.existsSync(path.join(newShared, 'templates', 'config.json.example')), 'migration installs templates');
   assert(
-    fs.existsSync(path.join(legacyShared, 'templates', 'STACK.md.example')),
+    fs.existsSync(path.join(newShared, 'templates', 'STACK.md.example')),
     'migration moves STACK.md.example without case-alias ENOENT',
   );
-  assert(!fs.existsSync(path.join(legacyShared, 'STACK.md.example')), 'migration removes legacy flat STACK.md.example');
-  assert(!fs.existsSync(path.join(legacyShared, 'tools.md')), 'migration removes the legacy flat runtime file');
+  assert(!fs.existsSync(path.join(newShared, 'STACK.md.example')), 'migration removes legacy flat STACK.md.example');
+  assert(!fs.existsSync(path.join(newShared, 'tools.md')), 'migration removes the legacy flat runtime file');
   assert(
-    !fs.existsSync(path.join(legacyShared, 'CATALOG.md.bak_20260907-1756')),
+    !fs.existsSync(path.join(newShared, 'CATALOG.md.bak_20260907-1756')),
     'migration prunes hub backup artifacts instead of failing',
   );
-  assert(fs.existsSync(path.join(legacyShared, '.gitignore')), 'migration installs the aliased hub ignore file');
-  const localPointer = fs.readFileSync(path.join(legacyShared, 'AGENTS.md'), 'utf8');
+  assert(fs.existsSync(path.join(newShared, '.gitignore')), 'migration installs the aliased hub ignore file');
+  const localPointer = fs.readFileSync(path.join(newShared, 'AGENTS.md'), 'utf8');
   assert(localPointer.includes('`runtime/AGENTS.md`'), 'local hub pointer links to the installed runtime contract');
   assert(
     !localPointer.includes('{globalSkillsRoot}/ws-shared/runtime/AGENTS.md'),
     'local hub pointer does not require a global-only runtime path',
   );
-  const installedAutoload = fs.readFileSync(path.join(legacyShared, 'autoload.md'), 'utf8');
+  const installedAutoload = fs.readFileSync(path.join(newShared, 'autoload.md'), 'utf8');
   assert(installedAutoload.includes('](runtime/tools.md)'), 'hub-root autoload rewrites runtime-relative hub links');
   assert(installedAutoload.includes('](../ws-spec-manager/SKILL.md)'), 'hub-root autoload rewrites skill-relative links');
   for (const [name, content] of Object.entries(preserved)) {
     if (name === 'config.json') {
-      const cfg = JSON.parse(fs.readFileSync(path.join(legacyShared, name), 'utf8'));
+      const cfg = JSON.parse(fs.readFileSync(path.join(newShared, name), 'utf8'));
       assert(cfg.project?.name === 'legacy-consumer', 'migration preserves consumer-owned config.json values');
       assert(cfg.toolsFile === 'runtime/tools.md', 'upgrade migrates legacy toolsFile');
       assert(cfg.$schema === './runtime/config.schema.json', 'upgrade normalizes $schema');
       assert(Boolean(cfg.pathTokens?.sharedDir), 'upgrade ensures pathTokens');
+      assert(cfg.pathTokens?.sharedDir === '.ws', 'upgrade seeds pathTokens.sharedDir at the new hub root');
       assert(!('sessionLeases' in (cfg.defaults || {})), 'upgrade strips retired defaults keys');
-      assert(fs.existsSync(path.join(legacyShared, 'config.json.bak')), 'migration creates config.json.bak');
+      assert(fs.existsSync(path.join(newShared, 'config.json.bak')), 'migration creates config.json.bak');
       assert(
-        fs.readFileSync(path.join(legacyShared, 'config.json.bak'), 'utf8') === content,
+        fs.readFileSync(path.join(newShared, 'config.json.bak'), 'utf8') === content,
         'config.json.bak matches original pre-update content',
       );
     } else {
       assert(
-        fs.readFileSync(path.join(legacyShared, name), 'utf8') === content,
+        fs.readFileSync(path.join(newShared, name), 'utf8') === content,
         `migration preserves consumer-owned ${name}`,
       );
     }
   }
-  fs.writeFileSync(path.join(legacyShared, '.gitignore'), '# stale gitignore\n', 'utf8');
+  fs.writeFileSync(path.join(newShared, '.gitignore'), '# stale gitignore\n', 'utf8');
   const secondInstall = cp.spawnSync(
     process.execPath,
     [path.join(repoRoot, 'bin', 'cli.js'), 'update', '--yes'],
     { cwd: legacyRoot, encoding: 'utf8', env: { ...process.env, FORCE_COLOR: '0' } },
   );
   assert(secondInstall.status === 0, `${secondInstall.stdout || ''}${secondInstall.stderr || ''}`);
-  assert(!fs.existsSync(path.join(legacyShared, 'templates', 'hub.gitignore')), 'migration does not retain alias source');
+  assert(!fs.existsSync(path.join(newShared, 'templates', 'hub.gitignore')), 'migration does not retain alias source');
   assert(
-    fs.readFileSync(path.join(legacyShared, '.gitignore'), 'utf8').includes('config.json.bak'),
+    fs.readFileSync(path.join(newShared, '.gitignore'), 'utf8').includes('config.json.bak'),
     'update refreshes managed .gitignore from template alias',
+  );
+
+  // us-351: collision (both legacy hub and .ws/ present) leaves both in place.
+  const collisionRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-layout-collision-'));
+  tempRoots.push(collisionRoot);
+  const collisionLegacy = path.join(collisionRoot, '.agents', 'skills', 'ws-shared');
+  const collisionNew = path.join(collisionRoot, '.ws');
+  fs.mkdirSync(collisionLegacy, { recursive: true });
+  fs.writeFileSync(path.join(collisionLegacy, 'config.json'), '{"project":{"name":"collision"}}\n', 'utf8');
+  fs.mkdirSync(collisionNew, { recursive: true });
+  fs.writeFileSync(path.join(collisionNew, 'config.json'), '{"project":{"name":"current"}}\n', 'utf8');
+  const collisionInstall = cp.spawnSync(
+    process.execPath,
+    [path.join(repoRoot, 'bin', 'cli.js'), 'install', '--skills', 'ws-tdah', '--yes'],
+    { cwd: collisionRoot, encoding: 'utf8', env: { ...process.env, FORCE_COLOR: '0' } },
+  );
+  assert(collisionInstall.status === 0, `${collisionInstall.stdout || ''}${collisionInstall.stderr || ''}`);
+  assert(fs.existsSync(path.join(collisionLegacy, 'config.json')), 'collision leaves the legacy hub in place');
+  assert(
+    JSON.parse(fs.readFileSync(path.join(collisionNew, 'config.json'), 'utf8')).project?.name === 'current',
+    'collision never overwrites the current .ws/ hub with legacy data',
   );
 
   console.log('test-ws-shared-layout: ok');

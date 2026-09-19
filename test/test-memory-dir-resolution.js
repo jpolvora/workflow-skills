@@ -42,7 +42,7 @@ function fixture() {
   return root;
 }
 function seedHub(root, config = {}) {
-  const shared = path.join(root, '.agents', 'skills', 'ws-shared');
+  const shared = path.join(root, '.ws');
   fs.mkdirSync(path.join(shared, 'templates'), { recursive: true });
   fs.writeFileSync(path.join(shared, 'config.json'), JSON.stringify(config, null, 2), 'utf8');
   return shared;
@@ -61,7 +61,7 @@ function seedRootMemory(root) {
   fs.writeFileSync(path.join(root, 'MEMORY.md'), `# Memory\n\n${ENTRY}`, 'utf8');
 }
 function ctxFor(root, config) {
-  return { repoRoot: root, sharedDir: path.join(root, '.agents', 'skills', 'ws-shared'), config };
+  return { repoRoot: root, sharedDir: path.join(root, '.ws'), config };
 }
 
 // --- 1. Value defaults ---
@@ -98,7 +98,7 @@ assert(resolveChangelogFileValue({ rules: { changelogFile: 42 } }) === 'CHANGELO
 
   seedLegacyMemory(shared);
   const legacy = resolveEffectiveMemoryPaths(ctxFor(root, {}));
-  assert(legacy.source === 'legacy' && legacy.dir === shared, 'legacy ws-shared memory wins when root is empty');
+  assert(legacy.source === 'legacy' && legacy.dir === shared, 'legacy hub memory wins when root is empty');
 
   seedRootMemory(root);
   const both = resolveEffectiveMemoryPaths(ctxFor(root, {}));
@@ -117,9 +117,9 @@ assert(resolveChangelogFileValue({ rules: { changelogFile: 42 } }) === 'CHANGELO
   const shared = seedHub(root, {});
   seedLegacyMemory(shared);
   const explicit = resolveEffectiveMemoryPaths(
-    ctxFor(root, { rules: { memoryDir: '.agents/skills/ws-shared' } }),
+    ctxFor(root, { rules: { memoryDir: '.ws' } }),
   );
-  assert(explicit.source === 'configured' && explicit.dir === shared, 'memoryDir pointing at legacy resolves configured');
+  assert(explicit.source === 'configured' && explicit.dir === shared, 'memoryDir pointing at the hub resolves configured');
 }
 
 // --- 4. Changelog resolution ---
@@ -188,7 +188,7 @@ function runSelfLearning(args, cwd) {
   assert(res.status === 0, `fresh --compile exits 0 (${(res.stderr || '').trim()})`);
   assert(fs.existsSync(path.join(root, 'MEMORY.md')), 'fresh --compile writes root MEMORY.md');
   assert(fs.existsSync(path.join(root, 'memory')), 'fresh --compile creates root memory/');
-  assert(!fs.existsSync(path.join(root, '.agents', 'skills', 'ws-shared', 'MEMORY.md')), 'fresh --compile writes nothing under ws-shared');
+  assert(!fs.existsSync(path.join(root, '.ws', 'MEMORY.md')), 'fresh --compile writes nothing under the hub');
   const header = fs.readFileSync(path.join(root, 'MEMORY.md'), 'utf8');
   assert(header.includes('`memory/`'), 'compiled header names the effective entries dir');
 }

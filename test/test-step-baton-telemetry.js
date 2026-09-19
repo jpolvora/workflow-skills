@@ -26,7 +26,7 @@ try {
   const stateFile = path.join(usDir, 'wf-telemetry.state.json');
   const fixtures = path.join(repoRoot, 'test/fixtures/step-baton');
   const updater = path.join(repoRoot, '.agents/skills/ws-spec-to-pr-lite/scripts/update_state.cjs');
-  write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(root, '.ws/config.json'), JSON.stringify({
     project: { name: 'telemetry-test', baseBranch: 'main' },
     plans: { dir: '.agents/plans' },
     verification: {},

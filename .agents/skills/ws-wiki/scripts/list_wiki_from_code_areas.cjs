@@ -3,10 +3,22 @@
 
 const fs = require('fs');
 const path = require('path');
+// us-351: managed runtime loads from its installed location: the upstream
+// package / global skills tree (<skills>/ws-shared) or the project consumer
+// hub (<repo>/.ws). Mirrors resolveConsumerContext runtimeSource precedence.
+const HUB_SCRIPTS_DIR = (() => {
+  const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
+  try {
+    require.resolve(path.join(packaged, 'resolve_consumer_root.cjs'));
+    return packaged;
+  } catch {
+    return path.resolve(__dirname, '..', '..', '..', '..', '.ws', 'runtime', 'scripts');
+  }
+})();
 const {
   resolveConsumerContext,
   toRepoRelative,
-} = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
+} = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
 
 const CANONICAL_AREAS = [
   { id: 'structure', title: 'Project structure & stack layout' },
@@ -113,7 +125,7 @@ function collectDirFiles(repoRoot, dirRel, paths, maxDepth = 3, depth = 0) {
 
 function collectStructurePaths(repoRoot, config) {
   const paths = [];
-  addUnique(paths, repoRoot, '.agents/skills/ws-shared/config.json');
+  addUnique(paths, repoRoot, '.ws/config.json');
   addUnique(paths, repoRoot, 'config.json');
   addUnique(paths, repoRoot, 'package.json');
   const stack = config.stack || {};
@@ -251,7 +263,7 @@ function collectShipPaths(repoRoot, config) {
   }
   const project = config.project || {};
   if (project.baseBranch || project.workingBranch) {
-    addUnique(paths, repoRoot, '.agents/skills/ws-shared/config.json');
+    addUnique(paths, repoRoot, '.ws/config.json');
   }
   return paths;
 }

@@ -50,7 +50,7 @@ function tempDir() {
   const root = tempDir();
   try {
     const skillsDir = path.join(root, '.agents', 'skills');
-    const sharedDir = path.join(skillsDir, 'ws-shared');
+    const sharedDir = path.join(root, '.ws');
     fs.mkdirSync(sharedDir, { recursive: true });
     fs.writeFileSync(
       path.join(sharedDir, 'config.json'),
@@ -120,6 +120,7 @@ function tempDir() {
     const logs = [];
     const result = pruneRetiredConsumerArtifacts(fs, path, {
       skillsDir,
+      sharedDir,
       log: (msg) => logs.push(msg),
     });
 

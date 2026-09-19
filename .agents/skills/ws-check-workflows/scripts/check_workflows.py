@@ -60,7 +60,9 @@ REPO_ROOT = find_repo_root(SCRIPT_DIR)
 
 def resolve_skills_dir(repo_root: Path) -> Path:
     """Respect pathTokens.skillsRoot from shared/config.json when present."""
-    config_path = repo_root / ".agents" / "skills" / "ws-shared" / "config.json"
+    config_path = repo_root / ".ws" / "config.json"
+    if not config_path.exists():
+        config_path = repo_root / ".agents" / "skills" / "ws-shared" / "config.json"
     if config_path.exists():
         try:
             cfg = json.loads(config_path.read_text(encoding="utf-8", errors="replace"))
@@ -491,13 +493,13 @@ class WorkflowChecker:
         lite_val_state = SKILLS_DIR / "ws-spec-to-pr-lite" / "scripts" / "validate_state.py"
         if lite_val_state.exists():
             code = lite_val_state.read_text(encoding="utf-8", errors="replace")
-            if "ws-shared" not in code or "config.json" not in code:
+            if "config.json" not in code or ("ws-shared" not in code and ".ws" not in code):
                 self.add_issue(
                     "WARNING",
                     "Config Sharing",
                     "ws-spec-to-pr-lite/scripts/validate_state.py",
-                    "Lite validate_state.py does not target ws-shared/config.json.",
-                    "Update script to reference ws-shared/config.json.",
+                    "Lite validate_state.py does not target the shared hub config.json.",
+                    "Update script to reference .ws/config.json.",
                 )
 
     def check_g2_code_contract(self) -> None:

@@ -161,7 +161,7 @@ const leasePast = new Date(Date.now() - 60000).toISOString();
 {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'baton-finish-'));
   try {
-    write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    write(path.join(root, '.ws/config.json'), JSON.stringify({
       project: { name: 'finish-test', baseBranch: 'main' },
       plans: { dir: '.agents/plans' },
       verification: {},
@@ -209,7 +209,7 @@ const leasePast = new Date(Date.now() - 60000).toISOString();
 {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'baton-legacy-'));
   try {
-    write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+    write(path.join(root, '.ws/config.json'), JSON.stringify({
       project: { name: 'legacy-test', baseBranch: 'main' },
       plans: { dir: '.agents/plans' },
       verification: {},

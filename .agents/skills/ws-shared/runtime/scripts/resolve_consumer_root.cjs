@@ -5,7 +5,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-const HUB_REL = path.join('.agents', 'skills', 'ws-shared');
+const HUB_REL = '.ws';
 const HUB_CONFIG = path.join(HUB_REL, 'config.json');
 const HUB_CONFIG_EXAMPLE = path.join(HUB_REL, 'templates', 'config.json.example');
 const HUB_RUNTIME_REL = path.join('runtime');

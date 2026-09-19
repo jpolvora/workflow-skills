@@ -7,7 +7,7 @@ const skills = fs.readdirSync(path.join(repoRoot, '.agents/skills'), { withFileT
   .filter((entry) => entry.isDirectory() && entry.name !== 'ws-shared' && fs.existsSync(path.join(repoRoot, '.agents/skills', entry.name, 'SKILL.md')))
   .map((entry) => entry.name);
 for (const skill of skills) assert.match(catalog, new RegExp(`\\\`${skill}\\\``), `catalog includes ${skill}`);
-const configPath = path.join(repoRoot, '.agents/skills/ws-shared/config.json');
+const configPath = path.join(repoRoot, '.ws/config.json');
 const config = fs.existsSync(configPath)
   ? JSON.parse(fs.readFileSync(configPath, 'utf8'))
   : {};
@@ -16,7 +16,7 @@ const requiredDocs = [
   'README.md',
   'CATALOG.md',
   'docs/index.html',
-  '.agents/skills/ws-shared/AGENTS.md',
+  '.ws/AGENTS.md',
   '.agents/skills/ws-shared/runtime/CATALOG.md',
   '.agents/skills/ws-shared/runtime/CROSS-PLATFORM.md',
 ];
@@ -49,7 +49,7 @@ assert.match(taskLifecycle, /featuresMdEnabled/, 'task-lifecycle honors tracking
 // shared-dir token, and the generated consumer mirror must carry runtime/
 // prefixes on managed-hub sibling links so every relative target resolves.
 const runtimeAutoload = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/runtime/autoload.md'), 'utf8');
-const mirrorAutoload = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/autoload.md'), 'utf8');
+const mirrorAutoload = fs.readFileSync(path.join(repoRoot, '.ws/autoload.md'), 'utf8');
 assert.match(runtimeAutoload, /\{sharedDir\}\/runtime\/scm-provider-contract\.md/, 'runtime autoload keyword-map prose uses runtime/ token');
 assert.doesNotMatch(runtimeAutoload.replaceAll('{sharedDir}/runtime/scm-provider-contract.md', ''), /\{sharedDir\}\/scm-provider-contract\.md/, 'runtime autoload has no bare contract prose');
 assert.match(mirrorAutoload, /\{sharedDir\}\/runtime\/scm-provider-contract\.md/, 'mirror autoload keyword-map prose uses runtime/ token');
@@ -57,6 +57,6 @@ for (const bare of ['](tools.md)', '](AGENTS.md)', '](scm-provider-contract.md)'
   assert.ok(!mirrorAutoload.includes(bare), `mirror autoload has no bare ${bare}`);
 }
 for (const target of ['runtime/tools.md', 'runtime/AGENTS.md', 'runtime/scm-provider-contract.md', 'runtime/gates.md']) {
-  assert.ok(fs.existsSync(path.join(repoRoot, '.agents/skills/ws-shared', target)), `mirror link target exists: ${target}`);
+  assert.ok(fs.existsSync(path.join(repoRoot, '.agents/skills/ws-shared', target)), `mirror link target exists in SoT runtime: ${target}`);
 }
 console.log('test-doc-sync: ok');

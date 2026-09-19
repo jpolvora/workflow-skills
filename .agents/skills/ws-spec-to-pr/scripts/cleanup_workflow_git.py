@@ -57,6 +57,8 @@ def load_config_protected_branches(repo: Path) -> frozenset[str]:
     """Optional extras from project.baseBranch / project.workingBranch."""
     extra: set[str] = set()
     candidates = [
+        repo / ".ws" / "config.json",
+        Path.cwd() / ".ws" / "config.json",
         repo / ".agents" / "skills" / "ws-shared" / "config.json",
         Path.cwd() / ".agents" / "skills" / "ws-shared" / "config.json",
     ]

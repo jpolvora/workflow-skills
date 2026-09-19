@@ -5,7 +5,7 @@ const { assert, path, repoRoot, temp, run, write } = utils;
 const indexScript = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/plan_index.cjs');
 const dagScript = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/write_sequential_dag.cjs');
 const root = temp('ws-artifact-economy-');
-write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({ plans: { dir: '.agents/plans' }, fable: { auditVerdictsBlockShip: 'refuted' } }));
+write(path.join(root, '.ws/config.json'), JSON.stringify({ plans: { dir: '.agents/plans' }, fable: { auditVerdictsBlockShip: 'refuted' } }));
 write(path.join(root, 'spec.md'), '## Acceptance Criteria\n- AC1: First.\n- AC2: Second.\n');
 write(path.join(root, 'plan.md'), '## Árvore\n\nT00 handles AC1 in `src/a.js` and V1:test-a.\n\n## Second\n\nT01 handles AC2 in `test/a.test.js` and V2:test-b.\n');
 const base = ['--repo-root', root];

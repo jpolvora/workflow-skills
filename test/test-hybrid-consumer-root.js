@@ -61,7 +61,7 @@ function run(cmd, args, opts = {}) {
 }
 
 function writeConsumerHub(consumerRoot, overrides = {}) {
-  const shared = path.join(consumerRoot, '.agents', 'skills', 'ws-shared');
+  const shared = path.join(consumerRoot, '.ws');
   fs.mkdirSync(shared, { recursive: true });
   const config = {
     dagThresholds: {
@@ -105,7 +105,7 @@ function testSelfLearningCompileTargetsConsumer() {
   assert(result.status === 0, `self_learning --compile exit 0 (${result.stderr || result.stdout})`);
 
   const memoryPath = path.join(shared, 'MEMORY.md');
-  assert(fs.existsSync(memoryPath), 'MEMORY.md written under consumer ws-shared');
+  assert(fs.existsSync(memoryPath), 'MEMORY.md written under consumer .ws hub');
   const content = fs.readFileSync(memoryPath, 'utf8');
   assert(
     content.includes('hybrid consumer memory probe'),
@@ -299,7 +299,7 @@ function testProjectLocalScriptParents4Resolves() {
     'project-local script resolves parents[4] hub, not foreign cwd',
   );
   assert(
-    !fs.existsSync(path.join(foreignCwd, '.agents', 'skills', 'ws-shared', 'MEMORY.md')),
+    !fs.existsSync(path.join(foreignCwd, '.ws', 'MEMORY.md')),
     'foreign cwd hub not created or updated by project-local script',
   );
 }

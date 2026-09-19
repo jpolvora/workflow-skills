@@ -77,7 +77,7 @@ console.log('4. Testing resolve_spec_path.cjs CLI and behavior');
 
 function createTempProject(enforcePrefixVal = false) {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-prefix-test-'));
-  const shared = path.join(tmp, '.agents', 'skills', 'ws-shared');
+  const shared = path.join(tmp, '.ws');
   fs.mkdirSync(shared, { recursive: true });
   const specs = path.join(tmp, '.agents', 'specs');
   fs.mkdirSync(specs, { recursive: true });

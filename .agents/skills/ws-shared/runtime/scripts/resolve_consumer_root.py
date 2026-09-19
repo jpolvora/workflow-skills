@@ -3,7 +3,7 @@
 
 Precedence:
   1. explicit --repo-root / override argument
-  2. cwd when $PWD/.agents/skills/ws-shared/config.json (or .example) exists
+  2. cwd when $PWD/.ws/config.json (or .example) exists
   3. parents[4] from script_file when script is NOT under global skills root
   4. cwd (last resort)
 
@@ -16,7 +16,7 @@ import json
 import re
 from pathlib import Path
 
-HUB_REL = Path(".agents") / "skills" / "ws-shared"
+HUB_REL = Path(".ws")
 HUB_CONFIG = HUB_REL / "config.json"
 HUB_CONFIG_EXAMPLE = HUB_REL / "templates" / "config.json.example"
 HUB_RUNTIME = HUB_REL / "runtime"

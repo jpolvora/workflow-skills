@@ -149,13 +149,17 @@ function findRetiredSkillDirsAtRoot(fs, pathModule, skillsDirAbs) {
  * @param {object} path - node path module
  * @param {object} options
  * @param {string} options.skillsDir - absolute .agents/skills (or global skills root)
+ * @param {string} [options.sharedDir] - absolute consumer hub dir (defaults to <skillsDir>/ws-shared legacy layout)
  * @param {(msg: string) => void} [options.log] - logger (default console.log)
  * @returns {{ hubFiles: string[], configKeys: string[], skillDirs: string[] }}
  */
 function pruneRetiredConsumerArtifacts(fs, path, options) {
   const log = options.log || ((msg) => console.log(msg));
   const skillsDir = path.resolve(options.skillsDir);
-  const sharedDir = path.join(skillsDir, 'ws-shared');
+  const sharedDir = options.sharedDir
+    ? path.resolve(options.sharedDir)
+    : path.join(skillsDir, 'ws-shared');
+  const hubLabel = path.basename(sharedDir);
   const result = { hubFiles: [], configKeys: [], skillDirs: [] };
 
   if (fs.existsSync(sharedDir)) {
@@ -164,7 +168,7 @@ function pruneRetiredConsumerArtifacts(fs, path, options) {
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
         result.hubFiles.push(name);
-        log(`    Removed obsolete ws-shared/${name}`);
+        log(`    Removed obsolete ${hubLabel}/${name}`);
       }
     }
 
@@ -177,7 +181,7 @@ function pruneRetiredConsumerArtifacts(fs, path, options) {
         if (changed) {
           fs.writeFileSync(configPath, `${JSON.stringify(next, null, 2)}\n`);
           result.configKeys.push(...removed);
-          log(`    Stripped retired config keys from ws-shared/config.json: ${removed.join(', ')}`);
+          log(`    Stripped retired config keys from ${hubLabel}/config.json: ${removed.join(', ')}`);
         }
       } catch {
         // consumer-owned; do not fail install/update
@@ -213,7 +217,7 @@ function pruneRetiredConsumerArtifacts(fs, path, options) {
         data.skills = nextSkills;
         data.selected = nextSelected;
         fs.writeFileSync(manifestPath, `${JSON.stringify(data, null, 2)}\n`);
-        log(`    Removed retired skill id(s) from ws-shared/installed-skills.json`);
+        log(`    Removed retired skill id(s) from ${hubLabel}/installed-skills.json`);
       }
     } catch {
       // preserve manifest on parse failure

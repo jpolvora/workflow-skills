@@ -2,7 +2,7 @@
 
 Human-readable companion to `config.json`. Agents read `config.json` for machine-readable values; this doc explains structure and conventions.
 
-> **Source of truth:** `.agents/skills/ws-shared/config.json` — project identity, stack, verification, invariants. `tools.md` — tool aliases. This `STACK.md` is the human-readable guide.
+> **Source of truth:** `.ws/config.json` — project identity, stack, verification, invariants. `tools.md` — tool aliases. This `STACK.md` is the human-readable guide.
 
 ## Project Stack (from config.json)
 
@@ -43,13 +43,13 @@ Related upstream authoring (not in verification keys): `npm run generate-integri
 
 | Area | Config key | Path |
 |------|-----------|------|
-| **Harness routing** | `rules.harness` | `.agents/skills/ws-shared/AGENTS.md` |
+| **Harness routing** | `rules.harness` | `.ws/AGENTS.md` |
 | **Engineering guardrails** | `rules.seniorDeveloper` | `.agents/skills/ws-senior-developer/SKILL.md` |
 | **Karpathy guidelines** | `rules.karpathyGuidelines` | `.agents/skills/ws-senior-developer/SKILL.md` |
-| **Changelog** | `rules.changelogFile` | `.agents/skills/ws-shared/CHANGELOG.md` |
-| **Stack companion** | `rules.stackFile` | `.agents/skills/ws-shared/STACK.md` |
+| **Changelog** | `rules.changelogFile` | `.ws/CHANGELOG.md` |
+| **Stack companion** | `rules.stackFile` | `.ws/STACK.md` |
 
-**Note:** Upstream skill SoT and `pathTokens.skillsRoot` both use `.agents/skills`. Consumer-owned hub files under `ws-shared/` remain gitignored and are not published as templates.
+**Note:** Upstream skill SoT and `pathTokens.skillsRoot` both use `.agents/skills`. Generated hub files under `.ws/` (memory/history, installer metadata, managed copies) remain gitignored and are not published as templates; `config.json` and a maintained `STACK.md` are committable.
 
 ## Project Invariants (from config.json)
 

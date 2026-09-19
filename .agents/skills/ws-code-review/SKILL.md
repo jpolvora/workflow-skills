@@ -65,7 +65,7 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
 
 ## Steps
 
-1. **Detect stack, diff & rule pack**: read `config.json.stack` and load the applicable project stack invariant rule pack from `{sharedDir}/runtime/stacks/` (`abp-angular.md`, `typescript-node.md`, `nextjs-react.md`, `php-laravel.md`, or custom override in `$PWD/.agents/skills/ws-shared/runtime/stacks/`). Exclude `bin/`, `obj/`, `dist/`, `node_modules/`, CI YAML, translations. Resolve `{base}` from `config.project.baseBranch` (auto-detect `main` then `master`). Run `git diff --name-status {base}...HEAD` over in-scope paths — that committed range is the **only** primary file list.
+1. **Detect stack, diff & rule pack**: read `config.json.stack` and load the applicable project stack invariant rule pack from `{sharedDir}/runtime/stacks/` (`abp-angular.md`, `typescript-node.md`, `nextjs-react.md`, `php-laravel.md`, or custom override in `$PWD/.ws/runtime/stacks/`). Exclude `bin/`, `obj/`, `dist/`, `node_modules/`, CI YAML, translations. Resolve `{base}` from `config.project.baseBranch` (auto-detect `main` then `master`). Run `git diff --name-status {base}...HEAD` over in-scope paths — that committed range is the **only** primary file list.
    - Done when: the in-scope modified file list and active stack invariant rule pack are known.
 
 2. **Phase 1: Triage**: adversarial scan of the committed diff against loaded stack invariant rules and domain constraints. Flag lines with concrete defect hypotheses; discard cosmetic nits, untouched pre-existing code, and low-risk UI without security or concurrency surface.

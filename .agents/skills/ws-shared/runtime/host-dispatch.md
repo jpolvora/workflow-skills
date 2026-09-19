@@ -88,7 +88,7 @@ Legacy neutral flags (`hasStructuredChoiceTool` / `hasSubagentTool` / `hasBrowse
 
 ## 4. Configurable Host Dispatch Adapter (`config.json`)
 
-Projects can configure and customize subagent dispatch behavior in `.agents/skills/ws-shared/config.json` under `defaults.hostAdapter`:
+Projects can configure and customize subagent dispatch behavior in `.ws/config.json` under `defaults.hostAdapter`:
 
 ```json
 {

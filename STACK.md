@@ -1,8 +1,8 @@
 # Stack Definition — workflow-skills
 
-Human-readable companion to `.agents/skills/ws-shared/config.json`.
+Human-readable companion to `.ws/config.json`.
 
-> **Source of truth:** `.agents/skills/ws-shared/config.json` — project identity, stack, verification commands, invariants. `tools.md` — canonical tool aliases.
+> **Source of truth:** `.ws/config.json` — project identity, stack, verification commands, invariants. `tools.md` — canonical tool aliases.
 
 ## Project Stack (from config.json)
 

@@ -2,7 +2,7 @@
 
 > **Human audience.** Orchestrator FSM lives in [`SKILL.md`](SKILL.md) — English agent contract. Use this README + [`DIAGRAM.md`](DIAGRAM.md) for onboarding. FAQ sections that still mention steps 11–13 are **legacy**; trust [`SKILL.md`](SKILL.md) / this README for steps **0–9**.
 >
-> **Current:** Standard FSM steps **0–9** (F0–F6). Pipeline skill folders `ws-*` (`ws-spec-write`…`ws-fix-pr`, `ws-goal-fix-pr`). Optional Extra post-workflow: `ws-plan-update` when installed. Dual-mode with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) (steps 0–5). Tools via [`tools.md`](../ws-shared/runtime/tools.md). Config: `.agents/skills/ws-shared/config.json`.
+> **Current:** Standard FSM steps **0–9** (F0–F6). Pipeline skill folders `ws-*` (`ws-spec-write`…`ws-fix-pr`, `ws-goal-fix-pr`). Optional Extra post-workflow: `ws-plan-update` when installed. Dual-mode with [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) (steps 0–5). Tools via [`tools.md`](../ws-shared/runtime/tools.md). Config: `.ws/config.json`.
 >
 > **Identity:** `/ws-spec-to-pr`. Runtime tags: `uswf/`; plan slugs: `us-{id}`.
 
@@ -23,7 +23,7 @@ End-to-end Spec → PR pipeline using **orchestrator + sub-agents**, shared stat
 | [`DIAGRAM.md`](DIAGRAM.md) | Visual | Mermaid 0–9 / lite 0–5 |
 | [`ARTIFACTS.md`](ARTIFACTS.md) | Both | Canonical filenames |
 
-**Project entry:** [`ws-shared/AGENTS.md`](../ws-shared/AGENTS.md) (or root [`AGENTS.md`](../../../AGENTS.md) when authoring against the source repo).
+**Project entry:** [`.ws/AGENTS.md`](../../../.ws/AGENTS.md) (or root [`AGENTS.md`](../../../AGENTS.md) when authoring against the source repo).
 
 ---
 

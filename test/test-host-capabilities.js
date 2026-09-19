@@ -198,9 +198,9 @@ function main() {
 
   // REG default cache resolves to the consumer shared dir (hybrid-safe).
   const consumerRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-consumer-'));
-  fs.mkdirSync(path.join(consumerRoot, '.agents', 'skills', 'ws-shared'), { recursive: true });
+  fs.mkdirSync(path.join(consumerRoot, '.ws'), { recursive: true });
   fs.writeFileSync(
-    path.join(consumerRoot, '.agents', 'skills', 'ws-shared', 'config.json'),
+    path.join(consumerRoot, '.ws', 'config.json'),
     '{}\n',
     'utf8',
   );
@@ -210,7 +210,7 @@ function main() {
     { cwd: consumerRoot, encoding: 'utf-8' },
   );
   assert(rDefaultCache.status === 0, 'REG default-cache probe exits 0');
-  const expectedCache = path.join(consumerRoot, '.agents', 'skills', 'ws-shared', 'host-capabilities.json');
+  const expectedCache = path.join(consumerRoot, '.ws', 'host-capabilities.json');
   assert(fs.existsSync(expectedCache), 'REG default cache lands in the consumer shared dir');
   assert(
     JSON.parse(fs.readFileSync(expectedCache, 'utf8'))['cursor::model-default-cache'],

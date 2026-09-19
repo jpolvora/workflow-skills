@@ -45,7 +45,7 @@ try {
   git(tmp, 'config', 'user.name', 'test');
 
   const plans = path.join(tmp, '.agents', 'plans');
-  const shared = path.join(tmp, '.agents', 'skills', 'ws-shared');
+  const shared = path.join(tmp, '.ws');
   fs.mkdirSync(shared, { recursive: true });
   fs.writeFileSync(
     path.join(shared, 'config.json'),
@@ -234,8 +234,8 @@ try {
     traversalFile,
     JSON.stringify({
       paths: [
-        '.tmp-x/../../.agents/skills/ws-shared/config.json',
-        '.agents/plans/../../.agents/skills/ws-shared/config.json',
+        '.tmp-x/../../.ws/config.json',
+        '.agents/plans/../../.ws/config.json',
       ],
     }),
     'utf8',

@@ -12,7 +12,7 @@ Heuristic (when scores present): uniform high scores (mean ≥ 8, low variance) 
 
 ## Threshold source
 
-[`config.json`](../../ws-shared/config.json) → `dagThresholds` (defaults in [`config.json.example`](../../ws-shared/templates/config.json.example)):
+[`config.json`](../../../../.ws/config.json) → `dagThresholds` (defaults in [`config.json.example`](../../ws-shared/templates/config.json.example)):
 
 | Key | Default | Compared metric |
 |-----|---------|-----------------|

@@ -49,7 +49,7 @@ for (const [name, body] of [
 assert.match(consumerCatalog, /never.*spec-to-pr/i);
 
 const memory = fs.readFileSync(
-  path.join(repoRoot, '.agents/skills/ws-shared/MEMORY.md'),
+  path.join(repoRoot, '.ws/MEMORY.md'),
   'utf8',
 );
 assert.match(memory, /Spec-to-PR must not start harness benchmarks/);
@@ -64,7 +64,7 @@ assert.doesNotMatch(
 );
 
 const orchTrap = fs.readFileSync(
-  path.join(repoRoot, '.agents/skills/ws-shared/memory/2026-08-28-run-benchmark-orch-step.md'),
+  path.join(repoRoot, '.ws/memory/2026-08-28-run-benchmark-orch-step.md'),
   'utf8',
 );
 assert.match(orchTrap, /Never load this file from `ws-spec-to-pr`/);

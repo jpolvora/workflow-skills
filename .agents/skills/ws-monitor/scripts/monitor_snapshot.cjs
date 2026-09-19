@@ -4,6 +4,18 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+// us-351: managed runtime loads from its installed location: the upstream
+// package / global skills tree (<skills>/ws-shared) or the project consumer
+// hub (<repo>/.ws). Mirrors resolveConsumerContext runtimeSource precedence.
+const HUB_SCRIPTS_DIR = (() => {
+  const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
+  try {
+    require.resolve(path.join(packaged, 'resolve_consumer_root.cjs'));
+    return packaged;
+  } catch {
+    return path.resolve(__dirname, '..', '..', '..', '..', '.ws', 'runtime', 'scripts');
+  }
+})();
 const { spawnSync } = require('child_process');
 const {
   resolveConsumerContext,
@@ -13,8 +25,8 @@ const {
   resolveMemoryRouting,
   resolveEffectiveMemoryPaths,
   toRepoRelative,
-} = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
-const { parseFrontmatter } = require('../../ws-shared/runtime/scripts/workflow_state.cjs');
+} = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
+const { parseFrontmatter } = require(path.join(HUB_SCRIPTS_DIR, 'workflow_state.cjs'));
 
 const MUTATING_STEPS = new Set([0, 1, 2, 3, 4, 6, 7, 8]);
 const DEFAULT_INTERVAL_SECONDS = 10;

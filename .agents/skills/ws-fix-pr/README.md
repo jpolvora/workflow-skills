@@ -13,7 +13,7 @@ Thread list/resolve I/O goes through `config.providers.scm` → [ws-spec-provide
 | Main skill | `.agents/skills/ws-fix-pr/SKILL.md` |
 | Convergence loop | `.agents/skills/ws-goal-fix-pr/SKILL.md` — `/ws-goal-fix-pr <PR-ID>` |
 | Code review (pre-push) | `.agents/skills/ws-code-review/SKILL.md` |
-| SCM config | `providers.scm` in `.agents/skills/ws-shared/config.json` (`github` \| `azure-devops`) |
+| SCM config | `providers.scm` in `.ws/config.json` (`github` \| `azure-devops`) |
 | GitHub provider | `.agents/skills/ws-spec-provider-github/SKILL.md` — `list-threads` / `resolve-thread` |
 | Azure DevOps provider | `.agents/skills/ws-spec-provider-azure-devops/SKILL.md` — `list-threads` / `resolve-thread` |
 | GitHub list (canonical) | `node .agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs` |

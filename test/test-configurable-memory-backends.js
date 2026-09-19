@@ -39,7 +39,7 @@ function runNode(script, args, opts = {}) {
   });
 }
 
-function seedHub(root, { sharedRel = '.agents/skills/ws-shared' } = {}) {
+function seedHub(root, { sharedRel = '.ws' } = {}) {
   const shared = path.join(root, sharedRel);
   fs.mkdirSync(path.join(shared, 'templates'), { recursive: true });
   fs.writeFileSync(
@@ -173,7 +173,7 @@ const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'configurable-memory-test-'));
 
 try {
   seedHub(tmp);
-  const sharedDir = path.join(tmp, '.agents/skills/ws-shared');
+  const sharedDir = path.join(tmp, '.ws');
 
   // Test State 1: Local files only (default)
   const cfgState1 = runNode(

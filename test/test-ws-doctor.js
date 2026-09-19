@@ -387,7 +387,7 @@ function setupTmpDoctorProject(root, opts = {}) {
   const ancestorType = opts.ancestorType || 'commonjs';
   writeAncestorPackageJson(root, ancestorType);
   const skillsRoot = path.join(root, '.agents', 'skills');
-  const sharedDir = path.join(skillsRoot, 'ws-shared');
+  const sharedDir = path.join(root, '.ws');
   fs.mkdirSync(sharedDir, { recursive: true });
   const doctorDir = path.join(skillsRoot, 'ws-doctor');
   fs.mkdirSync(doctorDir, { recursive: true });
@@ -680,7 +680,7 @@ function testStaleRetiredArtifactsReported() {
       {
         pathTokens: {
           skillsRoot: '.agents/skills',
-          sharedDir: '.agents/skills/ws-shared',
+          sharedDir: '.ws',
         },
         defaults: { sessionLeases: true, _comment_patterns: 'stale comment', patterns: true },
       },
@@ -772,7 +772,7 @@ function testGlobalStaleHubFileReported() {
       {
         pathTokens: {
           skillsRoot: '.agents/skills',
-          sharedDir: '.agents/skills/ws-shared',
+          sharedDir: '.ws',
         },
         defaults: {},
       },
@@ -825,7 +825,7 @@ function testGlobalStaleConfigKeysReported() {
       {
         pathTokens: {
           skillsRoot: '.agents/skills',
-          sharedDir: '.agents/skills/ws-shared',
+          sharedDir: '.ws',
         },
         defaults: {},
       },
@@ -868,7 +868,7 @@ function testGlobalHybridUsesGlobalRuntimeSource() {
   console.log('\n--- testGlobalHybridUsesGlobalRuntimeSource ---');
   const project = mkTmp('ws-doctor-hybrid-runtime-project-');
   const globalRoot = mkTmp('ws-doctor-hybrid-runtime-global-');
-  const projectShared = path.join(project, '.agents', 'skills', 'ws-shared');
+  const projectShared = path.join(project, '.ws');
   fs.mkdirSync(projectShared, { recursive: true });
   fs.writeFileSync(
     path.join(projectShared, 'config.json'),

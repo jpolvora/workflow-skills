@@ -10,7 +10,7 @@
     "enableMemoryFiles": {
       "type": "boolean",
       "default": true,
-      "description": "When true (default), write memory.md traps/issues/learnings to local memory structure files (.agents/skills/ws-shared/memory/*.md and compiled MEMORY.md)."
+      "description": "When true (default), write memory.md traps/issues/learnings to local memory structure files (.ws/memory/*.md and compiled MEMORY.md)."
     },
     "enableSpecMemoIntegration": {
       "type": "boolean",
@@ -29,8 +29,8 @@
         },
         "sharedDir": {
           "type": "string",
-          "default": ".agents/skills/ws-shared",
-          "description": "Expand {sharedDir}. Usually {skillsRoot}/shared."
+          "default": ".ws",
+          "description": "Expand {sharedDir}. Project hub root; explicit value wins, no legacy fallback."
         }
       }
     },
@@ -538,7 +538,7 @@
         "enableMemoryFiles": {
           "type": "boolean",
           "default": true,
-          "description": "When true (default), write memory.md traps/issues/learnings to local memory structure files (.agents/skills/ws-shared/memory/*.md and compiled MEMORY.md)."
+          "description": "When true (default), write memory.md traps/issues/learnings to local memory structure files (.ws/memory/*.md and compiled MEMORY.md)."
         },
         "enableSpecMemoIntegration": {
           "type": "boolean",

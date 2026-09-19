@@ -6,7 +6,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 
 ## Skill catalog (layers)
 
-> **Scope:** 47 workflow + 8 Extra; see [`bin/skill-dependencies.json`](bin/skill-dependencies.json). Routes: [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md).
+> **Scope:** 47 workflow + 8 Extra; see [`bin/skill-dependencies.json`](bin/skill-dependencies.json). Routes: [`.ws/AGENTS.md`](.ws/AGENTS.md).
 >
 > **Index only.** Load skills per root `AGENTS.md` § Progressive disclosure.
 
@@ -161,12 +161,12 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 
 ### Upstream developer workflow (this repo only)
 
-**Local project rule** for agents in `jpolvora/workflow-skills`. Consumers dogfood the same skills via install but follow [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) — not this section.
+**Local project rule** for agents in `jpolvora/workflow-skills`. Consumers dogfood the same skills via install but follow [`.ws/AGENTS.md`](.ws/AGENTS.md) — not this section.
 
 #### Skill tree (authoritative source)
 
 - **Develop and test** under **`.agents/skills/ws-*`** — pipeline, providers, utilities, and hub templates shipped with skills. This is the **only** upstream skill-content SoT (see § [Skill SoT, install scopes & config override](#skill-sot-install-scopes--config-override-mandatory)). Host-listed `{globalSkillsRoot}/ws-*` duplicates: § [Global vs local `ws-*` (this repo only — mandatory)](#global-vs-local-ws--this-repo-only--mandatory) (default invoke global; edit local only).
-- **Consumer hub data** under **`.agents/skills/ws-shared/`** stays consumer-owned. Managed content is manifest-classified under `runtime/` and `templates/`.
+- **Consumer hub data** under **`.ws/`** stays consumer-owned. Managed content is manifest-classified under `runtime/` and `templates/`.
 - **Package/publish** `.agents/skills/ws-*` and the manifest hub with the installer/CLI into local or global consumers. Global configure writes project config only; local configure never copies global managed content.
 - **Lasting changes** belong in upstream PRs (`develop` → `main`); consumer copies are managed and overwritten on `update` (project `ws-shared` consumer data preserved).
 
@@ -281,7 +281,7 @@ Print a board after each row (same ✅ / ❌ / ⏭ convention as [`ws-ship-pr/PR
 
 **Post-ship:** Do not merge while review threads are open or required checks are red. `ws-goal-fix-pr` owns the fix loop; `ws-ship-pr` merges only after convergence (unless `no-merge` / orch `stopBeforeFixPr`).
 
-*Note:* Consumers use [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) § Recommended Feature Delivery Checklist — not this table.
+*Note:* Consumers use [`.ws/AGENTS.md`](.ws/AGENTS.md) § Recommended Feature Delivery Checklist — not this table.
 
 ---
 

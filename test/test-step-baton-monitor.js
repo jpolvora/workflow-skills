@@ -40,7 +40,7 @@ try {
   const slug = 'monitor-baton';
   const usDir = path.join(root, '.agents/plans', slug);
   const leaseUntil = new Date(Date.now() + 60000).toISOString();
-  write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(root, '.ws/config.json'), JSON.stringify({
     project: { name: 'monitor-test', baseBranch: 'main' },
     plans: { dir: '.agents/plans' },
     verification: {},
@@ -91,10 +91,10 @@ try {
   const coordState = path.join(coordDir, 'wf-side.state.json');
   const fixtures = path.join(repoRoot, 'test/fixtures/step-baton');
   const updater = path.join(repoRoot, '.agents/skills/ws-spec-to-pr-lite/scripts/update_state.cjs');
-  const config = JSON.parse(fs.readFileSync(path.join(root, '.agents/skills/ws-shared/config.json'), 'utf8'));
+  const config = JSON.parse(fs.readFileSync(path.join(root, '.ws/config.json'), 'utf8'));
   config.defaults.autoMode = true;
   config.defaults.stepRunners['3'] = 'runner-a';
-  write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify(config));
+  write(path.join(root, '.ws/config.json'), JSON.stringify(config));
   write(coordState, JSON.stringify({
     stateVersion: 3, revision: 4, workflowId: 'wf-side', slug: coordSlug,
     workflowType: 'lite', status: 'active', currentStep: 3,
@@ -117,7 +117,7 @@ try {
     timeoutSeconds: 60,
     env: {},
   };
-  write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify(config));
+  write(path.join(root, '.ws/config.json'), JSON.stringify(config));
   const coord = cp.spawnSync(process.execPath, [
     path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs'),
     '--state', coordState, '--repo-root', root, '--once',
