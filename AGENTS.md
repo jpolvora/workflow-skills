@@ -377,6 +377,7 @@ On changes under `.agents/skills/ws-*`, this file, `README.md`, or `docs/`:
    - [`FEATURES.md`](FEATURES.md) when `tracking.featuresMdEnabled` is not `false` (feature inventory — optional via `{sharedDir}/config.json`; upstream dogfood keeps it on).
 2. Evaluate: **ws-check-harness** (Phases 0–5c → plan) · site rebuild · `README.md` if install/usage/human docs changed. For PRs that ship package changes, follow [`CATALOG.md`](CATALOG.md) § Upstream developer workflow (dependency graph, integrity, version/catalog, hub drift).
 3. If hashed install content changed, regenerate integrity in the same commit (`npm run generate-integrity` + `npm run verify-integrity`) — [`CATALOG.md`](CATALOG.md) § Before ship PR step 7.
+4. **Skill dependency-graph check (mandatory on every skill edit):** When fixing, updating, or editing a skill under `.agents/skills/ws-*`, consult `bin/skill-dependencies.json` (plus package membership) to identify the skill's callers and callees, verify their contracts (inputs, outputs, scripts, file conventions) still hold against the change, and either update them atomically in the same change or record explicit follow-ups. Regenerate integrity data (`npm run generate-integrity` + `npm run verify-integrity`) and run the harness checks (`ws-check-harness` / `node test/test-harness-clean.js`) over the whole affected skill set. Worked example: changing the `ws-spec-list` skill triggers a check of the `ws-spec-index` skill for needed matching updates.
 
 ---
 
