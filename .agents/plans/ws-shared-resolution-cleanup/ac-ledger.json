@@ -1,0 +1,403 @@
+{
+  "schemaVersion": 1,
+  "revision": 15,
+  "workflowId": "ws-shared-resolution-cleanup",
+  "slug": "ws-shared-resolution-cleanup",
+  "specPath": ".agents/plans/ws-shared-resolution-cleanup/step-00-ws-shared-resolution-cleanup.spec.md",
+  "planIndexPath": ".agents/plans/ws-shared-resolution-cleanup/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "Every skill resolves consumer config via `{sharedDir}/config.json` with project-local precedence over global, never a hardcoded `.ws/config.json` path where a token applies — verified by grep audit over `.agents/skills/ws-*/SKILL.md`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/config-resolution.md:L121-L121",
+        ".agents/skills/ws-shared/runtime/config-resolution.md:L155-L155",
+        ".agents/skills/ws-show-harness/SKILL.md:L26-L26"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-008"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/config-resolution.md",
+          "lineStart": 121,
+          "lineEnd": 121,
+          "sha256": "434f993f9ad16863d55a2fa1e024b52384b38c54e7d2d0146a0426eaf390c312"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/config-resolution.md",
+          "lineStart": 155,
+          "lineEnd": 155,
+          "sha256": "434f993f9ad16863d55a2fa1e024b52384b38c54e7d2d0146a0426eaf390c312"
+        },
+        {
+          "path": ".agents/skills/ws-show-harness/SKILL.md",
+          "lineStart": 26,
+          "lineEnd": 26,
+          "sha256": "f1e34f801f7f1273c01c49d4bfb402a367d51a9bd498df1126533b473dffda1f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "84559abbf0b7633977ab8173e7198bba2ba77f23",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "Harness OK (upstream clean)",
+          "sourceFile": "test/test-harness-clean.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T21:27:24.502Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-84559abbf0b7633977ab8173e7198bba2ba77f23",
+        "step5-verify-20260919"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "Managed runtime references resolve via `{sharedDir}/runtime/` in consumer context and `{skillsRoot}/ws-shared/runtime/` in upstream-authoring context, with no bare `ws-shared/` shorthand in link targets — verified by `check_harness_links.cjs` and `test-harness-clean.js` with 0 findings.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/config-resolution.md:L121-L121"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/config-resolution.md",
+          "lineStart": 121,
+          "lineEnd": 121,
+          "sha256": "434f993f9ad16863d55a2fa1e024b52384b38c54e7d2d0146a0426eaf390c312"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "84559abbf0b7633977ab8173e7198bba2ba77f23",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "Harness OK (upstream clean)",
+          "sourceFile": "test/test-harness-clean.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T21:27:24.554Z"
+        },
+        {
+          "name": "OK: harness links, paths, shorthand, and routing are clean",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/check_harness_links.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T21:27:24.553Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-84559abbf0b7633977ab8173e7198bba2ba77f23",
+        "step5-verify-20260919"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "Global vs vendored resolution is explicit: `{skillsRoot}` expansion (explicit override, then project `.agents/skills`, then `{globalSkillsRoot}`) is honored in prose and scripts, and global execution checks for project `config.json` for config-dependent skills — verified by `ws-check-harness` consumer/global/hybrid cases.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs:L358-L358"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs",
+          "lineStart": 358,
+          "lineEnd": 358,
+          "sha256": "6b80de16d6f52d9b7c6fe2d2d0a0e1cb22e407a4cb16c5d3b01dfdbf650ce2ac"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "84559abbf0b7633977ab8173e7198bba2ba77f23",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "All check-harness install-mode tests passed.",
+          "sourceFile": "test/test-check-harness-install-mode.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T21:27:24.619Z"
+        },
+        {
+          "name": "All hybrid consumer-root tests passed.",
+          "sourceFile": "test/test-hybrid-consumer-root.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T21:27:24.611Z"
+        },
+        {
+          "name": "test-local-first-precedence: ok",
+          "sourceFile": "test/test-local-first-precedence.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T21:27:24.611Z"
+        },
+        {
+          "name": "test-skills-runtime-resolution: ok",
+          "sourceFile": "test/test-skills-runtime-resolution.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T21:27:24.619Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-84559abbf0b7633977ab8173e7198bba2ba77f23",
+        "step5-verify-20260919"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "`bin/` installer, `test/` gates, and site/docs describe the same layout (SoT `.agents/skills/ws-*`, project hub `.ws/`, global fallback) with no stale host-specific folder defaults — verified by `npm run test` and `ws-check-harness` green.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/skill-integrity.json:L8-L8",
+        "package.json:L23-L23"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": "bin/skill-integrity.json",
+          "lineStart": 8,
+          "lineEnd": 8,
+          "sha256": "9a85eb0d0a77cced797844a3c95423b389dbdf2d079f72ccbd3d4e54a464c39f"
+        },
+        {
+          "path": "package.json",
+          "lineStart": 23,
+          "lineEnd": 23,
+          "sha256": "923635ca1ecaa369c1a724488ef5743652a206a82771b716a2860f566fd13282"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "84559abbf0b7633977ab8173e7198bba2ba77f23",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-doc-sync: ok",
+          "sourceFile": "test/test-doc-sync.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T21:27:24.680Z"
+        },
+        {
+          "name": "test-shared-hub-paths: ok",
+          "sourceFile": "test/test-shared-hub-paths.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T21:27:24.680Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-84559abbf0b7633977ab8173e7198bba2ba77f23",
+        "step5-verify-20260919"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "Negative case: a skill invoked globally without a project hub fails closed with a `ws-configure-project` pointer instead of silently reading global config as project config — verified by a config-missing test.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs:L358-L358",
+        "test/test-global-config-missing.js:L68-L68"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-007",
+        "section-008",
+        "section-009"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs",
+          "lineStart": 358,
+          "lineEnd": 358,
+          "sha256": "6b80de16d6f52d9b7c6fe2d2d0a0e1cb22e407a4cb16c5d3b01dfdbf650ce2ac"
+        },
+        {
+          "path": "test/test-global-config-missing.js",
+          "lineStart": 68,
+          "lineEnd": 68,
+          "sha256": "04613bcba95bb78fd6bd413fb7e708ae3e83453d52d735493c8cb3ea19d09570"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "84559abbf0b7633977ab8173e7198bba2ba77f23",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-global-config-missing: ok",
+          "sourceFile": "test/test-global-config-missing.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T21:27:24.747Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-84559abbf0b7633977ab8173e7198bba2ba77f23",
+        "step5-verify-20260919"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Bare `ws-shared/MEMORY.md` shorthand without braces yields warning, prefers `{memoryDir}/MEMORY.md`.",
+      "tests": [
+        {
+          "name": "Harness OK (upstream clean)",
+          "sourceFile": "test/test-harness-clean.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T21:27:24.796Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-verify-20260919"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Token inside Markdown link target flags as broken-link finding.",
+      "tests": [
+        {
+          "name": "All check-harness link gate tests passed.",
+          "sourceFile": "test/test-check-harness-links.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T21:27:24.849Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-verify-20260919"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Globally invoked config-dependent skill with no project `.ws/config.json` must prompt `ws-configure-project`, never silently use global config.",
+      "tests": [
+        {
+          "name": "test-global-config-missing: ok",
+          "sourceFile": "test/test-global-config-missing.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T21:27:24.902Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-verify-20260919"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "pre-step6",
+    "score": 10,
+    "earnedUnits": 50,
+    "totalUnits": 50,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-19T21:28:31.248Z"
+  }
+}
