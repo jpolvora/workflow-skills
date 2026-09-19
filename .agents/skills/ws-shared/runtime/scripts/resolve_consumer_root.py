@@ -334,7 +334,8 @@ def require_project_config(context: dict) -> dict:
     example never counts. Returns the context unchanged on success.
     """
     root = Path(context.get("repo_root") or Path.cwd()).resolve()
-    project_config = root / HUB_CONFIG
+    shared = Path(context.get("shared_dir") or root / HUB_REL).resolve()
+    project_config = shared / "config.json"
     usable = (
         bool(context)
         and not context.get("config_error")

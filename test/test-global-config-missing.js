@@ -184,6 +184,33 @@ function makeGlobalWithoutHub() {
   check(good.status === 0, 'probe with a project hub still succeeds');
 }
 
+// 6. Explicit shared-dir override: a valid config only under
+// WORKFLOW_SKILLS_SHARED_DIR (no <repo>/.ws/config.json) must pass the gate
+// through requireProjectHub: true; the inverse (override without config)
+// must fail closed.
+{
+  const consumer = mkTmp('ws-gcm-shared-');
+  const shared = mkTmp('ws-gcm-shared-hub-');
+  write(path.join(shared, 'config.json'), JSON.stringify({ project: { name: 'custom-hub' } }));
+  const pass = withEnv(
+    { WORKFLOW_SKILLS_SHARED_DIR: shared, WORKFLOW_SKILLS_GLOBAL_DIR: mkTmp('ws-gcm-noglobal3-') },
+    () => resolver.resolveConsumerContext({ repoRoot: consumer, requireProjectHub: true }),
+  );
+  check(pass && pass.config && pass.config.project && pass.config.project.name === 'custom-hub', 'valid config under WORKFLOW_SKILLS_SHARED_DIR passes the gate via requireProjectHub');
+  const emptyShared = mkTmp('ws-gcm-shared-empty-');
+  let error2 = null;
+  try {
+    withEnv(
+      { WORKFLOW_SKILLS_SHARED_DIR: emptyShared },
+      () => resolver.resolveConsumerContext({ repoRoot: consumer, requireProjectHub: true }),
+    );
+  } catch (err) {
+    error2 = err;
+  }
+  check(error2 !== null, 'override without config.json fails closed');
+  check(/ws-configure-project/.test(String(error2 && error2.message)), 'override-miss error points at ws-configure-project');
+}
+
 for (const dir of tmpRoots) fs.rmSync(dir, { recursive: true, force: true });
 if (failures > 0) {
   console.error(`\n${failures} failure(s)`);

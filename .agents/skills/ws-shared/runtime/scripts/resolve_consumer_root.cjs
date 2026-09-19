@@ -360,7 +360,7 @@ function resolveConfiguredPath(repoRoot, value, fallback) {
 // with no read/validation error (the seeded templates example never counts). Returns the context unchanged on success.
 function requireProjectConfig(context) {
   const root = path.resolve((context && context.repoRoot) || process.cwd());
-  const projectConfigPath = path.join(root, HUB_CONFIG);
+  const projectConfigPath = path.join(path.resolve((context && context.sharedDir) || path.join(root, HUB_REL)), 'config.json');
   const usable =
     !!context &&
     !context.configError &&
