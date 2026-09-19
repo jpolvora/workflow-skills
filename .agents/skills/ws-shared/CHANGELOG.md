@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-19 09:08] Agent: Muse Code
+- **Prompt**: us-348 worker (standard): host capabilities detect tools & cache (Steps 0-8, ship PR, no merge).
+- **Done**: Brainstorm refine-and-implement; tokens doc + tool map + probe script + tools/host-dispatch edits + test-host-capabilities.js; verify 10/10; review clean; sabotage bit+restored; full npm run test green; bump 0.4.39 to 0.4.40; G2 6edf5be8 + delivery commit; PR to main.
+- **Result**: AC1-AC5 delivered, NS1-NS4 asserted, harness-clean 0 findings, integrity v0.4.40 verified. Learning: recorded trap 2026-09-19-dashed-cli-flag-normalization (failure reflection: dashed CLI flags silently ignored until test caught it).
+
 ### [2026-09-18 16:45] Agent: Muse Code
 - **Prompt**: us-347 close (ws-goal-fix-pr orchestrator dispatch).
 - **Done**: Verify 10/10, review clean, testing PASS; delivery commit with refined plan; status completed, ship to PR next.
