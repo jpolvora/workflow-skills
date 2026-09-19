@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "bb83853ca1c9d6b4819349bab11030e38a592dcef5caf39806a1c3053520b4cd",
+  "fullPackageDigest": "364d49956fd5a051d4573066fb2a90f0cb4af875057a27191deb616d16b044ef",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -14,7 +14,7 @@
       "runtime/autoload.md": "2ad6e41750e75c5894716a659cc6ceac6152cf310c142dac7d8eb5e66301fcbc",
       "runtime/CATALOG.md": "04ebe2bac21119a06af1214454a4ba128220d282a47f2cb29ca1499c3fd7984f",
       "runtime/config-resolution.md": "22506f387a7784defcd576861dfa483a13b43faf67e4ef89d8834eff042a86e2",
-      "runtime/config.schema.json": "0bc40f9ff1c83f5452ebf42336f7e9715fe220acc30df9f8460bf459da260b74",
+      "runtime/config.schema.json": "bfb26a0d84ebecfffb390aabf627376ec2096d126226843c4838cb7232a67641",
       "runtime/CROSS-PLATFORM.md": "1790b12b2c2add0942a2544c2c8e75f1aa794410e6861b84c052583954074d27",
       "runtime/evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
       "runtime/gates.md": "e547792f503feb4bdcd7997cac928d2d6cff767fd23508c3fe93f7372df27ff3",
@@ -30,7 +30,7 @@
       "runtime/scripts/ac_counts.cjs": "60f38cfd14d7ce914d292027eac808cd0d98ab2ef686b8892e8a125a14d92e63",
       "runtime/scripts/compile_host_subagents.cjs": "0dda22723abe39d55c85147b6c09da603e4f0b368a5032f180f8548488803abc",
       "runtime/scripts/Edit-Config.bat": "ab204e94f425d9cdc279d19ae046c19f65ab7f52212e99852094ea1d479b42a6",
-      "runtime/scripts/Edit-WorkflowSkillsConfig.ps1": "40b758e893513034e41fb9205b39fceaaa8c82777b7ece32d1c54d64a00abead",
+      "runtime/scripts/Edit-WorkflowSkillsConfig.ps1": "8368754807843c5e2ae5da5504060c57083f93d0f5be5dd01aa0aefcb4574d7a",
       "runtime/scripts/extract_frontmatter_field.cjs": "41513cc12a7b7a1af7313b4111b86ca318c6d522351650945295e29c3e1b6a63",
       "runtime/scripts/http_retry.cjs": "5a78b6bc9137a081fc4b5293c1ac60d447d13c29faa8c2a1a3aa779340af7600",
       "runtime/scripts/http_retry.py": "a0f742b2d2116d7da25578cc9f633f607e1fa3175b482df21cfe848965f4a42b",
@@ -56,11 +56,11 @@
       "runtime/tools.md": "bf063c5871a98d82db92a1f672f59e36f2193a28dcf74679420dde82c28478aa",
       "runtime/workflow-state.schema.json": "2e42d794bc4c54a4241d3130c1d8db6d47f4aa41cfb2e65e42bfeb933fba4ab9",
       "templates/CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
-      "templates/config.json.example": "4604a864c6ba4a0ccf422c4052eae73d47391c6e1f13b0ad7f33a2cc0f6590d5",
+      "templates/config.json.example": "5907dc39852fc346d3b38e50416a4f288be9394a4ad18bc1534f78d9684200c6",
       "templates/MEMORY.md.template": "1a604cb2184c9c54cfb24a2da547d3664bc5d4d8e713ffa937c3c3083c21340d",
       "templates/STACK.md.example": "64f4765864305e0a2fb1e21b70676f7d5c23f9ffede3f526d49435134fa1924e"
     },
-    "skillDigest": "f06577df2d48ca0a9e4c219f06e8f8b27cf905ce83a1b6b48fceba6faad1417f"
+    "skillDigest": "d8a5c8930c28c4e09d82a0dcc67af39b53720a851d134026fd6fd58febd3424b"
   },
   "packageVersion": "0.4.41",
   "skills": {
@@ -249,11 +249,12 @@
         "evals/evals.json": "54799c81d862cd53298216cdfcc8e9a3537da550ddf81fd6d96d93de5176fee2",
         "examples.md": "5055b3dfb95fcc0a3e63fbbeb02a01a6d8bad17ede237ec0e7a130a31b036e69",
         "references/audit-report-template.md": "9c8f11b2ebe6c00cd89a9b00208cf128d62b338ba1cc71c3710deca83603d39a",
+        "references/host-adapters.md": "6f1a977d1edbfaa0ff90917274be57011440c8ec4872479e645a4fb4e135b99d",
         "references/upstream-issue-template.md": "ab0c45d7e23b3cf78e4a05dd7923dff7e8fe8db2b80d49a8c83015a5ac59a311",
-        "scripts/monitor_snapshot.cjs": "a56863465cf24e24eca83b6ac85aec5672519c34447c9ecc15f3893e5e35f57e",
-        "SKILL.md": "aaadbc976501eeaf3195c114fa4a8013f3f708895006936d2e98965a6053442d"
+        "scripts/monitor_snapshot.cjs": "6f90eeacca6ceef364c05acd8e9989fa28002b2211cec6cec796dfbe5c861b86",
+        "SKILL.md": "d04955c8b9442903938a5e55be61b37d957dd906f114a3a3771b4f59203eedd0"
       },
-      "skillDigest": "9bbdc8479ae21860d18a3becd9fe44ebd9c8473838917db45700e20cb8018583"
+      "skillDigest": "8f8f12f219396f412f62c366dcb564d443675e21a8937b0a423ada67cb8cd6a3"
     },
     "ws-plan-interview": {
       "files": {

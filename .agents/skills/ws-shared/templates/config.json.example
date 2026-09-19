@@ -332,6 +332,13 @@
     "canonicalFiles": []
   },
 
+  "monitor": {
+    "_comment": "Opt-in ws-monitor host transcript discovery (us-356). discoverHostTranscripts default false (zero host-store reads); hostHome overrides the home used for discovery/sanitizing (CI/sandbox); transcriptRoots adds explicit roots.",
+    "discoverHostTranscripts": false,
+    "hostHome": "",
+    "transcriptRoots": []
+  },
+
   "specMemo": {
     "_comment": "External spec-memo vault bridge (ws-spec-memo). enableSpecMemoIntegration: true routes memory/traps to memo MCP/CLI. enableMemoryFiles: true routes memory to local memory/*.md and MEMORY.md. Both can be true (dual-mode) or false (disabled). When boolean flags are absent, resolveMemoryRouting derives them from specMemo.mode (local|vault|hybrid|disabled); explicit flags always win. Legacy enabled without mode still resolves.",
     "enabled": false,
