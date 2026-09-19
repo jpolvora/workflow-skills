@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "194f80c096ae1b917a3844781fcfa4e524f5b301c026d224f8d7749a44e8483d",
+  "fullPackageDigest": "c0e8447d624fba5d10a2c6792b034d35431a098c4f26823f42f8c6f5ec343d6f",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -513,7 +513,7 @@
         "scripts/merge_verify_review.cjs": "27fc8cde96e46edadc32f45a6ee124293fadbbc59456120bb255bac810760cf9",
         "scripts/plan_index.cjs": "5aeb212dbeaa77b0089f1043b02b9f1b8c3fcaf4fc4834e0c02172de68aaf274",
         "scripts/search_plan_history.cjs": "a090d41a44c70deb5d3731881cab39491ea6ebc65a88ca702ee071ee4a447c76",
-        "scripts/step_coordinator.cjs": "602c84d89c903d12be5e42c9cd2bf3d0169c68c457edb76890e0bca9c54d4fe0",
+        "scripts/step_coordinator.cjs": "2d67f41dba8c38bb671c5f3d40081d67eb5cfaeb130ba8de0198624fb0688b35",
         "scripts/update_state.cjs": "4e43d98f5cf421843a8a3e260e4dc3e7faa69d0d803002df73744ef73ca46fe4",
         "scripts/update_state.py": "963c79a3442b7f663c47309f2c625b6635cb51b8552902ba2081c819b8492894",
         "scripts/validate_state.cjs": "09f08af273165ff23edc9ae0ae27d2d2fe14bf2ff33bcabd4ae5b074cfa4576b",
@@ -525,7 +525,7 @@
         "STEP-DISPATCH.md": "f61827148631839613dc38e71a7c82b0d356a311809eea7f363300271cc35d83",
         "ws-spec-to-pr-run-test.md": "3136ad5c11dc243ae802f1c44408b86bc9d53921ee8eed3c471d47fb940660c8"
       },
-      "skillDigest": "21aa4490172cfa8b8bec0057377e725f45fdbc372a927b1e9118fc3d79f3ac72"
+      "skillDigest": "af1adfa005f3b03b215a53308f4f4c1811922320fdfaf5a0570a42356d9f6a44"
     },
     "ws-spec-to-pr-lite": {
       "files": {

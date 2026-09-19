@@ -132,6 +132,37 @@ function emitTelemetry(telemetryFile, context, state, pipeline, type, fields) {
   return event;
 }
 
+function countTelemetryLines(file) {
+  try {
+    return fs.readFileSync(file, 'utf8').split('\n').filter((line) => line.trim()).length;
+  } catch {
+    return 0;
+  }
+}
+
+// Count update_state op events (dispatch/finish/gate-bypass) appended after the
+// line baseline. Each worker op bumps state.revision once and appends exactly one
+// op event; malformed lines are skipped individually so one corrupt line cannot
+// nuke the count, and coordinator events (baton_*/runner_*) never match the filter.
+function countWorkerOps(file, baseline) {
+  let lines;
+  try {
+    lines = fs.readFileSync(file, 'utf8').split('\n').filter((line) => line.trim()).slice(Math.max(0, Number(baseline) || 0));
+  } catch {
+    return 0;
+  }
+  let count = 0;
+  for (const line of lines) {
+    try {
+      const type = JSON.parse(line).type;
+      if (type === 'dispatch' || type === 'finish' || type === 'gate-bypass') count += 1;
+    } catch {
+      // ignore malformed line
+    }
+  }
+  return count;
+}
+
 function chunkGateOptions(options, maxPerQuestion = 3) {
   const list = [...options];
   const pages = [];
@@ -592,6 +623,7 @@ async function runCoordinator(argv) {
     emitTelemetry(telemetryFile, context, loadStateDisk(jsonPath, mdPath).state, pipeline, 'runner_spawned', {
       step: currentStep, holder: runnerId, attempt,
     });
+    const telemetryBaseline = countTelemetryLines(telemetryFile);
     let result;
     try {
       result = await spawnWorker({ cmd: argv.cmd, args: argv.args, cwd: repoRoot, env: runner.env, timeoutSeconds: runner.timeoutSeconds });
@@ -667,7 +699,16 @@ async function runCoordinator(argv) {
 
     // Post-exit verification: revision guard + advancement + artifacts.
     const after = loadStateDisk(jsonPath, mdPath).state;
-    if (Number(after.revision || 0) > beforeClaimRevision + 2 || Number(after.revision || 0) < beforeClaimRevision + 1) {
+    // Every legitimate worker write goes through update_state, which bumps the
+    // revision once and appends exactly one dispatch/finish event per op; the
+    // coordinator claim is the only other writer. Derive the allowed delta from
+    // the events actually recorded this turn instead of a fixed +2 window (a
+    // plain dispatch + finish is already +3 relative to the pre-claim revision).
+    // The +1 slack covers a suppressed duplicate/idempotent finish, which bumps
+    // the revision without appending an event.
+    const workerWrites = countWorkerOps(telemetryFile, telemetryBaseline);
+    const revisionDelta = Number(after.revision || 0) - beforeClaimRevision;
+    if (revisionDelta < 1 || revisionDelta - 1 > workerWrites + 1) {
       process.stderr.write(`ERROR: state revision changed underfoot on step ${currentStep} (${beforeClaimRevision} -> ${after.revision}) (STATE_CHANGED_UNDERFOOT)\n`);
       return { exitCode: EXIT_UNDERFOOT };
     }
@@ -782,4 +823,6 @@ module.exports = {
   buildBatonEvent,
   runCoordinator,
   releaseOwnBaton,
+  countTelemetryLines,
+  countWorkerOps,
 };

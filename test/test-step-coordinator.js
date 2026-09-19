@@ -298,6 +298,47 @@ function workerCommand(fixture, timeoutSeconds = 60) {
   if (!/STATE_CHANGED_UNDERFOOT/.test(`${result.stdout || ''}${result.stderr || ''}`)) throw new Error('NS6 must report the named error');
 }
 
+// Revision guard derives its allowance from the turn's op events: a worker that
+// emits dispatch (+1) then finish (+1) lands at +3 over the pre-claim revision
+// and must advance (fixed +2 window would abort with exit 4).
+{
+  const repo = makeRepo({
+    currentStep: 4, completedSteps: [0, 1, 2, 3],
+    stepRunners: { 4: 'runner-a' }, runners: { 'runner-a': workerCommand('worker-dispatch-finish.cjs') },
+  });
+  const result = runCoordinator(repo);
+  if (result.status !== 0) throw new Error(`dispatch+finish should exit 0, got ${result.status}: ${result.stderr || result.stdout}`);
+  if (/STATE_CHANGED_UNDERFOOT/.test(`${result.stdout || ''}${result.stderr || ''}`)) throw new Error('dispatch+finish must not trip the underfoot guard');
+  const state = readState(repo);
+  if (state.status !== 'completed' || !state.handoffs['4']) throw new Error('dispatch+finish did not reach terminal status');
+  const opTypes = readTelemetry(repo).map((event) => event.type).filter((type) => type === 'dispatch' || type === 'finish');
+  if (opTypes.length !== 2) throw new Error(`dispatch+finish must record exactly 2 op events, got ${opTypes.join(',')}`);
+}
+
+// countWorkerOps counts only post-baseline op events and skips malformed lines.
+{
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'baton-ops-'));
+  tempRoots.push(dir);
+  const file = path.join(dir, 'telemetry.jsonl');
+  const lines = [
+    '{"type":"baton_claimed"}',
+    '{"type":"dispatch"}',
+    '{"type":"runner_spawned"}',
+    'NOT-JSON{{{',
+    '{"type":"dispatch"}',
+    '{"type":"runner_exited"}',
+    '{"type":"finish"}',
+    '{"type":"gate-bypass"}',
+    '{"type":"baton_released"}',
+  ];
+  write(file, `${lines.join('\n')}\n`);
+  if (coordinator.countTelemetryLines(file) !== lines.length) throw new Error('countTelemetryLines must count non-empty lines');
+  if (coordinator.countTelemetryLines(path.join(dir, 'missing.jsonl')) !== 0) throw new Error('countTelemetryLines must return 0 for a missing file');
+  if (coordinator.countWorkerOps(file, 3) !== 3) throw new Error('countWorkerOps must count post-baseline dispatch/finish/gate-bypass only');
+  if (coordinator.countWorkerOps(file, 0) !== 4) throw new Error('countWorkerOps with baseline 0 must include the pre-spawn dispatch');
+  if (coordinator.countWorkerOps(path.join(dir, 'missing.jsonl'), 0) !== 0) throw new Error('countWorkerOps must return 0 for a missing file');
+}
+
 // AC10: unmapped steps are never spawned; the coordinator only observes.
 {
   const repo = makeRepo({
