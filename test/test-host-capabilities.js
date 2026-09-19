@@ -235,6 +235,36 @@ function main() {
     'REG rewritten cache entry keeps the declared tool',
   );
 
+  // REG re-probe preserves data the probe does not own (binding extras like
+  // supportedModels) and previously detected tools it has no new info about.
+  const preserveCache = path.join(tmp, 'preserve-capabilities.json');
+  const preserveKey = 'custom-host-zzz::model-1';
+  fs.writeFileSync(
+    preserveCache,
+    `${JSON.stringify({ [preserveKey]: {
+      binding: { askQuestionTool: 'none', subagentTool: 'task', backgroundTaskTool: 'none', browserTool: 'none', supportedModels: ['composer-2.5'] },
+      capabilities: { readFile: 'read', writeFile: 'write', editFile: 'edit', shellExec: 'bash', dispatchAgent: 'task', askQuestion: 'question', browserVerify: 'none' },
+      hostShape: 'opencode-like', knownShape: true, probedAt: '2026-01-01T00:00:00.000Z', hostAdapterMode: 'auto',
+    } }, null, 2)}\n`,
+    'utf8',
+  );
+  const rPreserve = probe(['--key', preserveKey, '--declare', 'readFile=custom_reader'], preserveCache);
+  assert(rPreserve.status === 0, 'REG preserving re-probe exits 0');
+  const preserved = JSON.parse(fs.readFileSync(preserveCache, 'utf8'))[preserveKey];
+  assert(
+    JSON.parse(rPreserve.stdout.trim()).capabilities.readFile === 'custom_reader',
+    'REG preserving re-probe applies the declared tool',
+  );
+  assert(
+    preserved.capabilities.writeFile === 'write' && preserved.capabilities.dispatchAgent === 'task',
+    'REG preserving re-probe keeps previously detected tools (no minimal degrade)',
+  );
+  assert(
+    Array.isArray(preserved.binding.supportedModels)
+      && preserved.binding.supportedModels[0] === 'composer-2.5',
+    'REG preserving re-probe keeps binding.supportedModels the probe never emits',
+  );
+
   // REG unknown flags fail loudly instead of silently keeping defaults.
   const rUnknownFlag = cp.spawnSync(
     process.execPath,

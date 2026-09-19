@@ -131,18 +131,27 @@ function main() {
   const shapeEntry = shapes[args.hostShape || inferredShape] || null;
   const declared = parseDeclared(args.declare);
 
+  // Re-probes must not discard data this probe does not own (e.g. binding
+  // extras like supportedModels) or degrade previously detected tools the
+  // current invocation has no new information about.
+  const priorEntry = (cachedEntry && typeof cachedEntry === 'object') ? cachedEntry : {};
+  const priorBinding = (priorEntry.binding && typeof priorEntry.binding === 'object') ? priorEntry.binding : {};
+  const priorCaps = (priorEntry.capabilities && typeof priorEntry.capabilities === 'object') ? priorEntry.capabilities : {};
+
   const capabilities = {};
   for (const token of TOKENS) {
     if (declared[token]) {
       capabilities[token] = declared[token];
       continue;
     }
-    const variants = (shapeEntry && shapeEntry[token]) || [];
-    if (token === 'shellExec' && variants.length === 0) {
-      capabilities[token] = MINIMAL[token];
+    if (shapeEntry) {
+      const variants = shapeEntry[token] || [];
+      capabilities[token] = variants.length > 0 ? variants[0] : MINIMAL[token];
       continue;
     }
-    capabilities[token] = variants.length > 0 ? variants[0] : MINIMAL[token];
+    capabilities[token] = (typeof priorCaps[token] === 'string' && priorCaps[token])
+      ? priorCaps[token]
+      : MINIMAL[token];
   }
 
   const first = (names) => (Array.isArray(names) && names.length > 0 ? names[0] : 'none');
@@ -156,10 +165,11 @@ function main() {
 
   const effectiveShape = args.hostShape || inferredShape || 'generic';
   cache[key] = {
-    binding,
+    // Preserve fields this probe does not own (e.g. supportedModels) and refresh tool bindings.
+    binding: { ...priorBinding, ...binding },
     capabilities,
-    hostShape: shapeEntry ? effectiveShape : 'generic',
-    knownShape: Boolean(shapeEntry),
+    hostShape: shapeEntry ? effectiveShape : (priorEntry.hostShape || 'generic'),
+    knownShape: Boolean(shapeEntry) || priorEntry.knownShape === true,
     probedAt: startedAt,
     hostAdapterMode: 'auto',
   };
