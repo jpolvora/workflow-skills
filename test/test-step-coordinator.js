@@ -2,6 +2,7 @@
  * Step baton coordinator run loop (AC7, AC9-AC14; NS2, NS3, NS5, NS6).
  * Run: node test/test-step-coordinator.js
  */
+import crypto from 'crypto';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -382,6 +383,86 @@ function workerCommand(fixture, timeoutSeconds = 60) {
   skipped.status = 'skipped';
   const allowed = coordinator.verifyAdvancement({ ...base, afterState: { currentStep: 5, completedSteps: [0, 1, 2, 3, 4], handoffs: { 4: skipped } } });
   if (!allowed.advanced) throw new Error(`skipped handoff must still advance: ${allowed.detail}`);
+}
+
+// verifyAdvancement: reason-gated skips waive the artifact exactly when pre-advance does.
+{
+  const repo = makeRepo({ currentStep: 3, completedSteps: [0, 1, 2], stepRunners: {}, runners: {} });
+  const skipped = handoffFor(3, repo.slug, 'wf-coord');
+  skipped.status = 'skipped';
+  const waived = coordinator.verifyAdvancement({
+    usDir: repo.usDir, slug: repo.slug, pipeline: 'standard', step: 3, beforeCurrentStep: 3,
+    afterState: {
+      slug: repo.slug, workflowId: 'wf-coord', currentStep: 4, completedSteps: [0, 1, 2, 3],
+      skippedSteps: [{ step: 3, reason: 'dag-disabled', evidence: 'enableDag false' }],
+      handoffs: { 3: skipped },
+    },
+  });
+  if (!waived.advanced) throw new Error(`dag-disabled skip must waive plan.exec: ${waived.detail}`);
+  // interview-not-required (step 2) is waived too — same class beyond the reported anchors.
+  const skipped2 = handoffFor(2, repo.slug, 'wf-coord');
+  skipped2.status = 'skipped';
+  const waived2 = coordinator.verifyAdvancement({
+    usDir: repo.usDir, slug: repo.slug, pipeline: 'standard', step: 2, beforeCurrentStep: 2,
+    afterState: {
+      slug: repo.slug, workflowId: 'wf-coord', currentStep: 3, completedSteps: [0, 1, 2],
+      skippedSteps: [{ step: 2, reason: 'interview-not-required', evidence: '' }],
+      handoffs: { 2: skipped2 },
+    },
+  });
+  if (!waived2.advanced) throw new Error(`interview-not-required skip must waive step-02 artifacts: ${waived2.detail}`);
+  // Negative control: a skipped step with no canonical waiver still demands its artifact.
+  const repo5 = makeRepo({ currentStep: 5, completedSteps: [0, 1, 2, 3, 4], stepRunners: {}, runners: {} });
+  const skipped5 = handoffFor(5, repo5.slug, 'wf-coord');
+  skipped5.status = 'skipped';
+  const demanded = coordinator.verifyAdvancement({
+    usDir: repo5.usDir, slug: repo5.slug, pipeline: 'standard', step: 5, beforeCurrentStep: 5,
+    afterState: {
+      slug: repo5.slug, workflowId: 'wf-coord', currentStep: 6, completedSteps: [0, 1, 2, 3, 4, 5],
+      skippedSteps: [{ step: 5, reason: 'dag-disabled', evidence: '' }],
+      handoffs: { 5: skipped5 },
+    },
+  });
+  if (demanded.advanced || demanded.reason !== 'missing-artifact') {
+    throw new Error(`unwaived skip must still demand its artifact: ${JSON.stringify(demanded)}`);
+  }
+}
+
+function assertIndexFresh(repo) {
+  const indexFile = path.join(repo.root, '.agents/plans/index.json');
+  if (!fs.existsSync(indexFile)) throw new Error('coordinator writes must refresh the plans index row');
+  const index = JSON.parse(fs.readFileSync(indexFile, 'utf8'));
+  const row = (index.workflows || []).find((item) => item.workflowId === 'wf-coord');
+  if (!row) throw new Error('plans index must contain the coordinator workflow row');
+  const jsonText = fs.readFileSync(repo.stateFile, 'utf8');
+  const digest = crypto.createHash('sha256').update(jsonText).digest('hex');
+  if (row.stateSha256 !== digest) throw new Error(`index row hash must match state bytes (row ${row.stateSha256} vs bytes ${digest})`);
+}
+
+// releaseOwnBaton with index sync keeps the plans index row hash fresh (hermetic case).
+{
+  const repo = makeRepo({
+    currentStep: 4, completedSteps: [0, 1, 2, 3], stepRunners: {}, runners: {},
+    baton: { holder: 'runner-a', step: 4, claimedAt: new Date().toISOString(), leaseUntil: new Date(Date.now() + 600000).toISOString(), revision: 7 },
+  });
+  const mdPath = path.join(repo.usDir, 'wf-coord.state.md');
+  coordinator.releaseOwnBaton(mdPath, repo.stateFile, 'runner-a', {
+    context: { repoRoot: repo.root, config: { plans: { dir: '.agents/plans' } } },
+    pipeline: 'lite', maxStep: 5,
+  });
+  assertIndexFresh(repo);
+}
+
+// Blocked runs leave a fresh index row (persist path is the last writer).
+{
+  const repo = makeRepo({
+    currentStep: 4, completedSteps: [0, 1, 2, 3],
+    stepRunners: { 4: 'runner-a' }, runners: { 'runner-a': workerCommand('worker-failed-finish.cjs') },
+    stepBaton: { pollIntervalSeconds: 30, maxAttempts: 1 },
+  });
+  const result = runCoordinator(repo, ['--once']);
+  if (result.status !== 2) throw new Error(`failed finish should exit 2 (blocked), got ${result.status}: ${result.stderr || result.stdout}`);
+  assertIndexFresh(repo);
 }
 
 console.log('PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)');

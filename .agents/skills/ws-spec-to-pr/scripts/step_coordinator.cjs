@@ -11,6 +11,8 @@ const {
   syncStateDualWrite,
   parseFrontmatter,
   finishArtifactNames,
+  requiredAdvanceArtifacts,
+  refreshPlansIndexForState,
   resolvePackageVersion,
 } = require('../../ws-shared/runtime/scripts/workflow_state.cjs');
 const {
@@ -340,7 +342,11 @@ function verifyAdvancement({ usDir, slug, pipeline, step, beforeCurrentStep, aft
     return { advanced: false, reason: 'missing-finish', detail: `currentStep did not advance (still ${afterStep})` };
   }
   const expected = finishArtifactNames(slug, Number(step), pipeline);
-  const missing = expected.filter((name) => !isNonEmptyFile(path.join(usDir, name)));
+  // A reason-gated skip legitimately produces no artifact exactly when the canonical
+  // pre-advance validator waives it; reuse that oracle so the two gates cannot drift.
+  const skipWaived = handoff.status === 'skipped'
+    && requiredAdvanceArtifacts(pipeline, Number(step) + 1, afterState).length === 0;
+  const missing = skipWaived ? [] : expected.filter((name) => !isNonEmptyFile(path.join(usDir, name)));
   if (missing.length) {
     return { advanced: false, reason: 'missing-artifact', detail: `expected step artifacts missing: ${missing.join(', ')}` };
   }
@@ -417,9 +423,11 @@ async function runCoordinator(argv) {
   const attempts = new Map();
   let turns = 0;
 
+  const indexSync = { context, pipeline, maxStep: MAX_STEP[pipeline] ?? 9 };
   const persist = (state) => {
     state.revision = Number(state.revision || 0) + 1;
     syncStateDualWrite(mdPath, state, { body: null, jsonText: null });
+    refreshPlansIndexForState(context, state, { ...indexSync, stateFile: mdPath });
   };
 
   for (;;) {
@@ -517,6 +525,7 @@ async function runCoordinator(argv) {
         });
         fresh.revision = Number(fresh.revision || 0) + 1;
         syncStateDualWrite(mdPath, fresh, { body: null, jsonText: null });
+        refreshPlansIndexForState(context, fresh, { ...indexSync, stateFile: mdPath });
         const reread = loadStateDisk(jsonPath, mdPath).state;
         if (Number(reread?.baton?.revision) !== claimed.revision || reread?.baton?.holder !== runnerId) {
           throw createError('BATON_REVISION_CONFLICT', 'baton claim lost the write-then-reread check');
@@ -598,7 +607,7 @@ async function runCoordinator(argv) {
         persist(blocked);
         return { exitCode: EXIT_BLOCKED };
       }
-      releaseOwnBaton(mdPath, jsonPath, runnerId);
+      releaseOwnBaton(mdPath, jsonPath, runnerId, indexSync);
       sleepSync(computeBackoffMs(attempt, 100, 2000));
       continue;
     }
@@ -616,7 +625,7 @@ async function runCoordinator(argv) {
         persist(blocked);
         return { exitCode: EXIT_BLOCKED };
       }
-      releaseOwnBaton(mdPath, jsonPath, runnerId);
+      releaseOwnBaton(mdPath, jsonPath, runnerId, indexSync);
       sleepSync(computeBackoffMs(attempt, 100, 2000));
       continue;
     }
@@ -632,7 +641,7 @@ async function runCoordinator(argv) {
         persist(blocked);
         return { exitCode: EXIT_BLOCKED };
       }
-      releaseOwnBaton(mdPath, jsonPath, runnerId);
+      releaseOwnBaton(mdPath, jsonPath, runnerId, indexSync);
       sleepSync(computeBackoffMs(attempt, 100, 2000));
       continue;
     }
@@ -648,7 +657,7 @@ async function runCoordinator(argv) {
         persist(blocked);
         return { exitCode: EXIT_BLOCKED };
       }
-      releaseOwnBaton(mdPath, jsonPath, runnerId);
+      releaseOwnBaton(mdPath, jsonPath, runnerId, indexSync);
       sleepSync(computeBackoffMs(attempt, 100, 2000));
       continue;
     }
@@ -684,14 +693,14 @@ async function runCoordinator(argv) {
         persist(blocked);
         return { exitCode: EXIT_BLOCKED };
       }
-      releaseOwnBaton(mdPath, jsonPath, runnerId);
+      releaseOwnBaton(mdPath, jsonPath, runnerId, indexSync);
       sleepSync(computeBackoffMs(attempt, 100, 2000));
       continue;
     }
     // Success: force-clear a stale held baton, emit release, mirror, reset counter.
     const settled = loadStateDisk(jsonPath, mdPath).state;
     if (settled?.baton?.holder) {
-      releaseOwnBaton(mdPath, jsonPath, runnerId);
+      releaseOwnBaton(mdPath, jsonPath, runnerId, indexSync);
     }
     attempts.delete(currentStep);
     const released = loadStateDisk(jsonPath, mdPath).state;
@@ -708,7 +717,7 @@ async function runCoordinator(argv) {
   }
 }
 
-function releaseOwnBaton(mdPath, jsonPath, holder) {
+function releaseOwnBaton(mdPath, jsonPath, holder, indexSync) {
   try {
     const disk = loadStateDisk(jsonPath, mdPath);
     const state = disk.state;
@@ -724,6 +733,9 @@ function releaseOwnBaton(mdPath, jsonPath, holder) {
     };
     state.revision = Number(state.revision || 0) + 1;
     syncStateDualWrite(mdPath, state, { body: null, jsonText: null });
+    if (indexSync?.context) {
+      refreshPlansIndexForState(indexSync.context, state, { ...indexSync, stateFile: mdPath });
+    }
   } catch {
     // best effort: next claim will surface the held lease
   }

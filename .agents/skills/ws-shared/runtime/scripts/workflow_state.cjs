@@ -1072,6 +1072,21 @@ function updatePlansIndex(context, run, timestamp) {
   return { file, index };
 }
 
+function refreshPlansIndexForState(context, state, options = {}) {
+  const flow = options.pipeline || state.workflowType || 'standard';
+  const max = options.maxStep !== undefined ? Number(options.maxStep) : (flow === 'lite' ? 5 : 9);
+  const statePath = state.statePath
+    || (options.stateFile ? toRepoRelative(context.repoRoot, options.stateFile) : null)
+    || '';
+  const effective = state.statePath ? state : { ...state, statePath };
+  const stateHash = sha256(canonicalStateJson(state));
+  const medians = estimatedSteps(context, flow, max);
+  const run = buildRun(effective, flow, max, {}, stateHash, medians);
+  const index = updatePlansIndex(context, run, options.timestamp || new Date().toISOString());
+  atomicWrite(index.file, `${JSON.stringify(index.index, null, 2)}\n`);
+  return index;
+}
+
 function validateGateDecision(value) {
   if (!value) return null;
   const parsed = typeof value === 'string' ? JSON.parse(value) : value;
@@ -1693,7 +1708,11 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   atomicWrite(index.file, `${JSON.stringify(index.index, null, 2)}\n`);
   if (operation === 'finish') {
     for (const artifact of finishArtifactNames(state.slug, step, pipeline)) {
-      stampStepArtifact(path.join(paths.usDir, artifact), state, step, stepFinishStatus);
+      // The artifact's canonical step is encoded in its file name (e.g. lite step 3
+      // produces step-06-*.review.md); never stamp the producing step number.
+      const match = artifact.match(/^step-(\d+)-/);
+      const canonicalStep = match ? Number(match[1]) : Number(step);
+      stampStepArtifact(path.join(paths.usDir, artifact), state, canonicalStep, stepFinishStatus);
     }
   }
   validateSnapshot({ stateFile: absoluteState, indexFile: index.file, context, maxStep, pipeline });
@@ -2105,6 +2124,8 @@ module.exports = {
   resolveStepStampStatus,
   stampStepArtifact,
   finishArtifactNames,
+  requiredAdvanceArtifacts,
+  refreshPlansIndexForState,
   atomicWrite,
   syncStateDualWrite,
   gitTrackedSet,

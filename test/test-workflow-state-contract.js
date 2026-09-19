@@ -603,6 +603,10 @@ assert.strictEqual(run(liteValidate, [liteStateRel, '--pre-advance', '2', '--rep
 stampArtifact(path.join(liteRoot, '.agents/plans/lite'), 'step-06-lite.review.md', 6, 'lite', 'wf-lite');
 assert.strictEqual(run(liteUpdate, ['dispatch', liteStateRel, '--step', '2', '--timestamp', '2026-08-21T20:00:08.000Z', ...liteCommon]).status, 0);
 assert.strictEqual(run(liteUpdate, ['finish', liteStateRel, '--step', '2', '--timestamp', '2026-08-21T20:00:09.000Z', ...liteCommon]).status, 0);
+assert.strictEqual(run(liteUpdate, ['dispatch', liteStateRel, '--step', '3', '--timestamp', '2026-08-21T20:00:09.500Z', ...liteCommon]).status, 0);
+assert.strictEqual(run(liteUpdate, ['finish', liteStateRel, '--step', '3', '--timestamp', '2026-08-21T20:00:09.800Z', ...liteCommon]).status, 0);
+const liteReviewAfterFinish = fs.readFileSync(path.join(liteRoot, '.agents/plans/lite/step-06-lite.review.md'), 'utf8');
+assert.match(liteReviewAfterFinish, /^step: 6$/m, 'lite finish --step 3 must keep the review canonical step 6');
 assert.strictEqual(run(liteValidate, [liteStateRel, '--pre-advance', '4', '--repo-root', liteRoot]).status, 0, 'lite pre-advance 4 uses step-06 review, not step-03 exec');
 assert.notStrictEqual(run(liteValidate, [liteStateRel, '--pre-advance', '5', '--repo-root', liteRoot]).status, 0, 'lite pre-advance 5 requires ship result');
 stampArtifact(path.join(liteRoot, '.agents/plans/lite'), 'step-08-lite.result.md', 8, 'lite', 'wf-lite');
