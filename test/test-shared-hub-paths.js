@@ -73,6 +73,7 @@ const ALLOW = [
   // --- Repo mechanics ---
   { file: '.gitattributes', substr: 'eol=lf', reason: 'line-ending attribute, not a path reference' },
   { file: '.gitignore', substr: 'SoT tracks runtime/ and templates/', reason: 'comment describing the upstream SoT layout' },
+  { file: 'test/test-shared-hub-paths.js', substr: 'ws-shared', reason: "sweep's own patterns and allowlist literals" },
 ];
 
 function collect(pattern) {
