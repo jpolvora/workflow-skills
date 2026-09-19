@@ -6,6 +6,33 @@ To add new learnings, create a separate markdown file under `.agents/skills/ws-s
 
 ---
 
+### [2026-09-19] Ship must bump the release version when the branch version equals the base
+- **Layer**: `devops`
+- **Module**: `release ship`
+- **Severity**: `High`
+- **PathPattern**: `package.json`
+- **Scenario / Context**: Step 8 pushed a package-content PR with `package.json` 0.4.38 identical to the merge base, reasoning that a prior merged worker PR had shipped without a bump. The review bot filed a WARNING (score 7): the repo release contract requires the shipping PR to carry the strict bump, and prior release runs did bump inside the run. Fixed with `npm run build-site:bump` plus integrity regen in the fix-pr round.
+- **DO NOT**: Rationalize skipping a mandatory release rule with merged-PR precedent anecdotes; an equal version on a package-content branch is a real defect even when an earlier PR got away with it.
+- **INSTEAD DO**: When the branch version equals the merge-base version on a package-content PR, run `npm run build-site:bump`, then `npm run generate-integrity` plus `verify-integrity`, and commit the bump with ship-scope changes — one patch bump per release PR.
+
+### [2026-09-19] Guard classifiers must not coerce null to zero
+- **Layer**: `harness`
+- **Module**: `ws-spec-to-pr worker turn guard`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/*.cjs`
+- **Scenario / Context**: The worker-turn guard used `Number(toolCalls) === 0` to detect preview-only turns; `Number(null) === 0` misclassified envelope-less CLI fixture turns (unknown count) as zero-tool-call failures and broke the coordinator suite. Fixed to strict `toolCalls === 0` with unknown falling through to the artifact check.
+- **DO NOT**: Compare possibly-null counts with `Number(x) === 0` in fail-closed classifiers; do not treat "unknown" as "zero".
+- **INSTEAD DO**: Use strict `x === 0` for the zero case and route null/unknown to the next observable signal (artifact presence); pin both branches with regression assertions.
+
+### [2026-09-19] Canonical single-source contract files need the new wording plus a same-batch test pin
+- **Layer**: `harness`
+- **Module**: `ws-spec-to-pr worker turn rules`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/WORKER-TURN-RULES.md`
+- **Scenario / Context**: The continuation mandate was added to the quoting dispatch builders (`STEP-DISPATCH.md`, `PROTOCOLS.md` addendum, lite block) but not to `WORKER-TURN-RULES.md`, which declares itself the single source of truth that builders quote without divergent copies. Contract tests pinned the builders only, so the drift was unguarded. The review bot filed a SUGGESTION with two sibling occurrences. Fixed by adding the mandate sentence to the canonical Turn rule section and pinning it with a same-batch assertion in `test-worker-turn-guard.js`.
+- **DO NOT**: Add contract wording to quoting builders without updating the declared canonical file; do not pin new wording in tests against the builders alone.
+- **INSTEAD DO**: Add the sentence to the canonical file first, then pin it with a same-batch regression assertion against the canonical path alongside the builder assertions.
+
 ### [2026-09-18] user-gate option-count portability cap
 - **Layer**: `harness`
 - **Module**: `ws-shared runtime gates / setup resume`

@@ -324,7 +324,7 @@ End with ```step-output(status, step, artifacts, files_touched, verification, re
 **VerboseMode addendum** (append to the body **only** when `defaults.verboseMode` is explicit `true`; omitted/`false` → skip):
 
 ```markdown
-VerboseMode: analyze THIS run (skill contract, state, files on disk, skip rules, config). Before any tool call, print `Starting step {STEP} ({Label}):` plus 4–8 `*` bullets covering goal, lookups, actions, conditional writes, and how the next step becomes ready. Then do the work. Do not copy a canned list. Turn rule: the FIRST response must hold BOTH that preview AND at least 2 tool calls — stopping right after the preview is failed delivery, never a complete turn.
+VerboseMode: analyze THIS run (skill contract, state, files on disk, skip rules, config). Before any tool call, print `Starting step {STEP} ({Label}):` plus 4–8 `*` bullets covering goal, lookups, actions, conditional writes, and how the next step becomes ready. Then do the work — then immediately continue with tool calls in the same response; never end the turn after the preview. Do not copy a canned list. Turn rule: the FIRST response must hold BOTH that preview AND at least 2 tool calls — stopping right after the preview is failed delivery, never a complete turn.
 ```
 
 

@@ -119,6 +119,10 @@ assert(
   !liteSkill.includes('verbose_step_preview.cjs'),
   'ws-spec-to-pr-lite SKILL.md does not invoke a canned preview script',
 );
+assert(
+  liteSkill.includes('then immediately continue with tool calls in the same response; never end the turn after the preview'),
+  'us-353 sibling: ws-spec-to-pr-lite verbose block pins the same-response continuation mandate',
+);
 
 const specToPrSkill = read('.agents/skills/ws-spec-to-pr/SKILL.md');
 assert(

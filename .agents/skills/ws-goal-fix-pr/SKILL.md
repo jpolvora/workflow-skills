@@ -1,7 +1,7 @@
 ---
 name: ws-goal-fix-pr
 description: PR thread convergence loop — orchestrates iterative fix-pr rounds until all open PR review threads are resolved and checks pass.
-version: 0.4.38
+version: 0.4.39
 disable-model-invocation: true
 invocation_names:
   - goal-fix-pr
@@ -64,6 +64,23 @@ This loop applies the same revision-guarded / fail-closed / resume contract as [
 | **Resume re-arms objective (AC8)** | Resuming the fix loop (after pause/stop) **re-arms the objective** (re-state PR number + success criterion) and **re-initializes the blocked/counter round state**, continuing from the current PR state. |
 | **Runtime storage (AC7–AC8)** | Use the same `$RUNTIME_DIR/revision` and `$RUNTIME_DIR/blocked-reason` contract as [`ws-goal-loop`](../ws-goal-loop/TEMPLATES.md): prefer `{us-dir}/.runtime` (`{plansDir}/{slug}/.runtime/`). Never OS temp. Never skill-folder `runs/` under `{skillsRoot}` or `{globalSkillsRoot}` (hybrid overwrite + SoT leak). Fix-round revision increments once per accepted round; blocked reason tracks consecutive identical failure reasons. |
 
+## Loop liveness watchdog
+
+Parent-side detection for a wedged loop session: a batch worker result is delivered but no follow-up model turn ever runs (observed once on PR #350 — loop log silent after batch-1 delivery, task recorded `completed` with no continuation; the resume loop then printed only the VerboseMode preview with zero tool calls).
+
+- **Signals:** round-log freshness — no new `{reviewsDir}/PR-<N>-round-*.md` after a batch worker completes — plus a stalled read-only state poll (no `currentStep`/revision advance and a `dispatch` telemetry event with no matching `finish`, per the Parent contract in [`WORKER-TURN-RULES.md`](../ws-spec-to-pr/WORKER-TURN-RULES.md)). Host-side corroboration when the host exposes run introspection: session-log mtime silence after worker-result delivery while the roster still reports the session `running`.
+- **Checks:** on a suspected wedge, run a fresh provider `list-threads` plus `check-pr-status` before deciding. Contradictory states (`running` vs `not_ready` vs not-active follow-up/cancel rejections) confirm the wedge — do not keep waiting on the wedged session.
+- **Resume-takeover procedure:** dispatch a fresh loop carrying the full handoff brief (PR number, success criterion, completed rounds, remaining threads). If the resume also stalls, drive the remaining batches inline on the parent: fresh `list-threads` + `check-pr-status` per round, one fresh `fixPrPlan` → `fixPrExec` worker per batch, per-batch audit + telemetry, merge only on `activeThreads == 0` with green checks. Do not ping a fix worker mid-batch — a mid-batch ping terminated a worker turn early; use read-only state polls for progress.
+- **State-path dispatch:** loop-path `update_state` calls always pass the state path, never a bare workflow id:
+
+```bash
+node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs dispatch \
+  {plansDir}/{slug}/{workflow-id}.state.md --step 9 --model {modelName} \
+  --jsonl-out {plansDir}/{slug}/telemetry.jsonl
+```
+
+A bare workflow id fails with `state file not found`.
+
 ## Steps
 
 1. **Initialize**: restate parameters (above) and resolve `providers.scm`.
@@ -94,7 +111,7 @@ This loop applies the same revision-guarded / fail-closed / resume contract as [
 
 The skill session is the orchestrator: it runs initialize, convergence check, heartbeat wait, re-check, pre-merge gate, and final report inline, and never authors plan gates or product fixes itself when dispatch is available.
 
-- **Fresh worker per round batch:** one fresh worker per round batch runs the ordered `fixPrPlan` → `fixPrExec` pair inside that worker; that worker is never reused for another round or substep instance. Dispatch through the portable `dispatch-agent` alias with discrete context pointers only (PR number, batch thread ids, gate path, round number) — never full transcripts.
+- **Fresh worker per round batch:** one fresh worker per round batch runs the ordered `fixPrPlan` → `fixPrExec` pair inside that worker; that worker is never reused for another round or substep instance. Dispatch through the portable `dispatch-agent` alias with discrete context pointers only (PR number, batch thread ids, gate path, round number) — never full transcripts. **Bounded handoff:** the worker writes its full output to the round artifact (`{reviewsDir}/PR-<N>-round-*.md`) and returns a summary plus artifact pointers only — never the full transcript — so an oversized delivered result cannot wedge the loop's follow-up turn.
 - **Lite / inline posture:** when the caller is `ws-spec-to-pr-lite` Step 5 (or any inline-only run), do not dispatch a batch worker and ignore both role model keys; run the ordered `fixPrPlan` → `fixPrExec` pair inline on the captured session model with identical gate/learning contracts and no internal role telemetry, matching [`ws-fix-pr`](../ws-fix-pr/SKILL.md) § Internal model roles and the lite inline contract.
 - **Ownership split:** on the standard dispatch path, the batch worker owns everything inside the `ws-fix-pr` batch scope (plan gate, fixes, proactive evidence, verify, round report, resolve, push). The session owns the goal-loop steps plus the final report, and never duplicates the worker's per-round `Learning:` write — it records the worker-reported `Learning:` titles in the round log. On the Lite / inline posture and the Tier 3 path (no batch worker) the session owns the batch scope itself under identical gate/learning contracts.
 - **Model routing:** capture the active session model once before the first round batch and resolve both role models from that stable fallback. The [ws-fix-pr](../ws-fix-pr/SKILL.md) "Internal model roles" table is the normative chain; [STEP-DISPATCH](../ws-spec-to-pr/STEP-DISPATCH.md) prose is an abbreviated pointer only:
@@ -113,6 +130,7 @@ The skill session is the orchestrator: it runs initialize, convergence check, he
 - Exit immediately on a fresh clean result; do not arm a redundant heartbeat.
 - Keep fixes, resolutions, commits, and pushes inside the explicitly authorized loop.
 - Require one complete plan gate and one execute/proactive evidence set for each Act-round batch before resolve or push; never call `finish --step 9` from an internal role.
+- Collect each batch worker's returned summary plus artifact pointers (bounded handoff — full output stays in the round artifact); on a suspected wedge run the Loop liveness watchdog (round-log freshness / session-log mtime checks, then resume-takeover; do not ping a fix worker mid-batch).
 - After every Act round, on the standard dispatch path collect the worker-reported `Learning:` titles into the round log; the batch worker owns the per-round `ws-self-learning` write (and pattern files when those flags are on), and the session never duplicates it. On the Lite / inline posture and the Tier 3 path (no batch worker) the session owns that per-round write itself under the same rule. `Learning: N/A` stays forbidden when the round fixed a valid reviewer/CI defect.
 - Return rounds, stop condition, final active-thread evidence, remaining blockers, and `Learning:` titles.
 - Handoff: recorded under `state.handoffs` — see [`PROTOCOLS.md`](../ws-spec-to-pr/PROTOCOLS.md) § Base Prompt Prefix.
