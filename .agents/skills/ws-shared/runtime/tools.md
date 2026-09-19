@@ -101,9 +101,11 @@ Config override: `defaults.hostAdapter.mode` (`auto` default; `native-tool` | `c
 Skill bodies name portable capability tokens instead of shell equivalents: `{readFile}`,
 `{writeFile}`, `{editFile}`, `{shellExec}`, `{dispatchAgent}`, `{askQuestion}`, `{browserVerify}`.
 Vocabulary, ordering, and effective-resolution precedence live in
-[`host-capability-tokens.md`](host-capability-tokens.md) — query the cached host-capabilities
-entry for the current `hostId::orchestratorModel` key before choosing how to act, and prefer the
-bound native tool over shelling out for the same operation.
+[`host-capability-tokens.md`](host-capability-tokens.md) — query the `capabilities` map of the
+cached host-capabilities entry for the current `hostId::orchestratorModel` key (the probe also
+mirrors the dispatch aliases under `binding`) before choosing how to act, and prefer the bound
+native tool over shelling out for the same operation. Keep the entry schema in
+[`host-dispatch.md`](host-dispatch.md) §4 in sync (`capabilities`, `hostShape`, `knownShape`).
 
 ### Host-tool binding & dispatch tiers (single contract)
 

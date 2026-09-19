@@ -156,11 +156,24 @@ function main() {
 
   const first = (names) => (Array.isArray(names) && names.length > 0 ? names[0] : 'none');
   const shapeNames = (token) => (shapeEntry && shapeEntry[token]) || [];
+  const priorBound = (alias) => (
+    typeof priorBinding[alias] === 'string' && priorBinding[alias] && priorBinding[alias] !== 'none'
+      ? priorBinding[alias]
+      : null
+  );
+  // Mirror the capabilities fallback: a known shape with no variant is fresh
+  // negative information ('none'); with no shape and no declaration, keep the
+  // previously bound alias instead of degrading to 'none'.
+  const aliasFor = (token, alias) => {
+    if (declared[token]) return declared[token];
+    if (shapeEntry) return first(shapeNames(token)) || 'none';
+    return priorBound(alias) || 'none';
+  };
   const binding = {
-    askQuestionTool: declared.askQuestion || first(shapeNames('askQuestion')) || 'none',
-    subagentTool: declared.dispatchAgent || first(shapeNames('dispatchAgent')) || 'none',
-    backgroundTaskTool: 'none',
-    browserTool: declared.browserVerify || first(shapeNames('browserVerify')) || 'none',
+    askQuestionTool: aliasFor('askQuestion', 'askQuestionTool'),
+    subagentTool: aliasFor('dispatchAgent', 'subagentTool'),
+    backgroundTaskTool: priorBound('backgroundTaskTool') || 'none',
+    browserTool: aliasFor('browserVerify', 'browserTool'),
   };
 
   const effectiveShape = args.hostShape || inferredShape || 'generic';

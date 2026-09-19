@@ -1,8 +1,9 @@
 # Host Capability Tokens
 
 Portable capability vocabulary for tool choice. Skill bodies reference these tokens (capability
-names only — never host product tool IDs) and resolve them per host at runtime through the cached
-binding in `{sharedDir}/host-capabilities.json`. Resolution protocol: [`host-dispatch.md`](host-dispatch.md)
+names only — never host product tool IDs) and resolve them per host at runtime through the
+`capabilities` map of the cached entry in `{sharedDir}/host-capabilities.json` (dispatch aliases
+are mirrored under `binding`). Resolution protocol: [`host-dispatch.md`](host-dispatch.md)
 §2. Probe script: [`scripts/probe_host_capabilities.cjs`](scripts/probe_host_capabilities.cjs).
 Pre-mapped host shapes: [`host-tool-map.json`](host-tool-map.json).
 

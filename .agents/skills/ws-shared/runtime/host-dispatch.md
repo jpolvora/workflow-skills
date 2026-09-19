@@ -122,7 +122,7 @@ Legacy named host values (if present in older configs) resolve to neutral tiers:
 
 ### Probe cache file (`{sharedDir}/host-capabilities.json`)
 
-Consumer-local, gitignored (see `hub.gitignore`), never shipped upstream. JSON object mapping each `hostId::orchestratorModel` key to `{ binding: { askQuestionTool, subagentTool, backgroundTaskTool, browserTool, supportedModels?: string[] }, probedAt: ISO, hostAdapterMode: string }`. `supportedModels` is optional host capability data used for fail-soft model selection. Key segments are runtime data values; skill contract tables keep neutral alias names only.
+Consumer-local, gitignored (see `hub.gitignore`), never shipped upstream. JSON object mapping each `hostId::orchestratorModel` key to `{ binding: { askQuestionTool, subagentTool, backgroundTaskTool, browserTool, supportedModels?: string[] }, capabilities: { readFile, writeFile, editFile, shellExec, dispatchAgent, askQuestion, browserVerify }, hostShape: string, knownShape: boolean, probedAt: ISO, hostAdapterMode: string }`. `supportedModels` is optional host capability data used for fail-soft model selection. Key segments are runtime data values; skill contract tables keep neutral alias names only.
 
 ---
 

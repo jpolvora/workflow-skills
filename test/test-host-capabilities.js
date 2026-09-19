@@ -264,6 +264,10 @@ function main() {
       && preserved.binding.supportedModels[0] === 'composer-2.5',
     'REG preserving re-probe keeps binding.supportedModels the probe never emits',
   );
+  assert(
+    preserved.binding.subagentTool === 'task',
+    'REG preserving re-probe keeps the bound dispatch alias (capabilities/binding consistent)',
+  );
 
   // REG unknown flags fail loudly instead of silently keeping defaults.
   const rUnknownFlag = cp.spawnSync(
@@ -277,6 +281,16 @@ function main() {
   const dispatch = fs.readFileSync(HOST_DISPATCH, 'utf8');
   assert(dispatch.includes('probe_host_capabilities.cjs'), 'host-dispatch.md references the probe script');
   assert(/no per-step re-probing/i.test(dispatch), 'host-dispatch.md states the reuse rule');
+
+  // REG hub docs name the capabilities field so the documented schema cannot drift.
+  assert(
+    dispatch.includes('capabilities: { readFile'),
+    'REG host-dispatch.md §4 schema documents the capabilities map',
+  );
+  assert(
+    toolsMd.includes('`capabilities` map of the'),
+    'REG tools.md names the capabilities map of the cached entry',
+  );
 
   fs.rmSync(tmp, { recursive: true, force: true });
 
