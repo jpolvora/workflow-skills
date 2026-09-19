@@ -46,7 +46,7 @@ When skills are executed from a global install (`$HOME/.agents/skills` or `WORKF
 
 1. Project-local `{sharedDir}/AGENTS.md` (`.ws/AGENTS.md`) — the installer seeds a thin local pointer here when the file is missing, so the configured `rules.harness` path still resolves.
 2. Global `{globalSkillsRoot}/ws-shared/AGENTS.md` (`~/.agents/skills` or `WORKFLOW_SKILLS_GLOBAL_DIR`) — documented fallback when no local file exists.
-3. Skill bodies via `resolveSkillMdPath` / `resolveConsumerContext` (`{sharedDir}/runtime/scripts/resolve_consumer_root.cjs`): project `{skillsRoot}/ws-<id>/SKILL.md` first, then `{globalSkillsRoot}/ws-<id>/SKILL.md`.
+3. Skill bodies via `resolveSkillMdPath` / `resolveConsumerContext` (`{skillsRoot}/ws-shared/runtime/scripts/resolve_consumer_root.cjs`, global fallback `{globalSkillsRoot}/ws-shared/runtime/scripts/resolve_consumer_root.cjs`): project `{skillsRoot}/ws-<id>/SKILL.md` first, then `{globalSkillsRoot}/ws-<id>/SKILL.md`. Managed skill scripts resolve the same way (local skills install, then global); the project consumer hub (`{sharedDir}`, default `.ws/`) holds only local config variable files (`config.json`, `STACK.md`, memory, changelog) and is not a managed-runtime source.
 
 An agent reading the configured `rules.harness` path succeeds without manual fallback when either the local pointer or the global hub is present.
 
@@ -64,7 +64,7 @@ not depend on whether the entrypoint script was loaded from the global hub.
 |------|-----------|------------|-----------------|
 | 1 | Config | `{sharedDir}/config.json` | `{globalSkillsRoot}/ws-shared/config.json` |
 | 2 | Skill bodies and projections | `{skillsRoot}/ws-<id>/SKILL.md` | `{globalSkillsRoot}/ws-<id>/SKILL.md` |
-| 3 | Shared runtime and references | `{sharedDir}/runtime/*` | `{globalSkillsRoot}/ws-shared/runtime/*` |
+| 3 | Shared runtime and references | `{skillsRoot}/ws-shared/runtime/*` | `{globalSkillsRoot}/ws-shared/runtime/*` |
 | 4 | Harness and rules | `{sharedDir}/AGENTS.md` | `{globalSkillsRoot}/ws-shared/AGENTS.md` |
 | 5 | Specs directory | `{specsDir}` (`plans.specsDir`) | Default `.agents/specs` |
 | 6 | Plans, state, telemetry, worktrees | `{plansDir}` plus workflow state/telemetry/worktree paths | Default `.agents/plans` |

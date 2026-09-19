@@ -95,14 +95,17 @@ const brokenCtx = resolver.resolveConsumerContext({ repoRoot: broken, scriptFile
 check(brokenCtx.configError != null, 'malformed local config surfaces configError');
 check(String(brokenCtx.configPath).includes('config.json'), 'malformed local config keeps the local path as source of record');
 
-// 5. Local skill bodies and runtime win over global copies.
+// 5. Local skill bodies and skills-tree runtime win over global copies.
 write(path.join(consumer, '.agents/skills/ws-demo/SKILL.md'), '# local body\n');
 write(path.join(globalHub, 'ws-demo/SKILL.md'), '# global body\n');
 const skillPath = resolver.resolveSkillMdPath({ repoRoot: consumer, globalSkillsRoot: globalHub }, 'ws-demo');
 check(String(skillPath).includes('.agents'), 'local skill body wins over global copy');
-fs.mkdirSync(path.join(consumer, '.ws/runtime'), { recursive: true });
+write(path.join(consumer, '.agents/skills/ws-shared/runtime/placeholder.txt'), 'local runtime marker\n');
 const runtimeCtx = resolver.resolveConsumerContext({ repoRoot: consumer, scriptFile: path.join(globalHub, 'ws-x/scripts/y.cjs') });
-check(String(runtimeCtx.runtimeSource).includes('.ws'), 'local runtime wins over global runtime');
+check(String(runtimeCtx.runtimeSource).includes('.agents'), 'local skills-tree runtime wins over global runtime');
+fs.mkdirSync(path.join(consumer, '.ws/runtime'), { recursive: true });
+const legacyCtx = resolver.resolveConsumerContext({ repoRoot: consumer, scriptFile: path.join(globalHub, 'ws-x/scripts/y.cjs') });
+check(String(legacyCtx.runtimeSource).includes('.agents'), 'legacy .ws/runtime never shadows the skills-tree runtime');
 
 // 6. Local specs/plans directories win in the resolved diagnostic.
 const diagnostic = resolver.resolveResolvedContext({ repoRoot: consumer, scriptFile: path.join(globalHub, 'ws-x/scripts/y.cjs'), slug: 'demo', workflowId: 'wf-demo' });
