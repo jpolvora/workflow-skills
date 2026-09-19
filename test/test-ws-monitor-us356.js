@@ -310,12 +310,18 @@ fs.utimesSync(sessionFile, new Date(Date.now() - 3600_000), new Date(Date.now() 
   }
 }
 
-// AC4: strictly read-only against live stores (WAL-safe copy-then-read).
+// AC4: strictly read-only against live stores (in-place read-only tails;
+// SQLite stores are never copied, locked, or modified).
 {
   const dbFile = path.join(museSessionsDir, `${slug}-live`, 'state.vscdb');
   const walFile = `${dbFile}-wal`;
   write(dbFile, 'sqlite-format-3-binary-payload');
   write(walFile, `wal-frame-payload ${workflowId} ${slug}\nfatal error WALONLY-BOOM-159753 wal-only-marker-line\n`);
+  // Large store created before the entries snapshot so later runs also cover
+  // multi-megabyte in-place tails.
+  const bigDb = path.join(museSessionsDir, `${slug}-live`, 'big-store.vscdb');
+  fs.writeFileSync(bigDb, Buffer.alloc(2 * 1024 * 1024, 7));
+  write(`${bigDb}-wal`, `wal tail ${workflowId} ${slug} big-wal-marker\n`);
   const beforeDb = sha256(dbFile);
   const beforeWal = sha256(walFile);
   const beforeEntries = fs.readdirSync(path.dirname(dbFile)).sort().join(',');
@@ -334,6 +340,23 @@ fs.utimesSync(sessionFile, new Date(Date.now() - 3600_000), new Date(Date.now() 
   const merged = readBoundedTailText(dbFile, 4096);
   if (!merged.text.includes('wal-only-marker-line')) {
     throw new Error('us-356 AC4: WAL-only content invisible to tail read');
+  }
+  // Bounded SQLite handling: tail reads never copy the store, however large.
+  const fsMod = require('fs');
+  const origCopy = fsMod.copyFileSync;
+  let copies = 0;
+  fsMod.copyFileSync = (...args) => { copies += 1; return origCopy(...args); };
+  try {
+    const bigRead = readBoundedTailText(bigDb, 4096);
+    if (copies !== 0) throw new Error(`us-356 AC4: sqlite tail read copied the store (${copies} copies)`);
+    if (!bigRead.text.includes('big-wal-marker')) {
+      throw new Error('us-356 AC4: large-store WAL tail invisible');
+    }
+    if (!(bigRead.bytesRead <= 3 * 4096)) {
+      throw new Error(`us-356 AC4: unbounded sqlite tail (${bigRead.bytesRead} bytes)`);
+    }
+  } finally {
+    fsMod.copyFileSync = origCopy;
   }
   const result = run(['--repo-root', root, '--discover-host-transcripts', '--slug', slug, '--json'], root);
   if (result.status !== 0) throw new Error(result.stderr || result.stdout);

@@ -192,39 +192,27 @@ function sanitizeReportPath(reportPath, home = os.homedir()) {
   return collapseHomePaths(String(reportPath || ''), home).replace(/<home>/g, '~');
 }
 
-// Strictly read-only, bounded tail read. SQLite-family stores (Cursor
-// workspaceStorage, other app databases) are copy-then-read through a temp
-// copy so a live WAL database is never locked or modified. Returns
+// Strictly read-only, bounded tail read. Files are opened read-only and only
+// the recent-window tail is read — SQLite-family stores (Cursor
+// workspaceStorage, other app databases) are never copied, locked, or
+// modified; their -wal/-shm sidecars are tail-read in place alongside the
+// primary so WAL-only commits stay visible. Returns
 // { text, bytesRead, reason } — reason is set when the store is unreadable.
 function readBoundedTailText(file, maxBytes = TRANSCRIPT_LIMITS.maxBytesPerFile) {
   const base = path.basename(String(file)).toLowerCase();
-  // SQLite sidecars are co-copied with the primary file, never read standalone.
+  // SQLite sidecars are tail-read in place with the primary, never standalone.
   if (base.endsWith('-wal') || base.endsWith('-shm')) {
     return { text: null, bytesRead: 0, reason: 'wal-sidecar-skipped' };
   }
   const isDatabase = SQLITE_FAMILY.test(base);
-  let target = file;
-  let tempCopy = null;
+  // us-356: never copy whole stores — tail-read the live files through
+  // read-only fds (no locks, no temp churn, bounded by maxBytes per part).
+  const tailTargets = isDatabase
+    ? [file, `${file}-wal`, `${file}-shm`].filter((candidate) => fs.existsSync(candidate))
+    : [file];
+  const tailChunks = [];
+  let totalBytes = 0;
   try {
-    if (isDatabase) {
-      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-monitor-'));
-      tempCopy = path.join(tempDir, path.basename(String(file)));
-      fs.copyFileSync(file, tempCopy);
-      for (const suffix of ['-wal', '-shm']) {
-        const sibling = `${file}${suffix}`;
-        if (fs.existsSync(sibling)) {
-          fs.copyFileSync(sibling, `${tempCopy}${suffix}`);
-        }
-      }
-      target = tempCopy;
-    }
-    // us-356: tail-read the primary plus any co-copied sidecars so WAL-only
-    // commits stay visible to pattern matching without a SQLite dependency.
-    const tailTargets = isDatabase
-      ? [tempCopy, `${tempCopy}-wal`, `${tempCopy}-shm`].filter((candidate) => fs.existsSync(candidate))
-      : [target];
-    const tailChunks = [];
-    let totalBytes = 0;
     for (const tailTarget of tailTargets) {
       const handle = fs.openSync(tailTarget, 'r');
       try {
@@ -242,14 +230,6 @@ function readBoundedTailText(file, maxBytes = TRANSCRIPT_LIMITS.maxBytesPerFile)
     return { text: Buffer.concat(tailChunks).toString('utf8'), bytesRead: totalBytes, reason: null };
   } catch (error) {
     return { text: null, bytesRead: 0, reason: error.message };
-  } finally {
-    if (tempCopy) {
-      try {
-        fs.rmSync(path.dirname(tempCopy), { recursive: true, force: true });
-      } catch {
-        // Temp cleanup is best-effort; the source store is never affected.
-      }
-    }
   }
 }
 

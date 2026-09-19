@@ -99,7 +99,7 @@ Transcripts provide secondary evidence to diagnose why a subagent or orchestrato
   - **Muse**: User sessions (`~/.local/share/muse/sessions/YYYY/MM/DD/<session-id>/session.jsonl`, `$XDG_DATA_HOME` honored when set).
 - **Adapter table:** per-OS default locations for Cursor, OpenCode, Antigravity, and Muse live in `references/host-adapters.md` (adapter data, not portable contract).
 - **Transcript source:** each workflow reports `transcriptSource` (`available` with adapter + location class, or `transcript-unavailable` with reason `discovery-disabled` / `no-matching-session` / `scan-capped` when the bounded scan stopped early with zero candidates).
-- **Read-only + bounded:** SQLite-family stores are copy-then-read (WAL-safe, never locked or modified); only the recent-window tail is read under per-tick time/read caps; a session idle beyond the stall window while its workflow is active raises `worker-session-stall`.
+- **Read-only + bounded:** SQLite-family stores are tail-read in place through read-only file descriptors (WAL-safe, never copied, locked, or modified); only the recent-window tail is read under per-tick time/read caps; a session idle beyond the stall window while its workflow is active raises `worker-session-stall`.
 - **Discovery:**
   - Workspace candidate roots are auto-discovered if they exist in the repository.
   - User-level / host IDE transcript paths are scanned when passing `--discover-host-transcripts` or configured via `monitor.discoverHostTranscripts` (`monitor.hostHome` overrides the home; `monitor.transcriptRoots` adds explicit roots) or `--transcript-root <path>`.
