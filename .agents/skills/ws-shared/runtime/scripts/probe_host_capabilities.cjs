@@ -138,10 +138,22 @@ function main() {
   const priorBinding = (priorEntry.binding && typeof priorEntry.binding === 'object') ? priorEntry.binding : {};
   const priorCaps = (priorEntry.capabilities && typeof priorEntry.capabilities === 'object') ? priorEntry.capabilities : {};
 
+  // Host-declared tools outrank the static pre-map; persist them so re-probes
+  // that omit --declare (e.g. --refresh) do not downgrade live declarations.
+  const priorDeclared = {};
+  if (priorEntry.declared && typeof priorEntry.declared === 'object') {
+    for (const token of TOKENS) {
+      if (typeof priorEntry.declared[token] === 'string' && priorEntry.declared[token]) {
+        priorDeclared[token] = priorEntry.declared[token];
+      }
+    }
+  }
+  const effectiveDeclared = { ...priorDeclared, ...declared };
+
   const capabilities = {};
   for (const token of TOKENS) {
-    if (declared[token]) {
-      capabilities[token] = declared[token];
+    if (effectiveDeclared[token]) {
+      capabilities[token] = effectiveDeclared[token];
       continue;
     }
     if (shapeEntry) {
@@ -165,7 +177,7 @@ function main() {
   // negative information ('none'); with no shape and no declaration, keep the
   // previously bound alias instead of degrading to 'none'.
   const aliasFor = (token, alias) => {
-    if (declared[token]) return declared[token];
+    if (effectiveDeclared[token]) return effectiveDeclared[token];
     if (shapeEntry) return first(shapeNames(token)) || 'none';
     return priorBound(alias) || 'none';
   };
@@ -181,6 +193,7 @@ function main() {
     // Preserve fields this probe does not own (e.g. supportedModels) and refresh tool bindings.
     binding: { ...priorBinding, ...binding },
     capabilities,
+    declared: effectiveDeclared,
     hostShape: shapeEntry ? effectiveShape : (priorEntry.hostShape || 'generic'),
     knownShape: Boolean(shapeEntry) || priorEntry.knownShape === true,
     probedAt: startedAt,

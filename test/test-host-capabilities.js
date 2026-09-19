@@ -269,6 +269,32 @@ function main() {
     'REG preserving re-probe keeps the bound dispatch alias (capabilities/binding consistent)',
   );
 
+  // REG declared tools survive a later re-probe that omits --declare (known shape).
+  const rDeclareFirst = probe(
+    ['--key', 'cursor::model-declared', '--declare', 'writeFile=custom_writer'],
+    cache,
+  );
+  assert(
+    JSON.parse(rDeclareFirst.stdout.trim()).capabilities.writeFile === 'custom_writer',
+    'REG initial --declare stores the declared tool',
+  );
+  const rRefreshKept = probe(['--key', 'cursor::model-declared', '--refresh'], cache);
+  assert(rRefreshKept.status === 0, 'REG refresh re-probe exits 0');
+  const keptCaps = JSON.parse(rRefreshKept.stdout.trim()).capabilities;
+  assert(
+    keptCaps.writeFile === 'custom_writer',
+    'REG refresh without --declare keeps the persisted declaration (declared outranks map)',
+  );
+  assert(
+    keptCaps.readFile !== 'none',
+    'REG refresh still resolves non-declared tokens from the inferred shape',
+  );
+  const keptEntry = JSON.parse(fs.readFileSync(cache, 'utf8'))['cursor::model-declared'];
+  assert(
+    keptEntry.declared && keptEntry.declared.writeFile === 'custom_writer',
+    'REG entry persists the declared map across re-probes',
+  );
+
   // REG unknown flags fail loudly instead of silently keeping defaults.
   const rUnknownFlag = cp.spawnSync(
     process.execPath,

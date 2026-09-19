@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "9c28d47ce5c49b7a812393807d0c488c7eef7ed4839d1faeb4aeed8f2debea7c",
+  "fullPackageDigest": "dd20235df8877051a06cd7c8496ee127a24f96f58d0ccbb3e4879950e6da5524",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -19,7 +19,7 @@
       "runtime/evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
       "runtime/gates.md": "d265cad687bf4c92d7c724d0c5f278d82a7062da01824c4e8a0bc07aaac93d42",
       "runtime/host-capability-tokens.md": "66ccef0e08d5518954982bf36b74bc39f727ed07d4c2040090fc4a4e7085395f",
-      "runtime/host-dispatch.md": "62db30ef9bd545468c173a479d9419a50fafba8bb645de6160d5d4a17ff2b819",
+      "runtime/host-dispatch.md": "a1367a5e71e996c6054b3f906d2218fe9e7a9af017983de73112c074c0cd0485",
       "runtime/host-tool-map.json": "3d9ba399da3b049f29ca927ae3179a1618a222ab84dd25497da066c02e3bdbe0",
       "runtime/hub-layout.json": "2d018faa3180d2a2b25cdd7fd15c5cf7c2390f496d3ebe7c1c01604d3ce2f8ba",
       "runtime/plan-index.schema.json": "36df14cc8d9ba17413c456baf6550662b6218465cdf28d9981d624dac9ab4c7f",
@@ -36,7 +36,7 @@
       "runtime/scripts/http_retry.py": "a0f742b2d2116d7da25578cc9f633f607e1fa3175b482df21cfe848965f4a42b",
       "runtime/scripts/ingest_visual_attachments.cjs": "707096a3ce9adffc8d836a40f51b6e6d0ecb7e67f54672ac701571da8490deb9",
       "runtime/scripts/persist_diagnostic.cjs": "336f2bbbd1a00b8a97058628a75e0696e884f632bff519410a9ca2313fcd61d1",
-      "runtime/scripts/probe_host_capabilities.cjs": "8faf0c2d594e250f036fea8121aa2181b2ec77fdb20ee278ceb84aac390a8ce7",
+      "runtime/scripts/probe_host_capabilities.cjs": "bd1a035ad16e329b4dd6c4840ecddc82a6567c9a4bbef066f6f43bd78e67795c",
       "runtime/scripts/resolve_consumer_root.cjs": "b7b0052159bc4b26fc6abfedd1d61b05e572090af6c972f781cee2af5db611d0",
       "runtime/scripts/resolve_consumer_root.py": "ba981b12d25b43d532946d0103d2adb9f09b611769e06a01d1886b00db2a9b55",
       "runtime/scripts/retired_artifacts.cjs": "512252528056874a8f9effeab5fdc09801cee0a8e8521f41e9f9be0958fd3890",
@@ -60,7 +60,7 @@
       "templates/MEMORY.md.template": "1a604cb2184c9c54cfb24a2da547d3664bc5d4d8e713ffa937c3c3083c21340d",
       "templates/STACK.md.example": "490400ff5822fb753abff5db2d93ae63b90e00117ecc8cd976c9537b872cd398"
     },
-    "skillDigest": "f1ff684d29a29a8ee38020f6a2c0fbf7ba33cf6932888b7e3c7242f4e66a85e7"
+    "skillDigest": "ee812c5c0b9bbf7fa342ac310ae4489ffed7a32b24b0d45f56e0e92b6e566333"
   },
   "packageVersion": "0.4.40",
   "skills": {
