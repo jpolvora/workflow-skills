@@ -78,8 +78,13 @@ function main() {
   if (cache === null || typeof cache !== 'object' || Array.isArray(cache)) cache = {};
 
   const key = args.key || 'generic::unknown';
-  if (!args.refresh && cache[key] && typeof cache[key] === 'object') {
-    const payload = { ok: true, cached: true, key, capabilities: cache[key].capabilities || null };
+  const cachedEntry = cache[key];
+  const hasCapabilities = cachedEntry && typeof cachedEntry === 'object'
+    && cachedEntry.capabilities && typeof cachedEntry.capabilities === 'object';
+  // Legacy entries written before capabilities existed are treated as a miss so
+  // the probe runs once and backfills the token map instead of staying inert.
+  if (!args.refresh && hasCapabilities) {
+    const payload = { ok: true, cached: true, key, capabilities: cachedEntry.capabilities };
     output(args.json, payload, `cache hit | ${key}`);
     return 0;
   }

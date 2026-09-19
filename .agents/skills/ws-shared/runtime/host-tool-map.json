@@ -1,5 +1,5 @@
 {
-  "$comment": "Static pre-map of common host shapes to capability-token tool names. Keys are neutral host-shape names (never host product IDs in skill prose); values map capability tokens to known tool/function name variants, first entry preferred. The probe script consults this file before falling back to host-declared tools. Keep entries additive; unknown hosts resolve to generic.",
+  "$comment": "Static pre-map of common host shapes to capability-token tool names. Keys are neutral host-shape names (never host product IDs in skill prose); values map capability tokens to known tool/function name variants, first entry preferred. Host-declared tools (--declare) override this map; the map is the fallback for tokens the host does not declare. Keep entries additive; unknown hosts resolve to generic.",
   "version": 1,
   "tokens": ["readFile", "writeFile", "editFile", "shellExec", "dispatchAgent", "askQuestion", "browserVerify"],
   "shapes": {

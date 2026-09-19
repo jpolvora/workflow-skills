@@ -154,6 +154,26 @@ function main() {
     'NEG host-declared tool wins over the pre-map entry',
   );
 
+  // REG legacy-shape entries (no capabilities field) backfill instead of cache-hit.
+  const legacyCache = path.join(tmp, 'legacy-capabilities.json');
+  const legacyKey = 'legacy::model-1';
+  fs.writeFileSync(
+    legacyCache,
+    `${JSON.stringify({ [legacyKey]: { binding: { subagentTool: 'none' }, probedAt: '2026-01-01T00:00:00.000Z', hostAdapterMode: 'auto' } }, null, 2)}\n`,
+    'utf8',
+  );
+  const rLegacy = probe(['--key', legacyKey, '--host-shape', shapeA, '--probe-log', probeLog], legacyCache);
+  assert(rLegacy.status === 0, 'REG legacy entry exits 0');
+  const pLegacy = JSON.parse(rLegacy.stdout.trim());
+  assert(pLegacy.cached === false, 'REG legacy entry is treated as a miss (probe runs)');
+  const backfilled = JSON.parse(fs.readFileSync(legacyCache, 'utf8'));
+  assert(
+    backfilled[legacyKey] && backfilled[legacyKey].capabilities
+      && typeof backfilled[legacyKey].capabilities === 'object'
+      && TOKENS.every((t) => typeof backfilled[legacyKey].capabilities[t] === 'string'),
+    'REG legacy entry backfills the full capability token map',
+  );
+
   // host-dispatch.md references the probe script and the reuse rule (quoter sweep target).
   const dispatch = fs.readFileSync(HOST_DISPATCH, 'utf8');
   assert(dispatch.includes('probe_host_capabilities.cjs'), 'host-dispatch.md references the probe script');
