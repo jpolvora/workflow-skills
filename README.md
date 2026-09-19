@@ -65,6 +65,8 @@ Two delivery workflows (install independently; both share `.ws/config.json`):
 
 Fix-PR batches plan before they edit: `fixPrPlan` uses reviewer-class model resolution to write the complete gate, then `fixPrExec` uses execution-class resolution to validate and apply it. Standard keeps this inside outer Step 9; lite runs the same order inline on its current session model.
 
+Fix-PR loop execution site is configurable via `ws-goal-fix-pr.useSubAgents` in `config.json` (default `false` = inline legacy loop with zero subagent dispatches; `true` = one fresh subagent worker per round batch). One key gates the whole fix path (`ws-fix-pr`, `ws-goal-fix-pr`, `ws-ship-pr` pre-ship convergence); fix semantics are identical in both modes.
+
 Standard Step 2 emits a dedicated `step-02-{slug}.plan-interview.md` registry alongside the refined plan. If Step 5 is below the configured verify bar, `scoreAndRefine` is recorded as an explicit telemetry substep and cannot advance the workflow until re-verification passes.
 
 See **Features** above for the operating model. Gates: [`gates.md`](.agents/skills/ws-shared/runtime/gates.md). Agent contract: [`AGENTS.md`](AGENTS.md) § Dual-mode. Human FAQ: [`ws-spec-to-pr/docs/faq.md`](.agents/skills/ws-spec-to-pr/docs/faq.md). Site FAQ: [jpolvora.github.io/workflow-skills](https://jpolvora.github.io/workflow-skills#faq).

@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "8ef9fb6246bcaf934712b85f35912059423a7995724ea41b340f7f394207e24e",
+  "fullPackageDigest": "5528ffe55cc245c9f574a0758910f9f9a8966ee581f4207fccd624fe27ee34b8",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -14,7 +14,7 @@
       "runtime/autoload.md": "2ad6e41750e75c5894716a659cc6ceac6152cf310c142dac7d8eb5e66301fcbc",
       "runtime/CATALOG.md": "04ebe2bac21119a06af1214454a4ba128220d282a47f2cb29ca1499c3fd7984f",
       "runtime/config-resolution.md": "22506f387a7784defcd576861dfa483a13b43faf67e4ef89d8834eff042a86e2",
-      "runtime/config.schema.json": "2380b65c2d867380c6c8c14fdb5e9f6d0e1b6d1d332cb0f7ece70ad10704bdac",
+      "runtime/config.schema.json": "0bc40f9ff1c83f5452ebf42336f7e9715fe220acc30df9f8460bf459da260b74",
       "runtime/CROSS-PLATFORM.md": "1790b12b2c2add0942a2544c2c8e75f1aa794410e6861b84c052583954074d27",
       "runtime/evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
       "runtime/gates.md": "e547792f503feb4bdcd7997cac928d2d6cff767fd23508c3fe93f7372df27ff3",
@@ -30,7 +30,7 @@
       "runtime/scripts/ac_counts.cjs": "60f38cfd14d7ce914d292027eac808cd0d98ab2ef686b8892e8a125a14d92e63",
       "runtime/scripts/compile_host_subagents.cjs": "0dda22723abe39d55c85147b6c09da603e4f0b368a5032f180f8548488803abc",
       "runtime/scripts/Edit-Config.bat": "ab204e94f425d9cdc279d19ae046c19f65ab7f52212e99852094ea1d479b42a6",
-      "runtime/scripts/Edit-WorkflowSkillsConfig.ps1": "9e89a391f5cec03c2905e2074a0e3a2eea77108ee98fb2e5e9aba73bb1840205",
+      "runtime/scripts/Edit-WorkflowSkillsConfig.ps1": "40b758e893513034e41fb9205b39fceaaa8c82777b7ece32d1c54d64a00abead",
       "runtime/scripts/extract_frontmatter_field.cjs": "41513cc12a7b7a1af7313b4111b86ca318c6d522351650945295e29c3e1b6a63",
       "runtime/scripts/http_retry.cjs": "5a78b6bc9137a081fc4b5293c1ac60d447d13c29faa8c2a1a3aa779340af7600",
       "runtime/scripts/http_retry.py": "a0f742b2d2116d7da25578cc9f633f607e1fa3175b482df21cfe848965f4a42b",
@@ -44,7 +44,7 @@
       "runtime/scripts/step_baton.cjs": "d18f4bd9cf4720c6bf5d3322c8a143a64c94593cce480f4577341f294645d071",
       "runtime/scripts/utf8_stdio.py": "b9599c57d16f7e1d05aef96fc4f5768ae4d54e3d32c3b5a8007e0e5f3f1caa31",
       "runtime/scripts/validate_json_schema.cjs": "db5bc07614c6496ae92ad7356b6f4c26cb8df5dd72681cfa228f1c76502bed61",
-      "runtime/scripts/workflow_state.cjs": "3ca1cacb61bd8742ab711d3d810ca17aeec00e35aceca6c419ee39fadae5e69b",
+      "runtime/scripts/workflow_state.cjs": "f90d8cea87ff57682a46fc27ce1cf712b5bde7bacaecb02bad41eecfaf45b438",
       "runtime/setup.md": "b599e81cb5058a919d664d13d150213ed85aacfe6ff75ba2a3554ac24ef0a864",
       "runtime/skill-dependencies.json": "4399832c264e82b3b419bb0971abd0e3ce5bee174da8622a359434aa41a1f2c6",
       "runtime/stacks/abp-angular.md": "83b756ab70e9a81b84d724371e4bbe40715730f1241676f84e3a29a86a17c367",
@@ -56,11 +56,11 @@
       "runtime/tools.md": "bf063c5871a98d82db92a1f672f59e36f2193a28dcf74679420dde82c28478aa",
       "runtime/workflow-state.schema.json": "2e42d794bc4c54a4241d3130c1d8db6d47f4aa41cfb2e65e42bfeb933fba4ab9",
       "templates/CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
-      "templates/config.json.example": "b88d6ee8cc7d7d71444c5b0d22eef4571e9cd80464e7ea84146a99e8bd176353",
+      "templates/config.json.example": "4604a864c6ba4a0ccf422c4052eae73d47391c6e1f13b0ad7f33a2cc0f6590d5",
       "templates/MEMORY.md.template": "1a604cb2184c9c54cfb24a2da547d3664bc5d4d8e713ffa937c3c3083c21340d",
       "templates/STACK.md.example": "64f4765864305e0a2fb1e21b70676f7d5c23f9ffede3f526d49435134fa1924e"
     },
-    "skillDigest": "4246572c3fbc27fdd2c9e957a33ca89bcb907dec72633b9f38f2d1b35864f6d1"
+    "skillDigest": "0584cf9605b9defd18cf96df813425383a1608f3e3a005ce460c5ccabad3f005"
   },
   "packageVersion": "0.4.40",
   "skills": {
@@ -194,17 +194,17 @@
         "scripts/fetch_threads.cjs": "ad555cfd34e9d0e0893d514a09e2ea52ea850c8889dfdbdf888e38bf0e26e203",
         "scripts/fix_pr_azure_context.py": "6af4a5712c2dc0ce377985dc3617b7184599f6bab1741a65a1b75ff7c5c0bad8",
         "scripts/resolve_thread.cjs": "597aa82018ca462ad117a22357696411fa73daa7bf4614522ab25afb4b543c9c",
-        "SKILL.md": "f14e41318b28bbc81deb8ede17b89822073b7575fe345cfd3f38f12e0a4bc4b2"
+        "SKILL.md": "8a86a0aa3ff0cfa82c3722a33dc04b5f30cec7fb85b9b7dcca6b5c27200c665c"
       },
-      "skillDigest": "a45841c0bdd1e520afd31138136af8cddf7d6752c55b8a5c990adb6459220571"
+      "skillDigest": "6f090889f71b8f4fb01b3535f2685c7e5f9b96fc01a4bd483e4f9859917e4cc2"
     },
     "ws-goal-fix-pr": {
       "files": {
         "evals/evals.json": "0c298f37295d8820666aa7f6f7c73e3ba203abed088c4126c9d9f71c1fee31cf",
         "examples.md": "5b556ba1020dcfb084e1d3c83fc81232e048a207c6706e5ec0627b9bfbe48e76",
-        "SKILL.md": "3c6f77e42b76497e1f5877a9d2c5e27435c7c01ed6f769d1219548fa0048ff5d"
+        "SKILL.md": "c5ac4490268c576a17428fb60f471a3ddbb837630b480c851fad9a7ff687ad84"
       },
-      "skillDigest": "171b429bec99a561f5626af1d4280c11716938ab2e249aa5fc101d327cb49c09"
+      "skillDigest": "68610ae6f0a3d4565ed0c4a416d6714753b33d908175560fdb04b2dd7fce4256"
     },
     "ws-goal-loop": {
       "files": {
@@ -354,9 +354,9 @@
         "PREPARE-CHECKLIST.md": "f23603a6b7e9859a19a9ecffdd6598483d2c83f730c07f7af30ce378ff67e6f0",
         "scripts/detect-base-branch.sh": "8435a94884d1ce3653159f2ffdee12829b758c8eb69cb9481d51ff8916c756fd",
         "scripts/verify.sh": "743b74b3850dbc6ab8c3373b8fab2da45a966ca5cdeeaeebb860d93f5a524c46",
-        "SKILL.md": "eee9580e182ee3fc03dff333617a9b1ec301a38fc8805c241ea6ad1ecfef7ecf"
+        "SKILL.md": "ccd4de8f40199166ae1a7f7ff6d69fcc6244087925840c83e32de3923266da8f"
       },
-      "skillDigest": "a0ddd2ce908f180e93c4eef2af7e26d829c5bef1c1fb05c637b4df524188a99d"
+      "skillDigest": "c04d0ad762f942f5a12ba7d8d501ea065676a6e097bf2f49fcdc2bc0e18944d9"
     },
     "ws-show-harness": {
       "files": {

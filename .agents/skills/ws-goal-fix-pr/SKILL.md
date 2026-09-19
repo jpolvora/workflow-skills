@@ -135,3 +135,22 @@ The skill session is the orchestrator: it runs initialize, convergence check, he
 - Return rounds, stop condition, final active-thread evidence, remaining blockers, and `Learning:` titles.
 - Handoff: recorded under `state.handoffs` — see [`PROTOCOLS.md`](../ws-spec-to-pr/PROTOCOLS.md) § Base Prompt Prefix.
 
+## Fix-loop execution mode (`ws-goal-fix-pr.useSubAgents`, default inline)
+
+One config key selects the execution site of every Act-round batch on the fix
+path. Read `ws-goal-fix-pr.useSubAgents` from `{sharedDir}/config.json`
+(machine helper: `resolveFixPrDispatchMode` in
+`{skillsRoot}/ws-shared/runtime/scripts/workflow_state.cjs`); fix semantics are
+identical in both modes — only the execution site changes.
+
+| `useSubAgents` | Mode | Behavior |
+|----------------|------|----------|
+| absent or `false` (default) | **Inline legacy loop** | Run the ordered `fixPrPlan` → `fixPrExec` pair inline on the captured session model with identical gate/learning contracts and no internal role telemetry. Zero subagent dispatches per fix-loop run. |
+| `true` (explicit opt-in) | **Subagent dispatch** | Dispatch one fresh worker per round batch via `dispatch-agent` per § Round-batch dispatch above, with identical gate/learning contracts. |
+
+Rules: this single key gates the whole fix path — `ws-fix-pr` standalone
+batches and `ws-ship-pr` Step 6 pre-ship convergence read the same key through
+the same resolver, so there is exactly one default and no mode skew. Any
+non-boolean value fails closed to inline. This section seeds the
+one-parent-config-section-per-skill convention for skill-specific options.
+

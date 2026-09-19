@@ -1228,6 +1228,8 @@ function Populate-Sections {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'fable' -Key 'autoAudit' -LabelText 'Automatic Fable Adversarial Audit' -Type 'bool' -DefaultVal $false
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'fable' -Key 'autoDetectDomain' -LabelText 'Autodetect Domain Adapter' -Type 'bool' -DefaultVal $false
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'fable' -Key 'auditVerdictsBlockShip' -LabelText 'Audit Verdicts That Block Ship' -Type 'enum' -Options @('refuted', 'caveats', 'false') -DefaultVal 'refuted'
+
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'ws-goal-fix-pr' -Key 'useSubAgents' -LabelText 'Fix-PR Loop: Dispatch Subagents Per Round (ws-goal-fix-pr.useSubAgents)' -Type 'bool' -DefaultVal $false
             }
         }
 

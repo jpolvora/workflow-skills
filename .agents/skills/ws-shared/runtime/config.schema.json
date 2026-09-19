@@ -608,6 +608,18 @@
           "description": "REFUTED always blocks. caveats additionally blocks VERIFIED WITH CAVEATS."
         }
       }
+    },
+    "ws-goal-fix-pr": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Per-skill section for the fix-PR convergence loop (ws-goal-fix-pr). Seeds the one-parent-section-per-skill convention for skill-specific options.",
+      "properties": {
+        "useSubAgents": {
+          "type": "boolean",
+          "default": false,
+          "description": "Fix-PR plan/fix loop execution site. false (default when omitted): run the loop inline in the current turn (legacy behavior) with zero subagent dispatches. true: dispatch one fresh subagent worker per round batch (fixPrPlan then fixPrExec) as documented in ws-goal-fix-pr. One key gates the whole fix path (ws-fix-pr, ws-goal-fix-pr, ws-ship-pr pre-ship convergence); fix semantics are identical in both modes."
+        }
+      }
     }
   }
 }
