@@ -174,6 +174,58 @@ function main() {
     'REG legacy entry backfills the full capability token map',
   );
 
+  // REG documented --key-only invocation infers the host shape from the key.
+  const rKeyOnly = probe(['--key', 'cursor::model-keyonly'], cache);
+  assert(rKeyOnly.status === 0, 'REG --key-only probe exits 0');
+  const pKeyOnly = JSON.parse(rKeyOnly.stdout.trim());
+  assert(pKeyOnly.cached === false, 'REG --key-only probe runs (miss, not inert hit)');
+  assert(
+    pKeyOnly.capabilities.readFile !== 'none' && pKeyOnly.capabilities.dispatchAgent !== 'none',
+    'REG --key-only probe reaches the pre-map (native tools bound, not minimal)',
+  );
+  const storedKeyOnly = JSON.parse(fs.readFileSync(cache, 'utf8'))['cursor::model-keyonly'];
+  assert(
+    storedKeyOnly && storedKeyOnly.knownShape === true && storedKeyOnly.hostShape === 'cursor-like',
+    'REG --key-only entry records the inferred cursor-like shape',
+  );
+
+  // REG unknown host id still degrades to the minimal safe set.
+  const rKeyUnknown = probe(['--key', 'mystery-host-zzz::model-1'], cache);
+  assert(
+    JSON.parse(rKeyUnknown.stdout.trim()).capabilities.dispatchAgent === 'none',
+    'REG uninferred host id degrades to minimal (no phantom dispatch tool)',
+  );
+
+  // REG default cache resolves to the consumer shared dir (hybrid-safe).
+  const consumerRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-consumer-'));
+  fs.mkdirSync(path.join(consumerRoot, '.agents', 'skills', 'ws-shared'), { recursive: true });
+  fs.writeFileSync(
+    path.join(consumerRoot, '.agents', 'skills', 'ws-shared', 'config.json'),
+    '{}\n',
+    'utf8',
+  );
+  const rDefaultCache = cp.spawnSync(
+    process.execPath,
+    [PROBE, '--key', 'cursor::model-default-cache', '--json'],
+    { cwd: consumerRoot, encoding: 'utf-8' },
+  );
+  assert(rDefaultCache.status === 0, 'REG default-cache probe exits 0');
+  const expectedCache = path.join(consumerRoot, '.agents', 'skills', 'ws-shared', 'host-capabilities.json');
+  assert(fs.existsSync(expectedCache), 'REG default cache lands in the consumer shared dir');
+  assert(
+    JSON.parse(fs.readFileSync(expectedCache, 'utf8'))['cursor::model-default-cache'],
+    'REG default cache holds the probed key',
+  );
+  fs.rmSync(consumerRoot, { recursive: true, force: true });
+
+  // REG unknown flags fail loudly instead of silently keeping defaults.
+  const rUnknownFlag = cp.spawnSync(
+    process.execPath,
+    [PROBE, '--cache', cache, '--bogus-flag', '--json'],
+    { cwd: REPO_ROOT, encoding: 'utf-8' },
+  );
+  assert(rUnknownFlag.status === 2, 'REG unknown flag exits 2 (fail loudly)');
+
   // host-dispatch.md references the probe script and the reuse rule (quoter sweep target).
   const dispatch = fs.readFileSync(HOST_DISPATCH, 'utf8');
   assert(dispatch.includes('probe_host_capabilities.cjs'), 'host-dispatch.md references the probe script');

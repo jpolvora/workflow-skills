@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "fab78ad4b8b75490465973f1c15d887516aa2ea7a40729db9ba5e9e930484df5",
+  "fullPackageDigest": "f48864154c00ae0e88b9eaeefd64a5fc6b9bccac55d2616dbc543caef0ab1bd6",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -36,7 +36,7 @@
       "runtime/scripts/http_retry.py": "a0f742b2d2116d7da25578cc9f633f607e1fa3175b482df21cfe848965f4a42b",
       "runtime/scripts/ingest_visual_attachments.cjs": "707096a3ce9adffc8d836a40f51b6e6d0ecb7e67f54672ac701571da8490deb9",
       "runtime/scripts/persist_diagnostic.cjs": "336f2bbbd1a00b8a97058628a75e0696e884f632bff519410a9ca2313fcd61d1",
-      "runtime/scripts/probe_host_capabilities.cjs": "fa1cec34cf60f755418c609bab23ebdfb05d7e31e14edbc7d23a9bb576fdc091",
+      "runtime/scripts/probe_host_capabilities.cjs": "8aa203f461efa95816c7eba937b0472d21178eadd0a73075d528a9b3efaee1dc",
       "runtime/scripts/resolve_consumer_root.cjs": "b7b0052159bc4b26fc6abfedd1d61b05e572090af6c972f781cee2af5db611d0",
       "runtime/scripts/resolve_consumer_root.py": "ba981b12d25b43d532946d0103d2adb9f09b611769e06a01d1886b00db2a9b55",
       "runtime/scripts/retired_artifacts.cjs": "512252528056874a8f9effeab5fdc09801cee0a8e8521f41e9f9be0958fd3890",
@@ -60,7 +60,7 @@
       "templates/MEMORY.md.template": "1a604cb2184c9c54cfb24a2da547d3664bc5d4d8e713ffa937c3c3083c21340d",
       "templates/STACK.md.example": "490400ff5822fb753abff5db2d93ae63b90e00117ecc8cd976c9537b872cd398"
     },
-    "skillDigest": "ecf1dada61dcf921e6d7784bd34a72143f935fd3edcb66eb91cf1e0984aab877"
+    "skillDigest": "bb4f8efce7601cce377c8ff78ba6be156a35df620244f9e875a0c3000f24b3eb"
   },
   "packageVersion": "0.4.40",
   "skills": {

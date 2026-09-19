@@ -13,12 +13,18 @@
  *     [--declare token=name,token=name] [--cache <path>] [--map <path>]
  *     [--refresh] [--probe-log <path>] [--json]
  *
+ * Host shape resolves from --host-shape, else is inferred from the host-id
+ * segment of --key; unknown hosts degrade to the minimal safe set.
+ * Default cache resolves to the consumer shared dir ({sharedDir}); explicit
+ * --cache overrides. Unknown flags fail loudly (exit 2), never silent defaults.
+ *
  * Invoke with an explicit `node` launcher; never rely on shebang alone.
  */
 'use strict';
 
 const fs = require('fs');
 const path = require('path');
+const { resolveConsumerContext } = require('./resolve_consumer_root.cjs');
 
 const TOKENS = ['readFile', 'writeFile', 'editFile', 'shellExec', 'dispatchAgent', 'askQuestion', 'browserVerify'];
 
@@ -40,8 +46,13 @@ function parseArgs(argv) {
     else if (a === '--json') out.json = true;
     else if (a.startsWith('--')) {
       const k = a.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+      if (!Object.prototype.hasOwnProperty.call(out, k)) {
+        process.stderr.write(`unknown flag: ${a}\n`);
+        process.exit(2);
+      }
       const v = argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[i + 1] : '';
-      if (k in out) { out[k] = v; if (v) i += 1; }
+      out[k] = v;
+      if (v) i += 1;
     }
   }
   return out;
@@ -67,11 +78,22 @@ function parseDeclared(raw) {
   return declared;
 }
 
+function defaultCachePath(scriptDir) {
+  try {
+    const context = resolveConsumerContext({ scriptFile: __filename });
+    if (context && context.sharedDir) return path.join(context.sharedDir, 'host-capabilities.json');
+  } catch {
+    // Consumer-hub resolution failed (e.g. global cwd without a target repo):
+    // fall back to the legacy script-relative default; startup never fails.
+  }
+  return path.join(scriptDir, '..', '..', 'host-capabilities.json');
+}
+
 function main() {
   const args = parseArgs(process.argv.slice(2));
   const scriptDir = __dirname;
   const mapPath = args.map || path.join(scriptDir, '..', 'host-tool-map.json');
-  const cachePath = args.cache || path.join(scriptDir, '..', '..', 'host-capabilities.json');
+  const cachePath = args.cache || defaultCachePath(scriptDir);
 
   const startedAt = new Date().toISOString();
   let cache = loadJson(cachePath);
@@ -92,7 +114,17 @@ function main() {
   // Actual probe: runs at most once per key until --refresh.
   const map = loadJson(mapPath);
   const shapes = (map && map.shapes) || {};
-  const shapeEntry = shapes[args.hostShape] || null;
+  // Explicit --host-shape wins; otherwise infer the shape from the host-id
+  // segment of --key so the documented --key-only invocation still reaches
+  // host-tool-map.json instead of degrading every host to the minimal set.
+  const rawHostId = String(key.split('::')[0] || '').toLowerCase();
+  const inferredShape = Object.keys(shapes).find((name) => {
+    if (name === 'generic') return false;
+    const base = name.replace(/-like$/, '');
+    return rawHostId === name || rawHostId === base
+      || rawHostId.startsWith(`${base}-`) || rawHostId.endsWith(base);
+  });
+  const shapeEntry = shapes[args.hostShape || inferredShape] || null;
   const declared = parseDeclared(args.declare);
 
   const capabilities = {};
@@ -118,10 +150,11 @@ function main() {
     browserTool: declared.browserVerify || first(shapeNames('browserVerify')) || 'none',
   };
 
+  const effectiveShape = args.hostShape || inferredShape || 'generic';
   cache[key] = {
     binding,
     capabilities,
-    hostShape: shapeEntry ? args.hostShape : 'generic',
+    hostShape: shapeEntry ? effectiveShape : 'generic',
     knownShape: Boolean(shapeEntry),
     probedAt: startedAt,
     hostAdapterMode: 'auto',
