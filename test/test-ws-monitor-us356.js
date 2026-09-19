@@ -132,6 +132,31 @@ function makeWorkflow(root, slug, workflowId) {
   if (expandMuseSessionDirs(path.join(repoRoot, 'definitely-missing-dir')).length !== 0) {
     throw new Error('us-356 AC2: missing muse root must expand to zero dirs');
   }
+  // Muse recency: opaque session ids select by session.jsonl mtime, not lex
+  // order (s-00 is newest here despite sorting last by name).
+  {
+    const fakeMuse = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-monitor-us356-muse-'));
+    tempRoots.push(fakeMuse);
+    const dayDir = path.join(fakeMuse, '2026', '09', '19');
+    const now = Date.now();
+    for (let i = 0; i < 55; i += 1) {
+      const id = `s-${String(i).padStart(2, '0')}`;
+      const sessionJsonl = path.join(dayDir, id, 'session.jsonl');
+      write(sessionJsonl, `session ${id}\n`);
+      const mtime = new Date(now - i * 1000);
+      fs.utimesSync(sessionJsonl, mtime, mtime);
+    }
+    const picked = expandMuseSessionDirs(fakeMuse);
+    if (picked.length !== 50) {
+      throw new Error(`us-356 AC2: muse slice must hold 50 sessions, got ${picked.length}`);
+    }
+    if (!picked.some((d) => d.endsWith(`${path.sep}s-00`))) {
+      throw new Error('us-356 AC2: muse slice must keep the newest session despite lex order');
+    }
+    if (picked.some((d) => d.endsWith(`${path.sep}s-54`))) {
+      throw new Error('us-356 AC2: muse slice must drop the oldest session');
+    }
+  }
   // XDG is honored only for the real OS home; an explicit hostHome override
   // anchors muse discovery under itself even with ambient XDG_DATA_HOME.
   const osPosix = String(os.homedir()).replace(/\\/g, '/');
@@ -290,7 +315,7 @@ fs.utimesSync(sessionFile, new Date(Date.now() - 3600_000), new Date(Date.now() 
   const dbFile = path.join(museSessionsDir, `${slug}-live`, 'state.vscdb');
   const walFile = `${dbFile}-wal`;
   write(dbFile, 'sqlite-format-3-binary-payload');
-  write(walFile, 'wal-frame-payload');
+  write(walFile, `wal-frame-payload ${workflowId} ${slug}\nfatal error WALONLY-BOOM-159753 wal-only-marker-line\n`);
   const beforeDb = sha256(dbFile);
   const beforeWal = sha256(walFile);
   const beforeEntries = fs.readdirSync(path.dirname(dbFile)).sort().join(',');
@@ -305,6 +330,11 @@ fs.utimesSync(sessionFile, new Date(Date.now() - 3600_000), new Date(Date.now() 
   if (shmSkip.text !== null || shmSkip.reason !== 'wal-sidecar-skipped') {
     throw new Error(`us-356 AC4: standalone -shm read not skipped (${shmSkip.reason})`);
   }
+  // WAL-merged tails: sidecar-only content stays visible without SQLite.
+  const merged = readBoundedTailText(dbFile, 4096);
+  if (!merged.text.includes('wal-only-marker-line')) {
+    throw new Error('us-356 AC4: WAL-only content invisible to tail read');
+  }
   const result = run(['--repo-root', root, '--discover-host-transcripts', '--slug', slug, '--json'], root);
   if (result.status !== 0) throw new Error(result.stderr || result.stdout);
   if (sha256(dbFile) !== beforeDb || sha256(walFile) !== beforeWal) {
@@ -312,6 +342,10 @@ fs.utimesSync(sessionFile, new Date(Date.now() - 3600_000), new Date(Date.now() 
   }
   const afterEntries = fs.readdirSync(path.dirname(dbFile)).sort().join(',');
   if (afterEntries !== beforeEntries) throw new Error('us-356 AC4: monitor left files beside the live store');
+  const ac4Report = JSON.parse(result.stdout);
+  if (!ac4Report.findings.some((f) => f.code === 'subagent-error')) {
+    throw new Error('us-356 AC4: WAL-only error invisible to scan');
+  }
   const direct = resolveTranscriptSource({ slug, workflowId }, [], true, root);
   if (direct.reason !== 'no-matching-session') throw new Error('us-356 AC1: empty scan must report no-matching-session');
   const disabled = resolveTranscriptSource({ slug, workflowId }, [{ file: sessionFile, mtimeMs: Date.now(), tail: slug }], false, root);

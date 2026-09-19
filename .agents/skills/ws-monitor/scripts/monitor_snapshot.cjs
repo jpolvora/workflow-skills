@@ -66,10 +66,12 @@ function resolveMuseSessionsRoot(posixHome) {
 }
 
 // us-356: Muse nests sessions YYYY/MM/DD/<session-id>/ under its root.
-// Expand to the recent session dirs (bounded slice, newest first) instead
-// of walking the whole tree; fall back to the root when the layout differs.
+// Session ids are opaque, so the bounded slice selects by session.jsonl
+// mtime (newest first), not lex order; Y/M/D traversal stays name-sorted.
+// Falls back to the root when the layout differs.
 function expandMuseSessionDirs(root, limit = 50) {
-  const found = [];
+  const candidates = [];
+  const walkCap = 500;
   const listDirs = (dir) => {
     try {
       return fs.readdirSync(dir, { withFileTypes: true })
@@ -81,19 +83,32 @@ function expandMuseSessionDirs(root, limit = 50) {
     }
   };
   for (const year of listDirs(root)) {
-    if (found.length >= limit) break;
+    if (candidates.length >= walkCap) break;
     for (const month of listDirs(path.join(root, year))) {
-      if (found.length >= limit) break;
+      if (candidates.length >= walkCap) break;
       for (const day of listDirs(path.join(root, year, month))) {
-        if (found.length >= limit) break;
+        if (candidates.length >= walkCap) break;
         for (const session of listDirs(path.join(root, year, month, day))) {
-          if (found.length >= limit) break;
-          found.push(path.join(root, year, month, day, session));
+          if (candidates.length >= walkCap) break;
+          candidates.push(path.join(root, year, month, day, session));
         }
       }
     }
   }
-  return found;
+  return candidates
+    .map((dir) => {
+      const sessionFile = path.join(dir, 'session.jsonl');
+      let mtimeMs = 0;
+      try {
+        if (fs.existsSync(sessionFile)) mtimeMs = fs.statSync(sessionFile).mtimeMs;
+      } catch {
+        // Unreadable stats sort last.
+      }
+      return { dir, mtimeMs };
+    })
+    .sort((a, b) => b.mtimeMs - a.mtimeMs)
+    .slice(0, limit)
+    .map((entry) => entry.dir);
 }
 
 function getHostAdapters(platform = process.platform, home = os.homedir()) {
@@ -203,18 +218,28 @@ function readBoundedTailText(file, maxBytes = TRANSCRIPT_LIMITS.maxBytesPerFile)
       }
       target = tempCopy;
     }
-    const handle = fs.openSync(target, 'r');
-    try {
-      const stat = fs.fstatSync(handle);
-      const size = stat.size;
-      const start = Math.max(0, size - maxBytes);
-      const length = Math.min(size, maxBytes);
-      const buffer = Buffer.alloc(length);
-      fs.readSync(handle, buffer, 0, length, start);
-      return { text: buffer.toString('utf8'), bytesRead: length, reason: null };
-    } finally {
-      fs.closeSync(handle);
+    // us-356: tail-read the primary plus any co-copied sidecars so WAL-only
+    // commits stay visible to pattern matching without a SQLite dependency.
+    const tailTargets = isDatabase
+      ? [tempCopy, `${tempCopy}-wal`, `${tempCopy}-shm`].filter((candidate) => fs.existsSync(candidate))
+      : [target];
+    const tailChunks = [];
+    let totalBytes = 0;
+    for (const tailTarget of tailTargets) {
+      const handle = fs.openSync(tailTarget, 'r');
+      try {
+        const stat = fs.fstatSync(handle);
+        const length = Math.min(stat.size, maxBytes);
+        const start = Math.max(0, stat.size - length);
+        const buffer = Buffer.alloc(length);
+        fs.readSync(handle, buffer, 0, length, start);
+        tailChunks.push(buffer);
+        totalBytes += length;
+      } finally {
+        fs.closeSync(handle);
+      }
     }
+    return { text: Buffer.concat(tailChunks).toString('utf8'), bytesRead: totalBytes, reason: null };
   } catch (error) {
     return { text: null, bytesRead: 0, reason: error.message };
   } finally {

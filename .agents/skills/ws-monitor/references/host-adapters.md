@@ -10,7 +10,8 @@ Default runs perform zero host-store reads.
 All reads are read-only and bounded (recent-window tail, per-tick time/read
 caps in `TRANSCRIPT_LIMITS`); SQLite-family stores are copy-then-read (primary
 file plus `-wal`/`-shm` sidecars, so the temp copy stays coherent) so a live
-WAL database is never locked or modified; standalone sidecars are skipped. Findings carry sanitized evidence
+WAL database is never locked or modified; standalone sidecars are skipped,
+and primary plus sidecar tails are merged for pattern matching. Findings carry sanitized evidence
 only — tokens, prompt content, credentials, and absolute home paths (both the
 OS home and the configured `monitor.hostHome`) are redacted before reporting.
 
