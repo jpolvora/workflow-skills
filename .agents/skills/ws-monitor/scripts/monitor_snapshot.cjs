@@ -232,6 +232,18 @@ function normalizeCorrelationKey(value) {
   return String(value || '').toLowerCase().replace(/\\/g, '/').trim();
 }
 
+// us-356: boundary-aware correlation so a short id (wf-us356) never matches
+// inside a longer sibling id (wf-us356-lonely). Both sides are normalized
+// before matching. The boundary class is identifier characters only: '/' is
+// a separator (path-embedded keys must match), while '-', '_', '.' keep
+// sibling ids/files distinct.
+function correlationMatches(haystack, key) {
+  const needle = normalizeCorrelationKey(key);
+  if (!needle) return false;
+  const escaped = needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`(?:^|[^a-z0-9._-])${escaped}(?:$|[^a-z0-9._-])`).test(normalizeCorrelationKey(haystack));
+}
+
 function guessTranscriptAdapter(file) {
   const lowered = normalizeCorrelationKey(file);
   for (const adapter of getHostAdapters()) {
@@ -845,8 +857,8 @@ function scanTranscriptRoots(context, roots, filter = {}) {
     if (read.text === null) continue;
     const rawText = read.text;
     if (filter && (filter.workflowId || filter.slug)) {
-      const matchesWf = Boolean(filter.workflowId && (file.includes(filter.workflowId) || rawText.includes(filter.workflowId)));
-      const matchesSlug = Boolean(filter.slug && (file.includes(filter.slug) || rawText.includes(filter.slug)));
+      const matchesWf = Boolean(filter.workflowId && (correlationMatches(file, filter.workflowId) || correlationMatches(rawText, filter.workflowId)));
+      const matchesSlug = Boolean(filter.slug && (correlationMatches(file, filter.slug) || correlationMatches(rawText, filter.slug)));
       const pass = filter.workflowId && filter.slug
         ? (matchesWf && matchesSlug)
         : (matchesWf || matchesSlug);
@@ -917,7 +929,7 @@ function resolveTranscriptSource(workflow, scannedFiles, discoveryEnabled, repoR
   const repoRootResolved = path.resolve(repoRoot);
   const candidates = (scannedFiles || []).filter((item) => {
     const haystack = normalizeCorrelationKey(item.file + String.fromCharCode(10) + item.tail);
-    return keys.some((key) => haystack.includes(key));
+    return keys.some((key) => correlationMatches(haystack, key));
   });
   if (candidates.length === 0) {
     return { status: 'transcript-unavailable', reason: 'no-matching-session' };
@@ -1314,4 +1326,5 @@ module.exports = {
   resolveMuseSessionsRoot,
   expandMuseSessionDirs,
   collapseHomePaths,
+  correlationMatches,
 };

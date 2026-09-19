@@ -23,6 +23,7 @@ const {
   resolveMuseSessionsRoot,
   expandMuseSessionDirs,
   collapseHomePaths,
+  correlationMatches,
   TRANSCRIPT_LIMITS,
 } = require(script);
 
@@ -217,6 +218,36 @@ fs.utimesSync(sessionFile, new Date(Date.now() - 3600_000), new Date(Date.now() 
   }
 }
 
+// Prefix-collision guard: the short id wf-us356 must not correlate the
+// longer sibling session wf-us356-lonely (boundary-aware matching).
+{
+  if (!correlationMatches('wf-us356 us356-demo recent activity', 'wf-us356')) {
+    throw new Error('us-356 AC1: boundary matcher missed an exact key');
+  }
+  if (correlationMatches('wf-us356-lonely us356-lonely recent activity', 'wf-us356')) {
+    throw new Error('us-356 AC1: short id must not match inside a longer sibling id');
+  }
+  if (!correlationMatches(path.join(museSessionsDir, 'us356-lonely', 'session.jsonl'), 'us356-lonely')) {
+    throw new Error('us-356 AC1: boundary matcher missed a path-segment key');
+  }
+  const lonelySession = path.join(museSessionsDir, 'us356-lonely', 'session.jsonl');
+  write(lonelySession, 'wf-us356-lonely us356-lonely recent worker activity line\n');
+  const result = run(['--repo-root', root, '--discover-host-transcripts', '--json'], root);
+  if (result.status !== 0) throw new Error(result.stderr || result.stdout);
+  const report = JSON.parse(result.stdout);
+  const demo = report.workflows.find((w) => w.slug === slug);
+  if (!demo?.findings.some((f) => f.code === 'worker-session-stall')) {
+    throw new Error('us-356 AC1: demo session misattributed to the fresh lonely session (stall missing)');
+  }
+  const lonelyUnscoped = report.workflows.find((w) => w.slug === 'us356-lonely');
+  if (lonelyUnscoped?.transcriptSource?.status !== 'available') {
+    throw new Error(`us-356 AC1: lonely session must correlate to its own workflow, got ${JSON.stringify(lonelyUnscoped?.transcriptSource)}`);
+  }
+  if (lonelyUnscoped?.findings.some((f) => f.code === 'worker-session-stall')) {
+    throw new Error('us-356 AC1: lonely workflow wrongly stalled on the idle demo session');
+  }
+}
+
 // AC4: strictly read-only against live stores (WAL-safe copy-then-read).
 {
   const dbFile = path.join(museSessionsDir, `${slug}-live`, 'state.vscdb');
@@ -303,8 +334,9 @@ fs.utimesSync(sessionFile, new Date(Date.now() - 3600_000), new Date(Date.now() 
 
 // AC6: per-tick cost stays bounded (tail-only reads on a large fixture).
 {
-  const big = path.join(museSessionsDir, `${slug}-big`, 'session.jsonl');
-  fs.mkdirSync(path.dirname(big), { recursive: true });
+  // Inside the demo session dir so the slug filter still matches on a path
+  // boundary (a sibling dir like `${slug}-big` would no longer correlate).
+  const big = path.join(museSessionsDir, slug, 'big-history.jsonl');
   fs.writeFileSync(big, `${'x'.repeat(999)}\n`.repeat(20 * 1024));
   const started = Date.now();
   const result = run(['--repo-root', root, '--discover-host-transcripts', '--slug', slug, '--json'], root);
