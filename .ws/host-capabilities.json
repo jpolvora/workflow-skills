@@ -1,0 +1,22 @@
+{
+  "opencode::opencode-go/deepseek-v4.1-flash": {
+    "binding": {
+      "askQuestionTool": "question",
+      "subagentTool": "task",
+      "backgroundTaskTool": "none",
+      "browserTool": "none"
+    },
+    "probedAt": "2026-09-17T01:17:47Z",
+    "hostAdapterMode": "auto"
+  },
+  "muse::muse-spark": {
+    "binding": {
+      "askQuestionTool": "request_user_input",
+      "subagentTool": "subagent_spawn",
+      "backgroundTaskTool": "none",
+      "browserTool": "none"
+    },
+    "probedAt": "2026-09-17T02:30:00Z",
+    "hostAdapterMode": "auto"
+  }
+}
