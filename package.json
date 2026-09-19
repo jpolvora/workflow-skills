@@ -28,7 +28,7 @@
     "benchmark": "node scripts/harness-benchmark/cli.cjs",
     "benchmark:static": "node scripts/harness-benchmark/cli.cjs run --mode static",
     "config:gui": "powershell -NoProfile -ExecutionPolicy Bypass -File .agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
-    "review:dry": "bash -c \"curl -fsSL https://raw.githubusercontent.com/jpolvora/agentic-code-reviewers/release/run.sh -o /tmp/agentic-code-reviewers-run.sh && AGENTIC_CODE_REVIEWERS_EXTRA_EXCLUDE_PATTERNS='.agents/plans/**,.agents/specs/**' bash /tmp/agentic-code-reviewers-run.sh --engine opencode --model opencode-go/muse-spark-1.3-contributor --variant xhigh --dry-run --stack Custom --target-branch refs/heads/main --custom-prompt .github/agentic-code-reviewers-prompt.md --score-min 3 --include-patterns '**/*.md,**/*.mdc,**/*.yml,**/*.yaml,**/*.json,**/*.sh,**/*.ps1,**/*.psm1,**/*.psd1,**/*.cmd,**/*.js,**/*.ts,**/*.css,**/*.html,**/*.cjs,**/*.py,**/*.prd'\""
+    "review:dry": "bash -c \"curl -fsSL https://raw.githubusercontent.com/jpolvora/agentic-code-reviewers/release/run.sh -o /tmp/agentic-code-reviewers-run.sh && AGENTIC_CODE_REVIEWERS_EXTRA_EXCLUDE_PATTERNS='.agents/plans/**,.agents/specs/**' bash /tmp/agentic-code-reviewers-run.sh --engine cursor-sdk --model composer-2.5 --variant high --dry-run --stack Custom --target-branch refs/heads/main --custom-prompt .github/agentic-code-reviewers-prompt.md --score-min 3 --include-patterns '**/*.md,**/*.mdc,**/*.yml,**/*.yaml,**/*.json,**/*.sh,**/*.ps1,**/*.psm1,**/*.psd1,**/*.cmd,**/*.js,**/*.ts,**/*.css,**/*.html,**/*.cjs,**/*.py,**/*.prd'\""
   },
   "files": [
     "bin/",
