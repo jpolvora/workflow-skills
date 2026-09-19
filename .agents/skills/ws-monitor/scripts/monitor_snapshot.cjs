@@ -216,7 +216,12 @@ function expectedArtifacts(state, workflowDir, minVerifyScore, repoRoot = workfl
     add(`step-02-${slug}.plan-interview.md`, 'Step 2 interview completed');
     add(`step-02-${slug}.plan.refined.md`, 'Step 2 interview completed');
   }
-  if (Number(state.currentStep) >= 4 || isCompleted(state, 3)) add(`step-03-${slug}.plan.exec.md`, 'Step 3 completed');
+  // A dag-disabled Step 3 skip is the designed sequential shape (no stubs written):
+  // grandfathered, never an exec-artifact signal. Only a true completion needs the file.
+  const step3SkippedDagDisabled = skippedReason(state, 3) === 'dag-disabled';
+  if (!step3SkippedDagDisabled && (Number(state.currentStep) >= 4 || isCompleted(state, 3))) {
+    add(`step-03-${slug}.plan.exec.md`, 'Step 3 completed');
+  }
   if (Number(state.currentStep) >= 6 || isCompleted(state, 5)) add(`step-05-${slug}.plan.report.md`, 'Step 5 completed');
   if (Number(state.currentStep) >= 7 || isCompleted(state, 6)) add(`step-06-${slug}.review.md`, 'Step 6 completed');
   const testingSkipped = ['testing-disabled', 'no-test-surface'].includes(skippedReason(state, 7));
@@ -237,7 +242,8 @@ function classifyWorkflow(state, workflowDir, telemetry, minVerifyScore, repoRoo
   const findings = [];
   const missing = expectedArtifacts(state, workflowDir, minVerifyScore, repoRoot).filter((item) => !item.present);
   for (const artifact of missing) {
-    addFinding(findings, 'critical', 'missing-artifact', `${artifact.name} is missing (${artifact.reason})`, [artifact.path]);
+    const code = artifact.name.endsWith('.plan.exec.md') ? 'missing-exec-artifact' : 'missing-artifact';
+    addFinding(findings, 'critical', code, `${artifact.name} is missing (${artifact.reason})`, [artifact.path]);
   }
   if (Number(state.currentStep) > 5 && Number(state.verificationScore) < minVerifyScore) {
     addFinding(
@@ -256,7 +262,9 @@ function classifyWorkflow(state, workflowDir, telemetry, minVerifyScore, repoRoo
     const rawTouched = event.filesTouched ?? event.files_touched;
     const touched = Array.isArray(rawTouched) ? { created: rawTouched } : (rawTouched || {});
     const hasTouched = ['created', 'modified', 'deleted'].some((key) => Array.isArray(touched[key]) && touched[key].length);
-    if (event.type === 'finish' && event.step !== 5 && MUTATING_STEPS.has(Number(event.step)) && event.skipReason == null && !hasTouched) {
+    // An explicit no-op declaration (finish --noop) is the only completed-with-empty
+    // shape that stays silent; any skipReason also suppresses (skipped steps are not completions).
+    if (event.type === 'finish' && event.step !== 5 && MUTATING_STEPS.has(Number(event.step)) && event.skipReason == null && event.noop == null && !hasTouched) {
       addFinding(findings, 'warning', 'empty-files-touched', `Completed mutating Step ${event.step} reported no filesTouched`, []);
     }
   }

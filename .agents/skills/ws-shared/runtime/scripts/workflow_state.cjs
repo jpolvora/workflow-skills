@@ -1566,6 +1566,14 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
         throw new Error(`cannot finish step 2: required artifacts missing: ${missing.join(', ')}`);
       }
     }
+    if (pipeline === 'standard' && step === 3 && status === 'completed') {
+      const execStepSlug = state.slug || state.us;
+      const missing = [`step-03-${execStepSlug}.plan.exec.md`, `step-03-${execStepSlug}.exec.dag.json`]
+        .filter((name) => !isNonEmptyFile(path.join(paths.usDir, name)));
+      if (missing.length) {
+        throw new Error(`cannot finish step 3: required artifacts missing: ${missing.join(', ')} (sequential runs finish step 3 as skipped with reason dag-disabled)`);
+      }
+    }
     if (status === 'skipped') {
       if (!SKIP_REASONS.has(options.reason)) throw new Error(`skip reason must be one of: ${[...SKIP_REASONS].join(', ')}`);
       state.skippedSteps = [...(Array.isArray(state.skippedSteps) ? state.skippedSteps : []).filter((item) => Number(item.step) !== step), {
@@ -1578,6 +1586,11 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       state.completedSteps = [...new Set([...(state.completedSteps || []).map(Number), step])].sort((a, b) => a - b);
       state.stepStatus[String(step)] = status;
       state.currentStep = Math.min(maxStep, step + 1);
+      // A skipped step is not a completion: keep the skip record as the single
+      // source of truth so completion checks cannot read it as completed.
+      if (status === 'skipped') {
+        state.completedSteps = state.completedSteps.map(Number).filter((item) => item !== step);
+      }
     } else {
       state.currentStep = step;
       state.stepStatus[String(step)] = 'active';
@@ -1603,6 +1616,15 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       fallbackArtifacts.push(path.join(paths.usDir, 'ac-ledger.json'));
     }
     const { created, modified, deleted, phantoms } = normalizeFilesTouched(output, options, context.repoRoot, fallbackArtifacts);
+    const finishNoop = options.noop === undefined || options.noop === null ? '' : String(options.noop).trim();
+    if (options.noop !== undefined && options.noop !== null && (!finishNoop || finishNoop.startsWith('--'))) {
+      throw new Error('finish --noop requires a non-empty reason (e.g. --noop "verification-only retry touched nothing")');
+    }
+    if (pipeline === 'standard' && step === 4 && status === 'completed' && !isInternalSubstep) {
+      if (!created.length && !modified.length && !deleted.length && !finishNoop) {
+        throw new Error('cannot finish step 4: filesTouched is empty and no explicit no-op was declared (pass --noop "<reason>" when the step genuinely modified nothing)');
+      }
+    }
     const promptTokens = tokenCount(options, output, 'promptTokens');
     const completionTokens = tokenCount(options, output, 'completionTokens');
     applyFinishTelemetry(state, labels, step, {
@@ -1645,6 +1667,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       promptTokens,
       completionTokens,
       filesTouched: { created, modified, deleted },
+      ...(finishNoop ? { noop: finishNoop } : {}),
       phantoms: Array.isArray(phantoms) ? phantoms : [],
       phantomCount: Array.isArray(phantoms) ? phantoms.length : 0,
       gateDecision,
@@ -1968,6 +1991,7 @@ function runUpdateCli(config) {
     if (options.help) {
       process.stdout.write('Usage: update_state.cjs dispatch|finish|finish-batch|bypass <state> --step N [options]\n');
       process.stdout.write('  finish-batch <state> --steps "2:skipped:interview-not-required,3:skipped:dag-disabled"\n');
+      process.stdout.write('  finish <state> --step 4 --noop "<reason>" (explicit no-op when a completed mutating step touched nothing)\n');
       return;
     }
     const [operation, stateFile] = positional;

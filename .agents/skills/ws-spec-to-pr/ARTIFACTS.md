@@ -55,7 +55,7 @@ Minimum on-disk artifacts required before **advance to step N** (standard FSM). 
 | 1 | `step-00-{slug}.spec.md` + `ac-ledger.json` |
 | 2 | `step-00-{slug}.spec.md` + `step-01-{slug}.plan.md` |
 | 3 | `step-00-{slug}.spec.md` + `step-02-{slug}.plan-interview.md` + `step-02-{slug}.plan.refined.md` if interview ran, else `step-01-{slug}.plan.md` (Step 2 skipped `interview-not-required`) |
-| 4 | plan of record + `.runtime/plan.index.json` (plus `step-03-{slug}.plan.exec.md` when `enableDag` is true; sequential mode skips Step 3 with `dag-disabled`, no stubs written) |
+| 4 | plan of record + `.runtime/plan.index.json` (plus `step-03-{slug}.plan.exec.md` when `enableDag` is true; sequential mode skips Step 3 with `dag-disabled`, no stubs written; a `completed` Step 3 finish requires both exec files on disk, fail-closed) |
 | 5 | plan or refined plan + implementation tree (state manifest `created` / `artifacts` non-empty, or `dryRun`) |
 | 6 | `step-05-{slug}.plan.report.md` |
 | 7 | `step-06-{slug}.review.md` when code review ran |
