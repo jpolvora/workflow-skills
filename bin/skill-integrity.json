@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "6915b9f2051ad7a82fb61796dcef746159558172cd4ec90547705d04d8bf04f9",
+  "fullPackageDigest": "ed5b654eaaa37dbd38d3cfd8f72357f328405b324a6faa966a027cc822c9e594",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -13,7 +13,7 @@
       "runtime/AGENTS.md": "262f2c62dc1e3cf4727f59c2d899aa1c0b5a509bd015c1751eb75842f2f5d833",
       "runtime/autoload.md": "2ad6e41750e75c5894716a659cc6ceac6152cf310c142dac7d8eb5e66301fcbc",
       "runtime/CATALOG.md": "04ebe2bac21119a06af1214454a4ba128220d282a47f2cb29ca1499c3fd7984f",
-      "runtime/config-resolution.md": "ee6b53a0abf9d98de0299f7abcf0ec0bf29f0ca195b0aee2c2857b06a650a9cd",
+      "runtime/config-resolution.md": "f7a9d382d01aae7a0b9375db06fcb09572e5a0595febbda51cf988c33e17fcc4",
       "runtime/config.schema.json": "bfb26a0d84ebecfffb390aabf627376ec2096d126226843c4838cb7232a67641",
       "runtime/CROSS-PLATFORM.md": "1790b12b2c2add0942a2544c2c8e75f1aa794410e6861b84c052583954074d27",
       "runtime/evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
@@ -37,8 +37,8 @@
       "runtime/scripts/ingest_visual_attachments.cjs": "707096a3ce9adffc8d836a40f51b6e6d0ecb7e67f54672ac701571da8490deb9",
       "runtime/scripts/persist_diagnostic.cjs": "336f2bbbd1a00b8a97058628a75e0696e884f632bff519410a9ca2313fcd61d1",
       "runtime/scripts/probe_host_capabilities.cjs": "bd1a035ad16e329b4dd6c4840ecddc82a6567c9a4bbef066f6f43bd78e67795c",
-      "runtime/scripts/resolve_consumer_root.cjs": "ce93fc08e36148992adbbd94aa310345d9688c0fca069f959b603c0eb9e6a1c2",
-      "runtime/scripts/resolve_consumer_root.py": "70d905681d781a4c11852cc24c126fa017fd9e2049a807b2f0bc475d8106c754",
+      "runtime/scripts/resolve_consumer_root.cjs": "dc018fc7f5261329fa01763b4ba8e943702d408916de1b1d2b915e38a99115ce",
+      "runtime/scripts/resolve_consumer_root.py": "4b806f21a76052f1a0cabc18d42e9773165826be19939a6702a896058b462b3a",
       "runtime/scripts/retired_artifacts.cjs": "4f0f43720824bd7df82002bc98cc7d95b3f70b9477e57bfba466f6e04c87222a",
       "runtime/scripts/scan_stack_invariants.cjs": "f186e197040142066fa7e78b563b11a171c8dc5a62c8026a135457fa82faf5e7",
       "runtime/scripts/step_baton.cjs": "d18f4bd9cf4720c6bf5d3322c8a143a64c94593cce480f4577341f294645d071",
@@ -60,7 +60,7 @@
       "templates/MEMORY.md.template": "1a604cb2184c9c54cfb24a2da547d3664bc5d4d8e713ffa937c3c3083c21340d",
       "templates/STACK.md.example": "64f4765864305e0a2fb1e21b70676f7d5c23f9ffede3f526d49435134fa1924e"
     },
-    "skillDigest": "757476408fee9a2d55207ac7513ebc9ee311d037f27a8b04a3de034f8884ef37"
+    "skillDigest": "bf54487d3459d922cfb92c6b8893862aa57e27f0331ac73fe52eb193b2d0ab8a"
   },
   "packageVersion": "0.4.42",
   "skills": {
@@ -577,11 +577,11 @@
     "ws-testing": {
       "files": {
         "evals/evals.json": "b05e7fb7b7a3aa4d4e1baad7c1f265872245b909fa800a8f5e57be3341d6f6a2",
-        "scripts/probe_test_surface.cjs": "7b8cfd696b27562c0d7ff86649e4de4f0c2fe67798d19cf6c3f2b9b56732fd96",
+        "scripts/probe_test_surface.cjs": "f0394632f4d4cdb4a898e6d980f7e30ea97b010748d4b1cc93e4c37dc4c32a0d",
         "scripts/run_sabotage.py": "2183e133a8c8d18a1da7358402f9d33db2c16b7f127920653f38b3845c62d176",
         "SKILL.md": "dc306800947508ac49a23403a2fb537620007a818732d27a14928b27511327d3"
       },
-      "skillDigest": "98ebac5561b667dede1564a7c7562cff384591cac8c3fec465474752da18e76d"
+      "skillDigest": "f891156ee7b8a5950d8a289accbf3e00677190a523e4ee8d8d6eec99595654e3"
     },
     "ws-wiki": {
       "files": {

@@ -145,6 +145,45 @@ function makeGlobalWithoutHub() {
   check(/ws-configure-project/.test(String(error && error.message)), 'local fail-closed error points at ws-configure-project');
 }
 
+// 4. Example-only fixture: a consumer with only
+// .ws/templates/config.json.example (no .ws/config.json) must also fail
+// closed — the seeded template never counts as a project hub.
+{
+  const consumer = mkTmp('ws-gcm-example-');
+  write(path.join(consumer, '.ws', 'templates', 'config.json.example'), JSON.stringify({ project: { name: 'template' } }));
+  const ctx = withEnv(
+    { WORKFLOW_SKILLS_GLOBAL_DIR: mkTmp('ws-gcm-noglobal2-'), WORKFLOW_SKILLS_SHARED_DIR: undefined },
+    () => resolver.resolveConsumerContext({ repoRoot: consumer }),
+  );
+  check(ctx.configSource === 'project', 'example-only resolves project source (the hole)');
+  let error = null;
+  try {
+    resolver.requireProjectConfig(ctx);
+  } catch (err) {
+    error = err;
+  }
+  check(error !== null, 'example-only fixture fails closed instead of proceeding on template defaults');
+  check(/ws-configure-project/.test(String(error && error.message)), 'example-only error points at ws-configure-project');
+}
+
+// 5. End-to-end: invoking a real config-dependent script
+// (probe_test_surface.cjs, wired with requireProjectHub: true) against a
+// hub-less consumer must exit non-zero with the ws-configure-project
+// pointer; the same script against this repo (hub present) still exits 0.
+{
+  const { spawnSync } = require('node:child_process');
+  const probe = path.join(repoRoot, '.agents', 'skills', 'ws-testing', 'scripts', 'probe_test_surface.cjs');
+  const emptyGlobal = mkTmp('ws-gcm-e2e-global-');
+  const consumer = mkTmp('ws-gcm-e2e-consumer-');
+  const env = { ...process.env, WORKFLOW_SKILLS_GLOBAL_DIR: emptyGlobal };
+  delete env.WORKFLOW_SKILLS_SHARED_DIR;
+  const bad = spawnSync(process.execPath, [probe, '--repo-root', consumer, '--json'], { encoding: 'utf8', env });
+  check(bad.status !== 0, 'probe without a project hub fails closed (non-zero exit)');
+  check(/ws-configure-project/.test(String(bad.stderr)), 'probe fail-closed stderr points at ws-configure-project');
+  const good = spawnSync(process.execPath, [probe, '--repo-root', repoRoot, '--json'], { encoding: 'utf8', env: process.env });
+  check(good.status === 0, 'probe with a project hub still succeeds');
+}
+
 for (const dir of tmpRoots) fs.rmSync(dir, { recursive: true, force: true });
 if (failures > 0) {
   console.error(`\n${failures} failure(s)`);

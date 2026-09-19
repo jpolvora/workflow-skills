@@ -35,6 +35,7 @@ When skills are executed from a global install (`$HOME/.agents/skills` or `WORKF
 - **Config-Dependent Skills** (`ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-spec-multi`, `ws-plan-write`, `ws-plan-interview`, `ws-plan-to-tasks`, `ws-implement-tasks`, `ws-plan-verify`, `ws-code-review`, `ws-testing`, `ws-ship-pr`, `ws-fix-pr`, `ws-goal-fix-pr`, providers):
   - **Entry Gate:** Must verify `$PWD/.ws/config.json` exists and is non-empty.
   - **Missing Config:** If missing or unconfigured (`<...>` placeholders), trigger `user-gate` recommending running `ws-configure-project` (which seeds and populates `$PWD/.ws/config.json`).
+  - **Script enforcement (opt-in):** config-dependent scripts fail closed at runtime by resolving with `requireProjectHub: true` (`require_project_hub=True` in Python), which runs `requireProjectConfig()` after `resolveConsumerContext()` and throws with a `ws-configure-project` pointer when the concrete `{sharedDir}/config.json` is absent (the seeded templates example never counts). Default is `false` (no behavior change); adopt per script, starting with `ws-testing/scripts/probe_test_surface.cjs`.
 - **Config-Independent / Standalone Skills** (`ws-configure-project`, `ws-secrets-leak-review`, `ws-tdah`, `ws-write-a-skill`, `ws-spec-format`, `ws-check-harness`, `ws-megabrain`):
   - Run directly in any repository without requiring `config.json`.
 

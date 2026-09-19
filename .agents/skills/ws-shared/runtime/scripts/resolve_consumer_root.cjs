@@ -271,7 +271,7 @@ function resolveSkillMdPath(context, skillId) {
   );
 }
 
-function resolveConsumerContext({ repoRoot, scriptFile, skillId } = {}) {
+function resolveConsumerContext({ repoRoot, scriptFile, skillId, requireProjectHub = false } = {}) {
   const root = resolveRepoRoot(repoRoot, { scriptFile });
   const localSkillsRoot = path.join(root, '.agents', 'skills');
   const globalSkillsRoot = resolveExecutionGlobalSkillsRoot(scriptFile);
@@ -328,7 +328,7 @@ function resolveConsumerContext({ repoRoot, scriptFile, skillId } = {}) {
     HUB_TEMPLATES_REL,
   );
 
-  return {
+  const context = {
     repoRoot: root,
     skillsRoot,
     sharedDir: hub,
@@ -343,6 +343,9 @@ function resolveConsumerContext({ repoRoot, scriptFile, skillId } = {}) {
     configCandidates: configCandidatesSeen,
     precedenceMatrix: describePrecedenceMatrix(),
   };
+  // Opt-in AC5 fail-closed gate for config-dependent entrypoints (default off).
+  if (requireProjectHub) requireProjectConfig(context);
+  return context;
 }
 
 function resolveConfiguredPath(repoRoot, value, fallback) {
@@ -353,19 +356,18 @@ function resolveConfiguredPath(repoRoot, value, fallback) {
 // Fail-closed project-config gate for config-dependent skills (AC5/NS3).
 // A globally invoked skill without a project hub must NOT silently read
 // global config as project config: throw with a ws-configure-project
-// pointer instead. Usable = project-sourced config file on disk with no
-// read/validation error. Returns the context unchanged on success.
+// pointer instead. Usable = the concrete {sharedDir}/config.json file on disk
+// with no read/validation error (the seeded templates example never counts). Returns the context unchanged on success.
 function requireProjectConfig(context) {
   const root = path.resolve((context && context.repoRoot) || process.cwd());
-  const configPath = context && context.configPath ? path.resolve(context.configPath) : path.join(root, HUB_CONFIG);
+  const projectConfigPath = path.join(root, HUB_CONFIG);
   const usable =
     !!context &&
-    context.configSource === 'project' &&
     !context.configError &&
-    fs.existsSync(configPath);
+    fs.existsSync(projectConfigPath);
   if (!usable) {
     throw new Error(
-      `Project hub config missing (expected ${configPath}); run ws-configure-project to seed {sharedDir}/config.json — ` +
+      `Project hub config missing (expected ${projectConfigPath}); run ws-configure-project to seed {sharedDir}/config.json — ` +
       `refusing to use global config as project config (configSource: ${(context && context.configSource) || 'unknown'}).`,
     );
   }

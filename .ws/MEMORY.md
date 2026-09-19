@@ -60,6 +60,24 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **DO NOT**: Rationalize skipping a mandatory release rule with merged-PR precedent anecdotes; an equal version on a package-content branch is a real defect even when an earlier PR got away with it.
 - **INSTEAD DO**: When the branch version equals the merge-base version on a package-content PR, run `npm run build-site:bump`, then `npm run generate-integrity` plus `verify-integrity`, and commit the bump with ship-scope changes — one patch bump per release PR.
 
+### [2026-09-19] Resolver fallback changes need global-free verification
+- **Layer**: `tests`
+- **Module**: `ws-shared / skill script bootstraps / resolveHubSource`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/*/scripts/*.{cjs,js}; .agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs`
+- **Scenario / Context**: Managed-runtime candidate chains (packaged, cwd-local, global, legacy .ws) resolve differently per machine. A Windows dev box usually has an ambient `%USERPROFILE%/.agents/skills` (or `$HOME/.agents/skills`) install, so a broken or missing fallback still loads from global and every local suite passes; the Linux CI runner has no global skills and fails (observed: MODULE_NOT_FOUND for http_retry.cjs in the consumer shim smoke after dropping the .ws fallback the installer still relies on, since ws-shared never ships into consumer .agents/skills).
+- **DO NOT**: Trust local-only green suites for resolver/bootstrap edits, or remove a fallback candidate without proving which installs rely on it (installer package map + consumer-tree fixtures).
+- **INSTEAD DO**: Reproduce the no-global condition explicitly (sanitized env: WORKFLOW_SKILLS_GLOBAL_DIR/HOME/USERPROFILE pointed at an empty dir) and prove which candidate gets selected; add a regression test with a partial consumer tree + full legacy copy that asserts no MODULE_NOT_FOUND and reaches usage.
+
+### [2026-09-19] Project-config gates must require the concrete config file
+- **Layer**: `harness`
+- **Module**: `ws-shared resolve_consumer_root gate`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.*`
+- **Scenario / Context**: Resolver candidate order can select `.ws/templates/config.json.example` when `.ws/config.json` is absent while `configSource` stays `'project'`. A fail-closed gate that validates the resolved `configPath` or `configSource === 'project'` passes in that state, and a config-dependent skill proceeds on seeded template defaults instead of pointing at `ws-configure-project` (found during PR #368 fix-pr round 2).
+- **DO NOT**: Accept a resolved config path's existence or `configSource === 'project'` as proof of a project hub in fail-closed gates.
+- **INSTEAD DO**: Require the concrete `<repo>/.ws/config.json` (`HUB_CONFIG`) on disk with no `configError`; cover with an example-only fixture case plus an end-to-end script-spawn case asserting fail-closed exit.
+
 ### [2026-09-19] Post-exit tripwires must derive their allowance from the turn's own op trace
 - **Layer**: `application`
 - **Module**: `ws-spec-to-pr / step coordinator revision guard`
