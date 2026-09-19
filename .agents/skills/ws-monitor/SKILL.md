@@ -88,7 +88,7 @@ The monitor checks project memory vault records to identify running or active wo
 - **Local memory files:** When local memory is active, inspect `{memoryDir}/memory/*.md` and `{memoryDir}/MEMORY.md` for active workflow markers, traps, and decision logs.
 - **Reconciliation:** Compare vault records with on-disk state under `{plansDir}`. If the vault lists a workflow as active that is missing on disk, report `vault-unreconciled-workflow`.
 
-## Host Agent Transcript Collection (Cursor, OpenCode, Antigravity, Claude)
+## Host Agent Transcript Collection (Cursor, OpenCode, Antigravity, Muse)
 
 Transcripts provide secondary evidence to diagnose why a subagent or orchestrator stalled, fell back, or threw errors:
 
@@ -96,13 +96,13 @@ Transcripts provide secondary evidence to diagnose why a subagent or orchestrato
   - **Cursor**: Workspace `.cursor/transcripts/`, `.cursor/chats/`, and user workspace storage (`%APPDATA%/Cursor/User/workspaceStorage/<hash>/` on Windows, `~/.config/Cursor/User/workspaceStorage/` on Linux, `~/Library/Application Support/Cursor/User/workspaceStorage/` on macOS).
   - **OpenCode**: Workspace `.opencode/transcripts/`, `.opencode/sessions/`, `.opencode/logs/`, and user sessions (`~/.opencode/sessions/`).
   - **Antigravity**: Workspace `.agents/transcripts/`, `.system_generated/logs/`, and IDE app data (`<appDataDir>/brain/<conversation-id>/.system_generated/logs/transcript.jsonl`).
-  - **Claude**: Workspace `.claude/sessions/` and user sessions (`~/.claude/sessions/`).
-- **Adapter table:** per-OS default locations for Cursor, OpenCode, Antigravity, and Claude live in `references/host-adapters.md` (adapter data, not portable contract).
+  - **Muse**: User sessions (`~/.local/share/muse/sessions/YYYY/MM/DD/<session-id>/session.jsonl`, `$XDG_DATA_HOME` honored when set).
+- **Adapter table:** per-OS default locations for Cursor, OpenCode, Antigravity, and Muse live in `references/host-adapters.md` (adapter data, not portable contract).
 - **Transcript source:** each workflow reports `transcriptSource` (`available` with adapter + location class, or `transcript-unavailable` with reason `discovery-disabled` / `no-matching-session`).
 - **Read-only + bounded:** SQLite-family stores are copy-then-read (WAL-safe, never locked or modified); only the recent-window tail is read under per-tick time/read caps; a session idle beyond the stall window while its workflow is active raises `worker-session-stall`.
 - **Discovery:**
   - Workspace candidate roots are auto-discovered if they exist in the repository.
-  - User-level / host IDE transcript paths are scanned when passing `--discover-host-transcripts` or configured via `monitor.transcriptRoots` or `--transcript-root <path>`.
+  - User-level / host IDE transcript paths are scanned when passing `--discover-host-transcripts` or configured via `monitor.discoverHostTranscripts` (`monitor.hostHome` overrides the home; `monitor.transcriptRoots` adds explicit roots) or `--transcript-root <path>`.
 - **Diagnostic pattern scanning:**
   - `hybrid-path-resolution`: `ENOENT`, `build_dispatch_context` (missing skills or path resolution failures).
   - `model-fallback`: rejected, unsupported, or unavailable model identifiers.

@@ -524,6 +524,27 @@
         }
       }
     },
+    "monitor": {
+      "type": "object",
+      "description": "Opt-in ws-monitor host transcript discovery (us-356). Default runs perform zero host-store reads.",
+      "additionalProperties": true,
+      "properties": {
+        "discoverHostTranscripts": {
+          "type": "boolean",
+          "default": false,
+          "description": "Opt-in host transcript discovery for ws-monitor (same as --discover-host-transcripts). Default false performs zero host-store reads."
+        },
+        "hostHome": {
+          "type": "string",
+          "description": "Override user home for host-store discovery and path sanitizing (CI/sandbox/isolated profiles). Empty/unset uses the OS home."
+        },
+        "transcriptRoots": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Explicit transcript roots scanned by ws-monitor in addition to workspace candidates."
+        }
+      }
+    },
     "rules": { "type": "object" },
     "specMemo": {
       "type": "object",

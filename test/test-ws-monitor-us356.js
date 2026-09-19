@@ -20,6 +20,8 @@ const {
   sanitizeReportPath,
   readBoundedTailText,
   resolveTranscriptSource,
+  resolveMuseSessionsRoot,
+  expandMuseSessionDirs,
   TRANSCRIPT_LIMITS,
 } = require(script);
 
@@ -31,10 +33,14 @@ function write(file, content) {
 }
 
 function run(args, cwd) {
+  // Scrub XDG_DATA_HOME so spawned discovery resolves the muse root under
+  // the fixture hostHome (explicit unit coverage below asserts XDG honoring).
+  const childEnv = { ...process.env };
+  delete childEnv.XDG_DATA_HOME;
   return cp.spawnSync(process.execPath, [script, ...args], {
     cwd,
     encoding: 'utf8',
-    env: { ...process.env },
+    env: childEnv,
   });
 }
 
@@ -92,16 +98,39 @@ function makeWorkflow(root, slug, workflowId) {
   for (const token of ['Cursor', 'OpenCode', 'Antigravity', 'Windows', 'Linux', 'macOS']) {
     if (!text.includes(token)) throw new Error(`us-356 AC2: adapter table missing ${token}`);
   }
-  if (!text.toLowerCase().includes('claude')) throw new Error('us-356 AC2: adapter table missing Claude');
+  if (!text.includes('Muse')) throw new Error('us-356 AC2: adapter table missing Muse');
+  // Default-root assertions must not see ambient XDG_DATA_HOME from the runner.
+  const savedXdg = process.env.XDG_DATA_HOME;
+  delete process.env.XDG_DATA_HOME;
   const adapters = getHostAdapters('win32', 'C:/Users/tester');
   const ids = adapters.map((a) => a.id).sort().join(',');
-  if (ids !== 'antigravity,claude-code,cursor,opencode') {
+  if (ids !== 'antigravity,cursor,muse,opencode') {
     throw new Error(`us-356 AC2: unexpected adapter ids ${ids}`);
   }
   const linux = getHostAdapters('linux', '/home/tester');
   const cursorLinux = linux.find((a) => a.id === 'cursor').locations[0].path;
   if (cursorLinux !== '/home/tester/.config/Cursor/User/workspaceStorage') {
     throw new Error(`us-356 AC2: wrong linux cursor path ${cursorLinux}`);
+  }
+  const museLinux = linux.find((a) => a.id === 'muse').locations[0].path;
+  if (museLinux !== '/home/tester/.local/share/muse/sessions') {
+    throw new Error(`us-356 AC2: wrong linux muse path ${museLinux}`);
+  }
+  if (resolveMuseSessionsRoot('/home/tester') !== '/home/tester/.local/share/muse/sessions') {
+    throw new Error('us-356 AC2: muse default root changed');
+  }
+  if (expandMuseSessionDirs(path.join(repoRoot, 'definitely-missing-dir')).length !== 0) {
+    throw new Error('us-356 AC2: missing muse root must expand to zero dirs');
+  }
+  try {
+    process.env.XDG_DATA_HOME = '/data/xdg';
+    const xdgRoot = resolveMuseSessionsRoot('/home/tester');
+    if (xdgRoot !== '/data/xdg/muse/sessions') {
+      throw new Error(`us-356 AC2: XDG_DATA_HOME not honored (${xdgRoot})`);
+    }
+  } finally {
+    if (savedXdg === undefined) delete process.env.XDG_DATA_HOME;
+    else process.env.XDG_DATA_HOME = savedXdg;
   }
   if (TRANSCRIPT_LIMITS.maxBytesPerFile !== 262144) throw new Error('us-356 AC6: per-file cap changed');
 }
@@ -112,8 +141,9 @@ const slug = 'us356-demo';
 const workflowId = 'wf-us356';
 makeWorkflow(root, slug, workflowId);
 makeWorkflow(root, 'us356-lonely', 'wf-us356-lonely');
-const sessionFile = path.join(fakeHome, '.claude', 'sessions', `${slug}.jsonl`);
-write(sessionFile, `${workflowId} ${slug} recent worker activity line\n`);
+const museSessionsDir = path.join(fakeHome, '.local', 'share', 'muse', 'sessions', '2026', '09', '19');
+const sessionFile = path.join(museSessionsDir, slug, 'session.jsonl');
+write(sessionFile, `${workflowId} ${slug} recent worker activity line\nturn_ended before workflow handoff\n`);
 fs.utimesSync(sessionFile, new Date(Date.now() - 3600_000), new Date(Date.now() - 3600_000));
 
 // AC3: default runs perform zero host-store reads; sources stay disabled.
@@ -141,7 +171,7 @@ fs.utimesSync(sessionFile, new Date(Date.now() - 3600_000), new Date(Date.now() 
   if (workflow.transcriptSource?.status !== 'available') {
     throw new Error(`us-356 AC1: expected available source, got ${JSON.stringify(workflow.transcriptSource)}`);
   }
-  if (workflow.transcriptSource.adapter !== 'claude-code' || workflow.transcriptSource.locationClass !== 'user') {
+  if (workflow.transcriptSource.adapter !== 'muse' || workflow.transcriptSource.locationClass !== 'user') {
     throw new Error(`us-356 AC1: wrong source detail ${JSON.stringify(workflow.transcriptSource)}`);
   }
   if (report.transcript.hostStoreReads < 1) throw new Error('us-356 AC1: expected host-store reads with the flag');
@@ -158,7 +188,7 @@ fs.utimesSync(sessionFile, new Date(Date.now() - 3600_000), new Date(Date.now() 
 
 // AC4: strictly read-only against live stores (WAL-safe copy-then-read).
 {
-  const dbFile = path.join(fakeHome, '.claude', 'sessions', 'state.vscdb');
+  const dbFile = path.join(museSessionsDir, `${slug}-live`, 'state.vscdb');
   const walFile = `${dbFile}-wal`;
   write(dbFile, 'sqlite-format-3-binary-payload');
   write(walFile, 'wal-frame-payload');
@@ -187,17 +217,34 @@ fs.utimesSync(sessionFile, new Date(Date.now() - 3600_000), new Date(Date.now() 
   const redacted = sanitizeTranscriptText(`call with ${secret} and ${bearer} plus api_key: hunter2value`);
   if (redacted.includes('PLANTED')) throw new Error('us-356 AC5: sanitizer leaked a planted secret');
   if (!redacted.includes('[REDACTED]')) throw new Error('us-356 AC5: sanitizer produced no redaction marker');
-  const collapsed = sanitizeReportPath(path.join(fakeHome, '.claude', 'sessions', 'x.jsonl'), fakeHome);
-  if (collapsed.includes('fakehome')) throw new Error('us-356 AC5: host-private path leaked in evidence');
-  write(path.join(fakeHome, '.claude', 'sessions', `${slug}-secret.jsonl`), `${slug} ${workflowId} leaked ${secret}\n`);
+  const collapsed = sanitizeReportPath(path.join(museSessionsDir, slug, 'x.jsonl'), fakeHome);
+  if (collapsed.includes(fakeHome)) throw new Error('us-356 AC5: host-private path leaked in evidence');
+  const collapsedDefault = sanitizeTranscriptText(`saw ${fakeHome}/sessions/y.jsonl`, fakeHome);
+  if (collapsedDefault.includes(fakeHome)) throw new Error('us-356 AC5: host-private path leaked in transcript text');
+  write(path.join(museSessionsDir, `${slug}-secret`, 'session.jsonl'), `${slug} ${workflowId} leaked ${secret}\n`);
   const result = run(['--repo-root', root, '--discover-host-transcripts', '--slug', slug, '--json'], root);
   if (result.status !== 0) throw new Error(result.stderr || result.stdout);
   if (result.stdout.includes('PLANTED')) throw new Error('us-356 AC5: planted secret leaked into snapshot output');
+  // AC5 end-to-end: paths discovered via monitor.hostHome stay anonymized in
+  // snapshot output (roots + finding evidence), not just in unit-called helpers.
+  const ac5Report = JSON.parse(result.stdout);
+  for (const r of ac5Report.transcript.roots || []) {
+    if (r.includes(fakeHome)) throw new Error('us-356 AC5: hostHome path leaked into transcript.roots');
+  }
+  let evidenceSeen = 0;
+  for (const f of ac5Report.findings || []) {
+    for (const e of f.evidence || []) {
+      evidenceSeen += 1;
+      if (e.includes(fakeHome)) throw new Error('us-356 AC5: hostHome path leaked into finding evidence');
+    }
+  }
+  if (evidenceSeen < 1) throw new Error('us-356 AC5: expected at least one evidence path in this run');
 }
 
 // AC6: per-tick cost stays bounded (tail-only reads on a large fixture).
 {
-  const big = path.join(fakeHome, '.claude', 'sessions', 'big-history.jsonl');
+  const big = path.join(museSessionsDir, `${slug}-big`, 'session.jsonl');
+  fs.mkdirSync(path.dirname(big), { recursive: true });
   fs.writeFileSync(big, `${'x'.repeat(999)}\n`.repeat(20 * 1024));
   const started = Date.now();
   const result = run(['--repo-root', root, '--discover-host-transcripts', '--slug', slug, '--json'], root);

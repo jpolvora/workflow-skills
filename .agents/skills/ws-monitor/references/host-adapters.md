@@ -3,13 +3,15 @@
 Adapter data for `ws-monitor` opt-in transcript discovery. Host specifics live
 here and in `monitor_snapshot.cjs` `getHostAdapters()` — never in the portable
 skill contract. Discovery is strictly opt-in (`--discover-host-transcripts` or
-`monitor.discoverHostTranscripts`); default runs perform zero host-store reads.
+`monitor.discoverHostTranscripts`); `monitor.hostHome` overrides the home used
+for host-store discovery and path sanitizing (CI/sandbox/isolated profiles).
+Default runs perform zero host-store reads.
 
 All reads are read-only and bounded (recent-window tail, per-tick time/read
 caps in `TRANSCRIPT_LIMITS`); SQLite-family stores are copy-then-read so a live
 WAL database is never locked or modified. Findings carry sanitized evidence
-only — tokens, prompt content, credentials, and absolute home paths are
-redacted before reporting.
+only — tokens, prompt content, credentials, and absolute home paths (both the
+OS home and the configured `monitor.hostHome`) are redacted before reporting.
 
 ## Default session locations
 
@@ -27,8 +29,7 @@ redacted before reporting.
 | OpenCode | any | `<repo>/.opencode/transcripts/`, `<repo>/.opencode/sessions/`, `<repo>/.opencode/logs/` | workspace | file |
 | Antigravity | any | `~/.gemini/antigravity-ide/brain/<conversation-id>/.system_generated/logs/` | user | file (`transcript.jsonl`) |
 | Antigravity | any | `<repo>/.agents/transcripts/`, `<repo>/.system_generated/logs/` | workspace | file |
-| Claude | any | `~/.claude/sessions/` | user | file (JSONL) |
-| Claude | any | `<repo>/.claude/sessions/` | workspace | file |
+| Muse | any | `~/.local/share/muse/sessions/YYYY/MM/DD/<session-id>/session.jsonl` (`$XDG_DATA_HOME/muse/sessions/...` when set) | user | file (JSONL) |
 
 ## Correlation
 

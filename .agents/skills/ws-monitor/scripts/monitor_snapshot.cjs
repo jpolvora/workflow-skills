@@ -50,6 +50,46 @@ function getHostHome(config) {
 
 // Per-OS default session locations per host adapter. Resolved lazily so no
 // host store is touched unless the caller opts in via --discover-host-transcripts.
+// us-356: Muse Code sessions live under the XDG data dir
+// (~/.local/share/muse/sessions/YYYY/MM/DD/<session-id>/session.jsonl),
+// never under ~/.claude. Honor $XDG_DATA_HOME when set.
+function resolveMuseSessionsRoot(posixHome) {
+  const xdg = typeof process.env.XDG_DATA_HOME === 'string' ? process.env.XDG_DATA_HOME.trim() : '';
+  const base = xdg ? xdg.replace(/\\/g, '/').replace(/\/+$/, '') : `${posixHome}/.local/share`;
+  return `${base}/muse/sessions`;
+}
+
+// us-356: Muse nests sessions YYYY/MM/DD/<session-id>/ under its root.
+// Expand to the recent session dirs (bounded slice, newest first) instead
+// of walking the whole tree; fall back to the root when the layout differs.
+function expandMuseSessionDirs(root, limit = 50) {
+  const found = [];
+  const listDirs = (dir) => {
+    try {
+      return fs.readdirSync(dir, { withFileTypes: true })
+        .filter((entry) => entry.isDirectory())
+        .sort((a, b) => b.name.localeCompare(a.name))
+        .map((entry) => entry.name);
+    } catch {
+      return [];
+    }
+  };
+  for (const year of listDirs(root)) {
+    if (found.length >= limit) break;
+    for (const month of listDirs(path.join(root, year))) {
+      if (found.length >= limit) break;
+      for (const day of listDirs(path.join(root, year, month))) {
+        if (found.length >= limit) break;
+        for (const session of listDirs(path.join(root, year, month, day))) {
+          if (found.length >= limit) break;
+          found.push(path.join(root, year, month, day, session));
+        }
+      }
+    }
+  }
+  return found;
+}
+
 function getHostAdapters(platform = process.platform, home = os.homedir()) {
   const posixHome = String(home).replace(/\\/g, '/');
   const appData = platform === 'win32'
@@ -83,12 +123,12 @@ function getHostAdapters(platform = process.platform, home = os.homedir()) {
       matchers: ['antigravity', '.gemini', '.system_generated'],
     },
     {
-      id: 'claude-code',
+      id: 'muse',
       storeKind: 'file',
       locations: [
-        { locationClass: 'user', path: `${posixHome}/.claude/sessions` },
+        { locationClass: 'user', path: resolveMuseSessionsRoot(posixHome) },
       ],
-      matchers: ['.claude'],
+      matchers: ['.local/share/muse', '/muse/sessions', 'session.jsonl'],
     },
   ];
 }
@@ -104,13 +144,12 @@ const SECRET_PATTERNS = [
   /password\s*[:=]\s*['"]?[^'"\s,}]{4,}['"]?/gi,
 ];
 
-function sanitizeTranscriptText(text) {
+function sanitizeTranscriptText(text, home = os.homedir()) {
   let redacted = String(text || '');
   for (const pattern of SECRET_PATTERNS) {
     pattern.lastIndex = 0;
     redacted = redacted.replace(pattern, '[REDACTED]');
   }
-  const home = os.homedir();
   if (home) redacted = redacted.split(home).join('<home>');
   redacted = redacted.replace(/[A-Za-z]:\\Users\\[^\\/:*?"<>|]+/g, '<home>');
   return redacted;
@@ -698,6 +737,8 @@ function resolveCandidateTranscriptRoots(context, explicitRoots = [], options = 
     path.join(context.repoRoot, '.opencode', 'sessions'),
     path.join(context.repoRoot, '.opencode', 'logs'),
     path.join(context.repoRoot, '.system_generated', 'logs'),
+    // Generic repo-local candidate (content-correlated, not adapter-gated);
+    // kept after the Claude-to-Muse adapter rename for existing checkouts.
     path.join(context.repoRoot, '.claude', 'sessions'),
   ];
   for (const candidate of workspaceCandidates) {
@@ -725,6 +766,11 @@ function resolveCandidateTranscriptRoots(context, explicitRoots = [], options = 
           }
           continue;
         }
+        if (adapter.id === 'muse' && fs.existsSync(resolved)) {
+          const sessions = expandMuseSessionDirs(resolved, 50);
+          roots.push(...(sessions.length > 0 ? sessions : [resolved]));
+          continue;
+        }
         if (fs.existsSync(resolved)) roots.push(resolved);
       }
     }
@@ -735,6 +781,9 @@ function resolveCandidateTranscriptRoots(context, explicitRoots = [], options = 
 function scanTranscriptRoots(context, roots, filter = {}) {
   // us-356: per-tick budget (time/read caps, recent-window tails only).
   const startedAt = Date.now();
+  // us-356: collapse host-private paths against the configured host home,
+  // not just the OS home, so isolated homes never leak into output.
+  const hostHome = getHostHome(context?.config);
   const findings = [];
   const files = [];
   const visit = (directory, depth = 0) => {
@@ -776,7 +825,7 @@ function scanTranscriptRoots(context, roots, filter = {}) {
         : (matchesWf || matchesSlug);
       if (!pass) continue;
     }
-    const text = sanitizeTranscriptText(rawText);
+    const text = sanitizeTranscriptText(rawText, hostHome);
     filesScanned += 1;
     bytesRead += read.bytesRead;
     let mtimeMs = null;
@@ -786,7 +835,7 @@ function scanTranscriptRoots(context, roots, filter = {}) {
       // mtime is liveness-only; unreadable stats stay observable via scan, not here.
     }
     scannedFiles.push({ file, mtimeMs, tail: text.slice(-8000) });
-    const evidence = sanitizeReportPath(toRepoRelative(context.repoRoot, file, { allowOutside: true }));
+    const evidence = sanitizeReportPath(toRepoRelative(context.repoRoot, file, { allowOutside: true }), hostHome);
     if (/ENOENT|build_dispatch_context/i.test(text)) {
       addFinding(findings, 'critical', 'hybrid-path-resolution', 'Transcript contains a missing-skill or dispatch-context path failure', [evidence]);
     }
@@ -998,6 +1047,7 @@ function snapshot(options) {
   }
 
   const transcriptRoots = resolveCandidateTranscriptRoots(context, options.transcriptRoots, options);
+  const hostHome = getHostHome(context.config);
   const transcript = scanTranscriptRoots(context, transcriptRoots, {
     workflowId: options.workflowId || null,
     slug: options.slug || null,
@@ -1058,7 +1108,7 @@ function snapshot(options) {
       findings: memoryVault.findings,
     },
     transcript: {
-      roots: transcriptRoots.map((root) => sanitizeReportPath(toRepoRelative(context.repoRoot, root, { allowOutside: true }))),
+      roots: transcriptRoots.map((root) => sanitizeReportPath(toRepoRelative(context.repoRoot, root, { allowOutside: true }), hostHome)),
       filesScanned: transcript.filesScanned,
       bytesRead: transcript.bytesRead,
       elapsedMs: transcript.elapsedMs,
@@ -1234,4 +1284,6 @@ module.exports = {
   readBoundedTailText,
   resolveTranscriptSource,
   guessTranscriptAdapter,
+  resolveMuseSessionsRoot,
+  expandMuseSessionDirs,
 };
