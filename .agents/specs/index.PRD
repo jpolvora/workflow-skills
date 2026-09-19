@@ -142,7 +142,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] Muse Code harness adaptation for ws-spec-to-pr workflows on muse-spark agents (`spec: 0090-muse-code-harness-adaptation.spec.md`)
 - [ ] Revamp website visual and template with docs-style layout (`spec: 0091-website-visual-revamp.spec.md`)
 - [ ] ws-spec-to-pr: parameter override for modelsPreset on workflow invocation (`spec: 0092-models-preset-override.spec.md`)
-- [ ] Step-Level Baton Handoffs for Multi-CLI Workflow Runs (`spec: 0094-step-baton-multi-agent-runs.spec.md`)
+- [x] Step-Level Baton Handoffs for Multi-CLI Workflow Runs (`spec: 0094-step-baton-multi-agent-runs.spec.md`)
 - [x] ws-wiki: verbosity/prose-style option + richer conditional page template (`spec: 0080-us-324.spec.md`)
 - [x] Fix stale autoload keyword-map prose for scm-provider-contract path (`spec: 0081-us-328.spec.md`)
 - [x] change website cta / main slug/slogan (`spec: 0093-us-344.spec.md`)
@@ -290,7 +290,7 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 
 | 96 | `models-preset-override` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-to-pr: parameter override for modelsPreset on workflow invocation |
 
-| 97 | `step-baton-multi-agent-runs` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Step-Level Baton Handoffs for Multi-CLI Workflow Runs |
+| 97 | `step-baton-multi-agent-runs` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Step-Level Baton Handoffs for Multi-CLI Workflow Runs |
 
 | 101 | `us-347` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-goal-fix-pr as orchestrator with per-round subagent dispatch |
 
@@ -393,6 +393,7 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 | 2026-09-13 | `us-328` | Fix stale autoload keyword-map prose for scm-provider-contract path | Implemented |
 | 2026-09-18 | `us-344` | change website cta / main slug/slogan | [PR #346](https://github.com/jpolvora/workflow-skills/pull/346) |
 | 2026-09-18 | `us-347` | ws-goal-fix-pr as orchestrator with per-round subagent dispatch | [PR #349](https://github.com/jpolvora/workflow-skills/pull/349) |
+| 2026-09-19 | `step-baton-multi-agent-runs` | Step-Level Baton Handoffs for Multi-CLI Workflow Runs | [PR #350](https://github.com/jpolvora/workflow-skills/pull/350) |
 
 ## 11. Maintenance checklist
 

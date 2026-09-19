@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-09-18 22:10] Agent: Muse Code
+- **Prompt**: update README.md, docs/wiki, website with latest new features added in previous 10 PRs (use /ws-wiki).
+- **Done**: ws-wiki bounded sync for specs 0092/0093/0095 + code-mapped updates (host-target picker, 3-option gate cap, header/nav) across 5 wiki pages + index (watermark left: 0094/0096 in-flight); README 4 feature rows + fix-PR dispatch wording; FEATURES 0.4.37 stamp, 54-skill counts, autoload fix, 0.4.31/0.4.32/0.4.35–0.4.37 evolution rows, ws-wiki catalog row; site 4 cards + 2 FAQs + preview note + 2 stale roadmap removals; llms.txt model-routing section; root + hub AGENTS one-liners; integrity regen; site/wiki rebuilt.
+- **Result**: Wiki validate PASS; build-site --check current; doc-sync/site-wiki/wiki suites ok; harness-clean 0 findings; full chain green except pre-existing bare-`python` miss (reran remainder under python3, all ok). Full-suite transient stale-integrity traced to concurrent step-baton session edits, verified settled via hash compare. Learning: pipe-exit trap (below).
+
+### [2026-09-19 00:35] Agent: Muse Code
+- **Prompt**: step-baton close (Step 8: baton handoffs for multi-CLI runs, 17 ACs).
+- **Done**: Verify 9/10, review clean, testing PASS; G2 40af4ad4 + 0.4.38 bump 231c5ddf; delivery commit with refined plan; status completed, ship to PR next.
+- **Result**: All 17 ACs + 7/7 NS delivered, product diff 89 files (+2866/-185), v0.4.38. Learning: traps verification-manifest-root-placement, step-output-nesting-manifest-merge.
+
 ### [2026-09-18 16:45] Agent: Muse Code
 - **Prompt**: us-347 close (ws-goal-fix-pr orchestrator dispatch).
 - **Done**: Verify 10/10, review clean, testing PASS; delivery commit with refined plan; status completed, ship to PR next.

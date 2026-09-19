@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "revision": 42,
-  "generatedAt": "2026-09-18T21:52:26Z",
+  "generatedAt": "2026-09-19T04:06:21Z",
   "workflows": [
     {
       "workflowId": "",
@@ -324,6 +324,17 @@
       "currentStep": 9,
       "updatedAt": "2026-09-09T13:03:58Z",
       "runPath": ".agents/plans/specialized-subagents-compiler/specialized-subagents-compiler-20260909T120930Z.state.json"
+    },
+    {
+      "workflowId": "step-baton-multi-agent-runs-20260918T232508Z",
+      "slug": "step-baton-multi-agent-runs",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/step-baton-multi-agent-runs/step-baton-multi-agent-runs-20260918T232508Z.state.md",
+      "stateSha256": "62fbbe25250707d123bb2b338e49f1ab695c0d725e7963205c960d9da7288728",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-19T03:55:03Z",
+      "runPath": ".agents/plans/step-baton-multi-agent-runs/step-baton-multi-agent-runs-20260918T232508Z.state.json"
     },
     {
       "workflowId": "testing-executor-model-20260812T192105Z",

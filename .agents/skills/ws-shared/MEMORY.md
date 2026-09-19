@@ -6,6 +6,141 @@ To add new learnings, create a separate markdown file under `.agents/skills/ws-s
 
 ---
 
+### [2026-09-19] Template substitution must use function replacements for variable values
+- **Layer**: `application`
+- **Module**: `ws-shared / step baton runner templates`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/scripts/step_baton.cjs`
+- **Scenario / Context**: `substituteRunnerTemplate` passed substituted values (prompt/cwd paths, slug, step) directly as the `String.replaceAll` replacement string, so dollar-patterns in real values mis-substituted: `a$&b` became `a{prompt}b` and `x$'y` became `xy`, silently corrupting the worker argv path. Paths with spaces/quotes were already handled deliberately, but no test covered `$` metacharacters.
+- **DO NOT**: Pass a variable value as the replacement argument to `String.replace`/`replaceAll` with a string pattern; assume paths never contain `$&`, `$'`, `$$`, or `$n`.
+- **INSTEAD DO**: Use function replacements (`() => value`) so every value inserts verbatim; keep the dollar-pattern unit case (`$&`/`$'`/`$$`/`$1` across all four tokens) in `test/test-step-baton-config.js` green.
+
+### [2026-09-19] Step-to-artifact maps must branch on pipeline, not just step
+- **Layer**: `application`
+- **Module**: `ws-spec-to-pr / step coordinator + workflow_state`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/scripts/workflow_state.cjs`
+- **Scenario / Context**: `finishArtifactNames` accepted a `pipeline` argument but only step 2 branched on it, so lite step 3 (review) expected the standard-only `step-03-plan.exec.md` that lite never emits. A correctly configured lite baton run mapping step 3 failed advancement verification after a successful review and blocked. The coordinator test masked it by seeding the standard-only file for every repo.
+- **DO NOT**: Add a `pipeline` parameter to a step-keyed map and leave most steps on the standard shape; seed test repos with artifacts the exercised pipeline never emits.
+- **INSTEAD DO**: Give every pipeline its own explicit step map (lite: 0 spec, 1 plan, 3 review, 4 result; else none) and seed only artifacts the pipeline under test produces; cross-check new maps against `requiredAdvanceArtifacts` and the pipeline SKILL step table.
+
+### [2026-09-19] Stamp pipeline-remapped artifacts with their canonical step, not the producing step
+- **Layer**: `application`
+- **Module**: `ws-shared / workflow state finish path`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/scripts/workflow_state.cjs`
+- **Scenario / Context**: The finish path stamped every `finishArtifactNames` result with the finishing step number, but the lite step-3 map returns `step-06-*.review.md`; the stamp merge overwrote the correct `step: 6` with `step: 3`, and the pre-advance validator (which always expects step 6 for that artifact) threw an identity mismatch — breaking every lite run reaching step 4.
+- **DO NOT**: Stamp a step number derived from the producing/finishing step onto an artifact whose filename encodes a different canonical step; assume step N always produces `step-N-*` files.
+- **INSTEAD DO**: Parse the canonical step from the artifact filename (`/^step-(\d+)-/`, fallback to the finishing step) at the single finish-flow stamp call site, and keep the lite finish-3 contract case plus the T6 canonical-step guard in `test/test-artifact-stamp-status.js` green.
+
+### [2026-09-19] Skip artifact waivers must reuse the canonical pre-advance oracle, not a reason list
+- **Layer**: `application`
+- **Module**: `ws-spec-to-pr / step coordinator`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs`
+- **Scenario / Context**: `verifyAdvancement` accepted `skipped` handoffs (round-2 status gate) but then unconditionally demanded `finishArtifactNames`, while the canonical pre-advance validator waives artifacts for reason-gated skips — so mapped-and-skipped steps (standard plan.exec, testing.report, interview artifacts) returned `missing-artifact`, retried, and blocked. A hand-kept reason list would drift again (it missed `interview-not-required` on first drafting).
+- **DO NOT**: Gate skipped steps on artifacts with a separate reason list, or demand artifacts after accepting a skip without consulting the canonical validator.
+- **INSTEAD DO**: Waive the artifact demand exactly when `requiredAdvanceArtifacts(pipeline, step+1, afterState)` is empty for a `skipped` handoff, so coordinator and canonical validator share one oracle; keep the waive + negative-control unit cases in `test/test-step-coordinator.js` green.
+
+### [2026-09-19] Post-exit tripwires must derive their allowance from the turn's own op trace
+- **Layer**: `application`
+- **Module**: `ws-spec-to-pr / step coordinator revision guard`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs`
+- **Scenario / Context**: The post-exit revision guard accepted only `after.revision` in `[beforeClaim+1, beforeClaim+2]`, assuming the worker performs exactly one state write. But every `update_state` op bumps the revision, the worker contract never forbids `dispatch`, and the harness-wide convention is dispatch-before-finish — so a conforming dispatch+finish worker landed at +3 and the guard aborted a healthy, correctly-advanced step with exit 4 and a misleading STATE_CHANGED_UNDERFOOT. All fixtures were finish-only, so the real path was unasserted.
+- **DO NOT**: Hardcode a fixed write-count ceiling into a post-exit guard; assume a worker performs exactly N state writes; adopt a telemetry-derived diff without per-line parse hardening and the full op-type vocabulary.
+- **INSTEAD DO**: Baseline the telemetry stream at spawn and count the turn's own op events (`dispatch`/`finish`/`gate-bypass`, per-line parse, malformed lines skipped) to derive the allowed delta; keep one slack write for suppressed duplicate/idempotent finishes; pin both directions with tests (legitimate multi-write turn advances, out-of-band bump still exits 4).
+
+### [2026-09-19] Pipeline step-to-artifact maps must cover the close/ship step
+- **Layer**: `application`
+- **Module**: `ws-spec-to-pr / step coordinator + workflow_state`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/scripts/workflow_state.cjs`
+- **Scenario / Context**: The lite branch of `finishArtifactNames` mapped steps 0/1/3 but omitted step 4 (close/ship, canonical artifact `step-08-*.result.md`). The coordinator then expected nothing for a mapped lite close step and reported `advanced` with the result missing, while the canonical `--pre-advance 5` gate rejected the same state (gate disagreement, HS-5); the finish stamp loop and `fallbackArtifacts` also skipped the result. The coordinator, telemetry, and specmemo tests masked it by seeding no close result while asserting completion.
+- **DO NOT**: Extend a pipeline step map mid-pipeline fix by mid-pipeline fix and stop before the terminal close/ship step; assert close-step completion in tests without seeding the close artifact.
+- **INSTEAD DO**: When touching any pipeline step map, verify the full step range 0..close against `requiredAdvanceArtifacts` (finish key N must pair with requiredAdvance next N+1) and the pipeline SKILL step table; keep the lite step-4 `verifyAdvancement` pair (present advances / absent demands) and the body-only step-08 stamp case green.
+
+### [2026-09-19] Orchestrator-loop replacements must run the canonical pre-advance oracle
+- **Layer**: `application`
+- **Module**: `ws-spec-to-pr / step coordinator success path`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs`
+- **Scenario / Context**: The coordinator replaced the single-host orchestrator loop but its `verifyAdvancement` re-implemented only the finished step's own contract (handoff status, step advance, finish-artifact presence), never calling `validateSnapshot({ preAdvance: N+1 })` — so the ledger score/alias/commit/fable gates, plan.index, ac-ledger presence, and artifact identity were silently dropped in baton runs. A below-bar pre-step6 result could enter review because step-6 dispatch only re-validates the step5-boundary score. Fixtures masked it by seeding no ledger or index while asserting completion.
+- **DO NOT**: Replace an orchestrator loop with a local advancement check that re-implements a subset of the canonical gate; assert close-step completion in coordinator tests without seeding the canonical pre-advance inputs.
+- **INSTEAD DO**: Call the shared `validateSnapshot` oracle with `preAdvance: currentStep+1` in the success path (import `plansIndexPath` for the index arg) and fail closed HS-5 (blocked, exit 2) on throw — a gate-weak finish reproduces under retry, so never retry it; seed `ac-ledger.json` + `plan.index.json` in baton e2e fixtures and keep the missing-ledger negative case in `test/test-step-coordinator.js` green.
+
+### [2026-09-19] New user-facing capabilities need all five doc surfaces
+- **Layer**: `other`
+- **Module**: `docs / harness change protocol`
+- **Severity**: `Medium`
+- **PathPattern**: `README.md;FEATURES.md;AGENTS.md;docs/index.html;.agents/skills/ws-shared/runtime/AGENTS.md`
+- **Scenario / Context**: A new run mode was documented only in its skill body plus two runtime contracts, leaving install/usage docs and the hub router silent. The Harness change protocol mandates README, root AGENTS, hub AGENTS, FEATURES, and the site for every added capability; the gap was caught by review instead of the author.
+- **DO NOT**: Ship a user-facing capability documented only in its skill body; do not treat a version-stamp site rebuild as documenting the feature (site cards are hardcoded in the builder and need an explicit card).
+- **INSTEAD DO**: Add one concise entry per surface (FEATURES section + config row, README table row, root AGENTS bullet, hub contract Task router sentence, builder card + rebuild without version bump); grep all five surfaces for zero mentions before opening the PR.
+
+### [2026-09-19] Harness-owned lock dirs under .runtime need a RUNTIME_NAMES entry
+- **Layer**: `infrastructure`
+- **Module**: `ws-shared / step_baton + workflow_state validator`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/scripts/step_baton.cjs;.agents/skills/ws-shared/runtime/scripts/workflow_state.cjs`
+- **Scenario / Context**: `withBatonLock` mkdirs `{us-dir}/.runtime/baton.lock` for the claim/release critical section, but `RUNTIME_NAMES` had no `baton.lock` pattern, so `validateSnapshot` (run on every `performUpdate` op and in the coordinator pre-advance gate) threw `unknown .runtime residue: baton.lock` whenever a second coordinator held the lock while the first run's worker validated. Single-coordinator runs never trip it (lock released before spawn), so the gap hid until contention. This is the inverse of the fixture-residue trap: here the unknown name is harness-owned and must be allowlisted, not moved.
+- **DO NOT**: Place a harness-owned lock, socket, or transient dir under `{us-dir}/.runtime/` without adding its stem to `RUNTIME_NAMES` — the fail-closed validator will abort healthy contending turns.
+- **INSTEAD DO**: Add `/^<stem>$/` to `RUNTIME_NAMES` next to the other coordinator transients (`sentinel.pid`, `revision`, `blocked-reason`) in the same change that introduces the `.runtime` writer; cover it with a held-shape positive case (dir + inner file present → validate AND finish exit 0).
+
+### [2026-09-19] GUI config rows must match schema types for structured keys
+- **Layer**: `application`
+- **Module**: `ws-shared / config GUI editor`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1`
+- **Scenario / Context**: Two new GUI rows bound JSON-object config keys with a plain string control. The string branch rendered `[string]$currentVal` (PowerShell object text, not JSON) and stored raw text on edit, so saving from the GUI replaced the object with a string and the next validation run failed. Same-class sweep found no other mistyped rows; object keys without any GUI row have no corruption vector.
+- **DO NOT**: Bind a schema `object`/`array` key with `-Type 'string'` (or any control that renders `[string]$currentVal` and stores raw text) in the config GUI.
+- **INSTEAD DO**: Bind structured keys with `-Type 'json'` (renders via `ConvertTo-Json`, parses via `ConvertFrom-Json`, tolerates invalid input by keeping the stored value); keep the static guard in `test/test-powershell-config-editor.js` (Test 9) green — it fails when any structured schema node is bound as a plain control.
+
+### [2026-09-19] Every programmatic state writer must refresh the plans index row
+- **Layer**: `application`
+- **Module**: `ws-spec-to-pr / step coordinator + ws-shared workflow state`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs;.agents/skills/ws-shared/runtime/scripts/workflow_state.cjs`
+- **Scenario / Context**: All three coordinator direct writers (claim, persist, releaseOwnBaton) called `syncStateDualWrite` without refreshing the plans index, so `row.stateSha256` went stale and every later `validateSnapshot` failed closed — including on the success path, where the post-advancement release bumped revision after the worker finish had already synced the row. (Extends the manual-edit index-hash trap to programmatic writers.)
+- **DO NOT**: Add a `syncStateDualWrite` call site that leaves the plans index row stale; assume the worker finish path's refresh covers later coordinator writes.
+- **INSTEAD DO**: Call the exported `refreshPlansIndexForState(context, state, { pipeline, maxStep, stateFile })` helper after every direct state write (claim, persist, release), and keep the index-hash e2e cases (hermetic release + blocked run) in `test/test-step-coordinator.js` green.
+
+### [2026-09-19] Baton releases need the claim lock plus a fresh-read check
+- **Layer**: `application`
+- **Module**: `ws-spec-to-pr / step coordinator baton release`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs`
+- **Scenario / Context**: `releaseOwnBaton` compared the holder against a pre-read snapshot and wrote outside the baton lock with no revision check, so a claim that won the lock between the read and the write was silently erased (holder=null over a live claim) and two workers executed the same step — on failure paths (same step re-claimed after expiry) and on the success path (next step claimed post-advance, then re-claimed by the staler). The earlier holder check fixed only the single-threaded case; existing tests asserted nothing about serialization.
+- **DO NOT**: Add a baton-affecting state write outside `withBatonLock`, or treat a holder comparison against a pre-lock read as a concurrency guard.
+- **INSTEAD DO**: Perform every release read-check-write inside `withBatonLock` on freshly re-read disk state with the same retry/backoff as the claim (the holder re-check under the shared lock is the CAS); keep the held-lock unit case in `test/test-step-coordinator.js` green (matching holder preserved under a held lock, released once it frees).
+
+### [2026-09-19] Baton release paths need the same ownership guard as claim paths
+- **Layer**: `application`
+- **Module**: `ws-spec-to-pr / step coordinator`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs`
+- **Scenario / Context**: The baton claim path was serialized (lockdir + expected revision + write-then-reread) but the release helper cleared whichever holder was present without checking caller identity, so a delayed coordinator could erase a lease a successor legitimately acquired after expiry and break the single-writer invariant.
+- **DO NOT**: Add a baton release/clear path that nulls the holder without comparing it to the caller's runner id.
+- **INSTEAD DO**: Pass the owner identity into every release helper and no-op on mismatch (`releaseOwnBaton(mdPath, jsonPath, runnerId)`); keep the ownership unit case in `test/test-step-coordinator.js` green (non-owner release asserts holder and revision unchanged).
+
+### [2026-09-19] Advancement gates must check handoff status, not handoff presence
+- **Layer**: `application`
+- **Module**: `ws-spec-to-pr / step coordinator`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs`
+- **Scenario / Context**: `verifyAdvancement` treated a recorded handoff plus step advance as success, but `finish --status failed` still writes the handoff and still advances `currentStep`, so a worker reporting failure through finish was accepted as advanced, the baton released, and the run proceeded over a failed step — bypassing the retry/block policy that only non-zero exits triggered.
+- **DO NOT**: Treat handoff presence (or `currentStep` advance alone) as step success in any advancement gate; assume non-zero exit is the only failure signal.
+- **INSTEAD DO**: Require `handoff.status === 'completed'` (explicitly accepting reason-gated `'skipped'`, which throws before writing any handoff when the reason is invalid) and keep the failed-finish e2e case in `test/test-step-coordinator.js` green (exit 2, blocked, no `baton_released`).
+
+### [2026-09-18] verification-manifest belongs at us-dir root, never .runtime
+- **Layer**: `infrastructure`
+- **Module**: `ws-spec-to-pr / Step 8 close`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/plans/*/.runtime/*;.agents/plans/*/verification-manifest.json`
+- **Scenario / Context**: STEP-DISPATCH says to write `.runtime/verification-manifest.json`, but `validateRuntime` (RUNTIME_NAMES allowlist) rejects that name, so `finish` and `--pre-advance` fail with `unknown .runtime residue` after the manifest exists. Prior shipped runs keep `verification-manifest.json` at the us-dir root, where no allowlist applies.
+- **DO NOT**: Write `verification-manifest.json` under `{us-dir}/.runtime/` (or any non-allowlisted name there) — every later finish/validate fails until it moves.
+- **INSTEAD DO**: Write the manifest at `{us-dir}/verification-manifest.json` (us-347 precedent); pass that path as the manifest pointer to Steps 5/6/7 instead of the `.runtime/` path.
+
 ### [2026-09-18] user-gate option-count portability cap
 - **Layer**: `harness`
 - **Module**: `ws-shared runtime gates / setup resume`
@@ -15,6 +150,15 @@ To add new learnings, create a separate markdown file under `.agents/skills/ws-s
 - **DO NOT**: Render one user-gate question with an unbounded or 4+ option list (resume pickers, combined menus), or add Cancel as a numbered option where dismiss already means HS-1.
 - **INSTEAD DO**: Keep at most 3 options per question (gates.md rule 8): ask intent first, then page picks with More workflows navigation; N==1 resumes directly; Cancel stays dismiss (HS-1). Lock the template with test/test-user-gate-option-cap.js and keep every documented branch reachable across the chunked stages.
 
+### [2026-09-18] Transcribed step-output must nest files under files_touched
+- **Layer**: `infrastructure`
+- **Module**: `ws-spec-to-pr / orch manifest merge`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/plans/*/.runtime/step-*-output.json`
+- **Scenario / Context**: When the orchestrator transcribes a child files_touched list into `.runtime/step-N-output.json` for a manifest merge, a top-level `{created, modified, deleted}` shape is silently ignored (merge reads `output.files_touched`), so `finish` falls back to stamped plan artifacts and the next G2-code skips with `empty-stage` despite real product files on disk.
+- **DO NOT**: Write transcribed step output as a bare `{created, modified, deleted}` object — the merge will not see it and G2 will stage nothing.
+- **INSTEAD DO**: Always wrap as `{status, files_touched: {created, modified, deleted}, notes, next_step_ready}`; after re-finish, assert `workflowManifest` counts match the transcribed set before running G2.
+
 ### [2026-09-18] Token contracts must state effective resolution when a fallback exists
 - **Layer**: `application`
 - **Module**: `ws-shared/runtime/tools.md`
@@ -23,6 +167,15 @@ To add new learnings, create a separate markdown file under `.agents/skills/ws-s
 - **Scenario / Context**: A path token (example: `{memoryDir}`) gains a legacy fallback (effective dir), but the token table still documents mechanical expansion to the configured path. Agents following the table miss legacy entries on read and corrupt the effective source on write. A related gap: token references added to skill prose without extending every token map (doc map + executable checker mirror), so audits silently skip them.
 - **DO NOT**: Document a token with fallback as mechanical configured-path expansion, and do not add token references without extending all maps.
 - **INSTEAD DO**: State the effective-resolution precedence in the token contract (configured wins with entries, else legacy with entries, else configured), and extend the doc map and the executable checker TOKENS mirror together.
+
+### [2026-09-18] Test fixtures must not write unknown files under us-dir .runtime
+- **Layer**: `tests`
+- **Module**: `ws-spec-to-pr / workflow_state fixtures`
+- **Severity**: `Medium`
+- **PathPattern**: `test/fixtures/**;test/test-*.js`
+- **Scenario / Context**: A coordinator worker fixture wrote its receipt next to the dispatch prompt (`{us-dir}/.runtime/*.receipt.json`). `update_state finish` applies the state write, then `validateSnapshot` rejects the run on `unknown .runtime residue` — so finish exits non-zero after mutating state, which surfaces misleadingly as a worker nonzero exit with a completed handoff.
+- **DO NOT**: Write fixture receipts, markers, or scratch files under `{us-dir}/.runtime/` unless the name matches `RUNTIME_NAMES` (`.cjs`/`.patch`/`.md` or the allowlisted stems).
+- **INSTEAD DO**: Direct fixture-only outputs outside the workflow dir (temp root) via an explicit arg such as `--receipt <path>`; keep `{us-dir}/.runtime/` limited to dispatch prompts and harness-owned files.
 
 ### [2026-09-18] subagent dispatch turn-continuation after verbose preview
 - **Layer**: `harness`
@@ -77,6 +230,15 @@ To add new learnings, create a separate markdown file under `.agents/skills/ws-s
 - **Scenario / Context**: Step 4 recorded `files_touched`, but `test/package.json` was modified afterwards (test tgz re-pointed at the bumped version during verify). G2-code staged only the recorded set, leaving one workflow product file uncommitted — which the fail-closed Step 6 dirty preflight would have STOPped on. Caught by an orch `git status` sweep and committed as a supplement with AC linkage.
 - **DO NOT**: Treat the step-4 `files_touched` list as frozen through verify; never enter Step 6 review with uncommitted workflow product files.
 - **INSTEAD DO**: After verify and before review, re-sweep `git status` for product-path dirt; when the stage set missed workflow files, commit the supplement path-scoped with the same message family and link its sha to the AC rows before the preflight.
+
+### [2026-09-18] Piped test commands mask the real exit code
+- **Layer**: `tests`
+- **Module**: `npm run test verification`
+- **Severity**: `Medium`
+- **PathPattern**: `test/**;package.json`
+- **Scenario / Context**: `npm run test 2>&1 | tail -n 15` reported exit 0 (tail's status) while the suite had actually failed mid-chain; the failure only surfaced on a rerun with the npm exit captured. Same class: any `unofficial-runner | head/tail/grep` success claim.
+- **DO NOT**: Treat a piped test command's exit code as the suite verdict, or report green from tail/grep output alone.
+- **INSTEAD DO**: Capture the producer status explicitly (`npm run test > /tmp/x.log 2>&1; echo NPM_EXIT=$?`) and grep the log for fail markers; quote NPM_EXIT in the report.
 
 ### [2026-09-18] New contract carve-outs need same-batch regression assertions
 - **Layer**: `tests`
