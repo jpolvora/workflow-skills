@@ -59,6 +59,10 @@ try {
   }, null, 2));
   // Seed the lite step-4 close result (lite close emits step-08).
   write(path.join(usDir, `step-08-${slug}.result.md`), 'result fixture\n');
+  // Seed the canonical pre-advance inputs the coordinator gate requires
+  // (presence-only for lite next <= 5; real runs carry a full ledger/index).
+  write(path.join(usDir, 'ac-ledger.json'), '{}\n');
+  write(path.join(usDir, 'plan.index.json'), '{}\n');
 
   const result = cp.spawnSync(process.execPath, [
     path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs'),

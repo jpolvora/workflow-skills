@@ -14,6 +14,8 @@ const {
   requiredAdvanceArtifacts,
   refreshPlansIndexForState,
   resolvePackageVersion,
+  validateSnapshot,
+  plansIndexPath,
 } = require('../../ws-shared/runtime/scripts/workflow_state.cjs');
 const {
   validateRunConfig,
@@ -418,6 +420,26 @@ function mirrorSpecMemo({ config, repoRoot, handoff, envelope }) {
   return { mirrored: true, reason: 'appended' };
 }
 
+// Canonical pre-advance oracle: the coordinator replaces the single-host
+// orchestrator loop, so it must enforce the same fail-closed gate
+// (validate_state.cjs --pre-advance N+1) after every verified advancement.
+// Returns null when the gate passes, else the validator message.
+function preAdvanceError({ context, pipeline, mdPath, currentStep }) {
+  try {
+    validateSnapshot({
+      stateFile: mdPath,
+      indexFile: plansIndexPath(context),
+      context,
+      maxStep: MAX_STEP[pipeline] ?? 9,
+      pipeline,
+      preAdvance: Number(currentStep) + 1,
+    });
+    return null;
+  } catch (error) {
+    return error && error.message ? error.message : String(error);
+  }
+}
+
 async function runCoordinator(argv) {
   const options = parseArgs(argv);
   if (options.help) {
@@ -738,6 +760,19 @@ async function runCoordinator(argv) {
       sleepSync(computeBackoffMs(attempt, 100, 2000));
       continue;
     }
+    // Canonical pre-advance gate (HS-5): verifyAdvancement covers the finished
+    // step's own contract; the validator covers everything single-host
+    // enforces before the next dispatch (ledger score/aliases/commits, plan
+    // index, artifact identity). A gate-weak finish reproduces under retry,
+    // so fail closed like the single-host loop instead of retrying.
+    const gateError = preAdvanceError({ context, pipeline, mdPath, currentStep });
+    if (gateError) {
+      process.stderr.write(`ERROR: step ${currentStep} failed pre-advance ${currentStep + 1}: ${gateError}\n`);
+      const blocked = loadStateDisk(jsonPath, mdPath).state;
+      blocked.status = 'blocked';
+      persist(blocked);
+      return { exitCode: EXIT_BLOCKED };
+    }
     // Success: force-clear a stale held baton, emit release, mirror, reset counter.
     const settled = loadStateDisk(jsonPath, mdPath).state;
     if (settled?.baton?.holder) {
@@ -760,23 +795,29 @@ async function runCoordinator(argv) {
 
 function releaseOwnBaton(mdPath, jsonPath, holder, indexSync) {
   try {
-    const disk = loadStateDisk(jsonPath, mdPath);
-    const state = disk.state;
-    normalizeBaton(state);
-    if (!state.baton.holder) return;
-    if (typeof holder === 'string' && holder && state.baton.holder !== holder) return;
-    state.baton = {
-      holder: null,
-      step: Number(state.currentStep),
-      claimedAt: state.baton.claimedAt,
-      leaseUntil: null,
-      revision: state.baton.revision + 1,
-    };
-    state.revision = Number(state.revision || 0) + 1;
-    syncStateDualWrite(mdPath, state, { body: null, jsonText: null });
-    if (indexSync?.context) {
-      refreshPlansIndexForState(indexSync.context, state, { ...indexSync, stateFile: mdPath });
-    }
+    const usDir = path.dirname(mdPath);
+    // Same lock as the claim path: re-read and re-check the holder on fresh
+    // disk state inside the lock, so a claim that won the lock in between is
+    // never overwritten (the holder check under the shared lock is the CAS).
+    withBatonLock(usDir, () => {
+      const disk = loadStateDisk(jsonPath, mdPath);
+      const state = disk.state;
+      normalizeBaton(state);
+      if (!state.baton.holder) return;
+      if (typeof holder === 'string' && holder && state.baton.holder !== holder) return;
+      state.baton = {
+        holder: null,
+        step: Number(state.currentStep),
+        claimedAt: state.baton.claimedAt,
+        leaseUntil: null,
+        revision: state.baton.revision + 1,
+      };
+      state.revision = Number(state.revision || 0) + 1;
+      syncStateDualWrite(mdPath, state, { body: null, jsonText: null });
+      if (indexSync?.context) {
+        refreshPlansIndexForState(indexSync.context, state, { ...indexSync, stateFile: mdPath });
+      }
+    }, { retries: 3, backoffBaseMs: 50 });
   } catch {
     // best effort: next claim will surface the held lease
   }
@@ -818,6 +859,7 @@ module.exports = {
   buildWorkerPrompt,
   spawnWorker,
   verifyAdvancement,
+  preAdvanceError,
   mirrorSpecMemo,
   specMemoEnabled,
   buildBatonEvent,

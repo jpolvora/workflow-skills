@@ -108,6 +108,10 @@ try {
     },
   }, null, 2));
   write(path.join(coordDir, `step-06-${coordSlug}.review.md`), 'review fixture\n');
+  // Seed the canonical pre-advance inputs the coordinator gate requires
+  // (presence-only for lite next <= 5; real runs carry a full ledger/index).
+  write(path.join(coordDir, 'ac-ledger.json'), '{}\n');
+  write(path.join(coordDir, 'plan.index.json'), '{}\n');
   config.defaults.runners['runner-a'] = {
     command: `node ${fixtures}/worker-ok.cjs --prompt "{prompt}" --cwd "{cwd}" --slug {slug} --step {step} --state "${coordState}" --updater "${updater}" --receipt "${path.join(root, 'worker-receipts.jsonl')}"`,
     timeoutSeconds: 60,

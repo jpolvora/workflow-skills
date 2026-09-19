@@ -79,6 +79,10 @@ function makeRepo({ currentStep, completedSteps, stepRunners, runners, stepBaton
   write(path.join(usDir, `step-06-${slug}.review.md`), 'review fixture\n');
   // Seed the lite step-4 close result so close-step runs verify (lite close emits step-08).
   write(path.join(usDir, `step-08-${slug}.result.md`), 'result fixture\n');
+  // Seed the canonical pre-advance inputs the coordinator gate requires
+  // (presence-only for lite next <= 5; real runs carry a full ledger/index).
+  write(path.join(usDir, 'ac-ledger.json'), '{}\n');
+  write(path.join(usDir, 'plan.index.json'), '{}\n');
   return { root, usDir, stateFile, slug, receiptsFile };
 }
 
@@ -384,6 +388,29 @@ function workerCommand(fixture, timeoutSeconds = 60) {
   if (state.baton.revision !== 8) throw new Error('owner release must bump the revision');
 }
 
+// Release serialization: a release must not write while the baton lock is held.
+{
+  const repo = makeRepo({
+    currentStep: 4, completedSteps: [0, 1, 2, 3],
+    stepRunners: { 4: 'runner-a' }, runners: { 'runner-a': workerCommand('worker-ok.cjs') },
+    baton: { holder: 'runner-a', step: 4, claimedAt: new Date().toISOString(), leaseUntil: new Date(Date.now() + 600000).toISOString(), revision: 7 },
+  });
+  const mdPath = path.join(repo.usDir, 'wf-coord.state.md');
+  const lockDir = path.join(repo.usDir, '.runtime', 'baton.lock');
+  fs.mkdirSync(lockDir, { recursive: true });
+  fs.writeFileSync(path.join(lockDir, 'lock.json'), JSON.stringify({ pid: process.pid, at: new Date().toISOString() }), 'utf8');
+  coordinator.releaseOwnBaton(mdPath, repo.stateFile, 'runner-a');
+  let state = JSON.parse(fs.readFileSync(repo.stateFile, 'utf8'));
+  if (state.baton.holder !== 'runner-a') throw new Error('release under a held lock must not clear the holder');
+  if (state.baton.revision !== 7) throw new Error('release under a held lock must not bump the revision');
+  if (state.revision !== 4) throw new Error('release under a held lock must not bump the state revision');
+  fs.rmSync(lockDir, { recursive: true, force: true });
+  coordinator.releaseOwnBaton(mdPath, repo.stateFile, 'runner-a');
+  state = JSON.parse(fs.readFileSync(repo.stateFile, 'utf8'));
+  if (state.baton.holder !== null) throw new Error('release after the lock frees must clear the holder');
+  if (state.baton.revision !== 8) throw new Error('release after the lock frees must bump the revision');
+}
+
 // Failure reported via finish --status failed must not count as advancement.
 {
   const repo = makeRepo({
@@ -399,6 +426,25 @@ function workerCommand(fixture, timeoutSeconds = 60) {
   if (state.handoffs['4']?.status !== 'failed') throw new Error('failed handoff status must be preserved in state');
   if (/baton_released/.test(readTelemetry(repo).map((event) => event.type).join(','))) {
     throw new Error('failed finish must not emit a release for an unadvanced step');
+  }
+}
+
+// Canonical pre-advance gate: a verified advancement that fails the
+// single-host oracle (here: missing ac-ledger) must block, not release.
+{
+  const repo = makeRepo({
+    currentStep: 4, completedSteps: [0, 1, 2, 3],
+    stepRunners: { 4: 'runner-a' }, runners: { 'runner-a': workerCommand('worker-ok.cjs') },
+    stepBaton: { pollIntervalSeconds: 30, maxAttempts: 1 },
+  });
+  fs.rmSync(path.join(repo.usDir, 'ac-ledger.json'), { force: true });
+  const result = runCoordinator(repo, ['--once']);
+  if (result.status !== 2) throw new Error(`missing-ledger advance should exit 2 (blocked), got ${result.status}: ${result.stderr || result.stdout}`);
+  if (!/failed pre-advance 5/.test(result.stderr || '')) throw new Error('missing-ledger block must name the pre-advance failure');
+  const state = readState(repo);
+  if (state.status !== 'blocked') throw new Error('missing-ledger advance must block the run for an operator');
+  if (/baton_released/.test(readTelemetry(repo).map((event) => event.type).join(','))) {
+    throw new Error('missing-ledger advance must not emit a release past the gate');
   }
 }
 

@@ -2127,6 +2127,7 @@ module.exports = {
   finishArtifactNames,
   requiredAdvanceArtifacts,
   refreshPlansIndexForState,
+  plansIndexPath,
   atomicWrite,
   syncStateDualWrite,
   gitTrackedSet,
