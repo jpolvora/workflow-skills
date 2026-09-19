@@ -311,6 +311,14 @@ acImplemented: 0
   const badRuntime = run(validate, [runtimeStateRel, '--repo-root', runtimeRoot]);
   assert.notStrictEqual(badRuntime.status, 0);
   assert.match(`${badRuntime.stdout}${badRuntime.stderr}`, /unknown .runtime residue: helper.txt/);
+  // Held baton lock must not read as residue: withBatonLock mkdirs
+  // .runtime/baton.lock for the critical section, and a concurrent
+  // coordinator can hold it while this run's worker validates.
+  fs.rmSync(path.join(runtimeDir, 'helper.txt'), { force: true });
+  fs.mkdirSync(path.join(runtimeDir, 'baton.lock'), { recursive: true });
+  write(path.join(runtimeDir, 'baton.lock', 'lock.json'), JSON.stringify({ pid: process.pid, at: '2026-09-19T00:00:00.000Z' }));
+  assert.strictEqual(run(validate, [runtimeStateRel, '--repo-root', runtimeRoot]).status, 0, 'validate passes with a held baton.lock');
+  assert.strictEqual(run(update, ['finish', runtimeStateRel, '--step', '0', '--timestamp', '2026-08-21T20:00:05.000Z', ...rtCommon]).status, 0, 'finish passes with a held baton.lock');
 }
 
 // AC10 / AC11 — frontmatter-only state hash; gate history append stable
@@ -603,11 +611,18 @@ assert.strictEqual(run(liteValidate, [liteStateRel, '--pre-advance', '2', '--rep
 stampArtifact(path.join(liteRoot, '.agents/plans/lite'), 'step-06-lite.review.md', 6, 'lite', 'wf-lite');
 assert.strictEqual(run(liteUpdate, ['dispatch', liteStateRel, '--step', '2', '--timestamp', '2026-08-21T20:00:08.000Z', ...liteCommon]).status, 0);
 assert.strictEqual(run(liteUpdate, ['finish', liteStateRel, '--step', '2', '--timestamp', '2026-08-21T20:00:09.000Z', ...liteCommon]).status, 0);
+assert.strictEqual(run(liteUpdate, ['dispatch', liteStateRel, '--step', '3', '--timestamp', '2026-08-21T20:00:09.500Z', ...liteCommon]).status, 0);
+assert.strictEqual(run(liteUpdate, ['finish', liteStateRel, '--step', '3', '--timestamp', '2026-08-21T20:00:09.800Z', ...liteCommon]).status, 0);
+const liteReviewAfterFinish = fs.readFileSync(path.join(liteRoot, '.agents/plans/lite/step-06-lite.review.md'), 'utf8');
+assert.match(liteReviewAfterFinish, /^step: 6$/m, 'lite finish --step 3 must keep the review canonical step 6');
 assert.strictEqual(run(liteValidate, [liteStateRel, '--pre-advance', '4', '--repo-root', liteRoot]).status, 0, 'lite pre-advance 4 uses step-06 review, not step-03 exec');
 assert.notStrictEqual(run(liteValidate, [liteStateRel, '--pre-advance', '5', '--repo-root', liteRoot]).status, 0, 'lite pre-advance 5 requires ship result');
-stampArtifact(path.join(liteRoot, '.agents/plans/lite'), 'step-08-lite.result.md', 8, 'lite', 'wf-lite');
+// Body-only result: the finish stamp loop must add the canonical step-8 metadata for lite step 4.
+write(path.join(liteRoot, '.agents/plans/lite/step-08-lite.result.md'), '# Result\n');
 assert.strictEqual(run(liteUpdate, ['dispatch', liteStateRel, '--step', '4', '--timestamp', '2026-08-21T20:00:10.000Z', ...liteCommon]).status, 0);
 assert.strictEqual(run(liteUpdate, ['finish', liteStateRel, '--step', '4', '--timestamp', '2026-08-21T20:00:11.000Z', ...liteCommon]).status, 0);
+const liteResultAfterFinish = fs.readFileSync(path.join(liteRoot, '.agents/plans/lite/step-08-lite.result.md'), 'utf8');
+assert.match(liteResultAfterFinish, /^step: 8$/m, 'lite finish --step 4 must stamp the result canonical step 8');
 const liteClosed = JSON.parse(fs.readFileSync(path.join(liteRoot, liteStateRel.replace(/\.state\.md$/, '.state.json')), 'utf8'));
 assert.strictEqual(liteClosed.status, 'completed', 'lite close finish sets workflow status completed');
 assert.strictEqual(liteClosed.shipStatus, 'pending', 'lite close finish defaults shipStatus pending');

@@ -15,6 +15,7 @@ const {
 const { scoreLedger } = require('../../../ws-spec-to-pr/scripts/ac_ledger.cjs');
 const { syncAcCountsFromLedger } = require('./ac_counts.cjs');
 const { loadJsonSchema, validateNode } = require('./validate_json_schema.cjs');
+const { releaseBaton } = require('./step_baton.cjs');
 
 const STATE_VERSION = 3;
 const SCHEMA_VERSION = 1;
@@ -39,6 +40,7 @@ const RUNTIME_NAMES = [
   /^round-\d+\.md$/,
   /^final\.md$/,
   /^plan-gate\.md$/,
+  /^baton\.lock$/,
   /^resolve-[A-Za-z0-9_-]+\.txt$/,
   /^plan\.index\.json$/,
   /^step(-\d+)?-output\.json$/,
@@ -469,6 +471,15 @@ function artifactStampFields(state, step, now, stepFinishStatus) {
 }
 
 function finishArtifactNames(slug, step, pipeline = 'standard') {
+  if (pipeline === 'lite') {
+    const lite = {
+      0: `step-00-${slug}.spec.md`,
+      1: `step-01-${slug}.plan.md`,
+      3: `step-06-${slug}.review.md`,
+      4: `step-08-${slug}.result.md`,
+    };
+    return lite[step] ? [lite[step]] : [];
+  }
   const names = {
     0: `step-00-${slug}.spec.md`,
     1: `step-01-${slug}.plan.md`,
@@ -1063,6 +1074,21 @@ function updatePlansIndex(context, run, timestamp) {
   return { file, index };
 }
 
+function refreshPlansIndexForState(context, state, options = {}) {
+  const flow = options.pipeline || state.workflowType || 'standard';
+  const max = options.maxStep !== undefined ? Number(options.maxStep) : (flow === 'lite' ? 5 : 9);
+  const statePath = state.statePath
+    || (options.stateFile ? toRepoRelative(context.repoRoot, options.stateFile) : null)
+    || '';
+  const effective = state.statePath ? state : { ...state, statePath };
+  const stateHash = sha256(canonicalStateJson(state));
+  const medians = estimatedSteps(context, flow, max);
+  const run = buildRun(effective, flow, max, {}, stateHash, medians);
+  const index = updatePlansIndex(context, run, options.timestamp || new Date().toISOString());
+  atomicWrite(index.file, `${JSON.stringify(index.index, null, 2)}\n`);
+  return index;
+}
+
 function validateGateDecision(value) {
   if (!value) return null;
   const parsed = typeof value === 'string' ? JSON.parse(value) : value;
@@ -1647,6 +1673,9 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       output: finishOutput,
       fallbackArtifacts,
     });
+    if (!isInternalSubstep && state.baton !== undefined) {
+      releaseBaton(state, { step, nextStep: state.currentStep });
+    }
   }
   if (operation === 'finish') {
     const hygiene = resolveContextHygiene(context.config);
@@ -1681,7 +1710,11 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   atomicWrite(index.file, `${JSON.stringify(index.index, null, 2)}\n`);
   if (operation === 'finish') {
     for (const artifact of finishArtifactNames(state.slug, step, pipeline)) {
-      stampStepArtifact(path.join(paths.usDir, artifact), state, step, stepFinishStatus);
+      // The artifact's canonical step is encoded in its file name (e.g. lite step 3
+      // produces step-06-*.review.md); never stamp the producing step number.
+      const match = artifact.match(/^step-(\d+)-/);
+      const canonicalStep = match ? Number(match[1]) : Number(step);
+      stampStepArtifact(path.join(paths.usDir, artifact), state, canonicalStep, stepFinishStatus);
     }
   }
   validateSnapshot({ stateFile: absoluteState, indexFile: index.file, context, maxStep, pipeline });
@@ -2092,6 +2125,10 @@ module.exports = {
   artifactStampFields,
   resolveStepStampStatus,
   stampStepArtifact,
+  finishArtifactNames,
+  requiredAdvanceArtifacts,
+  refreshPlansIndexForState,
+  plansIndexPath,
   atomicWrite,
   syncStateDualWrite,
   gitTrackedSet,

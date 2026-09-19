@@ -159,7 +159,7 @@
     <span class="badge-dot"></span>
     <span>Deterministic Spec-Driven Harness</span>
     <span style="color:var(--text-dim)">&bull;</span>
-    <span style="color:var(--accent-cyan);font-family:var(--font-mono)">v0.4.37</span>
+    <span style="color:var(--accent-cyan);font-family:var(--font-mono)">v0.4.38</span>
   </a>
   <h1>From Spec to <span class="gradient-text">Delivery</span></h1>
   <p class="hero-brand">Workflow Skills</p>
@@ -280,6 +280,13 @@
         <h4 class="role-card-title">Desktop config GUI editor</h4>
       </div>
       <p class="role-card-desc">Interactive Windows Forms editor (<code>npm run config:gui</code> / <code>Edit-Config.bat</code>) with auto Dark/Light themes, categorized tabs, live search filter, schema descriptions, and comment-preserving JSON persistence for <code>config.json</code>.</p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">B</div>
+        <h4 class="role-card-title">Step-level baton runs (multi-CLI)</h4>
+      </div>
+      <p class="role-card-desc">Execute different steps in different CLI processes through the deterministic coordinator (<code>step_coordinator.cjs</code>, no LLM): map steps to runners with <code>defaults.stepRunners</code> / <code>defaults.runners</code>, tune polling with <code>defaults.stepBaton</code>. Single-writer baton protocol with coordinator-surfaced gates.</p>
     </div>
   <!-- efficiency-verifiability:end -->
     <div class="role-matrix-card">
@@ -2724,7 +2731,7 @@ npx --yes github:jpolvora/workflow-skills --global
 <div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.4.37 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.4.38 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
 <!-- Skill Viewer Slide-Over Drawer -->

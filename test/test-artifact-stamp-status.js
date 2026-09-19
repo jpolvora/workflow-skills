@@ -142,8 +142,12 @@ function frontmatterStatus(root, rel) {
   const helper = source.match(/function artifactStampFields[\s\S]*?\r?\n\}\r?\n/);
   assert.ok(helper, 'T6: artifactStampFields helper exists');
   assert.doesNotMatch(helper[0], /state\.status/, 'T6: helper never mirrors workflow status');
-  const callSites = source.match(/stampStepArtifact\(path\.join\(paths\.usDir, artifact\), state, step, [A-Za-z0-9_]+\)/g) || [];
+  const callSites = source.match(/stampStepArtifact\(path\.join\(paths\.usDir, artifact\), state, [A-Za-z0-9_]+, stepFinishStatus\)/g) || [];
   assert.strictEqual(callSites.length, 1, 'T6: exactly one finish-flow stamp call site passes the step result');
+  assert.ok(
+    /const canonicalStep = match \? Number\(match\[1\]\) : Number\(step\);/.test(source),
+    'T6: the single call site stamps the artifact canonical step, not the producing step',
+  );
 }
 
 // T7: register first-stamp provisional default + re-register preservation.

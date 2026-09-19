@@ -74,6 +74,18 @@
     "workflowManifest": { "type": "object" },
     "telemetry": { "type": "object" },
     "handoffs": { "type": "object", "description": "Unified step handoffs keyed by step number (0.4.0 consolidation, replaces handoff/step-NN.json files)." },
+    "baton": {
+      "type": "object",
+      "description": "Step-level baton record for multi-CLI runs. Absent on legacy states means unclaimed revision 0.",
+      "required": ["holder", "step", "claimedAt", "leaseUntil", "revision"],
+      "properties": {
+        "holder": { "type": ["string", "null"], "description": "Runner id holding the baton, or null when free." },
+        "step": { "type": "integer", "minimum": 0, "maximum": 9 },
+        "claimedAt": { "type": ["string", "null"], "format": "date-time" },
+        "leaseUntil": { "type": ["string", "null"], "format": "date-time" },
+        "revision": { "type": "integer", "minimum": 0 }
+      }
+    },
     "acLedger": { "type": "object", "description": "Folded AC verification ledger (0.4.0 consolidation, replaces standalone ac-ledger.json reads)." },
     "commits": {
       "type": "array",

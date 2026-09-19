@@ -6,7 +6,7 @@
   "required": ["schemaVersion", "type", "timestamp", "workflowId", "pipeline", "packageVersion", "step", "model", "retries", "reviewRounds", "refineRounds", "skipReason", "acTotal", "acImplemented"],
   "properties": {
     "schemaVersion": { "const": 1 },
-    "type": { "enum": ["dispatch", "finish", "gate-bypass", "audit-finalize", "index-rebuilt"] },
+    "type": { "enum": ["dispatch", "finish", "gate-bypass", "audit-finalize", "index-rebuilt", "baton_claimed", "baton_released", "baton_lease_expired", "runner_spawned", "runner_exited"] },
     "timestamp": { "type": "string", "format": "date-time" },
     "workflowId": { "type": "string" },
     "pipeline": { "enum": ["standard", "lite"] },
@@ -63,7 +63,11 @@
     "juryIgnored": { "type": "string" },
     "substep": { "type": "string", "minLength": 1 },
     "bypassed": { "type": "boolean" },
-    "idempotentReplay": { "type": "boolean" }
+    "idempotentReplay": { "type": "boolean" },
+    "holder": { "type": "string" },
+    "attempt": { "type": "integer", "minimum": 1 },
+    "exitCode": { "type": ["integer", "null"] },
+    "cause": { "type": "string" }
   },
   "additionalProperties": false,
   "$defs": {

@@ -380,5 +380,70 @@ for (const prop of coreDefaults) {
 
 console.log(`  PASS: Schema-to-GUI parity validated (${guiKeys.size} bound keys, all plans/reviews/preview/defaults verified).`);
 
-console.log('\nALL 8 POWERSHELL CONFIG EDITOR TESTS PASSED.');
+console.log('Test 9: Verifying structured schema nodes are not bound as plain string rows...');
+const rowRegex = /-Section\s+['"]([^'"]+)['"]\s+-Key\s+['"]([^'"]+)['"][\s\S]*?-Type\s+['"]([^'"]+)['"]/g;
+const mistyped = [];
+let rowMatch;
+while ((rowMatch = rowRegex.exec(guiScript)) !== null) {
+  const [, section, key, rowType] = rowMatch;
+  if (rowType === 'json') continue;
+  if (rowType === 'array') {
+    // The 'array' branch round-trips string arrays via line-split; only object
+    // schemas (or non-string items) bound as 'array' would corrupt.
+    let node = schema.properties || {};
+    let resolved = true;
+    for (const segment of [...section.split('.'), key]) {
+      const props = node.properties || node;
+      if (!props || typeof props !== 'object' || !(segment in props)) {
+        resolved = false;
+        break;
+      }
+      node = props[segment];
+    }
+    if (!resolved || !node || typeof node !== 'object') continue;
+    const schemaTypes = Array.isArray(node.type) ? node.type : [node.type];
+    const itemsType = node.items && !Array.isArray(node.items) ? node.items.type : undefined;
+    if (schemaTypes.includes('object') || (schemaTypes.includes('array') && itemsType && itemsType !== 'string')) {
+      mistyped.push(`${section}.${key} (row -Type 'array', schema type '${schemaTypes.join('|')}')`);
+    }
+    continue;
+  }
+  let node = schema.properties || {};
+  let resolved = true;
+  for (const segment of [...section.split('.'), key]) {
+    const props = node.properties || node;
+    if (!props || typeof props !== 'object' || !(segment in props)) {
+      resolved = false;
+      break;
+    }
+    node = props[segment];
+  }
+  if (!resolved || !node || typeof node !== 'object') continue;
+  const schemaTypes = Array.isArray(node.type) ? node.type : [node.type];
+  if (schemaTypes.includes('object') || schemaTypes.includes('array')) {
+    mistyped.push(`${section}.${key} (row -Type '${rowType}', schema type '${schemaTypes.join('|')}')`);
+  }
+}
+assert.strictEqual(
+  mistyped.length,
+  0,
+  `GUI rows bind structured schema nodes as plain controls (renders/stores corrupt the value): ${mistyped.join('; ')}`
+);
+assert(
+  guiScript.includes("$Type -eq 'json'"),
+  "Add-ConfigFieldRow has no 'json' branch for object-typed config keys"
+);
+assert.match(
+  guiScript,
+  /-Key\s+['"]stepRunners['"][\s\S]*?-Type\s+['"]json['"]/,
+  'defaults.stepRunners row must use -Type json'
+);
+assert.match(
+  guiScript,
+  /-Key\s+['"]runners['"][\s\S]*?-Type\s+['"]json['"]/,
+  'defaults.runners row must use -Type json'
+);
+console.log('  PASS: No structured schema node is bound as a plain string row; baton rows use json.');
+
+console.log('\nALL 9 POWERSHELL CONFIG EDITOR TESTS PASSED.');
 

@@ -650,7 +650,7 @@ function Add-ConfigFieldRow {
         [string]$Section,
         [string]$Key,
         [string]$LabelText,
-        [string]$Type, # 'bool', 'string', 'path-folder', 'path-file', 'enum', 'int', 'array'
+        [string]$Type, # 'bool', 'string', 'path-folder', 'path-file', 'enum', 'int', 'array', 'json'
         $DefaultVal = $null,
         [string[]]$Options = @(),
         [int]$MinVal = 0,
@@ -746,6 +746,46 @@ function Add-ConfigFieldRow {
             $script:FieldControls += @{
                 Type    = 'string'
                 Control = $txt
+                Path    = $configPath
+            }
+        }
+        elseif ($Type -eq 'json') {
+            $txtJson = New-Object System.Windows.Forms.TextBox
+            $txtJson.Multiline = $true
+            $txtJson.ScrollBars = [System.Windows.Forms.ScrollBars]::Vertical
+            $txtJson.Font = New-Object System.Drawing.Font 'Consolas', 9
+            $txtJson.BackColor = $palette.InputBackColor
+            $txtJson.ForeColor = $palette.InputForeColor
+            $txtJson.Location = New-Object System.Drawing.Point(8, $innerY)
+            $txtJson.Size = New-Object System.Drawing.Size([Math]::Min(560, $rowPanel.Width - 30), 60)
+            $txtJson.Anchor = [System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
+            $txtJson.Tag = $configPath
+
+            if ($null -ne $currentVal -and -not ($currentVal -is [string])) {
+                $txtJson.Text = ($currentVal | ConvertTo-Json -Depth 10 -Compress)
+            }
+            elseif ($currentVal -is [string]) {
+                $txtJson.Text = $currentVal
+            }
+
+            if ($Placeholder) {
+                $h = $txtJson.Handle
+                [TextBoxCue]::SetCue($h, $Placeholder)
+            }
+
+            $txtJson.Add_TextChanged({
+                if ($this.Tag) {
+                    if ([string]::IsNullOrWhiteSpace($this.Text)) { return }
+                    try { Set-ConfigValue -Path ([string]$this.Tag) -Value ($this.Text | ConvertFrom-Json) } catch { }
+                }
+            })
+
+            $rowPanel.Controls.Add($txtJson)
+            $innerY += 66
+
+            $script:FieldControls += @{
+                Type    = 'json'
+                Control = $txtJson
                 Path    = $configPath
             }
         }
@@ -1115,6 +1155,10 @@ function Populate-Sections {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'skipMutationTesting' -LabelText 'Skip Step 7 Mutation Testing' -Type 'bool' -DefaultVal $true
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'parallelVerifyReview' -LabelText 'Parallel Verify & Review (Steps 5 & 6)' -Type 'bool' -DefaultVal $false
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'contextBudget' -LabelText 'Subagent Context Budget (UTF-8 Bytes)' -Type 'int' -MinVal 18000 -MaxVal 128000 -DefaultVal 32000
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'stepRunners' -LabelText 'Step Baton Runner Map (JSON step to runner id)' -Type 'json' -Placeholder '{"4":"runner-a"}'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'runners' -LabelText 'Step Baton Runner Table (JSON id to command entry)' -Type 'json' -Placeholder '{"runner-a":{"command":"node worker.cjs --prompt {prompt}","timeoutSeconds":600}}'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.stepBaton' -Key 'pollIntervalSeconds' -LabelText 'Step Baton Poll Interval (5-300s)' -Type 'int' -MinVal 5 -MaxVal 300 -DefaultVal 30
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.stepBaton' -Key 'maxAttempts' -LabelText 'Step Baton Max Attempts' -Type 'int' -MinVal 1 -MaxVal 10 -DefaultVal 2
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.contextHygiene' -Key 'pruneAfterStep' -LabelText 'Prune Prior Step Context' -Type 'bool' -DefaultVal $true
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.providerCompat' -Key 'stabilizeStaticPrefix' -LabelText 'Stabilize Static Dispatch Prefix' -Type 'bool' -DefaultVal $true
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.providerCompat' -Key 'thinkingToolCompat' -LabelText 'Preserve Thinking Text in Tool Turns' -Type 'bool' -DefaultVal $false

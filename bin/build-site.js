@@ -420,6 +420,13 @@ const efficiencyFeatureBlock = `  <!-- efficiency-verifiability:start -->
       </div>
       <p class="role-card-desc">Interactive Windows Forms editor (<code>npm run config:gui</code> / <code>Edit-Config.bat</code>) with auto Dark/Light themes, categorized tabs, live search filter, schema descriptions, and comment-preserving JSON persistence for <code>config.json</code>.</p>
     </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">B</div>
+        <h4 class="role-card-title">Step-level baton runs (multi-CLI)</h4>
+      </div>
+      <p class="role-card-desc">Execute different steps in different CLI processes through the deterministic coordinator (<code>step_coordinator.cjs</code>, no LLM): map steps to runners with <code>defaults.stepRunners</code> / <code>defaults.runners</code>, tune polling with <code>defaults.stepBaton</code>. Single-writer baton protocol with coordinator-surfaced gates.</p>
+    </div>
   <!-- efficiency-verifiability:end -->
 `;
 html = html.replace(

@@ -38,6 +38,10 @@ Host binding: [`tools.md`](tools.md) § Host-tool binding & dispatch tiers (`ask
 7. Gate continuation (all gates, every step boundary 0→1 through 8→9 / lite 0→1 through 4→5): a native modal `user-gate` return is already explicit confirmation — selecting the recommended advance option (Next / Accept / Commit then advance / Reach-10 advance / close / ship intent) MUST continue in the same turn (record the decision, run the gated action, present the next gate or dispatch next). A markdown fallback gate MUST yield the turn per rule 4; the user's next reply is consumed as that gate's decision before any other tool call. This applies equally to transition gates and intermediate gates (classifier, safety valve, Reach-10, scoreAndRefine, G2-code, close, ship).
 8. Option-count portability: never emit one question with more options than the bound `askQuestionTool` accepts — the portable ceiling is **at most 3 options per question** (some hosts reject more). When candidates exceed 3, chunk instead of truncating: ask intent first, then page the pick list with **More…** navigation so every candidate stays reachable. Cancel stays dismiss (HS-1, rule 5) — never a numbered option on capped hosts. Menus authored with more than 3 options MUST be presented through this chunking where the host cap applies.
 
+### Coordinator gate surfacing (step baton)
+
+In step-level baton runs, all Transition Gates and `user-gate` prompts surface at the deterministic coordinator (`ws-spec-to-pr/scripts/step_coordinator.cjs`) as pause-and-prompt, or auto-apply index 0 in `autoMode`. Prompts stay chunked to at most 3 options per question (rule 8). Worker processes run non-interactive and must not emit gates; gate-shaped worker output is recorded as a worker protocol violation without advancing the step.
+
 ## Interactive execution cadence (One Step Per Turn)
 
 In interactive execution mode (normal mode), the turn boundary depends on how the transition `user-gate` was presented. This prevents eager models from steamrolling past gates by generating a gate plus next-step tool calls in one response.
