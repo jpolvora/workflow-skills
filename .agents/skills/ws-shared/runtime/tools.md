@@ -96,6 +96,17 @@ Config override: `defaults.hostAdapter.mode` (`auto` default; `native-tool` | `c
 | `user-gate-auto` | Auto-select first option | auto-gate table — no user-gate prompt |
 | `browser-mcp` | Browser integration test | Host browser verification tool when available (only normal mode, non-dry-run, gated) |
 
+### Capability tokens & cache-query-first tool choice
+
+Skill bodies name portable capability tokens instead of shell equivalents: `{readFile}`,
+`{writeFile}`, `{editFile}`, `{shellExec}`, `{dispatchAgent}`, `{askQuestion}`, `{browserVerify}`.
+Vocabulary, ordering, and effective-resolution precedence live in
+[`host-capability-tokens.md`](host-capability-tokens.md) — query the `capabilities` map of the
+cached host-capabilities entry for the current `hostId::orchestratorModel` key (the probe also
+mirrors the dispatch aliases under `binding`) before choosing how to act, and prefer the bound
+native tool over shelling out for the same operation. Keep the entry schema in
+[`host-dispatch.md`](host-dispatch.md) §4 in sync (`capabilities`, `hostShape`, `knownShape`).
+
 ### Host-tool binding & dispatch tiers (single contract)
 
 Workflows never name concrete session tools. At bootstrap (before the first `user-gate` or `dispatch-agent`), bind these portable aliases once:
