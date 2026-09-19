@@ -328,6 +328,7 @@ const boundedFinish = run(updateStateScript, [
   'finish',
   stateRel,
   '--step', '4',
+  '--noop', 'handoff bounding fixture touches no product files',
   '--handoff', 'large-handoff.json',
   '--step-output', 'large-output.json',
   '--timestamp', '2026-08-27T12:00:00.000Z',

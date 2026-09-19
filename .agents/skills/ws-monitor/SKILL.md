@@ -1,7 +1,7 @@
 ---
 name: ws-monitor
 description: Read-only live observer for active Spec-to-PR and multi-spec workflow runs, memory vault status, telemetry, artifacts, and multi-host transcripts.
-version: 0.4.40
+version: 0.4.41
 disable-model-invocation: true
 invocation_names:
   - monitor
@@ -113,7 +113,8 @@ Transcripts provide secondary evidence to diagnose why a subagent or orchestrato
 |--------|----------------|---------|
 | Missing mandatory Step 2 interview/refined artifact | Critical | The plan contract is incomplete before downstream work |
 | `currentStep` past Step 5 with a score below `minVerifyScore` | Critical | The workflow has advanced while verification is below the gate |
-| Completed mutating step with empty `filesTouched` | Warning | The subagent handoff did not reach telemetry |
+| Completed mutating step with empty `filesTouched` | Warning | The subagent handoff did not reach telemetry (silent only with an explicit no-op declaration on the finish event, or a skip reason) |
+| Missing exec artifact on a truly completed Step 3 (`missing-exec-artifact`) | Critical | Step 3 finished `completed` but `step-03-*.plan.exec.md` is absent; a `dag-disabled` skip is the designed sequential shape (no stubs written) and stays silent as grandfathered |
 | `packageVersion: "unknown"` | Warning | Runtime provenance is unavailable |
 | `ENOENT` or `build_dispatch_context` in a transcript | Critical | A path or hybrid installation resolution failed |
 | Rejected/unavailable model in a transcript | Warning | Dispatch should fall back to the active session model |

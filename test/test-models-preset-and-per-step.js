@@ -666,6 +666,8 @@ const dagFinish = spawnSync(
     roleState,
     '--step',
     '4',
+    '--noop',
+    'dag role probe touches no product files',
     '--repo-root',
     tempRoot,
   ],

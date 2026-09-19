@@ -22,6 +22,7 @@
     "reviewRounds": { "type": "integer", "minimum": 0 },
     "refineRounds": { "type": "integer", "minimum": 0 },
     "skipReason": { "type": ["string", "null"] },
+    "noop": { "type": ["string", "null"] },
     "acTotal": { "type": "integer", "minimum": 0 },
     "acImplemented": { "type": "integer", "minimum": 0 },
     "dispatchedAt": { "type": ["string", "null"], "format": "date-time" },

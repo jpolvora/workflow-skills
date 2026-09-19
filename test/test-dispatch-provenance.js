@@ -164,6 +164,7 @@ const finishRes = spawnSync(
     'finish',
     stateFile,
     '--step', '4',
+    '--noop', 'provenance fixture touches no product files',
     '--repo-root', tempRoot,
   ],
   { encoding: 'utf8' },
