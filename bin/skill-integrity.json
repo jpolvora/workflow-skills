@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "e0be468dce7869d128f5115237d370073b2e9600e149d0db385bb23d926a4791",
+  "fullPackageDigest": "3b676a05dee6cd1a7cff067fda70adbc6de9213aebb2de04ee39d245033474f8",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -18,7 +18,7 @@
       "runtime/CROSS-PLATFORM.md": "1790b12b2c2add0942a2544c2c8e75f1aa794410e6861b84c052583954074d27",
       "runtime/evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
       "runtime/gates.md": "d265cad687bf4c92d7c724d0c5f278d82a7062da01824c4e8a0bc07aaac93d42",
-      "runtime/host-dispatch.md": "e680dee81fcab801ba5ccaeeb4ca559bd453ddb8fc6c1dcb287262b94aa3b057",
+      "runtime/host-dispatch.md": "e5561735bb2902e0633722e90807d8967f86af7a81744c4c0200e47ae8484fe9",
       "runtime/hub-layout.json": "2d018faa3180d2a2b25cdd7fd15c5cf7c2390f496d3ebe7c1c01604d3ce2f8ba",
       "runtime/plan-index.schema.json": "36df14cc8d9ba17413c456baf6550662b6218465cdf28d9981d624dac9ab4c7f",
       "runtime/plans-index.schema.json": "7f40795ad30dd6deec567b7eb4f4758177da65b4c5633eebba59d44e989ed585",
@@ -49,7 +49,7 @@
       "runtime/stacks/php-laravel.md": "9ab6a66dad32adbf4110e863372c92a47528b1ffb7941b4cdec6339f27df5f1d",
       "runtime/stacks/typescript-node.md": "fb9fb4d49e8f1eb79ced7be656a5ff6a2a2dcfd784a50b77c2766a98b52a73ab",
       "runtime/step-artifact.schema.json": "85a1674590d900df2bbbf818d9f4a4c5ccaf004bdc4a1523fe2c28e4dab554a2",
-      "runtime/telemetry.schema.json": "84728465a55e217b0ad386c12ba88a50c5472c417f562ec1868aefdcac60cfe2",
+      "runtime/telemetry.schema.json": "b2d8234a22e1461be80d1f0ed1884a87203bac840ee9e9293567ab856f784ecf",
       "runtime/tools.md": "cfb5a9c34969e1a3f7f27aa59b614b4adad1a3135b7b037e87d31d312aef1db6",
       "runtime/workflow-state.schema.json": "2e42d794bc4c54a4241d3130c1d8db6d47f4aa41cfb2e65e42bfeb933fba4ab9",
       "templates/CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
@@ -57,7 +57,7 @@
       "templates/MEMORY.md.template": "1a604cb2184c9c54cfb24a2da547d3664bc5d4d8e713ffa937c3c3083c21340d",
       "templates/STACK.md.example": "490400ff5822fb753abff5db2d93ae63b90e00117ecc8cd976c9537b872cd398"
     },
-    "skillDigest": "9bd435954a95b631ecabad06f556658ea0531fd2317bb89caa3e43fce380a52c"
+    "skillDigest": "5565c6cc6dc71fce54ce708b2c0c1bf564dff95474ad63555808dc698b673380"
   },
   "packageVersion": "0.4.38",
   "skills": {
@@ -496,7 +496,7 @@
         "DIAGRAM.md": "fb8a09f8a1ca72065a911aa4b24a3614e66c1611fda48d4dd57b128e82331303",
         "docs/faq.md": "6dbd834d14b77a9f9b54a9f1c6f6720e613dee397ac0c2fceecb3998c6c4e71e",
         "evals/evals.json": "e696da923c1994e6aa9a380d0bc76b4fb9560ca5eacf1c4a278712ef710dbbde",
-        "PROTOCOLS.md": "b63da20ebada10e196db9d4ca1c0c7305fd6ae71883e3dc5906a55951561a416",
+        "PROTOCOLS.md": "25aace84774fd10dc71d0ac38c58248ece1de11097cdb2934b3d09e1a13e37f0",
         "protocols/artifact-cleanup.md": "7797c6e3ece2ea7c64e6947c5cdce2761bcd711b19673de43ca47e35ded42ad2",
         "protocols/delivery-result.md": "c55d864d0d8eece086cc7863661574a9761fb8b947f2a7968b9648ebc4145173",
         "protocols/progress-board.md": "70b39d7711dbb8c3d8868b37e125a9630c63e4e22dff7923c51af9f5ab89ba58",
@@ -513,19 +513,21 @@
         "scripts/merge_verify_review.cjs": "27fc8cde96e46edadc32f45a6ee124293fadbbc59456120bb255bac810760cf9",
         "scripts/plan_index.cjs": "5aeb212dbeaa77b0089f1043b02b9f1b8c3fcaf4fc4834e0c02172de68aaf274",
         "scripts/search_plan_history.cjs": "a090d41a44c70deb5d3731881cab39491ea6ebc65a88ca702ee071ee4a447c76",
-        "scripts/step_coordinator.cjs": "6b38db15dc06c28af304857f5ee33793cd65c86cb14d463a69beea597a312113",
+        "scripts/step_coordinator.cjs": "dcc1bd36500b966ad429941f90adcd4065fc15ca0720d4e5a9b755ef96bc8a2b",
         "scripts/update_state.cjs": "4e43d98f5cf421843a8a3e260e4dc3e7faa69d0d803002df73744ef73ca46fe4",
         "scripts/update_state.py": "963c79a3442b7f663c47309f2c625b6635cb51b8552902ba2081c819b8492894",
         "scripts/validate_state.cjs": "09f08af273165ff23edc9ae0ae27d2d2fe14bf2ff33bcabd4ae5b074cfa4576b",
         "scripts/validate_state.py": "337aa2d349b2a04b244025b85c8a5fe14bb21a40a77396b7c8434417eeb4092b",
+        "scripts/worker_turn_guard.cjs": "74dec2177ad5c36e8259818c04bf9fd83f6c4dc90d98d3382b2971e944d03afa",
         "scripts/write_sequential_dag.cjs": "24980a0e3ef7cc79198af415c6a96b694c993675fc7bee128b423252d949b100",
         "scripts/write_simple_plan_stub.cjs": "8f62b147f7760c40d083857f230ec1f7d9dace8793561d9ddd63d09973a7431e",
         "scripts/write_verification_manifest.cjs": "438e5f7242a86287ac29691ce947e179ef2ec193d4779976310b55990be9da59",
         "SKILL.md": "7d56bcc6e45727edb701fca29118d3add9338c0a81a544c3702b0d62a097cc36",
         "STEP-DISPATCH.md": "f61827148631839613dc38e71a7c82b0d356a311809eea7f363300271cc35d83",
+        "WORKER-TURN-RULES.md": "1e7ca515e50b9fa7a2b177deb042dd8549434b94ce315260c561cee9f988a35d",
         "ws-spec-to-pr-run-test.md": "3136ad5c11dc243ae802f1c44408b86bc9d53921ee8eed3c471d47fb940660c8"
       },
-      "skillDigest": "5c5096dc25dcd7921963faf4b8a05b0b04498494839b78af6b5814189cd0d355"
+      "skillDigest": "0d2641a1d47e470c0cdc3a84351813336c4c5ffe14ebc45a02a1fd0744e18d8d"
     },
     "ws-spec-to-pr-lite": {
       "files": {
