@@ -17,6 +17,7 @@
  * segment of --key; unknown hosts degrade to the minimal safe set.
  * Default cache resolves to the consumer shared dir ({sharedDir}); explicit
  * --cache overrides. Unknown flags fail loudly (exit 2), never silent defaults.
+ * Non-empty --declare forces a fresh probe (host-declared tools rank highest).
  *
  * Invoke with an explicit `node` launcher; never rely on shebang alone.
  */
@@ -103,9 +104,12 @@ function main() {
   const cachedEntry = cache[key];
   const hasCapabilities = cachedEntry && typeof cachedEntry === 'object'
     && cachedEntry.capabilities && typeof cachedEntry.capabilities === 'object';
+  // Explicit --declare carries live host tool names and outranks the pre-map, so it
+  // must not be short-circuited by the cache (see host-capability-tokens.md precedence).
+  const hasDeclarations = String(args.declare || '').trim() !== '';
   // Legacy entries written before capabilities existed are treated as a miss so
   // the probe runs once and backfills the token map instead of staying inert.
-  if (!args.refresh && hasCapabilities) {
+  if (!args.refresh && !hasDeclarations && hasCapabilities) {
     const payload = { ok: true, cached: true, key, capabilities: cachedEntry.capabilities };
     output(args.json, payload, `cache hit | ${key}`);
     return 0;

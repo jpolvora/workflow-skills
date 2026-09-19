@@ -218,6 +218,23 @@ function main() {
   );
   fs.rmSync(consumerRoot, { recursive: true, force: true });
 
+  // REG host-declared tools override an ALREADY cached entry (highest precedence).
+  probe(['--key', 'shape-a::model-1'], cache); // warm the cache from the pre-map
+  const rRedeclare = probe(
+    ['--key', 'shape-a::model-1', '--declare', 'readFile=custom_reader'],
+    cache,
+  );
+  assert(rRedeclare.status === 0, 'REG --declare on warm cache exits 0');
+  assert(
+    JSON.parse(rRedeclare.stdout.trim()).capabilities.readFile === 'custom_reader',
+    'REG --declare overrides an existing cached entry (host-declared highest)',
+  );
+  assert(
+    JSON.parse(fs.readFileSync(cache, 'utf8'))['shape-a::model-1'].capabilities.readFile
+      === 'custom_reader',
+    'REG rewritten cache entry keeps the declared tool',
+  );
+
   // REG unknown flags fail loudly instead of silently keeping defaults.
   const rUnknownFlag = cp.spawnSync(
     process.execPath,
