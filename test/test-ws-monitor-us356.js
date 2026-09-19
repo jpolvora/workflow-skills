@@ -22,6 +22,7 @@ const {
   resolveTranscriptSource,
   resolveMuseSessionsRoot,
   expandMuseSessionDirs,
+  collapseHomePaths,
   TRANSCRIPT_LIMITS,
 } = require(script);
 
@@ -269,6 +270,16 @@ fs.utimesSync(sessionFile, new Date(Date.now() - 3600_000), new Date(Date.now() 
   const dualPath = sanitizeReportPath(path.join(os.homedir(), 'work', 'x.jsonl'), fakeHome);
   if (dualPath.includes(os.homedir()) || dualPath.includes(fakeHome)) {
     throw new Error('us-356 AC5: dual-home collapse leaked in evidence path');
+  }
+  // Longest prefix first: a short home that is a string prefix of the longer
+  // one must not split it (parent dir of the real OS home is always shorter).
+  const osh = os.homedir();
+  const parent = path.dirname(osh);
+  if (parent !== osh) {
+    const nested = collapseHomePaths(`${osh}/work/nested.jsonl`, parent);
+    if (nested.includes(path.basename(osh))) {
+      throw new Error('us-356 AC5: longest home prefix must collapse first');
+    }
   }
   write(path.join(museSessionsDir, `${slug}-secret`, 'session.jsonl'), `${slug} ${workflowId} leaked ${secret}\n`);
   const result = run(['--repo-root', root, '--discover-host-transcripts', '--slug', slug, '--json'], root);

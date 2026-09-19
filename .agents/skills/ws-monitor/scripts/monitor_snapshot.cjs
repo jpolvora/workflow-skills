@@ -155,7 +155,10 @@ const SECRET_PATTERNS = [
 function collapseHomePaths(value, home) {
   let out = String(value || '');
   const osHome = os.homedir();
-  for (const prefix of new Set([home, osHome].filter(Boolean))) {
+  // Longest prefix first: a short hostHome that is a string prefix of the OS
+  // home (e.g. /srv/ci vs /srv/ci-agent) must not split the longer path.
+  const prefixes = [...new Set([home, osHome].filter(Boolean))].sort((a, b) => b.length - a.length);
+  for (const prefix of prefixes) {
     out = out.split(prefix).join('<home>');
   }
   return out.replace(/[A-Za-z]:\\Users\\[^\\/:*?"<>|]+/g, '<home>');
@@ -1310,4 +1313,5 @@ module.exports = {
   guessTranscriptAdapter,
   resolveMuseSessionsRoot,
   expandMuseSessionDirs,
+  collapseHomePaths,
 };
