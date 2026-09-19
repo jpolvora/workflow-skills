@@ -122,11 +122,17 @@ function makeWorkflow(root, slug, workflowId) {
   if (expandMuseSessionDirs(path.join(repoRoot, 'definitely-missing-dir')).length !== 0) {
     throw new Error('us-356 AC2: missing muse root must expand to zero dirs');
   }
+  // XDG is honored only for the real OS home; an explicit hostHome override
+  // anchors muse discovery under itself even with ambient XDG_DATA_HOME.
+  const osPosix = String(os.homedir()).replace(/\\/g, '/');
   try {
     process.env.XDG_DATA_HOME = '/data/xdg';
-    const xdgRoot = resolveMuseSessionsRoot('/home/tester');
-    if (xdgRoot !== '/data/xdg/muse/sessions') {
-      throw new Error(`us-356 AC2: XDG_DATA_HOME not honored (${xdgRoot})`);
+    if (resolveMuseSessionsRoot(osPosix) !== '/data/xdg/muse/sessions') {
+      throw new Error('us-356 AC2: XDG_DATA_HOME not honored for the OS home');
+    }
+    const anchored = getHostAdapters('linux', '/srv/ci-agent-home').find((a) => a.id === 'muse').locations[0].path;
+    if (anchored !== '/srv/ci-agent-home/.local/share/muse/sessions') {
+      throw new Error(`us-356 AC2: hostHome override lost to XDG (${anchored})`);
     }
   } finally {
     if (savedXdg === undefined) delete process.env.XDG_DATA_HOME;
@@ -159,6 +165,30 @@ fs.utimesSync(sessionFile, new Date(Date.now() - 3600_000), new Date(Date.now() 
       throw new Error(`us-356 AC3: expected discovery-disabled source, got ${JSON.stringify(workflow.transcriptSource)}`);
     }
   }
+}
+
+// Config-only opt-in: monitor.discoverHostTranscripts enables host-store reads
+// without the CLI flag.
+{
+  const configFile = path.join(root, '.ws', 'config.json');
+  const baseConfig = {
+    project: { name: 'us356-test', baseBranch: 'main' },
+    plans: { dir: '.agents/plans' },
+    verification: {},
+    defaults: { minVerifyScore: 9 },
+  };
+  write(configFile, JSON.stringify({ ...baseConfig, monitor: { hostHome: fakeHome, discoverHostTranscripts: true } }));
+  const result = run(['--repo-root', root, '--slug', slug, '--json'], root);
+  if (result.status !== 0) throw new Error(result.stderr || result.stdout);
+  const report = JSON.parse(result.stdout);
+  if (report.transcript.hostStoreReads < 1) {
+    throw new Error('us-356: config discoverHostTranscripts must enable host-store reads without the CLI flag');
+  }
+  const workflow = report.workflows.find((w) => w.slug === slug);
+  if (workflow?.transcriptSource?.status !== 'available' || workflow.transcriptSource.adapter !== 'muse') {
+    throw new Error(`us-356: config-only discovery must report the muse source, got ${JSON.stringify(workflow?.transcriptSource)}`);
+  }
+  write(configFile, JSON.stringify({ ...baseConfig, monitor: { hostHome: fakeHome } }));
 }
 
 // AC1: opt-in discovery reports adapter + location class, or unavailable + reason.
@@ -197,6 +227,15 @@ fs.utimesSync(sessionFile, new Date(Date.now() - 3600_000), new Date(Date.now() 
   const beforeEntries = fs.readdirSync(path.dirname(dbFile)).sort().join(',');
   const read = readBoundedTailText(dbFile, 64);
   if (read.text === null || read.reason) throw new Error(`us-356 AC4: copy-then-read failed: ${read.reason}`);
+  // SQLite sidecars co-copy with the primary and are never read standalone.
+  const walSkip = readBoundedTailText(walFile, 64);
+  if (walSkip.text !== null || walSkip.reason !== 'wal-sidecar-skipped') {
+    throw new Error(`us-356 AC4: standalone -wal read not skipped (${walSkip.reason})`);
+  }
+  const shmSkip = readBoundedTailText(`${dbFile}-shm`, 64);
+  if (shmSkip.text !== null || shmSkip.reason !== 'wal-sidecar-skipped') {
+    throw new Error(`us-356 AC4: standalone -shm read not skipped (${shmSkip.reason})`);
+  }
   const result = run(['--repo-root', root, '--discover-host-transcripts', '--slug', slug, '--json'], root);
   if (result.status !== 0) throw new Error(result.stderr || result.stdout);
   if (sha256(dbFile) !== beforeDb || sha256(walFile) !== beforeWal) {
@@ -221,6 +260,16 @@ fs.utimesSync(sessionFile, new Date(Date.now() - 3600_000), new Date(Date.now() 
   if (collapsed.includes(fakeHome)) throw new Error('us-356 AC5: host-private path leaked in evidence');
   const collapsedDefault = sanitizeTranscriptText(`saw ${fakeHome}/sessions/y.jsonl`, fakeHome);
   if (collapsedDefault.includes(fakeHome)) throw new Error('us-356 AC5: host-private path leaked in transcript text');
+  // Dual-home contract: with a hostHome override active, divergent OS-home
+  // substrings collapse alongside the configured home.
+  const dualText = sanitizeTranscriptText(`trail ${os.homedir()}/work/x plus ${fakeHome}/sessions/y`, fakeHome);
+  if (dualText.includes(os.homedir()) || dualText.includes(fakeHome)) {
+    throw new Error('us-356 AC5: dual-home collapse leaked in transcript text');
+  }
+  const dualPath = sanitizeReportPath(path.join(os.homedir(), 'work', 'x.jsonl'), fakeHome);
+  if (dualPath.includes(os.homedir()) || dualPath.includes(fakeHome)) {
+    throw new Error('us-356 AC5: dual-home collapse leaked in evidence path');
+  }
   write(path.join(museSessionsDir, `${slug}-secret`, 'session.jsonl'), `${slug} ${workflowId} leaked ${secret}\n`);
   const result = run(['--repo-root', root, '--discover-host-transcripts', '--slug', slug, '--json'], root);
   if (result.status !== 0) throw new Error(result.stderr || result.stdout);

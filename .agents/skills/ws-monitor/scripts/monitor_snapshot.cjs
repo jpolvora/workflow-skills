@@ -54,8 +54,14 @@ function getHostHome(config) {
 // (~/.local/share/muse/sessions/YYYY/MM/DD/<session-id>/session.jsonl),
 // never under ~/.claude. Honor $XDG_DATA_HOME when set.
 function resolveMuseSessionsRoot(posixHome) {
+  // Honor $XDG_DATA_HOME only when resolving the real OS home: an explicit
+  // monitor.hostHome sandbox override always anchors discovery under itself,
+  // never the ambient XDG store.
+  const normalizedHome = String(posixHome).replace(/\\/g, '/');
+  const osHome = String(os.homedir()).replace(/\\/g, '/');
   const xdg = typeof process.env.XDG_DATA_HOME === 'string' ? process.env.XDG_DATA_HOME.trim() : '';
-  const base = xdg ? xdg.replace(/\\/g, '/').replace(/\/+$/, '') : `${posixHome}/.local/share`;
+  const honorXdg = Boolean(xdg) && normalizedHome === osHome;
+  const base = honorXdg ? xdg.replace(/\\/g, '/').replace(/\/+$/, '') : `${normalizedHome}/.local/share`;
   return `${base}/muse/sessions`;
 }
 
@@ -144,22 +150,28 @@ const SECRET_PATTERNS = [
   /password\s*[:=]\s*['"]?[^'"\s,}]{4,}['"]?/gi,
 ];
 
+// us-356: collapse both the configured host home and the real OS home, so a
+// hostHome override never leaves os.homedir() substrings in reported output.
+function collapseHomePaths(value, home) {
+  let out = String(value || '');
+  const osHome = os.homedir();
+  for (const prefix of new Set([home, osHome].filter(Boolean))) {
+    out = out.split(prefix).join('<home>');
+  }
+  return out.replace(/[A-Za-z]:\\Users\\[^\\/:*?"<>|]+/g, '<home>');
+}
+
 function sanitizeTranscriptText(text, home = os.homedir()) {
   let redacted = String(text || '');
   for (const pattern of SECRET_PATTERNS) {
     pattern.lastIndex = 0;
     redacted = redacted.replace(pattern, '[REDACTED]');
   }
-  if (home) redacted = redacted.split(home).join('<home>');
-  redacted = redacted.replace(/[A-Za-z]:\\Users\\[^\\/:*?"<>|]+/g, '<home>');
-  return redacted;
+  return collapseHomePaths(redacted, home);
 }
 
 function sanitizeReportPath(reportPath, home = os.homedir()) {
-  let sanitized = String(reportPath || '');
-  if (home) sanitized = sanitized.split(home).join('~');
-  sanitized = sanitized.replace(/[A-Za-z]:\\Users\\[^\\/:*?"<>|]+/g, '~');
-  return sanitized;
+  return collapseHomePaths(String(reportPath || ''), home).replace(/<home>/g, '~');
 }
 
 // Strictly read-only, bounded tail read. SQLite-family stores (Cursor
@@ -168,13 +180,24 @@ function sanitizeReportPath(reportPath, home = os.homedir()) {
 // { text, bytesRead, reason } — reason is set when the store is unreadable.
 function readBoundedTailText(file, maxBytes = TRANSCRIPT_LIMITS.maxBytesPerFile) {
   const base = path.basename(String(file)).toLowerCase();
-  const isDatabase = SQLITE_FAMILY.test(base) || base.endsWith('-wal') || base.endsWith('-shm');
+  // SQLite sidecars are co-copied with the primary file, never read standalone.
+  if (base.endsWith('-wal') || base.endsWith('-shm')) {
+    return { text: null, bytesRead: 0, reason: 'wal-sidecar-skipped' };
+  }
+  const isDatabase = SQLITE_FAMILY.test(base);
   let target = file;
   let tempCopy = null;
   try {
     if (isDatabase) {
-      tempCopy = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'ws-monitor-')), 'snapshot-copy');
+      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-monitor-'));
+      tempCopy = path.join(tempDir, path.basename(String(file)));
       fs.copyFileSync(file, tempCopy);
+      for (const suffix of ['-wal', '-shm']) {
+        const sibling = `${file}${suffix}`;
+        if (fs.existsSync(sibling)) {
+          fs.copyFileSync(sibling, `${tempCopy}${suffix}`);
+        }
+      }
       target = tempCopy;
     }
     const handle = fs.openSync(target, 'r');
@@ -798,6 +821,7 @@ function scanTranscriptRoots(context, roots, filter = {}) {
       if (files.length >= TRANSCRIPT_LIMITS.maxFilesPerTick) break;
       const full = path.join(directory, entry.name);
       if (entry.isDirectory()) visit(full, depth + 1);
+      else if (/-(wal|shm)$/i.test(entry.name)) continue; // SQLite sidecars: co-copied with the primary, never read standalone
       else if (/\.(jsonl|log|txt|md|db|sqlite3?|vscdb)$/i.test(entry.name)) files.push(full);
     }
   };
