@@ -436,6 +436,7 @@
   "currentModel": "muse-spark",
   "currentStep": 6,
   "dryRun": false,
+  "endedAt": "2026-09-19T06:09:30Z",
   "handoffs": {
     "0": {
       "acRefs": [],
@@ -560,7 +561,8 @@
   },
   "modelsPreset": "default",
   "nextAction": "Run step 6",
-  "revision": 11,
+  "revision": 12,
+  "shipStatus": "merged",
   "skippedSteps": [
     {
       "evidence": "",
@@ -574,7 +576,7 @@
   "startedAt": "2026-09-19T05:05:00.000Z",
   "statePath": ".agents/plans/us-353/us-353-20260919T043606Z.state.md",
   "stateVersion": 3,
-  "status": "active",
+  "status": "completed",
   "stepDispatches": [
     {
       "agentType": "named:ws-step-00-spec-write",

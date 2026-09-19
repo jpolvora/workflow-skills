@@ -25,6 +25,7 @@
   "currentModel": "Gemini 3.7 Flash",
   "currentStep": 5,
   "dryRun": false,
+  "endedAt": "2026-08-30T03:47:10.966Z",
   "fullMode": false,
   "gateDecision": {
     "choice": "complete",
@@ -34,8 +35,9 @@
   },
   "nextAction": "Run step 5",
   "preExistingDirty": false,
-  "revision": 12,
+  "revision": 13,
   "scoreAndRefine": false,
+  "shipStatus": "merged",
   "skipQualityGates": false,
   "skipTesting": false,
   "skipTests": false,
@@ -44,7 +46,7 @@
   "startedAt": "2026-08-27T14:37:34Z",
   "statePath": ".agents/plans/us-250/us-250-20260827T143734Z.state.md",
   "stateVersion": 2,
-  "status": "active",
+  "status": "completed",
   "stepDispatches": [
     {
       "dispatchedAt": "2026-08-27T14:38:49Z",
