@@ -31,6 +31,150 @@ const { parseFrontmatter } = require(path.join(HUB_SCRIPTS_DIR, 'workflow_state.
 const MUTATING_STEPS = new Set([0, 1, 2, 3, 4, 6, 7, 8]);
 const DEFAULT_INTERVAL_SECONDS = 10;
 
+// us-356: bounded, read-only host transcript access. Host specifics are
+// adapter data (see references/host-adapters.md), never portable contract.
+const TRANSCRIPT_LIMITS = {
+  maxBytesPerFile: 262144, // 256KB tail per file — recent window only, no full-history scans
+  maxFilesPerTick: 200,
+  maxTotalBytes: 4 * 1024 * 1024,
+  maxMsPerTick: 2000,
+  stallWindowMs: 10 * 60 * 1000, // session idle beyond this while active = stall evidence
+};
+const SQLITE_FAMILY = /\.(db|sqlite|sqlite3|vscdb)$/i;
+
+function getHostHome(config) {
+  const override = config?.monitor?.hostHome;
+  if (typeof override === 'string' && override.trim()) return override;
+  return os.homedir();
+}
+
+// Per-OS default session locations per host adapter. Resolved lazily so no
+// host store is touched unless the caller opts in via --discover-host-transcripts.
+function getHostAdapters(platform = process.platform, home = os.homedir()) {
+  const posixHome = String(home).replace(/\\/g, '/');
+  const appData = platform === 'win32'
+    ? `${posixHome}/AppData/Roaming`
+    : platform === 'darwin'
+      ? `${posixHome}/Library/Application Support`
+      : `${posixHome}/.config`;
+  return [
+    {
+      id: 'cursor',
+      storeKind: 'sqlite',
+      locations: [
+        { locationClass: 'user', path: `${appData}/Cursor/User/workspaceStorage` },
+      ],
+      matchers: ['.cursor', 'cursor'],
+    },
+    {
+      id: 'opencode',
+      storeKind: 'file',
+      locations: [
+        { locationClass: 'user', path: `${posixHome}/.opencode/sessions` },
+      ],
+      matchers: ['.opencode'],
+    },
+    {
+      id: 'antigravity',
+      storeKind: 'file',
+      locations: [
+        { locationClass: 'user', path: `${posixHome}/.gemini/antigravity-ide/brain` },
+      ],
+      matchers: ['antigravity', '.gemini', '.system_generated'],
+    },
+    {
+      id: 'claude-code',
+      storeKind: 'file',
+      locations: [
+        { locationClass: 'user', path: `${posixHome}/.claude/sessions` },
+      ],
+      matchers: ['.claude'],
+    },
+  ];
+}
+
+const SECRET_PATTERNS = [
+  /sk-[A-Za-z0-9\-_]{8,}/g,
+  /gh[pousr]_[A-Za-z0-9]{8,}/g,
+  /xox[bpas]-[A-Za-z0-9\-]{8,}/g,
+  /AKIA[A-Z0-9]{16}/g,
+  /Bearer\s+[A-Za-z0-9\-._~+/=]{8,}/gi,
+  /api[_-]?key\s*[:=]\s*['"]?[^'"\s,}]{4,}['"]?/gi,
+  /client[_-]?secret\s*[:=]\s*['"]?[^'"\s,}]{4,}['"]?/gi,
+  /password\s*[:=]\s*['"]?[^'"\s,}]{4,}['"]?/gi,
+];
+
+function sanitizeTranscriptText(text) {
+  let redacted = String(text || '');
+  for (const pattern of SECRET_PATTERNS) {
+    pattern.lastIndex = 0;
+    redacted = redacted.replace(pattern, '[REDACTED]');
+  }
+  const home = os.homedir();
+  if (home) redacted = redacted.split(home).join('<home>');
+  redacted = redacted.replace(/[A-Za-z]:\\Users\\[^\\/:*?"<>|]+/g, '<home>');
+  return redacted;
+}
+
+function sanitizeReportPath(reportPath, home = os.homedir()) {
+  let sanitized = String(reportPath || '');
+  if (home) sanitized = sanitized.split(home).join('~');
+  sanitized = sanitized.replace(/[A-Za-z]:\\Users\\[^\\/:*?"<>|]+/g, '~');
+  return sanitized;
+}
+
+// Strictly read-only, bounded tail read. SQLite-family stores (Cursor
+// workspaceStorage, other app databases) are copy-then-read through a temp
+// copy so a live WAL database is never locked or modified. Returns
+// { text, bytesRead, reason } — reason is set when the store is unreadable.
+function readBoundedTailText(file, maxBytes = TRANSCRIPT_LIMITS.maxBytesPerFile) {
+  const base = path.basename(String(file)).toLowerCase();
+  const isDatabase = SQLITE_FAMILY.test(base) || base.endsWith('-wal') || base.endsWith('-shm');
+  let target = file;
+  let tempCopy = null;
+  try {
+    if (isDatabase) {
+      tempCopy = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'ws-monitor-')), 'snapshot-copy');
+      fs.copyFileSync(file, tempCopy);
+      target = tempCopy;
+    }
+    const handle = fs.openSync(target, 'r');
+    try {
+      const stat = fs.fstatSync(handle);
+      const size = stat.size;
+      const start = Math.max(0, size - maxBytes);
+      const length = Math.min(size, maxBytes);
+      const buffer = Buffer.alloc(length);
+      fs.readSync(handle, buffer, 0, length, start);
+      return { text: buffer.toString('utf8'), bytesRead: length, reason: null };
+    } finally {
+      fs.closeSync(handle);
+    }
+  } catch (error) {
+    return { text: null, bytesRead: 0, reason: error.message };
+  } finally {
+    if (tempCopy) {
+      try {
+        fs.rmSync(path.dirname(tempCopy), { recursive: true, force: true });
+      } catch {
+        // Temp cleanup is best-effort; the source store is never affected.
+      }
+    }
+  }
+}
+
+function normalizeCorrelationKey(value) {
+  return String(value || '').toLowerCase().replace(/\\/g, '/').trim();
+}
+
+function guessTranscriptAdapter(file) {
+  const lowered = normalizeCorrelationKey(file);
+  for (const adapter of getHostAdapters()) {
+    if (adapter.matchers.some((matcher) => lowered.includes(matcher))) return adapter.id;
+  }
+  return 'custom-root';
+}
+
 function parseArgs(argv) {
   const options = { transcriptRoots: [] };
   const requireValue = (index, token) => {
@@ -554,28 +698,34 @@ function resolveCandidateTranscriptRoots(context, explicitRoots = [], options = 
     path.join(context.repoRoot, '.opencode', 'sessions'),
     path.join(context.repoRoot, '.opencode', 'logs'),
     path.join(context.repoRoot, '.system_generated', 'logs'),
+    path.join(context.repoRoot, '.claude', 'sessions'),
   ];
   for (const candidate of workspaceCandidates) {
     if (fs.existsSync(candidate)) {
       roots.push(candidate);
     }
   }
-  // Host user-level roots (when explicitly requested or enabled in config)
+  // Host user-level roots (us-356): strictly opt-in. Without the flag (or the
+  // config equivalent) no host store is probed — zero host-store reads.
   const checkHostRoots = options.discoverHostTranscripts || context.config?.monitor?.discoverHostTranscripts;
   if (checkHostRoots) {
-    const home = os.homedir();
-    const opencodeUser = path.join(home, '.opencode', 'sessions');
-    if (fs.existsSync(opencodeUser)) roots.push(opencodeUser);
-    const geminiBrain = path.join(home, '.gemini', 'antigravity-ide', 'brain');
-    if (fs.existsSync(geminiBrain)) {
-      try {
-        const convos = fs.readdirSync(geminiBrain, { withFileTypes: true })
-          .filter((d) => d.isDirectory())
-          .map((d) => path.join(geminiBrain, d.name, '.system_generated', 'logs'))
-          .filter((p) => fs.existsSync(p));
-        roots.push(...convos.slice(0, 10));
-      } catch {
-        // ignore
+    const home = getHostHome(context.config);
+    for (const adapter of getHostAdapters(process.platform, home)) {
+      for (const location of adapter.locations) {
+        const resolved = path.normalize(location.path);
+        if (adapter.id === 'antigravity' && fs.existsSync(resolved)) {
+          try {
+            const convos = fs.readdirSync(resolved, { withFileTypes: true })
+              .filter((d) => d.isDirectory())
+              .map((d) => path.join(resolved, d.name, '.system_generated', 'logs'))
+              .filter((p) => fs.existsSync(p));
+            roots.push(...convos.slice(0, 10));
+          } catch {
+            // ignore
+          }
+          continue;
+        }
+        if (fs.existsSync(resolved)) roots.push(resolved);
       }
     }
   }
@@ -583,10 +733,12 @@ function resolveCandidateTranscriptRoots(context, explicitRoots = [], options = 
 }
 
 function scanTranscriptRoots(context, roots, filter = {}) {
+  // us-356: per-tick budget (time/read caps, recent-window tails only).
+  const startedAt = Date.now();
   const findings = [];
   const files = [];
   const visit = (directory, depth = 0) => {
-    if (depth > 6 || !fs.existsSync(directory)) return;
+    if (depth > 6 || files.length >= TRANSCRIPT_LIMITS.maxFilesPerTick || !fs.existsSync(directory)) return;
     let entries;
     try {
       entries = fs.readdirSync(directory, { withFileTypes: true });
@@ -594,30 +746,47 @@ function scanTranscriptRoots(context, roots, filter = {}) {
       return;
     }
     for (const entry of entries) {
+      if (files.length >= TRANSCRIPT_LIMITS.maxFilesPerTick) break;
       const full = path.join(directory, entry.name);
       if (entry.isDirectory()) visit(full, depth + 1);
-      else if (/\.(jsonl|log|txt|md)$/i.test(entry.name)) files.push(full);
+      else if (/\.(jsonl|log|txt|md|db|sqlite3?|vscdb)$/i.test(entry.name)) files.push(full);
     }
   };
   for (const root of roots) visit(root);
   let filesScanned = 0;
-  for (const file of files.slice(0, 5000)) {
-    let text;
-    try {
-      text = fs.readFileSync(file, 'utf8').slice(0, 2_000_000);
-    } catch {
-      continue;
+  let bytesRead = 0;
+  let capped = files.length >= TRANSCRIPT_LIMITS.maxFilesPerTick;
+  const scannedFiles = [];
+  const repoRootResolved = path.resolve(context.repoRoot);
+  for (const file of files) {
+    if (Date.now() - startedAt > TRANSCRIPT_LIMITS.maxMsPerTick || bytesRead >= TRANSCRIPT_LIMITS.maxTotalBytes) {
+      capped = true;
+      break;
     }
+    // Correlate on the raw tail, then sanitize before any pattern matching so
+    // tokens, prompt content, and host-private paths never drive reporting.
+    const read = readBoundedTailText(file);
+    if (read.text === null) continue;
+    const rawText = read.text;
     if (filter && (filter.workflowId || filter.slug)) {
-      const matchesWf = Boolean(filter.workflowId && (file.includes(filter.workflowId) || text.includes(filter.workflowId)));
-      const matchesSlug = Boolean(filter.slug && (file.includes(filter.slug) || text.includes(filter.slug)));
+      const matchesWf = Boolean(filter.workflowId && (file.includes(filter.workflowId) || rawText.includes(filter.workflowId)));
+      const matchesSlug = Boolean(filter.slug && (file.includes(filter.slug) || rawText.includes(filter.slug)));
       const pass = filter.workflowId && filter.slug
         ? (matchesWf && matchesSlug)
         : (matchesWf || matchesSlug);
       if (!pass) continue;
     }
+    const text = sanitizeTranscriptText(rawText);
     filesScanned += 1;
-    const evidence = toRepoRelative(context.repoRoot, file, { allowOutside: true });
+    bytesRead += read.bytesRead;
+    let mtimeMs = null;
+    try {
+      mtimeMs = fs.statSync(file).mtimeMs;
+    } catch {
+      // mtime is liveness-only; unreadable stats stay observable via scan, not here.
+    }
+    scannedFiles.push({ file, mtimeMs, tail: text.slice(-8000) });
+    const evidence = sanitizeReportPath(toRepoRelative(context.repoRoot, file, { allowOutside: true }));
     if (/ENOENT|build_dispatch_context/i.test(text)) {
       addFinding(findings, 'critical', 'hybrid-path-resolution', 'Transcript contains a missing-skill or dispatch-context path failure', [evidence]);
     }
@@ -647,7 +816,44 @@ function scanTranscriptRoots(context, roots, filter = {}) {
       }
     }
   }
-  return { filesScanned, findings };
+  const hostStoreReads = scannedFiles.filter((item) => !path.resolve(item.file).startsWith(repoRootResolved)).length;
+  return {
+    filesScanned,
+    findings,
+    files: scannedFiles,
+    bytesRead,
+    elapsedMs: Date.now() - startedAt,
+    capped,
+    hostStoreReads,
+  };
+}
+
+// us-356: session-to-workflow correlation over already-scanned tails.
+// Keys are normalized (case, separators) before matching to avoid false
+// stall signals. Never touches the host store beyond the bounded scan above.
+function resolveTranscriptSource(workflow, scannedFiles, discoveryEnabled, repoRoot) {
+  if (!discoveryEnabled) {
+    return { status: 'transcript-unavailable', reason: 'discovery-disabled' };
+  }
+  const keys = [workflow.slug, workflow.workflowId]
+    .map(normalizeCorrelationKey)
+    .filter((key) => key && key !== 'ws-spec-multi');
+  const repoRootResolved = path.resolve(repoRoot);
+  const candidates = (scannedFiles || []).filter((item) => {
+    const haystack = normalizeCorrelationKey(item.file + String.fromCharCode(10) + item.tail);
+    return keys.some((key) => haystack.includes(key));
+  });
+  if (candidates.length === 0) {
+    return { status: 'transcript-unavailable', reason: 'no-matching-session' };
+  }
+  candidates.sort((a, b) => (b.mtimeMs || 0) - (a.mtimeMs || 0));
+  const best = candidates[0];
+  return {
+    status: 'available',
+    adapter: guessTranscriptAdapter(best.file),
+    locationClass: path.resolve(best.file).startsWith(repoRootResolved) ? 'workspace' : 'user',
+    sessionMtime: best.mtimeMs ? new Date(best.mtimeMs).toISOString() : null,
+  };
 }
 
 function snapshot(options) {
@@ -797,6 +1003,37 @@ function snapshot(options) {
     slug: options.slug || null,
   });
 
+  // us-356: transcript source per workflow + worker-session liveness.
+  const discoveryEnabled = Boolean(options.discoverHostTranscripts || context.config?.monitor?.discoverHostTranscripts);
+  const snapshotNow = Date.now();
+  for (const workflow of workflows) {
+    if (workflow.multiSpec) {
+      workflow.transcriptSource = null;
+      continue;
+    }
+    workflow.transcriptSource = resolveTranscriptSource(
+      { slug: workflow.slug, workflowId: workflow.workflowId },
+      transcript.files,
+      discoveryEnabled,
+      context.repoRoot,
+    );
+    const source = workflow.transcriptSource;
+    const isActive = ['active', 'blocked', 'in_progress'].includes(workflow.status);
+    if (source.status === 'available' && isActive && source.sessionMtime) {
+      const idleMs = snapshotNow - Date.parse(source.sessionMtime);
+      if (Number.isFinite(idleMs) && idleMs > TRANSCRIPT_LIMITS.stallWindowMs) {
+        addFinding(
+          workflow.findings,
+          'warning',
+          'worker-session-stall',
+          'worker session shows no recent activity while the workflow is active (possible stall)',
+          [],
+        );
+      }
+    }
+  }
+
+  for (const scanned of transcript.files) delete scanned.tail;
   const findings = [
     ...contextFindings,
     ...workflows.flatMap((workflow) => workflow.findings),
@@ -821,8 +1058,12 @@ function snapshot(options) {
       findings: memoryVault.findings,
     },
     transcript: {
-      roots: transcriptRoots.map((root) => toRepoRelative(context.repoRoot, root, { allowOutside: true })),
+      roots: transcriptRoots.map((root) => sanitizeReportPath(toRepoRelative(context.repoRoot, root, { allowOutside: true }))),
       filesScanned: transcript.filesScanned,
+      bytesRead: transcript.bytesRead,
+      elapsedMs: transcript.elapsedMs,
+      capped: transcript.capped,
+      hostStoreReads: transcript.hostStoreReads,
     },
     workflows,
   };
@@ -890,6 +1131,7 @@ function markdownReport(report) {
       `- Mapped runner: ${workflow.mappedRunner || 'single-host'}`,
       `- State: \`${workflow.statePath}\``,
       `- Telemetry events: ${workflow.telemetry.eventCount}`,
+    '- Transcript: ' + (workflow.transcriptSource ? workflow.transcriptSource.status : 'unknown') + (workflow.transcriptSource && workflow.transcriptSource.adapter ? ' via ' + workflow.transcriptSource.adapter + ' (' + workflow.transcriptSource.locationClass + ')' : ' (' + ((workflow.transcriptSource && workflow.transcriptSource.reason) || 'unknown') + ')'),
       '',
       'Expected artifacts:',
     );
@@ -902,7 +1144,7 @@ function markdownReport(report) {
     '## Transcript scan',
     '',
     `- Roots: ${report.transcript.roots.length ? report.transcript.roots.join(', ') : 'none configured'}`,
-    `- Files scanned: ${report.transcript.filesScanned}`,
+    `- Files scanned: ${report.transcript.filesScanned} (${report.transcript.bytesRead} bytes, ${report.transcript.elapsedMs}ms, host-store reads: ${report.transcript.hostStoreReads}${report.transcript.capped ? ', capped' : ''})`,
     '',
     '## Upstream filing guardrail',
     '',
@@ -984,4 +1226,12 @@ module.exports = {
   markdownReport,
   snapshot,
   scanTranscriptRoots,
+  TRANSCRIPT_LIMITS,
+  getHostAdapters,
+  getHostHome,
+  sanitizeTranscriptText,
+  sanitizeReportPath,
+  readBoundedTailText,
+  resolveTranscriptSource,
+  guessTranscriptAdapter,
 };

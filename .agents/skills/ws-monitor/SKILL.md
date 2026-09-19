@@ -88,7 +88,7 @@ The monitor checks project memory vault records to identify running or active wo
 - **Local memory files:** When local memory is active, inspect `{memoryDir}/memory/*.md` and `{memoryDir}/MEMORY.md` for active workflow markers, traps, and decision logs.
 - **Reconciliation:** Compare vault records with on-disk state under `{plansDir}`. If the vault lists a workflow as active that is missing on disk, report `vault-unreconciled-workflow`.
 
-## Host Agent Transcript Collection (Cursor, OpenCode, Antigravity)
+## Host Agent Transcript Collection (Cursor, OpenCode, Antigravity, Claude)
 
 Transcripts provide secondary evidence to diagnose why a subagent or orchestrator stalled, fell back, or threw errors:
 
@@ -96,6 +96,10 @@ Transcripts provide secondary evidence to diagnose why a subagent or orchestrato
   - **Cursor**: Workspace `.cursor/transcripts/`, `.cursor/chats/`, and user workspace storage (`%APPDATA%/Cursor/User/workspaceStorage/<hash>/` on Windows, `~/.config/Cursor/User/workspaceStorage/` on Linux, `~/Library/Application Support/Cursor/User/workspaceStorage/` on macOS).
   - **OpenCode**: Workspace `.opencode/transcripts/`, `.opencode/sessions/`, `.opencode/logs/`, and user sessions (`~/.opencode/sessions/`).
   - **Antigravity**: Workspace `.agents/transcripts/`, `.system_generated/logs/`, and IDE app data (`<appDataDir>/brain/<conversation-id>/.system_generated/logs/transcript.jsonl`).
+  - **Claude**: Workspace `.claude/sessions/` and user sessions (`~/.claude/sessions/`).
+- **Adapter table:** per-OS default locations for Cursor, OpenCode, Antigravity, and Claude live in `references/host-adapters.md` (adapter data, not portable contract).
+- **Transcript source:** each workflow reports `transcriptSource` (`available` with adapter + location class, or `transcript-unavailable` with reason `discovery-disabled` / `no-matching-session`).
+- **Read-only + bounded:** SQLite-family stores are copy-then-read (WAL-safe, never locked or modified); only the recent-window tail is read under per-tick time/read caps; a session idle beyond the stall window while its workflow is active raises `worker-session-stall`.
 - **Discovery:**
   - Workspace candidate roots are auto-discovered if they exist in the repository.
   - User-level / host IDE transcript paths are scanned when passing `--discover-host-transcripts` or configured via `monitor.transcriptRoots` or `--transcript-root <path>`.
@@ -127,6 +131,7 @@ Transcripts provide secondary evidence to diagnose why a subagent or orchestrato
 | Multi-spec queue active with no progress (`multi-spec-idle`) | Info | Batch run is active but all queue items are processed or none pending |
 | Memory vault records active workflow missing on disk (`vault-unreconciled-workflow`) | Info | Memory vault lists an active workflow that does not exist in local plans |
 | Transcript contains unhandled error or exception (`subagent-error`) | Warning | Subagent or worker crashed or threw an unhandled exception |
+| Worker session idle while workflow is active (`worker-session-stall`) | Warning | The correlated session shows no recent activity; possible stall |
 
 ## Launcher
 
