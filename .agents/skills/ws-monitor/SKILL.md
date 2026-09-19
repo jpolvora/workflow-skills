@@ -95,10 +95,10 @@ Transcripts provide secondary evidence to diagnose why a subagent or orchestrato
 - **Host transcript locations:**
   - **Cursor**: Workspace `.cursor/transcripts/`, `.cursor/chats/`, and user workspace storage (`%APPDATA%/Cursor/User/workspaceStorage/<hash>/` on Windows, `~/.config/Cursor/User/workspaceStorage/` on Linux, `~/Library/Application Support/Cursor/User/workspaceStorage/` on macOS).
   - **OpenCode**: Workspace `.opencode/transcripts/`, `.opencode/sessions/`, `.opencode/logs/`, and user sessions (`~/.opencode/sessions/`).
-  - **Antigravity**: Workspace `.agents/transcripts/`, `.system_generated/logs/`, and IDE app data (`<appDataDir>/brain/<conversation-id>/.system_generated/logs/transcript.jsonl`).
+  - **Antigravity**: Workspace `.agents/transcripts/`, `.system_generated/logs/`, and IDE app data (`~/.gemini/antigravity-ide/brain/<conversation-id>/.system_generated/logs/transcript.jsonl`).
   - **Muse**: User sessions (`~/.local/share/muse/sessions/YYYY/MM/DD/<session-id>/session.jsonl`, `$XDG_DATA_HOME` honored when set).
 - **Adapter table:** per-OS default locations for Cursor, OpenCode, Antigravity, and Muse live in `references/host-adapters.md` (adapter data, not portable contract).
-- **Transcript source:** each workflow reports `transcriptSource` (`available` with adapter + location class, or `transcript-unavailable` with reason `discovery-disabled` / `no-matching-session`).
+- **Transcript source:** each workflow reports `transcriptSource` (`available` with adapter + location class, or `transcript-unavailable` with reason `discovery-disabled` / `no-matching-session` / `scan-capped` when the bounded scan stopped early with zero candidates).
 - **Read-only + bounded:** SQLite-family stores are copy-then-read (WAL-safe, never locked or modified); only the recent-window tail is read under per-tick time/read caps; a session idle beyond the stall window while its workflow is active raises `worker-session-stall`.
 - **Discovery:**
   - Workspace candidate roots are auto-discovered if they exist in the repository.

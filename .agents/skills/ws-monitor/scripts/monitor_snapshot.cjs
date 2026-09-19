@@ -796,9 +796,21 @@ function resolveCandidateTranscriptRoots(context, explicitRoots = [], options = 
           try {
             const convos = fs.readdirSync(resolved, { withFileTypes: true })
               .filter((d) => d.isDirectory())
-              .map((d) => path.join(resolved, d.name, '.system_generated', 'logs'))
-              .filter((p) => fs.existsSync(p));
-            roots.push(...convos.slice(0, 10));
+              .map((d) => {
+                const logsDir = path.join(resolved, d.name, '.system_generated', 'logs');
+                let mtimeMs = 0;
+                try {
+                  if (fs.existsSync(logsDir)) mtimeMs = fs.statSync(logsDir).mtimeMs;
+                } catch {
+                  // Unreadable stats sort last; the exists filter below still applies.
+                }
+                return { logsDir, mtimeMs };
+              })
+              .filter((entry) => fs.existsSync(entry.logsDir))
+              .sort((a, b) => b.mtimeMs - a.mtimeMs)
+              .slice(0, 10)
+              .map((entry) => entry.logsDir);
+            roots.push(...convos);
           } catch {
             // ignore
           }
@@ -919,7 +931,7 @@ function scanTranscriptRoots(context, roots, filter = {}) {
 // us-356: session-to-workflow correlation over already-scanned tails.
 // Keys are normalized (case, separators) before matching to avoid false
 // stall signals. Never touches the host store beyond the bounded scan above.
-function resolveTranscriptSource(workflow, scannedFiles, discoveryEnabled, repoRoot) {
+function resolveTranscriptSource(workflow, scannedFiles, discoveryEnabled, repoRoot, scanMeta = {}) {
   if (!discoveryEnabled) {
     return { status: 'transcript-unavailable', reason: 'discovery-disabled' };
   }
@@ -932,7 +944,10 @@ function resolveTranscriptSource(workflow, scannedFiles, discoveryEnabled, repoR
     return keys.some((key) => correlationMatches(haystack, key));
   });
   if (candidates.length === 0) {
-    return { status: 'transcript-unavailable', reason: 'no-matching-session' };
+    return {
+      status: 'transcript-unavailable',
+      reason: scanMeta.capped ? 'scan-capped' : 'no-matching-session',
+    };
   }
   candidates.sort((a, b) => (b.mtimeMs || 0) - (a.mtimeMs || 0));
   const best = candidates[0];
@@ -1105,6 +1120,7 @@ function snapshot(options) {
       transcript.files,
       discoveryEnabled,
       context.repoRoot,
+      { capped: transcript.capped },
     );
     const source = workflow.transcriptSource;
     const isActive = ['active', 'blocked', 'in_progress'].includes(workflow.status);

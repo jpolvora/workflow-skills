@@ -19,6 +19,7 @@ const {
   sanitizeTranscriptText,
   sanitizeReportPath,
   readBoundedTailText,
+  resolveCandidateTranscriptRoots,
   resolveTranscriptSource,
   resolveMuseSessionsRoot,
   expandMuseSessionDirs,
@@ -101,6 +102,13 @@ function makeWorkflow(root, slug, workflowId) {
     if (!text.includes(token)) throw new Error(`us-356 AC2: adapter table missing ${token}`);
   }
   if (!text.includes('Muse')) throw new Error('us-356 AC2: adapter table missing Muse');
+  if (!text.includes('.gemini/antigravity-ide/brain')) {
+    throw new Error('us-356 AC2: adapter table missing the Antigravity user-store path');
+  }
+  const skillDoc = fs.readFileSync(path.join(repoRoot, '.agents', 'skills', 'ws-monitor', 'SKILL.md'), 'utf8');
+  if (!skillDoc.includes('~/.gemini/antigravity-ide/brain')) {
+    throw new Error('us-356 AC2: SKILL.md Antigravity path drifts from the adapter');
+  }
   // Default-root assertions must not see ambient XDG_DATA_HOME from the runner.
   const savedXdg = process.env.XDG_DATA_HOME;
   delete process.env.XDG_DATA_HOME;
@@ -141,6 +149,35 @@ function makeWorkflow(root, slug, workflowId) {
     else process.env.XDG_DATA_HOME = savedXdg;
   }
   if (TRANSCRIPT_LIMITS.maxBytesPerFile !== 262144) throw new Error('us-356 AC6: per-file cap changed');
+}
+
+// Antigravity recency: the bounded root slice keeps the newest conversations.
+{
+  const fakeAG = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-monitor-us356-aghome-'));
+  tempRoots.push(fakeAG);
+  const brain = path.join(fakeAG, '.gemini', 'antigravity-ide', 'brain');
+  const now = Date.now();
+  for (let i = 0; i < 12; i += 1) {
+    const logsDir = path.join(brain, `convo-${String(i).padStart(2, '0')}`, '.system_generated', 'logs');
+    write(path.join(logsDir, 'transcript.jsonl'), `convo ${i}\n`);
+    const mtime = new Date(now - (11 - i) * 60_000);
+    fs.utimesSync(logsDir, mtime, mtime);
+  }
+  const agRoots = resolveCandidateTranscriptRoots(
+    { repoRoot: fakeAG, config: { monitor: { hostHome: fakeAG, discoverHostTranscripts: true } } },
+    [],
+    {},
+  );
+  const convoRoots = agRoots.filter((r) => r.includes('convo-'));
+  if (convoRoots.length !== 10) {
+    throw new Error(`us-356: antigravity root slice must hold 10 convos, got ${convoRoots.length}`);
+  }
+  if (!convoRoots.some((r) => r.includes('convo-11'))) {
+    throw new Error('us-356: antigravity slice must keep the newest conversation');
+  }
+  if (convoRoots.some((r) => r.includes('convo-00') || r.includes('convo-01'))) {
+    throw new Error('us-356: antigravity slice must drop the two oldest conversations');
+  }
 }
 
 // AC1 + AC3 + stall: one root with a discoverable session, one lonely workflow.
@@ -279,6 +316,14 @@ fs.utimesSync(sessionFile, new Date(Date.now() - 3600_000), new Date(Date.now() 
   if (direct.reason !== 'no-matching-session') throw new Error('us-356 AC1: empty scan must report no-matching-session');
   const disabled = resolveTranscriptSource({ slug, workflowId }, [{ file: sessionFile, mtimeMs: Date.now(), tail: slug }], false, root);
   if (disabled.reason !== 'discovery-disabled') throw new Error('us-356 AC3: gated resolver must not report available');
+  const cappedSource = resolveTranscriptSource({ slug, workflowId }, [], true, root, { capped: true });
+  if (cappedSource.reason !== 'scan-capped') {
+    throw new Error(`us-356: capped scan must report scan-capped, got ${cappedSource.reason}`);
+  }
+  const missSource = resolveTranscriptSource({ slug, workflowId }, [], true, root);
+  if (missSource.reason !== 'no-matching-session') {
+    throw new Error(`us-356: uncapped miss must stay no-matching-session, got ${missSource.reason}`);
+  }
 }
 
 // AC5: secrets and host-private paths are sanitized before reporting.
@@ -347,6 +392,30 @@ fs.utimesSync(sessionFile, new Date(Date.now() - 3600_000), new Date(Date.now() 
     throw new Error(`us-356 AC6: unbounded read (${report.transcript.bytesRead} bytes)`);
   }
   if (wallMs > 30000) throw new Error(`us-356 AC6: snapshot took ${wallMs}ms on a 20MB fixture`);
+}
+
+// scan-capped reason: a bounded scan that stops early with zero candidates
+// reports scan-capped, not no-matching-session.
+{
+  fs.rmSync(path.join(museSessionsDir, 'us356-lonely'), { recursive: true, force: true });
+  const loadDir = path.join(museSessionsDir, 'load-probe');
+  for (let i = 0; i < 210; i += 1) {
+    write(path.join(loadDir, `filler-${i}.jsonl`), 'filler line\n');
+  }
+  const result = run(['--repo-root', root, '--discover-host-transcripts', '--json'], root);
+  if (result.status !== 0) throw new Error(result.stderr || result.stdout);
+  const report = JSON.parse(result.stdout);
+  if (report.transcript.capped !== true) {
+    throw new Error('us-356 AC6: expected the file-count cap to trigger');
+  }
+  const lonelyCapped = report.workflows.find((w) => w.slug === 'us356-lonely');
+  if (lonelyCapped?.transcriptSource?.reason !== 'scan-capped') {
+    throw new Error(`us-356: capped scan with zero candidates must report scan-capped, got ${JSON.stringify(lonelyCapped?.transcriptSource)}`);
+  }
+  const demoStill = report.workflows.find((w) => w.slug === slug);
+  if (demoStill?.transcriptSource?.status !== 'available') {
+    throw new Error('us-356: capped scan must still correlate the scanned demo session');
+  }
 }
 
 for (const directory of tempRoots) fs.rmSync(directory, { recursive: true, force: true });

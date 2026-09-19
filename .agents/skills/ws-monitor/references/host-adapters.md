@@ -35,10 +35,13 @@ OS home and the configured `monitor.hostHome`) are redacted before reporting.
 ## Correlation
 
 A scanned session is attributed to a workflow when its path or recent tail
-mentions the workflow slug or id (normalized: lowercase, `/` separators).
+mentions the workflow slug or id (normalized: lowercase, `/` separators,
+boundary-aware so short ids never match inside longer sibling ids).
 Without the opt-in flag every workflow reports
 `transcript-unavailable / discovery-disabled`; with the flag but no match,
-`transcript-unavailable / no-matching-session`.
+`transcript-unavailable / no-matching-session`; when the bounded scan stops
+early (file/time/byte caps) with zero candidates,
+`transcript-unavailable / scan-capped`.
 
 ## Error parts
 
