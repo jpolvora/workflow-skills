@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-19 19:13] Agent: Muse Code
+- **Prompt**: Fix config/runtime resolution to the skills installation (local `.agents/skills/ws-shared/runtime` or global `$HOME/.agents/skills/ws-shared/runtime`); keep `.ws` for local config variable files only.
+- **Done**: New candidate-order bootstrap in 46 skill scripts + ws-doctor (explicit `WORKFLOW_SKILLS_SHARED_DIR` > packaged > cwd-local > global `WORKFLOW_SKILLS_GLOBAL_DIR`/`HOME` > fail-closed; dropped `.ws/runtime` fallback); `resolveHubSource` prefers repo-local skills tree, then global, then legacy `.ws` read-only fallback; precedence matrix row 3 + config-resolution.md + installer pointer text synced to `{skillsRoot}/{globalSkillsRoot}` tokens; new test-skills-runtime-resolution.js (7 checks) registered in package.json; test-local-first-precedence.js updated to the skills-tree-wins contract; integrity regenerated + verified (v0.4.41).
+- **Result**: New test 7/7; precedence, hybrid-consumer-root, shared-hub-paths, doc-sync, hub-layout, monitor, monitor-us356, doctor, links, autoload-configure, powershell-config-editor, install --local all green; harness-clean 0 findings. Learning: re-confirmed trap 2026-09-19-us356-edit-tooling (CRLF files need single-line or file-aware edits; batch mechanical edits via reviewed /tmp codemod + git diff).
+
 ### [2026-09-19 12:10] Agent: Muse Code
 - **Prompt**: us-356 worker (standard): host adapters for transcript/session discovery in ws-monitor (Steps 0-8, ship PR, no merge).
 - **Done**: Per-OS adapter table (Cursor, OpenCode, Antigravity, Muse) behind opt-in flag, session correlation, WAL-safe bounded reads, sanitizer, transcriptSource per workflow, worker-session-stall signal; new references/host-adapters.md + test-ws-monitor-us356.js; package.json chain registration; integrity regen; G2 c0750bc0 + delivery 98076a6a; PR 364 to main.
