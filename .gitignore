@@ -49,6 +49,8 @@ check-workflows-report.md
 # excludes consumer-owned config/state from the npm tarball. Consumer defaults
 # track non-secret config.json and maintained STACK.md, while generated state and
 # installer metadata are ignored by the installed hub .gitignore.
+# Machine-local host probe cache must never ship upstream (spec 0059 AC9).
+.ws/host-capabilities.json
 .tmp-ws-cleanup-approved.json
 .tmp-*/
 
