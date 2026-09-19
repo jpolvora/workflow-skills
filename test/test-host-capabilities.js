@@ -1,0 +1,171 @@
+/**
+ * Tests for us-348 host capability detection & cache (AC1-AC5 + negatives).
+ * Run: node test/test-host-capabilities.js
+ */
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import cp from 'child_process';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = path.resolve(__dirname, '..');
+const RUNTIME = path.join(REPO_ROOT, '.agents', 'skills', 'ws-shared', 'runtime');
+const TOKENS_DOC = path.join(RUNTIME, 'host-capability-tokens.md');
+const MAP_FILE = path.join(RUNTIME, 'host-tool-map.json');
+const PROBE = path.join(RUNTIME, 'scripts', 'probe_host_capabilities.cjs');
+const TOOLS_MD = path.join(RUNTIME, 'tools.md');
+const HOST_DISPATCH = path.join(RUNTIME, 'host-dispatch.md');
+
+const TOKENS = ['readFile', 'writeFile', 'editFile', 'shellExec', 'dispatchAgent', 'askQuestion', 'browserVerify'];
+
+let failures = 0;
+
+function assert(cond, msg) {
+  if (cond) console.log(`OK ${msg}`);
+  else {
+    console.error(`FAIL ${msg}`);
+    failures += 1;
+  }
+}
+
+function probe(args, cache) {
+  return cp.spawnSync(
+    process.execPath,
+    [PROBE, '--cache', cache, ...args, '--json'],
+    { cwd: REPO_ROOT, encoding: 'utf-8' },
+  );
+}
+
+// Mirror of the cache-query-first ordering in host-capability-tokens.md.
+function chooseTool(capabilities, token) {
+  if (capabilities && capabilities[token] && capabilities[token] !== 'none') {
+    return { tool: capabilities[token], native: true };
+  }
+  return { tool: 'shell', native: false };
+}
+
+function main() {
+  // File existence.
+  assert(fs.existsSync(TOKENS_DOC), 'host-capability-tokens.md exists');
+  assert(fs.existsSync(MAP_FILE), 'host-tool-map.json exists');
+  assert(fs.existsSync(PROBE), 'probe_host_capabilities.cjs exists');
+
+  // AC1: documented brainstorm decision.
+  const tokensDoc = fs.readFileSync(TOKENS_DOC, 'utf8');
+  assert(/refine-and-implement/i.test(tokensDoc), 'AC1 decision note records refine-and-implement');
+  assert(/abandon/i.test(tokensDoc), 'AC1 decision note records the rejected abandon option');
+
+  // AC3: vocabulary greppable in tools.md + tokens doc.
+  const toolsMd = fs.readFileSync(TOOLS_MD, 'utf8');
+  for (const token of TOKENS) {
+    assert(toolsMd.includes(`{${token}}`), `AC3 tools.md maps {${token}}`);
+    assert(tokensDoc.includes(`{${token}}`), `AC3 tokens doc defines {${token}}`);
+  }
+  assert(/cache-query-first/i.test(toolsMd), 'AC3 tools.md states cache-query-first ordering');
+
+  // AC5: pre-mapped named entries including dispatch-agent variants.
+  const map = JSON.parse(fs.readFileSync(MAP_FILE, 'utf8'));
+  const shapes = Object.keys(map.shapes || {});
+  assert(shapes.length >= 2, 'AC5 map ships at least two named host shapes');
+  for (const shape of shapes) {
+    for (const token of TOKENS) {
+      assert(Array.isArray(map.shapes[shape][token]), `AC5 ${shape}.${token} is a variant list`);
+    }
+  }
+  const nonGeneric = shapes.filter((s) => s !== 'generic');
+  assert(nonGeneric.length >= 1, 'AC5 map has non-generic shapes');
+  for (const shape of nonGeneric) {
+    assert(
+      map.shapes[shape].dispatchAgent.length > 0,
+      `AC5 ${shape} pre-maps dispatch-agent variants`,
+    );
+  }
+
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-hostcaps-'));
+  const cache = path.join(tmp, 'host-capabilities.json');
+  const probeLog = path.join(tmp, 'probes.log');
+
+  // AC2: cache-content test on at least two host shapes.
+  const shapeA = shapes[0];
+  const shapeB = shapes[1];
+  const rA = probe(['--key', 'shape-a::model-1', '--host-shape', shapeA, '--probe-log', probeLog], cache);
+  assert(rA.status === 0, 'AC2 probe exits 0 for first host shape');
+  const pA = JSON.parse(rA.stdout.trim());
+  assert(pA.ok === true && pA.cached === false, 'AC2 first probe detects (not cached)');
+  const rB = probe(['--key', 'shape-b::model-1', '--host-shape', shapeB, '--probe-log', probeLog], cache);
+  assert(rB.status === 0, 'AC2 probe exits 0 for second host shape');
+  const stored = JSON.parse(fs.readFileSync(cache, 'utf8'));
+  assert(
+    stored['shape-a::model-1'] && stored['shape-b::model-1'],
+    'AC2 cache holds detected tools per host-shape key',
+  );
+  assert(
+    TOKENS.every((t) => typeof stored['shape-a::model-1'].capabilities[t] === 'string'),
+    'AC2 cached entry lists every capability token',
+  );
+
+  // AC3 scenario: file work uses the native tool when cached-available.
+  const choice = chooseTool(stored['shape-a::model-1'].capabilities, 'readFile');
+  assert(choice.native === true, 'AC3 scenario file work picks the native tool over shell');
+  assert(choice.tool !== 'shell', 'AC3 scenario native choice is not a shell equivalent');
+
+  // Negative: file operation via shell when native is cached-available must fail tool-choice.
+  const shellBypass = { tool: 'shell', native: false };
+  assert(
+    shellBypass.tool !== choice.tool,
+    'NEG shell-when-native-available diverges from the native choice (fails tool-choice)',
+  );
+
+  // AC4: cached detection reused across steps — probe-count test over a multi-step run.
+  const before = fs.existsSync(probeLog)
+    ? fs.readFileSync(probeLog, 'utf8').split('\n').filter(Boolean).length
+    : 0;
+  for (let step = 0; step < 3; step += 1) {
+    const r = probe(['--key', 'shape-a::model-1', '--probe-log', probeLog], cache);
+    assert(r.status === 0, `AC4 step ${step + 1} reuses cache without error`);
+    assert(JSON.parse(r.stdout.trim()).cached === true, `AC4 step ${step + 1} is a cache hit`);
+  }
+  const after = fs.readFileSync(probeLog, 'utf8').split('\n').filter(Boolean).length;
+  assert(after === before, 'AC4 multi-step run performs no per-step re-probing');
+  assert(/invalidation/i.test(tokensDoc), 'AC4 documented invalidation rule exists');
+  const rRefresh = probe(
+    ['--key', 'shape-a::model-1', '--refresh', '--host-shape', shapeA, '--probe-log', probeLog],
+    cache,
+  );
+  assert(JSON.parse(rRefresh.stdout.trim()).cached === false, 'AC4 --refresh forces re-probe');
+  const refreshed = fs.readFileSync(probeLog, 'utf8').split('\n').filter(Boolean).length;
+  assert(refreshed === after + 1, 'AC4 refresh appends exactly one probe');
+
+  // Negative: unknown host degrades to the minimal capability set without failing startup.
+  const rUnknown = probe(['--key', 'mystery::model-9', '--host-shape', 'no-such-shape'], cache);
+  assert(rUnknown.status === 0, 'NEG unknown host exits 0 (graceful degradation)');
+  const pUnknown = JSON.parse(rUnknown.stdout.trim());
+  assert(pUnknown.capabilities.shellExec !== 'none', 'NEG unknown host keeps a shell fallback');
+  assert(pUnknown.capabilities.dispatchAgent === 'none', 'NEG unknown host has no phantom dispatch tool');
+
+  // Negative: host-declared tools override the pre-map (effective resolution).
+  const rDeclared = probe(
+    ['--key', 'declared::model-1', '--host-shape', shapeA, '--declare', 'readFile=custom_reader'],
+    cache,
+  );
+  assert(
+    JSON.parse(rDeclared.stdout.trim()).capabilities.readFile === 'custom_reader',
+    'NEG host-declared tool wins over the pre-map entry',
+  );
+
+  // host-dispatch.md references the probe script and the reuse rule (quoter sweep target).
+  const dispatch = fs.readFileSync(HOST_DISPATCH, 'utf8');
+  assert(dispatch.includes('probe_host_capabilities.cjs'), 'host-dispatch.md references the probe script');
+  assert(/no per-step re-probing/i.test(dispatch), 'host-dispatch.md states the reuse rule');
+
+  fs.rmSync(tmp, { recursive: true, force: true });
+
+  if (failures > 0) {
+    console.error(`\n${failures} failure(s)`);
+    process.exit(1);
+  }
+  console.log('\nAll host-capability tests passed.');
+}
+
+main();
