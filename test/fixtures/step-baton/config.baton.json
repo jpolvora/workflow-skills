@@ -1,0 +1,18 @@
+{
+  "project": { "name": "step-baton-fixture", "baseBranch": "main" },
+  "plans": { "dir": ".agents/plans" },
+  "verification": {},
+  "defaults": {
+    "autoMode": true,
+    "minVerifyScore": 9,
+    "stepRunners": { "3": "runner-a", "4": "runner-a" },
+    "runners": {
+      "runner-a": {
+        "command": "node FIXTURE_DIR/worker-ok.cjs --prompt \"{prompt}\" --cwd \"{cwd}\" --slug {slug} --step {step} --state STATE_PATH --updater UPDATER_PATH",
+        "timeoutSeconds": 60,
+        "env": {}
+      }
+    },
+    "stepBaton": { "pollIntervalSeconds": 30, "maxAttempts": 2 }
+  }
+}

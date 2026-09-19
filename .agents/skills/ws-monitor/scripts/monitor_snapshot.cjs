@@ -723,6 +723,7 @@ function snapshot(options) {
     const findings = classifyWorkflow(state, workflowDir, telemetry, minVerifyScore, context.repoRoot, context.config);
     findings.push(...detectStaleState(state, workflowDir, telemetry, loaded.stateFile, context.repoRoot));
     findings.push(...detectContextMismatch(state, gitContext, context.repoRoot));
+    const batonRaw = state.baton && typeof state.baton === 'object' ? state.baton : null;
     workflows.push({
       workflowId: state.workflowId || path.basename(loaded.stateFile, '.state.md'),
       slug: state.slug || state.us || path.basename(workflowDir),
@@ -735,6 +736,13 @@ function snapshot(options) {
       minVerifyScore,
       currentModel: state.currentModel || null,
       configuredModel: state.configuredModel || null,
+      baton: {
+        holder: batonRaw?.holder || null,
+        step: Number.isInteger(batonRaw?.step) ? batonRaw.step : Number(state.currentStep),
+        leaseUntil: batonRaw?.leaseUntil || null,
+        revision: Number.isInteger(batonRaw?.revision) ? batonRaw.revision : 0,
+      },
+      mappedRunner: context.config?.defaults?.stepRunners?.[String(Number(state.currentStep))] || null,
       statePath: toRepoRelative(context.repoRoot, loaded.stateFile, { allowOutside: true }),
       telemetry: {
         path: toRepoRelative(context.repoRoot, path.join(workflowDir, 'telemetry.jsonl'), { allowOutside: true }),
@@ -858,6 +866,8 @@ function markdownReport(report) {
       `- Pipeline: ${workflow.pipeline}`,
       `- Current step: ${workflow.currentStep}`,
       `- Verification score: ${workflow.verificationScore ?? 'missing'} / ${workflow.minVerifyScore}`,
+      `- Baton: ${workflow.baton?.holder || 'free'} (step ${workflow.baton?.step ?? workflow.currentStep}, lease ${workflow.baton?.leaseUntil || 'none'})`,
+      `- Mapped runner: ${workflow.mappedRunner || 'single-host'}`,
       `- State: \`${workflow.statePath}\``,
       `- Telemetry events: ${workflow.telemetry.eventCount}`,
       '',

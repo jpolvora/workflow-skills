@@ -66,6 +66,7 @@ Legacy neutral flags (`hasStructuredChoiceTool` / `hasSubagentTool` / `hasBrowse
   ```text
   {cli} run --prompt "{prompt}" --working-dir "{cwd}"
   ```
+- **Step baton vocabulary:** coordinator worker templates add `{step}` to `{prompt}`, `{cwd}`, `{slug}`; `{prompt}` resolves to a dispatch-prompt file path (see §7).
 
 ### Tier 3 — Inline Isolated Execution (Clean Context Pointer Mode)
 
@@ -186,3 +187,14 @@ When creating or modifying workflow skills:
 - [ ] Never hardcode host-specific slash commands or product names into skill bodies.
 - [ ] Allow `hostAdapter` in `config.json` to customize or override subagent dispatch.
 - [ ] Support native-tool, CLI-runner, and inline-isolated hosts seamlessly via the tier ladder.
+
+---
+
+## 7. Step-level baton runs (multi-CLI coordinator)
+
+A deterministic coordinator process (`ws-spec-to-pr/scripts/step_coordinator.cjs`, plain Node, no LLM) may drive one run (`workflowId`) across several CLI processes on the same machine and repository. The coordinator is a durable driver around the Tier 2 one-shot mechanism (§3 Tier 2), not a new dispatch tier: unmapped steps keep Tier 1/2/3 plus `stepModels`, and lite inline execution keeps its clean-context-pointer boundary.
+
+- **Turn signal:** the workflow state file only. The baton holder for `currentStep` (`state.baton`, plus the terse `state.handoffs` entry per step) is the only runner allowed to act.
+- **Worker spawn vocabulary:** runner command templates substitute `{prompt}`, `{cwd}`, `{slug}`, `{step}`. Effective resolution: `{prompt}` is the coordinator-written dispatch-prompt file path (`{us-dir}/.runtime/step-{N}-dispatch-prompt.md`), `{cwd}` the repo root, `{slug}` the run slug, `{step}` the step number. Templates are tokenized to argv and spawned without a shell.
+- **Worker contract:** one-shot per turn with the Tier 2 sparse-pointer payload plus a baton envelope (`step`, `holder`, `leaseUntil`, `attempt`); the worker calls `finish` for its step before exit and never polls, idles, or emits gates.
+- **Gates:** all Transition Gates and `user-gate` prompts surface at the coordinator (pause-and-prompt, or index 0 in `autoMode`); see [`gates.md`](gates.md) § Coordinator gate surfacing.

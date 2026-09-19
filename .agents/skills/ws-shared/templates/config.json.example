@@ -253,7 +253,22 @@
     "plannerModel": "",
     "executionModel": "",
     "reviewerModel": "",
-    "testingModel": ""
+    "testingModel": "",
+    "_comment_stepRunners": "Optional step-level baton run config: step number to runner id. Unmapped steps keep single-host dispatch. Runner ids are opaque neutral strings.",
+    "stepRunners": {
+      "4": "runner-a"
+    },
+    "runners": {
+      "runner-a": {
+        "command": "node ./scripts/run-step-worker.cjs --prompt \"{prompt}\" --cwd \"{cwd}\" --slug {slug} --step {step}",
+        "timeoutSeconds": 600,
+        "env": {}
+      }
+    },
+    "stepBaton": {
+      "pollIntervalSeconds": 30,
+      "maxAttempts": 2
+    }
   },
 
   "plans": {

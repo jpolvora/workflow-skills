@@ -1115,6 +1115,10 @@ function Populate-Sections {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'skipMutationTesting' -LabelText 'Skip Step 7 Mutation Testing' -Type 'bool' -DefaultVal $true
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'parallelVerifyReview' -LabelText 'Parallel Verify & Review (Steps 5 & 6)' -Type 'bool' -DefaultVal $false
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'contextBudget' -LabelText 'Subagent Context Budget (UTF-8 Bytes)' -Type 'int' -MinVal 18000 -MaxVal 128000 -DefaultVal 32000
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'stepRunners' -LabelText 'Step Baton Runner Map (JSON step to runner id)' -Type 'string' -Placeholder '{"4":"runner-a"}'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'runners' -LabelText 'Step Baton Runner Table (JSON id to command entry)' -Type 'string' -Placeholder '{"runner-a":{"command":"node worker.cjs --prompt {prompt}","timeoutSeconds":600}}'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.stepBaton' -Key 'pollIntervalSeconds' -LabelText 'Step Baton Poll Interval (5-300s)' -Type 'int' -MinVal 5 -MaxVal 300 -DefaultVal 30
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.stepBaton' -Key 'maxAttempts' -LabelText 'Step Baton Max Attempts' -Type 'int' -MinVal 1 -MaxVal 10 -DefaultVal 2
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.contextHygiene' -Key 'pruneAfterStep' -LabelText 'Prune Prior Step Context' -Type 'bool' -DefaultVal $true
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.providerCompat' -Key 'stabilizeStaticPrefix' -LabelText 'Stabilize Static Dispatch Prefix' -Type 'bool' -DefaultVal $true
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.providerCompat' -Key 'thinkingToolCompat' -LabelText 'Preserve Thinking Text in Tool Turns' -Type 'bool' -DefaultVal $false

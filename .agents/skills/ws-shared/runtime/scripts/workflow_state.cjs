@@ -15,6 +15,7 @@ const {
 const { scoreLedger } = require('../../../ws-spec-to-pr/scripts/ac_ledger.cjs');
 const { syncAcCountsFromLedger } = require('./ac_counts.cjs');
 const { loadJsonSchema, validateNode } = require('./validate_json_schema.cjs');
+const { releaseBaton } = require('./step_baton.cjs');
 
 const STATE_VERSION = 3;
 const SCHEMA_VERSION = 1;
@@ -1647,6 +1648,9 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       output: finishOutput,
       fallbackArtifacts,
     });
+    if (!isInternalSubstep && state.baton !== undefined) {
+      releaseBaton(state, { step, nextStep: state.currentStep });
+    }
   }
   if (operation === 'finish') {
     const hygiene = resolveContextHygiene(context.config);
@@ -2092,6 +2096,7 @@ module.exports = {
   artifactStampFields,
   resolveStepStampStatus,
   stampStepArtifact,
+  finishArtifactNames,
   atomicWrite,
   syncStateDualWrite,
   gitTrackedSet,

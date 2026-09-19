@@ -372,6 +372,55 @@
             "fixPrExec": { "type": "string", "description": "Fix-PR batch execution role; falls back to executionModel and never numeric Step 9." }
           },
           "description": "Per-step or substep model overrides (numeric \"0\"–\"9\", dag, scoreAndRefine, reviewFix, fixPrPlan, fixPrExec). Not the state frontmatter stepModels list."
+        },
+        "stepRunners": {
+          "type": "object",
+          "description": "Step-level baton run config: step number (string key) to runner id. Steps without a mapping keep single-host dispatch. Keys are validated against the owning workflowType step set (0-9 standard, 0-5 lite).",
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        },
+        "runners": {
+          "type": "object",
+          "description": "Runner table for step-level baton runs: opaque runner id to command template entry. Runner ids are neutral strings; never host product names as contract keys.",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["command", "timeoutSeconds"],
+            "properties": {
+              "command": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Command template with {prompt} (dispatch-prompt file path), {cwd}, {slug}, {step} substitutions. Tokenized argv; never run through a shell."
+              },
+              "timeoutSeconds": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Per-turn worker timeout in seconds. Lease default is 3x this value."
+              },
+              "env": {
+                "type": "object",
+                "description": "Explicit per-runner environment allowlist merged over process.env.",
+                "additionalProperties": { "type": "string" }
+              }
+            }
+          }
+        },
+        "stepBaton": {
+          "type": "object",
+          "description": "Step-level baton coordinator tunables.",
+          "properties": {
+            "pollIntervalSeconds": {
+              "type": "integer",
+              "minimum": 5,
+              "maximum": 300,
+              "default": 30,
+              "description": "Coordinator state poll interval in seconds for external-advancement detection (5-300, default 30). Workers never poll."
+            },
+            "maxAttempts": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 2,
+              "description": "Consecutive expiries or failures on one step before the workflow moves to blocked (default 2)."
+            }
+          }
         }
       }
     },

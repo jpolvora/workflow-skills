@@ -82,6 +82,10 @@ After `step-00-{slug}.spec.md` exists and before Step 1:
 
 See [`gates.md`](../ws-shared/runtime/gates.md) § Quality gate bypass. Active via `--skip-gates` or `config.json` → `invariants.skipQualityGates`.
 
+## Step-level baton runs (multi-CLI)
+
+One run may execute different steps in different CLI processes via the deterministic coordinator (`scripts/step_coordinator.cjs`, plain Node, no LLM): run `node {skillsRoot}/ws-spec-to-pr/scripts/step_coordinator.cjs --state {us-dir}/{workflow-id}.state.json` after configuring `defaults.stepRunners` / `defaults.runners` / `defaults.stepBaton`. Worker spawn vocabulary and the baton contract live in [`host-dispatch.md`](../ws-shared/runtime/host-dispatch.md) §7; gates surface at the coordinator per [`gates.md`](../ws-shared/runtime/gates.md) § Coordinator gate surfacing.
+
 ## Invocation
 
 ```
