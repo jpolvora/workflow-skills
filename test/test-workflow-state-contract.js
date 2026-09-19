@@ -609,9 +609,12 @@ const liteReviewAfterFinish = fs.readFileSync(path.join(liteRoot, '.agents/plans
 assert.match(liteReviewAfterFinish, /^step: 6$/m, 'lite finish --step 3 must keep the review canonical step 6');
 assert.strictEqual(run(liteValidate, [liteStateRel, '--pre-advance', '4', '--repo-root', liteRoot]).status, 0, 'lite pre-advance 4 uses step-06 review, not step-03 exec');
 assert.notStrictEqual(run(liteValidate, [liteStateRel, '--pre-advance', '5', '--repo-root', liteRoot]).status, 0, 'lite pre-advance 5 requires ship result');
-stampArtifact(path.join(liteRoot, '.agents/plans/lite'), 'step-08-lite.result.md', 8, 'lite', 'wf-lite');
+// Body-only result: the finish stamp loop must add the canonical step-8 metadata for lite step 4.
+write(path.join(liteRoot, '.agents/plans/lite/step-08-lite.result.md'), '# Result\n');
 assert.strictEqual(run(liteUpdate, ['dispatch', liteStateRel, '--step', '4', '--timestamp', '2026-08-21T20:00:10.000Z', ...liteCommon]).status, 0);
 assert.strictEqual(run(liteUpdate, ['finish', liteStateRel, '--step', '4', '--timestamp', '2026-08-21T20:00:11.000Z', ...liteCommon]).status, 0);
+const liteResultAfterFinish = fs.readFileSync(path.join(liteRoot, '.agents/plans/lite/step-08-lite.result.md'), 'utf8');
+assert.match(liteResultAfterFinish, /^step: 8$/m, 'lite finish --step 4 must stamp the result canonical step 8');
 const liteClosed = JSON.parse(fs.readFileSync(path.join(liteRoot, liteStateRel.replace(/\.state\.md$/, '.state.json')), 'utf8'));
 assert.strictEqual(liteClosed.status, 'completed', 'lite close finish sets workflow status completed');
 assert.strictEqual(liteClosed.shipStatus, 'pending', 'lite close finish defaults shipStatus pending');

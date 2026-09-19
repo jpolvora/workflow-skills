@@ -371,10 +371,10 @@ function substituteRunnerTemplate(command, { prompt, cwd, slug, step } = {}) {
     step: String(step ?? ''),
   };
   const tokens = splitCommand(command).map((token) => token
-    .replaceAll('{prompt}', values.prompt)
-    .replaceAll('{cwd}', values.cwd)
-    .replaceAll('{slug}', values.slug)
-    .replaceAll('{step}', values.step));
+    .replaceAll('{prompt}', () => values.prompt)
+    .replaceAll('{cwd}', () => values.cwd)
+    .replaceAll('{slug}', () => values.slug)
+    .replaceAll('{step}', () => values.step));
   if (!tokens.length || !tokens[0]) {
     throw createError('RUNNER_EMPTY_COMMAND', 'runner command template produced no executable');
   }

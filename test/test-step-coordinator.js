@@ -77,6 +77,8 @@ function makeRepo({ currentStep, completedSteps, stepRunners, runners, stepBaton
   write(stateFile, JSON.stringify(state, null, 2));
   // Seed the lite step-3 review artifact so multi-turn runs verify (lite never emits plan.exec).
   write(path.join(usDir, `step-06-${slug}.review.md`), 'review fixture\n');
+  // Seed the lite step-4 close result so close-step runs verify (lite close emits step-08).
+  write(path.join(usDir, `step-08-${slug}.result.md`), 'result fixture\n');
   return { root, usDir, stateFile, slug, receiptsFile };
 }
 
@@ -367,6 +369,25 @@ function workerCommand(fixture, timeoutSeconds = 60) {
     afterState: { currentStep: 4, completedSteps: [0, 1, 2, 3], handoffs: { 3: handoffFor(3, repo.slug, 'wf-coord') } },
   });
   if (!check.advanced) throw new Error(`lite step 3 with the review artifact must advance: ${check.detail}`);
+}
+
+// verifyAdvancement: lite step 4 expects the step-08 close result (shared name with standard).
+{
+  const repo = makeRepo({ currentStep: 4, completedSteps: [0, 1, 2, 3], stepRunners: {}, runners: {} });
+  const base = { usDir: repo.usDir, slug: repo.slug, pipeline: 'lite', step: 4, beforeCurrentStep: 4 };
+  const present = coordinator.verifyAdvancement({
+    ...base,
+    afterState: { currentStep: 5, completedSteps: [0, 1, 2, 3, 4], handoffs: { 4: handoffFor(4, repo.slug, 'wf-coord') } },
+  });
+  if (!present.advanced) throw new Error(`lite step 4 with the close result must advance: ${present.detail}`);
+  fs.rmSync(path.join(repo.usDir, `step-08-${repo.slug}.result.md`));
+  const absent = coordinator.verifyAdvancement({
+    ...base,
+    afterState: { currentStep: 5, completedSteps: [0, 1, 2, 3, 4], handoffs: { 4: handoffFor(4, repo.slug, 'wf-coord') } },
+  });
+  if (absent.advanced || absent.reason !== 'missing-artifact') {
+    throw new Error(`lite step 4 without the close result must not advance: ${JSON.stringify(absent)}`);
+  }
 }
 
 // verifyAdvancement: failed handoffs never advance; reason-gated skips still do.

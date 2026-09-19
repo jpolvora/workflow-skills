@@ -57,6 +57,8 @@ try {
       },
     },
   }, null, 2));
+  // Seed the lite step-4 close result (lite close emits step-08).
+  write(path.join(usDir, `step-08-${slug}.result.md`), 'result fixture\n');
 
   const result = cp.spawnSync(process.execPath, [
     path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs'),

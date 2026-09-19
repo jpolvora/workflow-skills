@@ -60,6 +60,17 @@ if (quoted.length !== 5 || quoted[1] !== '--prompt' || quoted[2] !== '{prompt}' 
 }
 const single = baton.substituteRunnerTemplate('worker --label "step {step} for {slug}"', { slug: 's', step: 2 });
 if (!single.args.includes('step 2 for s')) throw new Error('embedded-token argv element split incorrectly');
+// Dollar-pattern values must substitute verbatim, not as replacement patterns ($&, $', $$, $n).
+const dollars = baton.substituteRunnerTemplate('worker --prompt {prompt} --cwd {cwd} --slug {slug} --step {step}', {
+  prompt: 'a$&b',
+  cwd: "x$'y",
+  slug: 's$$1',
+  step: '$1',
+});
+const dJoined = dollars.args.join('|');
+for (const needle of ['a$&b', "x$'y", 's$$1', '$1']) {
+  if (!dJoined.includes(needle)) throw new Error(`dollar-pattern value corrupted: ${needle} missing in ${dJoined}`);
+}
 expectCode(() => baton.splitCommand('run "unterminated'), 'RUNNER_EMPTY_COMMAND', 'unterminated quote');
 expectCode(() => baton.substituteRunnerTemplate('   ', {}), 'RUNNER_EMPTY_COMMAND', 'blank template');
 

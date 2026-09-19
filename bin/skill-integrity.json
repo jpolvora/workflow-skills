@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "ca30f05c42446803a43a749d36f9375cac7720474d323936fd176c0306e86104",
+  "fullPackageDigest": "194f80c096ae1b917a3844781fcfa4e524f5b301c026d224f8d7749a44e8483d",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -38,10 +38,10 @@
       "runtime/scripts/resolve_consumer_root.py": "ba981b12d25b43d532946d0103d2adb9f09b611769e06a01d1886b00db2a9b55",
       "runtime/scripts/retired_artifacts.cjs": "512252528056874a8f9effeab5fdc09801cee0a8e8521f41e9f9be0958fd3890",
       "runtime/scripts/scan_stack_invariants.cjs": "f186e197040142066fa7e78b563b11a171c8dc5a62c8026a135457fa82faf5e7",
-      "runtime/scripts/step_baton.cjs": "29037278b8454b7104204d6f25e7e9db34e68a83b62057cd3e176c1080f3fca0",
+      "runtime/scripts/step_baton.cjs": "d18f4bd9cf4720c6bf5d3322c8a143a64c94593cce480f4577341f294645d071",
       "runtime/scripts/utf8_stdio.py": "b9599c57d16f7e1d05aef96fc4f5768ae4d54e3d32c3b5a8007e0e5f3f1caa31",
       "runtime/scripts/validate_json_schema.cjs": "db5bc07614c6496ae92ad7356b6f4c26cb8df5dd72681cfa228f1c76502bed61",
-      "runtime/scripts/workflow_state.cjs": "abb61736387e2999eb75fb1a813effed11b09f513515e72279eaf6b5d5c49a2c",
+      "runtime/scripts/workflow_state.cjs": "a50a07277985cefef52f3be017968b8cf3ae3da30b81dc2cadce1a50e14641a1",
       "runtime/setup.md": "7a630f3c366b0208b162ca72c26237e9a4298a63f1d05b7efb01fce244e77bec",
       "runtime/skill-dependencies.json": "52fa9451319a72dc66d4dfc7dfb116239aacc65014e25e93e7f580b7f75f49f3",
       "runtime/stacks/abp-angular.md": "afd0426d06b2e2cd048fae3aa9a120ebed221d261713e3373840ef01f5ac629d",
@@ -57,7 +57,7 @@
       "templates/MEMORY.md.template": "1a604cb2184c9c54cfb24a2da547d3664bc5d4d8e713ffa937c3c3083c21340d",
       "templates/STACK.md.example": "490400ff5822fb753abff5db2d93ae63b90e00117ecc8cd976c9537b872cd398"
     },
-    "skillDigest": "15a0e68aa4ed5c79546a721c901fa1487b8273db167fa47733cb2128c7adef51"
+    "skillDigest": "c3ffbe9548de88a5df6e3f62c34b5a1dff376fc9c76124f4cc7bc7aaea233152"
   },
   "packageVersion": "0.4.38",
   "skills": {

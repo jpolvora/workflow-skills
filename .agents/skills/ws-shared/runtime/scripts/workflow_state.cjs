@@ -475,6 +475,7 @@ function finishArtifactNames(slug, step, pipeline = 'standard') {
       0: `step-00-${slug}.spec.md`,
       1: `step-01-${slug}.plan.md`,
       3: `step-06-${slug}.review.md`,
+      4: `step-08-${slug}.result.md`,
     };
     return lite[step] ? [lite[step]] : [];
   }
