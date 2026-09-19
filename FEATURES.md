@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.4.34** · 55 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.4.38** · 54 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 ### ws-shared hybrid configuration boundary
 
@@ -48,8 +48,8 @@ A finite state machine that carries one feature from an idea to a merged pull re
 | 5 | Spec-compliance scoring 0–10 (`ws-plan-verify`); **advances only at ≥ `defaults.minVerifyScore`** (default 9); below-bar refinement is a telemetry-backed `scoreAndRefine` substep | `step-05-{slug}.plan.report.md` |
 | 6 | Local code review of `{base}...HEAD` (`ws-code-review`) with a fix → re-review loop | `step-06-{slug}.review.md` (+ `.fix.report.md`) |
 | 7 | Test battery (`ws-testing`): unit, integration, E2E, coverage, optional mutation, regression sabotage | `step-07-{slug}.testing.*` |
-| 8 | Close implementation (result, G2-delivery, MEMORY, changelog, `status: completed`), then ship gate, push/PR (`ws-ship-pr`), tracker comment | `step-08-{slug}.result.md` |
-| 9 | PR thread convergence: one gate-only `fixPrPlan` then `fixPrExec` per Act-round/standalone batch, then merge | plan gate + resolved threads / merge |
+| 8 | Close implementation (result, G2-delivery, MEMORY, changelog, `status: completed`), then quiet-preflight ship gate, non-blocking preview dry-run, push/PR (`ws-ship-pr`), tracker comment | `step-08-{slug}.result.md` |
+| 9 | PR thread convergence (`ws-goal-fix-pr` orchestrator): session owns the loop inline, each Act-round/standalone batch runs in a fresh worker with one gate-only `fixPrPlan` then `fixPrExec`, then merge | plan gate + resolved threads / merge |
 
 Canonical dispatch table: [`STEP-DISPATCH.md`](.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md).
 
@@ -85,7 +85,7 @@ Projects canonical skills (`.agents/skills/ws-*`) into native host agent definit
 
 ### 1.6 Step-level baton runs (multi-CLI)
 
-One run may execute different steps in different CLI processes via the deterministic coordinator (`ws-spec-to-pr/scripts/step_coordinator.cjs`, plain Node, no LLM): map steps to runner ids with `defaults.stepRunners`, declare command templates in `defaults.runners`, and tune polling/retries with `defaults.stepBaton`. The baton protocol (claim → spawn → verify → release) keeps single-writer state across processes; gates surface at the coordinator while workers stay non-interactive.
+One run may execute different steps in different CLI processes via the deterministic coordinator (`ws-spec-to-pr/scripts/step_coordinator.cjs`, plain Node, no LLM): map steps to runner ids with `defaults.stepRunners`, declare command templates in `defaults.runners` (`{prompt}`/`{cwd}`/`{slug}`/`{step}` substitutions, timeout, env allowlist), and tune polling/retries with `defaults.stepBaton` (`pollIntervalSeconds` 5–300 default 30, `maxAttempts` default 2). Unknown steps, runner ids, or empty commands fail fast before Step 0; unmapped steps keep single-host dispatch. The state-file baton (`holder`, `step`, `claimedAt`, `leaseUntil`, `revision`) is the sole turn signal: revision-checked claim, exactly-once release on `finish`, re-claimable expiry with logged attempts, `blocked` after `maxAttempts`. Workers spawn one-shot with sparse pointers plus a baton envelope and must call `finish` before exit; the coordinator verifies advancement and artifacts, emits `baton_*` / `runner_*` telemetry, and mirrors released handoffs to the spec-memo vault when integration is enabled. Gates surface at the coordinator while workers stay non-interactive. Same-machine same-repo only; no IPC bus, multi-machine queue, or CLI provisioning.
 
 ---
 
@@ -105,6 +105,7 @@ The suite's central claim is that nothing ships on an agent's word alone. Every 
 | **Pre-advance validation** | Machine validation of the workflow state file before every step transition; a bad state halts the FSM. Both orchestrators invoke the Node `validate_state.cjs` surface. | `validate_state.cjs` |
 | **Secrets and PII scan** | Leak audit before ship, with an optional pre-commit hook (user-requested only). | `ws-secrets-leak-review` |
 | **Adversarial audit** | Claimed work is checked against real git diffs and re-run verifications. `auditVerdictsBlockShip` supports `false`, `"refuted"` (default), or stricter `"caveats"` while preserving the REFUTED safety floor. | `ws-fable-judge` |
+| **Preview dry-run before Create PR** | `ws-ship-pr` Step 4b reuses `preview.dryRunCommand` verbatim after push and before PR creation; default on via `preview.previewBeforeShip`, disabled only by explicit `false`. Findings or failure are reported on the Prepare-to-PR board and never block shipping. | `ws-ship-pr` + `ws-preview` |
 | **Delivery gate** | Scope control, anti-reinvention, ambiguity stops, and pre-ship proof checklist. | `ws-senior-developer` |
 
 ---
@@ -231,7 +232,7 @@ Diagnostics can be persisted under `plans.diagnosticsDir`. `workflow-skills tele
 | `ws-goal-loop` | Generic convergence primitive: sentinel management, heartbeat and settle timers, re-check control. Backs `ws-goal-fix-pr` |
 | `ws-plan-update` | Post-ship QA delta manager: capture manual findings, plan and execute delta fixes, update the delivery summary |
 
-Autoload set (loaded every prompt when a project opts in via `{sharedDir}/autoload.md`): `ws-senior-developer`, `ws-self-learning`, `ws-changelog`, `ws-fable-method`, `ws-tdah`, `ws-megabrain`. Precedence among them is documented and deterministic.
+Autoload set (loaded every prompt when a project opts in via `{sharedDir}/autoload.md`): required `ws-senior-developer`, `ws-self-learning`, `ws-tdah`, `ws-spec-memo`, `ws-task-lifecycle`; on-demand only `ws-changelog`, `ws-fable-method`, `ws-megabrain`. Precedence among them is documented and deterministic.
 
 **Source anonymization:** agents must not name private consumer projects in closing reports, commits, specs, or new tracker issues. Pasted consumer traces stay in-chat for diagnosis; published wording describes the failure class with generic examples.
 
@@ -256,7 +257,7 @@ Project settings live in consumer-owned `.agents/skills/ws-shared/config.json` (
 | `fable` | Master toggle plus `autoAudit`, `autoDetectDomain`, `auditVerdictsBlockShip` |
 | `specMemo` / memory flags | Dual routing: `enableMemoryFiles` (local `{memoryDir}/MEMORY.md`) and `enableSpecMemoIntegration` (external vault). `specMemo.*` holds MCP/CLI paths; `ws-spec-memo` is harness bridge only; day-to-day vault ops use `ws-memo` |
 
-**Per-phase model switching:** the orchestrator session always runs under the active model. Named presets (`modelsPreset` / `modelPresets`), optional per-step/role `stepModels`, and legacy phase keys resolve the subagent model for standard `dispatch-agent` dispatches only, with graceful fallback when a switch fails. Fix-PR resolves `fixPrPlan` through `reviewerModel` and `fixPrExec` through `executionModel`; both bypass numeric Step 9, which remains outer-only. Lite ignores role switches and runs plan then execute inline.
+**Per-phase model switching:** the orchestrator session always runs under the active model. Named presets (`modelsPreset` / `modelPresets`), optional per-step/role `stepModels`, and legacy phase keys resolve the subagent model for standard `dispatch-agent` dispatches only, with graceful fallback when a switch fails. Invocation `preset=<name>` (`--preset`) overrides `defaults.modelsPreset` for one run; the resolved preset persists as state `modelsPreset` and survives resume. Fix-PR resolves `fixPrPlan` through `reviewerModel` and `fixPrExec` through `executionModel`, each round batch in a fresh worker while the session owns the loop inline; both bypass numeric Step 9, which remains outer-only. Lite ignores role switches and runs plan then execute inline.
 
 Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, `MEMORY.md`, `memory/*`, `backend.md`, `frontend.md`, `installed-skills.json`, `CHANGELOG.md`, `skill-integrity-local.json`.
 
@@ -268,7 +269,7 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 |---------|--------|
 | **Zero-dependency CLI** | `bin/cli.js` runs under plain Node; no runtime npm dependencies |
 | **npx install** | `npx --yes github:jpolvora/workflow-skills` — interactive or `--yes` non-interactive |
-| **Three packages** | `f` Full (all skills), `w` Workflows (45 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`, `ws-activity-report`, `ws-fable-domain`, `ws-plan-update`, `ws-run-benchmark`, `ws-benchmarks`) |
+| **Three packages** | `f` Full (all skills), `w` Workflows (46 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`, `ws-activity-report`, `ws-fable-domain`, `ws-plan-update`, `ws-run-benchmark`, `ws-benchmarks`) |
 | **Global or project scope** | `--global` / `--project`; project-local skills override global copies; interactive `--global` install/update always prompts for host targets (`canonical` + `claude` / `codex` / `gemini`) with recorded/detected targets pre-selected |
 | **Dependency closure** | `skill-dependencies.json` drives install; uninstall cascades dependents and unused deps |
 | **SHA-256 integrity** | `bin/skill-integrity.json` covers every installable tree; install and update verify the source before copying and the consumer after, failing closed on mismatch. LF-canonical hashing keeps CRLF checkouts consistent |
@@ -283,14 +284,20 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.4.26)
+## 12. Recent evolution (0.3.22 → 0.4.38)
 
-Derived from recent commits on `develop` (2026-08-16 → 2026-09-13).
+Derived from recent commits on `develop` (2026-08-16 → 2026-09-19).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.4.38** | Sep 19 | **Step-level baton handoffs for multi-CLI runs:** `stepRunners`/`runners`/`stepBaton` run config with fail-fast validation; state-file baton with revision-serialized claim/release/expiry; deterministic `step_coordinator.cjs` run loop with advancement checks; one-shot workers with sparse pointers + baton envelope; `baton_*`/`runner_*` telemetry, read-only monitor baton fields, optional spec-memo handoff mirror |
+| **0.4.37** | Sep 18 | **ws-goal-fix-pr orchestrator dispatch:** session owns the wait/fetch convergence loop inline; every Act round batch runs in a fresh worker via `dispatch-agent` with one ordered `fixPrPlan` → `fixPrExec` pair; per-substep model chains (`reviewerModel` / `executionModel`, never numeric `"9"`); Tier 3 inline fallback on no-dispatch hosts; ordered dispatch telemetry |
+| **0.4.36** | Sep 18 | **Repo-root memory defaults:** new `rules.memoryDir` (default `.`) holding `MEMORY.md` + `memory/` with `{memoryDir}` token; `rules.changelogFile` default moves to repo-root `CHANGELOG.md`; legacy `ws-shared/` copies stay as entry-bearing fallback; installer stops fresh-seeding legacy copies; slogan decision keeps `From Spec to Delivery` |
+| **0.4.35** | Sep 18 | **Per-run preset override + gate portability:** `preset=<name>` / `--preset` overrides `defaults.modelsPreset` for one orch run with state persistence, resume retention, and Init banner provenance; `user-gate` portable ceiling of 3 options per question with two-stage chunked resume gate |
 | **0.4.34** | Sep 17 | **Host posture + quiet ship:** session-posture record with fail-closed approval default and non-interactive recipe rules (`CROSS-PLATFORM.md`); `ws-ship-pr` preflight resolution order (state → git → config → auto-detect → ask); session-safe `muse-spark` model preset in template, project config, and GUI enum; agent-facing PowerShell rules in the shared hub |
 | **0.4.33** | Sep 16 | **ws-check-harness install-mode detection + clean-run invariant:** `detect_install_mode.cjs` classifies upstream / project-local / global / hybrid installs plus upstream + machine-global coexistence evidence (version drift, ids outside the package); `check_harness_links.cjs` gate + `test/test-harness-clean.js` prove the upstream zero-findings invariant; `deploy-site.yml` publishes a non-blocking harness report artifact on `main`; `previewBeforeShip` gate runs the dry-run before Create PR (non-blocking) |
+| **0.4.32** | Sep 17 | **Host-target picker on global install/update:** interactive runs always prompt (canonical + `claude` / `codex` / `gemini`) with recorded/detected targets pre-selected; `--targets` skips the prompt; `update` gains `--yes`; copy/symlink default follows the recorded mode |
+| **0.4.31** | Sep 16 | **Wiki Sync Baseline + autoload split + senior-developer consolidation:** `index.wiki.md` watermark bounds the next sync to the delta; Always-applied splits into required (senior, self-learning, tdah, spec-memo, task-lifecycle) plus on-demand (changelog, fable-method, megabrain); retired karpathy guardrail merges into `ws-senior-developer` with aliases preserved |
 | **0.4.26** | Sep 14 | **ws-fix-pr surgical commit:** dirty worktree OK; snapshot `preExistingDirty` (local harness stays on disk); forbid full-tree stash sandwich; stage only thread-fix paths (`git add --`); never `git add -A` |
 | **0.4.25** | Sep 13 | **State dual-write, git caching & Step 8 gate alignment:** `syncStateDualWrite` guarantees atomic `.state.json` and `.state.md` frontmatter/body synchronization during G2 delivery commits; `gitTrackedSet` subprocess caching with 5000ms TTL eliminates redundant git spawns during step finishes; aligned Step 8 5-option interactive user-gate; single JSON output for `check_memory_conflict.py --soft-exit`; untracked test file probing in `probe_test_surface.cjs` |
 | **0.4.20** | Sep 12 | **Wiki verbosity & richer conditional template (`us-324`):** `ws-wiki` supports `condensed` and `detailed` styles via `plans.wiki.verbosity` config, conditional section headings, and automated wiki index/feature validation |
@@ -335,7 +342,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-09-13).
 
 ## 13. Roadmap (not in the current package)
 
-These items remain todo or partial on [`index.PRD`](.agents/specs/index.PRD). They are **not** shipped in **0.4.26**.
+These items remain todo or partial on [`index.PRD`](.agents/specs/index.PRD). They are **not** shipped in **0.4.38**.
 
 | Item | Status | Notes |
 |------|--------|-------|
@@ -352,7 +359,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 
 ## 14. Full skill catalog
 
-53 skills. Package membership: **W** = Workflows, **E** = Extra. Everything is in Full.
+54 skills. Package membership: **W** = Workflows, **E** = Extra. Everything is in Full.
 
 ### Orchestrators
 
@@ -403,6 +410,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-spec-memo`](.agents/skills/ws-spec-memo/SKILL.md) | W | Harness ↔ spec-memo **bridge** only; runtime vault ops are `ws-memo` / `ws-session-tracking` (`externalSkills`, spec-memo package) |
 | [`ws-spec-organizer`](.agents/skills/ws-spec-organizer/SKILL.md) | W | Resolve spec-of-record path and organize/prefix specs chronologically |
 | [`ws-task-lifecycle`](.agents/skills/ws-task-lifecycle/SKILL.md) | W | Prompt-driven intake → implement → complete tracking (not Spec-to-PR) |
+| [`ws-wiki`](.agents/skills/ws-wiki/SKILL.md) | W | Living feature wiki & domain knowledge base (init, from-code genesis, sweep, verify, apply, sync) |
 
 ### Quality and audit
 

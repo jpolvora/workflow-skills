@@ -17,7 +17,7 @@ Primary use cases from `index.PRD`: end-to-end Spec-to-PR (standard or lite), se
 
 ## Domain Catalog
 
-Living synthesis of specs 0001–0091. Feature subpages use `{domain}/{feature}.md` with `## Feature` and `## How it works` required; `## Backend`, `## Frontend`, and `## Third-party services` are conditional.
+Living synthesis of specs 0001–0095 (0096 is in-flight and not yet synced). Feature subpages use `{domain}/{feature}.md` with `## Feature` and `## How it works` required; `## Backend`, `## Frontend`, and `## Third-party services` are conditional.
 
 ## Domain: harness
 

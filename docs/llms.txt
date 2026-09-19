@@ -22,6 +22,13 @@ Install: `npx --yes github:jpolvora/workflow-skills`
 - `ws-spec-to-pr-lite` — lite steps 0–5 (spec, plan, implement, review, ship, fix-PR).
 - `ws-spec-multi` — queue pending specs; classify lite vs standard per spec.
 - `ws-fable-method` — 7-step evidence loop when a full pipeline is not warranted. Adjacent, not a second spec contract.
+- Step-level baton runs — one run across CLI processes via `step_coordinator.cjs` (`defaults.stepRunners` / `runners` / `stepBaton`); revision-serialized claim/release/expiry; gates at the coordinator.
+
+## Model routing & fix-PR
+
+- `preset=<name>` on orch invocation overrides `defaults.modelsPreset` for one run; persists in state, survives resume. Orch session stays on the active model.
+- `ws-goal-fix-pr` owns the convergence loop inline; each Act round batch runs in a fresh worker (`fixPrPlan` reviewer gate, then `fixPrExec` execution fix).
+- Ship runs `preview.dryRunCommand` after push, before Create PR (non-blocking); preflight resolves head/base/remote/provider before asking.
 
 ## Not spec-driven (adjacent)
 

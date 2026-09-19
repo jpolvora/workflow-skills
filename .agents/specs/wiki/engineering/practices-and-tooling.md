@@ -16,6 +16,8 @@ The `wait-what` re-pitch triggers on explicit slash, hyphen, and spaced forms pl
 
 Guardrail boundaries are skill-owned rather than dispatch-only: pipeline step skills declare their writable paths and forbid self-commit or push, keep a one-line Contract pointer for shared gates, and remain enforceable in standalone or lite runs where `build_dispatch_context.cjs` does not inject context. That injector inlines enhancing `## Subagent contract` sections from `ws-senior-developer`, `ws-tdah`, and `ws-self-learning` and caps each section at 40 lines.
 
+Gate prompts stay portable through a three-option ceiling: no single `user-gate` question carries more than 3 options, because some hosts reject larger structured choices. Menus with more candidates chunk instead of truncating — the resume gate asks intent first (resume versus start fresh) and then pages unfinished workflows at most 3 per question with `More…` navigation so every candidate stays reachable. Cancel remains a dismiss action rather than a numbered option on capped hosts, and coordinator-surfaced gates in step-baton runs follow the same chunking.
+
 Workflow state hygiene requires nested telemetry maps to serialize as YAML mappings rather than Python-repr strings, duplicate `completedSteps` entries to union-sort, step artifact `status` to equal the per-step result through one derivation path, and file-list flags to accumulate only `created`, `modified`, and `deleted`. Git cleanup detaches worktrees and deletes only `uswf-*` tags, never protected branches; failures must not throw unhandled or corrupt telemetry.
 
 ## Backend

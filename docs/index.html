@@ -286,7 +286,7 @@
         <div class="role-card-icon">B</div>
         <h4 class="role-card-title">Step-level baton runs (multi-CLI)</h4>
       </div>
-      <p class="role-card-desc">Execute different steps in different CLI processes through the deterministic coordinator (<code>step_coordinator.cjs</code>, no LLM): map steps to runners with <code>defaults.stepRunners</code> / <code>defaults.runners</code>, tune polling with <code>defaults.stepBaton</code>. Single-writer baton protocol with coordinator-surfaced gates.</p>
+      <p class="role-card-desc">Execute different steps in different CLI processes through the deterministic coordinator (<code>step_coordinator.cjs</code>, no LLM): map steps to runners with <code>defaults.stepRunners</code> / <code>defaults.runners</code>, tune polling with <code>defaults.stepBaton</code>. Revision-serialized claim/release/expiry on the state-file baton, one-shot workers with sparse pointers, <code>baton_*</code> telemetry plus read-only monitor fields, and coordinator-surfaced gates.</p>
     </div>
   <!-- efficiency-verifiability:end -->
     <div class="role-matrix-card">
@@ -358,6 +358,34 @@
         <h4 class="role-card-title">Local preview dry-run</h4>
       </div>
       <p class="role-card-desc"><code>/ws-preview</code> runs your <code>preview.dryRunCommand</code> in-repo (no packaged reviewer). Configure with <code>/ws-configure-project --section preview</code> — it can infer the recipe from harness docs and scripts.</p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">P</div>
+        <h4 class="role-card-title">Per-run model preset</h4>
+      </div>
+      <p class="role-card-desc"><code>preset=&lt;name&gt;</code> on the orch invocation overrides <code>defaults.modelsPreset</code> for that run only. Unknown names warn and fall back; the resolved preset persists in state and survives resume.</p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">R</div>
+        <h4 class="role-card-title">Orchestrated fix-PR rounds</h4>
+      </div>
+      <p class="role-card-desc"><code>ws-goal-fix-pr</code> owns the convergence loop inline while every Act round batch runs in a fresh worker: reviewer-model plan gate first, execution-model fix second. No-dispatch hosts use Tier 3 inline execution.</p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">D</div>
+        <h4 class="role-card-title">Dry-run before Create PR</h4>
+      </div>
+      <p class="role-card-desc">Ship reuses <code>preview.dryRunCommand</code> after push and before PR creation (default on via <code>preview.previewBeforeShip</code>). Findings are reported on the Prepare-to-PR board and never block shipping.</p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">Q</div>
+        <h4 class="role-card-title">Quiet ship preflight</h4>
+      </div>
+      <p class="role-card-desc">Ship resolves head, base, remote, provider, and commit title from state, git, config, then auto-detect — asking only on genuine ambiguity instead of re-prompting known values.</p>
     </div>
   </div>
 
@@ -2292,11 +2320,9 @@ npx --yes github:jpolvora/workflow-skills --global
   </div>
   <div class="contribute-box">
     <ul class="roadmap-list">
-      <li><span class="status">todo</span> Harness spec-run benchmark with snapshot compare</li>
       <li><span class="status">todo</span> Skill-family renaming (<code>ws-{family}-{verb}</code>)</li>
       <li><span class="status">todo</span> Unique Node runtime for all helper scripts</li>
       <li><span class="status">todo</span> Step 5 to 6 deadlock diagnostics (<code>us-235</code>)</li>
-      <li><span class="status">todo</span> Optional chronological spec filename prefixes (not implemented)</li>
       <li><span class="status">inbox</span> Multi-repository orchestrator; CI/CD workflow generator</li>
     </ul>
     <div class="hero-cta-row">
@@ -2576,6 +2602,7 @@ npx --yes github:jpolvora/workflow-skills --global
         <div class="faq-answer-content">
           <p><code>ws-preview</code> does not ship a reviewer backend. It runs whatever command you set in <code>preview.dryRunCommand</code> from the consumer repo root, and never publishes PR threads.</p>
           <p>Recommended setup: <code>/ws-configure-project --section preview</code>. The wizard infers candidates from <code>AGENTS.md</code>, <code>README.md</code>, <code>MEMORY</code>, <code>rules.*</code>, <code>package.json</code> scripts, and local skills, then asks you to accept, edit, or leave empty. You can also edit <code>.agents/skills/ws-shared/config.json</code> directly (see <code>config.json.example</code>).</p>
+          <p>The same command doubles as the optional Step 4b gate inside <code>ws-ship-pr</code>: it runs verbatim after push and before Create PR, reports on the Prepare-to-PR board, and never blocks shipping. Disable only with explicit <code>preview.previewBeforeShip: false</code>.</p>
         </div>
       </div>
     </div>
@@ -2661,6 +2688,40 @@ npx --yes github:jpolvora/workflow-skills --global
       <div class="faq-answer">
         <div class="faq-answer-content">
           <p>Optional model preference for <strong>standard Step 7</strong> (testing). <code>modelsPreset</code> / <code>stepModels</code> overrides apply first. When set, the orchestrator prefers that model for the test executor subagent. Empty or omitted falls back to <code>defaults.executionModel</code>, then the active session model. Lite has no Testing step and does not read <code>testingModel</code>.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q-preset-override -->
+    <div class="faq-item" data-faq-cat="config" data-search="preset override modelsPreset per-run invocation preset name resume state banner">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Configuration</span>
+          <span>Can I override the model preset for a single run?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p>Yes. Pass <code>preset=&lt;name&gt;</code> (or <code>--preset &lt;name&gt;</code>) on the <code>ws-spec-to-pr</code> / <code>ws-spec-to-pr-lite</code> invocation and that run resolves subagent models from the named bundle instead of <code>defaults.modelsPreset</code> — no <code>config.json</code> edit needed.</p>
+          <p>Unknown names warn in telemetry and the Init banner and fall back to the configured preset. The resolved preset persists in workflow state and survives resume without re-passing the flag. The orchestrator session itself always stays on the active model.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q-fixpr-dispatch -->
+    <div class="faq-item" data-faq-cat="workflows" data-search="fix-pr goal-fix-pr orchestrator dispatch fresh worker round batch fixPrPlan fixPrExec tier 3">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Workflows &amp; FSM</span>
+          <span>How do fix-PR rounds execute?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p><code>ws-goal-fix-pr</code> acts as an orchestrator: its session owns the wait/fetch convergence loop inline, while every Act round batch runs in a freshly dispatched worker. Each worker runs one ordered pair — reviewer-model <code>fixPrPlan</code> writes the complete gate before any mutation, then execution-model <code>fixPrExec</code> validates and applies it.</p>
+          <p>Hosts without subagent dispatch use documented Tier 3 inline execution with identical gate and learning contracts. Resolve and push stay forbidden until both substeps have evidence.</p>
         </div>
       </div>
     </div>
