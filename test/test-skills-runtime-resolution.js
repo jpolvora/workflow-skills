@@ -161,21 +161,58 @@ const anchorScript = path.join(repoRoot, '.agents/skills/ws-monitor/scripts/moni
   );
 }
 
-// 6. Bootstrap hygiene: no managed skill script falls back to .ws/runtime.
+// 6. Bootstrap order: every managed skill script tries the global skills
+// runtime before the deprecated legacy .ws/runtime copy (last resort).
 {
-  const hits = [];
+  const unordered = [];
+  const missingGlobal = [];
   const walk = (dir) => {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) walk(full);
       else if (entry.isFile() && (entry.name.endsWith('.cjs') || entry.name.endsWith('.js'))) {
-        const text = fs.readFileSync(full, 'utf8');
-        if (text.includes("'.ws', 'runtime', 'scripts'")) hits.push(path.relative(repoRoot, full));
+        const body = fs.readFileSync(full, 'utf8');
+        if (!body.includes('const HUB_SCRIPTS_DIR = (() => {') && !body.includes('function resolveHubScriptsDir()')) return;
+        if (!body.includes('WORKFLOW_SKILLS_GLOBAL_DIR')) missingGlobal.push(path.relative(repoRoot, full));
+        const legacyAt = body.indexOf("'..', '..', '..', '..', '.ws'");
+        const globalAt = body.indexOf('globalRoot');
+        if (legacyAt !== -1 && globalAt !== -1 && legacyAt < globalAt) unordered.push(path.relative(repoRoot, full));
       }
     }
   };
   walk(path.join(repoRoot, '.agents/skills'));
-  check(hits.length === 0, `no .ws/runtime bootstrap fallback remains${hits.length ? `: ${hits.join(', ')}` : ''}`);
+  check(missingGlobal.length === 0, `every bootstrap tries the global skills runtime${missingGlobal.length ? `: ${missingGlobal.join(', ')}` : ''}`);
+  check(unordered.length === 0, `.ws/runtime is last resort everywhere${unordered.length ? `: ${unordered.join(', ')}` : ''}`);
+}
+
+// 7. Partial consumer tree (provider script, no ws-shared) + full .ws/runtime
+// copy + no reachable global resolves without MODULE_NOT_FOUND (CI fixture).
+{
+  const t = mkTmp('ws-rt-legacyfallback-');
+  const skillScripts = path.join(t, '.agents', 'skills', 'ws-spec-provider-github', 'scripts');
+  fs.mkdirSync(skillScripts, { recursive: true });
+  fs.copyFileSync(
+    path.join(repoRoot, '.agents/skills/ws-spec-provider-github/scripts/resolve_thread.cjs'),
+    path.join(skillScripts, 'resolve_thread.cjs'),
+  );
+  const hubScripts = path.join(t, '.ws', 'runtime', 'scripts');
+  fs.mkdirSync(hubScripts, { recursive: true });
+  for (const entry of fs.readdirSync(path.join(repoRoot, '.agents/skills/ws-shared/runtime/scripts'), { withFileTypes: true })) {
+    if (!entry.isFile()) continue;
+    fs.copyFileSync(
+      path.join(repoRoot, '.agents/skills/ws-shared/runtime/scripts', entry.name),
+      path.join(hubScripts, entry.name),
+    );
+  }
+  const emptyGlobal = mkTmp('ws-rt-noglobal-');
+  const result = cp.spawnSync(process.execPath, [path.join(skillScripts, 'resolve_thread.cjs')], {
+    encoding: 'utf8',
+    cwd: t,
+    env: { ...process.env, WORKFLOW_SKILLS_GLOBAL_DIR: emptyGlobal, WORKFLOW_SKILLS_SHARED_DIR: '' },
+  });
+  const combined = `${result.stdout || ''}${result.stderr || ''}`;
+  check(!/MODULE_NOT_FOUND|Cannot find module/i.test(combined), 'partial tree + .ws fallback loads without MODULE_NOT_FOUND');
+  check(result.status !== 0 && /Usage:/i.test(combined), 'partial tree + .ws fallback reaches script usage');
 }
 
 for (const dir of tmpRoots) fs.rmSync(dir, { recursive: true, force: true });
