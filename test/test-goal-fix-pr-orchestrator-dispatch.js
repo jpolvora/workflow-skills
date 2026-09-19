@@ -278,6 +278,41 @@ assert(
   assert(!/visual studio/i.test(bodies), 'NS5 harnessNeutrality: no Visual Studio reference');
 }
 
+// us-353 AC2 — loopLivenessWatchdog: parent-side wedge detection + resume takeover
+// (issue #353: loop wedged after batch-1 worker result, resume no-op'd).
+assert(/## Loop liveness watchdog/.test(goalFix), 'us-353 watchdog: section exists');
+assert(
+  /round-log freshness/i.test(goalFix) && /session-log mtime/i.test(goalFix),
+  'us-353 watchdog: detection signals are round-log freshness and session-log mtime',
+);
+assert(/resume-takeover/i.test(goalFix), 'us-353 watchdog: resume-takeover procedure documented');
+assert(
+  /do not ping a fix worker mid-batch|never ping[^.]*mid-batch/i.test(goalFix),
+  'us-353 watchdog: no-ping-mid-batch rule restated on the loop path',
+);
+
+// us-353 AC3 — statePathDispatch: loop-path update_state dispatch examples use the
+// state-path form (bare workflow-id fails with `state file not found`).
+assert(
+  /\{plansDir\}\/\{slug\}\/\{workflow-id\}\.state\.md/.test(goalFix),
+  'us-353 statePath: watchdog shows the state-path dispatch form',
+);
+assert(
+  !/dispatch\s+(?:<workflow-id>|\{workflow-id\})(?!\.state)/.test(goalFix),
+  'us-353 statePath: no bare workflow-id dispatch example on the loop path',
+);
+
+// us-353 AC4 — boundedHandoff: batch worker returns summary + artifact pointers,
+// full transcript stays in the round artifact.
+assert(
+  /summar[^.]*artifact pointer/i.test(goalFix),
+  'us-353 boundedHandoff: worker returns summary plus artifact pointers',
+);
+assert(
+  /\{reviewsDir\}\/PR-<N>-round-\*\.md/.test(goalFix),
+  'us-353 boundedHandoff: full output lives in the round artifact',
+);
+
 if (failures > 0) {
   console.error(`\n${failures} failure(s)`);
   process.exit(1);

@@ -62,6 +62,19 @@ assert(/analyze THIS run/.test(protocols), 'PROTOCOLS.md keeps locked "analyze T
 assert(/explicit `true`/.test(protocols), 'PROTOCOLS.md keeps locked explicit-true phrasing');
 assert(protocols.includes('Starting step {STEP}'), 'PROTOCOLS.md keeps locked Starting-step preview line');
 
+// us-353 AC1: VerboseMode same-response continuation mandate survives on both
+// dispatch paths (issue #353: resume loop ended its turn right after the preview).
+const MANDATE =
+  'then immediately continue with tool calls in the same response; never end the turn after the preview';
+assert(
+  protocols.includes(MANDATE),
+  'us-353 AC1 PROTOCOLS.md VerboseMode addendum pins the same-response continuation mandate',
+);
+assert(
+  read('.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md').includes(MANDATE),
+  'us-353 AC1 STEP-DISPATCH.md verbose block pins the same-response continuation mandate',
+);
+
 // NS1 / AC2: preview-only worker (preview text, zero tool calls) resolves as failure.
 const previewOnly = [
   'Starting step 5 (Verify):',
