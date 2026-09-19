@@ -271,7 +271,7 @@ function resolveSkillMdPath(context, skillId) {
   );
 }
 
-function resolveConsumerContext({ repoRoot, scriptFile, skillId } = {}) {
+function resolveConsumerContext({ repoRoot, scriptFile, skillId, requireProjectHub = false } = {}) {
   const root = resolveRepoRoot(repoRoot, { scriptFile });
   const localSkillsRoot = path.join(root, '.agents', 'skills');
   const globalSkillsRoot = resolveExecutionGlobalSkillsRoot(scriptFile);
@@ -328,7 +328,7 @@ function resolveConsumerContext({ repoRoot, scriptFile, skillId } = {}) {
     HUB_TEMPLATES_REL,
   );
 
-  return {
+  const context = {
     repoRoot: root,
     skillsRoot,
     sharedDir: hub,
@@ -343,11 +343,35 @@ function resolveConsumerContext({ repoRoot, scriptFile, skillId } = {}) {
     configCandidates: configCandidatesSeen,
     precedenceMatrix: describePrecedenceMatrix(),
   };
+  // Opt-in AC5 fail-closed gate for config-dependent entrypoints (default off).
+  if (requireProjectHub) requireProjectConfig(context);
+  return context;
 }
 
 function resolveConfiguredPath(repoRoot, value, fallback) {
   const raw = String(value || fallback || '');
   return path.isAbsolute(raw) ? path.resolve(raw) : path.resolve(repoRoot, raw);
+}
+
+// Fail-closed project-config gate for config-dependent skills (AC5/NS3).
+// A globally invoked skill without a project hub must NOT silently read
+// global config as project config: throw with a ws-configure-project
+// pointer instead. Usable = the concrete {sharedDir}/config.json file on disk
+// with no read/validation error (the seeded templates example never counts). Returns the context unchanged on success.
+function requireProjectConfig(context) {
+  const root = path.resolve((context && context.repoRoot) || process.cwd());
+  const projectConfigPath = path.join(path.resolve((context && context.sharedDir) || path.join(root, HUB_REL)), 'config.json');
+  const usable =
+    !!context &&
+    !context.configError &&
+    fs.existsSync(projectConfigPath);
+  if (!usable) {
+    throw new Error(
+      `Project hub config missing (expected ${projectConfigPath}); run ws-configure-project to seed {sharedDir}/config.json — ` +
+      `refusing to use global config as project config (configSource: ${(context && context.configSource) || 'unknown'}).`,
+    );
+  }
+  return context;
 }
 
 // Resolved-context diagnostic shared by entrypoints and ws-monitor. It names
@@ -514,6 +538,7 @@ module.exports = {
   isResolutionStale,
   resolveSkillMdPath,
   resolveConfiguredPath,
+  requireProjectConfig,
   toRepoRelative,
   reportResolved,
   normalizeConfig,

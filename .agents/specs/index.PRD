@@ -137,9 +137,9 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Merge ws-karpathy-guidelines into ws-senior-developer (`spec: 0085-merge-karpathy-into-senior-developer.spec.md`)
 - [x] ws-tdah wait-what grounded re-pitch (`spec: 0086-ws-tdah-wait-what-repitch.spec.md`)
 - [x] ws-wiki Sync Baseline incremental watermark (`spec: 0087-ws-wiki-sync-baseline.spec.md`)
-- [ ] ws-check-harness install-mode detection and upstream clean-audit invariant (`spec: 0088-ws-check-harness-install-mode-clean-audit.spec.md`)
+- [x] ws-check-harness install-mode detection and upstream clean-audit invariant (`spec: 0088-ws-check-harness-install-mode-clean-audit.spec.md`)
 - [x] Optional ws-preview dry-run gate in ws-ship-pr before Create PR (`spec: 0089-ws-preview-before-ship-gate.spec.md`)
-- [ ] Muse Code harness adaptation for ws-spec-to-pr workflows on muse-spark agents (`spec: 0090-muse-code-harness-adaptation.spec.md`)
+- [x] Muse Code harness adaptation for ws-spec-to-pr workflows on muse-spark agents (`spec: 0090-muse-code-harness-adaptation.spec.md`)
 - [x] Revamp website visual and template with docs-style layout (`spec: 0091-website-visual-revamp.spec.md`)
 - [x] ws-spec-to-pr: parameter override for modelsPreset on workflow invocation (`spec: 0092-models-preset-override.spec.md`)
 - [x] Step-Level Baton Handoffs for Multi-CLI Workflow Runs (`spec: 0094-step-baton-multi-agent-runs.spec.md`)
@@ -156,6 +156,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] (ws-monitor ms-20260919T043606Z) Step 3 completed without exec artifact; Step 4 completed with empty filesTouched (live us-354 run) (`spec: 0101-us-355.spec.md`)
 - [x] (ws-monitor) Discover and check transcripts/sessions for known agent hosts (Cursor, OpenCode, Antigravity, Muse) (`spec: 0100-us-356.spec.md`)
 - [x] Add AGENTS.md rule: check the skill dependency graph when editing a skill so callers and callees stay in sync (`spec: 0099-us-358.spec.md`)
+- [ ] .ws resolution vs ws-shared folders cleanup (`spec: 0106-ws-shared-resolution-cleanup.spec.md`)
+
 
 
 
@@ -298,11 +300,11 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 
 | 91 | `ws-wiki-sync-baseline` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-wiki Sync Baseline incremental watermark |
 
-| 92 | `ws-check-harness-install-mode-clean-audit` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-check-harness install-mode detection and upstream clean-audit invariant |
+| 92 | `ws-check-harness-install-mode-clean-audit` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-check-harness install-mode detection and upstream clean-audit invariant |
 
 | 93 | `ws-preview-before-ship-gate` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Optional ws-preview dry-run gate in ws-ship-pr before Create PR |
 
-| 94 | `muse-code-harness-adaptation` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Muse Code harness adaptation for ws-spec-to-pr workflows on muse-spark agents |
+| 94 | `muse-code-harness-adaptation` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Muse Code harness adaptation for ws-spec-to-pr workflows on muse-spark agents |
 
 | 95 | `website-visual-revamp` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Revamp website visual and template with docs-style layout |
 
@@ -329,6 +331,8 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 | 109 | `us-356` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | [ws-monitor] Discover and check transcripts/sessions for known agent hosts (Cursor, OpenCode, Antigravity, Muse) |
 
 | 110 | `us-358` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Add AGENTS.md rule: check the skill dependency graph when editing a skill so callers and callees stay in sync |
+
+| 111 | `ws-shared-resolution-cleanup` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | .ws resolution vs ws-shared folders cleanup |
 
 ## 9. Inbox
 
@@ -429,9 +433,11 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 | 2026-09-13 | `us-328` | Fix stale autoload keyword-map prose for scm-provider-contract path | Implemented |
 | 2026-09-18 | `us-344` | change website cta / main slug/slogan | [PR #346](https://github.com/jpolvora/workflow-skills/pull/346) |
 | 2026-09-18 | `us-347` | ws-goal-fix-pr as orchestrator with per-round subagent dispatch | [PR #349](https://github.com/jpolvora/workflow-skills/pull/349) |
-| 2026-09-17 | `website-visual-revamp` | Revamp website visual and template with docs-style layout | [PR #341](https://github.com/jpolvora/workflow-skills/pull/341) |
-| 2026-09-17 | `models-preset-override` | ws-spec-to-pr: parameter override for modelsPreset on workflow invocation | [PR #345](https://github.com/jpolvora/workflow-skills/pull/345) |
 | 2026-09-19 | `step-baton-multi-agent-runs` | Step-Level Baton Handoffs for Multi-CLI Workflow Runs | [PR #350](https://github.com/jpolvora/workflow-skills/pull/350) |
+| 2026-09-17 | `ws-check-harness-install-mode-clean-audit` | ws-check-harness install-mode detection and upstream clean-audit invariant | [PR #339](https://github.com/jpolvora/workflow-skills/pull/339) (`0eb52085`) |
+| 2026-09-17 | `muse-code-harness-adaptation` | Muse Code harness adaptation for ws-spec-to-pr workflows on muse-spark agents | [PR #340](https://github.com/jpolvora/workflow-skills/pull/340) (`9f4e59f3`) |
+| 2026-09-17 | `website-visual-revamp` | Revamp website visual and template with docs-style layout | [PR #341](https://github.com/jpolvora/workflow-skills/pull/341) (`a48f0d30`) |
+| 2026-09-17 | `models-preset-override` | ws-spec-to-pr: parameter override for modelsPreset on workflow invocation | [PR #345](https://github.com/jpolvora/workflow-skills/pull/345) (`95e8856f`) |
 | 2026-09-19 | `us-354` | Worker turns ending prematurely mid-step force orch re-dispatch (preview no-op + ping termination) | [PR #357](https://github.com/jpolvora/workflow-skills/pull/357) |
 | 2026-09-19 | `us-353` | Harden Step 9 goal-fix loop against batch-handoff wedge and preview-only no-op | [PR #359](https://github.com/jpolvora/workflow-skills/pull/359) |
 | 2026-09-19 | `us-348` | enhance host capabilities - detect tools & cache it | [PR #360](https://github.com/jpolvora/workflow-skills/pull/360) |

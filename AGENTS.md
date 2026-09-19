@@ -116,9 +116,19 @@ Repo `jpolvora/workflow-skills` is the authoritative upstream for **spec-driven*
 
 Authoring + Before-ship checklist: [`CATALOG.md`](CATALOG.md) § Upstream developer workflow. Consumers: [`.ws/AGENTS.md`](.ws/AGENTS.md).
 
-**Config schema & GUI synchronization (mandatory):** Whenever changes are made to configuration options, `config.json`, or `config.schema.json` schema definitions/updates, the GUI tool (`.agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1`) MUST be updated to reflect the current configuration state and schema options (control bindings, types, validation ranges, descriptions, and section groupings). Run `node test/test-powershell-config-editor.js` to verify.
+**Config schema & GUI synchronization (mandatory):** Whenever a `config.json` structure, key, value, or default changes — via `config.schema.json` or `config.json.example` (or the configuration options they describe) — the GUI tool (`.agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1`) MUST be updated to reflect the current configuration state and schema options (control bindings, types, validation ranges, descriptions, and section groupings). Run `node test/test-powershell-config-editor.js` to verify.
 
 **Version bump (mandatory before PR):** When shipping **package content** from this repo, `package.json` `version` (and aligned `packageVersion` in `bin/skill-dependencies.json` + site footer) must be **strictly higher than the version on the PR merge-base** (typically `main` or `develop`) before commit, push, or PR creation. **One patch bump per release PR** — not per commit, review-fix commit, or `ws-goal-fix-pr` round on the same PR. If the branch version is unchanged vs the base, run `npm run build-site:bump`, commit the bump with ship-scope changes, then ship. Catalog-only doc fixes may use `node bin/build-site.js` without a version bump per [`CATALOG.md`](CATALOG.md) Before ship PR rows 2–3. CI on `main` never bumps — bump locally before push.
+
+**Pre-ship board (mandatory before commit, push, or PR creation):** print ✅ / ❌ / ⏭ per row; any ❌ → STOP. Detail: [`CATALOG.md`](CATALOG.md) § Before ship PR.
+
+| # | Check | Gate |
+|---|-------|------|
+| 1 | Version bumped once per release PR | `package.json` + `packageVersion` + site footer strictly above merge-base (`npm run build-site:bump`) — CATALOG rows 2–3 |
+| 2 | Integrity regenerated + verified | `npm run generate-integrity` + `npm run verify-integrity` — CATALOG row 7 |
+| 3 | **Desktop config GUI editor synced** — every `config.json` structure/key/value/default change (schema `config.schema.json` and/or example `config.json.example`) reflected in `Edit-WorkflowSkillsConfig.ps1` (bindings, types, ranges, descriptions, sections) | `node test/test-powershell-config-editor.js` green — CATALOG row 7b |
+| 4 | Tests + harness clean | `npm run test`, `ws-check-harness` Phases 0–5c, `test-harness-clean.js` 0 findings — CATALOG rows 1, 8–9 |
+| 5 | Docs/site/catalog in sync | Rebuild site; sync README/FEATURES/hubs per § Harness change protocol — CATALOG rows 2, 10–11 |
 
 ### Consumer CLI (install / update / uninstall)
 
@@ -137,13 +147,13 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 - Config: `.ws/config.json` only — [`config-resolution.md`](.agents/skills/ws-shared/runtime/config-resolution.md)
 - SCM intents: [`scm-provider-contract.md`](.agents/skills/ws-shared/runtime/scm-provider-contract.md) — GitHub and Azure DevOps must implement the same required intents
 - Gates: [`gates.md`](.agents/skills/ws-shared/runtime/gates.md) — prefer `user-gate` (native structured choice when available; markdown fallback)
-- **Session model:** orch stays on `currentModel` (Pause → host → Resume; no `--model` / `--model-chain`). Subagent models: `defaults.modelsPreset` / `modelPresets` / `stepModels` / legacy phase keys; standard `dispatch-agent` only (lite inline). Fix-PR batches use `fixPrPlan` → `reviewerModel`, then `fixPrExec` → `executionModel`; both bypass numeric Step 9 and emit dispatch events only. `defaults.enableDag` default `false` = sequential; `true` = DAG. `defaults.verboseMode` explicit `true` = start-of-step `*` preview (schema seed writes `true`). Review-model tip at Advance into Step 6 (full orch)
+- **Session model:** orch stays on `currentModel` (Pause → host → Resume; no `--model` / `--model-chain`). Subagent models: `defaults.modelsPreset` / `modelPresets` / `stepModels` / legacy phase keys, with invocation `preset=<name>` overriding the preset per run (persisted in state, resume-safe); standard `dispatch-agent` only (lite inline). Fix-PR batches use `fixPrPlan` → `reviewerModel`, then `fixPrExec` → `executionModel`; each round batch runs in a fresh worker while the session owns the loop inline, both bypass numeric Step 9 and emit dispatch events only. `defaults.enableDag` default `false` = sequential; `true` = DAG. `defaults.verboseMode` explicit `true` = start-of-step `*` preview (schema seed writes `true`). Review-model tip at Advance into Step 6 (full orch)
 - State: `workflowType` `standard` | `lite` (no cross-resume)
 - Handoffs: step context is stored in `{workflow-id}.state.json` under `state.handoffs`; generated consumer-root `autoload.md` rewrites hub and skill links for its root-relative location.
 - Shared pipeline skills stay orch-agnostic
 - **Product commits:** standard after Step 5 when score ≥ `defaults.minVerifyScore` (default 9) (before Step 6 review) then after Step 6 review-fix if files changed; lite after Step 2 (before Step 3 review) then after review-fix if files changed. Stage only workflow `files_touched` (never `{plansDir}` until Step 8 close / lite Step 4 close). **`status: completed`** at close (implementation done), before push/PR; `shipStatus` tracks shipping. Review uses `git diff {base}...HEAD`. No push before ship phase. Dual-write sync: G2 delivery commits and state updates synchronize `.state.json` and `.state.md` atomically (`syncStateDualWrite`) with `gitTrackedSet` caching.
 - **Dispatch:** [`ws-spec-to-pr/STEP-DISPATCH.md`](.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–9). Lite keeps its own Steps 0–5 table; do not use STEP-DISPATCH as lite step numbers.
-- **Step baton:** one run may execute different steps in different CLI processes via the deterministic `step_coordinator.cjs` (`defaults.stepRunners` / `defaults.runners` / `defaults.stepBaton`); gates surface at the coordinator while workers stay non-interactive.
+- **Step baton:** one run may execute different steps in different CLI processes via the deterministic `step_coordinator.cjs` (`defaults.stepRunners` / `defaults.runners` / `defaults.stepBaton`); state-file baton with revision-serialized claim/release/expiry, `baton_*`/`runner_*` telemetry, read-only monitor fields; gates surface at the coordinator while workers stay non-interactive.
 
 ### Pipeline skills (owned here)
 

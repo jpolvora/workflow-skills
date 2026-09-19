@@ -103,7 +103,7 @@ function walk(root) {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
-  const context = resolveConsumerContext({ repoRoot: args.repoRoot, scriptFile: __filename });
+  const context = resolveConsumerContext({ repoRoot: args.repoRoot, scriptFile: __filename, requireProjectHub: true });
   const aliases = Object.entries(context.config?.verification || {})
     .filter(([key, value]) => /Test$/.test(key) && typeof value === 'string' && value.trim())
     .map(([key, command]) => ({ key, command }));

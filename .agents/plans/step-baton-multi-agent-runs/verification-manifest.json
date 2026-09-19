@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-09-18T23:58:36.529Z",
+  "filesTouched": {
+    "created": [
+      ".agents/plans/step-baton-multi-agent-runs/ac-ledger.json",
+      ".agents/plans/step-baton-multi-agent-runs/step-00-step-baton-multi-agent-runs.spec.md",
+      ".agents/plans/step-baton-multi-agent-runs/step-01-step-baton-multi-agent-runs.plan.md",
+      ".agents/plans/step-baton-multi-agent-runs/step-02-step-baton-multi-agent-runs.plan-interview.md",
+      ".agents/plans/step-baton-multi-agent-runs/step-02-step-baton-multi-agent-runs.plan.refined.md"
+    ],
+    "modified": [],
+    "deleted": []
+  },
+  "filesHash": "ba6f696b66a8ccd98593bff3f8d87cd991560c89ad4e564ae1dde77ef0b14005",
+  "aliasResults": [],
+  "sabotage": "not-required",
+  "reuse": "Steps 5/6/7 re-run alias/stack/sabotage commands only if files_touched changed; AC scoring, review, and tests still run. Compare current workflowManifest sorted hash to filesHash; match means reuse aliasResults/sabotage, mismatch means re-run."
+}

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 11,
-  "generatedAt": "2026-09-19T05:37:50Z",
+  "revision": 12,
+  "generatedAt": "2026-09-19T18:47:25.429Z",
   "workflows": [
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
@@ -244,6 +244,17 @@
       "currentStep": 9,
       "updatedAt": "2026-09-09T13:03:58Z",
       "runPath": ".agents/plans/specialized-subagents-compiler/specialized-subagents-compiler-20260909T120930Z.state.json"
+    },
+    {
+      "workflowId": "step-baton-multi-agent-runs-20260918T232508Z",
+      "slug": "step-baton-multi-agent-runs",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/step-baton-multi-agent-runs/step-baton-multi-agent-runs-20260918T232508Z.state.md",
+      "stateSha256": "62fbbe25250707d123bb2b338e49f1ab695c0d725e7963205c960d9da7288728",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-19T03:55:03Z",
+      "runPath": ".agents/plans/step-baton-multi-agent-runs/step-baton-multi-agent-runs-20260918T232508Z.state.json"
     },
     {
       "workflowId": "testing-executor-model-20260812T192105Z",
@@ -492,10 +503,10 @@
       "slug": "us-250",
       "pipeline": "lite",
       "statePath": ".agents/plans/us-250/us-250-20260827T143734Z.state.md",
-      "stateSha256": "d7d4c88c35468e0f3de5c693f1bbfffcec716e011414df63a08a53a15e07c867",
-      "status": "active",
+      "stateSha256": "db1181ef85046822754f154f92caa34b9decfa05c8abb7dba2edfa81ee159813",
+      "status": "completed",
       "currentStep": 5,
-      "updatedAt": "2026-08-27T15:12:08Z",
+      "updatedAt": "2026-09-19T18:47:25.412Z",
       "runPath": ".agents/plans/us-250/us-250-20260827T143734Z.state.json"
     },
     {
@@ -591,10 +602,10 @@
       "slug": "us-353",
       "pipeline": "standard",
       "statePath": ".agents/plans/us-353/us-353-20260919T043606Z.state.md",
-      "stateSha256": "8fc7300a57ed39907bad7aaea02ae8c12ad0e7c16e34d58deed4367c9fcb76d1",
-      "status": "active",
+      "stateSha256": "3ae81db8dac68fc82bd7a3c36924ae93cd8bd190d30cf0557d5dc31d74574723",
+      "status": "completed",
       "currentStep": 6,
-      "updatedAt": "2026-09-19T05:37:50Z",
+      "updatedAt": "2026-09-19T18:47:25.429Z",
       "runPath": ".agents/plans/us-353/us-353-20260919T043606Z.state.json"
     },
     {

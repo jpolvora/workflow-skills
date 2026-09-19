@@ -19,6 +19,30 @@
 - **Prompt**: us-348 worker (standard): host capabilities detect tools & cache (Steps 0-8, ship PR, no merge).
 - **Done**: Brainstorm refine-and-implement; tokens doc + tool map + probe script + tools/host-dispatch edits + test-host-capabilities.js; verify 10/10; review clean; sabotage bit+restored; full npm run test green; bump 0.4.39 to 0.4.40; G2 6edf5be8 + delivery commit; PR to main.
 - **Result**: AC1-AC5 delivered, NS1-NS4 asserted, harness-clean 0 findings, integrity v0.4.40 verified. Learning: recorded trap 2026-09-19-dashed-cli-flag-normalization (failure reflection: dashed CLI flags silently ignored until test caught it).
+### [2026-09-19 00:30] Agent: Muse Code
+- **Prompt**: /ws-spec-sync (spec index sync).
+- **Done**: Synced 4 shipped specs to `[x]`/`done` with Done-log rows + `status: completed` frontmatter (0088→PR #339, 0090→PR #340, 0091→PR #341, 0092→PR #345); us-348 skipped (unmapped, no ship signal — needs `track`, not `sync`).
+- **Result**: spec-index track, list-pending-specs, spec-lint, validate-spec all ok. Learning: N/A (routine index sync).
+
+### [2026-09-19 00:25] Agent: Muse Code
+- **Prompt**: add Desktop config GUI Editor sync to the AGENTS.md pre-ship section/board for every config.json structure/key/value/default change.
+- **Done**: Sharpened the Config schema & GUI synchronization trigger (schema + example) and added a 5-row Pre-ship board under Upstream developer workflow, row 3 gating GUI sync via `node test/test-powershell-config-editor.js` (mirrors CATALOG row 7b).
+- **Result**: Harness-clean 0 findings; GUI editor static tests pass. Learning: N/A (small docs edit).
+
+### [2026-09-19 00:14] Agent: Muse Code
+- **Prompt**: replay reverted docs sync, then cover newly merged PR #350 (step-baton) in README/docs/wiki/website.
+- **Done**: Re-applied full 22:10 sync after PR 350 batch-3 worker revert (all anchors matched, no drift); added #350 step-baton protocol coverage — wiki delivery paragraph + provenance 0094 + index range 0001–0095, README row, FEATURES §1.6 + 0.4.38 stamp/evolution/roadmap, builder baton card, llms.txt bullet, root + hub AGENTS clauses; integrity regen; site/wiki rebuilt.
+- **Result**: Wiki validate PASS; build-site --check current; doc-sync/site-wiki/wiki/harness-clean (0 findings) ok; full chain green except pre-existing bare-`python` miss (remainder under python3: PY_EXIT=0, 211 pass markers, 0 failures). Learning: N/A (replay + documented feature; pipe-exit trap already recorded).
+
+### [2026-09-18 22:10] Agent: Muse Code
+- **Prompt**: update README.md, docs/wiki, website with latest new features added in previous 10 PRs (use /ws-wiki).
+- **Done**: ws-wiki bounded sync for specs 0092/0093/0095 + code-mapped updates (host-target picker, 3-option gate cap, header/nav) across 5 wiki pages + index (watermark left: 0094/0096 in-flight); README 4 feature rows + fix-PR dispatch wording; FEATURES 0.4.37 stamp, 54-skill counts, autoload fix, 0.4.31/0.4.32/0.4.35–0.4.37 evolution rows, ws-wiki catalog row; site 4 cards + 2 FAQs + preview note + 2 stale roadmap removals; llms.txt model-routing section; root + hub AGENTS one-liners; integrity regen; site/wiki rebuilt.
+- **Result**: Wiki validate PASS; build-site --check current; doc-sync/site-wiki/wiki suites ok; harness-clean 0 findings; full chain green except pre-existing bare-`python` miss (reran remainder under python3, all ok). Full-suite transient stale-integrity traced to concurrent step-baton session edits, verified settled via hash compare. Learning: pipe-exit trap (below).
+
+### [2026-09-19 00:35] Agent: Muse Code
+- **Prompt**: step-baton close (Step 8: baton handoffs for multi-CLI runs, 17 ACs).
+- **Done**: Verify 9/10, review clean, testing PASS; G2 40af4ad4 + 0.4.38 bump 231c5ddf; delivery commit with refined plan; status completed, ship to PR next.
+- **Result**: All 17 ACs + 7/7 NS delivered, product diff 89 files (+2866/-185), v0.4.38. Learning: traps verification-manifest-root-placement, step-output-nesting-manifest-merge.
 
 ### [2026-09-18 16:45] Agent: Muse Code
 - **Prompt**: us-347 close (ws-goal-fix-pr orchestrator dispatch).

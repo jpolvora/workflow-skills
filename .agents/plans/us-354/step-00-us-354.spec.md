@@ -2,12 +2,12 @@
 id: 354
 slug: us-354
 title: Worker turns ending prematurely mid-step force orch re-dispatch (preview no-op + ping termination)
-source: local
+source: github
 specDate: 2026-09-19
 issueState: open
 issueUrl: "https://github.com/jpolvora/workflow-skills/issues/354"
 step: 0
-workflowId: us-354
+workflowId: us-354-20260919T043606Z
 status: completed
 startedAt: "2026-09-19T04:38:40.674Z"
 endedAt: "2026-09-19T04:38:40.674Z"

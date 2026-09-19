@@ -4,6 +4,7 @@ slug: models-preset-override
 title: "ws-spec-to-pr: parameter override for modelsPreset on workflow invocation"
 source: local
 specDate: 2026-09-17
+status: completed
 ---
 
 # Specification — ws-spec-to-pr: parameter override for modelsPreset on workflow invocation

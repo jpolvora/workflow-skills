@@ -35,6 +35,7 @@ When skills are executed from a global install (`$HOME/.agents/skills` or `WORKF
 - **Config-Dependent Skills** (`ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-spec-multi`, `ws-plan-write`, `ws-plan-interview`, `ws-plan-to-tasks`, `ws-implement-tasks`, `ws-plan-verify`, `ws-code-review`, `ws-testing`, `ws-ship-pr`, `ws-fix-pr`, `ws-goal-fix-pr`, providers):
   - **Entry Gate:** Must verify `$PWD/.ws/config.json` exists and is non-empty.
   - **Missing Config:** If missing or unconfigured (`<...>` placeholders), trigger `user-gate` recommending running `ws-configure-project` (which seeds and populates `$PWD/.ws/config.json`).
+  - **Script enforcement (opt-in):** config-dependent scripts fail closed at runtime by resolving with `requireProjectHub: true` (`require_project_hub=True` in Python), which runs `requireProjectConfig()` after `resolveConsumerContext()` and throws with a `ws-configure-project` pointer when the concrete `{sharedDir}/config.json` is absent (the seeded templates example never counts). Default is `false` (no behavior change); adopt per script, starting with `ws-testing/scripts/probe_test_surface.cjs`.
 - **Config-Independent / Standalone Skills** (`ws-configure-project`, `ws-secrets-leak-review`, `ws-tdah`, `ws-write-a-skill`, `ws-spec-format`, `ws-check-harness`, `ws-megabrain`):
   - Run directly in any repository without requiring `config.json`.
 
@@ -118,7 +119,7 @@ Expand before tool calls. `{skillsRoot}` is **fixed install layout** (optional `
 
 ## SCM provider resolution (`providers.scm`)
 
-1. Read `providers.active` / `providers.scm` from `.ws/config.json`.
+1. Read `providers.active` / `providers.scm` from `{sharedDir}/config.json`.
 2. If `providers` absent: enabled GitHub tracker → `scm=github`; else enabled Azure DevOps → `scm=azure-devops`; else STOP (require explicit `providers.scm`). Prefer GitHub if both enabled.
 3. If `scm` absent: if active is `github`|`azure-devops` → scm=active; if active=`local` → parse `project.repoUrl` host (`github.com` → github; `dev.azure.com` / `visualstudio.com` → azure-devops); else STOP.
 4. Reject `scm: "local"` for PR/thread/merge intents.
@@ -152,7 +153,7 @@ Standalone invokes omit these; skills may present their own gates.
 
 Optional integration block for `fable-*` skills in `ws-spec-to-pr` / `ws-spec-to-pr-lite` workflows.
 
-1. Read `fable` object from `.ws/config.json`.
+1. Read `fable` object from `{sharedDir}/config.json`.
 2. Default in fresh `config.json.example`: `enabled: true`. Default if absent in legacy config: `enabled: false` (strictly opt-in).
 3. When `fable.enabled: true`:
    - `autoAudit` (default `true`): `ws-code-review` (Step 6) and `ws-plan-verify` (Step 5) run adversarial audit via `ws-fable-judge`.

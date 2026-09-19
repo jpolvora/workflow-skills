@@ -1,0 +1,1018 @@
+{
+  "schemaVersion": 1,
+  "revision": 31,
+  "workflowId": "step-baton-multi-agent-runs-20260918T232508Z",
+  "slug": "step-baton-multi-agent-runs",
+  "specPath": ".agents/plans/step-baton-multi-agent-runs/step-00-step-baton-multi-agent-runs.spec.md",
+  "planIndexPath": null,
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "The project hub config accepts `defaults.stepRunners` (step number to runner id) and `defaults.runners` (runner id to `{command, timeoutSeconds, env}`); the command template supports `{prompt}`, `{cwd}`, `{slug}`, and `{step}` substitutions with the same vocabulary as the Tier 2 CLI template.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/config.schema.json:L376-L404"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/config.schema.json",
+          "lineStart": 376,
+          "lineEnd": 404,
+          "sha256": "b9501e8e6ccb52cb29e980e1814f7c19696bc75c27e3caa93b06ca6469147dac"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step": 5
+        },
+        {
+          "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-config (AC1-AC4, NS4)",
+          "sourceFile": "test/test-step-baton-config.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:14:42.777Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+        "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+        "step5-AC1"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "Runner ids are opaque neutral strings validated against `defaults.runners`; an unknown step key, an unknown runner id, or an empty command fails fast with a named error before Step 0 dispatch and never starts a partial run.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs:L57-L100"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs",
+          "lineStart": 57,
+          "lineEnd": 100,
+          "sha256": "29037278b8454b7104204d6f25e7e9db34e68a83b62057cd3e176c1080f3fca0"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step": 5
+        },
+        {
+          "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-config (AC1-AC4, NS4)",
+          "sourceFile": "test/test-step-baton-config.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:14:42.891Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+        "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+        "step5-AC2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "Steps without a runner mapping fall back to the current single-host dispatch (Tier 1/2/3 plus `stepModels`); a run config may map any subset of steps, including a single step.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs:L154-L159"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs",
+          "lineStart": 154,
+          "lineEnd": 159,
+          "sha256": "29037278b8454b7104204d6f25e7e9db34e68a83b62057cd3e176c1080f3fca0"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step": 5
+        },
+        {
+          "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-config (AC1-AC4, NS4)",
+          "sourceFile": "test/test-step-baton-config.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:14:42.989Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+        "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+        "step5-AC3"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "Runner map keys are validated against the owning `workflowType` step set (0–9 standard, 0–5 lite); a key outside the set fails fast with a named error.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs:L86-L92"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs",
+          "lineStart": 86,
+          "lineEnd": 92,
+          "sha256": "29037278b8454b7104204d6f25e7e9db34e68a83b62057cd3e176c1080f3fca0"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step": 5
+        },
+        {
+          "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-config (AC1-AC4, NS4)",
+          "sourceFile": "test/test-step-baton-config.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:14:43.058Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+        "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+        "step5-AC4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "The workflow state carries a `baton` record `{holder, step, claimedAt, leaseUntil, revision}`; a claim succeeds only when the presented revision equals the stored revision and no live lease exists, and the write goes through the existing atomic dual-write path.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs:L161-L182",
+        ".agents/skills/ws-shared/runtime/workflow-state.schema.json:L77-L88"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs",
+          "lineStart": 161,
+          "lineEnd": 182,
+          "sha256": "29037278b8454b7104204d6f25e7e9db34e68a83b62057cd3e176c1080f3fca0"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/workflow-state.schema.json",
+          "lineStart": 77,
+          "lineEnd": 88,
+          "sha256": "2e42d794bc4c54a4241d3130c1d8db6d47f4aa41cfb2e65e42bfeb933fba4ab9"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step": 5
+        },
+        {
+          "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-claim (AC5, AC6, AC8; NS1, NS7)",
+          "sourceFile": "test/test-step-baton-claim.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:14:47.478Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+        "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+        "step5-AC5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "Step completion releases the baton exactly once: `finish` writes the step handoff, clears the holder, and advances `currentStep` in the same atomic update; the next runner may claim only the baton for the new `currentStep`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs:L198-L214",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1651-L1652"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs",
+          "lineStart": 198,
+          "lineEnd": 214,
+          "sha256": "29037278b8454b7104204d6f25e7e9db34e68a83b62057cd3e176c1080f3fca0"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1651,
+          "lineEnd": 1652,
+          "sha256": "9513ff9b65f262e0807e69f727cfb4e36bdf07d43f37a5e7b8f707e404f1aa4f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step": 5
+        },
+        {
+          "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-claim (AC5, AC6, AC8; NS1, NS7)",
+          "sourceFile": "test/test-step-baton-claim.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:14:47.634Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+        "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+        "step5-AC6"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "A lease past `leaseUntil` with no `finish` becomes re-claimable by the coordinator, which logs the expiry with old holder, step, and attempt count; after `maxAttempts` (default 2) consecutive expiries on one step the workflow moves to `blocked` and the coordinator stops.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs:L478-L485"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+          "lineStart": 478,
+          "lineEnd": 485,
+          "sha256": "d9b60c84de13ffafe87a8192e4553769cc584fb5d6f788fff9d73321057b1d40"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step": 5
+        },
+        {
+          "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+          "sourceFile": "test/test-step-coordinator.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:14:52.234Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+        "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+        "step5-AC7"
+      ]
+    },
+    {
+      "id": "AC8",
+      "text": "Concurrent claim attempts serialize on the revision check; the loser receives a named conflict error and retries with backoff, and no step body ever executes twice for the same attempt.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs:L296-L318"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs",
+          "lineStart": 296,
+          "lineEnd": 318,
+          "sha256": "29037278b8454b7104204d6f25e7e9db34e68a83b62057cd3e176c1080f3fca0"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step": 5
+        },
+        {
+          "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-claim (AC5, AC6, AC8; NS1, NS7)",
+          "sourceFile": "test/test-step-baton-claim.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:14:47.779Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+        "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+        "step5-AC8"
+      ]
+    },
+    {
+      "id": "AC9",
+      "text": "A deterministic coordinator script (plain Node, no LLM session) owns the run loop for one `workflowId`: read config and state, claim the baton, spawn the mapped worker, await exit, verify advancement, repeat until terminal status.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs:L381-L398"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+          "lineStart": 381,
+          "lineEnd": 398,
+          "sha256": "d9b60c84de13ffafe87a8192e4553769cc584fb5d6f788fff9d73321057b1d40"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step": 5
+        },
+        {
+          "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+          "sourceFile": "test/test-step-coordinator.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:14:52.323Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+        "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+        "step5-AC9"
+      ]
+    },
+    {
+      "id": "AC10",
+      "text": "The coordinator is the only polling party: it re-reads state on a configured interval (default 30s, allowed range 5–300s) to detect external advancement; worker CLIs are spawned one-shot per turn and never left idling or polling.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs:L440-L442"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+          "lineStart": 440,
+          "lineEnd": 442,
+          "sha256": "d9b60c84de13ffafe87a8192e4553769cc584fb5d6f788fff9d73321057b1d40"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step": 5
+        },
+        {
+          "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+          "sourceFile": "test/test-step-coordinator.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:14:52.404Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+        "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+        "step5-AC10"
+      ]
+    },
+    {
+      "id": "AC11",
+      "text": "All Transition Gates and `user-gate` prompts surface at the coordinator as pause-and-prompt, or auto-apply index 0 in `autoMode`; a worker process must not emit a gate, and a gate-shaped worker output is recorded as a worker protocol violation without advancing the step.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs:L133-L151"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+          "lineStart": 133,
+          "lineEnd": 151,
+          "sha256": "d9b60c84de13ffafe87a8192e4553769cc584fb5d6f788fff9d73321057b1d40"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step": 5
+        },
+        {
+          "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+          "sourceFile": "test/test-step-coordinator.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:14:52.482Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+        "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+        "step5-AC11"
+      ]
+    },
+    {
+      "id": "AC12",
+      "text": "The coordinator verifies post-exit that `currentStep` advanced and the expected step artifacts exist on disk; a clean exit without advancement is treated as a failed attempt under the AC7 retry policy, never as success.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs:L327-L345"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+          "lineStart": 327,
+          "lineEnd": 345,
+          "sha256": "d9b60c84de13ffafe87a8192e4553769cc584fb5d6f788fff9d73321057b1d40"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step": 5
+        },
+        {
+          "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+          "sourceFile": "test/test-step-coordinator.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:14:52.560Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+        "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+        "step5-AC12"
+      ]
+    },
+    {
+      "id": "AC13",
+      "text": "Each worker spawn receives the Tier 2 sparse-pointer payload (spec path, plan index, AC ledger, prior handoff) plus its baton envelope `{step, holder, leaseUntil, attempt}`; the worker must call `finish` for its step before exit.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs:L200-L214"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+          "lineStart": 200,
+          "lineEnd": 214,
+          "sha256": "d9b60c84de13ffafe87a8192e4553769cc584fb5d6f788fff9d73321057b1d40"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step": 5
+        },
+        {
+          "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+          "sourceFile": "test/test-step-coordinator.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:14:52.650Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+        "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+        "step5-AC13"
+      ]
+    },
+    {
+      "id": "AC14",
+      "text": "A non-zero worker exit, a timeout past `timeoutSeconds`, or a missing `finish` leaves the step unadvanced; the coordinator records failure telemetry and applies the AC7 retry policy instead of advancing.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs:L621-L642"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+          "lineStart": 621,
+          "lineEnd": 642,
+          "sha256": "d9b60c84de13ffafe87a8192e4553769cc584fb5d6f788fff9d73321057b1d40"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step": 5
+        },
+        {
+          "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+          "sourceFile": "test/test-step-coordinator.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:14:52.731Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+        "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+        "step5-AC14"
+      ]
+    },
+    {
+      "id": "AC15",
+      "text": "Every claim, release, expiry, spawn, and exit appends to the run `telemetry.jsonl` as `baton_claimed`, `baton_released`, `baton_lease_expired`, `runner_spawned`, or `runner_exited` with step, holder, attempt, and exit code fields.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/telemetry.schema.json:L7-L15"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/telemetry.schema.json",
+          "lineStart": 7,
+          "lineEnd": 15,
+          "sha256": "84728465a55e217b0ad386c12ba88a50c5472c417f562ec1868aefdcac60cfe2"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step": 5
+        },
+        {
+          "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-telemetry (AC15)",
+          "sourceFile": "test/test-step-baton-telemetry.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:14:56.990Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+        "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+        "step5-AC15"
+      ]
+    },
+    {
+      "id": "AC16",
+      "text": "State readers derive the current holder, lease, and mapped runner per step from the state file alone with no side-channel files; `ws-monitor` snapshots include the baton holder and lease without changing their read-only contract.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L739-L745"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 739,
+          "lineEnd": 745,
+          "sha256": "0e5bc4d06b70decd7be0c41f801df6e494b17054a670b257825718289fdffd86"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step": 5
+        },
+        {
+          "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-monitor (AC16)",
+          "sourceFile": "test/test-step-baton-monitor.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:14:57.090Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+        "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+        "step5-AC16"
+      ]
+    },
+    {
+      "id": "AC17",
+      "text": "When spec-memo integration is enabled, the coordinator mirrors each released step handoff summary into the vault handoff payload shape (`nextSteps` from the next-step pointers); when integration is disabled the run behaves identically with zero vault calls.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs:L347-L356"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+          "lineStart": 347,
+          "lineEnd": 356,
+          "sha256": "d9b60c84de13ffafe87a8192e4553769cc584fb5d6f788fff9d73321057b1d40"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step": 5
+        },
+        {
+          "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-specmemo (AC17)",
+          "sourceFile": "test/test-step-baton-specmemo.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:14:57.188Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+        "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+        "step5-AC17"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Two coordinators claim the same step at the same revision: exactly one claim wins and the loser receives the named conflict error.",
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-claim (AC5, AC6, AC8; NS1, NS7)",
+          "sourceFile": "test/test-step-baton-claim.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:15:04.563Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-NS1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Worker exits 0 without calling `finish`: the coordinator treats the turn as a failed attempt and does not advance `currentStep`.",
+      "tests": [
+        {
+          "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+          "sourceFile": "test/test-step-coordinator.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:15:04.822Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-NS2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Worker exceeds `timeoutSeconds`: the coordinator kills the spawn, records `runner_exited` with timeout cause, and applies the retry policy.",
+      "tests": [
+        {
+          "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+          "sourceFile": "test/test-step-coordinator.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:15:04.905Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-NS3"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "Run config maps a step to an undeclared runner id: the run refuses to start with a named error before any dispatch.",
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-config (AC1-AC4, NS4)",
+          "sourceFile": "test/test-step-baton-config.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:15:04.724Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-NS4"
+      ]
+    },
+    {
+      "id": "NS5",
+      "text": "Worker emits gate-shaped output: the coordinator records a protocol violation and the step stays unadvanced.",
+      "tests": [
+        {
+          "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+          "sourceFile": "test/test-step-coordinator.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:15:04.983Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-NS5"
+      ]
+    },
+    {
+      "id": "NS6",
+      "text": "State file edited out-of-band mid-run (revision jump): the coordinator stops with a named changed-underfoot error instead of overwriting the edit.",
+      "tests": [
+        {
+          "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+          "sourceFile": "test/test-step-coordinator.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:15:05.060Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-NS6"
+      ]
+    },
+    {
+      "id": "NS7",
+      "text": "Claiming a baton for a non-current step is rejected even when the lease is free.",
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-claim (AC5, AC6, AC8; NS1, NS7)",
+          "sourceFile": "test/test-step-baton-claim.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-19T00:15:04.645Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-NS7"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "ship",
+    "score": 9,
+    "earnedUnits": 153,
+    "totalUnits": 170,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-19T00:45:15.907Z"
+  }
+}

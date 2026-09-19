@@ -1,0 +1,1829 @@
+{
+  "acImplemented": 17,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+            "step": 5
+          },
+          {
+            "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/config.schema.json:L376-L404"
+        ],
+        "files": [
+          {
+            "lineEnd": 404,
+            "lineStart": 376,
+            "path": ".agents/skills/ws-shared/runtime/config.schema.json",
+            "sha256": "b9501e8e6ccb52cb29e980e1814f7c19696bc75c27e3caa93b06ca6469147dac"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step5-AC1"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-baton-config (AC1-AC4, NS4)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-baton-config.js",
+            "timestamp": "2026-09-19T00:14:42.777Z"
+          }
+        ],
+        "text": "The project hub config accepts `defaults.stepRunners` (step number to runner id) and `defaults.runners` (runner id to `{command, timeoutSeconds, env}`); the command template supports `{prompt}`, `{cwd}`, `{slug}`, and `{step}` substitutions with the same vocabulary as the Tier 2 CLI template.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+            "step": 5
+          },
+          {
+            "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs:L57-L100"
+        ],
+        "files": [
+          {
+            "lineEnd": 100,
+            "lineStart": 57,
+            "path": ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs",
+            "sha256": "29037278b8454b7104204d6f25e7e9db34e68a83b62057cd3e176c1080f3fca0"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step5-AC2"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-baton-config (AC1-AC4, NS4)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-baton-config.js",
+            "timestamp": "2026-09-19T00:14:42.891Z"
+          }
+        ],
+        "text": "Runner ids are opaque neutral strings validated against `defaults.runners`; an unknown step key, an unknown runner id, or an empty command fails fast with a named error before Step 0 dispatch and never starts a partial run.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+            "step": 5
+          },
+          {
+            "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs:L154-L159"
+        ],
+        "files": [
+          {
+            "lineEnd": 159,
+            "lineStart": 154,
+            "path": ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs",
+            "sha256": "29037278b8454b7104204d6f25e7e9db34e68a83b62057cd3e176c1080f3fca0"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step5-AC3"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-baton-config (AC1-AC4, NS4)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-baton-config.js",
+            "timestamp": "2026-09-19T00:14:42.989Z"
+          }
+        ],
+        "text": "Steps without a runner mapping fall back to the current single-host dispatch (Tier 1/2/3 plus `stepModels`); a run config may map any subset of steps, including a single step.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+            "step": 5
+          },
+          {
+            "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs:L86-L92"
+        ],
+        "files": [
+          {
+            "lineEnd": 92,
+            "lineStart": 86,
+            "path": ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs",
+            "sha256": "29037278b8454b7104204d6f25e7e9db34e68a83b62057cd3e176c1080f3fca0"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step5-AC4"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-baton-config (AC1-AC4, NS4)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-baton-config.js",
+            "timestamp": "2026-09-19T00:14:43.058Z"
+          }
+        ],
+        "text": "Runner map keys are validated against the owning `workflowType` step set (0–9 standard, 0–5 lite); a key outside the set fails fast with a named error.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+            "step": 5
+          },
+          {
+            "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs:L161-L182",
+          ".agents/skills/ws-shared/runtime/workflow-state.schema.json:L77-L88"
+        ],
+        "files": [
+          {
+            "lineEnd": 182,
+            "lineStart": 161,
+            "path": ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs",
+            "sha256": "29037278b8454b7104204d6f25e7e9db34e68a83b62057cd3e176c1080f3fca0"
+          },
+          {
+            "lineEnd": 88,
+            "lineStart": 77,
+            "path": ".agents/skills/ws-shared/runtime/workflow-state.schema.json",
+            "sha256": "2e42d794bc4c54a4241d3130c1d8db6d47f4aa41cfb2e65e42bfeb933fba4ab9"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step5-AC5"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-baton-claim (AC5, AC6, AC8; NS1, NS7)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-baton-claim.js",
+            "timestamp": "2026-09-19T00:14:47.478Z"
+          }
+        ],
+        "text": "The workflow state carries a `baton` record `{holder, step, claimedAt, leaseUntil, revision}`; a claim succeeds only when the presented revision equals the stored revision and no live lease exists, and the write goes through the existing atomic dual-write path.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+            "step": 5
+          },
+          {
+            "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs:L198-L214",
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1651-L1652"
+        ],
+        "files": [
+          {
+            "lineEnd": 214,
+            "lineStart": 198,
+            "path": ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs",
+            "sha256": "29037278b8454b7104204d6f25e7e9db34e68a83b62057cd3e176c1080f3fca0"
+          },
+          {
+            "lineEnd": 1652,
+            "lineStart": 1651,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "9513ff9b65f262e0807e69f727cfb4e36bdf07d43f37a5e7b8f707e404f1aa4f"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step5-AC6"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-baton-claim (AC5, AC6, AC8; NS1, NS7)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-baton-claim.js",
+            "timestamp": "2026-09-19T00:14:47.634Z"
+          }
+        ],
+        "text": "Step completion releases the baton exactly once: `finish` writes the step handoff, clears the holder, and advances `currentStep` in the same atomic update; the next runner may claim only the baton for the new `currentStep`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+            "step": 5
+          },
+          {
+            "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs:L478-L485"
+        ],
+        "files": [
+          {
+            "lineEnd": 485,
+            "lineStart": 478,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+            "sha256": "d9b60c84de13ffafe87a8192e4553769cc584fb5d6f788fff9d73321057b1d40"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [
+          "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step5-AC7"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-coordinator.js",
+            "timestamp": "2026-09-19T00:14:52.234Z"
+          }
+        ],
+        "text": "A lease past `leaseUntil` with no `finish` becomes re-claimable by the coordinator, which logs the expiry with old holder, step, and attempt count; after `maxAttempts` (default 2) consecutive expiries on one step the workflow moves to `blocked` and the coordinator stops.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+            "step": 5
+          },
+          {
+            "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs:L296-L318"
+        ],
+        "files": [
+          {
+            "lineEnd": 318,
+            "lineStart": 296,
+            "path": ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs",
+            "sha256": "29037278b8454b7104204d6f25e7e9db34e68a83b62057cd3e176c1080f3fca0"
+          }
+        ],
+        "findings": [],
+        "id": "AC8",
+        "linkEventIds": [
+          "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step5-AC8"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-baton-claim (AC5, AC6, AC8; NS1, NS7)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-baton-claim.js",
+            "timestamp": "2026-09-19T00:14:47.779Z"
+          }
+        ],
+        "text": "Concurrent claim attempts serialize on the revision check; the loser receives a named conflict error and retries with backoff, and no step body ever executes twice for the same attempt.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+            "step": 5
+          },
+          {
+            "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs:L381-L398"
+        ],
+        "files": [
+          {
+            "lineEnd": 398,
+            "lineStart": 381,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+            "sha256": "d9b60c84de13ffafe87a8192e4553769cc584fb5d6f788fff9d73321057b1d40"
+          }
+        ],
+        "findings": [],
+        "id": "AC9",
+        "linkEventIds": [
+          "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step5-AC9"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-coordinator.js",
+            "timestamp": "2026-09-19T00:14:52.323Z"
+          }
+        ],
+        "text": "A deterministic coordinator script (plain Node, no LLM session) owns the run loop for one `workflowId`: read config and state, claim the baton, spawn the mapped worker, await exit, verify advancement, repeat until terminal status.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+            "step": 5
+          },
+          {
+            "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs:L440-L442"
+        ],
+        "files": [
+          {
+            "lineEnd": 442,
+            "lineStart": 440,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+            "sha256": "d9b60c84de13ffafe87a8192e4553769cc584fb5d6f788fff9d73321057b1d40"
+          }
+        ],
+        "findings": [],
+        "id": "AC10",
+        "linkEventIds": [
+          "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step5-AC10"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-coordinator.js",
+            "timestamp": "2026-09-19T00:14:52.404Z"
+          }
+        ],
+        "text": "The coordinator is the only polling party: it re-reads state on a configured interval (default 30s, allowed range 5–300s) to detect external advancement; worker CLIs are spawned one-shot per turn and never left idling or polling.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+            "step": 5
+          },
+          {
+            "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs:L133-L151"
+        ],
+        "files": [
+          {
+            "lineEnd": 151,
+            "lineStart": 133,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+            "sha256": "d9b60c84de13ffafe87a8192e4553769cc584fb5d6f788fff9d73321057b1d40"
+          }
+        ],
+        "findings": [],
+        "id": "AC11",
+        "linkEventIds": [
+          "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step5-AC11"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-coordinator.js",
+            "timestamp": "2026-09-19T00:14:52.482Z"
+          }
+        ],
+        "text": "All Transition Gates and `user-gate` prompts surface at the coordinator as pause-and-prompt, or auto-apply index 0 in `autoMode`; a worker process must not emit a gate, and a gate-shaped worker output is recorded as a worker protocol violation without advancing the step.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+            "step": 5
+          },
+          {
+            "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs:L327-L345"
+        ],
+        "files": [
+          {
+            "lineEnd": 345,
+            "lineStart": 327,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+            "sha256": "d9b60c84de13ffafe87a8192e4553769cc584fb5d6f788fff9d73321057b1d40"
+          }
+        ],
+        "findings": [],
+        "id": "AC12",
+        "linkEventIds": [
+          "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step5-AC12"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-coordinator.js",
+            "timestamp": "2026-09-19T00:14:52.560Z"
+          }
+        ],
+        "text": "The coordinator verifies post-exit that `currentStep` advanced and the expected step artifacts exist on disk; a clean exit without advancement is treated as a failed attempt under the AC7 retry policy, never as success.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+            "step": 5
+          },
+          {
+            "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs:L200-L214"
+        ],
+        "files": [
+          {
+            "lineEnd": 214,
+            "lineStart": 200,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+            "sha256": "d9b60c84de13ffafe87a8192e4553769cc584fb5d6f788fff9d73321057b1d40"
+          }
+        ],
+        "findings": [],
+        "id": "AC13",
+        "linkEventIds": [
+          "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step5-AC13"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-coordinator.js",
+            "timestamp": "2026-09-19T00:14:52.650Z"
+          }
+        ],
+        "text": "Each worker spawn receives the Tier 2 sparse-pointer payload (spec path, plan index, AC ledger, prior handoff) plus its baton envelope `{step, holder, leaseUntil, attempt}`; the worker must call `finish` for its step before exit.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+            "step": 5
+          },
+          {
+            "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs:L621-L642"
+        ],
+        "files": [
+          {
+            "lineEnd": 642,
+            "lineStart": 621,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+            "sha256": "d9b60c84de13ffafe87a8192e4553769cc584fb5d6f788fff9d73321057b1d40"
+          }
+        ],
+        "findings": [],
+        "id": "AC14",
+        "linkEventIds": [
+          "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step5-AC14"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-coordinator.js",
+            "timestamp": "2026-09-19T00:14:52.731Z"
+          }
+        ],
+        "text": "A non-zero worker exit, a timeout past `timeoutSeconds`, or a missing `finish` leaves the step unadvanced; the coordinator records failure telemetry and applies the AC7 retry policy instead of advancing.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+            "step": 5
+          },
+          {
+            "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/telemetry.schema.json:L7-L15"
+        ],
+        "files": [
+          {
+            "lineEnd": 15,
+            "lineStart": 7,
+            "path": ".agents/skills/ws-shared/runtime/telemetry.schema.json",
+            "sha256": "84728465a55e217b0ad386c12ba88a50c5472c417f562ec1868aefdcac60cfe2"
+          }
+        ],
+        "findings": [],
+        "id": "AC15",
+        "linkEventIds": [
+          "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step5-AC15"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-baton-telemetry (AC15)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-baton-telemetry.js",
+            "timestamp": "2026-09-19T00:14:56.990Z"
+          }
+        ],
+        "text": "Every claim, release, expiry, spawn, and exit appends to the run `telemetry.jsonl` as `baton_claimed`, `baton_released`, `baton_lease_expired`, `runner_spawned`, or `runner_exited` with step, holder, attempt, and exit code fields.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+            "step": 5
+          },
+          {
+            "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L739-L745"
+        ],
+        "files": [
+          {
+            "lineEnd": 745,
+            "lineStart": 739,
+            "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            "sha256": "0e5bc4d06b70decd7be0c41f801df6e494b17054a670b257825718289fdffd86"
+          }
+        ],
+        "findings": [],
+        "id": "AC16",
+        "linkEventIds": [
+          "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step5-AC16"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-baton-monitor (AC16)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-baton-monitor.js",
+            "timestamp": "2026-09-19T00:14:57.090Z"
+          }
+        ],
+        "text": "State readers derive the current holder, lease, and mapped runner per step from the state file alone with no side-channel files; `ws-monitor` snapshots include the baton holder and lease without changing their read-only contract.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+            "step": 5
+          },
+          {
+            "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs:L347-L356"
+        ],
+        "files": [
+          {
+            "lineEnd": 356,
+            "lineStart": 347,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+            "sha256": "d9b60c84de13ffafe87a8192e4553769cc584fb5d6f788fff9d73321057b1d40"
+          }
+        ],
+        "findings": [],
+        "id": "AC17",
+        "linkEventIds": [
+          "g2-commit-231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+          "g2-commit-40af4ad462aedea8647f527ca47f8a8e1708671f",
+          "step5-AC17"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-baton-specmemo (AC17)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-baton-specmemo.js",
+            "timestamp": "2026-09-19T00:14:57.188Z"
+          }
+        ],
+        "text": "When spec-memo integration is enabled, the coordinator mirrors each released step handoff summary into the vault handoff payload shape (`nextSteps` from the next-step pointers); when integration is disabled the run behaves identically with zero vault calls.",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      }
+    ],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "step5-NS1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-baton-claim (AC5, AC6, AC8; NS1, NS7)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-baton-claim.js",
+            "timestamp": "2026-09-19T00:15:04.563Z"
+          }
+        ],
+        "text": "Two coordinators claim the same step at the same revision: exactly one claim wins and the loser receives the named conflict error."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "step5-NS2"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-coordinator.js",
+            "timestamp": "2026-09-19T00:15:04.822Z"
+          }
+        ],
+        "text": "Worker exits 0 without calling `finish`: the coordinator treats the turn as a failed attempt and does not advance `currentStep`."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "step5-NS3"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-coordinator.js",
+            "timestamp": "2026-09-19T00:15:04.905Z"
+          }
+        ],
+        "text": "Worker exceeds `timeoutSeconds`: the coordinator kills the spawn, records `runner_exited` with timeout cause, and applies the retry policy."
+      },
+      {
+        "id": "NS4",
+        "linkEventIds": [
+          "step5-NS4"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-baton-config (AC1-AC4, NS4)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-baton-config.js",
+            "timestamp": "2026-09-19T00:15:04.724Z"
+          }
+        ],
+        "text": "Run config maps a step to an undeclared runner id: the run refuses to start with a named error before any dispatch."
+      },
+      {
+        "id": "NS5",
+        "linkEventIds": [
+          "step5-NS5"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-coordinator.js",
+            "timestamp": "2026-09-19T00:15:04.983Z"
+          }
+        ],
+        "text": "Worker emits gate-shaped output: the coordinator records a protocol violation and the step stays unadvanced."
+      },
+      {
+        "id": "NS6",
+        "linkEventIds": [
+          "step5-NS6"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-coordinator.js",
+            "timestamp": "2026-09-19T00:15:05.060Z"
+          }
+        ],
+        "text": "State file edited out-of-band mid-run (revision jump): the coordinator stops with a named changed-underfoot error instead of overwriting the edit."
+      },
+      {
+        "id": "NS7",
+        "linkEventIds": [
+          "step5-NS7"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "PASS: test-step-baton-claim (AC5, AC6, AC8; NS1, NS7)",
+            "phase": "observed",
+            "sourceFile": "test/test-step-baton-claim.js",
+            "timestamp": "2026-09-19T00:15:04.645Z"
+          }
+        ],
+        "text": "Claiming a baton for a non-current step is rejected even when the lease is free."
+      }
+    ],
+    "planIndexPath": null,
+    "revision": 31,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "ship",
+      "computedAt": "2026-09-19T00:45:15.907Z",
+      "earnedUnits": 153,
+      "errors": [],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "missingEvidence": false,
+      "score": 9,
+      "totalUnits": 170
+    },
+    "slug": "step-baton-multi-agent-runs",
+    "specPath": ".agents/plans/step-baton-multi-agent-runs/step-00-step-baton-multi-agent-runs.spec.md",
+    "testingSkip": null,
+    "workflowId": "step-baton-multi-agent-runs-20260918T232508Z"
+  },
+  "acTotal": 17,
+  "autoMode": true,
+  "baseBranch": "main",
+  "baselineCommit": "259b1473a87d6fa62cdc4f4cb9d935dd6950d160",
+  "branch": "develop",
+  "branchStrategy": "stay",
+  "commits": [
+    {
+      "sha": "40af4ad462aedea8647f527ca47f8a8e1708671f",
+      "step": 5
+    },
+    {
+      "sha": "231c5ddf54edf787f18d0d8bbd4209fdd402f6bc",
+      "step": 6
+    },
+    {
+      "message": "docs(step-baton-multi-agent-runs): configured delivery artifacts",
+      "sha": "e11bef9cffbc9d7364ea4a94a4293041a551962d",
+      "step": 8
+    }
+  ],
+  "completedSteps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "currentModel": "muse-spark",
+  "currentStep": 9,
+  "dryRun": false,
+  "endedAt": "2026-09-19T00:36:20Z",
+  "fullMode": true,
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/step-baton-multi-agent-runs/step-00-step-baton-multi-agent-runs.spec.md",
+        ".agents/plans/step-baton-multi-agent-runs/ac-ledger.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "step-baton-multi-agent-runs",
+      "status": "completed",
+      "step": 0,
+      "summary": "Finished step 0",
+      "workflowId": "step-baton-multi-agent-runs-20260918T232508Z",
+      "workflowType": "standard"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/step-baton-multi-agent-runs/step-01-step-baton-multi-agent-runs.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "step-baton-multi-agent-runs",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "step-baton-multi-agent-runs-20260918T232508Z",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/step-baton-multi-agent-runs/step-02-step-baton-multi-agent-runs.plan-interview.md",
+        ".agents/plans/step-baton-multi-agent-runs/step-02-step-baton-multi-agent-runs.plan.refined.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "step-baton-multi-agent-runs",
+      "status": "completed",
+      "step": 2,
+      "summary": "Finished step 2",
+      "workflowId": "step-baton-multi-agent-runs-20260918T232508Z",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "step-baton-multi-agent-runs",
+      "status": "skipped",
+      "step": 3,
+      "summary": "Finished step 3",
+      "workflowId": "step-baton-multi-agent-runs-20260918T232508Z",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs",
+        ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+        "test/test-step-baton-claim.js",
+        "test/test-step-baton-config.js",
+        "test/test-step-baton-monitor.js",
+        "test/test-step-baton-specmemo.js",
+        "test/test-step-baton-telemetry.js",
+        "test/test-step-coordinator.js",
+        "test/fixtures/step-baton/worker-ok.cjs",
+        "test/fixtures/step-baton/worker-nonzero.cjs",
+        "test/fixtures/step-baton/worker-hang.cjs",
+        "test/fixtures/step-baton/worker-no-finish.cjs",
+        "test/fixtures/step-baton/worker-gate-emit.cjs",
+        "test/fixtures/step-baton/worker-bump-revision.cjs",
+        "test/fixtures/step-baton/worker-flaky.cjs",
+        "test/fixtures/step-baton/specmemo-stub.cjs",
+        "test/fixtures/step-baton/config.baton.json",
+        "test/fixtures/step-baton/state.lite-step3.json",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+        ".agents/skills/ws-shared/runtime/workflow-state.schema.json",
+        ".agents/skills/ws-shared/runtime/telemetry.schema.json",
+        ".agents/skills/ws-shared/runtime/config.schema.json",
+        ".agents/skills/ws-shared/templates/config.json.example",
+        ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
+        ".agents/skills/ws-shared/runtime/host-dispatch.md",
+        ".agents/skills/ws-shared/runtime/gates.md",
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+        ".agents/skills/ws-spec-to-pr/SKILL.md",
+        "package.json",
+        "bin/skill-integrity.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "step-baton-multi-agent-runs",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "step-baton-multi-agent-runs-20260918T232508Z",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/step-baton-multi-agent-runs/step-05-step-baton-multi-agent-runs.plan.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "step-baton-multi-agent-runs",
+      "status": "completed",
+      "step": 5,
+      "summary": "Finished step 5",
+      "workflowId": "step-baton-multi-agent-runs-20260918T232508Z",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/skills/ws-activity-report/SKILL.md",
+        ".agents/skills/ws-benchmarks/SKILL.md",
+        ".agents/skills/ws-changelog/SKILL.md",
+        ".agents/skills/ws-check-harness/SKILL.md",
+        ".agents/skills/ws-check-workflows/SKILL.md",
+        ".agents/skills/ws-classify-complexity/SKILL.md",
+        ".agents/skills/ws-cleanup/SKILL.md",
+        ".agents/skills/ws-code-review/SKILL.md",
+        ".agents/skills/ws-configure-project/SKILL.md",
+        ".agents/skills/ws-doctor/SKILL.md",
+        ".agents/skills/ws-fable-domain/SKILL.md",
+        ".agents/skills/ws-fable-judge/SKILL.md",
+        ".agents/skills/ws-fable-method/SKILL.md",
+        ".agents/skills/ws-fix-pr/SKILL.md",
+        ".agents/skills/ws-goal-fix-pr/SKILL.md",
+        ".agents/skills/ws-goal-loop/SKILL.md",
+        ".agents/skills/ws-implement-tasks/SKILL.md",
+        ".agents/skills/ws-megabrain/SKILL.md",
+        ".agents/skills/ws-monitor/SKILL.md",
+        ".agents/skills/ws-plan-interview/SKILL.md",
+        ".agents/skills/ws-plan-to-tasks/SKILL.md",
+        ".agents/skills/ws-plan-update/SKILL.md",
+        ".agents/skills/ws-plan-verify/SKILL.md",
+        ".agents/skills/ws-plan-write/SKILL.md",
+        ".agents/skills/ws-pre-daily/SKILL.md",
+        ".agents/skills/ws-preview/SKILL.md",
+        ".agents/skills/ws-run-benchmark/SKILL.md",
+        ".agents/skills/ws-secrets-leak-review/SKILL.md",
+        ".agents/skills/ws-self-learning/SKILL.md",
+        ".agents/skills/ws-senior-developer/SKILL.md",
+        ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+        ".agents/skills/ws-ship-pr/SKILL.md",
+        ".agents/skills/ws-show-harness/SKILL.md",
+        ".agents/skills/ws-spec-archive/SKILL.md",
+        ".agents/skills/ws-spec-explain/SKILL.md",
+        ".agents/skills/ws-spec-format/SKILL.md",
+        ".agents/skills/ws-spec-from-provider/SKILL.md",
+        ".agents/skills/ws-spec-index/SKILL.md",
+        ".agents/skills/ws-spec-list/SKILL.md",
+        ".agents/skills/ws-spec-manager/SKILL.md",
+        ".agents/skills/ws-spec-memo/SKILL.md",
+        ".agents/skills/ws-spec-multi/SKILL.md",
+        ".agents/skills/ws-spec-organizer/SKILL.md",
+        ".agents/skills/ws-spec-provider-azure-devops/SKILL.md",
+        ".agents/skills/ws-spec-provider-github/SKILL.md",
+        ".agents/skills/ws-spec-provider-local/SKILL.md",
+        ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+        ".agents/skills/ws-spec-to-pr/SKILL.md",
+        ".agents/skills/ws-spec-update/SKILL.md",
+        ".agents/skills/ws-spec-write/SKILL.md",
+        ".agents/skills/ws-task-lifecycle/SKILL.md",
+        ".agents/skills/ws-tdah/SKILL.md",
+        ".agents/skills/ws-testing/SKILL.md",
+        ".agents/skills/ws-wiki/SKILL.md",
+        ".agents/skills/ws-write-a-skill/SKILL.md",
+        "bin/skill-dependencies.json",
+        "bin/skill-integrity.json",
+        "docs/index.html",
+        "package.json",
+        "test/package.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "step-baton-multi-agent-runs",
+      "status": "completed",
+      "step": 6,
+      "summary": "Finished step 6",
+      "workflowId": "step-baton-multi-agent-runs-20260918T232508Z",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/step-baton-multi-agent-runs/step-07-step-baton-multi-agent-runs.testing.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "step-baton-multi-agent-runs",
+      "status": "completed",
+      "step": 7,
+      "summary": "Finished step 7",
+      "workflowId": "step-baton-multi-agent-runs-20260918T232508Z",
+      "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/step-baton-multi-agent-runs/step-08-step-baton-multi-agent-runs.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "step-baton-multi-agent-runs",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "step-baton-multi-agent-runs-20260918T232508Z",
+      "workflowType": "standard"
+    },
+    "9": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "step-baton-multi-agent-runs",
+      "status": "completed",
+      "step": 9,
+      "summary": "Finished step 9",
+      "workflowId": "step-baton-multi-agent-runs-20260918T232508Z",
+      "workflowType": "standard"
+    }
+  },
+  "modelsPreset": "default",
+  "nextAction": "Run step 9",
+  "prNumber": 350,
+  "prUrl": "https://github.com/jpolvora/workflow-skills/pull/350",
+  "preExistingDirty": [
+    ".agents/plans/us-348/",
+    ".agents/specs/0094-step-baton-multi-agent-runs.context.md",
+    ".agents/specs/0094-step-baton-multi-agent-runs.spec.md",
+    ".agents/specs/0096-us-348.spec.md"
+  ],
+  "revision": 36,
+  "shipStatus": "merged",
+  "skippedSteps": [
+    {
+      "evidence": "",
+      "reason": "dag-disabled",
+      "step": 3
+    }
+  ],
+  "slug": "step-baton-multi-agent-runs",
+  "startedAt": "2026-09-18T23:25:08Z",
+  "statePath": ".agents/plans/step-baton-multi-agent-runs/step-baton-multi-agent-runs-20260918T232508Z.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [
+    {
+      "agentType": "generic:subagent_spawn",
+      "dispatchedAt": "2026-09-18T23:26:08Z",
+      "model": "muse-spark",
+      "step": 0
+    },
+    {
+      "agentType": "generic:subagent_spawn",
+      "dispatchedAt": "2026-09-18T23:27:55Z",
+      "model": "muse-spark",
+      "step": 1
+    },
+    {
+      "agentType": "generic:subagent_spawn",
+      "dispatchedAt": "2026-09-18T23:32:10Z",
+      "model": "muse-spark",
+      "step": 2
+    },
+    {
+      "agentType": "generic:subagent_spawn",
+      "dispatchedAt": "2026-09-18T23:36:59Z",
+      "model": "muse-spark",
+      "step": 4
+    },
+    {
+      "agentType": "generic:subagent_spawn",
+      "dispatchedAt": "2026-09-18T23:59:09Z",
+      "model": "muse-spark",
+      "step": 5
+    },
+    {
+      "agentType": "generic:subagent_spawn",
+      "dispatchedAt": "2026-09-19T00:17:52Z",
+      "model": "muse-spark",
+      "step": 6
+    },
+    {
+      "agentType": "generic:subagent_spawn",
+      "dispatchedAt": "2026-09-19T00:23:06Z",
+      "model": "muse-spark",
+      "step": 7
+    },
+    {
+      "agentType": "generic:subagent_spawn",
+      "dispatchedAt": "2026-09-19T00:29:57Z",
+      "model": "muse-spark",
+      "step": 8
+    },
+    {
+      "agentType": "named:ws-step-04-implement-tasks",
+      "dispatchedAt": "2026-09-19T03:55:03Z",
+      "model": "muse-spark",
+      "step": 9,
+      "substep": "fixPrExec"
+    }
+  ],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "skipped",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed",
+    "9": "completed"
+  },
+  "telemetry": {
+    "steps": [
+      {
+        "N": 0,
+        "agentType": "generic:subagent_spawn",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-18T23:26:08Z",
+        "elapsedSec": 91,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/step-baton-multi-agent-runs/step-00-step-baton-multi-agent-runs.spec.md",
+            ".agents/plans/step-baton-multi-agent-runs/ac-ledger.json"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-18T23:27:39Z",
+        "label": "Spec",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 1,
+        "agentType": "generic:subagent_spawn",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-18T23:27:55Z",
+        "elapsedSec": 249,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/step-baton-multi-agent-runs/step-01-step-baton-multi-agent-runs.plan.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-18T23:32:04Z",
+        "label": "Planning",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": "generic:subagent_spawn",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-18T23:32:10Z",
+        "elapsedSec": 276,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/step-baton-multi-agent-runs/step-02-step-baton-multi-agent-runs.plan-interview.md",
+            ".agents/plans/step-baton-multi-agent-runs/step-02-step-baton-multi-agent-runs.plan.refined.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-18T23:36:46Z",
+        "label": "Interview",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-18T23:36:53Z",
+        "label": "Plan to tasks",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": "generic:subagent_spawn",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-18T23:36:59Z",
+        "elapsedSec": 2421,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs",
+            ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+            "test/test-step-baton-claim.js",
+            "test/test-step-baton-config.js",
+            "test/test-step-baton-monitor.js",
+            "test/test-step-baton-specmemo.js",
+            "test/test-step-baton-telemetry.js",
+            "test/test-step-coordinator.js",
+            "test/fixtures/step-baton/worker-ok.cjs",
+            "test/fixtures/step-baton/worker-nonzero.cjs",
+            "test/fixtures/step-baton/worker-hang.cjs",
+            "test/fixtures/step-baton/worker-no-finish.cjs",
+            "test/fixtures/step-baton/worker-gate-emit.cjs",
+            "test/fixtures/step-baton/worker-bump-revision.cjs",
+            "test/fixtures/step-baton/worker-flaky.cjs",
+            "test/fixtures/step-baton/specmemo-stub.cjs",
+            "test/fixtures/step-baton/config.baton.json",
+            "test/fixtures/step-baton/state.lite-step3.json"
+          ],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            ".agents/skills/ws-shared/runtime/workflow-state.schema.json",
+            ".agents/skills/ws-shared/runtime/telemetry.schema.json",
+            ".agents/skills/ws-shared/runtime/config.schema.json",
+            ".agents/skills/ws-shared/templates/config.json.example",
+            ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
+            ".agents/skills/ws-shared/runtime/host-dispatch.md",
+            ".agents/skills/ws-shared/runtime/gates.md",
+            ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            ".agents/skills/ws-spec-to-pr/SKILL.md",
+            "package.json",
+            "bin/skill-integrity.json"
+          ]
+        },
+        "finishedAt": "2026-09-19T00:17:20Z",
+        "label": "Implement",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": "generic:subagent_spawn",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-18T23:59:09Z",
+        "elapsedSec": 997,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/step-baton-multi-agent-runs/step-05-step-baton-multi-agent-runs.plan.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-19T00:15:46Z",
+        "label": "Verify",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 6,
+        "agentType": "generic:subagent_spawn",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-19T00:17:52Z",
+        "elapsedSec": 995,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-activity-report/SKILL.md",
+            ".agents/skills/ws-benchmarks/SKILL.md",
+            ".agents/skills/ws-changelog/SKILL.md",
+            ".agents/skills/ws-check-harness/SKILL.md",
+            ".agents/skills/ws-check-workflows/SKILL.md",
+            ".agents/skills/ws-classify-complexity/SKILL.md",
+            ".agents/skills/ws-cleanup/SKILL.md",
+            ".agents/skills/ws-code-review/SKILL.md",
+            ".agents/skills/ws-configure-project/SKILL.md",
+            ".agents/skills/ws-doctor/SKILL.md",
+            ".agents/skills/ws-fable-domain/SKILL.md",
+            ".agents/skills/ws-fable-judge/SKILL.md",
+            ".agents/skills/ws-fable-method/SKILL.md",
+            ".agents/skills/ws-fix-pr/SKILL.md",
+            ".agents/skills/ws-goal-fix-pr/SKILL.md",
+            ".agents/skills/ws-goal-loop/SKILL.md",
+            ".agents/skills/ws-implement-tasks/SKILL.md",
+            ".agents/skills/ws-megabrain/SKILL.md",
+            ".agents/skills/ws-monitor/SKILL.md",
+            ".agents/skills/ws-plan-interview/SKILL.md",
+            ".agents/skills/ws-plan-to-tasks/SKILL.md",
+            ".agents/skills/ws-plan-update/SKILL.md",
+            ".agents/skills/ws-plan-verify/SKILL.md",
+            ".agents/skills/ws-plan-write/SKILL.md",
+            ".agents/skills/ws-pre-daily/SKILL.md",
+            ".agents/skills/ws-preview/SKILL.md",
+            ".agents/skills/ws-run-benchmark/SKILL.md",
+            ".agents/skills/ws-secrets-leak-review/SKILL.md",
+            ".agents/skills/ws-self-learning/SKILL.md",
+            ".agents/skills/ws-senior-developer/SKILL.md",
+            ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+            ".agents/skills/ws-ship-pr/SKILL.md",
+            ".agents/skills/ws-show-harness/SKILL.md",
+            ".agents/skills/ws-spec-archive/SKILL.md",
+            ".agents/skills/ws-spec-explain/SKILL.md",
+            ".agents/skills/ws-spec-format/SKILL.md",
+            ".agents/skills/ws-spec-from-provider/SKILL.md",
+            ".agents/skills/ws-spec-index/SKILL.md",
+            ".agents/skills/ws-spec-list/SKILL.md",
+            ".agents/skills/ws-spec-manager/SKILL.md",
+            ".agents/skills/ws-spec-memo/SKILL.md",
+            ".agents/skills/ws-spec-multi/SKILL.md",
+            ".agents/skills/ws-spec-organizer/SKILL.md",
+            ".agents/skills/ws-spec-provider-azure-devops/SKILL.md",
+            ".agents/skills/ws-spec-provider-github/SKILL.md",
+            ".agents/skills/ws-spec-provider-local/SKILL.md",
+            ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+            ".agents/skills/ws-spec-to-pr/SKILL.md",
+            ".agents/skills/ws-spec-update/SKILL.md",
+            ".agents/skills/ws-spec-write/SKILL.md",
+            ".agents/skills/ws-task-lifecycle/SKILL.md",
+            ".agents/skills/ws-tdah/SKILL.md",
+            ".agents/skills/ws-testing/SKILL.md",
+            ".agents/skills/ws-wiki/SKILL.md",
+            ".agents/skills/ws-write-a-skill/SKILL.md",
+            "bin/skill-dependencies.json",
+            "bin/skill-integrity.json",
+            "docs/index.html",
+            "package.json",
+            "test/package.json"
+          ]
+        },
+        "finishedAt": "2026-09-19T00:34:27Z",
+        "label": "Code review",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 7,
+        "agentType": "generic:subagent_spawn",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-19T00:23:06Z",
+        "elapsedSec": 395,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/step-baton-multi-agent-runs/step-07-step-baton-multi-agent-runs.testing.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-19T00:29:41Z",
+        "label": "Testing",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": "generic:subagent_spawn",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-19T00:29:57Z",
+        "elapsedSec": 383,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/step-baton-multi-agent-runs/step-08-step-baton-multi-agent-runs.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-19T00:36:20Z",
+        "label": "Ship",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 9,
+        "agentType": "named:ws-step-04-implement-tasks",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-19T03:55:03Z",
+        "elapsedSec": 666,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-19T04:06:09Z",
+        "label": "Fix PR",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 6473,
+    "totalTokens": 0
+  },
+  "verificationScore": 9,
+  "workflowId": "step-baton-multi-agent-runs-20260918T232508Z",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/step-baton-multi-agent-runs/ac-ledger.json",
+      ".agents/plans/step-baton-multi-agent-runs/step-00-step-baton-multi-agent-runs.spec.md",
+      ".agents/plans/step-baton-multi-agent-runs/step-01-step-baton-multi-agent-runs.plan.md",
+      ".agents/plans/step-baton-multi-agent-runs/step-02-step-baton-multi-agent-runs.plan-interview.md",
+      ".agents/plans/step-baton-multi-agent-runs/step-02-step-baton-multi-agent-runs.plan.refined.md",
+      ".agents/plans/step-baton-multi-agent-runs/step-05-step-baton-multi-agent-runs.plan.report.md",
+      ".agents/plans/step-baton-multi-agent-runs/step-06-step-baton-multi-agent-runs.review.md",
+      ".agents/plans/step-baton-multi-agent-runs/step-07-step-baton-multi-agent-runs.testing.report.md",
+      ".agents/plans/step-baton-multi-agent-runs/step-08-step-baton-multi-agent-runs.result.md",
+      ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs",
+      ".agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs",
+      "test/fixtures/step-baton/config.baton.json",
+      "test/fixtures/step-baton/specmemo-stub.cjs",
+      "test/fixtures/step-baton/state.lite-step3.json",
+      "test/fixtures/step-baton/worker-bump-revision.cjs",
+      "test/fixtures/step-baton/worker-flaky.cjs",
+      "test/fixtures/step-baton/worker-gate-emit.cjs",
+      "test/fixtures/step-baton/worker-hang.cjs",
+      "test/fixtures/step-baton/worker-no-finish.cjs",
+      "test/fixtures/step-baton/worker-nonzero.cjs",
+      "test/fixtures/step-baton/worker-ok.cjs",
+      "test/test-step-baton-claim.js",
+      "test/test-step-baton-config.js",
+      "test/test-step-baton-monitor.js",
+      "test/test-step-baton-specmemo.js",
+      "test/test-step-baton-telemetry.js",
+      "test/test-step-coordinator.js"
+    ],
+    "deleted": [],
+    "modified": [
+      ".agents/skills/ws-activity-report/SKILL.md",
+      ".agents/skills/ws-benchmarks/SKILL.md",
+      ".agents/skills/ws-changelog/SKILL.md",
+      ".agents/skills/ws-check-harness/SKILL.md",
+      ".agents/skills/ws-check-workflows/SKILL.md",
+      ".agents/skills/ws-classify-complexity/SKILL.md",
+      ".agents/skills/ws-cleanup/SKILL.md",
+      ".agents/skills/ws-code-review/SKILL.md",
+      ".agents/skills/ws-configure-project/SKILL.md",
+      ".agents/skills/ws-doctor/SKILL.md",
+      ".agents/skills/ws-fable-domain/SKILL.md",
+      ".agents/skills/ws-fable-judge/SKILL.md",
+      ".agents/skills/ws-fable-method/SKILL.md",
+      ".agents/skills/ws-fix-pr/SKILL.md",
+      ".agents/skills/ws-goal-fix-pr/SKILL.md",
+      ".agents/skills/ws-goal-loop/SKILL.md",
+      ".agents/skills/ws-implement-tasks/SKILL.md",
+      ".agents/skills/ws-megabrain/SKILL.md",
+      ".agents/skills/ws-monitor/SKILL.md",
+      ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+      ".agents/skills/ws-plan-interview/SKILL.md",
+      ".agents/skills/ws-plan-to-tasks/SKILL.md",
+      ".agents/skills/ws-plan-update/SKILL.md",
+      ".agents/skills/ws-plan-verify/SKILL.md",
+      ".agents/skills/ws-plan-write/SKILL.md",
+      ".agents/skills/ws-pre-daily/SKILL.md",
+      ".agents/skills/ws-preview/SKILL.md",
+      ".agents/skills/ws-run-benchmark/SKILL.md",
+      ".agents/skills/ws-secrets-leak-review/SKILL.md",
+      ".agents/skills/ws-self-learning/SKILL.md",
+      ".agents/skills/ws-senior-developer/SKILL.md",
+      ".agents/skills/ws-shared/runtime/config.schema.json",
+      ".agents/skills/ws-shared/runtime/gates.md",
+      ".agents/skills/ws-shared/runtime/host-dispatch.md",
+      ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
+      ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+      ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+      ".agents/skills/ws-shared/runtime/telemetry.schema.json",
+      ".agents/skills/ws-shared/runtime/workflow-state.schema.json",
+      ".agents/skills/ws-shared/templates/config.json.example",
+      ".agents/skills/ws-ship-pr/SKILL.md",
+      ".agents/skills/ws-show-harness/SKILL.md",
+      ".agents/skills/ws-spec-archive/SKILL.md",
+      ".agents/skills/ws-spec-explain/SKILL.md",
+      ".agents/skills/ws-spec-format/SKILL.md",
+      ".agents/skills/ws-spec-from-provider/SKILL.md",
+      ".agents/skills/ws-spec-index/SKILL.md",
+      ".agents/skills/ws-spec-list/SKILL.md",
+      ".agents/skills/ws-spec-manager/SKILL.md",
+      ".agents/skills/ws-spec-memo/SKILL.md",
+      ".agents/skills/ws-spec-multi/SKILL.md",
+      ".agents/skills/ws-spec-organizer/SKILL.md",
+      ".agents/skills/ws-spec-provider-azure-devops/SKILL.md",
+      ".agents/skills/ws-spec-provider-github/SKILL.md",
+      ".agents/skills/ws-spec-provider-local/SKILL.md",
+      ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+      ".agents/skills/ws-spec-to-pr/SKILL.md",
+      ".agents/skills/ws-spec-update/SKILL.md",
+      ".agents/skills/ws-spec-write/SKILL.md",
+      ".agents/skills/ws-task-lifecycle/SKILL.md",
+      ".agents/skills/ws-tdah/SKILL.md",
+      ".agents/skills/ws-testing/SKILL.md",
+      ".agents/skills/ws-wiki/SKILL.md",
+      ".agents/skills/ws-write-a-skill/SKILL.md",
+      "bin/skill-dependencies.json",
+      "bin/skill-integrity.json",
+      "docs/index.html",
+      "package.json",
+      "test/package.json"
+    ]
+  },
+  "workflowType": "standard"
+}

@@ -4,6 +4,7 @@ slug: muse-code-harness-adaptation
 title: "Muse Code harness adaptation for ws-spec-to-pr workflows on muse-spark agents"
 source: local
 specDate: 2026-09-17
+status: completed
 ---
 
 # Specification — Muse Code harness adaptation for ws-spec-to-pr workflows on muse-spark agents

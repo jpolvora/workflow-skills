@@ -120,9 +120,9 @@ Intent → skill: [`CATALOG.md`](CATALOG.md) § Task router. Specs keywords: [`a
 | Observe a live Spec-to-PR workflow run | `ws-monitor` |
 | Prompt-driven task (not Spec-to-PR) | `ws-task-lifecycle` |
 
-**Product commits:** standard after Step 5 reaches `minVerifyScore` (default 9); lite after Step 2. Commit only `files_touched`; review `{base}...HEAD`; commit review fixes separately. `{plansDir}` only at Step 8 / lite 4; never `git add -A`. Fix-PR: `fixPrPlan` (reviewer) before `fixPrExec` (execution) inside standard Step 9; lite inline.
+**Product commits:** standard after Step 5 reaches `minVerifyScore` (default 9); lite after Step 2. Commit only `files_touched`; review `{base}...HEAD`; commit review fixes separately. `{plansDir}` only at Step 8 / lite 4; never `git add -A`. Fix-PR: `fixPrPlan` (reviewer) before `fixPrExec` (execution) inside standard Step 9, each round batch in a fresh worker while the session owns the loop inline; lite inline. Invocation `preset=<name>` overrides `defaults.modelsPreset` per run (state-persisted, resume-safe).
 
-Step-level baton runs (multi-CLI) execute different steps in different CLI processes via the deterministic `step_coordinator.cjs` (`defaults.stepRunners` / `defaults.runners` / `defaults.stepBaton`); gates surface at the coordinator while workers stay non-interactive.
+Step-level baton runs (multi-CLI) execute different steps in different CLI processes via the deterministic `step_coordinator.cjs` (`defaults.stepRunners` / `defaults.runners` / `defaults.stepBaton`); state-file baton with revision-serialized claim/release/expiry, `baton_*`/`runner_*` telemetry, read-only monitor fields; gates surface at the coordinator while workers stay non-interactive.
 
 ## Managed skills — no silent local refactors
 

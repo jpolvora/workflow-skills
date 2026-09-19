@@ -4,6 +4,7 @@ slug: website-visual-revamp
 title: "Revamp website visual and template with docs-style layout"
 source: local
 specDate: 2026-09-17
+status: completed
 ---
 
 # Specification — Revamp website visual and template with docs-style layout

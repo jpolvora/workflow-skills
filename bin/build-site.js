@@ -425,7 +425,7 @@ const efficiencyFeatureBlock = `  <!-- efficiency-verifiability:start -->
         <div class="role-card-icon">B</div>
         <h4 class="role-card-title">Step-level baton runs (multi-CLI)</h4>
       </div>
-      <p class="role-card-desc">Execute different steps in different CLI processes through the deterministic coordinator (<code>step_coordinator.cjs</code>, no LLM): map steps to runners with <code>defaults.stepRunners</code> / <code>defaults.runners</code>, tune polling with <code>defaults.stepBaton</code>. Single-writer baton protocol with coordinator-surfaced gates.</p>
+      <p class="role-card-desc">Execute different steps in different CLI processes through the deterministic coordinator (<code>step_coordinator.cjs</code>, no LLM): map steps to runners with <code>defaults.stepRunners</code> / <code>defaults.runners</code>, tune polling with <code>defaults.stepBaton</code>. Revision-serialized claim/release/expiry on the state-file baton, one-shot workers with sparse pointers, <code>baton_*</code> telemetry plus read-only monitor fields, and coordinator-surfaced gates.</p>
     </div>
   <!-- efficiency-verifiability:end -->
 `;

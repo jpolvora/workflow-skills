@@ -25,13 +25,8 @@ credentials.json
 .aws/
 config/credentials
 
-# Backup files
-*.bak_*
-*.bak
 
 # Temporary files & Logs
-*.log
-.tmp-*/
 audit_results.txt
 __pycache__/
 **/__pycache__/
@@ -54,12 +49,11 @@ check-workflows-report.md
 # excludes consumer-owned config/state from the npm tarball. Consumer defaults
 # track non-secret config.json and maintained STACK.md, while generated state and
 # installer metadata are ignored by the installed hub .gitignore.
+# Machine-local host probe cache must never ship upstream (spec 0059 AC9).
+.ws/host-capabilities.json
 .tmp-ws-cleanup-approved.json
 .tmp-*/
 
 # Harness benchmark full run reports (upstream maintainer only)
 benchmarks/runs/
 .active-session-id
-
-# Upstream dogfood probe cache (consumer-local gitignored state, never shipped upstream)
-.ws/host-capabilities.json

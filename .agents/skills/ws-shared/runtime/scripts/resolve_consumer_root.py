@@ -324,11 +324,39 @@ def to_repo_relative(
         return absolute.name
 
 
+def require_project_config(context: dict) -> dict:
+    """Fail-closed project-config gate for config-dependent skills (AC5/NS3).
+
+    Mirror of the Node SoT requireProjectConfig(): a globally invoked skill
+    without a project hub must NOT silently read global config as project
+    config — raise with a ws-configure-project pointer instead. Usable means
+    the concrete {sharedDir}/config.json file on disk; the seeded templates
+    example never counts. Returns the context unchanged on success.
+    """
+    root = Path(context.get("repo_root") or Path.cwd()).resolve()
+    shared = Path(context.get("shared_dir") or root / HUB_REL).resolve()
+    project_config = shared / "config.json"
+    usable = (
+        bool(context)
+        and not context.get("config_error")
+        and project_config.is_file()
+    )
+    if not usable:
+        raise ValueError(
+            f"Project hub config missing (expected {project_config}); run "
+            "ws-configure-project to seed {sharedDir}/config.json — refusing "
+            "to use global config as project config "
+            f"(config_source: {context.get('config_source') if context else 'unknown'})."
+        )
+    return context
+
+
 def resolve_consumer_context(
     override: str | os.PathLike[str] | None = None,
     *,
     script_file: str | os.PathLike[str] | None = None,
     skill_id: str | None = None,
+    require_project_hub: bool = False,
 ) -> dict:
     root = resolve_repo_root(override, script_file=script_file)
     global_skills_root = resolve_execution_global_skills_root(script_file)
@@ -374,7 +402,7 @@ def resolve_consumer_context(
     except ValueError as error:
         config = {"fable": {"auditVerdictsBlockShip": "refuted"}}
         config_error = str(error)
-    return {
+    context = {
         "repo_root": root,
         "skills_root": resolve_skills_root(root, skill_id, global_skills_root),
         "shared_dir": shared_dir(root),
@@ -388,6 +416,10 @@ def resolve_consumer_context(
         "config_error": config_error,
         "precedence_matrix": describe_precedence_matrix(),
     }
+    # Opt-in AC5 fail-closed gate for config-dependent entrypoints (default off).
+    if require_project_hub:
+        require_project_config(context)
+    return context
 
 
 def resolve_resolved_context(
