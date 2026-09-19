@@ -137,9 +137,9 @@ function packageHubPath(categoryName, relativePath) {
  */
 const LOCAL_HUB_POINTER_MD = `# Shared — Workflow Config & Consumer Data Hub (local pointer)
 
-This is the project-local pointer for global-hybrid installs. Managed hub runtime is resolved from the project-local \`runtime/\` when present, otherwise from \`{globalSkillsRoot}/ws-shared/runtime/\`. Project consumer data lives in this folder (\`config.json\`, \`STACK.md\`, \`installed-skills.json\`); MEMORY/changelog live at their configured locations (defaults: repo-root \`MEMORY.md\` + \`memory/\`, repo-root \`CHANGELOG.md\`).
+This is the project-local pointer for global-hybrid installs. Managed hub runtime is resolved from the project-local skills install (\`{skillsRoot}/ws-shared/runtime/\`) when present, otherwise from \`{globalSkillsRoot}/ws-shared/runtime/\`. This folder keeps project-local config only. Project consumer data lives in this folder (\`config.json\`, \`STACK.md\`, \`installed-skills.json\`); MEMORY/changelog live at their configured locations (defaults: repo-root \`MEMORY.md\` + \`memory/\`, repo-root \`CHANGELOG.md\`).
 
-- Full hub contract: \`runtime/AGENTS.md\` (resolve the managed runtime locally or from \`{globalSkillsRoot}/ws-shared/runtime/\`; resolve skill bodies via \`resolveSkillMdPath\` / \`resolveConsumerContext\` in \`.ws/runtime/scripts/resolve_consumer_root.cjs\`).
+- Full hub contract: \`runtime/AGENTS.md\` (resolve the managed runtime locally or from \`{globalSkillsRoot}/ws-shared/runtime/\`; resolve skill bodies via \`resolveSkillMdPath\` / \`resolveConsumerContext\` in \`{skillsRoot}/ws-shared/runtime/scripts/resolve_consumer_root.cjs\` (global fallback \`{globalSkillsRoot}/ws-shared/runtime/scripts/resolve_consumer_root.cjs\`).
 - Config always resolves project-local first: \`$PWD/.ws/config.json\` overrides the global hub.
 - \`rules.harness\` default (\`.ws/AGENTS.md\`) resolves to this file; follow the canonical runtime link above. Run installer \`update\` to refresh this pointer.
 `;
@@ -1913,7 +1913,7 @@ async function runInstall(skills, opts) {
     console.log('\n\u26a0\ufe0f  After installing, run the `ws-check-harness` skill to validate the harness:');
     console.log('   Load `.agents/skills/ws-check-harness/SKILL.md` and execute Phases 0\u20135c.');
     console.log('   Optional: run `ws-configure-project` to interview/detect and fill `.ws/config.json`.');
-    console.log('   Path tokens: `.ws/runtime/tools.md` § Path tokens (`pathTokens` in config.json).');
+    console.log('   Path tokens: `{skillsRoot}/ws-shared/runtime/tools.md` § Path tokens (`pathTokens` in config.json).');
   } else {
     console.log('No skills were installed.');
   }
@@ -2449,7 +2449,7 @@ async function runUpdate(skills, includeNew, forceIntegrity = false, updateOpts 
   console.log('   Load `.agents/skills/ws-check-harness/SKILL.md` and execute Phases 0\u20135c.');
   console.log('   This detects phantom skills, broken links, stale references, and fixes routing/indexes.');
   console.log('   Optional: run `ws-configure-project` if .ws/config.json still has placeholders.');
-  console.log('   Path tokens: `.ws/runtime/tools.md` § Path tokens (`pathTokens` in config.json).');
+  console.log('   Path tokens: `{skillsRoot}/ws-shared/runtime/tools.md` § Path tokens (`pathTokens` in config.json).');
   process.exit(0);
 }
 
@@ -2607,7 +2607,7 @@ async function runInteractive(skills, forceIntegrity = false) {
     console.log('   Load `.agents/skills/ws-check-harness/SKILL.md` and execute Phases 0\u20135c.');
     console.log('   This detects phantom skills, broken links, stale references, and fixes routing/indexes.');
     console.log('   Optional: run `ws-configure-project` to interview/detect and fill `.ws/config.json`.');
-    console.log('   Path tokens: `.ws/runtime/tools.md` § Path tokens (`pathTokens` in config.json).');
+    console.log('   Path tokens: `{skillsRoot}/ws-shared/runtime/tools.md` § Path tokens (`pathTokens` in config.json).');
   } else {
     console.log('No skills were installed.');
   }

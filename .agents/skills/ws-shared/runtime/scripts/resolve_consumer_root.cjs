@@ -75,12 +75,18 @@ function sharedDir(repoRoot) {
 }
 
 function resolveHubSource(context, relative) {
-  const local = path.join(context.sharedDir, relative);
-  if (fs.existsSync(local)) return local;
-  if (context.executionScope === 'project-local') return local;
+  const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
+  if (explicitShared && String(explicitShared).trim()) {
+    return path.join(path.resolve(String(explicitShared).trim()), relative);
+  }
+  const root = context.repoRoot || process.cwd();
+  const localSkills = path.join(root, '.agents', 'skills', 'ws-shared', relative);
+  if (fs.existsSync(localSkills)) return localSkills;
   const global = path.join(context.globalSkillsRoot, 'ws-shared', relative);
   if (fs.existsSync(global)) return global;
-  return local;
+  const legacyHub = path.join(context.sharedDir, relative);
+  if (fs.existsSync(legacyHub)) return legacyHub;
+  return localSkills;
 }
 
 function loadJson(file) {
@@ -107,7 +113,7 @@ function readConfigStrict(file) {
 const PRECEDENCE_MATRIX = [
   { rank: 1, dimension: 'config', local: '{sharedDir}/config.json', global: '{globalSkillsRoot}/ws-shared/config.json' },
   { rank: 2, dimension: 'skill-bodies', local: '{skillsRoot}/ws-<id>/SKILL.md', global: '{globalSkillsRoot}/ws-<id>/SKILL.md' },
-  { rank: 3, dimension: 'shared-runtime', local: '{sharedDir}/runtime/*', global: '{globalSkillsRoot}/ws-shared/runtime/*' },
+  { rank: 3, dimension: 'shared-runtime', local: '{skillsRoot}/ws-shared/runtime/*', global: '{globalSkillsRoot}/ws-shared/runtime/*' },
   { rank: 4, dimension: 'harness', local: '{sharedDir}/AGENTS.md', global: '{globalSkillsRoot}/ws-shared/AGENTS.md' },
   { rank: 5, dimension: 'specs', local: '{specsDir} (plans.specsDir)', global: 'default .agents/specs' },
   { rank: 6, dimension: 'plans-state', local: '{plansDir} + telemetry + worktree paths', global: 'default .agents/plans' },
@@ -314,11 +320,11 @@ function resolveConsumerContext({ repoRoot, scriptFile, skillId } = {}) {
     config = normalizeConfig(loadJson(configPath));
   }
   const runtimeSource = resolveHubSource(
-    { sharedDir: hub, globalSkillsRoot, executionScope },
+    { sharedDir: hub, globalSkillsRoot, executionScope, repoRoot: root },
     HUB_RUNTIME_REL,
   );
   const templateSource = resolveHubSource(
-    { sharedDir: hub, globalSkillsRoot, executionScope },
+    { sharedDir: hub, globalSkillsRoot, executionScope, repoRoot: root },
     HUB_TEMPLATES_REL,
   );
 

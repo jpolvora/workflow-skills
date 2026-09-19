@@ -9,10 +9,10 @@ const ledgerScript = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/a
 const update = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/update_state.cjs');
 const validate = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/validate_state.cjs');
 const root = temp('ws-state-contract-');
-fs.mkdirSync(path.join(root, '.ws/runtime'), { recursive: true });
+fs.mkdirSync(path.join(root, '.agents/skills/ws-shared/runtime'), { recursive: true });
 fs.copyFileSync(
   path.join(repoRoot, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
-  path.join(root, '.ws/runtime/skill-dependencies.json'),
+  path.join(root, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
 );
 write(path.join(root, '.ws/config.json'), JSON.stringify({
   plans: { dir: '.agents/plans' },
@@ -904,10 +904,10 @@ acImplemented: 0
   const workflowId = 'wf-outdisc';
   const stateRel = `.agents/plans/${slug}/wf.state.md`;
   const usDir = path.join(testRoot, '.agents/plans', slug);
-  fs.mkdirSync(path.join(testRoot, '.ws/runtime'), { recursive: true });
+  fs.mkdirSync(path.join(testRoot, '.agents/skills/ws-shared/runtime'), { recursive: true });
   fs.copyFileSync(
     path.join(repoRoot, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
-    path.join(testRoot, '.ws/runtime/skill-dependencies.json'),
+    path.join(testRoot, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
   );
   write(path.join(testRoot, '.ws/config.json'), JSON.stringify({
     plans: { dir: '.agents/plans' },
