@@ -74,6 +74,10 @@ assert(
   read('.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md').includes(MANDATE),
   'us-353 AC1 STEP-DISPATCH.md verbose block pins the same-response continuation mandate',
 );
+assert(
+  read('.agents/skills/ws-spec-to-pr/WORKER-TURN-RULES.md').includes(MANDATE),
+  'us-353 AC1 WORKER-TURN-RULES.md canonical turn rule pins the same-response continuation mandate',
+);
 
 // NS1 / AC2: preview-only worker (preview text, zero tool calls) resolves as failure.
 const previewOnly = [

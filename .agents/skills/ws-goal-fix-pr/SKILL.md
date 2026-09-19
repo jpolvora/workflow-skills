@@ -1,7 +1,7 @@
 ---
 name: ws-goal-fix-pr
 description: PR thread convergence loop — orchestrates iterative fix-pr rounds until all open PR review threads are resolved and checks pass.
-version: 0.4.38
+version: 0.4.39
 disable-model-invocation: true
 invocation_names:
   - goal-fix-pr
@@ -68,7 +68,7 @@ This loop applies the same revision-guarded / fail-closed / resume contract as [
 
 Parent-side detection for a wedged loop session: a batch worker result is delivered but no follow-up model turn ever runs (observed once on PR #350 — loop log silent after batch-1 delivery, task recorded `completed` with no continuation; the resume loop then printed only the VerboseMode preview with zero tool calls).
 
-- **Signals:** round-log freshness — no new `{reviewsDir}/PR-<N>-round-*.md` after a batch worker completes; session-log mtime silence after worker-result delivery while the roster still reports the session `running`.
+- **Signals:** round-log freshness — no new `{reviewsDir}/PR-<N>-round-*.md` after a batch worker completes — plus a stalled read-only state poll (no `currentStep`/revision advance and a `dispatch` telemetry event with no matching `finish`, per the Parent contract in [`WORKER-TURN-RULES.md`](../ws-spec-to-pr/WORKER-TURN-RULES.md)). Host-side corroboration when the host exposes run introspection: session-log mtime silence after worker-result delivery while the roster still reports the session `running`.
 - **Checks:** on a suspected wedge, run a fresh provider `list-threads` plus `check-pr-status` before deciding. Contradictory states (`running` vs `not_ready` vs not-active follow-up/cancel rejections) confirm the wedge — do not keep waiting on the wedged session.
 - **Resume-takeover procedure:** dispatch a fresh loop carrying the full handoff brief (PR number, success criterion, completed rounds, remaining threads). If the resume also stalls, drive the remaining batches inline on the parent: fresh `list-threads` + `check-pr-status` per round, one fresh `fixPrPlan` → `fixPrExec` worker per batch, per-batch audit + telemetry, merge only on `activeThreads == 0` with green checks. Do not ping a fix worker mid-batch — a mid-batch ping terminated a worker turn early; use read-only state polls for progress.
 - **State-path dispatch:** loop-path `update_state` calls always pass the state path, never a bare workflow id:

@@ -8,6 +8,7 @@ they never maintain a divergent copy.
 ## Turn rule
 
 - The worker's FIRST response must contain BOTH the verbose preview AND at least 2 tool calls.
+- After printing the verbose preview, then immediately continue with tool calls in the same response; never end the turn after the preview.
 - A response with zero tool calls ends the turn as failed delivery.
 - The verbose preview alone is never the turn's work: printing
   `Starting step N` and then yielding without tool calls is a failed turn,
