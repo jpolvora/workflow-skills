@@ -311,6 +311,14 @@ acImplemented: 0
   const badRuntime = run(validate, [runtimeStateRel, '--repo-root', runtimeRoot]);
   assert.notStrictEqual(badRuntime.status, 0);
   assert.match(`${badRuntime.stdout}${badRuntime.stderr}`, /unknown .runtime residue: helper.txt/);
+  // Held baton lock must not read as residue: withBatonLock mkdirs
+  // .runtime/baton.lock for the critical section, and a concurrent
+  // coordinator can hold it while this run's worker validates.
+  fs.rmSync(path.join(runtimeDir, 'helper.txt'), { force: true });
+  fs.mkdirSync(path.join(runtimeDir, 'baton.lock'), { recursive: true });
+  write(path.join(runtimeDir, 'baton.lock', 'lock.json'), JSON.stringify({ pid: process.pid, at: '2026-09-19T00:00:00.000Z' }));
+  assert.strictEqual(run(validate, [runtimeStateRel, '--repo-root', runtimeRoot]).status, 0, 'validate passes with a held baton.lock');
+  assert.strictEqual(run(update, ['finish', runtimeStateRel, '--step', '0', '--timestamp', '2026-08-21T20:00:05.000Z', ...rtCommon]).status, 0, 'finish passes with a held baton.lock');
 }
 
 // AC10 / AC11 — frontmatter-only state hash; gate history append stable

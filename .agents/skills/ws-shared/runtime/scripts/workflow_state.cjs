@@ -40,6 +40,7 @@ const RUNTIME_NAMES = [
   /^round-\d+\.md$/,
   /^final\.md$/,
   /^plan-gate\.md$/,
+  /^baton\.lock$/,
   /^resolve-[A-Za-z0-9_-]+\.txt$/,
   /^plan\.index\.json$/,
   /^step(-\d+)?-output\.json$/,
