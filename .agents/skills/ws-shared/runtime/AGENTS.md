@@ -122,6 +122,8 @@ Intent → skill: [`CATALOG.md`](CATALOG.md) § Task router. Specs keywords: [`a
 
 **Product commits:** standard after Step 5 reaches `minVerifyScore` (default 9); lite after Step 2. Commit only `files_touched`; review `{base}...HEAD`; commit review fixes separately. `{plansDir}` only at Step 8 / lite 4; never `git add -A`. Fix-PR: `fixPrPlan` (reviewer) before `fixPrExec` (execution) inside standard Step 9; lite inline.
 
+Step-level baton runs (multi-CLI) execute different steps in different CLI processes via the deterministic `step_coordinator.cjs` (`defaults.stepRunners` / `defaults.runners` / `defaults.stepBaton`); gates surface at the coordinator while workers stay non-interactive.
+
 ## Managed skills — no silent local refactors
 
 Skills under `.agents/skills/` (except consumer-owned `ws-shared/` data) are **managed upstream copies**. `update` overwrites them.

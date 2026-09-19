@@ -595,7 +595,7 @@ async function runCoordinator(argv) {
         persist(blocked);
         return { exitCode: EXIT_BLOCKED };
       }
-      releaseOwnBaton(mdPath, jsonPath);
+      releaseOwnBaton(mdPath, jsonPath, runnerId);
       sleepSync(computeBackoffMs(attempt, 100, 2000));
       continue;
     }
@@ -613,7 +613,7 @@ async function runCoordinator(argv) {
         persist(blocked);
         return { exitCode: EXIT_BLOCKED };
       }
-      releaseOwnBaton(mdPath, jsonPath);
+      releaseOwnBaton(mdPath, jsonPath, runnerId);
       sleepSync(computeBackoffMs(attempt, 100, 2000));
       continue;
     }
@@ -629,7 +629,7 @@ async function runCoordinator(argv) {
         persist(blocked);
         return { exitCode: EXIT_BLOCKED };
       }
-      releaseOwnBaton(mdPath, jsonPath);
+      releaseOwnBaton(mdPath, jsonPath, runnerId);
       sleepSync(computeBackoffMs(attempt, 100, 2000));
       continue;
     }
@@ -645,7 +645,7 @@ async function runCoordinator(argv) {
         persist(blocked);
         return { exitCode: EXIT_BLOCKED };
       }
-      releaseOwnBaton(mdPath, jsonPath);
+      releaseOwnBaton(mdPath, jsonPath, runnerId);
       sleepSync(computeBackoffMs(attempt, 100, 2000));
       continue;
     }
@@ -681,14 +681,14 @@ async function runCoordinator(argv) {
         persist(blocked);
         return { exitCode: EXIT_BLOCKED };
       }
-      releaseOwnBaton(mdPath, jsonPath);
+      releaseOwnBaton(mdPath, jsonPath, runnerId);
       sleepSync(computeBackoffMs(attempt, 100, 2000));
       continue;
     }
     // Success: force-clear a stale held baton, emit release, mirror, reset counter.
     const settled = loadStateDisk(jsonPath, mdPath).state;
     if (settled?.baton?.holder) {
-      releaseOwnBaton(mdPath, jsonPath);
+      releaseOwnBaton(mdPath, jsonPath, runnerId);
     }
     attempts.delete(currentStep);
     const released = loadStateDisk(jsonPath, mdPath).state;
@@ -705,12 +705,13 @@ async function runCoordinator(argv) {
   }
 }
 
-function releaseOwnBaton(mdPath, jsonPath) {
+function releaseOwnBaton(mdPath, jsonPath, holder) {
   try {
     const disk = loadStateDisk(jsonPath, mdPath);
     const state = disk.state;
     normalizeBaton(state);
     if (!state.baton.holder) return;
+    if (typeof holder === 'string' && holder && state.baton.holder !== holder) return;
     state.baton = {
       holder: null,
       step: Number(state.currentStep),
@@ -765,4 +766,5 @@ module.exports = {
   specMemoEnabled,
   buildBatonEvent,
   runCoordinator,
+  releaseOwnBaton,
 };

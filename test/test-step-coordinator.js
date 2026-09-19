@@ -322,4 +322,22 @@ function workerCommand(fixture, timeoutSeconds = 60) {
   if (elapsed < 4500) throw new Error(`AC10 poll interval was not honored (elapsed ${elapsed}ms, expected >= 4500ms)`);
 }
 
+// Release ownership: a non-owner release is a no-op; the owner release clears.
+{
+  const repo = makeRepo({
+    currentStep: 4, completedSteps: [0, 1, 2, 3],
+    stepRunners: { 4: 'runner-a' }, runners: { 'runner-a': workerCommand('worker-ok.cjs') },
+    baton: { holder: 'runner-b', step: 4, claimedAt: new Date().toISOString(), leaseUntil: new Date(Date.now() + 600000).toISOString(), revision: 7 },
+  });
+  const mdPath = path.join(repo.usDir, 'wf-coord.state.md');
+  coordinator.releaseOwnBaton(mdPath, repo.stateFile, 'runner-a');
+  let state = JSON.parse(fs.readFileSync(repo.stateFile, 'utf8'));
+  if (state.baton.holder !== 'runner-b') throw new Error('non-owner release must not clear the holder');
+  if (state.baton.revision !== 7) throw new Error('non-owner release must not bump the revision');
+  coordinator.releaseOwnBaton(mdPath, repo.stateFile, 'runner-b');
+  state = JSON.parse(fs.readFileSync(repo.stateFile, 'utf8'));
+  if (state.baton.holder !== null) throw new Error('owner release must clear the holder');
+  if (state.baton.revision !== 8) throw new Error('owner release must bump the revision');
+}
+
 console.log('PASS: test-step-coordinator (AC7, AC9-AC14; NS2, NS3, NS5, NS6)');

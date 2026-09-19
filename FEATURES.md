@@ -83,6 +83,10 @@ Projects canonical skills (`.agents/skills/ws-*`) into native host agent definit
 - **Integrity protection:** Signs generated files with `@generated` SHA-256 hashes and non-clobber protection so human-authored custom agents are never overwritten or deleted.
 - **Fail-safe fallback ladder:** `host-dispatch.md` implements Tier 1 (named specialized subagent) → Tier 2 (generic subagent reading `SKILL.md`) → Tier 3 (inline execution), preserving 100% harness portability. Step 5 (`ws-plan-verify`) is product-tree readonly in the compiled prompt; the compiler never emits host `readonly: true` (question-only session blocks Shell).
 
+### 1.6 Step-level baton runs (multi-CLI)
+
+One run may execute different steps in different CLI processes via the deterministic coordinator (`ws-spec-to-pr/scripts/step_coordinator.cjs`, plain Node, no LLM): map steps to runner ids with `defaults.stepRunners`, declare command templates in `defaults.runners`, and tune polling/retries with `defaults.stepBaton`. The baton protocol (claim → spawn → verify → release) keeps single-writer state across processes; gates surface at the coordinator while workers stay non-interactive.
+
 ---
 
 ## 2. Quality gates
@@ -245,7 +249,7 @@ Project settings live in consumer-owned `.agents/skills/ws-shared/config.json` (
 | `issueTrackers` | GitHub and Azure DevOps credentials, CLI, converter scripts |
 | `verification` | Build, test, format, migration, and mutation commands plus `mutationThreshold` |
 | `dagThresholds` | Complexity limits that decide sequential versus parallel DAG |
-| `defaults` | Execution mode, test globs, 32 KB context budget, `minVerifyScore` (1–10, default 9), optional parallel verify/review, `gateGranularity` (`step` by default or `phase`), adaptive convergence policy, delivery artifacts, `modelsPreset` / `modelPresets` bundles, optional `stepModels` map, `reviewJury` / `providerCompat` / `contextHygiene`, and legacy per-phase model identifiers |
+| `defaults` | Execution mode, test globs, 32 KB context budget, `minVerifyScore` (1–10, default 9), optional parallel verify/review, `gateGranularity` (`step` by default or `phase`), adaptive convergence policy, delivery artifacts, `modelsPreset` / `modelPresets` bundles, optional `stepModels` map, `reviewJury` / `providerCompat` / `contextHygiene`, step-baton maps (`stepRunners` / `runners` / `stepBaton`), and legacy per-phase model identifiers |
 | `plans` / `reviews` / `preview` | Artifact roots, `plans.enforceSpecPrefixOrdering` (default false), diagnostics root, and `preview.dryRunCommand` (consumer local dry-run for `/ws-preview`; set via `--section preview`) |
 | `rules` | Guardrail paths: harness, senior developer (and karpathy alias), stack file, changelog file, memory dir |
 | `invariants` | Project-level architectural assertions plus `skipQualityGates` |
