@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-19 00:30] Agent: Muse Code
+- **Prompt**: /ws-spec-sync (spec index sync).
+- **Done**: Synced 4 shipped specs to `[x]`/`done` with Done-log rows + `status: completed` frontmatter (0088→PR #339, 0090→PR #340, 0091→PR #341, 0092→PR #345); us-348 skipped (unmapped, no ship signal — needs `track`, not `sync`).
+- **Result**: spec-index track, list-pending-specs, spec-lint, validate-spec all ok. Learning: N/A (routine index sync).
+
 ### [2026-09-19 00:25] Agent: Muse Code
 - **Prompt**: add Desktop config GUI Editor sync to the AGENTS.md pre-ship section/board for every config.json structure/key/value/default change.
 - **Done**: Sharpened the Config schema & GUI synchronization trigger (schema + example) and added a 5-row Pre-ship board under Upstream developer workflow, row 3 gating GUI sync via `node test/test-powershell-config-editor.js` (mirrors CATALOG row 7b).

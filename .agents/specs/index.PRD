@@ -137,11 +137,11 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Merge ws-karpathy-guidelines into ws-senior-developer (`spec: 0085-merge-karpathy-into-senior-developer.spec.md`)
 - [x] ws-tdah wait-what grounded re-pitch (`spec: 0086-ws-tdah-wait-what-repitch.spec.md`)
 - [x] ws-wiki Sync Baseline incremental watermark (`spec: 0087-ws-wiki-sync-baseline.spec.md`)
-- [ ] ws-check-harness install-mode detection and upstream clean-audit invariant (`spec: 0088-ws-check-harness-install-mode-clean-audit.spec.md`)
+- [x] ws-check-harness install-mode detection and upstream clean-audit invariant (`spec: 0088-ws-check-harness-install-mode-clean-audit.spec.md`)
 - [x] Optional ws-preview dry-run gate in ws-ship-pr before Create PR (`spec: 0089-ws-preview-before-ship-gate.spec.md`)
-- [ ] Muse Code harness adaptation for ws-spec-to-pr workflows on muse-spark agents (`spec: 0090-muse-code-harness-adaptation.spec.md`)
-- [ ] Revamp website visual and template with docs-style layout (`spec: 0091-website-visual-revamp.spec.md`)
-- [ ] ws-spec-to-pr: parameter override for modelsPreset on workflow invocation (`spec: 0092-models-preset-override.spec.md`)
+- [x] Muse Code harness adaptation for ws-spec-to-pr workflows on muse-spark agents (`spec: 0090-muse-code-harness-adaptation.spec.md`)
+- [x] Revamp website visual and template with docs-style layout (`spec: 0091-website-visual-revamp.spec.md`)
+- [x] ws-spec-to-pr: parameter override for modelsPreset on workflow invocation (`spec: 0092-models-preset-override.spec.md`)
 - [x] Step-Level Baton Handoffs for Multi-CLI Workflow Runs (`spec: 0094-step-baton-multi-agent-runs.spec.md`)
 - [x] ws-wiki: verbosity/prose-style option + richer conditional page template (`spec: 0080-us-324.spec.md`)
 - [x] Fix stale autoload keyword-map prose for scm-provider-contract path (`spec: 0081-us-328.spec.md`)
@@ -280,15 +280,15 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 
 | 91 | `ws-wiki-sync-baseline` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-wiki Sync Baseline incremental watermark |
 
-| 92 | `ws-check-harness-install-mode-clean-audit` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-check-harness install-mode detection and upstream clean-audit invariant |
+| 92 | `ws-check-harness-install-mode-clean-audit` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-check-harness install-mode detection and upstream clean-audit invariant |
 
 | 93 | `ws-preview-before-ship-gate` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Optional ws-preview dry-run gate in ws-ship-pr before Create PR |
 
-| 94 | `muse-code-harness-adaptation` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Muse Code harness adaptation for ws-spec-to-pr workflows on muse-spark agents |
+| 94 | `muse-code-harness-adaptation` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Muse Code harness adaptation for ws-spec-to-pr workflows on muse-spark agents |
 
-| 95 | `website-visual-revamp` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Revamp website visual and template with docs-style layout |
+| 95 | `website-visual-revamp` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Revamp website visual and template with docs-style layout |
 
-| 96 | `models-preset-override` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-to-pr: parameter override for modelsPreset on workflow invocation |
+| 96 | `models-preset-override` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-to-pr: parameter override for modelsPreset on workflow invocation |
 
 | 97 | `step-baton-multi-agent-runs` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Step-Level Baton Handoffs for Multi-CLI Workflow Runs |
 
@@ -394,6 +394,10 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 | 2026-09-18 | `us-344` | change website cta / main slug/slogan | [PR #346](https://github.com/jpolvora/workflow-skills/pull/346) |
 | 2026-09-18 | `us-347` | ws-goal-fix-pr as orchestrator with per-round subagent dispatch | [PR #349](https://github.com/jpolvora/workflow-skills/pull/349) |
 | 2026-09-19 | `step-baton-multi-agent-runs` | Step-Level Baton Handoffs for Multi-CLI Workflow Runs | [PR #350](https://github.com/jpolvora/workflow-skills/pull/350) |
+| 2026-09-17 | `ws-check-harness-install-mode-clean-audit` | ws-check-harness install-mode detection and upstream clean-audit invariant | [PR #339](https://github.com/jpolvora/workflow-skills/pull/339) (`0eb52085`) |
+| 2026-09-17 | `muse-code-harness-adaptation` | Muse Code harness adaptation for ws-spec-to-pr workflows on muse-spark agents | [PR #340](https://github.com/jpolvora/workflow-skills/pull/340) (`9f4e59f3`) |
+| 2026-09-17 | `website-visual-revamp` | Revamp website visual and template with docs-style layout | [PR #341](https://github.com/jpolvora/workflow-skills/pull/341) (`a48f0d30`) |
+| 2026-09-17 | `models-preset-override` | ws-spec-to-pr: parameter override for modelsPreset on workflow invocation | [PR #345](https://github.com/jpolvora/workflow-skills/pull/345) (`95e8856f`) |
 
 ## 11. Maintenance checklist
 
