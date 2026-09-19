@@ -350,6 +350,28 @@ function resolveConfiguredPath(repoRoot, value, fallback) {
   return path.isAbsolute(raw) ? path.resolve(raw) : path.resolve(repoRoot, raw);
 }
 
+// Fail-closed project-config gate for config-dependent skills (AC5/NS3).
+// A globally invoked skill without a project hub must NOT silently read
+// global config as project config: throw with a ws-configure-project
+// pointer instead. Usable = project-sourced config file on disk with no
+// read/validation error. Returns the context unchanged on success.
+function requireProjectConfig(context) {
+  const root = path.resolve((context && context.repoRoot) || process.cwd());
+  const configPath = context && context.configPath ? path.resolve(context.configPath) : path.join(root, HUB_CONFIG);
+  const usable =
+    !!context &&
+    context.configSource === 'project' &&
+    !context.configError &&
+    fs.existsSync(configPath);
+  if (!usable) {
+    throw new Error(
+      `Project hub config missing (expected ${configPath}); run ws-configure-project to seed {sharedDir}/config.json — ` +
+      `refusing to use global config as project config (configSource: ${(context && context.configSource) || 'unknown'}).`,
+    );
+  }
+  return context;
+}
+
 // Resolved-context diagnostic shared by entrypoints and ws-monitor. It names
 // exactly which local/global source was selected without requiring the reader
 // to inspect host-private paths.
@@ -514,6 +536,7 @@ module.exports = {
   isResolutionStale,
   resolveSkillMdPath,
   resolveConfiguredPath,
+  requireProjectConfig,
   toRepoRelative,
   reportResolved,
   normalizeConfig,

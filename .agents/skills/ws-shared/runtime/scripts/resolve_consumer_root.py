@@ -324,6 +324,33 @@ def to_repo_relative(
         return absolute.name
 
 
+def require_project_config(context: dict) -> dict:
+    """Fail-closed project-config gate for config-dependent skills (AC5/NS3).
+
+    Mirror of the Node SoT requireProjectConfig(): a globally invoked skill
+    without a project hub must NOT silently read global config as project
+    config — raise with a ws-configure-project pointer instead. Returns the
+    context unchanged on success.
+    """
+    root = Path(context.get("repo_root") or Path.cwd()).resolve()
+    raw_path = context.get("config_path")
+    config_path = Path(raw_path).expanduser().resolve() if raw_path else (root / HUB_CONFIG)
+    usable = (
+        bool(context)
+        and context.get("config_source") == "project"
+        and not context.get("config_error")
+        and config_path.is_file()
+    )
+    if not usable:
+        raise ValueError(
+            f"Project hub config missing (expected {config_path}); run "
+            "ws-configure-project to seed {sharedDir}/config.json — refusing "
+            "to use global config as project config "
+            f"(config_source: {context.get('config_source') if context else 'unknown'})."
+        )
+    return context
+
+
 def resolve_consumer_context(
     override: str | os.PathLike[str] | None = None,
     *,

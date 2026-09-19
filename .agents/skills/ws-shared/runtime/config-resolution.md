@@ -118,7 +118,7 @@ Expand before tool calls. `{skillsRoot}` is **fixed install layout** (optional `
 
 ## SCM provider resolution (`providers.scm`)
 
-1. Read `providers.active` / `providers.scm` from `.ws/config.json`.
+1. Read `providers.active` / `providers.scm` from `{sharedDir}/config.json`.
 2. If `providers` absent: enabled GitHub tracker → `scm=github`; else enabled Azure DevOps → `scm=azure-devops`; else STOP (require explicit `providers.scm`). Prefer GitHub if both enabled.
 3. If `scm` absent: if active is `github`|`azure-devops` → scm=active; if active=`local` → parse `project.repoUrl` host (`github.com` → github; `dev.azure.com` / `visualstudio.com` → azure-devops); else STOP.
 4. Reject `scm: "local"` for PR/thread/merge intents.
@@ -152,7 +152,7 @@ Standalone invokes omit these; skills may present their own gates.
 
 Optional integration block for `fable-*` skills in `ws-spec-to-pr` / `ws-spec-to-pr-lite` workflows.
 
-1. Read `fable` object from `.ws/config.json`.
+1. Read `fable` object from `{sharedDir}/config.json`.
 2. Default in fresh `config.json.example`: `enabled: true`. Default if absent in legacy config: `enabled: false` (strictly opt-in).
 3. When `fable.enabled: true`:
    - `autoAudit` (default `true`): `ws-code-review` (Step 6) and `ws-plan-verify` (Step 5) run adversarial audit via `ws-fable-judge`.
