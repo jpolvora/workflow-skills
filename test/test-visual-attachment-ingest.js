@@ -41,7 +41,7 @@ const PNG_1X1 = Buffer.from(
 
 function createTempProject() {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-visual-ingest-'));
-  const shared = path.join(tmp, '.agents', 'skills', 'ws-shared');
+  const shared = path.join(tmp, '.ws');
   const specs = path.join(tmp, '.agents', 'specs');
   const plans = path.join(tmp, '.agents', 'plans');
   fs.mkdirSync(shared, { recursive: true });

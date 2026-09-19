@@ -239,7 +239,7 @@ Missing Business Rules & Logic section!
     assert(runtimeCatalog.includes('ws-wiki') && runtimeCatalog.includes('.agents/skills/ws-wiki/SKILL.md'), 'AC17: runtime/CATALOG.md registers ws-wiki');
     assert(runtimeCatalog.includes('`workflows` = 47'), 'AC17: runtime/CATALOG.md scope note has workflows = 47');
 
-    const autoloadPath = path.join(REPO_ROOT, '.agents/skills/ws-shared/autoload.md');
+    const autoloadPath = path.join(REPO_ROOT, '.ws/autoload.md');
     const autoload = fs.readFileSync(autoloadPath, 'utf8');
     assert(autoload.includes('ws-wiki'), 'AC17: autoload.md registers ws-wiki');
     assert(autoload.includes('{wikiDir} living domain pages'), 'AC17: autoload.md diagram uses {wikiDir}');
@@ -256,7 +256,7 @@ Missing Business Rules & Logic section!
     const skillContent = fs.readFileSync(skillPath, 'utf8');
     const syncCompanion = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'SYNC.md'), 'utf8');
     assert(syncCompanion.includes('user-gate') && syncCompanion.includes('Cancel') && syncCompanion.includes('STOP'), 'NS3: Cancel in review gate terminates ws-wiki without modifying files');
-    assert(skillContent.includes('ws-shared/config.json') && skillContent.includes('ws-configure-project'), 'NS4: Missing project configuration triggers entry check gate');
+    assert(skillContent.includes('.ws/config.json') && skillContent.includes('ws-configure-project'), 'NS4: Missing project configuration triggers entry check gate');
   }
 
   // Test 11: Slug safety and out-of-wiki containment
@@ -635,7 +635,7 @@ Missing Business Rules & Logic section!
 
     const emptyFrontendTmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-wiki-fromcode-'));
     try {
-      const hub = path.join(emptyFrontendTmp, '.agents', 'skills', 'ws-shared');
+      const hub = path.join(emptyFrontendTmp, '.ws');
       fs.mkdirSync(hub, { recursive: true });
       fs.writeFileSync(
         path.join(hub, 'config.json'),
@@ -658,7 +658,7 @@ Missing Business Rules & Logic section!
 
       const guardTmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-wiki-fromcode-guard-'));
       try {
-        const hub = path.join(guardTmp, '.agents', 'skills', 'ws-shared');
+        const hub = path.join(guardTmp, '.ws');
         fs.mkdirSync(hub, { recursive: true });
         fs.writeFileSync(
           path.join(hub, 'config.json'),

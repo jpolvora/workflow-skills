@@ -1,5 +1,18 @@
 const fs = require('fs');
-const { fetchRetry } = require('../../ws-shared/runtime/scripts/http_retry.cjs');
+const path = require('path');
+// us-351: managed runtime loads from its installed location: the upstream
+// package / global skills tree (<skills>/ws-shared) or the project consumer
+// hub (<repo>/.ws). Mirrors resolveConsumerContext runtimeSource precedence.
+const HUB_SCRIPTS_DIR = (() => {
+  const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
+  try {
+    require.resolve(path.join(packaged, 'resolve_consumer_root.cjs'));
+    return packaged;
+  } catch {
+    return path.resolve(__dirname, '..', '..', '..', '..', '.ws', 'runtime', 'scripts');
+  }
+})();
+const { fetchRetry } = require(path.join(HUB_SCRIPTS_DIR, 'http_retry.cjs'));
 
 const RESOLUTION_MARKER = '<!-- resolution-reply -->';
 const MODEL_FOOTER_PREFIX = 'LLM model:';

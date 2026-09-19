@@ -3,7 +3,7 @@
 This FAQ documents the canonical behavior of the modern **Spec-to-PR** (Steps 0–9) and **Spec-to-PR Lite** (Steps 0–5) orchestrated workflows.
 
 > **Architecture:**
-> - Shared config: [`.agents/skills/ws-shared/config.json`](../../ws-shared/config.json) (see [`config-resolution.md`](../../ws-shared/runtime/config-resolution.md))
+> - Shared config: [`.ws/config.json`](../../../../.ws/config.json) (see [`config-resolution.md`](../../ws-shared/runtime/config-resolution.md))
 > - Shared gates: [`gates.md`](../../ws-shared/runtime/gates.md)
 > - SCM intents: [`scm-provider-contract.md`](../../ws-shared/runtime/scm-provider-contract.md) (GitHub and Azure DevOps implement the same required intents)
 > - Dynamic paths: [Path tokens](../../ws-shared/runtime/tools.md#path-tokens) (`{plansDir}`, `{sharedDir}`, etc.)
@@ -220,9 +220,9 @@ Every step transition exposes:
 The Node state runtime writes `{workflow-id}.state.json` and the rendered `{workflow-id}.state.md` atomically, then publishes the repo-level plans index from that committed snapshot. `state.handoffs` contains compact per-step handoffs. Per-step JSONL records contain dispatch, finish, and bypass evidence. `plan.index.json` hash-checks plan slices, while `ac-ledger.json` links every acceptance criterion to observed files, tests, commits, findings, and sabotage results. The Step 5 score is derived from that ledger and cannot be overridden.
 
 ### Path Tokens
-All file references in workflow logs use bracketed path tokens which are resolved against `.agents/skills/ws-shared/config.json`:
+All file references in workflow logs use bracketed path tokens which are resolved against `.ws/config.json`:
 *   `{skillsRoot}`: Path to installation folder (default `.agents/skills`).
-*   `{sharedDir}`: Path to shared seeds (default `.agents/skills/ws-shared`).
+*   `{sharedDir}`: Path to shared seeds (default `.ws`).
 *   `{plansDir}`: Path to plans workspace (default `.agents/plans`).
 *   `{reviewsDir}`: Path to review summaries (default `.agents/codereviews`).
 *   `{us-dir}`: Path to specific US folder `{plansDir}/us-{id}`.

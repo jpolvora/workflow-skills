@@ -8,7 +8,7 @@ Goals:
 - Avoid each fix-pr run inventing a different REST call.
 
 Config preference:
-  1. `.agents/skills/ws-shared/config.json` → `issueTrackers.azureDevOps` + env PAT
+  1. `.ws/config.json` → `issueTrackers.azureDevOps` + env PAT
   2. Legacy `.agents/skills/azure-devops/azure-devops.config.json` (+ optional `.secret`)
 
 Usage:
@@ -32,7 +32,13 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
-_SHARED_SCRIPTS = Path(__file__).resolve().parents[2] / "ws-shared" / "runtime" / "scripts"
+# us-351: managed runtime loads from its installed location: the upstream
+# package / global skills tree (<skills>/ws-shared) or the project consumer
+# hub (<repo>/.ws). Mirrors resolveConsumerContext runtimeSource precedence.
+_SKILLS_DIR = Path(__file__).resolve().parents[2]
+_PACKAGED_SCRIPTS = _SKILLS_DIR / "ws-shared" / "runtime" / "scripts"
+_PROJECT_SCRIPTS = _SKILLS_DIR.parent.parent / ".ws" / "runtime" / "scripts"
+_SHARED_SCRIPTS = _PACKAGED_SCRIPTS if _PACKAGED_SCRIPTS.is_dir() else _PROJECT_SCRIPTS
 if str(_SHARED_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SHARED_SCRIPTS))
 from resolve_consumer_root import resolve_repo_root  # noqa: E402
@@ -90,6 +96,7 @@ def resolve_azdo_legacy_paths(repo_root: Path) -> tuple[Path, Path]:
 
 def load_spec_to_pr_ado_config(repo_root: Path) -> dict[str, Any] | None:
     for rel_path in (
+        Path(".ws") / "config.json",
         Path(".agents") / "skills" / "ws-shared" / "config.json",
         Path(".agents") / "skills" / "shared" / "config.json",
     ):
@@ -132,7 +139,7 @@ def load_azdo_config(repo_root: Path) -> tuple[str, str, str]:
     if not config_path.exists():
         raise SystemExit(
             "Configure issueTrackers.azureDevOps (org, project) in "
-            ".agents/skills/ws-shared/config.json, or create legacy "
+            ".ws/config.json, or create legacy "
             ".agents/skills/azure-devops/azure-devops.config.json."
         )
 

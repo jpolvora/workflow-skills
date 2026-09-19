@@ -4,7 +4,19 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
-const { resolveConsumerContext, toRepoRelative } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
+// us-351: managed runtime loads from its installed location: the upstream
+// package / global skills tree (<skills>/ws-shared) or the project consumer
+// hub (<repo>/.ws). Mirrors resolveConsumerContext runtimeSource precedence.
+const HUB_SCRIPTS_DIR = (() => {
+  const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
+  try {
+    require.resolve(path.join(packaged, 'resolve_consumer_root.cjs'));
+    return packaged;
+  } catch {
+    return path.resolve(__dirname, '..', '..', '..', '..', '.ws', 'runtime', 'scripts');
+  }
+})();
+const { resolveConsumerContext, toRepoRelative } = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
 
 const MARKERS = [
   'package.json',
@@ -66,7 +78,7 @@ function main() {
   const { command, options } = parseArgs(process.argv.slice(2));
   if (!['check', 'write'].includes(command)) throw new Error('command must be check or write');
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
-  const configured = context.config?.rules?.stackFile || '.agents/skills/ws-shared/STACK.md';
+  const configured = context.config?.rules?.stackFile || '.ws/STACK.md';
   const stackFile = path.resolve(context.repoRoot, options.stackFile || configured);
   const current = fingerprint(context.repoRoot);
   const parsed = fs.existsSync(stackFile) ? frontmatter(fs.readFileSync(stackFile, 'utf8')) : { data: {}, body: '# Stack\n' };

@@ -60,7 +60,7 @@ function runPy(args, opts = {}) {
 }
 
 function seedConsumerTree(root, { withLocalSkills = true, withAutoload = true } = {}) {
-  const shared = path.join(root, '.agents', 'skills', 'ws-shared');
+  const shared = path.join(root, '.ws');
   fs.mkdirSync(shared, { recursive: true });
   const template = fs.readFileSync(
     path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/autoload.md'),
@@ -127,7 +127,7 @@ function parseJsonOut(result) {
   const data = parseJsonOut(result);
   if (data) {
     const autoText = fs.readFileSync(
-      path.join(root, '.agents/skills/ws-shared/autoload.md'),
+      path.join(root, '.ws/autoload.md'),
       'utf8',
     );
     const rootText = fs.readFileSync(path.join(root, 'AGENTS.md'), 'utf8');
@@ -141,7 +141,7 @@ function parseJsonOut(result) {
       'consumer autoload rewrites skill-relative links',
     );
     assert(
-      rootText.includes('autoload.md') && rootText.includes('ws-shared/AGENTS.md'),
+      rootText.includes('autoload.md') && rootText.includes('.ws/AGENTS.md'),
       'root AGENTS.md references shared hub + autoload.md',
     );
     assert(
@@ -210,7 +210,7 @@ function parseJsonOut(result) {
       'global-only install emits {globalSkillsRoot} token paths',
     );
     const autoText = fs.readFileSync(
-      path.join(root, '.agents/skills/ws-shared/autoload.md'),
+      path.join(root, '.ws/autoload.md'),
       'utf8',
     );
     assert(
@@ -364,7 +364,7 @@ function parseJsonOut(result) {
     '--json',
   ]);
   assert(refused.status !== 0, 'AC11: Yes+non-generated root refuses without --force');
-  const cfgPath = path.join(root, '.agents/skills/ws-shared/config.json');
+  const cfgPath = path.join(root, '.ws/config.json');
   if (fs.existsSync(cfgPath)) {
     const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
     assert(
@@ -389,7 +389,7 @@ function parseJsonOut(result) {
   // Preserve consumer-customized Always-applied membership + triggers; only refresh paths.
   const root = mkTmp('ws-autoload-preserve-');
   seedConsumerTree(root, { withLocalSkills: true });
-  const autoPath = path.join(root, '.agents/skills/ws-shared/autoload.md');
+  const autoPath = path.join(root, '.ws/autoload.md');
   let autoText = fs.readFileSync(autoPath, 'utf8');
   autoText = autoText.replace(
     /(\| Skill \| Path \| Trigger \|\r?\n\|[-| ]+\|\r?\n)(?:\|.*\|\r?\n)+/,
@@ -438,7 +438,7 @@ function parseJsonOut(result) {
   // Swapped skill/path must warn even when both skills exist and path is portable.
   const root = mkTmp('ws-autoload-mismatch-');
   seedConsumerTree(root, { withLocalSkills: true });
-  const autoPath = path.join(root, '.agents/skills/ws-shared/autoload.md');
+  const autoPath = path.join(root, '.ws/autoload.md');
   let autoText = fs.readFileSync(autoPath, 'utf8');
   autoText = autoText.replace(
     /(\| Skill \| Path \| Trigger \|\r?\n\|[-| ]+\|\r?\n)(?:\|.*\|\r?\n)+/,
@@ -460,7 +460,7 @@ function parseJsonOut(result) {
   // Absolute-path detection covers Windows forward-slash and POSIX /opt roots.
   const root = mkTmp('ws-autoload-abspath-');
   seedConsumerTree(root, { withLocalSkills: true });
-  const autoPath = path.join(root, '.agents/skills/ws-shared/autoload.md');
+  const autoPath = path.join(root, '.ws/autoload.md');
   let autoText = fs.readFileSync(autoPath, 'utf8');
   autoText = autoText.replace(
     /(\| Skill \| Path \| Trigger \|\r?\n\|[-| ]+\|\r?\n)(?:\|.*\|\r?\n)+/,
@@ -485,7 +485,7 @@ function parseJsonOut(result) {
 }
 
 function seedConfigExample(root) {
-  const shared = path.join(root, '.agents', 'skills', 'ws-shared');
+  const shared = path.join(root, '.ws');
   fs.mkdirSync(path.join(shared, 'templates'), { recursive: true });
   fs.copyFileSync(
     path.join(REPO_ROOT, '.agents/skills/ws-shared/templates/config.json.example'),
@@ -510,10 +510,10 @@ function seedConfigExample(root) {
   const rootOmitted = mkTmp('ws-autoload-eff-omitted-');
   seedConsumerTree(rootOmitted, { withLocalSkills: true });
   seedConfigExample(rootOmitted);
-  const cfgPath = path.join(rootOmitted, '.agents/skills/ws-shared/config.json');
+  const cfgPath = path.join(rootOmitted, '.ws/config.json');
   const example = JSON.parse(
     fs.readFileSync(
-      path.join(rootOmitted, '.agents/skills/ws-shared/templates/config.json.example'),
+      path.join(rootOmitted, '.ws/templates/config.json.example'),
       'utf8',
     ),
   );
@@ -548,7 +548,7 @@ function seedConfigExample(root) {
   const data = parseJsonOut(result);
   if (data) {
     const cfg = JSON.parse(
-      fs.readFileSync(path.join(root, '.agents/skills/ws-shared/config.json'), 'utf8'),
+      fs.readFileSync(path.join(root, '.ws/config.json'), 'utf8'),
     );
     assert(cfg.defaults?.autoload === true, 'AC11: --set-autoload true writes defaults.autoload');
     assert(fs.existsSync(path.join(root, 'AGENTS.md')), 'AC11: true path writes root AGENTS.md');
@@ -574,7 +574,7 @@ function seedConfigExample(root) {
   const data = parseJsonOut(result);
   if (data) {
     const cfg = JSON.parse(
-      fs.readFileSync(path.join(root, '.agents/skills/ws-shared/config.json'), 'utf8'),
+      fs.readFileSync(path.join(root, '.ws/config.json'), 'utf8'),
     );
     assert(cfg.defaults?.autoload === false, 'AC11: --set-autoload false writes defaults.autoload');
     assert(!fs.existsSync(path.join(root, 'AGENTS.md')), 'AC11: false path does not require root');
@@ -640,13 +640,13 @@ function seedConfigExample(root) {
   seedConfigExample(root);
   const example = JSON.parse(
     fs.readFileSync(
-      path.join(root, '.agents/skills/ws-shared/templates/config.json.example'),
+      path.join(root, '.ws/templates/config.json.example'),
       'utf8',
     ),
   );
   example.defaults = { ...(example.defaults || {}), autoloadTaskLifecycle: false };
   fs.writeFileSync(
-    path.join(root, '.agents/skills/ws-shared/config.json'),
+    path.join(root, '.ws/config.json'),
     JSON.stringify(example, null, 2) + '\n',
     'utf8',
   );
@@ -654,7 +654,7 @@ function seedConfigExample(root) {
   const data = parseJsonOut(result);
   if (data) {
     const autoText = fs.readFileSync(
-      path.join(root, '.agents/skills/ws-shared/autoload.md'),
+      path.join(root, '.ws/autoload.md'),
       'utf8',
     );
     const alwaysTable =
@@ -689,11 +689,11 @@ function seedConfigExample(root) {
   const data = parseJsonOut(result);
   if (data) {
     const autoText = fs.readFileSync(
-      path.join(root, '.agents/skills/ws-shared/autoload.md'),
+      path.join(root, '.ws/autoload.md'),
       'utf8',
     );
     const cfg = JSON.parse(
-      fs.readFileSync(path.join(root, '.agents/skills/ws-shared/config.json'), 'utf8'),
+      fs.readFileSync(path.join(root, '.ws/config.json'), 'utf8'),
     );
     const alwaysTable =
       (autoText.match(
@@ -732,7 +732,7 @@ function seedConfigExample(root) {
   ]);
   const enabledData = parseJsonOut(enabled);
   const enabledTable =
-    ((fs.readFileSync(path.join(root, '.agents/skills/ws-shared/autoload.md'), 'utf8').match(
+    ((fs.readFileSync(path.join(root, '.ws/autoload.md'), 'utf8').match(
       /\| Skill \| Path \| Trigger \|\r?\n\|[-| ]+\|\r?\n((?:\|[^\r\n]*\|\r?\n)+)/,
     ) || [])[1] || '');
   assert(
@@ -749,7 +749,7 @@ function seedConfigExample(root) {
   ]);
   const disabledData = parseJsonOut(disabled);
   const disabledText = fs.readFileSync(
-    path.join(root, '.agents/skills/ws-shared/autoload.md'),
+    path.join(root, '.ws/autoload.md'),
     'utf8',
   );
   const disabledTable =
@@ -757,7 +757,7 @@ function seedConfigExample(root) {
       /\| Skill \| Path \| Trigger \|\r?\n\|[-| ]+\|\r?\n((?:\|[^\r\n]*\|\r?\n)+)/,
     ) || [])[1] || '';
   const cfg = JSON.parse(
-    fs.readFileSync(path.join(root, '.agents/skills/ws-shared/config.json'), 'utf8'),
+    fs.readFileSync(path.join(root, '.ws/config.json'), 'utf8'),
   );
   assert(
     disabled.status === 0 &&
@@ -830,9 +830,9 @@ function seedConfigExample(root) {
   ]);
   const data = parseJsonOut(result);
   if (data) {
-    const autoloadPath = path.join(root, '.agents/skills/ws-shared/autoload.md');
+    const autoloadPath = path.join(root, '.ws/autoload.md');
     const rootAgentsPath = path.join(root, 'AGENTS.md');
-    const hubPointerPath = path.join(root, '.agents/skills/ws-shared/AGENTS.md');
+    const hubPointerPath = path.join(root, '.ws/AGENTS.md');
     const autoloadText = fs.readFileSync(autoloadPath, 'utf8');
     const hubPointer = fs.readFileSync(hubPointerPath, 'utf8');
     const alwaysTableStart = autoloadText.indexOf('| Skill | Path | Trigger |');

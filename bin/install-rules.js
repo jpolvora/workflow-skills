@@ -136,7 +136,7 @@ export const INSTALLED_SKILLS_FILE = 'installed-skills.json';
 export const SKILL_INTEGRITY_LOCAL_FILE = 'skill-integrity-local.json';
 
 /**
- * Consumer-owned artifacts under ws-shared/ — never copy upstream content into consumers.
+ * Consumer-owned artifacts under the consumer hub — never copy upstream content into consumers.
  * Fresh install seeds empty templates; existing consumer files are preserved.
  */
 export const CONSUMER_OWNED_HUB_FILES = new Set(
@@ -181,7 +181,7 @@ export function shouldSkipInstallEntry(name) {
 }
 
 /**
- * True for manual backup/scratch files left in ws-shared/ (for example
+ * True for manual backup/scratch files left in the consumer hub (for example
  * `CATALOG.md.bak_20260907-1756` or `AGENTS.md.bak`). These are not managed
  * hub entries and are pruned during layout migration instead of failing update.
  */

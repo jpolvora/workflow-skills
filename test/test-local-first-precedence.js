@@ -40,7 +40,7 @@ function write(file, content) {
 }
 
 function writeConfig(root, config) {
-  write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify(config, null, 2));
+  write(path.join(root, '.ws/config.json'), JSON.stringify(config, null, 2));
 }
 
 function baseConfig(overrides = {}) {
@@ -84,13 +84,13 @@ check(localCtx.configError == null, 'valid local config sets no configError');
 // 3. Global fallback only when the local candidate is absent, and it stays observable.
 const bare = mkTmp('ws-precedence-bare-');
 const fallbackCtx = resolver.resolveConsumerContext({ repoRoot: bare, scriptFile: path.join(globalHub, 'ws-x/scripts/y.cjs') });
-check(fallbackCtx.configSource === 'global' || fallbackCtx.configPath.includes('.agents'), 'fallback path resolves observably');
+check(fallbackCtx.configSource === 'global' || String(fallbackCtx.configPath).includes('.ws'), 'fallback path resolves observably');
 const fallbackDiagnostic = resolver.resolveResolvedContext({ repoRoot: bare, scriptFile: path.join(globalHub, 'ws-x/scripts/y.cjs') });
 check(fallbackDiagnostic.configSource != null && fallbackDiagnostic.skillsSource != null, 'fallback source stays observable in resolved context');
 
 // 4. Present-but-malformed local config never silently falls back to global.
 const broken = mkTmp('ws-precedence-broken-');
-write(path.join(broken, '.agents/skills/ws-shared/config.json'), '{ not-json');
+write(path.join(broken, '.ws/config.json'), '{ not-json');
 const brokenCtx = resolver.resolveConsumerContext({ repoRoot: broken, scriptFile: path.join(globalHub, 'ws-x/scripts/y.cjs') });
 check(brokenCtx.configError != null, 'malformed local config surfaces configError');
 check(String(brokenCtx.configPath).includes('config.json'), 'malformed local config keeps the local path as source of record');
@@ -100,9 +100,9 @@ write(path.join(consumer, '.agents/skills/ws-demo/SKILL.md'), '# local body\n');
 write(path.join(globalHub, 'ws-demo/SKILL.md'), '# global body\n');
 const skillPath = resolver.resolveSkillMdPath({ repoRoot: consumer, globalSkillsRoot: globalHub }, 'ws-demo');
 check(String(skillPath).includes('.agents'), 'local skill body wins over global copy');
-fs.mkdirSync(path.join(consumer, '.agents/skills/ws-shared/runtime'), { recursive: true });
+fs.mkdirSync(path.join(consumer, '.ws/runtime'), { recursive: true });
 const runtimeCtx = resolver.resolveConsumerContext({ repoRoot: consumer, scriptFile: path.join(globalHub, 'ws-x/scripts/y.cjs') });
-check(String(runtimeCtx.runtimeSource).includes('.agents'), 'local runtime wins over global runtime');
+check(String(runtimeCtx.runtimeSource).includes('.ws'), 'local runtime wins over global runtime');
 
 // 6. Local specs/plans directories win in the resolved diagnostic.
 const diagnostic = resolver.resolveResolvedContext({ repoRoot: consumer, scriptFile: path.join(globalHub, 'ws-x/scripts/y.cjs'), slug: 'demo', workflowId: 'wf-demo' });
@@ -185,7 +185,7 @@ check(!unknown.some((finding) => finding.code === 'context-mismatch'), 'missing 
 
 // 10. Monitor surfaces unreadable local config instead of silently using global state.
 const unreadableRoot = mkTmp('ws-precedence-unreadable-');
-write(path.join(unreadableRoot, '.agents/skills/ws-shared/config.json'), '{ broken');
+write(path.join(unreadableRoot, '.ws/config.json'), '{ broken');
 const unreadableResult = runMonitor(['--repo-root', unreadableRoot, '--json'], unreadableRoot);
 if (unreadableResult.status !== 0) fail(`unreadable-config monitor run failed: ${unreadableResult.stderr || unreadableResult.stdout}`);
 else {

@@ -4,7 +4,19 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
-const { toRepoRelative, resolveConsumerContext } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
+// us-351: managed runtime loads from its installed location: the upstream
+// package / global skills tree (<skills>/ws-shared) or the project consumer
+// hub (<repo>/.ws). Mirrors resolveConsumerContext runtimeSource precedence.
+const HUB_SCRIPTS_DIR = (() => {
+  const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
+  try {
+    require.resolve(path.join(packaged, 'resolve_consumer_root.cjs'));
+    return packaged;
+  } catch {
+    return path.resolve(__dirname, '..', '..', '..', '..', '.ws', 'runtime', 'scripts');
+  }
+})();
+const { toRepoRelative, resolveConsumerContext } = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
 
 function hash(buffer) {
   return crypto.createHash('sha256').update(buffer).digest('hex');

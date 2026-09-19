@@ -26,7 +26,7 @@
     .\Edit-WorkflowSkillsConfig.ps1
 
 .EXAMPLE
-    powershell -ExecutionPolicy Bypass -File Edit-WorkflowSkillsConfig.ps1 -ConfigPath .agents/skills/ws-shared/config.json
+    powershell -ExecutionPolicy Bypass -File Edit-WorkflowSkillsConfig.ps1 -ConfigPath .ws/config.json
 #>
 
 param(
@@ -153,7 +153,7 @@ function Resolve-ConfigurationPaths {
     }
     else {
         $candidatesConfig = @(
-            (Join-Path $root '.agents/skills/ws-shared/config.json'),
+            (Join-Path $root '.ws/config.json'),
             (Join-Path $root 'config.json')
         )
         foreach ($cand in $candidatesConfig) {
@@ -163,7 +163,7 @@ function Resolve-ConfigurationPaths {
             }
         }
         if (-not $script:ActiveConfigPath) {
-            $script:ActiveConfigPath = [System.IO.Path]::GetFullPath((Join-Path $root '.agents/skills/ws-shared/config.json'))
+            $script:ActiveConfigPath = [System.IO.Path]::GetFullPath((Join-Path $root '.ws/config.json'))
         }
     }
 
@@ -1203,10 +1203,10 @@ function Populate-Sections {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.deliveryCommitArtifacts' -Key 'includeTestingReport' -LabelText 'Step 8 Delivery: Include Step 7 Test Report' -Type 'bool' -DefaultVal $false
             }
             'rules' {
-                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'harness' -LabelText 'Harness Rule Path' -Type 'path-file' -DefaultVal '.agents/skills/ws-shared/AGENTS.md'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'harness' -LabelText 'Harness Rule Path' -Type 'path-file' -DefaultVal '.ws/AGENTS.md'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'seniorDeveloper' -LabelText 'Senior Developer Gate Rule Path' -Type 'path-file' -DefaultVal '.agents/skills/ws-senior-developer/SKILL.md'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'karpathyGuidelines' -LabelText 'Karpathy Diff Hygiene Rule Path' -Type 'path-file' -DefaultVal '.agents/skills/ws-karpathy-guidelines/SKILL.md'
-                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'stackFile' -LabelText 'Project Stack File' -Type 'path-file' -DefaultVal '.agents/skills/ws-shared/STACK.md'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'stackFile' -LabelText 'Project Stack File' -Type 'path-file' -DefaultVal '.ws/STACK.md'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'changelogFile' -LabelText 'Project Changelog File' -Type 'path-file' -DefaultVal 'CHANGELOG.md'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'memoryDir' -LabelText 'Memory Files Directory ({memoryDir})' -Type 'path-folder' -DefaultVal '.'
 

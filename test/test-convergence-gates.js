@@ -6,13 +6,13 @@ const convergence = path.join(repoRoot, '.agents/skills/ws-goal-loop/scripts/con
 const fingerprint = path.join(repoRoot, '.agents/skills/ws-configure-project/scripts/stack_fingerprint.cjs');
 const merge = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/merge_verify_review.cjs');
 const root = temp('ws-convergence-');
-write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+write(path.join(root, '.ws/config.json'), JSON.stringify({
   plans: { dir: '.agents/plans' },
-  rules: { stackFile: '.agents/skills/ws-shared/STACK.md' },
+  rules: { stackFile: '.ws/STACK.md' },
   defaults: { gateGranularity: 'phase', convergence: { initialDelaySec: 0, minPollSec: 30, maxPollSec: 300, backoff: 2, maxIterations: 10 } },
   fable: { auditVerdictsBlockShip: 'refuted' },
 }));
-write(path.join(root, '.agents/skills/ws-shared/STACK.md'), '# Stack\n');
+write(path.join(root, '.ws/STACK.md'), '# Stack\n');
 write(path.join(root, 'package.json'), '{"name":"fixture"}\n');
 
 function observe(name, payload) {
@@ -54,7 +54,7 @@ assert.deepStrictEqual(merged.findings.map((item) => item.id), ['CR-1', 'V-1']);
 assert.strictEqual(merged.requiresFix, true);
 
 const rootMin10 = temp('ws-convergence-min10-');
-write(path.join(rootMin10, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+write(path.join(rootMin10, '.ws/config.json'), JSON.stringify({
   plans: { dir: '.agents/plans' },
   defaults: { minVerifyScore: 10 },
   fable: { auditVerdictsBlockShip: 'refuted' },
@@ -66,7 +66,7 @@ const mergedMin10 = JSON.parse(fs.readFileSync(path.join(rootMin10, 'merged-min1
 assert.strictEqual(mergedMin10.requiresFix, true, 'minVerifyScore 10 requires fix for score 9');
 
 const rootMin8 = temp('ws-convergence-min8-');
-write(path.join(rootMin8, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+write(path.join(rootMin8, '.ws/config.json'), JSON.stringify({
   plans: { dir: '.agents/plans' },
   defaults: { minVerifyScore: 8 },
   fable: { auditVerdictsBlockShip: 'refuted' },

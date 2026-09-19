@@ -14,10 +14,23 @@ import { fileURLToPath } from 'url';
 
 const require = createRequire(import.meta.url);
 const __doctorDir = path.dirname(fileURLToPath(import.meta.url));
+// us-351: managed runtime loads from its installed location: the upstream
+// package / global skills tree (<skills>/ws-shared) or the project consumer
+// hub (<repo>/.ws). Mirrors resolveConsumerContext runtimeSource precedence.
+function resolveHubScriptsDir() {
+  const packaged = path.resolve(__doctorDir, '..', '..', 'ws-shared', 'runtime', 'scripts');
+  try {
+    require.resolve(path.join(packaged, 'resolve_consumer_root.cjs'));
+    return packaged;
+  } catch {
+    return path.resolve(__doctorDir, '..', '..', '..', '..', '.ws', 'runtime', 'scripts');
+  }
+}
+const HUB_SCRIPTS_DIR = resolveHubScriptsDir();
 let resolveConsumerContext = null;
 try {
   ({ resolveConsumerContext } = require(
-    path.join(__doctorDir, '../../ws-shared/runtime/scripts/resolve_consumer_root.cjs'),
+    path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'),
   ));
 } catch {
   // Standalone ws-doctor installs may not include the optional shared hub runtime.
@@ -27,7 +40,7 @@ let retiredArtifactsModule = null;
 function getRetiredArtifactsModule() {
   if (retiredArtifactsModule) return retiredArtifactsModule;
   try {
-    retiredArtifactsModule = require(path.join(__doctorDir, '../../ws-shared/runtime/scripts/retired_artifacts.cjs'));
+    retiredArtifactsModule = require(path.join(HUB_SCRIPTS_DIR, 'retired_artifacts.cjs'));
   } catch {
     retiredArtifactsModule = {
       listRetiredConfigKeys(cfg) {
@@ -137,7 +150,7 @@ function usage() {
     '  --persist     Save a dated comparable artifact under plans.diagnosticsDir',
     '  --help        Show this help',
     '',
-    'Read-only diagnose of skillsRoot + project ws-shared config.',
+    'Read-only diagnose of skillsRoot + project shared-hub config.',
   ];
   console.log(lines.join('\n'));
 }
@@ -234,7 +247,7 @@ function loadJson(filePath) {
 }
 
 function resolveProjectSharedDir(projectRoot) {
-  return path.resolve(projectRoot, '.agents', 'skills', 'ws-shared');
+  return path.resolve(projectRoot, '.ws');
 }
 
 function resolveGlobalSkillsRoot() {
@@ -271,7 +284,7 @@ function buildTokenMap(projectRoot, config) {
 
   const skillsRootRel = (pt.skillsRoot && String(pt.skillsRoot).trim()) || '.agents/skills';
   const sharedDirRel =
-    (pt.sharedDir && String(pt.sharedDir).trim()) || '.agents/skills/ws-shared';
+    (pt.sharedDir && String(pt.sharedDir).trim()) || '.ws';
   const plansDirRel = (plans.dir && String(plans.dir).trim()) || '.agents/plans';
   const specsDirRel = (plans.specsDir && String(plans.specsDir).trim()) || '.agents/specs';
   const reviewsDirRel = (reviews.dir && String(reviews.dir).trim()) || '.agents/codereviews';
@@ -280,7 +293,7 @@ function buildTokenMap(projectRoot, config) {
   const sharedDirAbs = path.resolve(projectRoot, sharedDirRel);
   // Project hub always wins for config; keep absolute shared for hybrid clarity.
   const projectSharedAbs = resolveProjectSharedDir(projectRoot);
-  const effectiveSharedAbs = exists(projectSharedAbs) ? projectSharedAbs : sharedDirAbs;
+  const effectiveSharedAbs = exists(sharedDirAbs) ? sharedDirAbs : (exists(projectSharedAbs) ? projectSharedAbs : sharedDirAbs);
 
   const globalSkillsRoot = resolveGlobalSkillsRoot();
 

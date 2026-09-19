@@ -5,7 +5,7 @@ const classifier = path.join(repoRoot, '.agents/skills/ws-classify-complexity/sc
 const history = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/search_plan_history.cjs');
 const memory = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/check_memory_conflict.py');
 const root = temp('ws-classifier-history-');
-write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+write(path.join(root, '.ws/config.json'), JSON.stringify({
   plans: { dir: '.agents/plans' },
   dagThresholds: { maxImplementationSteps: 1, maxExpectedFiles: 1, maxLayers: 1 },
   defaults: { enableDag: true, skipTesting: false },
@@ -37,7 +37,7 @@ for (const key of ['pipeline', 'execMode', 'runInterview', 'runTesting', 'estima
 assert.strictEqual(payload.executionProfile.estimatedElapsedSec.value, 777);
 
 const liteComplexRoot = temp('ws-classifier-lite-complex-');
-write(path.join(liteComplexRoot, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+write(path.join(liteComplexRoot, '.ws/config.json'), JSON.stringify({
   plans: { dir: '.agents/plans' },
   dagThresholds: { maxImplementationSteps: 3, maxExpectedFiles: 6, maxLayers: 2 },
   defaults: { enableDag: false, skipTesting: false },

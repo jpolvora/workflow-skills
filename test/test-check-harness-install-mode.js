@@ -61,7 +61,7 @@ function writeLocalSkill(repoRoot, id, version = '0.4.32') {
 }
 
 function writeProjectHub(repoRoot) {
-  const shared = path.join(repoRoot, '.agents', 'skills', 'ws-shared');
+  const shared = path.join(repoRoot, '.ws');
   fs.mkdirSync(shared, { recursive: true });
   fs.writeFileSync(path.join(shared, 'config.json'), JSON.stringify({ plans: { dir: '.agents/plans' } }, null, 2), 'utf8');
   fs.writeFileSync(path.join(shared, 'AGENTS.md'), '# hub\n', 'utf8');

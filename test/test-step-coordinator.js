@@ -60,7 +60,7 @@ function makeRepo({ currentStep, completedSteps, stepRunners, runners, stepBaton
         .replaceAll('RECEIPT_PATH', receiptsFile),
     };
   }
-  write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(root, '.ws/config.json'), JSON.stringify({
     project: { name: 'coord-test', baseBranch: 'main' },
     plans: { dir: '.agents/plans' },
     verification: {},

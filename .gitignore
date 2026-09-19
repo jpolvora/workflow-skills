@@ -49,8 +49,8 @@ check-workflows-report.md
 .agents/plans/**/*.baseline/
 .agents/codereviews/PR*.md
 
-# ws-shared hub: consumer installs get templates/hub.gitignore written as .gitignore.
-# The upstream SoT tracks runtime/ and templates/ under ws-shared; package.json
+# Consumer hub (.ws/): installs get templates/hub.gitignore written as .ws/.gitignore.
+# The upstream SoT tracks runtime/ and templates/ under .agents/skills/ws-shared; package.json
 # excludes consumer-owned config/state from the npm tarball. Consumer defaults
 # track non-secret config.json and maintained STACK.md, while generated state and
 # installer metadata are ignored by the installed hub .gitignore.
@@ -62,4 +62,4 @@ benchmarks/runs/
 .active-session-id
 
 # Upstream dogfood probe cache (consumer-local gitignored state, never shipped upstream)
-.agents/skills/ws-shared/host-capabilities.json
+.ws/host-capabilities.json

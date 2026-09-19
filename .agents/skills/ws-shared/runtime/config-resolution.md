@@ -14,7 +14,7 @@ Resolve the project-local `{sharedDir}/config.json` before any config-dependent 
 ## Config path (only)
 
 ```text
-.agents/skills/ws-shared/config.json
+.ws/config.json
 ```
 
 Template: [`config.json.example`](../templates/config.json.example). Schema: [`config.schema.json`](config.schema.json).
@@ -24,7 +24,7 @@ Template: [`config.json.example`](../templates/config.json.example). Schema: [`c
 - `.agents/skills/ws-spec-to-pr/config.json`
 - `.agents/skills/ws-spec-to-pr-lite/config.json`
 
-Scripts and skills that still mention those paths are **bugs** — fix to `{sharedDir}/config.json` (expand per [tools.md](tools.md) § Path tokens; default `.agents/skills/ws-shared/config.json`). Lite and full always share this file (dual-mode).
+Scripts and skills that still mention those paths are **bugs** — fix to `{sharedDir}/config.json` (expand per [tools.md](tools.md) § Path tokens; default `.ws/config.json`). Lite and full always share this file (dual-mode).
 
 ---
 
@@ -33,8 +33,8 @@ Scripts and skills that still mention those paths are **bugs** — fix to `{shar
 When skills are executed from a global install (`$HOME/.agents/skills` or `WORKFLOW_SKILLS_GLOBAL_DIR`), they target the local repository at `$PWD`.
 
 - **Config-Dependent Skills** (`ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-spec-multi`, `ws-plan-write`, `ws-plan-interview`, `ws-plan-to-tasks`, `ws-implement-tasks`, `ws-plan-verify`, `ws-code-review`, `ws-testing`, `ws-ship-pr`, `ws-fix-pr`, `ws-goal-fix-pr`, providers):
-  - **Entry Gate:** Must verify `$PWD/.agents/skills/ws-shared/config.json` exists and is non-empty.
-  - **Missing Config:** If missing or unconfigured (`<...>` placeholders), trigger `user-gate` recommending running `ws-configure-project` (which seeds and populates `$PWD/.agents/skills/ws-shared/config.json`).
+  - **Entry Gate:** Must verify `$PWD/.ws/config.json` exists and is non-empty.
+  - **Missing Config:** If missing or unconfigured (`<...>` placeholders), trigger `user-gate` recommending running `ws-configure-project` (which seeds and populates `$PWD/.ws/config.json`).
 - **Config-Independent / Standalone Skills** (`ws-configure-project`, `ws-secrets-leak-review`, `ws-tdah`, `ws-write-a-skill`, `ws-spec-format`, `ws-check-harness`, `ws-megabrain`):
   - Run directly in any repository without requiring `config.json`.
 
@@ -42,9 +42,9 @@ When skills are executed from a global install (`$HOME/.agents/skills` or `WORKF
 
 ## Harness entrypoint fallback (global-hybrid)
 
-`rules.harness` defaults to the project-local `.agents/skills/ws-shared/AGENTS.md` (local-first; project config always overrides the global hub). On a global-hybrid install (skill bodies under `{globalSkillsRoot}`, project-local `ws-shared/` holding consumer data only), resolve the harness entrypoint in this order:
+`rules.harness` defaults to the project-local `.ws/AGENTS.md` (local-first; project config always overrides the global hub). On a global-hybrid install (skill bodies under `{globalSkillsRoot}`, project-local `.ws/` holding consumer data only), resolve the harness entrypoint in this order:
 
-1. Project-local `{sharedDir}/AGENTS.md` (`.agents/skills/ws-shared/AGENTS.md`) — the installer seeds a thin local pointer here when the file is missing, so the configured `rules.harness` path still resolves.
+1. Project-local `{sharedDir}/AGENTS.md` (`.ws/AGENTS.md`) — the installer seeds a thin local pointer here when the file is missing, so the configured `rules.harness` path still resolves.
 2. Global `{globalSkillsRoot}/ws-shared/AGENTS.md` (`~/.agents/skills` or `WORKFLOW_SKILLS_GLOBAL_DIR`) — documented fallback when no local file exists.
 3. Skill bodies via `resolveSkillMdPath` / `resolveConsumerContext` (`{sharedDir}/runtime/scripts/resolve_consumer_root.cjs`): project `{skillsRoot}/ws-<id>/SKILL.md` first, then `{globalSkillsRoot}/ws-<id>/SKILL.md`.
 
@@ -105,20 +105,20 @@ Load early with `toolsFile` (default `tools.md` § Path tokens).
 | Token | Source | Default |
 |-------|--------|---------|
 | `{skillsRoot}` | `pathTokens.skillsRoot` | `.agents/skills` |
-| `{sharedDir}` | `pathTokens.sharedDir` | `.agents/skills/ws-shared` |
+| `{sharedDir}` | `pathTokens.sharedDir` | `.ws` |
 | `{plansDir}` | `plans.dir` | `.agents/plans` |
 | `{specsDir}` | `plans.specsDir` | `.agents/specs` |
 | `{wikiDir}` | `plans.wikiDir` | `.agents/specs/wiki` |
 | `{reviewsDir}` | `reviews.dir` | `.agents/codereviews` |
 | `{memoryDir}` | `rules.memoryDir` | `.` (repo root) |
 
-Expand before tool calls. `{skillsRoot}` / `{sharedDir}` are **fixed install layout** (optional `pathTokens` in config for discoverability; not relocatable). `{plansDir}` / `{specsDir}` / `{wikiDir}` / `{reviewsDir}` / `{memoryDir}` remain consumer-configurable.
+Expand before tool calls. `{skillsRoot}` is **fixed install layout** (optional `pathTokens` in config for discoverability; not relocatable). `{sharedDir}` resolves to the project hub root (default `.ws`; explicit `pathTokens.sharedDir` wins when configured, with no fallback read of a previous hub location). `{plansDir}` / `{specsDir}` / `{wikiDir}` / `{reviewsDir}` / `{memoryDir}` remain consumer-configurable.
 
 ---
 
 ## SCM provider resolution (`providers.scm`)
 
-1. Read `providers.active` / `providers.scm` from `.agents/skills/ws-shared/config.json`.
+1. Read `providers.active` / `providers.scm` from `.ws/config.json`.
 2. If `providers` absent: enabled GitHub tracker → `scm=github`; else enabled Azure DevOps → `scm=azure-devops`; else STOP (require explicit `providers.scm`). Prefer GitHub if both enabled.
 3. If `scm` absent: if active is `github`|`azure-devops` → scm=active; if active=`local` → parse `project.repoUrl` host (`github.com` → github; `dev.azure.com` / `visualstudio.com` → azure-devops); else STOP.
 4. Reject `scm: "local"` for PR/thread/merge intents.
@@ -152,7 +152,7 @@ Standalone invokes omit these; skills may present their own gates.
 
 Optional integration block for `fable-*` skills in `ws-spec-to-pr` / `ws-spec-to-pr-lite` workflows.
 
-1. Read `fable` object from `.agents/skills/ws-shared/config.json`.
+1. Read `fable` object from `.ws/config.json`.
 2. Default in fresh `config.json.example`: `enabled: true`. Default if absent in legacy config: `enabled: false` (strictly opt-in).
 3. When `fable.enabled: true`:
    - `autoAudit` (default `true`): `ws-code-review` (Step 6) and `ws-plan-verify` (Step 5) run adversarial audit via `ws-fable-judge`.

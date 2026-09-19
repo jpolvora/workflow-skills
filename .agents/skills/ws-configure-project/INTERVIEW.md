@@ -32,10 +32,10 @@ Scan consumer **repo root** (not this skill package alone):
 | No app stack detected + `.agents/skills/` present | Suggest `verification.backendTest: "python .agents/skills/ws-check-workflows/scripts/check_workflows.py"` for harness validation |
 | `prisma/` / `drizzle` / `Migrations/` / compose DB services | `stack.database.*` hints |
 | Top-level `src/`, `web/`, `tests/` | `stack.backend.srcDir` / frontend `sourceDir` / test paths |
-| `.agents/skills/ws-shared/STACK.md` (preferred) | `rules.stackFile` → that path |
+| `.ws/STACK.md` (preferred) | `rules.stackFile` → that path |
 | Root `STACK.md` / `stack.md` (legacy optional) | Keep only if user already uses it; do not create or require |
 | Repo-root `CHANGELOG.md` (preferred default) | `rules.changelogFile` → `CHANGELOG.md` |
-| `.agents/skills/ws-shared/CHANGELOG.md` with entries | Keep as legacy fallback; offer move to the configured path |
+| `.ws/CHANGELOG.md` with entries | Keep as legacy fallback; offer move to the configured path |
 | Existing repo-root `specs/` | Keep `plans.specsDir: "specs"` |
 | No specs dir yet | Suggest `plans.specsDir: ".agents/specs"` |
 | Fable skills in `{skillsRoot}` | Suggest `fable.enabled: true` (**Recommended**), `autoAudit: true`, `autoDetectDomain: true`, `auditVerdictsBlockShip: "refuted"` |
@@ -297,7 +297,7 @@ Configure optional projection of canonical workflow skills into host-native spec
 
 - Merge into existing JSON; do not delete unknown keys.
 - Preserve `_comment*` keys from the example when present.
-- After write: show path `.agents/skills/ws-shared/config.json` and remind the user to track it only when it contains non-secret project settings.
+- After write: show path `.ws/config.json` and remind the user to track it only when it contains non-secret project settings.
 - Autoload writes: `defaults.autoload` and `defaults.autoloadTaskLifecycle` in `{sharedDir}/config.json`; `{sharedDir}/autoload.md` (Always-applied paths); repo-root `AGENTS.md` only when enablement is `true` (after user-gate) — installer never creates root `AGENTS.md`. `--set-autoload-task-lifecycle true` does not set `defaults.autoload`.
 - Preview writes: `preview.dryRunCommand` in `{sharedDir}/config.json` only (never commit). Cite inference source in the session summary when Accept inferred.
 - specMemo writes: `specMemo.*` in `{sharedDir}/config.json` only; optional `memo import` / `memo hook install` via `configure_spec_memo.cjs` when user opts in.

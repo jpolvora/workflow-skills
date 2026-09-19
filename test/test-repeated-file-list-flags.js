@@ -16,7 +16,7 @@ const update = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/update_
 
 function setupFixture(name) {
   const root = temp(name);
-  write(path.join(root, '.agents/skills/ws-shared/config.json'), JSON.stringify({
+  write(path.join(root, '.ws/config.json'), JSON.stringify({
     plans: { dir: '.agents/plans' },
     verification: {},
     defaults: {},

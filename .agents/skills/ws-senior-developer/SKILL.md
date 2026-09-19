@@ -17,7 +17,7 @@ Delivery gate and diff hygiene. Stop scope creep; surface assumptions; enforce r
 
 **Routing:** Named orch wins. For non-orch investigation without a plan, prefer [`ws-fable-method`](../ws-fable-method/SKILL.md) (Evidence→Act→Verify); do not run competing plan ceremony. Owns the **Code review proof** checklist (§5).
 
-When config-resolved: if `$PWD/.agents/skills/ws-shared/config.json` is missing, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) before relying on verification aliases.
+When config-resolved: if `$PWD/.ws/config.json` is missing, `user-gate` → run [`ws-configure-project`](../ws-configure-project/SKILL.md) before relying on verification aliases.
 
 ## Core Directives
 

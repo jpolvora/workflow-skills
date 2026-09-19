@@ -2029,10 +2029,10 @@ disable-model-invocation: true
         <span class="package-shortcut">Shortcut: <code>f</code></span>
       </div>
       <h4>Full Package</h4>
-      <p class="package-desc">Full package — selects every installable top-level skill and initializes the <code>ws-shared/</code> config/docs hub.</p>
+      <p class="package-desc">Full package — selects every installable top-level skill and initializes the consumer (<code>.ws/</code>) config/docs hub.</p>
       <div class="package-features">
         <div class="pkg-feat"><span>✓</span> Every top-level skill</div>
-        <div class="pkg-feat"><span>✓</span> Full <code>ws-shared/</code> config & docs hub</div>
+        <div class="pkg-feat"><span>✓</span> Full consumer (<code>.ws/</code>) config & docs hub</div>
         <div class="pkg-feat"><span>✓</span> Best for complete team environments</div>
       </div>
     </div>
@@ -2043,7 +2043,7 @@ disable-model-invocation: true
         <span class="package-shortcut">Shortcut: <code>w</code></span>
       </div>
       <h4>Workflows Package</h4>
-      <p class="package-desc">Workflows package — 46 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the <code>ws-shared/</code> hub.</p>
+      <p class="package-desc">Workflows package — 46 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the consumer (<code>.ws/</code>) hub.</p>
       <div class="package-preview">
         <strong>Included core skills:</strong> <code>ws-spec-to-pr</code>, <code>ws-spec-to-pr-lite</code>, <code>ws-spec-write</code>, <code>ws-classify-complexity</code>, <code>ws-plan-write</code>, <code>ws-plan-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, … (+38)
       </div>
@@ -2079,7 +2079,7 @@ disable-model-invocation: true
     <h2>Installation, Updates & Management</h2>
     <p class="section-subtitle">
       Canonical installation form: <code>npx --yes github:jpolvora/workflow-skills</code>.
-      Preserves consumer-owned files under <code>.agents/skills/ws-shared/</code>.
+      Preserves consumer-owned files under <code>.ws/</code>.
     </p>
   </div>
 
@@ -2162,7 +2162,7 @@ description: Spec-driven harness and workflow skills router
 globs: .agents/**/*, **/*.spec.md
 ---
 # Workflow Skills Harness
-Read .agents/skills/ws-shared/AGENTS.md for project configuration and task routing.
+Read .ws/AGENTS.md for project configuration and task routing.
 Follow ws-spec-to-pr for standard pipeline, or ws-spec-to-pr-lite for low-complexity changes.">Copy</button>
           </div>
           <pre class="env-code-block"><code>---
@@ -2170,7 +2170,7 @@ description: Spec-driven harness and workflow skills router
 globs: .agents/**/*, **/*.spec.md
 ---
 # Workflow Skills Harness
-Read .agents/skills/ws-shared/AGENTS.md for project configuration and task routing.
+Read .ws/AGENTS.md for project configuration and task routing.
 Follow ws-spec-to-pr for standard pipeline, or ws-spec-to-pr-lite for low-complexity changes.</code></pre>
         </div>
       </div>
@@ -2182,7 +2182,7 @@ Follow ws-spec-to-pr for standard pipeline, or ws-spec-to-pr-lite for low-comple
             <button type="button" class="cmd-copy-btn" data-copy='{
   "$schema": "https://opencode.ai/schema.json",
   "instructions": [
-    ".agents/skills/ws-shared/AGENTS.md"
+    ".ws/AGENTS.md"
   ],
   "skills": {
     "local": ".agents/skills",
@@ -2193,7 +2193,7 @@ Follow ws-spec-to-pr for standard pipeline, or ws-spec-to-pr-lite for low-comple
           <pre class="env-code-block"><code>{
   "$schema": "https://opencode.ai/schema.json",
   "instructions": [
-    ".agents/skills/ws-shared/AGENTS.md"
+    ".ws/AGENTS.md"
   ],
   "skills": {
     "local": ".agents/skills",
@@ -2208,12 +2208,12 @@ Follow ws-spec-to-pr for standard pipeline, or ws-spec-to-pr-lite for low-comple
           <div class="env-snippet-top">
             <span>CLAUDE.md / settings</span>
             <button type="button" class="cmd-copy-btn" data-copy="# Claude Code Spec-Driven Instructions
-At session start, read .agents/skills/ws-shared/AGENTS.md.
+At session start, read .ws/AGENTS.md.
 Use `npx --yes github:jpolvora/workflow-skills` to update or install skills.
 All changes require a spec file under .agents/specs/*.spec.md.">Copy</button>
           </div>
           <pre class="env-code-block"><code># Claude Code Spec-Driven Instructions
-At session start, read .agents/skills/ws-shared/AGENTS.md.
+At session start, read .ws/AGENTS.md.
 Use `npx --yes github:jpolvora/workflow-skills` to update or install skills.
 All changes require a spec file under .agents/specs/*.spec.md.</code></pre>
         </div>
@@ -2224,12 +2224,12 @@ All changes require a spec file under .agents/specs/*.spec.md.</code></pre>
           <div class="env-snippet-top">
             <span>AGENTS.md / .agents/skills/</span>
             <button type="button" class="cmd-copy-btn" data-copy="# Antigravity / Gemini CLI Instructions
-Load project settings from .agents/skills/ws-shared/config.json.
+Load project settings from .ws/config.json.
 When running multi-spec batches, invoke ws-spec-multi.
 Adhere to surgical code hygiene and verify ledger scoring.">Copy</button>
           </div>
           <pre class="env-code-block"><code># Antigravity / Gemini CLI Instructions
-Load project settings from .agents/skills/ws-shared/config.json.
+Load project settings from .ws/config.json.
 When running multi-spec batches, invoke ws-spec-multi.
 Adhere to surgical code hygiene and verify ledger scoring.</code></pre>
         </div>
@@ -2478,7 +2478,7 @@ npx --yes github:jpolvora/workflow-skills --global
       <div class="faq-answer">
         <div class="faq-answer-content">
           <p><strong>No!</strong> Workflow Skills maintains a strict separation between <em>managed skill files</em> and <em>consumer-owned project data</em>.</p>
-          <p>Files located under <code>.agents/skills/ws-shared/</code> — including <code>config.json</code>, <code>STACK.md</code>, <code>MEMORY.md</code>, memory entries, and <code>CHANGELOG.md</code> — are strictly preserved during all updates and uninstalls. Only managed <code>SKILL.md</code> definitions and skill scripts are updated from canonical upstream releases.</p>
+          <p>Files located under <code>.ws/</code> — including <code>config.json</code>, <code>STACK.md</code>, <code>MEMORY.md</code>, memory entries, and <code>CHANGELOG.md</code> — are strictly preserved during all updates and uninstalls. Only managed <code>SKILL.md</code> definitions and skill scripts are updated from canonical upstream releases.</p>
         </div>
       </div>
     </div>
@@ -2550,11 +2550,11 @@ npx --yes github:jpolvora/workflow-skills --global
       </button>
       <div class="faq-answer">
         <div class="faq-answer-content">
-          <p>You can run <code>ws-configure-project</code> or edit <code>.agents/skills/ws-shared/config.json</code> directly. Key configurable options include:</p>
+          <p>You can run <code>ws-configure-project</code> or edit <code>.ws/config.json</code> directly. Key configurable options include:</p>
           <ul>
             <li><code>plans.dir</code>: Target folder for workflow plans and execution artifacts (default: <code>.agents/plans</code>).</li>
             <li><code>providers.scm</code>: Active SCM provider (<code>github</code> via <code>gh</code> CLI, <code>azure-devops</code> via ADO PAT). Both implement the same required intents in <code>scm-provider-contract.md</code> (parity checked in <code>npm run test</code>). Hybrid: <code>providers.active: local</code> with <code>scm: github</code>.</li>
-            <li><code>rules.stackFile</code>: Path to project technology stack guidance (default: <code>.agents/skills/ws-shared/STACK.md</code>).</li>
+            <li><code>rules.stackFile</code>: Path to project technology stack guidance (default: <code>.ws/STACK.md</code>).</li>
             <li><code>verification.*</code>: Build, test, format, and optional mutation commands.</li>
             <li><code>preview.dryRunCommand</code>: Local pipeline review dry-run for <code>/ws-preview</code> (set via <code>/ws-configure-project --section preview</code>, which can infer from AGENTS/README/MEMORY/rules/scripts; empty until configured).</li>
             <li><code>defaults.testingModel</code>: Optional test-executor model for standard Step 7 (falls back to <code>executionModel</code>).</li>
@@ -2575,7 +2575,7 @@ npx --yes github:jpolvora/workflow-skills --global
       <div class="faq-answer">
         <div class="faq-answer-content">
           <p><code>ws-preview</code> does not ship a reviewer backend. It runs whatever command you set in <code>preview.dryRunCommand</code> from the consumer repo root, and never publishes PR threads.</p>
-          <p>Recommended setup: <code>/ws-configure-project --section preview</code>. The wizard infers candidates from <code>AGENTS.md</code>, <code>README.md</code>, <code>MEMORY</code>, <code>rules.*</code>, <code>package.json</code> scripts, and local skills, then asks you to accept, edit, or leave empty. You can also edit <code>.agents/skills/ws-shared/config.json</code> directly (see <code>config.json.example</code>).</p>
+          <p>Recommended setup: <code>/ws-configure-project --section preview</code>. The wizard infers candidates from <code>AGENTS.md</code>, <code>README.md</code>, <code>MEMORY</code>, <code>rules.*</code>, <code>package.json</code> scripts, and local skills, then asks you to accept, edit, or leave empty. You can also edit <code>.ws/config.json</code> directly (see <code>config.json.example</code>).</p>
         </div>
       </div>
     </div>
@@ -2592,7 +2592,7 @@ npx --yes github:jpolvora/workflow-skills --global
       <div class="faq-answer">
         <div class="faq-answer-content">
           <p>Yes. Both SCM providers implement the same required intents: <code>validate-auth</code>, <code>fetch-to-spec</code>, <code>create-pr</code>, <code>list-threads</code>, <code>sweep-prior-work</code>, <code>check-pr-status</code>, <code>resolve-thread</code>, <code>comment-issue</code>, and <code>merge-pr</code>.</p>
-          <p>The contract lives in <code>.agents/skills/ws-shared/runtime/scm-provider-contract.md</code>. Host CLI recipes stay inside each provider. An extra intent on one side without the other (and without an allowlist row) fails <code>npm run test</code> via <code>test/test-provider-parity.js</code>.</p>
+          <p>The contract lives in <code>.ws/runtime/scm-provider-contract.md</code>. Host CLI recipes stay inside each provider. An extra intent on one side without the other (and without an allowlist row) fails <code>npm run test</code> via <code>test/test-provider-parity.js</code>.</p>
           <p>The local spec provider is not an SCM implementer. It registers specs and delegates PR intents to <code>providers.scm</code>.</p>
         </div>
       </div>

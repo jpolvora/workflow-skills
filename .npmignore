@@ -11,12 +11,12 @@ src/skills/ws-shared/memory/**
 !src/skills/ws-shared/STACK.md.example
 !src/skills/ws-shared/config.json.example
 
-.agents/skills/ws-shared/config.json
-.agents/skills/ws-shared/config.local.json
-.agents/skills/ws-shared/STACK.md
-.agents/skills/ws-shared/MEMORY.md
-.agents/skills/ws-shared/CHANGELOG.md
-.agents/skills/ws-shared/memory/**
+.ws/config.json
+.ws/config.local.json
+.ws/STACK.md
+.ws/MEMORY.md
+.ws/CHANGELOG.md
+.ws/memory/**
 .agents/skills/**/runs/**
 .agents/skills/**/.runtime/**
 .agents/skills/**/.audit-session-*.json

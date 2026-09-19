@@ -402,7 +402,7 @@ assert(/preset=<name>/.test(dispatch), 'STEP-DISPATCH documents preset=<name>');
 assert(/preset=<name>/.test(liteSkill), 'ws-spec-to-pr-lite SKILL.md documents preset=<name>');
 
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-models-preset-'));
-const tempShared = path.join(tempRoot, '.agents/skills/ws-shared');
+const tempShared = path.join(tempRoot, '.ws');
 fs.mkdirSync(tempShared, { recursive: true });
 fs.writeFileSync(
   path.join(tempShared, 'config.json'),

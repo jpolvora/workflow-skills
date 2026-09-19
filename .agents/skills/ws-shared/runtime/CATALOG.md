@@ -2,7 +2,7 @@
 
 **Audience: agents.** Load this file when you need the full skill inventory or intent→skill router tables. Do **not** load it every prompt. Root `AGENTS.md` keeps progressive-disclosure rules; this companion holds the indexes.
 
-Path tokens: expand via `.agents/skills/ws-shared/runtime/tools.md` before tool calls.
+Path tokens: expand via `runtime/tools.md` before tool calls.
 
 ## Skill catalog (layers)
 
@@ -107,7 +107,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Implement | `ws-implement-tasks` |
 | Engineering delivery gate / Code review proof | This file § [2. Delivery gate](#2-delivery-gate-ws-senior-developer) (live `ws-senior-developer` only when authoring that skill) |
 | Verify / check-implementation / verify score | `ws-plan-verify` (advance at `defaults.minVerifyScore` (default 9); `scoreAndRefine` below) |
-| SCM intent contract / GitHub vs Azure parity | [`scm-provider-contract.md`](.agents/skills/ws-shared/runtime/scm-provider-contract.md) — then one provider skill |
+| SCM intent contract / GitHub vs Azure parity | [`scm-provider-contract.md`](scm-provider-contract.md) — then one provider skill |
 | Local code review | `ws-code-review` |
 | Secrets / leaks | `ws-secrets-leak-review` |
 | Adversarial audit / fraud scan | `ws-fable-judge` |
@@ -163,12 +163,12 @@ Install via `using-superpowers` / `find-skills` until routed here.
 
 ### Upstream developer workflow (this repo only)
 
-**Local project rule** for agents in `jpolvora/workflow-skills`. Consumers dogfood the same skills via install but follow [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) — not this section.
+**Local project rule** for agents in `jpolvora/workflow-skills`. Consumers dogfood the same skills via install but follow [`.ws/AGENTS.md`](../../../../.ws/AGENTS.md) — not this section.
 
 #### Skill tree (authoritative source)
 
 - **Develop and test** under **`.agents/skills/ws-*`** — pipeline, providers, utilities, and hub templates shipped with skills. This is the **only** upstream skill-content SoT (see § [Skill SoT, install scopes & config override](#skill-sot-install-scopes--config-override-mandatory)). Host-listed `{globalSkillsRoot}/ws-*` duplicates: § [Global vs local `ws-*` (this repo only — mandatory)](#global-vs-local-ws--this-repo-only--mandatory) (default invoke global; edit local only).
-- **Consumer hub data** under **`.agents/skills/ws-shared/`** in this repo (`config.json`, MEMORY, STACK, memory, installed-skills) stays local/temp consumer-style data — never published as skill SoT.
+- **Consumer hub data** under **`.ws/`** in this repo (`config.json`, MEMORY, STACK, memory, installed-skills) stays local/temp consumer-style data — never published as skill SoT.
 - **Package and publish** from `.agents/skills/ws-*` via the installer/CLI (`bin/cli.js`, `bin/skill-dependencies.json`, `bin/skill-integrity.json`) into consumer **project-local** (`.agents/skills`) or **global** (`$HOME/.agents/skills`) installs.
 - **Lasting changes** belong in upstream PRs (`develop` → `main`); consumer copies are managed and overwritten on `update` (project `ws-shared` consumer data preserved).
 
@@ -178,7 +178,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 |-------|----------------|
 | Skill design, pruning & protocol rules (mandatory) | [`SKILL_AUTHORING.md`](.agents/skills/ws-write-a-skill/SKILL_AUTHORING.md) |
 | Portability, language, folder naming | This file § [Portability & harness neutrality](#portability--harness-neutrality-mandatory) |
-| Script launchers (`python` / `node` / `bash`) | [`ws-shared/runtime/tools.md`](.agents/skills/ws-shared/runtime/tools.md) § Script launchers |
+| Script launchers (`python` / `node` / `bash`) | [`runtime/tools.md`](tools.md) § Script launchers |
 | New or rewritten skills (markdown + scripts) | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) |
 | Spec shape / review | [`ws-spec-format`](.agents/skills/ws-spec-format/SKILL.md) |
 
@@ -213,7 +213,7 @@ Managed script calls use explicit launchers; do not rewrite skill scripts for sh
 | Harness integrity | `ws-check-harness` (Phases 0–5c) → 0 critical |
 | Workflow / FSM simulation | `ws-check-workflows`, or `python .agents/skills/ws-check-workflows/scripts/check_workflows.py` |
 | Secrets / PII scan | `ws-secrets-leak-review` |
-| Stack invariant static scan | `node .agents/skills/ws-shared/runtime/scripts/scan_stack_invariants.cjs [--stack <name>]` |
+| Stack invariant static scan | `node .ws/runtime/scripts/scan_stack_invariants.cjs [--stack <name>]` |
 | Adversarial audit of claimed work | `ws-fable-judge` |
 | External agentic reviewer (optional) | § [Local dry-run: agentic code reviewers](#local-dry-run-agentic-code-reviewers) |
 | PR review threads after ship | `ws-fix-pr` / `ws-goal-fix-pr` |
@@ -281,7 +281,7 @@ Print a board after each row (same ✅ / ❌ / ⏭ convention as [`ws-ship-pr/PR
 
 **Post-ship:** Do not merge while review threads are open or required checks are red. `ws-goal-fix-pr` owns the fix loop; `ws-ship-pr` merges only after convergence (unless `no-merge` / orch `stopBeforeFixPr`).
 
-*Note:* Consumers use [`ws-shared/AGENTS.md`](.agents/skills/ws-shared/AGENTS.md) § Recommended Feature Delivery Checklist — not this table.
+*Note:* Consumers use [`.ws/AGENTS.md`](../../../../.ws/AGENTS.md) § Recommended Feature Delivery Checklist — not this table.
 
 ---
 

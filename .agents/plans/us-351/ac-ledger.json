@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "revision": 1,
+  "workflowId": "us-351",
+  "slug": "us-351",
+  "specPath": ".agents/plans/us-351/step-00-us-351.spec.md",
+  "planIndexPath": null,
+  "declaredGaps": [],
+  "aliasResults": [],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "Fresh configure/install writes consumer shared data (config, hub files) under `{projectRoot}/.ws` with the same tree structure — verified by running the configure flow in a fixture repo and listing the tree.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC2",
+      "text": "All skill bodies, runtime scripts, docs, and manifests resolve the shared dir from the new location with zero remaining references to the old default path — verified by grepping the repo for the old path segments (allowlisted historical/compat notes only).",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC3",
+      "text": "Local and global installs both work against the new location (local project hub wins; global fallback only when the project hub is absent) — verified by hybrid-mode install tests.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC4",
+      "text": "The new folder is committable by default (not in default `.gitignore`; installer does not ignore it) — verified by installer output plus `git status` showing the folder as candidate changes.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC5",
+      "text": "Integrity generation/verification and harness checks pass on the new layout — verified by `npm run generate-integrity`, `npm run verify-integrity`, and `test/test-harness-clean.js` exit 0.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Any non-allowlisted reference to the old shared path must fail the sweep test — red until the last reference moves.",
+      "tests": [],
+      "linkEventIds": []
+    },
+    {
+      "id": "NS2",
+      "text": "Global-only install resolving a project hub from the old location must fail — red on stale fallback.",
+      "tests": [],
+      "linkEventIds": []
+    },
+    {
+      "id": "NS3",
+      "text": "Installer run that git-ignores `.ws` by default must fail — red on policy regression.",
+      "tests": [],
+      "linkEventIds": []
+    },
+    {
+      "id": "NS4",
+      "text": "Integrity verification against the old layout manifest must fail after regeneration — red on manifest skew.",
+      "tests": [],
+      "linkEventIds": []
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": null
+}

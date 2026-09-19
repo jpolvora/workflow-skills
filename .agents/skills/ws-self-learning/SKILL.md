@@ -15,7 +15,7 @@ invocation_names:
 
 **Bidirectional gate** — MEMORY is both input (avoid known traps) and output (record new ones).
 
-Expand path tokens first ([`tools.md`](../ws-shared/runtime/tools.md) § Path tokens): `{sharedDir}` → `.agents/skills/ws-shared`, `{skillsRoot}` → `.agents/skills`, `{memoryDir}` → `rules.memoryDir` (default repo root `.`).
+Expand path tokens first ([`tools.md`](../ws-shared/runtime/tools.md) § Path tokens): `{sharedDir}` → `.ws`, `{skillsRoot}` → `.agents/skills`, `{memoryDir}` → `rules.memoryDir` (default repo root `.`).
 
 Consumer-owned memory routing is configured via `config.json` (`enableMemoryFiles` and `enableSpecMemoIntegration`):
 
