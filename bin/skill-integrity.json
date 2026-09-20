@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "827e930f1b89245acaa64f297aa5f9135690fca7b972227d1d6c4ca645d9ef1f",
+  "fullPackageDigest": "da120ce2c6c6fb9c968140326ca084498adb6434db96e80dd854e7bad6934214",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -43,7 +43,7 @@
       "runtime/scripts/step_baton.cjs": "d18f4bd9cf4720c6bf5d3322c8a143a64c94593cce480f4577341f294645d071",
       "runtime/scripts/validate_json_schema.cjs": "c6901a6ad2ed4fde4e5a6fcd85ebaa8b4c31f5707924f2928d25392d502dbbd9",
       "runtime/scripts/workflow_state.cjs": "c901bd6504cdc14ee057ac480edb0cf546583c0f0609acf1eed77ec6363ed0d9",
-      "runtime/setup.md": "1cb2f17780a2812b68d66afcde83ee7331a81660767b1902d0ccc2afbdaca4c3",
+      "runtime/setup.md": "365984d128d72f189bc2e630ab972a1b58471b33b5d94606e8364f1355651402",
       "runtime/skill-dependencies.json": "3272091ff22566c9bdc638f4055a3ae3b3120c7ca68903221fab20a443e9ca2d",
       "runtime/stacks/abp-angular.md": "fc728fb3d39373b91f7bb4e0a719a24abc995a643fd55c856603a2a1f7bfd742",
       "runtime/stacks/nextjs-react.md": "a852fc0db314c4b99c0d1e7e0a16978bd30df732480536aebe82982a72e09bad",
@@ -58,7 +58,7 @@
       "templates/MEMORY.md.template": "1a604cb2184c9c54cfb24a2da547d3664bc5d4d8e713ffa937c3c3083c21340d",
       "templates/STACK.md.example": "829b7d3fce62b8167905fc1d921ee744db1d7e8ef895b0e7eb969f089973bebd"
     },
-    "skillDigest": "177d35ab834d3b93e06d50360558c3815ac81b48b27f8e39c816c14a583da984"
+    "skillDigest": "c4fcbd391d545ff176de45f921aac223dd516c6597bec950a09d5a77ae7ee1f9"
   },
   "packageVersion": "0.4.44",
   "skills": {
@@ -116,11 +116,11 @@
     "ws-classify-complexity": {
       "files": {
         "evals/evals.json": "504884fb9b89dec24d41c219daa4a093bfff24832dbdb8f30ab704cc09fec88e",
-        "references/THRESHOLDS.md": "9062f27ada6927089c22fea0fafce9deb8f8b85c9f133b8ee799afd90b6456b7",
+        "references/THRESHOLDS.md": "7bec00ba9f0da8f5c9afb51c0d571a1124b382c67e6997949b2668714544b403",
         "scripts/classify.cjs": "be15f9ff57a45275ad3b9bd14aeb2bc9240a8d9a33a16fe60c1c51f3508c8aa0",
         "SKILL.md": "57df9de256c7c2aee1619e2a34f23ec8f23e2f4dde7fd235ab1408b8d2f93edf"
       },
-      "skillDigest": "35f46e526966bfae56e59519c99dea594852c94497099030493cdb1deeeb6e4d"
+      "skillDigest": "0cf8a583b883e78d5992160fec7c147d5c159b4a15115568fd7da4d491fe16d6"
     },
     "ws-cleanup": {
       "files": {

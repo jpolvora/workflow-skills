@@ -12,7 +12,7 @@ Heuristic (when scores present): uniform high scores (mean ≥ 8, low variance) 
 
 ## Threshold source
 
-`{sharedDir}/config.json` → `dagThresholds` (defaults in `{sharedDir}/templates/config.json.example`):
+`{sharedDir}/config.json` → `dagThresholds` (defaults in `{skillsRoot}/ws-shared/templates/config.json.example` when the project-local skills tree exists, else `{sharedDir}/templates/` or `{globalSkillsRoot}/ws-shared/templates/`):
 
 | Key | Default | Compared metric |
 |-----|---------|-----------------|
