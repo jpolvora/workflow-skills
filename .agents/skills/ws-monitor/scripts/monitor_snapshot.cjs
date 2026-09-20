@@ -4,39 +4,40 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { StringDecoder } = require('string_decoder');
 // Managed runtime loads from its skills installation: the project-local
 // skills tree ({skillsRoot}/ws-shared) or the global skills tree
 // ({globalSkillsRoot}/ws-shared, override via WORKFLOW_SKILLS_GLOBAL_DIR).
-// An explicit WORKFLOW_SKILLS_SHARED_DIR selects the shared hub root
-// (<hub>/runtime/scripts is used). The project consumer hub (<repo>/.ws)
-// holds only local config variable files (config.json, STACK.md, memory,
-// changelog) and is not a managed-runtime source.
 const HUB_SCRIPTS_DIR = (() => {
-  const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
-  const candidates = [packaged];
-  const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
-  if (explicitShared && String(explicitShared).trim()) {
-    candidates.unshift(path.join(path.resolve(String(explicitShared).trim()), 'runtime', 'scripts'));
-  }
   try {
-    candidates.push(path.resolve(process.cwd(), '.agents', 'skills', 'ws-shared', 'runtime', 'scripts'));
+    return require('../../ws-shared/runtime/scripts/bootstrap_runtime.cjs').resolveHubScriptsDir(__dirname);
   } catch {
-    // Ignore cwd resolution failures; remaining candidates still apply.
-  }
-  const globalDir = process.env.WORKFLOW_SKILLS_GLOBAL_DIR;
-  const globalRoot = globalDir && String(globalDir).trim()
-    ? path.resolve(String(globalDir).trim())
-    : path.join(require('os').homedir(), '.agents', 'skills');
-  candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
-  for (const candidate of [...new Set(candidates)]) {
-    try {
-      require.resolve(path.join(candidate, 'resolve_consumer_root.cjs'));
-      return candidate;
-    } catch {
-      // Try the next candidate.
+    const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
+    const candidates = [packaged];
+    const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
+    if (explicitShared && String(explicitShared).trim()) {
+      candidates.unshift(path.join(path.resolve(String(explicitShared).trim()), 'runtime', 'scripts'));
     }
+    try {
+      candidates.push(path.resolve(process.cwd(), '.agents', 'skills', 'ws-shared', 'runtime', 'scripts'));
+    } catch {
+      // Ignore cwd resolution failures; remaining candidates still apply.
+    }
+    const globalDir = process.env.WORKFLOW_SKILLS_GLOBAL_DIR;
+    const globalRoot = globalDir && String(globalDir).trim()
+      ? path.resolve(String(globalDir).trim())
+      : path.join(os.homedir(), '.agents', 'skills');
+    candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
+    for (const candidate of [...new Set(candidates)]) {
+      try {
+        require.resolve(path.join(candidate, 'resolve_consumer_root.cjs'));
+        return candidate;
+      } catch {
+        // Try the next candidate.
+      }
+    }
+    return packaged;
   }
-  return packaged;
 })();
 const { spawnSync } = require('child_process');
 const {
@@ -234,6 +235,8 @@ function readBoundedTailText(file, maxBytes = TRANSCRIPT_LIMITS.maxBytesPerFile)
     : [file];
   const tailChunks = [];
   let totalBytes = 0;
+  const decoder = new StringDecoder('utf8');
+  let decodedText = '';
   try {
     for (const tailTarget of tailTargets) {
       const handle = fs.openSync(tailTarget, 'r');
@@ -243,13 +246,14 @@ function readBoundedTailText(file, maxBytes = TRANSCRIPT_LIMITS.maxBytesPerFile)
         const start = Math.max(0, stat.size - length);
         const buffer = Buffer.alloc(length);
         fs.readSync(handle, buffer, 0, length, start);
-        tailChunks.push(buffer);
+        decodedText += decoder.write(buffer);
         totalBytes += length;
       } finally {
         fs.closeSync(handle);
       }
     }
-    return { text: Buffer.concat(tailChunks).toString('utf8'), bytesRead: totalBytes, reason: null };
+    decodedText += decoder.end();
+    return { text: decodedText, bytesRead: totalBytes, reason: null };
   } catch (error) {
     return { text: null, bytesRead: 0, reason: error.message };
   }

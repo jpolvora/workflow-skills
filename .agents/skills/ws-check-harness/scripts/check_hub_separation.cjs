@@ -8,6 +8,7 @@
 // without requiring root AGENTS.md.
 
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 
 const SOT_HUB = ['.agents', 'skills', 'ws-shared', 'runtime', 'AGENTS.md'].join(path.sep);
@@ -60,7 +61,7 @@ function resolveConsumerHub(repoRoot, mode) {
   if (mode === 'upstream') return path.join(repoRoot, SOT_HUB);
   const globalRoot =
     process.env.WORKFLOW_SKILLS_GLOBAL_DIR ||
-    path.join(process.env.HOME || process.env.USERPROFILE || '', '.agents', 'skills');
+    path.join(os.homedir(), '.agents', 'skills');
   // Managed hub content lives only in the skills install (project-local, then
   // global). The consumer hub (.ws) never carries runtime copies.
   const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
