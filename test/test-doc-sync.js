@@ -45,18 +45,20 @@ const pkgVersion = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'
 assert.match(site, new RegExp(pkgVersion.replace(/\./g, '\\.')), `site includes package version ${pkgVersion}`);
 const taskLifecycle = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-task-lifecycle/SKILL.md'), 'utf8');
 assert.match(taskLifecycle, /featuresMdEnabled/, 'task-lifecycle honors tracking.featuresMdEnabled');
-// Hub autoload contract paths: keyword-map prose must use the runtime-prefixed
-// shared-dir token, and the generated consumer mirror must carry runtime/
-// prefixes on managed-hub sibling links so every relative target resolves.
+// Hub autoload contract paths: keyword-map prose must use the managed
+// skills-install runtime token, and the generated consumer mirror must carry
+// project-relative skills-install prefixes on managed-hub sibling links so
+// every relative target resolves.
 const runtimeAutoload = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/runtime/autoload.md'), 'utf8');
 const mirrorAutoload = fs.readFileSync(path.join(repoRoot, '.ws/autoload.md'), 'utf8');
-assert.match(runtimeAutoload, /\{sharedDir\}\/runtime\/scm-provider-contract\.md/, 'runtime autoload keyword-map prose uses runtime/ token');
-assert.doesNotMatch(runtimeAutoload.replaceAll('{sharedDir}/runtime/scm-provider-contract.md', ''), /\{sharedDir\}\/scm-provider-contract\.md/, 'runtime autoload has no bare contract prose');
-assert.match(mirrorAutoload, /\{sharedDir\}\/runtime\/scm-provider-contract\.md/, 'mirror autoload keyword-map prose uses runtime/ token');
+assert.match(runtimeAutoload, /\{skillsRoot\}\/ws-shared\/runtime\/scm-provider-contract\.md/, 'runtime autoload keyword-map prose uses the managed runtime token');
+assert.doesNotMatch(runtimeAutoload, /\{sharedDir\}\/runtime\//, 'runtime autoload never resolves through {sharedDir}/runtime');
+assert.match(mirrorAutoload, /\{skillsRoot\}\/ws-shared\/runtime\/scm-provider-contract\.md/, 'mirror autoload keyword-map prose uses the managed runtime token');
 for (const bare of ['](tools.md)', '](AGENTS.md)', '](scm-provider-contract.md)', '](gates.md)']) {
   assert.ok(!mirrorAutoload.includes(bare), `mirror autoload has no bare ${bare}`);
 }
+assert.ok(!mirrorAutoload.includes('](runtime/'), 'mirror autoload never links a .ws/runtime copy');
 for (const target of ['runtime/tools.md', 'runtime/AGENTS.md', 'runtime/scm-provider-contract.md', 'runtime/gates.md']) {
-  assert.ok(fs.existsSync(path.join(repoRoot, '.agents/skills/ws-shared', target)), `mirror link target exists in SoT runtime: ${target}`);
+  assert.ok(fs.existsSync(path.join(repoRoot, '.agents/skills/ws-shared', target)), `mirror link target exists in skills-tree runtime: ${target}`);
 }
 console.log('test-doc-sync: ok');

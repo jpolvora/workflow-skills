@@ -128,8 +128,8 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Project spec index init/sync/promote | `ws-spec-index` |
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
 | Bulk-import GH issues / ADO US → local specs | `ws-spec-from-provider` |
-| Session autoload set (which skills load every prompt) | [`{sharedDir}/runtime/autoload.md`](autoload.md) § Always-applied (a consumer root `AGENTS.md` may override membership) |
-| Specs keywords / which skill to invoke | [`{sharedDir}/runtime/autoload.md`](autoload.md) § Specs skill router |
+| Session autoload set (which skills load every prompt) | [`{skillsRoot}/ws-shared/runtime/autoload.md`](autoload.md) § Always-applied (a consumer root `AGENTS.md` may override membership) |
+| Specs keywords / which skill to invoke | [`{skillsRoot}/ws-shared/runtime/autoload.md`](autoload.md) § Specs skill router |
 | Package release tasks (deps, integrity, site) | Upstream source repo only — see root `CATALOG.md` |
 | Local code review / audits | `ws-code-review` (review `{base}...HEAD`; fix → re-review, max 3) |
 | Auto-update feature specs after code changes | `ws-spec-update` |
@@ -163,7 +163,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 
 ### Upstream authoring (source repo only)
 
-Package skill authoring, development commands, review commands, and the ship checklist live in the upstream repo's root `CATALOG.md` (authoring-only; not copied to consumer installs). Consumer delivery follows the installed `{sharedDir}/runtime/AGENTS.md` § Recommended Feature Delivery Checklist — not an upstream table here.
+Package skill authoring, development commands, review commands, and the ship checklist live in the upstream repo's root `CATALOG.md` (authoring-only; not copied to consumer installs). Consumer delivery follows the installed `{skillsRoot}/ws-shared/runtime/AGENTS.md` § Recommended Feature Delivery Checklist — not an upstream table here.
 
 ---
 

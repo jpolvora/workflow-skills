@@ -1,6 +1,6 @@
 ---
 name: ws-configure-project
-version: 0.4.45
+version: 0.4.46
 description: Project configuration wizard — detects project settings and interviews config.json sections (including preview.dryRunCommand and optional specMemo).
 invocation_names:
   - configure-project
@@ -13,9 +13,9 @@ invocation_names:
 
 Fill or refresh consumer `config.json` via detect → suggest → user-gate. Portable: no host-product names; paths use `{plansDir}` tokens after write.
 
-**Config path:** `{sharedDir}/config.json` (consumer-owned). Templates are under `{sharedDir}/templates/`; runtime contracts and scripts are under `{sharedDir}/runtime/`. Template: [`ws-shared/templates/config.json.example`](../ws-shared/templates/config.json.example). Schema: [`ws-shared/runtime/config.schema.json`](../ws-shared/runtime/config.schema.json).
+**Config path:** `{sharedDir}/config.json` (consumer-owned). Managed runtime contracts/scripts and setup templates live in the skills install: `{skillsRoot}/ws-shared/runtime/` and `{skillsRoot}/ws-shared/templates/` (global fallback `{globalSkillsRoot}/ws-shared/{runtime,templates}/`) — never `{sharedDir}/runtime/` or `{sharedDir}/templates/`. Template: [`ws-shared/templates/config.json.example`](../ws-shared/templates/config.json.example). Schema: [`ws-shared/runtime/config.schema.json`](../ws-shared/runtime/config.schema.json).
 
-**Hybrid behavior:** When this skill executes from a global skills root, it resolves runtime/templates from the executing global `ws-shared/` and writes only the consumer project's `{sharedDir}/config.json` (plus optional consumer-owned `STACK.md`, memory, changelog, and autoload outputs). When it executes from a project-local installation, it uses the local hub and updates that same local config without copying global files. The layout manifest is `{sharedDir}/runtime/hub-layout.json`.
+**Hybrid behavior:** When this skill executes from a global skills root, it resolves runtime/templates from the executing global `ws-shared/` and writes only the consumer project's `{sharedDir}/config.json` (plus optional consumer-owned `STACK.md`, memory, changelog, and autoload outputs). When it executes from a project-local installation, it uses the project skills install (`{skillsRoot}/ws-shared/`) and updates the local config without copying global files. The layout manifest is `{skillsRoot}/ws-shared/runtime/hub-layout.json`.
 
 **Callers:** standalone anytime; [`ws-shared/runtime/setup.md`](../ws-shared/runtime/setup.md) bootstrap step 1; post-install when user opts in.
 

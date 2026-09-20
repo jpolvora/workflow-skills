@@ -173,11 +173,11 @@ Explicit `--targets` (even `--targets canonical`) skips the interactive prompt a
 |------|------------------|
 | `.ws/config.json` | Track when non-secret; keep provider credentials as environment-variable references |
 | `.ws/STACK.md` | Track when maintained |
-| `.ws/runtime/` and `.ws/templates/` | Installer-managed; safe to omit from consumer commits |
+| `{skillsRoot}/ws-shared/runtime/`, `{skillsRoot}/ws-shared/templates/` | Installer-managed inside the skills install (global fallback `{globalSkillsRoot}/ws-shared/`); `.ws/` never holds `runtime/` or `templates/` |
 | `MEMORY.md`, `memory/`, `CHANGELOG.md` | Generated local state; ignore by default |
 | `installed-skills.json`, `skill-integrity-local.json`, `host-capabilities.json` | Installer/machine metadata; ignore |
 
-`ws-configure-project --auto --json` reports the same matrix from `runtime/hub-layout.json`.
+`ws-configure-project --auto --json` reports the same matrix from the managed `hub-layout.json` (in the skills install).
 
 #### Troubleshooting
 

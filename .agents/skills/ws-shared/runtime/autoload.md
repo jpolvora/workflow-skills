@@ -150,7 +150,7 @@ Load the named hub file or one skill. Do not load both SCM provider bodies to co
 
 | Keywords / phrases | Invoke |
 |--------------------|--------|
-| SCM parity, github vs azure intents, provider contract | `{sharedDir}/runtime/scm-provider-contract.md` then one provider |
+| SCM parity, github vs azure intents, provider contract | `{skillsRoot}/ws-shared/runtime/scm-provider-contract.md` then one provider |
 | verify score, check-implementation, scoreAndRefine | orch Step 5 / `ws-plan-verify` |
 
 ---

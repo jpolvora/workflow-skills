@@ -694,13 +694,14 @@ child.on('close', async (code) => {
     console.error(`❌ ... and ${contentMismatchCount - 5} more content mismatch(es).`);
   }
 
-  // us-351: managed hub content (runtime/ + templates/) installs at the
-  // consumer .ws/ root instead of the legacy skills-tree hub. Verify it
+  // Managed hub content (runtime/ + templates/) installs inside the skills
+  // tree ({skillsRoot}/ws-shared) and is never copied into `.ws/`. Verify it
   // mirrors the SoT and that the consumer entrypoint files were seeded.
   const testWsDir = path.join(__dirname, '.ws');
+  const testManagedHubDir = path.join(testSkillsDir, 'ws-shared');
   const hubPairs = [
-    ['runtime', path.join(rootSkillsDir, 'ws-shared', 'runtime'), path.join(testWsDir, 'runtime')],
-    ['templates', path.join(rootSkillsDir, 'ws-shared', 'templates'), path.join(testWsDir, 'templates')],
+    ['runtime', path.join(rootSkillsDir, 'ws-shared', 'runtime'), path.join(testManagedHubDir, 'runtime')],
+    ['templates', path.join(rootSkillsDir, 'ws-shared', 'templates'), path.join(testManagedHubDir, 'templates')],
   ];
   for (const [label, srcDir, destDir] of hubPairs) {
     if (!fs.existsSync(destDir)) {
@@ -734,6 +735,12 @@ child.on('close', async (code) => {
   for (const seed of ['AGENTS.md', 'autoload.md', 'config.json', 'STACK.md', 'installed-skills.json']) {
     if (!fs.existsSync(path.join(testWsDir, seed))) {
       console.error(`❌ Mismatch: Missing consumer hub file in target: .ws/${seed}`);
+      mismatch = true;
+    }
+  }
+  for (const banned of ['runtime', 'templates']) {
+    if (fs.existsSync(path.join(testWsDir, banned))) {
+      console.error(`❌ Mismatch: .ws/${banned} must not exist (managed content lives in .agents/skills/ws-shared/)`);
       mismatch = true;
     }
   }
@@ -811,8 +818,11 @@ child.on('close', async (code) => {
     fail('.ws/config.json.bak was not created on update');
   }
   const hubAfter = JSON.parse(fs.readFileSync(hubConfig, 'utf8'));
-  if (hubAfter.toolsFile !== 'runtime/tools.md') {
-    fail('.ws/config.json toolsFile not normalized on update');
+  if (hubAfter.toolsFile !== '../.agents/skills/ws-shared/runtime/tools.md') {
+    fail('.ws/config.json toolsFile not normalized to the managed runtime on update');
+  }
+  if (hubAfter.$schema !== '../.agents/skills/ws-shared/runtime/config.schema.json') {
+    fail('.ws/config.json $schema not normalized to the managed runtime on update');
   }
   if (!hubAfter.pathTokens?.sharedDir) {
     fail('.ws/config.json pathTokens not populated on update');
@@ -892,9 +902,9 @@ child.on('close', async (code) => {
     fail(`Installer must only write under .agents/skills/; found stray docs: ${strayDocs.join(', ')}`);
   }
   const sharedAgents = path.join(__dirname, '.ws', 'AGENTS.md');
-  const sharedRuntimeAgents = path.join(__dirname, '.ws', 'runtime', 'AGENTS.md');
+  const sharedRuntimeAgents = path.join(testSkillsDir, 'ws-shared', 'runtime', 'AGENTS.md');
   if (!fs.existsSync(sharedAgents) || !fs.existsSync(sharedRuntimeAgents)) {
-    fail('.ws/AGENTS.md not installed into consumer test/.ws/');
+    fail('.ws/AGENTS.md entrypoint + .agents/skills/ws-shared/runtime/AGENTS.md missing in consumer test/');
   }
   const sharedAgentsBody = fs.readFileSync(sharedAgents, 'utf8');
   const sharedRuntimeBody = fs.readFileSync(sharedRuntimeAgents, 'utf8');
@@ -904,8 +914,11 @@ child.on('close', async (code) => {
   if (!/Skill loading \(mandatory\)/i.test(sharedRuntimeBody)) {
     fail('Consumer ws-shared/runtime/AGENTS.md missing Skill loading section');
   }
-  if (!/runtime\/AGENTS\.md/i.test(sharedAgentsBody) || !/global-hybrid/i.test(sharedAgentsBody)) {
-    fail('Consumer ws-shared/AGENTS.md must point to the runtime contract');
+  if (!/ws-shared\/runtime\/AGENTS\.md/i.test(sharedAgentsBody)) {
+    fail('Consumer .ws/AGENTS.md must point to the managed runtime contract');
+  }
+  if (/\]\(runtime\/(?:AGENTS|CATALOG|tools|gates)\.md\)/i.test(sharedAgentsBody)) {
+    fail('Consumer .ws/AGENTS.md must not link a .ws/runtime copy');
   }
   if (!/ws-check-harness/i.test(sharedRuntimeBody) || !/ws-check-workflows/i.test(sharedRuntimeBody)) {
     fail('Consumer ws-shared/runtime/AGENTS.md must route ws-check-harness and ws-check-workflows');
@@ -917,13 +930,14 @@ child.on('close', async (code) => {
     }
   }
   // AC9 shims + local-spec scripts must ship to consumers.
-  // us-351: managed hub scripts install at <consumer>/.ws/, not the skills dir.
+  // Managed hub scripts install inside the skills tree at
+  // <consumer>/.agents/skills/ws-shared/, never under .ws/.
   for (const rel of [
     path.join('runtime', 'scripts', 'Edit-WorkflowSkillsConfig.ps1'),
     path.join('runtime', 'scripts', 'Edit-Config.bat')
   ]) {
-    if (!fs.existsSync(path.join(testWsDir, rel))) {
-      fail(`Provider/shim script missing in consumer install: .ws/${rel}`);
+    if (!fs.existsSync(path.join(testSkillsDir, 'ws-shared', rel))) {
+      fail(`Provider/shim script missing in consumer install: .agents/skills/ws-shared/${rel}`);
     }
   }
   for (const rel of [
@@ -1118,7 +1132,7 @@ child.on('close', async (code) => {
   ok(`Pipeline + provider skills present (${installedAfter.length} dirs; source has ${sourceSkills.length})`);
   // --- Phase 3: packed file smoke (local only) ---
   if (useLocal) {
-    const schemaInTest = path.join(testWsDir, 'runtime', 'config.schema.json');
+    const schemaInTest = path.join(testSkillsDir, 'ws-shared', 'runtime', 'config.schema.json');
     const artifactsInTest = path.join(testSkillsDir, 'ws-spec-to-pr', 'ARTIFACTS.md');
     if (!fs.existsSync(schemaInTest)) fail('config.schema.json not installed into consumer');
     if (!fs.existsSync(artifactsInTest)) fail('ARTIFACTS.md not installed into consumer');
@@ -1142,8 +1156,8 @@ child.on('close', async (code) => {
         fail(`Promoted skill still nested under .ws/ in consumer: ${slug}`);
       }
     }
-    if (!fs.existsSync(path.join(testWsDir, 'templates', 'config.json.example'))) {
-      fail('.ws/ hub missing config.json.example after install');
+    if (!fs.existsSync(path.join(testSkillsDir, 'ws-shared', 'templates', 'config.json.example'))) {
+      fail('managed hub missing config.json.example after install');
     }
     if (fs.existsSync(path.join(testWsDir, 'ws-self-learning'))) {
       fail('.ws/ws-self-learning should not exist after promotion');
@@ -1204,11 +1218,11 @@ child.on('close', async (code) => {
         fail(`Workflows package did not install ${rel}`);
       }
     }
-    if (!fs.existsSync(path.join(pkgDir, '.ws', 'templates', 'config.json.example'))) {
-      fail('Workflows package did not install .ws/ hub templates');
+    if (!fs.existsSync(path.join(pkgSkills, 'ws-shared', 'templates', 'config.json.example'))) {
+      fail('Workflows package did not install managed hub templates');
     }
-    if (!fs.existsSync(path.join(pkgDir, '.ws', 'runtime', 'config.schema.json'))) {
-      fail('Workflows package did not install .ws/ hub runtime');
+    if (!fs.existsSync(path.join(pkgSkills, 'ws-shared', 'runtime', 'config.schema.json'))) {
+      fail('Workflows package did not install managed hub runtime');
     }
     if (fs.existsSync(path.join(pkgSkills, 'security-review'))) {
       fail('Workflows package must not install Extra-only security-review');
@@ -1459,7 +1473,7 @@ child.on('close', async (code) => {
     const destConfig = path.join(memDir, '.ws', 'config.json');
     const destChangelog = path.join(memDir, '.ws', 'CHANGELOG.md');
     const destAutoload = path.join(memDir, '.ws', 'autoload.md');
-    const destScmContract = path.join(memDir, '.ws', 'runtime', 'scm-provider-contract.md');
+    const destScmContract = path.join(memDir, '.agents', 'skills', 'ws-shared', 'runtime', 'scm-provider-contract.md');
     const destRootAgents = path.join(memDir, 'AGENTS.md');
     const memEntries = path.join(memDir, '.ws', 'memory');
     if (!fs.existsSync(destStack)) fail('Fresh install must seed .ws/STACK.md');
@@ -1468,7 +1482,8 @@ child.on('close', async (code) => {
     if (fs.existsSync(memEntries)) fail('Fresh install must not create .ws/memory/ (created on first use)');
     if (fs.existsSync(destChangelog)) fail('Fresh install must not seed .ws/CHANGELOG.md (created on first use)');
     if (!fs.existsSync(destAutoload)) fail('Fresh install must copy .ws/autoload.md from hub whitelist');
-    if (!fs.existsSync(destScmContract)) fail('Fresh install must copy .ws/runtime/scm-provider-contract.md from hub whitelist');
+    if (!fs.existsSync(destScmContract)) fail('Fresh install must copy .agents/skills/ws-shared/runtime/scm-provider-contract.md from the managed hub');
+    if (fs.existsSync(path.join(memDir, '.ws', 'runtime'))) fail('Fresh install must not create .ws/runtime');
     if (fs.existsSync(destRootAgents)) {
       fail('Installer must not write consumer root AGENTS.md');
     }
@@ -1707,9 +1722,9 @@ child.on('close', async (code) => {
         fail(`post-update autoload.md still cites retired ${retired} (AC1)`);
       }
     }
-    const linkTargets = [...afterAutoload.matchAll(/\.\.\/(ws-[A-Za-z0-9-]+)\/SKILL\.md/g)].map((m) => m[1]);
+    const linkTargets = [...afterAutoload.matchAll(/\.\.\/\.agents\/skills\/(ws-[A-Za-z0-9-]+)\/SKILL\.md/g)].map((m) => m[1]);
     if (linkTargets.length === 0) {
-      fail('post-update autoload.md has no ../ws-*/SKILL.md links to resolve (AC1)');
+      fail('post-update autoload.md has no ../.agents/skills/ws-*/SKILL.md links to resolve (AC1)');
     }
     for (const target of new Set(linkTargets)) {
       if (!fs.existsSync(path.join(skills, target, 'SKILL.md'))) {
@@ -1741,8 +1756,8 @@ child.on('close', async (code) => {
     }
     // AC6: update repairs root-relative hub links in an otherwise current autoload.
     const brokenLinksAutoload = afterAutoload
-      .replaceAll('](runtime/tools.md)', '](tools.md)')
-      .replaceAll('](../ws-spec-manager/SKILL.md)', '](../../ws-spec-manager/SKILL.md)');
+      .replaceAll('](../.agents/skills/ws-shared/runtime/tools.md)', '](tools.md)')
+      .replaceAll('](../.agents/skills/ws-spec-manager/SKILL.md)', '](../../ws-spec-manager/SKILL.md)');
     if (brokenLinksAutoload === afterAutoload) {
       fail('hybrid autoload fixture did not contain expected managed links (AC6)');
     }

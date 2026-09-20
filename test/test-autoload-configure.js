@@ -134,9 +134,9 @@ function parseJsonOut(result) {
       autoText.includes('.agents/skills/ws-senior-developer/SKILL.md'),
       'local install emits .agents/skills paths in autoload.md',
     );
-    assert(autoText.includes('](runtime/tools.md)'), 'consumer autoload rewrites runtime-relative hub links');
+    assert(autoText.includes('](../.agents/skills/ws-shared/runtime/tools.md)'), 'consumer autoload rewrites runtime-relative hub links to the skills install');
     assert(
-      autoText.includes('](../ws-spec-manager/SKILL.md)'),
+      autoText.includes('](../.agents/skills/ws-spec-manager/SKILL.md)'),
       'consumer autoload rewrites skill-relative links',
     );
     assert(
@@ -484,11 +484,11 @@ function parseJsonOut(result) {
 }
 
 function seedConfigExample(root) {
-  const shared = path.join(root, '.ws');
-  fs.mkdirSync(path.join(shared, 'templates'), { recursive: true });
+  const templates = path.join(root, '.agents', 'skills', 'ws-shared', 'templates');
+  fs.mkdirSync(templates, { recursive: true });
   fs.copyFileSync(
     path.join(REPO_ROOT, '.agents/skills/ws-shared/templates/config.json.example'),
-    path.join(shared, 'templates', 'config.json.example'),
+    path.join(templates, 'config.json.example'),
   );
 }
 
@@ -512,7 +512,7 @@ function seedConfigExample(root) {
   const cfgPath = path.join(rootOmitted, '.ws/config.json');
   const example = JSON.parse(
     fs.readFileSync(
-      path.join(rootOmitted, '.ws/templates/config.json.example'),
+      path.join(rootOmitted, '.agents', 'skills', 'ws-shared', 'templates', 'config.json.example'),
       'utf8',
     ),
   );
@@ -639,7 +639,7 @@ function seedConfigExample(root) {
   seedConfigExample(root);
   const example = JSON.parse(
     fs.readFileSync(
-      path.join(root, '.ws/templates/config.json.example'),
+      path.join(root, '.agents', 'skills', 'ws-shared', 'templates', 'config.json.example'),
       'utf8',
     ),
   );

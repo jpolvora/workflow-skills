@@ -125,8 +125,8 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | Project spec index init/sync/promote | `ws-spec-index` |
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
 | Bulk-import GH issues / ADO US → local specs | `ws-spec-from-provider` |
-| Session autoload set (which skills load every prompt) | This repo: § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only). Consumers: [`{sharedDir}/runtime/autoload.md`](.agents/skills/ws-shared/runtime/autoload.md) § Always-applied |
-| Specs keywords / which skill to invoke | [`{sharedDir}/runtime/autoload.md`](.agents/skills/ws-shared/runtime/autoload.md) § Specs skill router |
+| Session autoload set (which skills load every prompt) | This repo: § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only). Consumers: [`{skillsRoot}/ws-shared/runtime/autoload.md`](.agents/skills/ws-shared/runtime/autoload.md) § Always-applied |
+| Specs keywords / which skill to invoke | [`{skillsRoot}/ws-shared/runtime/autoload.md`](.agents/skills/ws-shared/runtime/autoload.md) § Specs skill router |
 | Dev commands (deps, tests, local install, integrity, site) | § [Development commands](#development-commands-this-repo) |
 | Local code review / audits | § [Review & audit commands](#review--audit-commands) |
 | Auto-update feature specs after code changes | `ws-spec-update` |

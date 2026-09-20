@@ -17,7 +17,7 @@ Focus review on this repository’s real stack: Cursor/agent skill markdown, Nod
 * **Skill inventory drift:** When skills are added, removed, or renamed, require an updated skill list in root `AGENTS.md`, `.ws/AGENTS.md` (consumer routes; Workflows vs Extra scope), `bin/skill-dependencies.json`, and site catalog (`docs/index.html` via `node bin/build-site.js` when applicable). Disk folders, hub tables, and package skill lists must stay aligned.
 * **Dependency graph:** If skills are added/removed/renamed or orchestrator dispatch changes, `bin/skill-dependencies.json` must be updated. Every dispatched skill id (pipeline `ws-*`, providers, fix-pr loop) must appear in the orchestrator dependency closure (direct or transitive). Missing graph edges are critical.
 * **Harness gates (must pass):** Package / harness-affecting PRs must leave **`check-harness`** and **`check-workflows`** with **0 critical** findings. Flag PRs that change skills, hubs, dispatch, or installer inputs without evidence these audits were run (or without noting the obligation).
-* **check-harness awareness:** Changes that add/rename/remove skills or routing tables should note the need to update root `AGENTS.md`, `.ws/AGENTS.md` (+ `.ws/runtime/autoload.md` when the Always-applied set changes), and regenerate `docs/index.html` via `node bin/build-site.js` when applicable.
+* **check-harness awareness:** Changes that add/rename/remove skills or routing tables should note the need to update root `AGENTS.md`, `.ws/AGENTS.md` (+ the managed `{skillsRoot}/ws-shared/runtime/autoload.md` when the Always-applied set changes), and regenerate `docs/index.html` via `node bin/build-site.js` when applicable.
 
 ## 2. Installer / CLI (`bin/`, `npx github:…`)
 

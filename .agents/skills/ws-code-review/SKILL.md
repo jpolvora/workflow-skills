@@ -1,7 +1,7 @@
 ---
 name: ws-code-review
 description: Local two-phase code review with fix → re-review loops (max 3). Trigger when reviewing a branch/diff before ship, or when orch Step 6 / lite Step 3 runs.
-version: 0.4.45
+version: 0.4.46
 disable-model-invocation: true
 invocation_names:
   - code-review
@@ -65,7 +65,7 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
 
 ## Steps
 
-1. **Detect stack, diff & rule pack**: read `config.json.stack` and load the applicable project stack invariant rule pack from `{sharedDir}/runtime/stacks/` (`abp-angular.md`, `typescript-node.md`, `nextjs-react.md`, `php-laravel.md`, or custom override in `$PWD/.ws/runtime/stacks/`). Exclude `bin/`, `obj/`, `dist/`, `node_modules/`, CI YAML, translations. Resolve `{base}` from `config.project.baseBranch` (auto-detect `main` then `master`). Run `git diff --name-status {base}...HEAD` over in-scope paths — that committed range is the **only** primary file list.
+1. **Detect stack, diff & rule pack**: read `config.json.stack` and load the applicable project stack invariant rule pack from `{skillsRoot}/ws-shared/runtime/stacks/` (global fallback `{globalSkillsRoot}/ws-shared/runtime/stacks/`; `abp-angular.md`, `typescript-node.md`, `nextjs-react.md`, `php-laravel.md`, or a custom override in the same directory). Exclude `bin/`, `obj/`, `dist/`, `node_modules/`, CI YAML, translations. Resolve `{base}` from `config.project.baseBranch` (auto-detect `main` then `master`). Run `git diff --name-status {base}...HEAD` over in-scope paths — that committed range is the **only** primary file list.
    - Done when: the in-scope modified file list and active stack invariant rule pack are known.
 
 2. **Phase 1: Triage**: adversarial scan of the committed diff against loaded stack invariant rules and domain constraints. Flag lines with concrete defect hypotheses; discard cosmetic nits, untouched pre-existing code, and low-risk UI without security or concurrency surface.
@@ -88,7 +88,7 @@ Log `review-fix` in gate history; do not add a separate `completedSteps` entry f
 
 6. **Check invariants & Local Reviewer Dry-Run**:
    - Run deterministic scan `node {skillsRoot}/ws-shared/runtime/scripts/scan_stack_invariants.cjs` against modified files.
-   - Cross-check `config.json.invariants` and the project stack rule pack (`{sharedDir}/runtime/stacks/`).
+   - Cross-check `config.json.invariants` and the project stack rule pack (`{skillsRoot}/ws-shared/runtime/stacks/`).
    - **Local CI Reviewer Dry-Run Gate:** When `config.json.verification.localReviewCommand` or `config.json.preview.localReviewCommand` resolves to a review runner, execute it (`--dry-run` against the diff) read-only to catch reviewer-aligned defects before Step 8 ship; ingest reported critical issues into the findings. Resolve the runner from config only — do not detect or name a specific reviewer product.
    - Optional `fable` integration: If `config.json.fable.enabled` and `autoAudit` are `true`, run [`ws-fable-judge`](../ws-fable-judge/SKILL.md) for Weakened Checks, False Completion, Scope Creep, Unauthorized Action. Report detected frauds as Critical or Warning.
    - Done when: stack invariant scan, local reviewer dry-run (if configured), and invariant checklists are evaluated.

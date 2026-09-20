@@ -39,7 +39,7 @@ node .agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs \
 
 | Note | Detail |
 |------|--------|
-| Visual ingest | Converter extracts images from Description/AC HTML, `AttachedFile` relations, and WIT comments (live GET comments API `7.1-preview.4`; offline uses `comments` on `--input` JSON). Then `node {sharedDir}/runtime/scripts/ingest_visual_attachments.cjs --provider azure-devops --api-base {apiBase}` writes `{specsDir}/{specStem}.assets/`, patches `## Visual References` after `## Original Issue Context`, and rewrites remote links. Partial HTTP failure exits 0 when the spec was written. `--skip-assets` for fixtures only. |
+| Visual ingest | Converter extracts images from Description/AC HTML, `AttachedFile` relations, and WIT comments (live GET comments API `7.1-preview.4`; offline uses `comments` on `--input` JSON). Then `node {skillsRoot}/ws-shared/runtime/scripts/ingest_visual_attachments.cjs --provider azure-devops --api-base {apiBase}` writes `{specsDir}/{specStem}.assets/`, patches `## Visual References` after `## Original Issue Context`, and rewrites remote links. Partial HTTP failure exits 0 when the spec was written. `--skip-assets` for fixtures only. |
 | Raw snapshot JSON | Audit artifact only — stays under `{us-dir}`; downstream steps never read it |
 | Agentic Reformulation | `ws-spec-write` reformulates and enhances raw work item descriptions into unambiguous, testable ACs while preserving human text in `## Original Issue Context` |
 | Re-fetch over an existing run | The converter (Step 2) refuses first when the spec of record differs (`--force` on the converter), and Step 3 refuses when `step-00` differs (`--force` on register); re-run with `--force` after confirming |

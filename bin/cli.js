@@ -108,6 +108,33 @@ function hubPresent() {
 function hubDisplay() {
   return isGlobalScope ? 'ws-shared/' : '.ws/';
 }
+/**
+ * Managed ws-shared content (runtime + templates) always lives in the skills
+ * install: `{skillsRoot}/ws-shared` (project) or `{globalSkillsRoot}/ws-shared`
+ * (global). It is never installed into the consumer hub (`.ws/runtime` banned).
+ */
+function managedHubDir() {
+  return path.join(targetSkillsDir, HUB_DIR);
+}
+function managedDisplay() {
+  return isGlobalScope ? 'ws-shared/' : '.agents/skills/ws-shared/';
+}
+/** Consumer-owned names that may live in a legacy pre-move skills-tree hub. */
+const LEGACY_CONSUMER_HUB_NAMES = [
+  CONFIG_FILE,
+  `${CONFIG_FILE}.bak`,
+  'config.local.json',
+  'STACK.md',
+  'stack.md',
+  'MEMORY.md',
+  'memory',
+  'CHANGELOG.md',
+  INSTALLED_SKILLS_FILE,
+  SKILL_INTEGRITY_LOCAL_FILE,
+  'host-capabilities.json',
+  'backend.md',
+  'frontend.md',
+];
 if (HUB_DIR !== INTEGRITY_HUB_DIR) {
   throw new Error('HUB_DIR mismatch between cli and skill-integrity-lib');
 }
@@ -137,14 +164,22 @@ function packageHubPath(categoryName, relativePath) {
  */
 const LOCAL_HUB_POINTER_MD = `# Shared — Workflow Config & Consumer Data Hub (local pointer)
 
-This is the project-local pointer for global-hybrid installs. Managed hub runtime is resolved from the project-local skills install (\`{skillsRoot}/ws-shared/runtime/\`) when present, otherwise from \`{globalSkillsRoot}/ws-shared/runtime/\`. This folder keeps project-local config only. Project consumer data lives in this folder (\`config.json\`, \`STACK.md\`, \`installed-skills.json\`); MEMORY/changelog live at their configured locations (defaults: repo-root \`MEMORY.md\` + \`memory/\`, repo-root \`CHANGELOG.md\`).
+This is the project-local entrypoint for the consumer hub (\`.ws/\`). Managed hub content (runtime contracts, schemas, scripts, templates) resolves from the project skills install (\`{skillsRoot}/ws-shared/\`) when present, otherwise from \`{globalSkillsRoot}/ws-shared/\`. This folder keeps project-local config only. Project consumer data lives in this folder (\`config.json\`, \`STACK.md\`, \`installed-skills.json\`); MEMORY/changelog live at their configured locations (defaults: repo-root \`MEMORY.md\` + \`memory/\`, repo-root \`CHANGELOG.md\`).
 
-- Full hub contract: \`runtime/AGENTS.md\` (resolve the managed runtime locally or from \`{globalSkillsRoot}/ws-shared/runtime/\`; resolve skill bodies via \`resolveSkillMdPath\` / \`resolveConsumerContext\` in \`{skillsRoot}/ws-shared/runtime/scripts/resolve_consumer_root.cjs\` (global fallback \`{globalSkillsRoot}/ws-shared/runtime/scripts/resolve_consumer_root.cjs\`).
+- Full hub contract: \`{skillsRoot}/ws-shared/runtime/AGENTS.md\` (global fallback \`{globalSkillsRoot}/ws-shared/runtime/AGENTS.md\`).
 - Config always resolves project-local first: \`$PWD/.ws/config.json\` overrides the global hub.
 - \`rules.harness\` default (\`.ws/AGENTS.md\`) resolves to this file; follow the canonical runtime link above. Run installer \`update\` to refresh this pointer.
 `;
 
+/** Hub-root autoload link prefixes (managed runtime lives in the skills install). */
+function managedRuntimeLinkPrefix() {
+  return isGlobalScope ? 'runtime/' : '../.agents/skills/ws-shared/runtime/';
+}
+function managedSkillLinkPrefix() {
+  return isGlobalScope ? '../' : '../.agents/skills/';
+}
 function renderConsumerAutoloadText(text) {
+  const runtimePrefix = managedRuntimeLinkPrefix();
   for (const runtimeFile of [
     'AGENTS.md',
     'CROSS-PLATFORM.md',
@@ -155,9 +190,9 @@ function renderConsumerAutoloadText(text) {
     'setup.md',
     'tools.md',
   ]) {
-    text = text.split(`](${runtimeFile})`).join(`](runtime/${runtimeFile})`);
+    text = text.split(`](${runtimeFile})`).join(`](${runtimePrefix}${runtimeFile})`);
   }
-  return text.replace(/\]\(\.\.\/\.\.\/(ws-[^)]+)\)/g, '](../$1)');
+  return text.replace(/\]\(\.\.\/\.\.\/(ws-[^)]+)\)/g, `](${managedSkillLinkPrefix()}$1)`);
 }
 
 function renderConsumerAutoload(sourcePath) {
@@ -610,7 +645,7 @@ function ensurePathTokensInConfig(configPath) {
   }
   const defaults = {
     _comment:
-      'Fixed install layout — expand brace tokens before tool calls. See runtime/tools.md § Path tokens.',
+      'Fixed install layout — expand brace tokens before tool calls. See {skillsRoot}/ws-shared/runtime/tools.md § Path tokens.',
     skillsRoot: '.agents/skills',
     sharedDir: '.ws',
   };
@@ -676,11 +711,18 @@ function deepMergeConfig(templateObj, userObj) {
 function upgradeConfigToLatestFormat(templateObj, userObj) {
   const merged = deepMergeConfig(templateObj, userObj);
 
+  // Managed runtime lives in the skills install: point editor-facing config
+  // references at `{skillsRoot}/ws-shared/runtime` (project) instead of a
+  // retired `.ws/runtime` copy. Global hub config keeps hub-relative paths.
+  const runtimePrefix = isGlobalScope ? './runtime/' : '../.agents/skills/ws-shared/runtime/';
   if (merged.$schema) {
-    merged.$schema = './runtime/config.schema.json';
+    merged.$schema = `${runtimePrefix}config.schema.json`;
   }
   if (merged.toolsFile && (merged.toolsFile === 'tools.md' || merged.toolsFile === './tools.md')) {
     merged.toolsFile = 'runtime/tools.md';
+  }
+  if (merged.toolsFile === 'runtime/tools.md') {
+    merged.toolsFile = isGlobalScope ? 'runtime/tools.md' : `${runtimePrefix}tools.md`;
   }
 
   const prevTokens = (userObj && typeof userObj === 'object' && userObj.pathTokens) || {};
@@ -705,34 +747,32 @@ function upgradeConfigToLatestFormat(templateObj, userObj) {
  * the skills create those files on first use. Existing legacy copies are preserved as fallback.
  * Never writes consumer repo-root files (root AGENTS.md stays host/consumer-owned).
  */
+/**
+ * Extract consumer-owned hub artifacts from a legacy pre-move skills-tree hub
+ * (`.agents/skills/ws-shared/`) into the project hub (`.ws/`). Managed content
+ * (runtime/, templates/, flat managed docs) stays in the skills tree, where it
+ * is refreshed from the package. Never writes consumer repo-root files.
+ */
 function relocateLegacyHub() {
   if (isGlobalScope) return;
   const legacy = legacyHubDir();
   const dest = consumerHubDir();
   if (!fs.existsSync(legacy)) return;
   if (path.resolve(legacy) === path.resolve(dest)) return;
-  if (fs.existsSync(dest)) {
-    console.log('    Legacy ws-shared/ hub present alongside .ws/; leaving both in place (remove the legacy dir manually once verified).');
-    return;
-  }
   fs.mkdirSync(dest, { recursive: true });
   const moved = [];
-  for (const name of fs.readdirSync(legacy)) {
-    fs.renameSync(path.join(legacy, name), path.join(dest, name));
+  for (const name of LEGACY_CONSUMER_HUB_NAMES) {
+    const source = path.join(legacy, name);
+    const target = path.join(dest, name);
+    if (!fs.existsSync(source) || fs.existsSync(target)) continue;
+    fs.renameSync(source, target);
     moved.push(name);
   }
-  console.log(`    Relocated legacy ws-shared/ hub to .ws/ (${moved.length} entries)`);
-  try {
-    if (fs.readdirSync(legacy).length === 0) {
-      fs.rmdirSync(legacy);
-      console.log('    Removed emptied legacy ws-shared/ hub dir');
-    } else {
-      console.log('    Legacy ws-shared/ hub dir still holds files; remove it manually once verified.');
-    }
-  } catch {
-    /* leave the legacy dir in place when it cannot be inspected */
+  if (moved.length > 0) {
+    console.log(`    Extracted legacy ws-shared/ consumer data to .ws/ (${moved.join(', ')})`);
   }
 }
+
 function ensureSharedConsumerArtifacts(mode = 'install') {
   const destShared = consumerHubDir();
   ensureWriteableDir(destShared);
@@ -1012,50 +1052,60 @@ function ensureSharedHubInstalled(mode = 'install') {
   const srcShared = path.join(packageSkillsDir, HUB_DIR);
   relocateLegacyHub();
   const destShared = consumerHubDir();
+  const destManaged = managedHubDir();
   if (!fs.existsSync(srcShared)) return;
 
   fs.mkdirSync(destShared, { recursive: true });
-  migrateLegacyFlatHub(destShared);
+  fs.mkdirSync(destManaged, { recursive: true });
+  migrateLegacyFlatHub(destManaged);
+  retireProjectHubManagedContent(destShared);
 
   for (const name of HUB_WHITELIST) {
     const srcPath = path.join(srcShared, name);
     if (!fs.existsSync(srcPath)) continue;
     const destName = HUB_DEST_ALIASES[name] || name;
-    const destPath = path.join(destShared, destName);
+    const destPath = path.join(destManaged, destName);
     if (fs.statSync(srcPath).isDirectory()) {
       copyDirSync(srcPath, destPath);
       pruneManagedSkillExtras(srcPath, destPath);
     } else if (CONSUMER_OWNED_HUB_FILES.has(destName) && fs.existsSync(destPath)) {
-      console.log(`    Skipped (preserved): ${hubDisplay()}${destName}`);
+      console.log(`    Skipped (preserved): ${managedDisplay()}${destName}`);
     } else {
       fs.copyFileSync(srcPath, destPath);
     }
   }
   // Aliased source names (for example templates/hub.gitignore) are package
-  // inputs only; consumers receive their declared destination instead.
+  // inputs only; consumers receive their declared destination in the hub root.
   for (const sourceName of Object.keys(HUB_DEST_ALIASES)) {
-    const sourcePath = path.join(destShared, sourceName);
-    if (sourcePath !== destShared && fs.existsSync(sourcePath)) {
-      fs.rmSync(sourcePath, { recursive: true, force: true });
+    const stalePath = path.join(destShared, sourceName);
+    if (stalePath !== destShared && fs.existsSync(stalePath)) {
+      fs.rmSync(stalePath, { recursive: true, force: true });
+    }
+    const staleManagedPath = path.join(destManaged, sourceName);
+    if (staleManagedPath !== destManaged && fs.existsSync(staleManagedPath)) {
+      fs.rmSync(staleManagedPath, { recursive: true, force: true });
     }
   }
   for (const [sourceName, destinationName] of Object.entries(HUB_DEST_ALIASES)) {
     const sourcePath = path.join(srcShared, sourceName);
-    const destinationPath = path.join(destShared, destinationName);
     if (!fs.existsSync(sourcePath)) continue;
-    if (CONSUMER_OWNED_HUB_FILES.has(destinationName) && fs.existsSync(destinationPath)) {
-      continue;
+    for (const base of new Set([destManaged, destShared])) {
+      const destinationPath = path.join(base, destinationName);
+      if (CONSUMER_OWNED_HUB_FILES.has(destinationName) && fs.existsSync(destinationPath)) {
+        continue;
+      }
+      fs.copyFileSync(sourcePath, destinationPath);
     }
-    fs.copyFileSync(sourcePath, destinationPath);
   }
 
   // Drop obsolete lowercase template only when it is a distinct file (case-sensitive FS).
   // On Windows / case-insensitive volumes, stack.md.example === STACK.md.example — never unlink.
-  {
-    const names = fs.readdirSync(destShared);
+  for (const templateDir of [destShared, path.join(destManaged, 'templates')]) {
+    if (!fs.existsSync(templateDir)) continue;
+    const names = fs.readdirSync(templateDir);
     if (names.includes('stack.md.example') && names.includes('STACK.md.example')) {
-      fs.unlinkSync(path.join(destShared, 'stack.md.example'));
-      console.log(`    Removed obsolete ${hubDisplay()}stack.md.example`);
+      fs.unlinkSync(path.join(templateDir, 'stack.md.example'));
+      console.log(`    Removed obsolete stack.md.example`);
     }
   }
 
@@ -1080,13 +1130,19 @@ function ensureSharedHubInstalled(mode = 'install') {
     }
   }
   pruneRetiredConsumerArtifacts(fs, path, { skillsDir: targetSkillsDir, sharedDir: destShared });
-  // Global-hybrid edge (us-272 AC3): seed a thin local pointer when the
-  // project hub lacks AGENTS.md. The HUB_WHITELIST copy above already
-  // refreshes it on normal updates; this covers the residual missing-file
-  // edge only. Never writes outside `.agents/skills/`.
-  if (!fs.existsSync(path.join(destShared, 'AGENTS.md'))) {
-    fs.writeFileSync(path.join(destShared, 'AGENTS.md'), LOCAL_HUB_POINTER_MD);
-    console.log(`    Seeded thin local ${hubDisplay()}AGENTS.md pointer to the global hub`);
+  // Seed or refresh the thin local entrypoint (`.ws/AGENTS.md`). Generated
+  // pointers are refreshed so upgrades stop citing retired `.ws/runtime` paths;
+  // consumer-authored files are left untouched. Never writes repo-root files.
+  const hubPointerPath = path.join(destShared, 'AGENTS.md');
+  if (!fs.existsSync(hubPointerPath)) {
+    fs.writeFileSync(hubPointerPath, LOCAL_HUB_POINTER_MD);
+    console.log(`    Seeded thin local ${hubDisplay()}AGENTS.md pointer to the managed hub`);
+  } else if (isGeneratedHubEntrypoint(hubPointerPath)) {
+    const currentPointer = fs.readFileSync(hubPointerPath, 'utf8');
+    if (currentPointer !== LOCAL_HUB_POINTER_MD) {
+      fs.writeFileSync(hubPointerPath, LOCAL_HUB_POINTER_MD);
+      console.log(`    Refreshed ${hubDisplay()}AGENTS.md pointer to the managed hub`);
+    }
   }
   if (!isGlobalScope) {
     const globalDir = resolveGlobalSkillsDir();
@@ -1102,6 +1158,31 @@ function ensureSharedHubInstalled(mode = 'install') {
   console.log(
     `  ${hubDisplay()} hub ${mode === 'update' ? 'updated' : 'installed'} (consumer config/MEMORY/stack/CHANGELOG preserved)`
   );
+}
+
+/**
+ * Retire managed hub copies from the project consumer hub (`.ws/runtime`,
+ * `.ws/templates`, and flat legacy managed docs). Managed content lives only
+ * in the skills install (`{skillsRoot}|{globalSkillsRoot}/ws-shared/`).
+ */
+function retireProjectHubManagedContent(destShared) {
+  if (isGlobalScope) return;
+  for (const name of ['runtime', 'templates']) {
+    const stale = path.join(destShared, name);
+    if (fs.existsSync(stale)) {
+      fs.rmSync(stale, { recursive: true, force: true });
+      console.log(`    Removed obsolete ${hubDisplay()}${name}/ (managed content lives in ${managedDisplay()})`);
+    }
+  }
+  for (const legacyName of Object.keys(HUB_LAYOUT.legacyPaths || {})) {
+    if (legacyName === 'AGENTS.md' || legacyName === 'autoload.md') continue;
+    if (LEGACY_CONSUMER_HUB_NAMES.includes(legacyName)) continue;
+    const stale = path.join(destShared, legacyName);
+    if (fs.existsSync(stale)) {
+      fs.rmSync(stale, { recursive: true, force: true });
+      console.log(`    Removed obsolete ${hubDisplay()}${legacyName} (managed content lives in ${managedDisplay()})`);
+    }
+  }
 }
 
 /** Block installing into the source package itself (except test/ consumer). */
@@ -1194,7 +1275,7 @@ function postVerifyAndWriteLocal(skillIds, { includeHub, force, manifest }) {
     manifest: expected,
     skillIds,
     includeHub,
-    hubDir: consumerHubDir(),
+    hubDir: managedHubDir(),
   });
 
   if (result.ok) {
@@ -1230,8 +1311,8 @@ function postVerifyAndWriteLocal(skillIds, { includeHub, force, manifest }) {
       if (fs.existsSync(root)) actualSkills[id] = buildSkillEntry(root);
     }
     let actualHub = null;
-    if (includeHub && fs.existsSync(consumerHubDir())) {
-      actualHub = buildHubEntry(consumerHubDir());
+    if (includeHub && fs.existsSync(managedHubDir())) {
+      actualHub = buildHubEntry(managedHubDir());
     }
     const isFull =
       listInstallableSkills(packageSkillsDir).length === skillIds.length && includeHub;
@@ -1258,7 +1339,7 @@ function postVerifyAndWriteLocal(skillIds, { includeHub, force, manifest }) {
 /** Rewrite local integrity record for remaining installed skills (uninstall). */
 function rewriteLocalIntegrityForRemaining(remainingSkillIds) {
   const localPath = localIntegrityPath(targetSkillsDir, consumerHubDir());
-  const sharedExists = fs.existsSync(consumerHubDir());
+  const sharedExists = fs.existsSync(managedHubDir());
   if (!sharedExists) {
     if (fs.existsSync(localPath)) fs.unlinkSync(localPath);
     return;
@@ -1283,7 +1364,7 @@ function rewriteLocalIntegrityForRemaining(remainingSkillIds) {
     const root = path.join(targetSkillsDir, id);
     if (fs.existsSync(root)) actualSkills[id] = buildSkillEntry(root);
   }
-  const actualHub = includeHub ? buildHubEntry(consumerHubDir()) : null;
+  const actualHub = includeHub ? buildHubEntry(managedHubDir()) : null;
   const record = buildLocalRecord({
     packageVersion: prior?.packageVersion || getLocalVersion(),
     fullPackageDigest: null,
@@ -1359,7 +1440,7 @@ function runIntegrityAudit() {
 
   // Skills in record but not installed → skip (AC7)
   if (record.hub != null) {
-    const actualHub = buildHubEntry(consumerHubDir());
+    const actualHub = buildHubEntry(managedHubDir());
     for (const rel of Object.keys(record.hub.files || {}).sort()) {
       if (!actualHub.files[rel]) {
         mismatches.push({ path: `hub/${rel}`, reason: 'missing' });

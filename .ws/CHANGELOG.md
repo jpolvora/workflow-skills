@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-20 12:31] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: Enforce managed-runtime location: never allow `.ws/runtime`; runtime must resolve from `{projectRoot|globalSkillsRoot}/.agents/skills/ws-shared/runtime`.
+- **Done**: Installer now copies the managed `ws-shared` tree (runtime + templates) into the skills install and retires `.ws/runtime`/`.ws/templates` on install/update; `.ws` keeps consumer config, the generated `AGENTS.md` entrypoint, and `autoload.md`. Resolver, hub-separation gate, and link checker drop the `.ws` fallback; 59 skill bootstraps drop the deprecated `.ws` fallback; seed templates get refreshed. Consumer config `$schema`/`toolsFile` repoint to the managed runtime. Hub/root docs, README, FEATURES, CATALOG, SPEC-MANAGEMENT, install shim banner, and wiki pages retargeted to `{skillsRoot}|{globalSkillsRoot}/ws-shared`. Tests updated + new negative invariant (`.ws/runtime` never resolves or installs); version 0.4.46 + integrity regen + site/wiki rebuild.
+- **Result**: `npm run tests` green (54 skills); `test-harness-clean` 0 findings; `verify-integrity` OK (v0.4.46).
+
 ### [2026-09-20 06:30] Agent: Muse Code (muse-spark)
 - **Prompt**: Release 0.4.45: bump version, update docs, update website, update wiki, commit, push, ws-ship-pr, ws-goal-fix-pr.
 - **Done**: `npm run build-site:bump` 0.4.44 -> 0.4.45 (54 SKILL frontmatter, packageVersion x2, site + docs/wiki rebuild); integrity regen + verified (54 skills); bounded ws-wiki sweep 9919e5c..HEAD (25 specs, detailed prose, 8 pages, validate 11/11 PASS, baseline -> d9db97f1); changelog entry; secrets scan clean.

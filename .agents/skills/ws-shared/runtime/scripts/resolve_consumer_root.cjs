@@ -84,8 +84,8 @@ function resolveHubSource(context, relative) {
   if (fs.existsSync(localSkills)) return localSkills;
   const global = path.join(context.globalSkillsRoot, 'ws-shared', relative);
   if (fs.existsSync(global)) return global;
-  const legacyHub = path.join(context.sharedDir, relative);
-  if (fs.existsSync(legacyHub)) return legacyHub;
+  // Managed content lives only in the skills install; the consumer hub never
+  // carries runtime/templates copies (`.ws/runtime` is not a resolution source).
   return localSkills;
 }
 
@@ -285,7 +285,7 @@ function resolveConsumerContext({ repoRoot, scriptFile, skillId, requireProjectH
   const skillsRoot = fs.existsSync(localSkill) ? localSkillsRoot : globalSkillsRoot;
   const hub = sharedDir(root);
   const localConfig = path.join(hub, 'config.json');
-  const localExample = path.join(hub, 'templates', 'config.json.example');
+  const localExample = path.join(localSkillsRoot, 'ws-shared', 'templates', 'config.json.example');
   const globalConfig = path.join(globalSkillsRoot, 'ws-shared', 'config.json');
   const globalExample = path.join(
     globalSkillsRoot,

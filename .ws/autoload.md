@@ -2,7 +2,7 @@
 
 **Audience: agents.** Load this file when the project root `AGENTS.md` references it, or whenever the user mentions specs / plans / Spec-to-PR / SCM intents / verify score without naming a skill.
 
-Path tokens: expand via [`tools.md`](runtime/tools.md) before tool calls (`{skillsRoot}`, `{sharedDir}`, `{specsDir}`, `{plansDir}`).
+Path tokens: expand via [`tools.md`](../.agents/skills/ws-shared/runtime/tools.md) before tool calls (`{skillsRoot}`, `{sharedDir}`, `{specsDir}`, `{plansDir}`).
 
 ---
 
@@ -20,7 +20,7 @@ When root `AGENTS.md` points here, load each listed `SKILL.md` every prompt (unl
 | `ws-spec-memo` | `{skillsRoot}/ws-spec-memo/SKILL.md` | Config preflight & bridge — wire config.json memory backends & hybrid fallback |
 | `ws-task-lifecycle` | `{skillsRoot}/ws-task-lifecycle/SKILL.md` | Every prompt-driven product task — intake, implement, complete (required) |
 
-Precedence when both root and `{sharedDir}/AGENTS.md` load: root / this file win for **membership of the Always-applied set above**. See [`AGENTS.md`](runtime/AGENTS.md) § Consumer root override.
+Precedence when both root and `{sharedDir}/AGENTS.md` load: root / this file win for **membership of the Always-applied set above**. See [`AGENTS.md`](../.agents/skills/ws-shared/runtime/AGENTS.md) § Consumer root override.
 
 ### Precedence among Always-applied (highest first)
 
@@ -90,23 +90,23 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 
 | When the user / task means… | Load | Does **not** do |
 |-----------------------------|------|-----------------|
-| Manage / route / index / handle all spec operations (unified front door) | [`ws-spec-manager`](../ws-spec-manager/SKILL.md) | Central router and interactive menu; delegates to specialized `ws-spec-*` skills |
-| Draft a new local spec or reformulate tracker issue | [`ws-spec-write`](../ws-spec-write/SKILL.md) | Does not create `{plansDir}` / `step-00`; does not run orch. Standalone: `user-gate` then `ws-spec-index` `track` |
-| Validate / reshape / review `*.spec.md` format & ACs | [`ws-spec-format`](../ws-spec-format/SKILL.md) | Does not invent product requirements; format SoT is [`FORMAT.md`](../ws-spec-format/FORMAT.md) |
-| Register any `*.spec.md` → `{specsDir}` spec of record + workflow `step-00`; configure `{specsDir}`; local `fetch-to-spec` | [`ws-spec-provider-local`](../ws-spec-provider-local/SKILL.md) | Not for free-text draft (use spec-write first); PR ops delegate to `providers.scm` |
-| List / pick / manage specs vs plan workflows (two boards) | [`ws-spec-list`](../ws-spec-list/SKILL.md) | Does not edit `index.PRD` content (that is spec-index); does not implement pipeline steps |
-| Init / sync / promote / track `index.PRD` feature map | [`ws-spec-index`](../ws-spec-index/SKILL.md) | Does not rewrite AC bodies for code drift (that is sync-spec); `sync` = index status vs delivery evidence; `track` = add existing spec row; does not harvest `{plansDir}` history (`ws-spec-archive`) |
-| Harvest plan-folder facts into `index.PRD` Archive, then propose shipped-plan cleanup | [`ws-spec-archive`](../ws-spec-archive/SKILL.md) | Does not delete untracked scratch (that is `ws-cleanup`); does not rewrite AC bodies |
-| Resolve spec-of-record path or organize/prefix existing specs chronologically | [`ws-spec-organizer`](../ws-spec-organizer/SKILL.md) | Does not reformulate requirements (that is spec-write); does not edit index.PRD status |
-| Spec text drifted from implemented code after prompts | [`ws-spec-update`](../ws-spec-update/SKILL.md) | Does not update `index.PRD` checkboxes (use spec-index `sync`); does not start orch |
-| Prompt-driven product work (not Spec-to-PR) | [`ws-task-lifecycle`](../ws-task-lifecycle/SKILL.md) | Does not mkdir `{plansDir}` or write `step-00`; does not invoke spec-to-pr / lite |
-| Vibe-coding implement / what-next / plan or research without a spec | [`ws-megabrain`](../ws-megabrain/SKILL.md) | Does not replace spec-to-pr; defers when orch owns the session |
-| Deliver **one** feature Spec→PR (full FSM 0–9) | [`ws-spec-to-pr`](../ws-spec-to-pr/SKILL.md) | Not for batch; not for format-only edits |
-| Deliver **one** feature Spec→PR (fast lite 0–5) | [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) | Not for complex multi-phase work; never cross-resume with standard |
-| Pick lite vs standard for a ready spec | [`ws-classify-complexity`](../ws-classify-complexity/SKILL.md) | Orthogonal to gates.md simple/standard/complex skip axis |
-| Deliver **many** specs sequentially (auto lite/standard workers) | [`ws-spec-multi`](../ws-spec-multi/SKILL.md) | Master orch only — does not edit product code itself |
-| Explain status / what a spec delivered (read-only panorama) | [`ws-spec-explain`](../ws-spec-explain/SKILL.md) | Does not implement, ship, or edit specs |
-| Bulk-import open GH issues / ADO User Stories → local specs + register | [`ws-spec-from-provider`](../ws-spec-from-provider/SKILL.md) | Not single-id fetch (use provider `fetch-to-spec`); not orch delivery |
+| Manage / route / index / handle all spec operations (unified front door) | [`ws-spec-manager`](../.agents/skills/ws-spec-manager/SKILL.md) | Central router and interactive menu; delegates to specialized `ws-spec-*` skills |
+| Draft a new local spec or reformulate tracker issue | [`ws-spec-write`](../.agents/skills/ws-spec-write/SKILL.md) | Does not create `{plansDir}` / `step-00`; does not run orch. Standalone: `user-gate` then `ws-spec-index` `track` |
+| Validate / reshape / review `*.spec.md` format & ACs | [`ws-spec-format`](../.agents/skills/ws-spec-format/SKILL.md) | Does not invent product requirements; format SoT is [`FORMAT.md`](../.agents/skills/ws-spec-format/FORMAT.md) |
+| Register any `*.spec.md` → `{specsDir}` spec of record + workflow `step-00`; configure `{specsDir}`; local `fetch-to-spec` | [`ws-spec-provider-local`](../.agents/skills/ws-spec-provider-local/SKILL.md) | Not for free-text draft (use spec-write first); PR ops delegate to `providers.scm` |
+| List / pick / manage specs vs plan workflows (two boards) | [`ws-spec-list`](../.agents/skills/ws-spec-list/SKILL.md) | Does not edit `index.PRD` content (that is spec-index); does not implement pipeline steps |
+| Init / sync / promote / track `index.PRD` feature map | [`ws-spec-index`](../.agents/skills/ws-spec-index/SKILL.md) | Does not rewrite AC bodies for code drift (that is sync-spec); `sync` = index status vs delivery evidence; `track` = add existing spec row; does not harvest `{plansDir}` history (`ws-spec-archive`) |
+| Harvest plan-folder facts into `index.PRD` Archive, then propose shipped-plan cleanup | [`ws-spec-archive`](../.agents/skills/ws-spec-archive/SKILL.md) | Does not delete untracked scratch (that is `ws-cleanup`); does not rewrite AC bodies |
+| Resolve spec-of-record path or organize/prefix existing specs chronologically | [`ws-spec-organizer`](../.agents/skills/ws-spec-organizer/SKILL.md) | Does not reformulate requirements (that is spec-write); does not edit index.PRD status |
+| Spec text drifted from implemented code after prompts | [`ws-spec-update`](../.agents/skills/ws-spec-update/SKILL.md) | Does not update `index.PRD` checkboxes (use spec-index `sync`); does not start orch |
+| Prompt-driven product work (not Spec-to-PR) | [`ws-task-lifecycle`](../.agents/skills/ws-task-lifecycle/SKILL.md) | Does not mkdir `{plansDir}` or write `step-00`; does not invoke spec-to-pr / lite |
+| Vibe-coding implement / what-next / plan or research without a spec | [`ws-megabrain`](../.agents/skills/ws-megabrain/SKILL.md) | Does not replace spec-to-pr; defers when orch owns the session |
+| Deliver **one** feature Spec→PR (full FSM 0–9) | [`ws-spec-to-pr`](../.agents/skills/ws-spec-to-pr/SKILL.md) | Not for batch; not for format-only edits |
+| Deliver **one** feature Spec→PR (fast lite 0–5) | [`ws-spec-to-pr-lite`](../.agents/skills/ws-spec-to-pr-lite/SKILL.md) | Not for complex multi-phase work; never cross-resume with standard |
+| Pick lite vs standard for a ready spec | [`ws-classify-complexity`](../.agents/skills/ws-classify-complexity/SKILL.md) | Orthogonal to gates.md simple/standard/complex skip axis |
+| Deliver **many** specs sequentially (auto lite/standard workers) | [`ws-spec-multi`](../.agents/skills/ws-spec-multi/SKILL.md) | Master orch only — does not edit product code itself |
+| Explain status / what a spec delivered (read-only panorama) | [`ws-spec-explain`](../.agents/skills/ws-spec-explain/SKILL.md) | Does not implement, ship, or edit specs |
+| Bulk-import open GH issues / ADO User Stories → local specs + register | [`ws-spec-from-provider`](../.agents/skills/ws-spec-from-provider/SKILL.md) | Not single-id fetch (use provider `fetch-to-spec`); not orch delivery |
 
 ### Keyword → skill (quick map)
 
@@ -144,12 +144,12 @@ Load the named hub file or one skill. Do not load both SCM provider bodies to co
 
 | When the user / task means… | Load | Does **not** do |
 |-----------------------------|------|-----------------|
-| SCM parity / GitHub vs Azure intents / `scm-provider-contract` | [`scm-provider-contract.md`](runtime/scm-provider-contract.md) then **one** provider | Do not load both provider `SKILL.md` bodies to compare intents |
-| Check-implementation / verify score / `scoreAndRefine` | Orch Step 5; standalone [`ws-plan-verify`](../ws-plan-verify/SKILL.md); gates in [`gates.md`](runtime/gates.md) | Do not auto-approve below `defaults.minVerifyScore` (default 9); do not load `ws-implement-tasks` until scoreAndRefine says to |
+| SCM parity / GitHub vs Azure intents / `scm-provider-contract` | [`scm-provider-contract.md`](../.agents/skills/ws-shared/runtime/scm-provider-contract.md) then **one** provider | Do not load both provider `SKILL.md` bodies to compare intents |
+| Check-implementation / verify score / `scoreAndRefine` | Orch Step 5; standalone [`ws-plan-verify`](../.agents/skills/ws-plan-verify/SKILL.md); gates in [`gates.md`](../.agents/skills/ws-shared/runtime/gates.md) | Do not auto-approve below `defaults.minVerifyScore` (default 9); do not load `ws-implement-tasks` until scoreAndRefine says to |
 
 | Keywords / phrases | Invoke |
 |--------------------|--------|
-| SCM parity, github vs azure intents, provider contract | `{sharedDir}/runtime/scm-provider-contract.md` then one provider |
+| SCM parity, github vs azure intents, provider contract | `{skillsRoot}/ws-shared/runtime/scm-provider-contract.md` then one provider |
 | verify score, check-implementation, scoreAndRefine | orch Step 5 / `ws-plan-verify` |
 
 ---

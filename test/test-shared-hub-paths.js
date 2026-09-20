@@ -1,15 +1,16 @@
 /**
- * Consumer-hub relocation sweep (us-351 AC2): the only live
- * `.agents/skills/ws-shared` references left in tracked files are upstream
- * package sources of truth (SoT), global-hub fallbacks, one-time relocation
- * logic, and byte-locked history. Any new consumer-resolved reference fails.
+ * Managed-runtime location sweep: `.ws/runtime` and `.ws/templates` are retired
+ * consumer-hub copies. Live files may only mention them in retirement logic,
+ * negative tests, and contract prose stating they are not a resolution source.
+ * Any other reference fails (managed content lives in the skills install:
+ * {skillsRoot}|{globalSkillsRoot}/ws-shared/{runtime,templates}).
  */
 import { spawnSync } from 'child_process';
 import utils from './harness-test-utils.cjs';
 
 const { assert, repoRoot } = utils;
 
-const PATTERNS = ['.agents/skills/ws-shared', '.agents\\skills\\ws-shared'];
+const PATTERNS = ['.ws/runtime', '.ws/templates', '.ws\\runtime', '.ws\\templates'];
 
 // History / run artifacts: contracts of record, never rewritten.
 const SKIP_DIRS = [
@@ -27,7 +28,7 @@ const SKIP_FILES = new Set([
   '.ws/CHANGELOG.md',
   '.ws/MEMORY.md',
 ]);
-// Wiki sources stay live: SoT runtime citations below still apply there.
+// Wiki sources stay live: managed-runtime citations below still apply there.
 const KEEP_DIRS = ['.agents/specs/wiki/'];
 
 function skipped(file) {
@@ -39,43 +40,22 @@ function skipped(file) {
 // { file, substr, reason } — file matches exactly or as a dir prefix
 // when it ends with '/'. Every entry must match >= 1 hit (no rot).
 const ALLOW = [
-  // --- Upstream SoT skill content ---
-  { file: '.agents/skills/ws-check-harness/PHASES.md', substr: 'retired hub folders', reason: 'harness retired-folder map already routes the old consumer hub to .ws' },
-  { file: '.agents/skills/ws-check-harness/scripts/check_harness_links.cjs', substr: 'hubText = ', reason: 'link checker covers SoT and installed-hub targets' },
-  { file: '.agents/skills/ws-check-workflows/scripts/check_workflows.cjs', substr: 'skill-dependencies.json', reason: 'SoT packaged graph path in message' },
-
-  // 0066: runtime/CATALOG.md no longer cites the SoT hub path (upstream block relocated to root).
-  { file: '.agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1', substr: "Join-Path $root '.agents/skills/ws-shared/", reason: 'upstream SoT fallback resolution' },
-  { file: '.ws/AGENTS.md', substr: 'authoring source of truth at', reason: 'upstream SoT pointer for package authors' },
-  { file: '.agents/skills/ws-shared/runtime/AGENTS.md', substr: 'authoring source at', reason: 'consumer banner names its SoT source for package authors' },
-  // --- Root hub docs (SoT links + global fallback) ---
-  { file: 'AGENTS.md', substr: '.agents/skills/ws-shared/', reason: 'SoT links and paths in upstream authoring hub' },
-  { file: 'AGENTS.md', substr: '$HOME/.agents/skills/ws-shared', reason: 'global hub templates/fallback (unchanged by project relocation)' },
-  { file: 'CATALOG.md', substr: '.agents/skills/ws-shared/', reason: 'SoT links and paths in upstream catalog' },
-  { file: 'FEATURES.md', substr: '.agents/skills/ws-shared/', reason: 'SoT links and paths in feature inventory' },
-  { file: 'README.md', substr: '.agents/skills/ws-shared/', reason: 'SoT links and paths in human install narrative' },
-  { file: 'README.md', substr: '.agents\\skills\\ws-shared', reason: 'SoT batch-launcher path in Windows snippet' },
-  { file: 'STACK.md', substr: '.agents/skills/ws-shared/', reason: 'SoT seed/launcher prose in upstream stack companion' },
-  { file: 'package.json', substr: '.agents/skills/ws-shared/runtime/scripts/', reason: 'SoT desktop GUI launcher script' },
-  // --- One-time relocation logic ---
-  { file: 'bin/cli.js', substr: "'.agents/skills/ws-shared'", reason: 'legacy-hub detection and token migration comparisons' },
-  // --- SoT runtime/template reads (scripts + tests) ---
-  { file: 'bin/', substr: '.agents/skills/ws-shared/runtime/scripts/', reason: 'SoT helper requires in packaged binaries' },
-  { file: 'scripts/', substr: '.agents/skills/ws-shared/runtime/scripts/', reason: 'SoT helper requires in benchmark harness' },
-  { file: 'test/', substr: '.agents/skills/ws-shared/runtime', reason: 'SoT runtime reads in tests (consumer runtime lives at .ws/runtime/)' },
-  { file: 'test/', substr: '.agents/skills/ws-shared/templates/', reason: 'SoT template reads in tests' },
-  { file: 'test/', substr: '.agents/skills/ws-shared/AGENTS.md', reason: 'SoT hub doc packaged assertion in tests' },
-  { file: 'test/', substr: "path.join(repoRoot, '.agents/skills/ws-shared', target)", reason: 'SoT mirror-link existence check in tests' },
-  { file: 'test/', substr: "path.join(parentDir, '.agents/skills/ws-shared', slug)", reason: 'promoted-skill nesting guard in install tests' },
-  { file: 'test/', substr: '!.agents/skills/ws-shared/', reason: 'inverted files[] assertion (relocated hub needs no exclusion)' },
-  { file: 'test/', substr: "= path.join(REPO, '.agents/skills/ws-shared');", reason: 'SoT hub const for runtime/template reads in tests' },
-  // --- SoT provenance citations in generated docs ---
-  { file: 'docs/', substr: 'ws-shared/runtime/', reason: 'SoT runtime source citations in site/wiki output' },
-  { file: '.agents/specs/wiki/', substr: 'ws-shared/runtime/', reason: 'SoT runtime source citations in wiki sources' },
-  // --- Repo mechanics ---
-  { file: '.gitattributes', substr: 'eol=lf', reason: 'line-ending attribute, not a path reference' },
-  { file: '.gitignore', substr: 'SoT tracks runtime/ and templates/', reason: 'comment describing the upstream SoT layout' },
-  { file: 'test/test-shared-hub-paths.js', substr: 'ws-shared', reason: "sweep's own patterns and allowlist literals" },
+  // --- Contract prose: `.ws` never carries managed runtime/templates ---
+  { file: '.agents/skills/ws-check-harness/PHASES.md', substr: '.ws/runtime', reason: 'gate contract states .ws/runtime is never a resolution source' },
+  { file: '.agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs', substr: '.ws/runtime', reason: 'resolver comment documenting the removed fallback' },
+  { file: 'install-skills.sh', substr: '.ws/runtime', reason: 'shim banner states managed content is never installed to .ws/runtime' },
+  // --- Retirement logic ---
+  { file: 'bin/cli.js', substr: '.ws/runtime', reason: 'installer retires .ws/runtime copies and documents the ban' },
+  { file: 'bin/cli.js', substr: '.ws/templates', reason: 'installer retires .ws/templates copies and documents the ban' },
+  // --- Negative/regression tests pinning the invariant ---
+  { file: 'test/test-doc-sync.js', substr: '.ws/runtime', reason: 'mirror-autoload negative assertion message' },
+  { file: 'test/test-hub-separation.js', substr: '.ws/runtime', reason: 'gate fixtures prove .ws/runtime is never audited or resolved' },
+  { file: 'test/test-install.js', substr: '.ws/runtime', reason: 'fresh-install negative assertion and message' },
+  { file: 'test/test-local-first-precedence.js', substr: '.ws/runtime', reason: 'stale-copy fixture proving skills-tree precedence' },
+  { file: 'test/test-ws-shared-layout.js', substr: '.ws/runtime', reason: 'migration fixture proves the hub pointer never links a retired copy' },
+  { file: 'test/test-skills-runtime-resolution.js', substr: '.ws/runtime', reason: 'fail-closed fixtures for the removed fallback' },
+  { file: 'test/test-shared-hub-paths.js', substr: '.ws/runtime', reason: "sweep's own patterns and allowlist literals" },
+  { file: 'test/test-shared-hub-paths.js', substr: '.ws/templates', reason: "sweep's own patterns and allowlist literals" },
 ];
 
 function collect(pattern) {
@@ -98,7 +78,7 @@ function collect(pattern) {
   return hits;
 }
 
-const hits = [...collect(PATTERNS[0]), ...collect(PATTERNS[1])];
+const hits = PATTERNS.flatMap((pattern) => collect(pattern));
 const used = new Array(ALLOW.length).fill(0);
 const unlisted = [];
 for (const hit of hits) {
@@ -116,7 +96,7 @@ for (const hit of hits) {
 assert.strictEqual(
   unlisted.length,
   0,
-  `live files reference the retired consumer hub path:\n${unlisted.join('\n')}`,
+  `live files reference the retired .ws/runtime or .ws/templates copies:\n${unlisted.join('\n')}`,
 );
 
 const unused = ALLOW.filter((entry, i) => used[i] === 0);
