@@ -358,6 +358,11 @@ function main(argv) {
     const telemetryFile = flagValue(argv, '--telemetry');
     const enabled = resolveAutoStartObserver(config);
     const gateStateFile = flagValue(argv, '--state');
+    // Round-8 fix-pr: fail closed when enabled without --state, so the
+    // durable check cannot be silently skipped.
+    if (enabled && !gateStateFile) {
+      throw new Error('should-dispatch requires --state when monitor.autoStartObserver is true');
+    }
     const gateState = gateStateFile && fs.existsSync(jsonStatePath(gateStateFile))
       ? readJson(jsonStatePath(gateStateFile))
       : null;

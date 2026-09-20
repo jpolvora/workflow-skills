@@ -194,11 +194,24 @@ assert(shouldDispatchObserver({
   assert(refused, 'AC3 second dispatch refused');
   assert(countObserverDispatches(fs.readFileSync(telemetryFile, 'utf8').trim().split('\n').map((line) => JSON.parse(line))) === 1,
     'AC3 dispatch count stays at one');
-  const gate = runObserver(['should-dispatch', '--config', configFile, '--telemetry', telemetryFile]);
+  const gate = runObserver(['should-dispatch', '--config', configFile, '--telemetry', telemetryFile,
+    '--state', stateFile]);
   assert(gate.status === 2, 'AC3 should-dispatch CLI exits 2 when enabled but already dispatched');
+  // Fix-pr round 8: enabled without --state fails closed (durable check
+  // cannot be silently skipped).
+  const noState = runObserver(['should-dispatch', '--config', configFile, '--telemetry', telemetryFile]);
+  assert(noState.status !== 0 && noState.stderr.includes('requires --state'),
+    'AC3 should-dispatch CLI fails closed when enabled without --state');
+  const freshStateFile = path.join(root, 'wf-fresh.state.json');
+  write(freshStateFile, JSON.stringify({
+    stateVersion: 3, revision: 0, workflowId: 'wf-fresh', slug: 's',
+    workflowType: 'standard', status: 'active', currentStep: 2,
+    completedSteps: [], skippedSteps: [],
+  }));
   write(configFile, JSON.stringify({ monitor: { autoStartObserver: true } }));
   write(telemetryFile, '');
-  const fresh = runObserver(['should-dispatch', '--config', configFile, '--telemetry', telemetryFile]);
+  const fresh = runObserver(['should-dispatch', '--config', configFile, '--telemetry', telemetryFile,
+    '--state', freshStateFile]);
   assert(fresh.status === 0 && JSON.parse(fresh.stdout).dispatch === true,
     'AC3 should-dispatch CLI exits 0 with dispatch true on fresh enabled run');
   write(configFile, JSON.stringify({}));
