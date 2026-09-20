@@ -20,8 +20,13 @@ void MAX_HUMAN_BURST;
 
 function parseIso(dtStr) {
   if (!dtStr) return null;
-  const raw = String(dtStr).trim().replace(/^["']|["']$/g, '').replace(/Z$/i, '+00:00');
-  const dt = new Date(raw);
+  let text = String(dtStr).trim().replace(/^["']|["']$/g, '').replace(/Z$/i, '+00:00');
+  // Parity with infer_human_timing.py parse_iso: naive wall times are UTC, not local.
+  if (!/[+-]\d{2}:?\d{2}$/.test(text)) {
+    const m = text.match(/^(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}(?::\d{2})?)$/);
+    text = m ? `${m[1]}T${m[2]}Z` : `${text}Z`;
+  }
+  const dt = new Date(text);
   if (Number.isNaN(dt.getTime())) return null;
   return dt;
 }

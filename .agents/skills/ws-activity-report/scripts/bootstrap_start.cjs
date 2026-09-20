@@ -89,8 +89,13 @@ function readStartedAt(usDir) {
     if (!m) continue;
     const raw = m[1].trim().replace(/^["']|["']$/g, '');
     try {
-      const normalized = raw.replace(/Z$/i, '+00:00');
-      const dt = new Date(normalized);
+      let text = raw.replace(/Z$/i, '+00:00');
+      // Parity with bootstrap_start.py read_started_at: naive wall times are UTC, not local.
+      if (!/[+-]\d{2}:?\d{2}$/.test(text)) {
+        const m = text.match(/^(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}(?::\d{2})?)$/);
+        text = m ? `${m[1]}T${m[2]}Z` : `${text}Z`;
+      }
+      const dt = new Date(text);
       if (Number.isNaN(dt.getTime())) return [raw, null];
       return [raw, dt.getTime() / 1000];
     } catch {

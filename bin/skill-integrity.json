@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "cccd07631486f224150bc1f7b95d1fd9576d1090f39f7b721682937cb6c84750",
+  "fullPackageDigest": "02a347cc4b03716d8c24d03467b55a9342e6fb060b3965c76ac96e4e3b18f510",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -66,11 +66,11 @@
         "evals/evals.json": "45e2f3241ef9549e949017b7072a7c6c1ff51c6d8259dac2b0c0137a322894d4",
         "references/OUTPUT.md": "421d9d76dc92d639fff3d62af1ae87e6eab0434a37cece670386673bb59f8528",
         "references/TIMING.md": "e62bad0929b88c873d9773101b66f8bb94bfd22c2dedea629bf90c9c44c35008",
-        "scripts/bootstrap_start.cjs": "a87283b10fa024754f36c0b9695474ecd436a3115a868fba66d7abafd0906249",
-        "scripts/infer_human_timing.cjs": "da1fc76850eaf1b5eddcfeaa9d4cb70b4598132543d6cc5f4f1317bc19df5287",
+        "scripts/bootstrap_start.cjs": "ce175b93517719346101a54bdca9a26ce6d6adc3727b8c975d67c5f644651344",
+        "scripts/infer_human_timing.cjs": "a38eeb2c6904ce7db9edc1c5fbf405f30e1f9e55f3177e514db624f999145275",
         "SKILL.md": "a50992809588c0bc81e94b7da0f8318be2c378e9f23090696f25fba58e19ac9c"
       },
-      "skillDigest": "0666f66c7f24a1c6716f5bfc163a548732c38b745084caa2df2b31c61903a935"
+      "skillDigest": "459b595d11bda9eb2b1c80cba50c593f0afe505452e14eb6e4a096039d0daa9d"
     },
     "ws-benchmarks": {
       "files": {
