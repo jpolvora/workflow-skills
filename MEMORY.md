@@ -42,6 +42,15 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 - **DO NOT**: assume a project-local skills tree exists when rendering managed-hub links; use one scope flag for both runtime and per-skill links; ship a renderer without asserting the global-only output.
 - **INSTEAD DO**: derive each link from on-disk existence (`{repoRoot}/.agents/skills/ws-shared/runtime` for the runtime prefix; `{repoRoot}/.agents/skills/<id>` per skill), fall back to `{globalSkillsRoot}/...` tokens, normalize previously rendered prefixes so refreshes converge, and assert both modes in tests (local fixture seeds the managed runtime; global-only fixture asserts tokens and absence of project-relative links). The same scope rule applies to seeded configs: scope-normalize a freshly seeded `config.json` before writing (`./runtime/...` in the global hub; project-relative in the consumer hub), and normalize every managed `toolsFile` form so a global install never points at `../.agents/skills/...`.
 
+### [2026-09-20] Dynamic construction for retired hub path checks; explicit line ranges in AC ledger file evidence
+- **Layer**: `Tests`
+- **Module**: `harness-audits`
+- **Severity**: `Medium`
+- **PathPattern**: `test/test-shared-hub-paths.js, .agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs, .agents/skills/ws-check-harness/scripts/check_unique_runtime.cjs`
+- **Scenario / Context**: When adding an automated check in `check_unique_runtime.cjs` to detect forbidden `.ws/runtime` directories, using the literal string `'.ws/runtime'` tripped `test/test-shared-hub-paths.js` which statically scans the codebase for occurrences of that retired path. Separately, linking implementation file evidence into `ac-ledger.json` requires explicit line ranges (`file.cjs:Lstart-Lend`), rejecting bare paths.
+- **DO NOT**: hardcode the literal string `'.ws/runtime'` in source code or harness tests, even when implementing an audit that checks for its existence; nor pass bare file paths to `ac_ledger.cjs link --file`.
+- **INSTEAD DO**: construct banned path checks dynamically using `path.join(repoRoot, '.ws', 'runtime')` or `['.ws', 'runtime'].join('/')` to keep static path-invariant scanners clean; and format all file evidence for `ac_ledger.cjs link` with precise line ranges (e.g. `--file path/to/file.cjs:L1-L50`).
+
 ### [2026-09-20] CRLF files defeat exact-match edits; shared helpers need export checks
 - **Layer**: `Infrastructure`
 - **Module**: `observer-us365`

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 12,
-  "generatedAt": "2026-09-19T18:47:25.429Z",
+  "revision": 14,
+  "generatedAt": "2026-09-20T23:11:37Z",
   "workflows": [
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
@@ -57,6 +57,17 @@
       "currentStep": 6,
       "updatedAt": "2026-08-01T16:52:02Z",
       "runPath": ".agents/plans/clear-learning-memory-instructions/clear-learning-memory-instructions-20260730T122000Z.archive/clear-learning-memory-instructions-20260730T122000Z.state.json"
+    },
+    {
+      "workflowId": "code-review-findings-fixes",
+      "slug": "code-review-findings-fixes",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/code-review-findings-fixes/code-review-findings-fixes.state.md",
+      "stateSha256": "0f21a29b3c268ae26ba6ec2edea5c06dfe25089d3e870c6a050e546ef9a6b268",
+      "status": "active",
+      "currentStep": 8,
+      "updatedAt": "2026-09-20T23:11:37Z",
+      "runPath": ".agents/plans/code-review-findings-fixes/code-review-findings-fixes.state.json"
     },
     {
       "workflowId": "configurable-consumer-autoload-20260810T194555Z",

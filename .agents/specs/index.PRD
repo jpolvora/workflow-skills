@@ -158,6 +158,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Add AGENTS.md rule: check the skill dependency graph when editing a skill so callers and callees stay in sync (`spec: 0099-us-358.spec.md`)
 - [x] .ws resolution vs ws-shared folders cleanup (`spec: 0106-ws-shared-resolution-cleanup.spec.md`) — PR #374 MERGED
 - [ ] ws-monitor transcript signals fire false positives on healthy runs (hybrid-path-resolution, model-fallback, subagent-error) (`spec: 0107-us-369.spec.md`)
+- [x] Harness & Skills Hardening from Code Review of Recent PRs (`spec: 0108-code-review-findings-fixes.spec.md`)
+
 
 
 
@@ -337,6 +339,8 @@ All Next-specs closed except true todo: `us-369`.
 | 111 | `ws-shared-resolution-cleanup` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | .ws resolution vs ws-shared folders cleanup (PR #374) |
 
 | 112 | `us-369` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor transcript signals fire false positives on healthy runs (hybrid-path-resolution, model-fallback, subagent-error) |
+
+| 113 | `code-review-findings-fixes` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Harness & Skills Hardening from Code Review of Recent PRs |
 
 ## 9. Inbox
 

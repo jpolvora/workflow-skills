@@ -1,0 +1,372 @@
+{
+  "schemaVersion": 1,
+  "revision": 13,
+  "workflowId": "code-review-findings-fixes",
+  "slug": "code-review-findings-fixes",
+  "specPath": ".agents/plans/code-review-findings-fixes/step-00-code-review-findings-fixes.spec.md",
+  "planIndexPath": ".agents/plans/code-review-findings-fixes/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "Provide a centralized runtime bootstrap helper in `ws-shared/runtime/scripts/bootstrap_runtime.cjs` that exports `resolveHubScriptsDir()` with candidate resolution precedence (explicit `WORKFLOW_SKILLS_SHARED_DIR` -> local `.agents/skills` -> global skills root -> packaged fallback).",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/bootstrap_runtime.cjs:L1-L50"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-005",
+        "section-012",
+        "section-014"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/bootstrap_runtime.cjs",
+          "lineStart": 1,
+          "lineEnd": 50,
+          "sha256": "4e9586a70ae11563e2129313b752c9d0ba9ad47193df1ee232f15dd63d4a0e2d"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3cbdd0b985655fd513ecd9080dc3ed56bcf59f4c",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testResolveHubScriptsDir",
+          "sourceFile": "test/test-bootstrap-runtime.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-20T23:03:45.788Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-3cbdd0b985655fd513ecd9080dc3ed56bcf59f4c",
+        "link-ac1-impl"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "Refactor skill scripts under `.agents/skills/*/scripts/*.cjs` to consume the centralized bootstrap helper while preserving fallback execution when invoked standalone outside repo root.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-check-harness/scripts/check_unique_runtime.cjs:L18-L45",
+        ".agents/skills/ws-spec-to-pr/scripts/observer.cjs:L20-L45"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-009",
+        "section-012"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-check-harness/scripts/check_unique_runtime.cjs",
+          "lineStart": 18,
+          "lineEnd": 45,
+          "sha256": "bc897e10eabcf22bba66a04cdaa0c55d183ca1df349c183bbd4f8ce9cce8e2b1"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/observer.cjs",
+          "lineStart": 20,
+          "lineEnd": 45,
+          "sha256": "33daced0fbadb6eb817065ae5589f2f72446db206443324cf8be61fb02f6236b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3cbdd0b985655fd513ecd9080dc3ed56bcf59f4c",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testResolveHubScriptsDir",
+          "sourceFile": "test/test-bootstrap-runtime.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-20T23:03:53.514Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-3cbdd0b985655fd513ecd9080dc3ed56bcf59f4c",
+        "link-ac2-impl"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "Update `check_hub_separation.cjs` to resolve global skills root via `require('os').homedir()` instead of raw `process.env.HOME || process.env.USERPROFILE`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-check-harness/scripts/check_hub_separation.cjs:L60-L75"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006",
+        "section-012"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-check-harness/scripts/check_hub_separation.cjs",
+          "lineStart": 60,
+          "lineEnd": 75,
+          "sha256": "c86aad86dd5eaf0ce15b7e0577ba2d88b07c5f4bc7bf29d703f7396c5a62ab69"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3cbdd0b985655fd513ecd9080dc3ed56bcf59f4c",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testResolveHubScriptsDir",
+          "sourceFile": "test/test-bootstrap-runtime.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-20T23:03:53.577Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-3cbdd0b985655fd513ecd9080dc3ed56bcf59f4c",
+        "link-ac3-impl"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "Enhance `readBoundedTailText` in `monitor_snapshot.cjs` with `StringDecoder` decoding to prevent replacement character corruption from boundary-split multi-byte UTF-8 sequences.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L230-L260"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-007",
+        "section-012"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 230,
+          "lineEnd": 260,
+          "sha256": "c4622f869002bc081f8f56911495ca83a168abb476c0f7c5018c478b9d864ac0"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3cbdd0b985655fd513ecd9080dc3ed56bcf59f4c",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testSeveredUtf8ChunkDecoding",
+          "sourceFile": "test/test-bootstrap-runtime.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-20T23:03:53.632Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-3cbdd0b985655fd513ecd9080dc3ed56bcf59f4c",
+        "link-ac4-impl"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "Add an automated check in `check_unique_runtime.cjs` or `check_hub_separation.cjs` that fails closed if any tracked skill script or documentation directs writing runtime code to `.ws/runtime`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-check-harness/scripts/check_unique_runtime.cjs:L109-L116"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-008",
+        "section-012"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-check-harness/scripts/check_unique_runtime.cjs",
+          "lineStart": 109,
+          "lineEnd": 116,
+          "sha256": "bc897e10eabcf22bba66a04cdaa0c55d183ca1df349c183bbd4f8ce9cce8e2b1"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3cbdd0b985655fd513ecd9080dc3ed56bcf59f4c",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testBannedRuntimeDirectoryDetection",
+          "sourceFile": "test/test-bootstrap-runtime.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-20T23:03:53.683Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-3cbdd0b985655fd513ecd9080dc3ed56bcf59f4c",
+        "link-ac5-impl"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "Verify all existing test suites (`npm test`) and harness audits (`node test/test-harness-clean.js`) pass with 0 findings.",
+      "status": "Implemented",
+      "evidence": [
+        "test/test-bootstrap-runtime.js:L1-L125"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-010",
+        "section-012",
+        "section-014"
+      ],
+      "files": [
+        {
+          "path": "test/test-bootstrap-runtime.js",
+          "lineStart": 1,
+          "lineEnd": 125,
+          "sha256": "fc3417df7cd80cc012bc055696e45d9e4e56c0526324adb670e16eb35ae02867"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3cbdd0b985655fd513ecd9080dc3ed56bcf59f4c",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-bootstrap-runtime",
+          "sourceFile": "test/test-bootstrap-runtime.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-20T23:03:53.733Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-3cbdd0b985655fd513ecd9080dc3ed56bcf59f4c",
+        "link-ac6-impl"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "A script invoking the bootstrap helper with invalid or unresolvable paths fails closed with an informative error rather than a silent undefined crash.",
+      "tests": [
+        {
+          "name": "testResolveHubScriptsDir",
+          "sourceFile": "test/test-bootstrap-runtime.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-20T23:03:53.783Z"
+        }
+      ],
+      "linkEventIds": [
+        "link-ns1-impl"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Tail-reading a buffer with a severed UTF-8 sequence does not produce corrupt unprintable tokens or cause regex matching exceptions.",
+      "tests": [
+        {
+          "name": "testSeveredUtf8ChunkDecoding",
+          "sourceFile": "test/test-bootstrap-runtime.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-20T23:03:53.836Z"
+        }
+      ],
+      "linkEventIds": [
+        "link-ns2-impl"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "pre-step6",
+    "score": 10,
+    "earnedUnits": 60,
+    "totalUnits": 60,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-20T23:09:35.201Z"
+  }
+}
