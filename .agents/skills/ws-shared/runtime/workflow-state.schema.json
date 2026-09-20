@@ -54,6 +54,37 @@
       }
     },
     "stepStatus": { "type": "object" },
+    "agentTranscripts": {
+      "type": "object",
+      "description": "us-365: available agent transcript paths recorded by the orchestrator so ws-monitor (and the opt-in watcher) can follow execution. Explicit absent marker when unavailable.",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": { "enum": ["available", "transcript-unavailable"] },
+        "paths": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Transcript/session paths correlated to this run (present only when status is available)."
+        },
+        "reason": {
+          "enum": ["discovery-disabled", "no-matching-session", "scan-capped"],
+          "description": "Why no transcript is recorded (present only when status is transcript-unavailable)."
+        },
+        "recordedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "observer": {
+      "type": "object",
+      "description": "us-365: opt-in execution-observer dispatch record. At most one watcher dispatch per run.",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "dispatchCount": { "type": "integer", "minimum": 0, "maximum": 1 },
+        "dispatchedAt": { "type": "string", "format": "date-time" },
+        "logPath": { "type": "string" },
+        "reportPath": { "type": "string" }
+      }
+    },
     "stepDispatches": {
       "type": "array",
       "items": {

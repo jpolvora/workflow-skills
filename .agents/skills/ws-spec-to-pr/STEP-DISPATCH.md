@@ -55,6 +55,18 @@ Fill 4–8 `*` bullets from that analysis. Do **not** copy a canned list from a 
 | 8 | **Close implementation then ship — primary + overflow, two state phases** ([`gates.md`](../ws-shared/runtime/gates.md)): delivery result → primary user-gate (Create PR / Push only / More options…) + overflow gate when More → close phase (G2-delivery per choice, MEMORY, changelog, `status: completed`, `shipStatus: pending`) → ship phase for ship intents (`ws-ship-pr` `workflowMode: true`, `stopBeforeFixPr: true`, push/PR only); Skip-shipping skips ship; Separate gates / Pause pauses. **`comment-issue`** on PR create when tracker id present; **`check-pr-status`** for CI triage. | `step-08-{slug}.result.md` |
 | 9 | `dispatch-agent` `ws-goal-fix-pr` (default) or `ws-fix-pr` (one-shot) after PR exists. CI fixes use **`check-pr-status`** only (baseline vs diff + one flake rerun). **`comment-issue`** on in-session merge when applicable. | PR threads / merge |
 
+### Execution observer dispatch (opt-in, us-365)
+
+- Gate: `node {skillsRoot}/ws-spec-to-pr/scripts/observer.cjs should-dispatch
+  --config {sharedDir}/config.json --telemetry {us-dir}/telemetry.jsonl`.
+  Refused (`dispatch: false`) → dispatch nothing.
+- On allow: one `dispatch-agent` read-only watcher (report state/execution and
+  skill-instruction errors per `{skillsRoot}/ws-shared/runtime/observer-instructions.md`;
+  forbid product, state, config, commit, and PR writes), then
+  `observer.cjs note-dispatch` records the single allowed dispatch.
+- At most one watcher per run; the watcher never blocks step advancement and
+  default-off runs dispatch zero watchers.
+
 ### Post-mutating transition (after step N completes)
 
 **Order (mandatory):**

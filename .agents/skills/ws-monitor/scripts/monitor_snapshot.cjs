@@ -961,6 +961,25 @@ function scanTranscriptRoots(context, roots, filter = {}) {
 // us-356: session-to-workflow correlation over already-scanned tails.
 // Keys are normalized (case, separators) before matching to avoid false
 // stall signals. Never touches the host store beyond the bounded scan above.
+// us-365: state-recorded agent transcript paths. The orchestrator records
+// available paths (or the explicit absent marker) in state.agentTranscripts
+// so snapshots stay readable without host-store discovery. Returns the
+// validated marker, or null when the state carries none.
+const STATE_TRANSCRIPT_REASONS = new Set(['discovery-disabled', 'no-matching-session', 'scan-capped']);
+function resolveStateAgentTranscripts(state) {
+  const marker = state && state.agentTranscripts;
+  if (!marker || typeof marker !== 'object') return null;
+  if (marker.status === 'available') {
+    const paths = Array.isArray(marker.paths) ? marker.paths.filter((item) => String(item || '').trim()) : [];
+    if (paths.length === 0) return null;
+    return { status: 'available', paths };
+  }
+  if (marker.status === 'transcript-unavailable' && STATE_TRANSCRIPT_REASONS.has(marker.reason)) {
+    return { status: 'transcript-unavailable', reason: marker.reason };
+  }
+  return null;
+}
+
 function resolveTranscriptSource(workflow, scannedFiles, discoveryEnabled, repoRoot, scanMeta = {}) {
   if (!discoveryEnabled) {
     return { status: 'transcript-unavailable', reason: 'discovery-disabled' };
@@ -1109,6 +1128,7 @@ function snapshot(options) {
         parseErrors: telemetry.errors,
         lastEvent: telemetry.events.at(-1) || null,
       },
+      stateAgentTranscripts: resolveStateAgentTranscripts(state),
       expectedArtifacts: expectedArtifacts(state, workflowDir, minVerifyScore, context.repoRoot),
       findings,
     });
@@ -1266,6 +1286,7 @@ function markdownReport(report) {
       `- Mapped runner: ${workflow.mappedRunner || 'single-host'}`,
       `- State: \`${workflow.statePath}\``,
       `- Telemetry events: ${workflow.telemetry.eventCount}`,
+    '- State transcripts: ' + (() => { const m = workflow.stateAgentTranscripts; if (!m) return 'not recorded'; if (m.status === 'available') return 'available (' + m.paths.length + ' paths)'; return 'transcript-unavailable (' + m.reason + ')'; })(),
     '- Transcript: ' + (workflow.transcriptSource ? workflow.transcriptSource.status : 'unknown') + (workflow.transcriptSource && workflow.transcriptSource.adapter ? ' via ' + workflow.transcriptSource.adapter + ' (' + workflow.transcriptSource.locationClass + ')' : ' (' + ((workflow.transcriptSource && workflow.transcriptSource.reason) || 'unknown') + ')'),
       '',
       'Expected artifacts:',
@@ -1367,6 +1388,7 @@ module.exports = {
   sanitizeTranscriptText,
   sanitizeReportPath,
   readBoundedTailText,
+  resolveStateAgentTranscripts,
   resolveTranscriptSource,
   guessTranscriptAdapter,
   resolveMuseSessionsRoot,

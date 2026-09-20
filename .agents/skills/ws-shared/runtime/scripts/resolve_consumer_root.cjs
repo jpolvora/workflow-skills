@@ -139,6 +139,12 @@ function resolveMinVerifyScore(config) {
   return n;
 }
 
+// us-365: opt-in execution observer. Omitted or any non-true value resolves
+// to false (zero watcher dispatches); only explicit true enables the watcher.
+function resolveAutoStartObserver(config) {
+  return config?.monitor?.autoStartObserver === true;
+}
+
 const DEFAULT_CHANGELOG_FILE = 'CHANGELOG.md';
 const DEFAULT_MEMORY_DIR = '.';
 
@@ -543,6 +549,7 @@ module.exports = {
   reportResolved,
   normalizeConfig,
   resolveMinVerifyScore,
+  resolveAutoStartObserver,
   resolveMemoryRouting,
   DEFAULT_CHANGELOG_FILE,
   DEFAULT_MEMORY_DIR,

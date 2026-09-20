@@ -1,7 +1,7 @@
 ---
 name: ws-plan-interview
 description: Interactive plan interrogation engine — audits implementation plans to uncover hidden assumptions, resolve ambiguities, and refine technical designs.
-version: 0.4.43
+version: 0.4.44
 disable-model-invocation: true
 invocation_names:
   - plan-interview
