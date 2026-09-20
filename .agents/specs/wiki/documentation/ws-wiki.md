@@ -1,6 +1,6 @@
 # Living Feature Wiki & Domain Knowledge Base (`ws-wiki`)
 
-> Provenance: `.agents/skills/ws-wiki/SKILL.md`, companions `FROM-CODE.md`/`PHASE-1-SWEEP.md`/`SYNC.md`/`UPDATE.md`, `scripts/validate_wiki.cjs`, `plans.wikiDir` and `plans.wiki.verbosity` in `{sharedDir}/config.json`, living synthesis of specs 0087.
+> Provenance: `.agents/skills/ws-wiki/SKILL.md`, companions `FROM-CODE.md`/`PHASE-1-SWEEP.md`/`SYNC.md`/`UPDATE.md`, `scripts/validate_wiki.cjs`, `plans.wikiDir` and `plans.wiki.verbosity` in `{sharedDir}/config.json`, living synthesis of specs 0075, 0076, 0078, 0079, 0080, 0087.
 
 ## Feature
 
@@ -10,7 +10,7 @@ Page-writing flows honor a `verbosity` prose style. `condensed` (the default) wr
 
 ## How it works
 
-Genesis begins after `index.wiki.md` exists. From-code inspects project structure and code in canonical area order from `list_wiki_from_code_areas.cjs`, merges with existing wiki pages by default, and writes the conditional template where `## Feature` and `## How it works` are required while `## Backend`, `## Frontend`, and `## Third-party services` appear only when applicable. Sweep walks top-level specs in prefix order via `list_wiki_sweep_specs.cjs`; later specs win conflicts and current code beats stale acceptance criteria when reconciling statements.
+Genesis begins after `index.wiki.md` exists. A finished `init` offers the first-time spec sweep through a `user-gate` when the wiki holds no feature pages yet, and the sweep also runs standalone without a fresh init. From-code inspects project structure and code in canonical area order from `list_wiki_from_code_areas.cjs`, merges with existing wiki pages by default, and writes the conditional template where `## Feature` and `## How it works` are required while `## Backend`, `## Frontend`, and `## Third-party services` appear only when applicable. Sweep walks top-level specs in prefix order via `list_wiki_sweep_specs.cjs`; later specs win conflicts and current code beats stale acceptance criteria when reconciling statements. The enumerator lists only top-level spec files, skips nested step copies, context files, and the wiki tree itself, and fail-closes a slug that exists in both prefixed and unprefixed form instead of guessing which copy is the record.
 
 Each page-writing run resolves verbosity as explicit invocation override, then `{wikiDir}/from-code.state.json`, then `plans.wiki.verbosity` in config, then `condensed`. Unknown values fail closed to `condensed` with a warning. The Start gate in from-code and sweep asks via `user-gate` unless `autoMode` takes the persisted default without prompting.
 

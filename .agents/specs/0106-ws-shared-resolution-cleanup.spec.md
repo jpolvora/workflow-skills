@@ -4,7 +4,7 @@ slug: ws-shared-resolution-cleanup
 title: ".ws resolution vs ws-shared folders cleanup"
 source: local
 specDate: 2026-09-19
-status: Final
+status: completed
 ---
 
 # Specification — .ws resolution vs ws-shared folders cleanup

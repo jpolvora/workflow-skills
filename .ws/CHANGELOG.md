@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-20 06:30] Agent: Muse Code (muse-spark)
+- **Prompt**: Release 0.4.45: bump version, update docs, update website, update wiki, commit, push, ws-ship-pr, ws-goal-fix-pr.
+- **Done**: `npm run build-site:bump` 0.4.44 -> 0.4.45 (54 SKILL frontmatter, packageVersion x2, site + docs/wiki rebuild); integrity regen + verified (54 skills); bounded ws-wiki sweep 9919e5c..HEAD (25 specs, detailed prose, 8 pages, validate 11/11 PASS, baseline -> d9db97f1); changelog entry; secrets scan clean.
+- **Result**: npm run test green; test-harness-clean 0 findings; check_workflows clean; verify-integrity OK.
+
 ### [2026-09-20 03:15] Agent: Muse Code
 - **Prompt**: us-365 worker (standard): opt-in execution observer for ws-spec-to-pr (transcript paths in state schema, autoStartObserver default false, at most one parallel read-only watcher sharing instruction source with ws-monitor, 6 ACs).
 - **Done**: monitor.autoStartObserver schema+example+resolver (strict true) + PS1 GUI row; state agentTranscripts/observer schema fields + observer.cjs (resolve/should-dispatch/record/note-dispatch/watch, read-only outside observer/); shared runtime/observer-instructions.md referenced by both SKILL.md files; monitor snapshot surfaces stateAgentTranscripts; new test-observer-us365.js (46 checks) registered in package.json chain; integrity regen + verified (v0.4.44).
