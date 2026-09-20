@@ -159,7 +159,7 @@ PowerShell rules (avoid runtime errors and on-the-fly script patching):
 
 Run this checklist before `/ship-pr` or shipping features:
 
-- [ ] **1. Run Tests & Verification**: Execute `verification.backendTest` / `verification.frontendTest` and the stack invariant scan (`node .ws/runtime/scripts/scan_stack_invariants.cjs`).
+- [ ] **1. Run Tests & Verification**: Execute `verification.backendTest` / `verification.frontendTest` and the stack invariant scan (`node {skillsRoot}/ws-shared/runtime/scripts/scan_stack_invariants.cjs`).
 - [ ] **2. Harness & Workflow Audit**: Run `ws-check-harness` / `ws-check-workflows` to ensure 0 critical findings.
 - [ ] **3. Configure & Verify Project**: Verify `.ws/config.json` settings and stack definitions.
 - [ ] **4. Clean Docs & Artifacts**: Ensure no merge conflict markers or uncommitted scratch files.
