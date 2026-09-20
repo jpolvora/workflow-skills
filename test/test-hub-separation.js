@@ -33,10 +33,13 @@ function mkConsumerHub(extra = '') {
   return root;
 }
 
-function check(repoRootDir, mode) {
+function check(repoRootDir, mode, env) {
   const args = ['--json', '--repo-root', repoRootDir];
   if (mode) args.push('--mode', mode);
-  const result = run(CHECKER, args);
+  // Pin an empty global dir by default so fixtures resolve locally instead of
+  // auditing the machine-global install.
+  const pinned = { WORKFLOW_SKILLS_GLOBAL_DIR: path.join(repoRootDir, 'no-global'), ...(env || {}) };
+  const result = run(CHECKER, args, { env: pinned });
   let report = null;
   try {
     report = JSON.parse(result.stdout);
@@ -108,23 +111,58 @@ try {
     `${fs.readFileSync(SOT_HUB, 'utf8')}\nRun npm run generate-integrity before ship.\n`,
     'utf8',
   );
-  const hybrid = run(CHECKER, ['--json', '--repo-root', hybridRoot, '--mode', 'consumer'], {
-    env: { WORKFLOW_SKILLS_GLOBAL_DIR: globalRoot },
-  });
-  assert.strictEqual(hybrid.status, 1, 'contaminated global runtime exits 1');
+  const hybrid = check(hybridRoot, 'consumer', { WORKFLOW_SKILLS_GLOBAL_DIR: globalRoot });
+  assert.strictEqual(hybrid.result.status, 1, 'contaminated global runtime exits 1');
   assert.ok(
-    JSON.parse(hybrid.stdout).findings.some((row) => row.kind === 'upstream-phrase'),
+    JSON.parse(hybrid.result.stdout).findings.some((row) => row.kind === 'upstream-phrase'),
     'global runtime contamination reported',
   );
 
   // Fail closed: a missing effective hub is critical in consumer mode.
   const emptyRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-hub-sep-empty-'));
   tmpRoots.push(emptyRoot);
-  const missing = run(CHECKER, ['--json', '--repo-root', emptyRoot, '--mode', 'consumer'], {
-    env: { WORKFLOW_SKILLS_GLOBAL_DIR: path.join(emptyRoot, 'no-global') },
-  });
-  assert.strictEqual(missing.status, 1, 'missing hub exits 1 in consumer mode');
-  assert.ok(JSON.parse(missing.stdout).findings.some((row) => row.kind === 'hub-missing'), 'missing hub reported');
+  const missing = check(emptyRoot, 'consumer');
+  assert.strictEqual(missing.result.status, 1, 'missing hub exits 1 in consumer mode');
+  assert.ok(JSON.parse(missing.result.stdout).findings.some((row) => row.kind === 'hub-missing'), 'missing hub reported');
+
+  // Local-first: a contaminated skills-tree runtime wins over a clean legacy installed copy.
+  const localFirstRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-hub-sep-localfirst-'));
+  tmpRoots.push(localFirstRoot);
+  const legacyRuntime = path.join(localFirstRoot, '.ws', 'runtime');
+  fs.mkdirSync(legacyRuntime, { recursive: true });
+  fs.writeFileSync(path.join(legacyRuntime, 'AGENTS.md'), fs.readFileSync(SOT_HUB, 'utf8'), 'utf8');
+  const treeRuntime = path.join(localFirstRoot, '.agents', 'skills', 'ws-shared', 'runtime');
+  fs.mkdirSync(treeRuntime, { recursive: true });
+  fs.writeFileSync(
+    path.join(treeRuntime, 'AGENTS.md'),
+    `${fs.readFileSync(SOT_HUB, 'utf8')}\nRun npm run generate-integrity before ship.\n`,
+    'utf8',
+  );
+  const localFirst = check(localFirstRoot, 'consumer');
+  assert.strictEqual(localFirst.result.status, 1, 'contaminated skills-tree runtime exits 1');
+  assert.ok(
+    JSON.parse(localFirst.result.stdout).hub.endsWith('.agents/skills/ws-shared/runtime/AGENTS.md'),
+    'skills-tree runtime is the audited hub',
+  );
+
+  // Explicit shared-dir override is audited when it is the effective source.
+  const overrideRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-hub-sep-override-'));
+  tmpRoots.push(overrideRoot);
+  const customShared = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-hub-sep-custom-'));
+  tmpRoots.push(customShared);
+  const customRuntime = path.join(customShared, 'runtime');
+  fs.mkdirSync(customRuntime, { recursive: true });
+  fs.writeFileSync(
+    path.join(customRuntime, 'AGENTS.md'),
+    `${fs.readFileSync(SOT_HUB, 'utf8')}\nRun npm run build-site:bump before ship.\n`,
+    'utf8',
+  );
+  const overridden = check(overrideRoot, 'consumer', { WORKFLOW_SKILLS_SHARED_DIR: customShared });
+  assert.strictEqual(overridden.result.status, 1, 'contaminated shared-dir override exits 1');
+  assert.ok(
+    JSON.parse(overridden.result.stdout).findings.some((row) => row.kind === 'upstream-phrase'),
+    'override contamination reported',
+  );
 
   // AC4: consumer CATALOG keeps no upstream-only sections; root keeps them.
   const catalog = fs.readFileSync(SOT_CATALOG, 'utf8');
