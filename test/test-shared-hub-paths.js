@@ -44,9 +44,10 @@ const ALLOW = [
   { file: '.agents/skills/ws-check-harness/scripts/check_harness_links.cjs', substr: 'hubText = ', reason: 'link checker covers SoT and installed-hub targets' },
   { file: '.agents/skills/ws-check-workflows/scripts/check_workflows.cjs', substr: 'skill-dependencies.json', reason: 'SoT packaged graph path in message' },
 
-  { file: '.agents/skills/ws-shared/runtime/CATALOG.md', substr: 'skill-dependencies.json', reason: 'SoT packaged graph prose' },
+  // 0066: runtime/CATALOG.md no longer cites the SoT hub path (upstream block relocated to root).
   { file: '.agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1', substr: "Join-Path $root '.agents/skills/ws-shared/", reason: 'upstream SoT fallback resolution' },
   { file: '.ws/AGENTS.md', substr: 'authoring source of truth at', reason: 'upstream SoT pointer for package authors' },
+  { file: '.agents/skills/ws-shared/runtime/AGENTS.md', substr: 'authoring source at', reason: 'consumer banner names its SoT source for package authors' },
   // --- Root hub docs (SoT links + global fallback) ---
   { file: 'AGENTS.md', substr: '.agents/skills/ws-shared/', reason: 'SoT links and paths in upstream authoring hub' },
   { file: 'AGENTS.md', substr: '$HOME/.agents/skills/ws-shared', reason: 'global hub templates/fallback (unchanged by project relocation)' },

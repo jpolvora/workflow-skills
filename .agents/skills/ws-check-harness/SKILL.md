@@ -2,7 +2,7 @@
 name: ws-check-harness
 description: Meta-harness integrity auditor — detects install mode/scope (upstream, project-local, global, hybrid) and scans routing, links, portability, integrity digests, instruction duplication, role clarity, and skill composition topology.
 disable-model-invocation: true
-version: 0.4.42
+version: 0.4.43
 invocation_names:
   - check-harness
   - ws-check-harness
@@ -34,7 +34,7 @@ flowchart LR
 
 | Step | Do | Done when |
 |------|-----|-----------|
-| **1 Scan** | Load [`PHASES.md`](PHASES.md); run the Phase 0 detector (`detect_install_mode.cjs`) then Phases 0–5c including Phase 5a (`check_duplicates.cjs`, `measure_harness.cjs`, `check_shell_quoting.cjs`, `check_pipeline_handoff.cjs`, `check_unique_runtime.cjs`, `check_harness_links.cjs`); collect evidence | Install mode/scope/scan roots + coexistence recorded; findings table ready; mechanical gates exit 0; **no edits** |
+| **1 Scan** | Load [`PHASES.md`](PHASES.md); run the Phase 0 detector (`detect_install_mode.cjs`) then Phases 0–5c including Phase 5a (`check_duplicates.cjs`, `measure_harness.cjs`, `check_shell_quoting.cjs`, `check_pipeline_handoff.cjs`, `check_unique_runtime.cjs`, `check_harness_links.cjs`, `check_hub_separation.cjs`); collect evidence | Install mode/scope/scan roots + coexistence recorded; findings table ready; mechanical gates exit 0; **no edits** |
 | **2 Plan** | Emit report per [`REPORT-FORMAT.md`](REPORT-FORMAT.md); `user-gate` unless dry-run | Report delivered; dry-run ends here |
 | **3 Execute** | Apply approved items only; re-run Phase 2 on touched files | User informed of applied vs pending |
 
@@ -118,7 +118,7 @@ Healthy + no unrouted items → **Harness OK**. Else emit full report from [`REP
 
 ## Definition of Done
 
-**Scan:** path token map loaded from `{sharedDir}/config.json` when present; **Install mode + Install scope + Skills scan root(s)** resolved (detector `detect_install_mode.cjs`, or manual evidence when it is unavailable) and recorded with `coexistence`; Phases 0–5c done (Phase 5a ran `check_duplicates.cjs`, `measure_harness.cjs`, `check_shell_quoting.cjs`, `check_pipeline_handoff.cjs`, `check_unique_runtime.cjs`, and `check_harness_links.cjs` to exit 0); § 3b + retired ids checked when `ws-spec-to-pr` present; Phase 4 hub↔disk diff; Phase 5c context report; zero edits.
+**Scan:** path token map loaded from `{sharedDir}/config.json` when present; **Install mode + Install scope + Skills scan root(s)** resolved (detector `detect_install_mode.cjs`, or manual evidence when it is unavailable) and recorded with `coexistence`; Phases 0–5c done (Phase 5a ran `check_duplicates.cjs`, `measure_harness.cjs`, `check_shell_quoting.cjs`, `check_pipeline_handoff.cjs`, `check_unique_runtime.cjs`, `check_harness_links.cjs`, and `check_hub_separation.cjs` to exit 0); § 3b + retired ids checked when `ws-spec-to-pr` present; Phase 4 hub↔disk diff; Phase 5c context report; zero edits.
 
 **Plan:** severity + evidence + proposed correction; report format; dry-run stops; else `user-gate`.
 
