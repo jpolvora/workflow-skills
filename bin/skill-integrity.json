@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "efcef2496f10ab42099c97a61de6df23e181c1c97b2650216acf73469503f452",
+  "fullPackageDigest": "34deccb939758b2aead26719eeaebd5e7942151566cd2675bc5c2e8e4d906c12",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -107,9 +107,9 @@
       "files": {
         "evals/evals.json": "3b75c793fe10d929f380ae3c90232b22e00cbe91149ae5187a56054ddc676630",
         "scripts/check_workflows.cjs": "a5c8269da6b52b2848fe0d5cd867376f45e9e768c11ed665d62baacd5ca46e54",
-        "SKILL.md": "e4d86896c6b6111fe9795a41a45293186dd558d5c8ca339820f9772f9b86c164"
+        "SKILL.md": "aa07aa08e010c97dd135d94ced5ed62e2a8910145e8903320b2459aa34b1840b"
       },
-      "skillDigest": "5c1bd8a9bcbb48a55f87386d6ac3a02da287940ef733f56335d1208ef3b065bb"
+      "skillDigest": "19b16174afa6f2ebd0a3b73ab97a8fdf999c5f9a7f1e84dd9103329526bff4a7"
     },
     "ws-classify-complexity": {
       "files": {
@@ -320,13 +320,13 @@
     "ws-secrets-leak-review": {
       "files": {
         "evals/evals.json": "5e0f2b6dc45fb8f4c4adede9485e295c1d494dfe694861814facf374571169d4",
-        "REFERENCE.md": "9361c84d7604f6f10e61ba8c45e211472abedfda6402efd07e65b398d644084a",
+        "REFERENCE.md": "52f9a053c31aaa20ce2c8fa27e775afe3fbcc446133512f9e672e166f67a6440",
         "scripts/install-hook.sh": "deaafa430a830ba7925654c9d7f3758a2199f97408e706b26f2b92371269ffcf",
         "scripts/pre-commit.sh": "01d8fd74a42e454425712a60ae04858c8c2ce256acd808661e3f63435b908be1",
         "scripts/secrets_scanner.cjs": "bfaa39adcc4f11bdfb90f7eff9038bf6fe7c3644bf1542a6e54ef2a46d58803c",
-        "SKILL.md": "1c5d04a9f749717fafb7b0404ae600b635d7dc6fc64221208835ac14c3d3dd04"
+        "SKILL.md": "e61f6d2fe5c56899709c411a62a8a1b33c288105b770cc1b395da79cffd0afd3"
       },
-      "skillDigest": "4ebf538deb0a6bb2592d6a91fc030502a8c600fbe52cab787e6c933d119656f4"
+      "skillDigest": "3ab38cb63ba9eb10b033155e510d2d35024aa019e5979eb45883bf4657fa8cc8"
     },
     "ws-self-learning": {
       "files": {
@@ -347,14 +347,14 @@
     "ws-ship-pr": {
       "files": {
         "evals/evals.json": "39dbdb16286b114d780b5761aa9256b4b566f0b9847da6ebb85a845195b57192",
-        "examples.md": "7d03d21ab7abfdcb5e8e771f49d6cdf9ea1626a9d39fc2727a085b45bfba4277",
+        "examples.md": "0e27492bfc71e14d723e512535bb8da087384edc39d7a689d05928d0cdd0b61c",
         "GOAL-OVERRIDES.md": "fd6047084d6875bbe908c581c0078ef8c75a93eea1f3d72c84e11807003a0406",
-        "PREPARE-CHECKLIST.md": "ea67c8ed4037335782fe861eb83a0596ba3e40de429be95e409ed9439376cb19",
+        "PREPARE-CHECKLIST.md": "f944935e5ea581862ea0d8a804405743d402da59ef392f795e7938aea5689f4e",
         "scripts/detect-base-branch.cjs": "1f24ca0f54790f1020047dac9e89c0163fcf96d07366d473606c59f0123cfd4d",
         "scripts/verify.cjs": "09ab8ec364dd0fcbbc749dfd4993f93674f417e3ec3c09694e5210d2fe837003",
-        "SKILL.md": "c59330e1943e38eaaded0ba81845df9c6343f237c93df8a9a864f68b67a4f51b"
+        "SKILL.md": "13b0fca7fa4699b11f1c7be720377e8cf62176bd73d0eebff5d3be0e0cc886f3"
       },
-      "skillDigest": "7480f7e33397d96b19602a80e44052301dbcfbf056bc2368ab5bea8e431915c3"
+      "skillDigest": "c368e3218430b10f3118f2164e29e805d992b6bb1605856d34f8469ab67127dd"
     },
     "ws-show-harness": {
       "files": {

@@ -31,7 +31,7 @@ Resolve from the **consumer project** only — never invent stack commands:
 | Consumer hubs + ship docs (see §6 scan list) | Prepare / before-push / before-publish steps |
 | Session evidence | Orch Steps 6–7 — credit only if tree unchanged |
 
-Prefer `bash .agents/skills/ws-ship-pr/scripts/verify.cjs` when it covers configured build+test; else `verification.*` via [`tools.md`](../ws-shared/runtime/tools.md) (run config strings unchanged). Expand path tokens before Read/Grep/Shell ([`tools.md`](../ws-shared/runtime/tools.md) § Path tokens).
+Prefer `node .agents/skills/ws-ship-pr/scripts/verify.cjs` when it covers configured build+test; else `verification.*` via [`tools.md`](../ws-shared/runtime/tools.md) (run config strings unchanged). Expand path tokens before Read/Grep/Shell ([`tools.md`](../ws-shared/runtime/tools.md) § Path tokens).
 
 ## Checklist items
 
@@ -43,13 +43,13 @@ Prefer `bash .agents/skills/ws-ship-pr/scripts/verify.cjs` when it covers config
 
 ### 2. Build
 **When:** no green build yet for the current tree.  
-**Do:** `verification.backendBuild` (+ `frontendBuild` if frontend touched), or `bash .agents/skills/ws-ship-pr/scripts/verify.cjs` build portion.  
+**Do:** `verification.backendBuild` (+ `frontendBuild` if frontend touched), or `node .agents/skills/ws-ship-pr/scripts/verify.cjs` build portion.  
 **⏭:** green build evidence for current tree.  
 **Done when:** build green or ❌ with summarized output.
 
 ### 3. Tests
 **When:** no green tests yet for the current tree.  
-**Do:** `verification.backendTest` (+ `frontendTest` if frontend touched), or full `bash .agents/skills/ws-ship-pr/scripts/verify.cjs`.  
+**Do:** `verification.backendTest` (+ `frontendTest` if frontend touched), or full `node .agents/skills/ws-ship-pr/scripts/verify.cjs`.  
 **Upstream `workflow-skills`:** `verify.sh` also runs `node bin/generate-skill-integrity.js --check` when that script exists. Testing / ship approval requires it green; if red → `npm run generate-integrity`, commit `bin/skill-integrity.json`, re-run (see root `AGENTS.md` § Upstream skill integrity regenerate when authoring against the source repo).  
 **⏭:** green evidence, or `skipTests` / orch `skipTesting` with waiver on board.  
 **Done when:** tests green (including integrity `--check` when applicable), waived with evidence, or ❌.
