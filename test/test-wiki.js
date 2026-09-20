@@ -407,6 +407,9 @@ Missing Business Rules & Logic section!
       const badFlagRes = run(LIST_SWEEP, ['--not-a-flag']);
       assert(badFlagRes.status === 2, 'unknown flag exits non-zero');
 
+      const leftoverRes = run(LIST_SWEEP, ['stray-token']);
+      assert(leftoverRes.status === 2, 'leftover positional token rejected before readdir');
+
       const escapeRes = run(LIST_SWEEP, ['--repo-root', sweepTmp, '--specs-dir', '../../outside', '--json']);
       assert(escapeRes.status === 1, 'specs-dir outside repo root fails closed');
     } finally {
@@ -579,6 +582,7 @@ Missing Business Rules & Logic section!
     const skillPath = path.join(REPO_ROOT, '.agents/skills/ws-wiki/SKILL.md');
     const skill = fs.readFileSync(skillPath, 'utf8');
     const sweepCompanion = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'PHASE-1-SWEEP.md'), 'utf8');
+    const syncCompanion = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'SYNC.md'), 'utf8');
     const verifyCompanion = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'PHASE-2-VERIFY.md'), 'utf8');
     const applyCompanion = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'PHASE-3-APPLY.md'), 'utf8');
     const fromCodeCompanion = fs.readFileSync(path.join(WIKI_SKILL_DIR, 'FROM-CODE.md'), 'utf8');
@@ -601,6 +605,10 @@ Missing Business Rules & Logic section!
     assert(applyCompanion.includes('Update wiki (Recommended)'), 'AC11: PHASE-3 documents truth-gate Update wiki recommended');
     assert(applyCompanion.includes('Apply scheduled wiki edits in one pass'), 'AC12: PHASE-3 documents wiki batch apply');
     assert(sweepCompanion.includes('Skip writes no verify artifacts'), 'NS5: PHASE-1 documents post-sweep Skip writes nothing');
+    assert(sweepCompanion.includes('--resume') && sweepCompanion.includes('lastFile'), '0076-AC11: PHASE-1 documents --resume continues after lastFile');
+    assert(sweepCompanion.includes('--force'), '0076-AC11: PHASE-1 documents --force re-apply of completed specs');
+    assert(sweepCompanion.includes('--dry-run') && sweepCompanion.includes('sweep.state.json'), '0076-AC13: PHASE-1 documents --dry-run writes neither pages nor checkpoint');
+    assert(syncCompanion.includes('Apply wiki updates') && syncCompanion.includes('Cancel'), '0076-AC11: SYNC keeps per-sync Apply/Cancel gate');
     assert(verifyCompanion.includes('Skip writes no wiki or spec updates'), 'NS6: PHASE-2 documents post-verify Skip writes nothing');
     assert(applyCompanion.includes('Undecided findings stay `pending`'), 'NS8: PHASE-3 documents pending on truth-gate Cancel');
     assert(applyCompanion.includes('assertContained') && applyCompanion.includes('no write leaves `{wikiDir}`'), 'NS9: PHASE-3 documents assertContained no-escape writers');
