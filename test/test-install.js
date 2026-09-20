@@ -2420,6 +2420,32 @@ child.on('close', async (code) => {
     }
     ok('global skill install writes to global directory with Global Scope log');
 
+    // 1b. Fresh global hub config seeds scope-normalized managed paths.
+    {
+      const gHub = cp.spawnSync(
+        process.execPath,
+        [cliPath, 'install', '--skills', 'ws-self-learning', '--global', '--yes'],
+        { cwd: projectTestDir, encoding: 'utf8', env: globalEnv, timeout: 60000 },
+      );
+      if (gHub.status !== 0) {
+        console.error(`${gHub.stdout || ''}${gHub.stderr || ''}`);
+        fail('global hub install (ws-self-learning) exited non-zero');
+      }
+      const gCfgPath = path.join(globalTestDir, 'ws-shared', 'config.json');
+      if (!fs.existsSync(gCfgPath)) {
+        fail('fresh global install must seed ws-shared/config.json');
+      } else {
+        const gCfg = JSON.parse(fs.readFileSync(gCfgPath, 'utf8'));
+        if (gCfg.$schema !== './runtime/config.schema.json') {
+          fail(`fresh global config $schema not scope-normalized (got ${gCfg.$schema})`);
+        }
+        if (gCfg.toolsFile !== './runtime/tools.md') {
+          fail(`fresh global config toolsFile not scope-normalized (got ${gCfg.toolsFile})`);
+        }
+      }
+      ok('fresh global hub config seeds scope-normalized $schema/toolsFile');
+    }
+
     // 2. Global update
     const gUpd = cp.spawnSync(
       process.execPath,

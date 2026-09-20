@@ -736,11 +736,10 @@ function upgradeConfigToLatestFormat(templateObj, userObj) {
   if (merged.$schema) {
     merged.$schema = `${runtimePrefix}config.schema.json`;
   }
-  if (merged.toolsFile && (merged.toolsFile === 'tools.md' || merged.toolsFile === './tools.md')) {
-    merged.toolsFile = 'runtime/tools.md';
-  }
-  if (merged.toolsFile === 'runtime/tools.md') {
-    merged.toolsFile = isGlobalScope ? 'runtime/tools.md' : `${runtimePrefix}tools.md`;
+  // Normalize any managed toolsFile form (template project-relative, legacy
+  // `runtime/tools.md`, bare `tools.md`) to the current install scope.
+  if (typeof merged.toolsFile === 'string' && /(^|\/)(tools\.md|runtime\/tools\.md)$/.test(merged.toolsFile)) {
+    merged.toolsFile = isGlobalScope ? './runtime/tools.md' : `${runtimePrefix}tools.md`;
   }
 
   const prevTokens = (userObj && typeof userObj === 'object' && userObj.pathTokens) || {};
@@ -834,8 +833,22 @@ function ensureSharedConsumerArtifacts(mode = 'install') {
     }
   } else {
     if (fs.existsSync(templatePath)) {
-      fs.copyFileSync(templatePath, configPath);
-      console.log(`    Seeded ${hubDisplay()}config.json from config.json.example (run ws-configure-project to fill)`);
+      let seeded = null;
+      try {
+        seeded = JSON.parse(fs.readFileSync(templatePath, 'utf8'));
+      } catch {
+        seeded = null;
+      }
+      if (seeded && typeof seeded === 'object') {
+        // Scope-normalize the seed: the template carries project-relative managed
+        // paths, which are wrong when the config lands in the global hub.
+        const normalized = upgradeConfigToLatestFormat(seeded, {});
+        fs.writeFileSync(configPath, `${JSON.stringify(normalized, null, 2)}\n`);
+        console.log(`    Seeded ${hubDisplay()}config.json from config.json.example (scope-normalized paths; run ws-configure-project to fill)`);
+      } else {
+        fs.copyFileSync(templatePath, configPath);
+        console.log(`    Seeded ${hubDisplay()}config.json from config.json.example (run ws-configure-project to fill)`);
+      }
       ensurePathTokensInConfig(configPath);
     }
   }
