@@ -42,6 +42,7 @@ const ALLOW = [
   // --- Upstream SoT skill content ---
   { file: '.agents/skills/ws-check-harness/PHASES.md', substr: 'retired hub folders', reason: 'harness retired-folder map already routes the old consumer hub to .ws' },
   { file: '.agents/skills/ws-check-harness/scripts/check_harness_links.cjs', substr: 'hubText = ', reason: 'link checker covers SoT and installed-hub targets' },
+  { file: '.agents/skills/ws-check-workflows/scripts/check_workflows.cjs', substr: 'skill-dependencies.json', reason: 'SoT packaged graph path in message' },
 
   { file: '.agents/skills/ws-shared/runtime/CATALOG.md', substr: 'skill-dependencies.json', reason: 'SoT packaged graph prose' },
   { file: '.agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1', substr: "Join-Path $root '.agents/skills/ws-shared/", reason: 'upstream SoT fallback resolution' },
