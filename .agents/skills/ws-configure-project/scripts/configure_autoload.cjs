@@ -254,6 +254,9 @@ function renderConsumerAutoload(text, { repoRoot = null } = {}) {
   // the local tree exists and the prefix already matches).
   text = text.split('](../.agents/skills/ws-shared/runtime/').join(`](${runtimePrefix}`);
   text = text.replace(/\]\(\.\.\/\.agents\/skills\/(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
+  // Legacy pre-0.4.46 rendered forms: `](runtime/<file>)` and `](../ws-<id>/...)`.
+  text = text.replace(/\]\(runtime\/([^)]+)\)/g, (match, rel) => `](${runtimePrefix}${rel})`);
+  text = text.replace(/\]\(\.\.\/(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
   for (const f of ['AGENTS.md', 'CROSS-PLATFORM.md', 'config-resolution.md', 'gates.md', 'host-dispatch.md', 'scm-provider-contract.md', 'setup.md', 'tools.md']) {
     text = text.split(`](${f})`).join(`](${runtimePrefix}${f})`);
   }

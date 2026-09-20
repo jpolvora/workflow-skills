@@ -13,7 +13,7 @@ const TOKENS = {
   '{memoryDir}': '.',
   '{specsDir}': '.agents/specs',
 };
-const EXCLUDED_MD = /(^|[\\/])(CHANGELOG\.md|MEMORY\.md|memory[\\/]|evals[\\/])/;
+const EXCLUDED_MD = /(^|[\\/])(CHANGELOG\.md|MEMORY\.md|memory[\\/]|evals[\\/]|ws-fix-pr[\\/]runs[\\/])/;
 const ROOT_DOCS = ['AGENTS.md', 'CATALOG.md', 'README.md', 'FEATURES.md', 'RESEARCH.md', 'STACK.md'];
 
 function walk(dir, filter, out = []) {

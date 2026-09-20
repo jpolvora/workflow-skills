@@ -276,6 +276,29 @@ try {
     'update refreshes managed .gitignore from template alias',
   );
 
+  // Legacy pre-0.4.46 rendered autoload links are migrated on update.
+  let legacyAutoload = installedAutoload
+    .replaceAll('](../.agents/skills/ws-shared/runtime/tools.md)', '](runtime/tools.md)');
+  if (legacyAutoload.includes('](../.agents/skills/ws-tdah/SKILL.md)')) {
+    legacyAutoload = legacyAutoload.replaceAll('](../.agents/skills/ws-tdah/SKILL.md)', '](../ws-tdah/SKILL.md');
+  } else {
+    legacyAutoload += '\n\n[legacy skill](../ws-tdah/SKILL.md)\n';
+  }
+  fs.writeFileSync(path.join(newShared, 'autoload.md'), legacyAutoload, 'utf8');
+  const thirdInstall = cp.spawnSync(
+    process.execPath,
+    [path.join(repoRoot, 'bin', 'cli.js'), 'update', '--yes'],
+    { cwd: legacyRoot, encoding: 'utf8', env: { ...process.env, FORCE_COLOR: '0' } },
+  );
+  assert(thirdInstall.status === 0, `${thirdInstall.stdout || ''}${thirdInstall.stderr || ''}`);
+  const migratedAutoload = fs.readFileSync(path.join(newShared, 'autoload.md'), 'utf8');
+  assert(!migratedAutoload.includes('](runtime/tools.md)'), 'update migrates legacy ](runtime/...) autoload links');
+  assert(!migratedAutoload.includes('](../ws-tdah/SKILL.md)'), 'update migrates legacy ](../ws-*/...) autoload links');
+  assert(
+    migratedAutoload.includes('](../.agents/skills/ws-shared/runtime/tools.md)'),
+    'migrated runtime link points at the managed skills install',
+  );
+
   // us-351: collision (both legacy hub and .ws/ present) leaves both in place.
   const collisionRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-layout-collision-'));
   tempRoots.push(collisionRoot);

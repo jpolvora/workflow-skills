@@ -41,11 +41,14 @@ function runNode(script, args, opts = {}) {
 
 function seedHub(root, { sharedRel = '.ws' } = {}) {
   const shared = path.join(root, sharedRel);
-  fs.mkdirSync(path.join(shared, 'templates'), { recursive: true });
+  // Managed hub content lives in the skills install; the consumer hub keeps config only.
+  const managed = path.join(root, '.agents', 'skills', 'ws-shared');
+  fs.mkdirSync(path.join(shared), { recursive: true });
+  fs.mkdirSync(path.join(managed, 'templates'), { recursive: true });
   fs.writeFileSync(
-    path.join(shared, 'templates', 'config.json.example'),
+    path.join(managed, 'templates', 'config.json.example'),
     JSON.stringify({
-      toolsFile: 'runtime/tools.md',
+      toolsFile: '../.agents/skills/ws-shared/runtime/tools.md',
       project: { name: 'test', baseBranch: 'main' },
       verification: {},
       plans: { dir: '.agents/plans' },

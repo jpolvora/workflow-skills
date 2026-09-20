@@ -190,6 +190,10 @@ function renderConsumerAutoloadText(text) {
   text = text.split('](../.agents/skills/ws-shared/runtime/').join(`](${runtimePrefix}`);
   if (!isGlobalScope) {
     text = text.replace(/\]\(\.\.\/\.agents\/skills\/(ws-[^)]+)\)/g, (match, rel) => `](${managedSkillLink(rel)})`);
+    // Legacy pre-0.4.46 rendered forms: `](runtime/<file>)` and `](../ws-<id>/...)`.
+    // Global scope keeps these untouched (`runtime/` and `../ws-x` are valid there).
+    text = text.replace(/\]\(runtime\/([^)]+)\)/g, (match, rel) => `](${runtimePrefix}${rel})`);
+    text = text.replace(/\]\(\.\.\/(ws-[^)]+)\)/g, (match, rel) => `](${managedSkillLink(rel)})`);
   }
   for (const runtimeFile of [
     'AGENTS.md',
