@@ -37,6 +37,13 @@ function validateNode(value, schema, label) {
   }
 
   const types = schemaTypes(schema);
+  if (Array.isArray(schema.oneOf)) {
+    const passing = schema.oneOf.filter((branch) => validateNode(value, branch, label).length === 0);
+    if (passing.length !== 1) {
+      errors.push(`${label}: expected exactly one of ${schema.oneOf.length} oneOf branches to match`);
+    }
+  }
+
   if (types && !types.some((type) => matchesType(value, type))) {
     errors.push(`${label}: expected ${types.join('|')}`);
   }

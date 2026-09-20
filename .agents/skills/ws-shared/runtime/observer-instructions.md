@@ -1,0 +1,53 @@
+# Execution observation semantics (shared)
+
+Single instruction source for harness-execution observation, shared by the
+`ws-spec-to-pr` opt-in execution observer (us-365) and `ws-monitor`.
+Both sides reference this file instead of duplicating the contract, so
+observation semantics cannot drift between them.
+
+## Scope
+
+Harness execution only: orchestrator dispatch flow, workflow state files,
+telemetry, expected step artifacts, and agent transcript paths. Consumer
+product implementation is never observed for content and never touched.
+
+## Read-only posture
+
+An observer (one-shot snapshot or parallel watcher) MUST NOT:
+
+- edit product files, workflow state files, or consumer configuration;
+- create commits, branches, or pull requests;
+- file upstream issues automatically.
+
+The only permitted write is the observer's own log/report artifact pair
+under the workflow directory (`observer/observer.log`,
+`observer/observer-report.md`).
+
+## Transcript vocabulary
+
+- `available`: transcript/session paths are recorded with adapter and
+  location class.
+- `transcript-unavailable` with one reason: `discovery-disabled`,
+  `no-matching-session`, or `scan-capped`.
+
+State files record available agent transcript paths when known and carry
+the explicit absent marker otherwise; monitoring continues in both cases.
+
+## Finding classification
+
+| Severity | Meaning |
+|----------|---------|
+| `critical` | Missing mandatory artifact, verify score below the gate with advancement, path-resolution failure |
+| `warning` | Empty `filesTouched` on a completed mutating step, rejected model without fallback, turn ended before handoff, worker-session stall |
+| `info` | Idle queue, vault record missing on disk, healthy run with no defects |
+
+Every finding carries a stable code, a message, and the evidence path that
+produced it. Evidence and inference are labeled separately.
+
+## Fix proposals
+
+Findings that indicate a bug in skill instructions or orchestrator flow
+include a proposal scoped to the upstream package: the failing contract,
+the file and contract that should change, and the smallest correction.
+Proposals are reports; auto-committing, auto-filing, or auto-merging them
+is out of scope.

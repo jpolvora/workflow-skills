@@ -336,7 +336,8 @@
     "_comment": "Opt-in ws-monitor host transcript discovery (us-356). discoverHostTranscripts default false (zero host-store reads); hostHome overrides the home used for discovery/sanitizing (CI/sandbox); transcriptRoots adds explicit roots.",
     "discoverHostTranscripts": false,
     "hostHome": "",
-    "transcriptRoots": []
+    "transcriptRoots": [],
+    "autoStartObserver": false
   },
 
   "specMemo": {

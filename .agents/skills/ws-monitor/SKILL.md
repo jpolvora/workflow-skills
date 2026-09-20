@@ -1,7 +1,7 @@
 ---
 name: ws-monitor
 description: Read-only live observer for active Spec-to-PR and multi-spec workflow runs, memory vault status, telemetry, artifacts, and multi-host transcripts.
-version: 0.4.43
+version: 0.4.44
 disable-model-invocation: true
 invocation_names:
   - monitor
@@ -23,6 +23,11 @@ Observe active `ws-spec-to-pr`, `ws-spec-to-pr-lite`, and `ws-spec-multi` runs w
 - Read transcript roots from configured `monitor.transcriptRoots`, workspace candidate roots (`.agents/transcripts/`, `.cursor/`, `.opencode/`), and host locations when requested via `--transcript-root` or `--discover-host-transcripts`.
 - Report missing artifacts, state drift, empty telemetry fields, path failures, rejected models, interrupted turns, batch queue stalls, and memory vault synchronization gaps.
 - Write a Markdown report only when the caller passes `--report`.
+- Share observation semantics with the `ws-spec-to-pr` opt-in execution observer
+  through [`observer-instructions.md`](../ws-shared/runtime/observer-instructions.md) — reference that file;
+  do not duplicate its contract here.
+- Prefer state-recorded agent transcript paths (`state.agentTranscripts` via
+  `resolveStateAgentTranscripts`) before host-store discovery.
 - Do not fix product code, patch managed skills, edit workflow state, or file an upstream issue automatically.
 
 Upstream issue text must be anonymized before filing: remove consumer repository names, local paths, hostnames, tracker ids, transcripts, credentials, and customer data. Describe the failure class and portable contract instead.

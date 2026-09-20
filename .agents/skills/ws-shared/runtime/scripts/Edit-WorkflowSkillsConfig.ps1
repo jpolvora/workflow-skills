@@ -1230,6 +1230,7 @@ function Populate-Sections {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'fable' -Key 'auditVerdictsBlockShip' -LabelText 'Audit Verdicts That Block Ship' -Type 'enum' -Options @('refuted', 'caveats', 'false') -DefaultVal 'refuted'
 
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'monitor' -Key 'discoverHostTranscripts' -LabelText 'Monitor: Discover Host Transcripts (opt-in)' -Type 'bool' -DefaultVal $false
+Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'monitor' -Key 'autoStartObserver' -LabelText 'Observer: Auto-Start Execution Watcher (opt-in)' -Type 'bool' -DefaultVal $false
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'monitor' -Key 'hostHome' -LabelText 'Monitor: Host Home Override (monitor.hostHome)' -Type 'string' -Placeholder 'e.g. /srv/ci-agent-home (empty = OS home)'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'monitor' -Key 'transcriptRoots' -LabelText 'Monitor: Extra Transcript Roots' -Type 'array' -DefaultVal @()
 

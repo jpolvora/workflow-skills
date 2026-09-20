@@ -1,7 +1,7 @@
 ---
 name: ws-spec-to-pr
 description: End-to-end Spec-to-PR (steps 0–9). Verify score ≥ `defaults.minVerifyScore` (default 9) before review. Trigger for full/standard delivery.
-version: 0.4.43
+version: 0.4.44
 disable-model-invocation: true
 invocation_names:
   - spec-to-pr
@@ -56,6 +56,31 @@ First Step 4 `dispatch-agent` (`ws-implement-tasks`) only after fail-closed `val
 6. **Artifacts:** Never commit `{plansDir}/` in Steps 0–7. Product G2-code after Step 5 and after Step 6 review-fix uses path-scoped `files_touched` only. Delivery commit Step 8: plan + `step-08-{slug}.result.md` only.
 7. **Pause / Revert:** Pause retains state (`status: active`). Revert uses manifest + checkpoint tag — no global hard reset. **Resume pre-check (AC9):** on resume, before re-implementing, resolve `{integrationBranch}` = `config.project.workingBranch` when set, else `{baseBranch}`; if `{gitRemote}` exists, run `git fetch {gitRemote} {integrationBranch}` first (auth/network failure → skip-check `fetch-failed`, proceed, never mark completed); then run `git rev-list --count origin/{integrationBranch}..HEAD` (do **not** compare only to `origin/{baseBranch}` when `workingBranch` is set — stale tips merged into `develop` can still be ahead of `main`). Count `0` → mark `completed` (already merged) **only when** the workflow has product commits (`state.commits` non-empty or Step 5 in `completedSteps`) **and** `HEAD` ≠ `baselineCommit`; bare `0` on a branch that never committed is pre-first-commit resume — proceed normally. When `state.branch` equals `{integrationBranch}` (stay-on-integration), skip the count, log `resume-gate | skip-check | stay-on-integration | {branch} vs {integrationBranch} | ISO`, and proceed (do **not** mark completed). Skip-check when `origin/{integrationBranch}` is unavailable (see [`setup.md`](../ws-shared/runtime/setup.md) §4c).
 8. **Reproducible-artifact invariant (AC6):** every step artifact a later step reads must be reconstructable from state + committed diff, enforced by the pre-advance `node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs <state> --pre-advance <N>` check: if a required artifact or its metadata for advancing to step N is missing, validation exits non-zero and advance is blocked (fail closed).
+
+## Execution observer (opt-in, us-365)
+
+Observation semantics are shared with `ws-monitor` through
+[`observer-instructions.md`](../ws-shared/runtime/observer-instructions.md) —
+both sides reference that file; never duplicate its contract here.
+
+- Default off: `monitor.autoStartObserver` omitted or `false` dispatches zero
+  watcher subagents and changes no current behavior.
+- When explicit `true`, the orchestrator may dispatch **at most one** parallel
+  read-only watcher subagent per run. Gate (must pass `--state` for durable
+  AC3 accounting):
+  `node {skillsRoot}/ws-spec-to-pr/scripts/observer.cjs should-dispatch
+  --config {sharedDir}/config.json --telemetry {us-dir}/telemetry.jsonl --state {state}`.
+  On allow, first reserve the slot (fail-closed when already taken)
+  `node {skillsRoot}/ws-spec-to-pr/scripts/observer.cjs note-dispatch
+  --state {state} --telemetry {us-dir}/telemetry.jsonl --config {sharedDir}/config.json`,
+  then dispatch the watcher; a second reservation is refused.
+  Full dispatch protocol: [`STEP-DISPATCH.md`](STEP-DISPATCH.md) § Execution observer dispatch.
+- The watcher reports state/execution and skill-instruction errors and never
+  blocks step advancement; it writes only its own `<usDir>/observer/` log +
+  report pair — no product edits, no state writes, no commits or PRs.
+- Record available agent transcript paths in state (`observer.cjs record`) so
+  `ws-monitor` can follow execution; carry the explicit absent marker when
+  transcripts are unavailable.
 
 ## Phases F0–F6 & Step Index
 
