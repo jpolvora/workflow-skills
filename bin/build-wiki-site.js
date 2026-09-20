@@ -265,7 +265,7 @@ function buildInfoboxHtml(page, title, markdown) {
   const cleanTitle = title.replace(/\s*\([^)]*\)/, '').trim();
 
   let specsText = '0001–0075';
-  const provenanceMatch = markdown.match(/(?:synthesis of specs?|specs?)\s+([0-9,\s–-]+)/i);
+  const provenanceMatch = markdown.match(/(?:synthesis of specs?|specs?)\s+([^\n.]+)/i);
   if (provenanceMatch) {
     specsText = 'Specs ' + provenanceMatch[1].trim().replace(/\.$/, '');
   }

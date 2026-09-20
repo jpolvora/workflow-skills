@@ -244,6 +244,38 @@ function testCheckPassesWhenFresh() {
   assert(result.staleReasons.length === 0, 'fresh wiki passes check');
 }
 
+function testInfoboxProvenanceSlugIds() {
+  const wikiDir = tempDir('wiki-prov-');
+  const outDir = tempDir('wiki-prov-out-');
+  write(
+    path.join(wikiDir, 'index.wiki.md'),
+    `# Prov Home
+`,
+  );
+  write(
+    path.join(wikiDir, 'harness', 'sample.md'),
+    `# Sample Feature
+
+> Provenance: living synthesis of specs 0097-us-354, 0099-us-352, 0106.
+
+## Feature Overview
+x
+
+## Business Rules & Logic
+x
+
+## Technical Architecture
+x
+`,
+  );
+  buildWikiSite({ repoRoot: REPO_ROOT, wikiDir, outDir, check: false });
+  const html = read(path.join(outDir, 'harness/sample.html'));
+  assert(html.includes('0097-us-354'), 'infobox keeps full slug 0097-us-354');
+  assert(html.includes('0099-us-352'), 'infobox keeps full slug 0099-us-352');
+  assert(html.includes('0106'), 'infobox keeps numeric 0106');
+  assert(!html.includes('0097-</code>') && !html.includes('>0097-<'), 'infobox not truncated at hyphen');
+}
+
 function testSitemapListsWikiLocs() {
   const wikiDir = tempDir('wiki-sitemap-');
   const outDir = tempDir('wiki-sitemap-out-');
@@ -371,6 +403,7 @@ const tests = [
   testPathContainment,
   testCheckFailsOnStaleWikiHtml,
   testCheckPassesWhenFresh,
+  testInfoboxProvenanceSlugIds,
   testSitemapListsWikiLocs,
   testRendersHeadingsListsCodeLinks,
   testWikiCssUsesThemeTokens,
