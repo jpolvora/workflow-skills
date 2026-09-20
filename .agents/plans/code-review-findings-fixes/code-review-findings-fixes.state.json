@@ -389,10 +389,12 @@
     4,
     5,
     6,
-    7
+    7,
+    8
   ],
   "currentModel": "unknown",
-  "currentStep": 8,
+  "currentStep": 9,
+  "endedAt": "2026-09-20T23:15:31Z",
   "handoffs": {
     "0": {
       "acRefs": [],
@@ -553,11 +555,31 @@
       "summary": "Finished step 7",
       "workflowId": "code-review-findings-fixes",
       "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/code-review-findings-fixes/step-08-code-review-findings-fixes.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "code-review-findings-fixes",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "code-review-findings-fixes",
+      "workflowType": "standard"
     }
   },
   "modelsPreset": "default",
-  "nextAction": "Finish step 8",
-  "revision": 14,
+  "nextAction": "Run step 9",
+  "revision": 15,
+  "shipStatus": "skipped",
   "skippedSteps": [
     {
       "evidence": "",
@@ -570,7 +592,7 @@
   "specSource": "local",
   "statePath": ".agents/plans/code-review-findings-fixes/code-review-findings-fixes.state.md",
   "stateVersion": 3,
-  "status": "active",
+  "status": "completed",
   "stepDispatches": [
     {
       "agentType": "named:ws-step-00-spec-write",
@@ -618,7 +640,7 @@
     "5": "completed",
     "6": "completed",
     "7": "completed",
-    "8": "active"
+    "8": "completed"
   },
   "telemetry": {
     "steps": [
@@ -790,9 +812,29 @@
         "model": "unknown",
         "promptTokens": 0,
         "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": "named:ws-step-08-ship-pr",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-20T23:11:37Z",
+        "elapsedSec": 234,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/code-review-findings-fixes/step-08-code-review-findings-fixes.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-20T23:15:31Z",
+        "label": "Ship",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
       }
     ],
-    "totalElapsedSec": 887,
+    "totalElapsedSec": 1121,
     "totalTokens": 0
   },
   "verificationScore": 10,
@@ -807,6 +849,7 @@
       ".agents/plans/code-review-findings-fixes/step-05-code-review-findings-fixes.plan.report.md",
       ".agents/plans/code-review-findings-fixes/step-06-code-review-findings-fixes.review.md",
       ".agents/plans/code-review-findings-fixes/step-07-code-review-findings-fixes.testing.report.md",
+      ".agents/plans/code-review-findings-fixes/step-08-code-review-findings-fixes.result.md",
       ".agents/skills/ws-shared/runtime/scripts/bootstrap_runtime.cjs",
       "test/test-bootstrap-runtime.js"
     ],

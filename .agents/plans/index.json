@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 14,
-  "generatedAt": "2026-09-20T23:11:37Z",
+  "revision": 15,
+  "generatedAt": "2026-09-20T23:15:31Z",
   "workflows": [
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
@@ -63,10 +63,10 @@
       "slug": "code-review-findings-fixes",
       "pipeline": "standard",
       "statePath": ".agents/plans/code-review-findings-fixes/code-review-findings-fixes.state.md",
-      "stateSha256": "0f21a29b3c268ae26ba6ec2edea5c06dfe25089d3e870c6a050e546ef9a6b268",
-      "status": "active",
-      "currentStep": 8,
-      "updatedAt": "2026-09-20T23:11:37Z",
+      "stateSha256": "b69cf3474253d6bbd6dc54fe8db6fd2150648ca93ac86e1346dbb13f2133ab8e",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-20T23:15:31Z",
       "runPath": ".agents/plans/code-review-findings-fixes/code-review-findings-fixes.state.json"
     },
     {

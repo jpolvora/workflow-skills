@@ -37,8 +37,9 @@ completedSteps:
   - 5
   - 6
   - 7
+  - 8
 currentModel: unknown
-currentStep: 8
+currentStep: 9
 handoffs:
   0: { acRefs: [], artifactPaths: [.agents/plans/code-review-findings-fixes/step-00-code-review-findings-fixes.spec.md, .agents/plans/code-review-findings-fixes/ac-ledger.json], findings: { critical: 0, info: 0, suggestion: 0, warning: 0 }, nextAction: Run step 1, slug: code-review-findings-fixes, status: completed, step: 0, summary: Finished step 0, workflowId: code-review-findings-fixes, workflowType: standard }
   1: { acRefs: [], artifactPaths: [.agents/plans/code-review-findings-fixes/step-01-code-review-findings-fixes.plan.md], findings: { critical: 0, info: 0, suggestion: 0, warning: 0 }, nextAction: Run step 2, slug: code-review-findings-fixes, status: completed, step: 1, summary: Finished step 1, workflowId: code-review-findings-fixes, workflowType: standard }
@@ -48,9 +49,10 @@ handoffs:
   5: { acRefs: [], artifactPaths: [.agents/plans/code-review-findings-fixes/step-05-code-review-findings-fixes.plan.report.md], findings: { critical: 0, info: 0, suggestion: 0, warning: 0 }, nextAction: Run step 6, slug: code-review-findings-fixes, status: completed, step: 5, summary: Finished step 5, workflowId: code-review-findings-fixes, workflowType: standard }
   6: { acRefs: [], artifactPaths: [.agents/plans/code-review-findings-fixes/step-06-code-review-findings-fixes.review.md], findings: { critical: 0, info: 0, suggestion: 0, warning: 0 }, nextAction: Run step 7, slug: code-review-findings-fixes, status: completed, step: 6, summary: Finished step 6, workflowId: code-review-findings-fixes, workflowType: standard }
   7: { acRefs: [], artifactPaths: [.agents/plans/code-review-findings-fixes/step-07-code-review-findings-fixes.testing.report.md], findings: { critical: 0, info: 0, suggestion: 0, warning: 0 }, nextAction: Run step 8, slug: code-review-findings-fixes, status: completed, step: 7, summary: Finished step 7, workflowId: code-review-findings-fixes, workflowType: standard }
+  8: { step: 8, slug: code-review-findings-fixes, workflowId: code-review-findings-fixes, workflowType: standard, status: completed, artifactPaths: [.agents/plans/code-review-findings-fixes/step-08-code-review-findings-fixes.result.md], acRefs: [], summary: Finished step 8, nextAction: Run step 9, findings: { critical: 0, warning: 0, suggestion: 0, info: 0 } }
 modelsPreset: default
-nextAction: Finish step 8
-revision: 14
+nextAction: Run step 9
+revision: 15
 skippedSteps:
   - { evidence: "", reason: dag-disabled, step: 3 }
 slug: code-review-findings-fixes
@@ -58,7 +60,7 @@ specPath: .agents/plans/code-review-findings-fixes/step-00-code-review-findings-
 specSource: local
 statePath: .agents/plans/code-review-findings-fixes/code-review-findings-fixes.state.md
 stateVersion: 3
-status: active
+status: completed
 stepDispatches:
   - { step: 0, dispatchedAt: "2026-09-20T22:51:23Z", model: unknown, agentType: "named:ws-step-00-spec-write" }
   - { step: 4, dispatchedAt: "2026-09-20T22:54:34Z", model: unknown, agentType: "named:ws-step-04-implement-tasks" }
@@ -75,7 +77,7 @@ stepStatus:
   5: completed
   6: completed
   7: completed
-  8: active
+  8: completed
 telemetry:
   steps:
     - { N: 0, agentType: "named:ws-step-00-spec-write", completionTokens: 0, dispatchedAt: "2026-09-20T22:51:23Z", elapsedSec: 23, estimated: false, filesTouched: { created: [.agents/plans/code-review-findings-fixes/step-00-code-review-findings-fixes.spec.md, .agents/plans/code-review-findings-fixes/ac-ledger.json], deleted: [], modified: [] }, finishedAt: "2026-09-20T22:51:46Z", label: Spec, model: unknown, promptTokens: 0, subagentId: null }
@@ -86,15 +88,18 @@ telemetry:
     - { N: 5, agentType: "named:ws-step-05-plan-verify", completionTokens: 0, dispatchedAt: "2026-09-20T23:05:08Z", elapsedSec: 209, estimated: false, filesTouched: { created: [.agents/plans/code-review-findings-fixes/step-05-code-review-findings-fixes.plan.report.md], deleted: [], modified: [] }, finishedAt: "2026-09-20T23:08:37Z", label: Verify, model: unknown, promptTokens: 0, subagentId: null }
     - { N: 6, agentType: "named:ws-step-06-code-review", completionTokens: 0, dispatchedAt: "2026-09-20T23:09:48Z", elapsedSec: 27, estimated: false, filesTouched: { created: [.agents/plans/code-review-findings-fixes/step-06-code-review-findings-fixes.review.md], deleted: [], modified: [] }, finishedAt: "2026-09-20T23:10:15Z", label: Code review, model: unknown, promptTokens: 0, subagentId: null }
     - { N: 7, agentType: "named:ws-step-07-testing", completionTokens: 0, dispatchedAt: "2026-09-20T23:10:27Z", elapsedSec: 23, estimated: false, filesTouched: { created: [.agents/plans/code-review-findings-fixes/step-07-code-review-findings-fixes.testing.report.md], deleted: [], modified: [] }, finishedAt: "2026-09-20T23:10:50Z", label: Testing, model: unknown, promptTokens: 0, subagentId: null }
-  totalElapsedSec: 887
+    - { N: 8, label: Ship, dispatchedAt: "2026-09-20T23:11:37Z", finishedAt: "2026-09-20T23:15:31Z", elapsedSec: 234, promptTokens: 0, completionTokens: 0, estimated: false, model: unknown, filesTouched: { created: [.agents/plans/code-review-findings-fixes/step-08-code-review-findings-fixes.result.md], modified: [], deleted: [] }, agentType: "named:ws-step-08-ship-pr", subagentId: null }
+  totalElapsedSec: 1121
   totalTokens: 0
 verificationScore: 10
 workflowId: code-review-findings-fixes
 workflowManifest:
-  created: [.agents/plans/code-review-findings-fixes/ac-ledger.json, .agents/plans/code-review-findings-fixes/step-00-code-review-findings-fixes.spec.md, .agents/plans/code-review-findings-fixes/step-01-code-review-findings-fixes.plan.md, .agents/plans/code-review-findings-fixes/step-02-code-review-findings-fixes.plan-interview.md, .agents/plans/code-review-findings-fixes/step-02-code-review-findings-fixes.plan.refined.md, .agents/plans/code-review-findings-fixes/step-05-code-review-findings-fixes.plan.report.md, .agents/plans/code-review-findings-fixes/step-06-code-review-findings-fixes.review.md, .agents/plans/code-review-findings-fixes/step-07-code-review-findings-fixes.testing.report.md, .agents/skills/ws-shared/runtime/scripts/bootstrap_runtime.cjs, test/test-bootstrap-runtime.js]
+  created: [.agents/plans/code-review-findings-fixes/ac-ledger.json, .agents/plans/code-review-findings-fixes/step-00-code-review-findings-fixes.spec.md, .agents/plans/code-review-findings-fixes/step-01-code-review-findings-fixes.plan.md, .agents/plans/code-review-findings-fixes/step-02-code-review-findings-fixes.plan-interview.md, .agents/plans/code-review-findings-fixes/step-02-code-review-findings-fixes.plan.refined.md, .agents/plans/code-review-findings-fixes/step-05-code-review-findings-fixes.plan.report.md, .agents/plans/code-review-findings-fixes/step-06-code-review-findings-fixes.review.md, .agents/plans/code-review-findings-fixes/step-07-code-review-findings-fixes.testing.report.md, .agents/plans/code-review-findings-fixes/step-08-code-review-findings-fixes.result.md, .agents/skills/ws-shared/runtime/scripts/bootstrap_runtime.cjs, test/test-bootstrap-runtime.js]
   deleted: []
   modified: [.agents/skills/ws-check-harness/scripts/check_hub_separation.cjs, .agents/skills/ws-check-harness/scripts/check_unique_runtime.cjs, .agents/skills/ws-monitor/scripts/monitor_snapshot.cjs, .agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs, .agents/skills/ws-spec-to-pr/scripts/observer.cjs, bin/skill-integrity.json, package.json]
 workflowType: standard
+shipStatus: skipped
+endedAt: "2026-09-20T23:15:31Z"
 ---
 # State — code-review-findings-fixes
 
