@@ -284,6 +284,8 @@ try {
   } else {
     legacyAutoload += '\n\n[legacy skill](../ws-tdah/SKILL.md)\n';
   }
+  // Global-token links from a previous global-only render must re-resolve locally.
+  legacyAutoload += '\n\n[global runtime]({globalSkillsRoot}/ws-shared/runtime/gates.md)\n[global skill]({globalSkillsRoot}/ws-tdah/SKILL.md)\n';
   fs.writeFileSync(path.join(newShared, 'autoload.md'), legacyAutoload, 'utf8');
   const thirdInstall = cp.spawnSync(
     process.execPath,
@@ -295,8 +297,16 @@ try {
   assert(!migratedAutoload.includes('](runtime/tools.md)'), 'update migrates legacy ](runtime/...) autoload links');
   assert(!migratedAutoload.includes('](../ws-tdah/SKILL.md)'), 'update migrates legacy ](../ws-*/...) autoload links');
   assert(
+    !migratedAutoload.includes(']({globalSkillsRoot}/ws-shared/runtime/'),
+    'update re-resolves global-token runtime links to the local managed path',
+  );
+  assert(
     migratedAutoload.includes('](../.agents/skills/ws-shared/runtime/tools.md)'),
     'migrated runtime link points at the managed skills install',
+  );
+  assert(
+    migratedAutoload.includes('](../.agents/skills/ws-shared/runtime/gates.md)'),
+    'global-token runtime link resolved to the managed skills install',
   );
 
   // us-351: collision (both legacy hub and .ws/ present) leaves both in place.

@@ -257,6 +257,9 @@ function renderConsumerAutoload(text, { repoRoot = null } = {}) {
   // Legacy pre-0.4.46 rendered forms: `](runtime/<file>)` and `](../ws-<id>/...)`.
   text = text.replace(/\]\(runtime\/([^)]+)\)/g, (match, rel) => `](${runtimePrefix}${rel})`);
   text = text.replace(/\]\(\.\.\/(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
+  // Global-token links re-resolve once a local skills tree exists (local-first).
+  text = text.replace(/\]\(\{globalSkillsRoot\}\/ws-shared\/runtime\//g, `](${runtimePrefix}`);
+  text = text.replace(/\]\(\{globalSkillsRoot\}\/(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
   for (const f of ['AGENTS.md', 'CROSS-PLATFORM.md', 'config-resolution.md', 'gates.md', 'host-dispatch.md', 'scm-provider-contract.md', 'setup.md', 'tools.md']) {
     text = text.split(`](${f})`).join(`](${runtimePrefix}${f})`);
   }

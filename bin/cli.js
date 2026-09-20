@@ -194,6 +194,9 @@ function renderConsumerAutoloadText(text) {
     // Global scope keeps these untouched (`runtime/` and `../ws-x` are valid there).
     text = text.replace(/\]\(runtime\/([^)]+)\)/g, (match, rel) => `](${runtimePrefix}${rel})`);
     text = text.replace(/\]\(\.\.\/(ws-[^)]+)\)/g, (match, rel) => `](${managedSkillLink(rel)})`);
+    // Global-token links re-resolve once a local skills tree exists (local-first).
+    text = text.replace(/\]\(\{globalSkillsRoot\}\/ws-shared\/runtime\//g, `](${runtimePrefix}`);
+    text = text.replace(/\]\(\{globalSkillsRoot\}\/(ws-[^)]+)\)/g, (match, rel) => `](${managedSkillLink(rel)})`);
   }
   for (const runtimeFile of [
     'AGENTS.md',

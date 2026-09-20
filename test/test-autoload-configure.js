@@ -233,6 +233,32 @@ function parseJsonOut(result) {
       'global-only autoload has no project-relative skills-install links',
     );
     assert(!autoText.includes('](runtime/'), 'global-only autoload never links a .ws/runtime copy');
+
+    // Transition: a local skills tree appears -> global-token links re-resolve locally.
+    const localRuntimeDir = path.join(root, '.agents', 'skills', 'ws-shared', 'runtime');
+    fs.mkdirSync(localRuntimeDir, { recursive: true });
+    fs.writeFileSync(path.join(localRuntimeDir, 'tools.md'), '# tools\n', 'utf8');
+    const localTaskLifecycle = path.join(root, '.agents', 'skills', 'ws-task-lifecycle');
+    fs.mkdirSync(localTaskLifecycle, { recursive: true });
+    fs.writeFileSync(path.join(localTaskLifecycle, 'SKILL.md'), '# ws-task-lifecycle\n', 'utf8');
+    const transition = runNode([
+      '--repo-root',
+      root,
+      '--global-skills-root',
+      globalRoot,
+      '--write-autoload',
+      '--json',
+    ]);
+    assert(transition.status === 0, 'global-to-local transition rerun exits 0');
+    const transitionText = fs.readFileSync(path.join(root, '.ws/autoload.md'), 'utf8');
+    assert(
+      transitionText.includes('](../.agents/skills/ws-shared/runtime/tools.md)'),
+      'transition rewrites runtime token link to the local managed path',
+    );
+    assert(
+      transitionText.includes('](../.agents/skills/ws-task-lifecycle/SKILL.md)'),
+      'transition rewrites skill token link to the local path',
+    );
     assert(!path.isAbsolute(paths[0].replace(/\{[^}]+\}/g, 'x')), 'token paths are not absolute');
   }
 }
