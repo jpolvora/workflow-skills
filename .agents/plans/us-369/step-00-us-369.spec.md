@@ -3,45 +3,16 @@ id: 369
 slug: us-369
 title: "ws-monitor transcript signals fire false positives on healthy runs (hybrid-path-resolution, model-fallback, subagent-error)"
 source: github
-specDate: 2026-09-19
 issueState: open
 issueUrl: "https://github.com/jpolvora/workflow-skills/issues/369"
-step: 0
-workflowId: us-369
-status: completed
-startedAt: "2026-09-19T23:00:52.374Z"
-endedAt: "2026-09-19T23:00:52.374Z"
-acRefs: []
+specDate: 2026-09-20
 ---
+
 # Specification — ws-monitor transcript signals fire false positives on healthy runs (hybrid-path-resolution, model-fallback, subagent-error)
 
 ## Description
 
-`ws-monitor` scans sanitized transcript tails in `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs` (transcript-scan block) and raises `hybrid-path-resolution` (critical), `model-fallback` (warning), and `subagent-error` (warning) findings from bare substring matches. On a fully healthy end-to-end run these three signals fire on every snapshot tick with no failure-shaped evidence behind them, training operators to ignore a red monitor on green runs.
-
-The fix stays inside the transcript-scan match conditions: each of the three signals must require failure-shaped evidence anchored to the failure it claims (resolution-failure token adjacent to dispatch-context construction; rejected/unavailable model identifier inside a dispatch record; executed unhandled-exception trace), while excluding benign text the current patterns hit — script filenames in directory listings, documentation prose about fallback behavior, routine benign reconciler outcome records, and retried-then-succeeded stream attempts. Severity levels, sanitize-before-match ordering, evidence sanitization, and everything outside the three match conditions (telemetry/state provenance, other signals, watch loop) stay unchanged.
-
-## Acceptance Criteria
-
-- AC1: On a known-green completed run (verify score above gate, every telemetry `finish` event with zero errors), a monitor transcript scan reports zero critical and zero warning findings for `hybrid-path-resolution`, `model-fallback`, and `subagent-error` on every tick (info-only reconciliation notes acceptable).
-- AC2: `hybrid-path-resolution` fires only on failure-shaped evidence: an `ENOENT` (or documented equivalent resolution-failure token) adjacent to dispatch-context construction (`build_dispatch_context` / missing-skill context). A bare `build_dispatch_context` or script-name substring with no resolution-failure token produces no finding.
-- AC3: `model-fallback` fires only on a rejected or unavailable model identifier inside a dispatch record. Prose describing fallback behavior and benign reconciler outcome records produce no finding.
-- AC4: `subagent-error` fires only on an executed unhandled-exception trace. Retried-then-succeeded stream attempts and prose mentions of error handling produce no finding.
-- AC5: Sanitize-before-match is preserved: tokens, prompt content, and host-private paths never drive reporting, and finding evidence paths stay repo-relative and sanitized.
-- AC6: True positives are preserved: fixtures with a genuine `ENOENT`-adjacent dispatch-context failure, a rejected-model dispatch record, and an unhandled-rejection trace still produce the same severity findings as before.
-- AC7: A red regression fixture whose transcript contains only directory-listing script filenames, fallback-behavior prose, reconciler outcome records, and one retried-then-succeeded stream marker yields zero findings for the three signals.
-
-## Original Issue Context
-
-Title: ws-monitor transcript signals fire false positives on healthy runs (hybrid-path-resolution, model-fallback, subagent-error)
-
-Body:
-
-## Failure class
-
 `ws-monitor` transcript-pattern signals report CRITICAL/WARNING on a fully healthy run, on every snapshot tick, with no failure-shaped evidence behind them. A red-on-green monitor trains operators to ignore it.
-
-## Observed (portable contract, no consumer data)
 
 On a clean end-to-end standard-pipeline run (verify score above the gate, every telemetry `finish` event with zero errors, all steps `completed` except the designed sequential skip), the monitor reported on every tick:
 
@@ -49,87 +20,86 @@ On a clean end-to-end standard-pipeline run (verify score above the gate, every 
 - WARNING `model-fallback` (rejected or unavailable model)
 - WARNING `subagent-error` (unhandled error or exception trace)
 
-Independent evidence check against the same transcript found:
+An independent evidence check against the same transcript found zero `ENOENT` occurrences, zero unavailable/unsupported model identifiers, and zero `unhandled` / `traceback` / `fatal` occurrences; the single non-success stream marker was one retried model-stream attempt that succeeded on retry.
 
-- zero `ENOENT` occurrences anywhere;
-- zero unavailable/unsupported model identifiers (only prose describing fallback behavior, plus routine benign reconciler outcomes);
-- zero `unhandled` / `traceback` / `fatal` occurrences; the single non-success stream marker was one retried model-stream attempt that succeeded on retry.
+Probable match sources are substring patterns hitting benign text: script filenames in directory listings, documentation prose about fallback behavior, routine reconciler outcome records, and retried-then-succeeded stream attempts. Current patterns live in `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs` (transcript scan): `ENOENT|build_dispatch_context`, `unsupported|invalid … model|model … (reject|not available)`, and `fatal error|unhandled rejection|exception in subagent` — none of them require failure-shaped evidence or exclude benign contexts.
 
-Probable match sources are substring patterns hitting benign text: script filenames appearing in directory listings, documentation prose about fallback behavior, routine reconciler outcome records, and retried-then-succeeded stream attempts.
+## Acceptance Criteria
 
-## Expected
+- AC1: `hybrid-path-resolution` fires only on an `ENOENT` (or equivalent resolution failure) adjacent to dispatch-context construction; bare script-name substrings, listings, and prose never fire it.
+- AC2: `model-fallback` fires only on a rejected/unavailable model identifier inside a dispatch record; documentation prose and benign reconciler outcomes never fire it.
+- AC3: `subagent-error` fires only on an actual unhandled-exception trace; retried-then-succeeded attempts and prose mentions of error handling never fire it.
+- AC4: Running the monitor against a known-green completed run reports zero critical and zero warning findings (info-only reconciliation notes acceptable).
+- AC5: Unit tests cover each signal's positive case (failure-shaped evidence fires) and negative case (benign transcript text stays silent), including the three observed false-positive sources.
+- AC6: Authoring validation for this specification exits 0.
+- AC7: Sanitize-before-match is preserved: tokens, prompt content, and host-private paths never drive reporting, and finding evidence paths stay repo-relative and sanitized.
+- AC8: True positives are preserved: fixtures with a genuine ENOENT-adjacent dispatch-context failure, a rejected-model dispatch record, and an unhandled-rejection trace still produce the same severity findings as before, while a benign-only red regression fixture yields zero findings for the three signals.
 
-Each transcript signal should require failure-shaped evidence, for example:
+## Original Issue Context
 
-- `hybrid-path-resolution`: an `ENOENT` (or equivalent resolution failure) adjacent to dispatch-context construction, not a bare script-name substring;
-- `model-fallback`: a rejected/unavailable model identifier inside a dispatch record, excluding prose and benign reconciler outcomes;
-- `subagent-error`: an actual unhandled-exception trace, excluding retried-then-succeeded attempts and prose mentions of error handling.
+`source: github`, `id: 369`.
 
-A `CRITICAL` that fires on every tick of a green run is the finding, not the run.
-
-## Verification suggested
-
-Run the monitor against a known-green completed run: transcript scan should report no critical and no warning findings (info-only reconciliation notes acceptable).
-
-Comments: none. Labels: none.
+ws-monitor transcript-pattern signals report CRITICAL/WARNING on a fully healthy run, on every snapshot tick. Expected: each signal requires failure-shaped evidence — `hybrid-path-resolution` needs an `ENOENT` (or equivalent) adjacent to dispatch-context construction, not a bare script-name substring; `model-fallback` needs a rejected/unavailable model identifier inside a dispatch record, excluding prose and benign reconciler outcomes; `subagent-error` needs an actual unhandled-exception trace, excluding retried-then-succeeded attempts and prose mentions. A `CRITICAL` that fires on every tick of a green run is the finding, not the run. Suggested verification: run the monitor against a known-green completed run and expect no critical and no warning findings.
 
 ### Prior Work Sweep
 
-Sweep ran via `ws-spec-provider-github` `sweep-prior-work` (`--issue 369`, keywords `ws-monitor transcript hybrid-path-resolution model-fallback subagent-error`, files `.agents/skills/ws-monitor/SKILL.md`).
-
-- Exact open PR for tracker id 369: none (all `#369`-search hits are MERGED: #175, #339, #182, #184, #248 — keyword-substring matches, unrelated titles). No stop/reuse gate triggered.
-- Related merged work: PR #304 (telemetry filesTouched auto-discovery, finish deduplication, monitor transcript scoping) is the closest prior transcript-scoping change; recent monitor history is us-355/us-356 host-adapter transcript discovery plus review-fix rounds. No duplicate risk; continue.
-- Touchpoint history on the signal code: 20 recent commits touch `.agents/skills/ws-monitor/SKILL.md`, all merged.
+- Open-issue scan (`list_open_issues.cjs`) shows issue 369 is the only open tracker item — no duplicate or sibling issue covers these three signals.
+- `git log --all --grep="369"` returns only unrelated hits; `git log --all --grep="false positive"` returns harness-link and spec-scaffolding commits, no prior signal-predicate fix.
+- Two non-main commits (`82bb0744`, `6308cf36`, both on `develop` only) mention false positives but add spec/plan artifacts, not a predicate fix — the patterns on `main` are unchanged.
+- Foundation is the merged us-356 series (transcript discovery and read-only snapshot contract in `ws-monitor`, e.g. `c0750bc0`, `ac55d68f`, `2d089427`), which this spec tightens at the predicate level without changing discovery.
+- Current predicates verified at `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs` transcript scan (bare-substring matches, no evidence guards).
 
 ### Design Intent
 
-`git log -S "hybrid-path-resolution"` and `git log -S "model-fallback"` on `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs` both first hit commit `5db6f9f7` ("fix: resolve workflow runtime issues and add monitor"). The three transcript signals were added intentionally as early warnings for real dispatch, model, and subagent failures; the missing evidence-anchoring is an accidental gap, not an intentional constraint. Tightening match conditions preserves the original intent.
+- Greenfield predicate fix: no existing evidence-guard or benign-exclusion logic to restore — modification archaeology is skipped with reason (scan code has none; history has no prior fix).
+- The `ws-monitor` read-only contract stays; only the match predicates gain evidence requirements, so healthy runs go silent without losing true-positive detection.
 
 ## Notes
 
-- Implementation touchpoint: the transcript-scan block of `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs` (the three `addFinding` conditions for `hybrid-path-resolution`, `model-fallback`, `subagent-error`); update the `ws-monitor` `SKILL.md` signal table only if signal wording changes.
-- No telemetry/state schema change; no new signal types; sanitize-before-match and evidence sanitization stay as-is.
-- Regression cover: one red fixture (benign-only transcript, AC7) plus true-positive fixtures (AC6); green-run check per AC1.
+- "Adjacent to dispatch-context construction" means a bounded proximity window around dispatch-context records; the exact window is chosen during implementation and pinned by tests.
+- Retried-then-succeeded attempts stay silent by default (no info-level note unless implementation finds a cheap, non-noisy carrier).
+- Enhanced from converter output during ws-spec-from-provider import (GitHub); AC7–AC8 adopted from the parallel develop-side draft during merge resolution.
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| `turn-ended` and `generic-dispatch` signals | Not reported as false-positive sources; separate match conditions |
-| Telemetry/state dispatch provenance | Canonical source of truth already; this spec changes transcript-scan matching only |
-| New transcript signal types | No new failure class requested |
-| Monitor watch-loop cadence and polling | Scheduling behavior, unrelated to match precision |
+| Changing signal severity levels or snapshot tick cadence | Issue is about match precision, not severity or cadence |
+| Consumer product transcript content or host-side log formats | Monitor-side predicate fix only |
+| `ws-monitor` host adapters and transcript discovery (us-356 series) | Discovery is settled; only predicates change |
+| Auto-remediation of findings | The monitor stays read-only |
 
 ## Assumptions & Open Questions
 
 | Assumption | Chosen default | Rationale | Confirmed |
 |------------|----------------|-----------|-----------|
-| Green-run validation transcript | Reuse a known-green completed run transcript, else add a benign-only fixture | Issue already describes the green run; a fixture makes AC1 repeatable | n |
-| Equivalent resolution-failure tokens besides `ENOENT` | `ENOENT` plus documented equivalents found during implementation | Covers platform/executor variants without widening to bare substrings | n |
-| Evidence adjacency window | Same sanitized record/window as the failure token, not whole-file co-occurrence | Whole-file co-occurrence is what causes the current false positives | n |
-| Absent dimensions (input validation, idempotency, auth, concurrency, data lifecycle, external-dependency failure, state transitions) | N/A because the change is a read-only transcript scan with no inputs, mutations, or transitions | No ACs invented for dimensions the feature does not have | y |
+| Failure-shaped evidence is expressible per signal as regex plus proximity/content guard | Guarded substring + window, no semantic parsing | Keeps the scan cheap and bounded like today | y |
+| A green-run transcript (or derived fixture) is available as the AC4 gate input | Derive fixture from a recorded healthy run | AC4 needs a stable, rerunnable input | n |
+| Exclusion lists (prose markers, reconciler outcomes, retry-then-success) cover the observed sources | The three observed sources plus obvious siblings | Matches the issue's probable-match-source list | y |
+| Input validation and idempotency dimensions | N/A: scan is a pure function over transcript text, no writes or new inputs | Predicate-only change | y |
 
 ## Definition of Ready (DoR)
 
 | Readiness Item | Requirement | Verification Method |
 |----------------|-------------|---------------------|
-| Scope bounded | Only the three named match conditions plus fixtures change | `git diff` touches the transcript-scan block and fixtures/evals only |
-| Atomic criteria | Each AC has a pass/fail fixture or green-run check | AC1–AC7 each mapped to a fixture or monitor run |
-| Failure modes listed | Benign-text classes excluded; true positives preserved | AC2–AC4 exclusions plus AC6 true-positive fixtures |
-| Observation telemetry | Monitor snapshot findings counts plus repo tests | Monitor JSON output and `npm run test` |
-| Stack invariants | N/A because the edit is a read-only monitor scan with no framework boundary touched (stack `node-skills-package`; no rule pack applies) | No stack rule pack under `{sharedDir}/runtime/stacks/` matches this change |
-| Zero open blockers | Green-run transcript or fixture available | Fixture or transcript path recorded before implementation |
+| Bounded scope | Three predicate guards + exclusions + tests; no discovery or severity changes | Plan file list matches AC touchpoints (scan script + tests) |
+| Atomic acceptance criteria | AC1–AC8 each independently checkable (unit cases, green-run gate, sanitize, true positives, validator) | `validate_spec.cjs --mode=authoring` passes |
+| Failure modes covered | Benign listing/prose/reconciler/retry inputs silent; genuine ENOENT still fires | Negative scenarios section lists both directions |
+| Observation telemetry | Per-signal positive/negative unit results plus green-run gate counts | Telemetry section names the signals |
+| Zero open blockers | Green-run fixture source chosen at plan time; proximity window is plan-owned | Assumptions table shows plan-owned defaults |
 
 ## Validation & Observation Notes
 
 ### Telemetry & Observable Signals
 
-- Monitor snapshot JSON: per-signal finding counts for `hybrid-path-resolution`, `model-fallback`, `subagent-error` on the green run (expect zero critical/zero warning) and on true-positive fixtures (expect unchanged severities).
-- Repo suite: `npm run test` stays green.
-- Manual: `/ws-monitor` against the known-green run shows no red findings across ticks.
+- Per-signal unit results: positive fixtures fire, negative fixtures stay silent.
+- Green-run gate: critical count 0 and warning count 0 on the known-green transcript.
+- No new telemetry plumbing; results observed through existing test output and one live snapshot tick.
 
 ### Negative & Failing Test Scenarios
 
-- Red fixture (AC7): transcript with only directory-listing filenames, fallback-behavior prose, reconciler outcomes, and one retried-then-succeeded stream marker must yield zero findings for the three signals; fails before the fix.
-- True-positive fixtures (AC6): genuine `ENOENT`-adjacent dispatch failure, rejected-model dispatch record, and unhandled-rejection trace must each still fire at the same severity; any silence is a regression failure.
-- Unreadable transcript tails stay observable via scan metadata rather than silently passing.
+- Transcript containing only a directory listing with `build_dispatch_context` script names: no `hybrid-path-resolution` finding (fails today).
+- Transcript containing docs prose describing model fallback plus routine reconciler outcomes: no `model-fallback` finding (fails today).
+- Transcript with one retried-then-succeeded stream attempt and prose about error handling: no `subagent-error` finding (fails today).
+- Transcript with a genuine `ENOENT` inside dispatch-context construction: `hybrid-path-resolution` still fires (no overcorrection to silence).
+- Malformed or empty transcript input: scan completes without throwing; findings empty, not an error.

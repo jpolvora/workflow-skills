@@ -1,6 +1,6 @@
 ---
 name: ws-activity-report
-version: 0.4.42
+version: 0.4.44
 description: >-
   Timesheet entries (date, start, end, description) for ws-spec-to-pr /
   ws-spec-to-pr-lite deliveries. Start = earliest bootstrap file creation in
@@ -50,7 +50,7 @@ Output language: **en-us**. Clock rules: [`references/TIMING.md`](references/TIM
 
 3. **Start clock** — Per `{us-dir}`, run:
    ```bash
-   python {skillsRoot}/ws-activity-report/scripts/bootstrap_start.py {us-dir}
+   node {skillsRoot}/ws-activity-report/scripts/bootstrap_start.cjs {us-dir}
    ```
    Start = script `startIso`. Cross-check `startedAt` in state YAML for audit only (script applies bulk-sync override when needed). Do **not** use PR merge or mtime of steps 01+.
    - Done when: each candidate has `startIso` or a documented gap.
@@ -63,7 +63,7 @@ Output language: **en-us**. Clock rules: [`references/TIMING.md`](references/TIM
 
 5. **Infer human work timing** — Per `{us-dir}`, run:
    ```bash
-   python {skillsRoot}/ws-activity-report/scripts/infer_human_timing.py {us-dir} --start-iso {startIso} --end-iso {endIso}
+   node {skillsRoot}/ws-activity-report/scripts/infer_human_timing.cjs {us-dir} --start-iso {startIso} --end-iso {endIso}
    ```
    Extracts Human Total (billable), Agent Running Total (active agent intervals below the 30m idle threshold), idle gaps (≥30m, including silence between agent events), and human activity breakdown (Reviewing/Deciding vs Editing Specs/Plans vs Prompting) from commits, state, PR threads, and transcript telemetry. Human Total must be ≥ Agent Running Total when agent running > 0 (TIMING § Invariant).
    - Done when: Human Total, Agent Running Total, and category breakdown are resolved per candidate.

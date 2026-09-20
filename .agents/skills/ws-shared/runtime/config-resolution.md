@@ -14,7 +14,7 @@ Resolve the project-local `{sharedDir}/config.json` before any config-dependent 
 ## Config path (only)
 
 ```text
-.ws/config.json
+{sharedDir}/config.json
 ```
 
 Template: [`config.json.example`](../templates/config.json.example). Schema: [`config.schema.json`](config.schema.json).

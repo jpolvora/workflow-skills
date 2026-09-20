@@ -27,12 +27,11 @@ const {
 } = require(path.join(REPO, '.agents/skills/ws-shared/runtime/scripts/ingest_visual_attachments.cjs'));
 
 const HELPER = path.join(REPO, '.agents/skills/ws-shared/runtime/scripts/ingest_visual_attachments.cjs');
-const GH_SCRIPT = path.join(REPO, '.agents/skills/ws-spec-provider-github/scripts/github-issue-to-spec.py');
-const ADO_SCRIPT = path.join(REPO, '.agents/skills/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.py');
+const GH_SCRIPT = path.join(REPO, '.agents/skills/ws-spec-provider-github/scripts/github-issue-to-spec.cjs');
+const ADO_SCRIPT = path.join(REPO, '.agents/skills/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.cjs');
 const REGISTER_SCRIPT = path.join(REPO, '.agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs');
 const FORMAT_DOC = path.join(REPO, '.agents/skills/ws-spec-format/FORMAT.md');
 const VALIDATE_SCRIPT = path.join(REPO, '.agents/skills/ws-spec-format/scripts/validate_spec.cjs');
-const PYTHON = process.platform === 'win32' ? 'python' : 'python3';
 
 const PNG_1X1 = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
@@ -311,7 +310,7 @@ assert.strictEqual(sniffMime(PNG_1X1, ''), 'image/png');
     'utf8',
   );
   const proc = await spawnAsync(
-    PYTHON,
+    process.execPath,
     [GH_SCRIPT, '--input', input, '--repo', 'o/r', '--repo-root', tmp, '--force', '--fetch-remap-file', remapPath],
     {
       encoding: 'utf8',
@@ -360,7 +359,7 @@ assert.strictEqual(sniffMime(PNG_1X1, ''), 'image/png');
   const input = path.join(tmp, 'wi.json');
   fs.writeFileSync(input, JSON.stringify(workItem), 'utf8');
   const proc = await spawnAsync(
-    PYTHON,
+    process.execPath,
     [
       ADO_SCRIPT,
       '--input',
@@ -391,57 +390,30 @@ assert.strictEqual(sniffMime(PNG_1X1, ''), 'image/png');
   console.log('OK ado converter subprocess ingest e2e');
 }
 
-// ADO clean_html preserves img markdown
+// ADO cleanHtml preserves img markdown
 {
-  const { clean_html } = await import(
-    pathToFileURL(path.join(REPO, '.agents/skills/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.py')).href
-  ).catch(() => ({ clean_html: null }));
-  const proc = spawnSync(
-    PYTHON,
-    [
-      '-c',
-      `import importlib.util, sys
-spec = importlib.util.spec_from_file_location('ado', r'${ADO_SCRIPT.replace(/\\/g, '\\\\')}')
-mod = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(mod)
-html = '<img src="https://dev.azure.com/x/_apis/wit/attachments/g" alt="x">'
-out = mod.clean_html(html)
-assert '![x](' in out, out
-print('ok')`,
-    ],
-    { encoding: 'utf8', cwd: REPO },
-  );
-  assert.strictEqual(proc.status, 0, proc.stderr || proc.stdout);
-  console.log('OK ado clean_html preserves img markdown');
+  const { cleanHtml } = require(ADO_SCRIPT);
+  const html = '<img src="https://dev.azure.com/x/_apis/wit/attachments/g" alt="x">';
+  const out = cleanHtml(html);
+  assert.ok(out.includes('![x]('), `cleanHtml output: ${out}`);
+  console.log('OK ado cleanHtml preserves img markdown');
 }
 
-// ADO Original Issue Context keeps raw HTML (not clean_html output)
+// ADO Original Issue Context keeps raw HTML (not cleanHtml output)
 {
-  const proc = spawnSync(
-    PYTHON,
-    [
-      '-c',
-      `import importlib.util, json, tempfile, os
-spec = importlib.util.spec_from_file_location('ado', r'${ADO_SCRIPT.replace(/\\/g, '\\\\')}')
-mod = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(mod)
-wi = {
-  'id': 42,
-  'fields': {
-    'System.Title': 'HTML audit',
-    'System.Description': '<table><tr><td>cell</td></tr></table>',
-    'Microsoft.VSTS.Common.AcceptanceCriteria': '<p><strong>AC</strong></p>',
-  },
-}
-md = mod.build_spec_md(wi, 'org', 'proj')
-assert '<table>' in md, 'description HTML preserved in Original Issue Context'
-assert '<p><strong>AC</strong></p>' in md, 'acceptance criteria HTML preserved'
-assert '## Description' in md
-print('ok')`,
-    ],
-    { encoding: 'utf8', cwd: REPO },
-  );
-  assert.strictEqual(proc.status, 0, proc.stderr || proc.stdout);
+  const { buildSpecMd } = require(ADO_SCRIPT);
+  const wi = {
+    id: 42,
+    fields: {
+      'System.Title': 'HTML audit',
+      'System.Description': '<table><tr><td>cell</td></tr></table>',
+      'Microsoft.VSTS.Common.AcceptanceCriteria': '<p><strong>AC</strong></p>',
+    },
+  };
+  const md = buildSpecMd(wi, 'org', 'proj');
+  assert.ok(md.includes('<table>'), 'description HTML preserved in Original Issue Context');
+  assert.ok(md.includes('<p><strong>AC</strong></p>'), 'acceptance criteria HTML preserved');
+  assert.ok(md.includes('## Description'));
   console.log('OK ado Original Issue Context preserves raw HTML');
 }
 

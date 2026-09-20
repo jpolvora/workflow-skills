@@ -466,10 +466,10 @@ const EVALS = {
         id: 1,
         prompt: 'Convert GitHub issue #42 to a local spec for oauth-login.',
         expected_output:
-          'fetch-to-spec via github-issue-to-spec.py writes {specsDir}/us-{n}.spec.md, then register_local_spec.py copies to step-00 under {plansDir}.',
+          'fetch-to-spec via github-issue-to-spec.cjs writes {specsDir}/us-{n}.spec.md, then register_local_spec.cjs copies to step-00 under {plansDir}.',
         assertions: [
           'Agent loads ws-spec-provider-github',
-          'Uses scripts/github-issue-to-spec.py with python launcher',
+          'Uses scripts/github-issue-to-spec.cjs with node launcher',
           'Does not hardcode org/repo names',
         ],
       },
@@ -490,17 +490,17 @@ const EVALS = {
         id: 1,
         prompt: 'Fetch ADO work item 1234 to spec for slug ado-feature.',
         expected_output:
-          'ado-workitem-to-spec.py writes {specsDir}/us-{id}.spec.md, then register_local_spec.py copies to step-00 under {plansDir}.',
+          'ado-workitem-to-spec.cjs writes {specsDir}/us-{id}.spec.md, then register_local_spec.cjs copies to step-00 under {plansDir}.',
         assertions: [
           'Agent loads ws-spec-provider-azure-devops',
           'Reads org/project from config.json issueTrackers.azureDevOps',
-          'Uses python launcher on scripts/ado-workitem-to-spec.py',
+          'Uses node launcher on scripts/ado-workitem-to-spec.cjs',
         ],
       },
       {
         id: 2,
         prompt: 'resolve thread 99 on ADO PR 50',
-        expected_output: 'fix_pr_azure_context.py resolve-thread with PAT from env.',
+        expected_output: 'fix_pr_azure_context.cjs resolve-thread with PAT from env.',
         assertions: [
           'Does not hardcode organization or project',
           'UTF-8 handling noted for context.json on Windows',
@@ -624,10 +624,10 @@ const EVALS = {
       {
         id: 1,
         prompt: 'Validate spec-to-pr and lite workflow paths.',
-        expected_output: 'check_workflows.py simulation; FSM/step continuity results.',
+        expected_output: 'check_workflows.cjs simulation; FSM/step continuity results.',
         assertions: [
           'Agent loads check-workflows',
-          'Invokes python on scripts/check_workflows.py',
+          'Invokes node on scripts/check_workflows.cjs',
           'Covers dual-mode config sharing',
         ],
       },
@@ -669,11 +669,11 @@ const EVALS = {
         id: 3,
         prompt: '/ws-configure-project --section autoload',
         expected_output:
-          'Agent refreshes autoload.md Always-applied paths and offers Generate/Refresh root AGENTS.md via user-gate; uses configure_autoload.py; no absolute paths.',
+          'Agent refreshes autoload.md Always-applied paths and offers Generate/Refresh root AGENTS.md via user-gate; uses configure_autoload.cjs; no absolute paths.',
         assertions: [
           'Loads --section autoload flow from SKILL.md / INTERVIEW.md',
           'Offers Generate/Refresh / Keep current / Skip for root AGENTS.md',
-          'Uses configure_autoload.py helper with portable path forms only',
+          'Uses configure_autoload.cjs helper with portable path forms only',
           'Does not invent absolute filesystem paths',
         ],
       },
@@ -688,7 +688,7 @@ const EVALS = {
         assertions: [
           'Agent loads secrets-leak-review',
           'Checks for API keys, tokens, PII patterns',
-          'Uses bash/python launchers on scripts/ when running hooks',
+          'Uses bash/node launchers on scripts/ when running hooks',
         ],
       },
       {
@@ -925,11 +925,11 @@ const EVALS = {
         id: 1,
         prompt: 'activity-report 2026-08-05 — build timesheet for that day',
         expected_output:
-          'Agent loads ws-activity-report, resolves plans under {plansDir}, uses bootstrap_start.py for start, max(thread, commit) for end, emits entries + technical table with Short title.',
+          'Agent loads ws-activity-report, resolves plans under {plansDir}, uses bootstrap_start.cjs for start, max(thread, commit) for end, emits entries + technical table with Short title.',
         assertions: [
           'Agent loads ws-activity-report before acting',
           'Uses path tokens ({plansDir}) not hardcoded .agents/plans',
-          'Runs python …/bootstrap_start.py for start clock',
+          'Runs node …/bootstrap_start.cjs for start clock',
           'End is max of PR thread comment and delivery commit (or gap)',
           'Technical table includes Short title column',
           'Does not invent times or titles',

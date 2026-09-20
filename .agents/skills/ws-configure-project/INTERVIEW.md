@@ -29,7 +29,7 @@ Scan consumer **repo root** (not this skill package alone):
 | `gh` auth / GitHub remote | `providers.active=github`, enable `issueTrackers.github` |
 | ADO remote only | `providers.active=azure-devops` |
 | No tracker remote / `specs/**/*.spec.md` | Suggest `active=local` + set `scm` from remote host or ask |
-| No app stack detected + `.agents/skills/` present | Suggest `verification.backendTest: "python .agents/skills/ws-check-workflows/scripts/check_workflows.py"` for harness validation |
+| No app stack detected + `.agents/skills/` present | Suggest `verification.backendTest: "node .agents/skills/ws-check-workflows/scripts/check_workflows.cjs"` for harness validation |
 | `prisma/` / `drizzle` / `Migrations/` / compose DB services | `stack.database.*` hints |
 | Top-level `src/`, `web/`, `tests/` | `stack.backend.srcDir` / frontend `sourceDir` / test paths |
 | `.ws/STACK.md` (preferred) | `rules.stackFile` → that path |
@@ -47,7 +47,7 @@ Scan consumer **repo root** (not this skill package alone):
 | Non-empty `preview.dryRunCommand` already set | Keep current (**Recommended** unless `--force`) |
 | Host-native agent dir or rules marker detected | Suggest detected compiler dialect (`defaults.specializedSubagents.targetHost`; valid ids `cursor`, `claude`, `generic`, `auto`) |
 | `package.json` scripts named like `preview`, `review:dry`, `pipeline-review`, `code-review:dry`, `*dry-run*review*`, `*review*dry*` | Suggest `npm run <script>` (or `npm run <script> -- …` only if the script docs require args) |
-| Repo `scripts/` / `tools/` files matching `*preview*`, `*pipeline-review*`, `*review*dry*`, `*dry-run*review*` | Suggest `bash <relpath>` / `node <relpath>` / `python <relpath>` per extension ([`tools.md`](../ws-shared/runtime/tools.md) launchers) |
+| Repo `scripts/` / `tools/` files matching `*preview*`, `*pipeline-review*`, `*review*dry*`, `*dry-run*review*` | Suggest `bash <relpath>` / `node <relpath>` per extension ([`tools.md`](../ws-shared/runtime/tools.md) launchers) |
 | Consumer skill under `.agents/skills/` or `{globalSkillsRoot}` with id/name containing `preview`, `pipeline-review`, `dry-run`, or `code-review` (excluding packaged `ws-preview` / `ws-code-review` bodies) | Extract the primary Shell recipe from that `SKILL.md` (first concrete command block); cite skill path as source |
 | Harness prose hit (see § Preview scan list) with a concrete shell/`npm run` recipe for local/CI-shaped review dry-run | Suggest that exact command string; cite file:line or section |
 | Multiple candidates | Rank: existing config → `package.json` script → repo script file → consumer skill → harness prose; show top 3 in the gate |
@@ -209,7 +209,7 @@ Persists `defaults.autoload` (boolean; omitted/missing/`false` → effective fal
 | Enable consumer root autoload? | **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip |
 | Autoload `ws-task-lifecycle` like other Always-applied skills? | **Yes (`true`, Recommended)** / No (`false`) / Keep current / Skip |
 | User chooses Yes (`true`) for root autoload | Root write **first** (`--write-autoload` + `--write-root-agents`); persist `defaults.autoload: true` only after root succeeds. Non-generated root → user-gate overwrite/`--force` (Recommended: No → leave flag false) |
-| User chooses Yes (`true`) / Keep true / Skip for `ws-task-lifecycle` | `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload-task-lifecycle true` then `--write-autoload`. Does **not** set `defaults.autoload` |
+| User chooses Yes (`true`) / Keep true / Skip for `ws-task-lifecycle` | `node {skillsRoot}/ws-configure-project/scripts/configure_autoload.cjs --set-autoload-task-lifecycle true` then `--write-autoload`. Does **not** set `defaults.autoload` |
 | User chooses No (`false`) for `ws-task-lifecycle` | `--set-autoload-task-lifecycle false` then `--write-autoload` so the Always-applied row is stripped (opt-out). Does **not** set `defaults.autoload` |
 | User chooses No / Skip / Keep false | Write or leave `defaults.autoload: false`; root `AGENTS.md` optional (do not require) |
 
@@ -219,12 +219,12 @@ Persists `defaults.autoload` (boolean; omitted/missing/`false` → effective fal
 
 ```bash
 # Yes path order (root before flag). Script also runs write-root before --set-autoload true when combined.
-python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --write-autoload --write-root-agents [--force]
-python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload true
-python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload false
-python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload-task-lifecycle true
-python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --set-autoload-task-lifecycle false
-python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --check --json
+node {skillsRoot}/ws-configure-project/scripts/configure_autoload.cjs --write-autoload --write-root-agents [--force]
+node {skillsRoot}/ws-configure-project/scripts/configure_autoload.cjs --set-autoload true
+node {skillsRoot}/ws-configure-project/scripts/configure_autoload.cjs --set-autoload false
+node {skillsRoot}/ws-configure-project/scripts/configure_autoload.cjs --set-autoload-task-lifecycle true
+node {skillsRoot}/ws-configure-project/scripts/configure_autoload.cjs --set-autoload-task-lifecycle false
+node {skillsRoot}/ws-configure-project/scripts/configure_autoload.cjs --check --json
 ```
 
 Default `--repo-root` is the consumer **cwd**. Pass `--repo-root <dir>` when cwd is not the target project. Use `--force` only when overwriting a non-generated root `AGENTS.md` (creates `AGENTS.md.bak`). Never persist `defaults.autoload: true` if root write was refused.

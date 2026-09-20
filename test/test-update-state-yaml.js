@@ -22,14 +22,14 @@ const UPDATE_LITE = path.join(
 );
 const VALIDATE_STANDARD = path.join(
   REPO_ROOT,
-  '.agents/skills/ws-spec-to-pr/scripts/validate_state.py',
+  '.agents/skills/ws-spec-to-pr/scripts/validate_state.cjs',
 );
 const VALIDATE_LITE = path.join(
   REPO_ROOT,
-  '.agents/skills/ws-spec-to-pr-lite/scripts/validate_state.py',
+  '.agents/skills/ws-spec-to-pr-lite/scripts/validate_state.cjs',
 );
 
-const PYTHON = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
+
 const NL = '\n';
 const tmpRoots = [];
 let failures = 0;
@@ -72,9 +72,6 @@ function run(cmd, args, opts = {}) {
   });
 }
 
-function runPython(script, args, opts = {}) {
-  return run(PYTHON, [script, ...args], opts);
-}
 
 function runNode(script, args, opts = {}) {
   return run(process.execPath, [script, ...args], opts);
@@ -458,7 +455,7 @@ function testStateVersionStampAndReject() {
   ]) {
     for (const c of cases) {
       const p = writeStateVersionFixture(dir, c.line, c.label + '-' + validatorLabel);
-      const r = runPython(validatorScript, [p]);
+      const r = runNode(validatorScript, [p]);
       assert(
         r.status === 1,
         validatorLabel + ' ' + c.label + ': validate_state exits 1 (status=' + r.status + ')',
@@ -471,10 +468,10 @@ function testStateVersionStampAndReject() {
   }
 
   const good = writeStateVersionFixture(dir, 'stateVersion: 3\nrevision: 0', 'good');
-  const rGood = runPython(VALIDATE_STANDARD, [good]);
+  const rGood = runNode(VALIDATE_STANDARD, [good]);
   assert(rGood.status === 0, 'current stateVersion: validate_state exits 0');
 
-  const rGoodLite = runPython(VALIDATE_LITE, [good]);
+  const rGoodLite = runNode(VALIDATE_LITE, [good]);
   assert(rGoodLite.status === 0, 'lite current stateVersion: validate_state exits 0');
 
   const CJS_STATE = path.join(
@@ -569,7 +566,7 @@ function testArtifactReproducibilityPreAdvance() {
   const { usDir, statePath } = writeArtifactFixture(dir, slug);
 
   // No artifacts created yet -> pre-advance 2 must fail.
-  const rMiss = runPython(VALIDATE_STANDARD, [statePath, '--pre-advance', String(step)]);
+  const rMiss = runNode(VALIDATE_STANDARD, [statePath, '--pre-advance', String(step)]);
   assert(
     rMiss.status !== 0,
     'AC6: pre-advance ' + step + ' exits non-zero when required artifact missing (status=' + rMiss.status + ')',
@@ -583,7 +580,7 @@ function testArtifactReproducibilityPreAdvance() {
   writeLedger(usDir, slug, slug);
   stampArtifact(usDir, 'step-00-' + slug + '.spec.md', { step: 0, slug, workflowId: slug });
   stampArtifact(usDir, 'step-01-' + slug + '.plan.md', { step: 1, slug, workflowId: slug });
-  const rOk = runPython(VALIDATE_STANDARD, [statePath, '--pre-advance', String(step)]);
+  const rOk = runNode(VALIDATE_STANDARD, [statePath, '--pre-advance', String(step)]);
   assert(
     rOk.status === 0,
     'AC6: pre-advance ' + step + ' exits 0 when required artifacts present (status=' + rOk.status + ' stderr=' + (rOk.stderr || '') + ')',
@@ -642,7 +639,7 @@ function testInlineDictCommitShaScan() {
   ]) {
     const dir = mkTmp('ws-inline-sha-');
     const inlinePath = writeInlineCommitFixture(dir, inlineYaml, true, validatorLabel + '-inline');
-    const rInline = runPython(validatorScript, [inlinePath, '--json']);
+    const rInline = runNode(validatorScript, [inlinePath, '--json']);
     assert(rInline.status === 0, validatorLabel + ' inline-dict sha scan: exit 0');
     const inlineJson = parseValidateJson(rInline.stdout);
     assert(!!inlineJson, validatorLabel + ' inline-dict sha scan: --json parses');
@@ -650,7 +647,7 @@ function testInlineDictCommitShaScan() {
     assert(typeof inlineJson.state === 'string', validatorLabel + ' inline-dict sha scan: returns state path');
 
     const blockPath = writeInlineCommitFixture(dir, blockYaml, true, validatorLabel + '-block');
-    const rBlock = runPython(validatorScript, [blockPath, '--json']);
+    const rBlock = runNode(validatorScript, [blockPath, '--json']);
     assert(rBlock.status === 0, validatorLabel + ' block sha scan: exit 0');
     const blockJson = parseValidateJson(rBlock.stdout);
     assert(!!blockJson && blockJson.ok === true, validatorLabel + ' block sha scan: --json ok');
@@ -664,13 +661,13 @@ function testInlineDictCommitShaScan() {
     const goodYaml =
       '  - { sha: "' + realSha + '", step: 5, message: "product" }' + NL;
     const goodPath = writeInlineCommitFixture(dir, goodYaml, false, 'git-good');
-    const rGood = runPython(VALIDATE_STANDARD, [goodPath, '--json']);
+    const rGood = runNode(VALIDATE_STANDARD, [goodPath, '--json']);
     assert(rGood.status === 0, 'inline-dict existing SHA: validate_state exits 0');
 
     const badYaml =
       '  - { sha: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef", step: 5, message: "forged" }' + NL;
     const badPath = writeInlineCommitFixture(dir, badYaml, false, 'git-bad');
-    const rBad = runPython(VALIDATE_STANDARD, [badPath, '--json']);
+    const rBad = runNode(VALIDATE_STANDARD, [badPath, '--json']);
     assert(rBad.status === 0, 'inline-dict forged SHA: Node SoT does not git-cat commits (hygiene only)');
   }
 }
@@ -696,3 +693,18 @@ function main() {
 }
 
 main();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

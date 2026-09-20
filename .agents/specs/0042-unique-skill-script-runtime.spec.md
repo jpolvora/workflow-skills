@@ -4,6 +4,7 @@ slug: unique-skill-script-runtime
 title: "Unique Node runtime for all workflow-skills helper scripts"
 source: local
 specDate: 2026-08-22
+status: completed
 ---
 
 # Specification — Unique Node runtime for all workflow-skills helper scripts

@@ -37,4 +37,4 @@ jobs:
         run: npm run test
 
       - name: Simulate workflow state machines
-        run: python .agents/skills/ws-check-workflows/scripts/check_workflows.py
+        run: node .agents/skills/ws-check-workflows/scripts/check_workflows.cjs

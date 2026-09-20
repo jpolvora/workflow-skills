@@ -91,7 +91,7 @@ Billable column uses **Human Total** only. Agent Running Total is informational 
 
 1. Resolve `{date}` + timezone
 2. Discover overlapping plans
-3. Start = `bootstrap_start.py` (creation / override)
+3. Start = `bootstrap_start.cjs` (creation / override)
 4. Short title (WI/issue vs PR)
 5. End = max(thread comment, delivery commit)
 6. Clip multi-day if needed

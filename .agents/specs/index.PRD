@@ -92,7 +92,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Harness spec-run benchmark with snapshot compare (`spec: 0041-harness-spec-benchmark.spec.md`)
 - [x] Regroup packaged skill ids as `ws-{family}-{verb}` (`spec: 0037-skill-family-naming.spec.md`) — delivered via release 0.3.56, PR #266 MERGED
 - [x] Specify-time closure pack for score-10 spec delivery (`spec: 0040-specify-closure-pack.spec.md`)
-- [ ] Unique Node runtime for all workflow-skills helper scripts (`spec: 0042-unique-skill-script-runtime.spec.md`)
+- [x] Unique Node runtime for all workflow-skills helper scripts (`spec: 0042-unique-skill-script-runtime.spec.md`) — PR #370 MERGED
 - [x] ~~Cooperative session leases~~ **retired 0.3.38** — historical spec only (`spec: 0043-workflow-session-leases.spec.md`; use worktrees for parallel work)
 - [x] Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, .runtime allowlist (`spec: 0044-us-235.spec.md`)
 - [x] Coordinated Prompt-to-Spec-to-Execution Lifecycle: 3-Phase Task Orchestrator & Canonical Tracking Skill (`spec: 0045-us-236.spec.md`)
@@ -117,7 +117,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Native gate advance options continue same-turn across all step boundaries, markdown fallback yields (issue #280, prompt-driven fix, no spec) — PR #281 MERGED
 - [x] ws-benchmarks: benchmark commands and evolution report manager (`spec: 0064-ws-benchmarks-skill.spec.md`) — PR #282 MERGED
 - [x] ws-spec-manager: unified specification router and lifecycle manager (`spec: 0065-ws-spec-manager-skill.spec.md`) — PR #282 MERGED
-- [ ] Separate consumer ws-shared hub from upstream root AGENTS.md (`spec: 0066-ws-shared-hub-agents-separation.spec.md`)
+- [x] Separate consumer ws-shared hub from upstream root AGENTS.md (`spec: 0066-ws-shared-hub-agents-separation.spec.md`) — PR #371 MERGED
 - [x] Reviewer-Aligned Implementation Gates & Pre-PR Defect Prevention (`spec: 0067-reviewer-aligned-implementation-gates.spec.md`)
 - [x] Align hub routing with unpackaged spec-memo companions (not vendor ws-memo) (`spec: 0069-us-288.spec.md`) — PR #289 MERGED
 - [x] Plan Directory Artifacts Consolidation & Minimal Runtime Footprint (`spec: 0068-plan-artifacts-consolidation.spec.md`) — PR #286 MERGED
@@ -127,7 +127,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Stamp finished step artifacts with the step result, not the overall workflow status (`spec: 0073-us-311.spec.md`) — PR #312 MERGED
 - [x] workflow_state.cjs drops earlier values for repeated file-list flags (`spec: 0074-us-310.spec.md`) — PR #313 MERGED
 - [x] ws-wiki: living project feature wiki and domain knowledge base manager (`spec: 0075-ws-wiki.spec.md`) — PR #319
-- [ ] ws-wiki first-time sequential spec sweep (`spec: 0076-ws-wiki-spec-sweep.spec.md`)
+- [x] ws-wiki first-time sequential spec sweep (`spec: 0076-ws-wiki-spec-sweep.spec.md`) — PR #372 MERGED
 - [x] Dedicated GitHub Pages wiki site generated from {wikiDir} (`spec: 0077-website-wiki-page.spec.md`)
 - [x] ws-wiki Phase 2 verify and Phase 3 plan/apply (`spec: 0078-ws-wiki-code-verify.spec.md`)
 - [x] ws-wiki from-code genesis and progressive-disclosure split (`spec: 0079-ws-wiki-from-code.spec.md`)
@@ -147,7 +147,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Fix stale autoload keyword-map prose for scm-provider-contract path (`spec: 0081-us-328.spec.md`)
 - [x] change website cta / main slug/slogan (`spec: 0093-us-344.spec.md`)
 - [x] ws-goal-fix-pr as orchestrator with per-round subagent dispatch (`spec: 0095-us-347.spec.md`)
-- [ ] ws-spec-to-pr orchestrator could dispatch and observer/watcher for errors during execution (`spec: 0105-us-365.spec.md`)
+- [x] ws-spec-to-pr orchestrator could dispatch and observer/watcher for errors during execution (`spec: 0105-us-365.spec.md`) — PR #373 MERGED
 - [x] enhance host capabilities - detect tools & cache it (`spec: 0104-us-348.spec.md`)
 - [x] change/update/move ws-shared folder location to {projectRoot}/.ws (`spec: 0103-us-351.spec.md`)
 - [x] Add config.json key for ws-ship-pr enable/disable subagent dispatch loop for fix (default inline loop) (`spec: 0102-us-352.spec.md`)
@@ -156,8 +156,40 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] (ws-monitor ms-20260919T043606Z) Step 3 completed without exec artifact; Step 4 completed with empty filesTouched (live us-354 run) (`spec: 0101-us-355.spec.md`)
 - [x] (ws-monitor) Discover and check transcripts/sessions for known agent hosts (Cursor, OpenCode, Antigravity, Muse) (`spec: 0100-us-356.spec.md`)
 - [x] Add AGENTS.md rule: check the skill dependency graph when editing a skill so callers and callees stay in sync (`spec: 0099-us-358.spec.md`)
-- [x] .ws resolution vs ws-shared folders cleanup (`spec: 0106-ws-shared-resolution-cleanup.spec.md`)
+- [x] .ws resolution vs ws-shared folders cleanup (`spec: 0106-ws-shared-resolution-cleanup.spec.md`) — PR #374 MERGED
 - [ ] ws-monitor transcript signals fire false positives on healthy runs (hybrid-path-resolution, model-fallback, subagent-error) (`spec: 0107-us-369.spec.md`)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 8. Next specs
 
@@ -210,7 +242,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 45 | `harness-spec-benchmark` | `[x]` done | Phase 4 | Upstream harness fixture benchmark + snapshot compare |
 | 46 | `skill-family-naming` | `[x]` done | Phase 4 | Regroup skill ids as `ws-{family}-{verb}` (spec family first) — delivered 0.3.56 (PR #266) |
 | 47 | `specify-closure-pack` | `[x]` done | Phase 4 | Specify-time closure pack for score-10 delivery |
-| 48 | `unique-skill-script-runtime` | `[ ]` todo | Phase 4 | Node-only runtime for all packaged helper scripts |
+| 48 | `unique-skill-script-runtime` | `[x]` done | Phase 4 | Node-only runtime for all packaged helper scripts (PR #370) |
 
 | 49 | `workflow-session-leases` | `[x]` retired | Phase 4 | **Removed 0.3.38** — historical spec; session leases / git.lock no longer ship |
 | 50 | `us-235` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, .runtime allowlist |
@@ -234,11 +266,11 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 68 | `us-250` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Remove retired ws-patterns references from hub templates/seeds (PR #251) |
 | 69 | `us-272` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Prune retired skill ids on update + hybrid harness fallback (PR #273) |
 
-All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-shared-hub-agents-separation`, and `ws-wiki-spec-sweep`.
+All Next-specs closed except true todo: `us-369`.
 
 | 70 | `ws-benchmarks-skill` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-benchmarks: benchmark commands and evolution report manager |
 | 71 | `ws-spec-manager-skill` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-manager: unified specification router and lifecycle manager |
-| 72 | `ws-shared-hub-agents-separation` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Separate consumer ws-shared hub from upstream root AGENTS.md |
+| 72 | `ws-shared-hub-agents-separation` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Separate consumer ws-shared hub from upstream root AGENTS.md (PR #371) |
 | 73 | `reviewer-aligned-implementation-gates` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Reviewer-Aligned Implementation Gates & Pre-PR Defect Prevention |
 | 74 | `us-288` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Align hub routing with unpackaged spec-memo companions (not vendor ws-memo) (PR #289) |
 | 75 | `plan-artifacts-consolidation` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Plan Directory Artifacts Consolidation & Minimal Runtime Footprint (PR #286) |
@@ -250,7 +282,7 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 
 | 81 | `ws-wiki` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-wiki: living project feature wiki and domain knowledge base manager (PR #319) |
 
-| 82 | `ws-wiki-spec-sweep` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-wiki first-time sequential spec sweep |
+| 82 | `ws-wiki-spec-sweep` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-wiki first-time sequential spec sweep (PR #372) |
 
 | 83 | `website-wiki-page` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Dedicated GitHub Pages wiki site generated from {wikiDir} |
 
@@ -284,7 +316,7 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 
 | 101 | `us-347` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-goal-fix-pr as orchestrator with per-round subagent dispatch |
 
-| 102 | `us-365` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-to-pr orchestrator could dispatch and observer/watcher for errors during execution |
+| 102 | `us-365` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-to-pr orchestrator could dispatch and observer/watcher for errors during execution (PR #373) |
 
 | 103 | `us-348` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | enhance host capabilities - detect tools & cache it |
 
@@ -302,7 +334,7 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 
 | 110 | `us-358` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Add AGENTS.md rule: check the skill dependency graph when editing a skill so callers and callees stay in sync |
 
-| 111 | `ws-shared-resolution-cleanup` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | .ws resolution vs ws-shared folders cleanup |
+| 111 | `ws-shared-resolution-cleanup` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | .ws resolution vs ws-shared folders cleanup (PR #374) |
 
 | 112 | `us-369` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor transcript signals fire false positives on healthy runs (hybrid-path-resolution, model-fallback, subagent-error) |
 
@@ -418,6 +450,11 @@ All Next-specs closed except true todo: `unique-skill-script-runtime`, `ws-share
 | 2026-09-19 | `us-355` | [ws-monitor] Step 3/Step 4 completion contracts plus monitor detection flags | [PR #363](https://github.com/jpolvora/workflow-skills/pull/363) |
 | 2026-09-19 | `us-356` | [ws-monitor] Discover and check transcripts/sessions for known agent hosts | [PR #364](https://github.com/jpolvora/workflow-skills/pull/364) |
 | 2026-09-19 | `us-358` | Add AGENTS.md rule: check the skill dependency graph when editing a skill | [PR #366](https://github.com/jpolvora/workflow-skills/pull/366) |
+| 2026-09-20 | `unique-skill-script-runtime` | Unique Node runtime for all workflow-skills helper scripts | [PR #370](https://github.com/jpolvora/workflow-skills/pull/370) |
+| 2026-09-20 | `ws-shared-hub-agents-separation` | Separate consumer ws-shared hub from upstream root AGENTS.md | [PR #371](https://github.com/jpolvora/workflow-skills/pull/371) |
+| 2026-09-20 | `ws-wiki-spec-sweep` | ws-wiki first-time sequential spec sweep | [PR #372](https://github.com/jpolvora/workflow-skills/pull/372) |
+| 2026-09-20 | `us-365` | ws-spec-to-pr orchestrator could dispatch and observer/watcher for errors during execution | [PR #373](https://github.com/jpolvora/workflow-skills/pull/373) |
+| 2026-09-20 | `ws-shared-resolution-cleanup` | .ws resolution vs ws-shared folders cleanup | [PR #374](https://github.com/jpolvora/workflow-skills/pull/374) |
 
 ## 11. Maintenance checklist
 

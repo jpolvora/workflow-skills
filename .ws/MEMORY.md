@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-09-20] CRLF file edits via single-line anchors
+- **Layer**: `Application`
+- **Module**: `ws-shared`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/*.md`
+- **Scenario / Context**: Managed hub templates ship to `{sharedDir}/runtime/` in consumers. A relative link valid from the SoT path (e.g. `../../../../CATALOG.md`) resolves outside the repo after install, and check_harness_links only validates the SoT side, so CI stays green while installed hubs ship broken links.
+- **DO NOT**: Add Markdown links in managed hub templates whose depth only resolves from the SoT tree; do not trust a green links gate for installed-layout validity.
+- **INSTEAD DO**: Keep cross-layout pointers as prose-only (name the upstream file plus an authoring-only note); assert installed-path citations (e.g. `{sharedDir}/runtime/AGENTS.md`) in test-hub-separation.js.
+
 ### [2026-09-19] Template substitution must use function replacements for variable values
 - **Layer**: `application`
 - **Module**: `ws-shared / step baton runner templates`

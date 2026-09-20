@@ -4,10 +4,10 @@
     {
       "id": 1,
       "prompt": "Validate spec-to-pr and lite workflow paths.",
-      "expected_output": "check_workflows.py simulation; FSM/step continuity results.",
+      "expected_output": "check_workflows.cjs simulation; FSM/step continuity results.",
       "assertions": [
         "Agent loads check-workflows",
-        "Invokes python on scripts/check_workflows.py",
+        "Invokes node on scripts/check_workflows.cjs",
         "Covers dual-mode config sharing"
       ]
     },

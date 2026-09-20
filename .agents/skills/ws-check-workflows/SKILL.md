@@ -1,7 +1,7 @@
 ---
 name: ws-check-workflows
 description: Workflow FSM simulation runner — validates step continuity, state isolation, provider dispatch, and artifact transitions across standard, lite, and multi-spec pipelines.
-version: 0.4.42
+version: 0.4.44
 disable-model-invocation: true
 invocation_names:
   - check-workflows
@@ -24,16 +24,17 @@ Run deep simulation and validation against both workflows:
 
 ```bash
 # Standard report execution
-python {skillsRoot}/ws-check-workflows/scripts/check_workflows.py
+node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs
 
 # Save Markdown report to ws-check-workflows-report.md
-python {skillsRoot}/ws-check-workflows/scripts/check_workflows.py --report
+node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs --report
 
-# Interactive auto-fix mode (prompts for confirmation before applying)
-python {skillsRoot}/ws-check-workflows/scripts/check_workflows.py --fix
+# Auto-fix mode (applies safe fixes; never prompts, even on a TTY)
+node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs --fix --yes
 
-# Non-interactive auto-fix (CI / automated runner)
-python {skillsRoot}/ws-check-workflows/scripts/check_workflows.py --fix --yes
+# Default is report-only (no fixes applied).
+# For this invocation: exit 1 iff a CRITICAL issue exists, 0 otherwise (warnings alone exit 0).
+node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs
 ```
 
 ---
@@ -48,7 +49,7 @@ The validation process performs end-to-end simulation across both orchestrators:
 - **Linked Skill Check**: Verifies that every step links to an existing skill under `{skillsRoot}/<skill>/SKILL.md` (upstream SoT is `.agents/skills/`).
 
 ### 2. Script Syntax & Execution Check
-- Compiles Python scripts (`.py`) via `py_compile` and checks Node.js scripts (`.cjs`/`.js`) via `node --check`.
+- Checks Node.js scripts (`.cjs`/`.js`) via `node --check`.
 - Flags syntax errors, invalid imports, or execution issues as critical broken steps.
 
 ### 3. Orchestrator Dependency Closure
@@ -70,9 +71,9 @@ The validation process performs end-to-end simulation across both orchestrators:
 ## Report & Confirmation Flow
 
 1. **Detailed Simulation Report**: Generates a structured breakdown of Full and Lite workflow simulation results, along with a table of detected issues and actionable **Suggested Fixes**.
-2. **User Confirmation Gate**: Prompts for explicit user confirmation before applying automated fixes.
+2. **User Confirmation Gate**: `--fix` applies safe fixes only with explicit `--yes` (never prompts, even on a TTY). `--fix` without `--yes` exits 1 on a TTY without applying fixes whenever any issue exists — even warning-only; in non-TTY mode it proceeds as if `--yes` were passed. For the default report-only invocation and for `--fix --yes`, exit code is 1 iff a CRITICAL issue exists: warning-only findings exit 0 and apply no fixes. Never use bare `--fix` as a dry-run gate — the default invocation (no `--fix`) is the report-only gate. With zero detected issues, bare `--fix` is a silent no-op that exits 0. Exit code is 1 iff a CRITICAL issue exists; warning-only findings exit 0 and apply no fixes.
 
 ## Done when
 
-- `python {skillsRoot}/ws-check-workflows/scripts/check_workflows.py` exits 0 (or `--report` wrote `ws-check-workflows-report.md` with 0 critical).
-- If `--fix`: user confirmed (or `--yes`) and re-run exits 0.
+- `node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs` exits 0 (or `--report` wrote `ws-check-workflows-report.md` with 0 critical).
+- If `--fix`: `--yes` passed and re-run exits 0.

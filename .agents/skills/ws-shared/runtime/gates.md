@@ -4,7 +4,7 @@ Canonical gate UX for [`ws-spec-to-pr`](../../ws-spec-to-pr/SKILL.md) and [`ws-s
 Both orchestrators MUST follow this file so shared pipeline skills stay interchangeable.
 
 Artifact paths: [`../ws-spec-to-pr/ARTIFACTS.md`](../../ws-spec-to-pr/ARTIFACTS.md).
-Config: [`.ws/config.json`](../../../../.ws/config.json) only — see [`config-resolution.md`](config-resolution.md).
+Config: `{sharedDir}/config.json` only — see [`config-resolution.md`](config-resolution.md).
 
 ---
 
@@ -18,7 +18,7 @@ Config: [`.ws/config.json`](../../../../.ws/config.json) only — see [`config-r
 | **Fix-PR is separate** | Standard Step 9 / lite Step 5 — **not** inside ship. `ws-ship-pr` receives `stopBeforeFixPr: true`. |
 | **Artifact names** | Delivery result is `step-08-{slug}.result.md` for **both** workflows. Plan is `step-01-{slug}.plan.md`. |
 | **Step ranges** | Standard: Steps 0–9. Lite: Steps 0–5. |
-| **Config** | Only `.ws/config.json`. No `ws-spec-to-pr/config.json` / `ws-spec-to-pr-lite/config.json`. |
+| **Config** | Only `{sharedDir}/config.json` (default `.ws/config.json`). No `ws-spec-to-pr/config.json` / `ws-spec-to-pr-lite/config.json`. |
 | **User gates** | Prefer native structured choice UI when available; markdown fallback when not; HS-1 on cancel. |
 | **Verbose step preview** | When `defaults.verboseMode` is explicit `true`, the model executing the step (orch for orch-owned/lite inline work; the dispatched subagent otherwise) reasons about **this run** and prints `Starting step N (label):` plus `*` bullets before any tool call. Omitted/`false` → silent. Schema/`ws-configure-project` seed writes `true`. Preview text is not canned in skills or scripts. |
 
@@ -134,7 +134,7 @@ Skip Step 2 (mark skipped, log) when **all** hold:
 - Complexity ≠ complex
 - Plan Open Questions section empty or all marked resolved
 - No `blocking` gaps from a 30s orch skim / prior step-output
-- `check_memory_conflict.py --json` did not return `force_interview: true`
+- `check_memory_conflict.cjs --json` did not return `force_interview: true`
 
 Otherwise run `ws-plan-interview` (project-context sweep before escalate; in `autoMode`, sweep-miss blocking gaps close as model-inferred — no `user-gate`). A High or Critical MEMORY trap whose `PathPattern` matches a touched plan path forces this interview even when every other skip condition passes. Choosing **End refinement and advance** at 2c **auto-sets** `shared_understanding: confirmed` (skip separate 2e). Only show 2e when 2c was not used to exit.
 

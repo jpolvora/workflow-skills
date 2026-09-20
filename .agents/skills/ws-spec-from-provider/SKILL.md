@@ -1,7 +1,7 @@
 ---
 name: ws-spec-from-provider
 description: Bulk-import open GitHub issues or ADO User Stories into local specs (spec-write + register). Trigger when importing tracker backlog to {specsDir} for ws-spec-list / ws-spec-multi.
-version: 0.4.42
+version: 0.4.44
 disable-model-invocation: true
 invocation_names:
   - spec-from-provider
@@ -56,9 +56,9 @@ Bulk-import remote work items into the local specs pipeline: agentic `{specsDir}
 
    ```bash
    # github
-   python {skillsRoot}/ws-spec-from-provider/scripts/list_open_issues.py [--repo-root .]
+   node {skillsRoot}/ws-spec-from-provider/scripts/list_open_issues.cjs [--repo-root .]
    # azure-devops
-   python {skillsRoot}/ws-spec-from-provider/scripts/list_my_user_stories.py [--repo-root .]
+   node {skillsRoot}/ws-spec-from-provider/scripts/list_my_user_stories.cjs [--repo-root .]
    ```
 
    Do not pass `--limit` to list scripts (cap after skip).

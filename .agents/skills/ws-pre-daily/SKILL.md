@@ -1,6 +1,6 @@
 ---
 name: ws-pre-daily
-version: 0.4.42
+version: 0.4.44
 disable-model-invocation: true
 description: Standup briefing of the last 36 hours — delivered, made, ongoing, next.
 invocation_names:
@@ -39,7 +39,7 @@ Timesheet clocks → [`ws-activity-report`](../ws-activity-report/SKILL.md) when
 2. **Collect evidence** — Run (hybrid path: `{skillsRoot}` then `{globalSkillsRoot}`):
 
    ```bash
-   python {skillsRoot}/ws-pre-daily/scripts/collect_window.py --hours {hours} --repo {gitRoot} --plans-dir {plansDir} --changelog {changelogPath}
+   node {skillsRoot}/ws-pre-daily/scripts/collect_window.cjs --hours {hours} --repo {gitRoot} --plans-dir {plansDir} --changelog {changelogPath}
    ```
 
    Add `--all-authors` when requested, and optional `--tz {tz}`. Script exit 0 + `ok: true` required. Empty lists are valid.

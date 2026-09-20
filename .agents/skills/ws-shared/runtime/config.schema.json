@@ -542,6 +542,11 @@
           "type": "array",
           "items": { "type": "string" },
           "description": "Explicit transcript roots scanned by ws-monitor in addition to workspace candidates."
+        },
+        "autoStartObserver": {
+          "type": "boolean",
+          "default": false,
+          "description": "Opt-in ws-spec-to-pr execution observer (us-365). Omitted or false dispatches zero watcher subagents; explicit true allows at most one parallel read-only watcher per run reporting state/execution and skill-instruction errors."
         }
       }
     },

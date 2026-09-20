@@ -1,5 +1,5 @@
 /**
- * cleanup_workflow_git.py + Phase A/B doc-contract tests (AC2–AC11).
+ * cleanup_workflow_git.cjs + Phase A/B doc-contract tests (AC2–AC11).
  * Run: node test/test-cleanup-workflow-git.js
  */
 import fs from 'fs';
@@ -7,13 +7,15 @@ import os from 'os';
 import path from 'path';
 import cp from 'child_process';
 import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const require = createRequire(import.meta.url);
 const REPO_ROOT = path.resolve(__dirname, '..');
 const SCRIPT = path.join(
   REPO_ROOT,
-  '.agents/skills/ws-spec-to-pr/scripts/cleanup_workflow_git.py',
+  '.agents/skills/ws-spec-to-pr/scripts/cleanup_workflow_git.cjs',
 );
 const PROTOCOL = path.join(
   REPO_ROOT,
@@ -25,7 +27,7 @@ const MULTI_PROTOCOL = path.join(REPO_ROOT, '.agents/skills/ws-spec-multi/PROTOC
 const STEP_DISPATCH = path.join(REPO_ROOT, '.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md');
 const ARTIFACTS = path.join(REPO_ROOT, '.agents/skills/ws-spec-to-pr/ARTIFACTS.md');
 
-const PYTHON = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
+const NODE_BIN = process.execPath;
 const WID = 'cleanup-test-20260801T180000Z';
 const OTHER = 'other-id-20260801T180000Z';
 const PREFIX = `uswf/${WID}`;
@@ -76,7 +78,7 @@ function git(cwd, ...args) {
 }
 
 function runCleanup(repo, extraArgs = []) {
-  return run(PYTHON, [SCRIPT, '--workflow-id', WID, '--repo', repo, ...extraArgs], {
+  return run(NODE_BIN, [SCRIPT, '--workflow-id', WID, '--repo', repo, ...extraArgs], {
     cwd: REPO_ROOT,
   });
 }
@@ -281,7 +283,7 @@ function testDocsReferenceSharedCleanupContract() {
   const artifacts = read(ARTIFACTS);
 
   assert(
-    protocol.includes('cleanup_workflow_git.py') && protocol.includes('Phase A'),
+    protocol.includes('cleanup_workflow_git.cjs') && protocol.includes('Phase A'),
     'protocol references shared script + Phase A',
   );
   assert(
@@ -297,19 +299,19 @@ function testDocsReferenceSharedCleanupContract() {
     'protocol no longer uses GNU xargs -r git pipelines',
   );
   assert(
-    faq.includes('cleanup_workflow_git.py') && faq.includes('Keep all artifacts'),
+    faq.includes('cleanup_workflow_git.cjs') && faq.includes('Keep all artifacts'),
     'FAQ documents mandatory git vs Keep all',
   );
   assert(
-    lite.includes('cleanup_workflow_git.py') && lite.includes('artifact-cleanup.md'),
+    lite.includes('cleanup_workflow_git.cjs') && lite.includes('artifact-cleanup.md'),
     'lite SKILL references shared script/protocol',
   );
   assert(
-    multi.includes('cleanup_workflow_git.py') && multi.includes('runId'),
+    multi.includes('cleanup_workflow_git.cjs') && multi.includes('runId'),
     'multi-spec documents child Phase A and runId not a target',
   );
   assert(
-    dispatch.includes('Phase A') && dispatch.includes('cleanup_workflow_git.py'),
+    dispatch.includes('Phase A') && dispatch.includes('cleanup_workflow_git.cjs'),
     'STEP-DISPATCH wires Phase A',
   );
   assert(
@@ -335,26 +337,13 @@ function testProtocolMandatoryVsOptionalSplit() {
 function testCleanupProtectsBaseBranches() {
   console.log('\n--- testCleanupProtectsBaseBranches ---');
   // AC11: never delete main/master/develop (exact names).
-  const scriptDir = path.dirname(SCRIPT).replace(/\\/g, '/');
-  const check = cp.spawnSync(
-    PYTHON,
-    [
-      '-c',
-      [
-        'import sys',
-        `sys.path.insert(0, r'${scriptDir}')`,
-        'import cleanup_workflow_git as m',
-        'assert m.is_protected_branch("main")',
-        'assert m.is_protected_branch("master")',
-        'assert m.is_protected_branch("develop")',
-        'assert not m.is_protected_branch("uswf/x/before-step-1")',
-        'assert not m.is_protected_branch("feature/foo")',
-        'print("ok")',
-      ].join('; '),
-    ],
-    { encoding: 'utf8' },
-  );
-  assert(check.status === 0, `is_protected_branch helper: ${(check.stderr || '') + (check.stdout || '')}`);
+  // AC11: never delete main/master/develop (exact names).
+  const { isProtectedBranch } = require(SCRIPT);
+  assert(isProtectedBranch('main'), 'main is protected');
+  assert(isProtectedBranch('master'), 'master is protected');
+  assert(isProtectedBranch('develop'), 'develop is protected');
+  assert(!isProtectedBranch('uswf/x/before-step-1'), 'workflow namespace branch is not protected');
+  assert(!isProtectedBranch('feature/foo'), 'feature branch is not protected');
 
   const repo = initTempGitRepo('cwg-protect-');
   if (!repo) return;
@@ -407,3 +396,13 @@ function main() {
 }
 
 main();
+
+
+
+
+
+
+
+
+
+

@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { spawnSync } from 'child_process';
 import { fileURLToPath, pathToFileURL } from 'url';
+import { createRequire } from 'module';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(__dirname, '..');
@@ -252,9 +253,9 @@ assert(
   'GitHub filler-only reject names the correction requirement',
 );
 
-const adoScript = path.join(SKILLS, 'ws-spec-provider-azure-devops/scripts/fix_pr_azure_context.py');
-const pythonBin = process.platform === 'win32' ? 'python' : 'python3';
-const adoHelp = spawnSync(pythonBin, [adoScript, 'resolve-thread', '--help'], {
+const adoScript = path.join(SKILLS, 'ws-spec-provider-azure-devops/scripts/fix_pr_azure_context.cjs');
+
+const adoHelp = spawnSync(process.execPath, [adoScript, 'resolve-thread', '--help'], {
   encoding: 'utf8',
   cwd: REPO,
 });
@@ -265,7 +266,7 @@ assert(
 );
 
 const adoDryNoModel = spawnSync(
-  pythonBin,
+  process.execPath,
   [
     adoScript,
     'resolve-thread',
@@ -290,7 +291,7 @@ assert(
 );
 
 const adoDryModel = spawnSync(
-  pythonBin,
+  process.execPath,
   [
     adoScript,
     'resolve-thread',
@@ -317,7 +318,7 @@ assert(
 );
 
 const adoThin = spawnSync(
-  pythonBin,
+  process.execPath,
   [
     adoScript,
     'resolve-thread',
@@ -340,7 +341,7 @@ assert(
 );
 
 const adoMeta = spawnSync(
-  pythonBin,
+  process.execPath,
   [
     adoScript,
     'resolve-thread',
@@ -361,7 +362,7 @@ assert(
 );
 
 const adoFiller = spawnSync(
-  pythonBin,
+  process.execPath,
   [
     adoScript,
     'resolve-thread',
@@ -395,37 +396,53 @@ const sweepKeys = ['status', 'provider', 'issue', 'keywords', 'pullRequests', 'c
 const rowAliases = ['number', 'pullRequestId', 'title', 'state', 'status', 'url', 'headRefName', 'sourceRefName'];
 
 for (const skillId of ['ws-spec-provider-github', 'ws-spec-provider-azure-devops']) {
-  const sweepSrc = read(path.join(SKILLS, skillId, 'scripts/sweep_prior_work.py'));
-  const commentSrc = read(path.join(SKILLS, skillId, 'scripts/comment_issue.py'));
+  const sweepSrc = read(path.join(SKILLS, skillId, 'scripts/sweep_prior_work.cjs'));
+  const commentSrc = read(path.join(SKILLS, skillId, 'scripts/comment_issue.cjs'));
   const intentsMd = read(path.join(SKILLS, skillId, 'INTENTS.md'));
   for (const flag of sweepFlags) {
-    assert(sweepSrc.includes(flag), `${skillId} sweep_prior_work.py has ${flag}`);
+    assert(sweepSrc.includes(flag), `${skillId} sweep_prior_work.cjs has ${flag}`);
   }
+  const dry = spawnSync(
+    process.execPath,
+    [path.join(SKILLS, skillId, 'scripts/sweep_prior_work.cjs'), '--dry-run', '--keywords', 'parity'],
+    { encoding: 'utf8', cwd: REPO },
+  );
+  assert(dry.status === 0, `${skillId} sweep_prior_work.cjs --dry-run exits 0`);
+  let envelope = null;
+  try {
+    envelope = JSON.parse(dry.stdout || '{}');
+  } catch {
+    envelope = null;
+  }
+  assert(envelope, `${skillId} sweep --dry-run prints JSON`);
   for (const key of sweepKeys) {
-    assert(sweepSrc.includes(`"${key}"`), `${skillId} sweep JSON envelope has ${key}`);
+    assert(envelope && Object.hasOwn(envelope, key), `${skillId} sweep JSON envelope has ${key}`);
   }
-  for (const key of rowAliases) {
-    assert(sweepSrc.includes(`"${key}"`), `${skillId} sweep PR row has alias ${key}`);
+  for (const row of (envelope && envelope.pullRequests) || []) {
+    for (const key of rowAliases) {
+      assert(Object.hasOwn(row, key), `${skillId} sweep PR row has alias ${key}`);
+    }
+    break;
   }
   for (const flag of commentFlags) {
-    assert(commentSrc.includes(flag), `${skillId} comment_issue.py has ${flag}`);
+    assert(commentSrc.includes(flag), `${skillId} comment_issue.cjs has ${flag}`);
   }
-  assert(commentSrc.includes('"skipped"'), `${skillId} comment_issue.py skips null tracker id`);
+  assert(commentSrc.includes('skipped'), `${skillId} comment_issue.cjs skips null tracker id`);
   if (skillId === 'ws-spec-provider-azure-devops') {
     assert(
       commentSrc.includes('7.1-preview.4'),
-      'ADO comment_issue.py uses WIT Comments api-version=7.1-preview.4',
+      'ADO comment_issue.cjs uses WIT Comments api-version=7.1-preview.4',
     );
     assert(
       !commentSrc.includes('?api-version=7.1"'),
-      'ADO comment_issue.py does not POST comments with ga api-version=7.1',
+      'ADO comment_issue.cjs does not POST comments with ga api-version=7.1',
     );
     assert(
-      commentSrc.includes('posted.get("commentId")'),
-      'ADO comment_issue.py reads WIT commentId before fallback id',
+      commentSrc.includes('posted.commentId'),
+      'ADO comment_issue.cjs reads WIT commentId before fallback id',
     );
     for (const flag of ['--org', '--project', '--api-base', '--pat-env']) {
-      assert(commentSrc.includes(flag), `ADO comment_issue.py has ${flag}`);
+      assert(commentSrc.includes(flag), `ADO comment_issue.cjs has ${flag}`);
     }
   }
   for (const term of ['diff-regression', 'baseline', 'infra-flake']) {
@@ -439,57 +456,24 @@ for (const skillId of ['ws-spec-provider-github', 'ws-spec-provider-azure-devops
 }
 
 const ghThreads = read(path.join(SKILLS, 'ws-spec-provider-github/scripts/fetch_threads.cjs'));
-const adoThreads = read(path.join(SKILLS, 'ws-spec-provider-azure-devops/scripts/fix_pr_azure_context.py'));
+const adoThreads = read(path.join(SKILLS, 'ws-spec-provider-azure-devops/scripts/fix_pr_azure_context.cjs'));
 assert(ghThreads.includes('activeThreads'), 'GitHub fetch_threads.cjs returns activeThreads');
 assert(adoThreads.includes('activeThreads'), 'Azure collect returns activeThreads');
 
-const ghSweepDry = spawnSync(
-  pythonBin,
-  [path.join(SKILLS, 'ws-spec-provider-github/scripts/sweep_prior_work.py'), '--dry-run', '--keywords', 'parity'],
-  { encoding: 'utf8', cwd: REPO },
-);
-assert(ghSweepDry.status === 0, 'GitHub sweep_prior_work.py --dry-run exits 0');
-const adoSweepDry = spawnSync(
-  pythonBin,
-  [path.join(SKILLS, 'ws-spec-provider-azure-devops/scripts/sweep_prior_work.py'), '--dry-run', '--keywords', 'parity'],
-  { encoding: 'utf8', cwd: REPO },
-);
-assert(adoSweepDry.status === 0, 'Azure sweep_prior_work.py --dry-run exits 0');
 
-const adoSweepScript = path.join(SKILLS, 'ws-spec-provider-azure-devops/scripts/sweep_prior_work.py');
-const prRowProbe = spawnSync(
-  pythonBin,
-  ['-'],
+const requireSweep = createRequire(import.meta.url);
+const adoSweep = requireSweep(path.join(SKILLS, 'ws-spec-provider-azure-devops/scripts/sweep_prior_work.cjs'));
+const prRow = adoSweep.prRow(
   {
-    encoding: 'utf8',
-    cwd: REPO,
-    env: { ...process.env, ADO_SWEEP_SCRIPT: adoSweepScript },
-    input: [
-      'import importlib.util, json, os',
-      'path = os.environ["ADO_SWEEP_SCRIPT"]',
-      'spec = importlib.util.spec_from_file_location("sweep", path)',
-      'mod = importlib.util.module_from_spec(spec)',
-      'spec.loader.exec_module(mod)',
-      'row = mod.pr_row({',
-      '  "pullRequestId": 9,',
-      '  "title": "t",',
-      '  "status": "active",',
-      '  "sourceRefName": "refs/heads/feat/x",',
-      '  "url": "https://dev.azure.com/o/p/_apis/git/repositories/r/pullRequests/9",',
-      '  "_links": {"web": {"href": "https://dev.azure.com/o/p/_git/r/pullrequest/9"}},',
-      '}, "q")',
-      'print(json.dumps(row))',
-      '',
-    ].join('\n'),
+    pullRequestId: 9,
+    title: 't',
+    status: 'active',
+    sourceRefName: 'refs/heads/feat/x',
+    url: 'https://dev.azure.com/o/p/_apis/git/repositories/r/pullRequests/9',
+    _links: { web: { href: 'https://dev.azure.com/o/p/_git/r/pullrequest/9' } },
   },
+  'q',
 );
-assert(prRowProbe.status === 0, 'Azure pr_row fixture exits 0');
-let prRow;
-try {
-  prRow = JSON.parse(prRowProbe.stdout || '{}');
-} catch {
-  prRow = {};
-}
 assert(!String(prRow.url || '').includes('/_apis/'), 'ADO sweep url must be web UI, not REST');
 assert(prRow.url === 'https://dev.azure.com/o/p/_git/r/pullrequest/9', 'ADO sweep url uses _links.web.href');
 assert(prRow.state === 'OPEN', 'ADO state uses GitHub OPEN vocabulary');
@@ -499,18 +483,18 @@ assert(prRow.sourceRefName === 'feat/x', 'ADO sourceRefName is a bare branch');
 
 for (const skillId of ['ws-spec-provider-github', 'ws-spec-provider-azure-devops']) {
   const skip = spawnSync(
-    pythonBin,
-    [path.join(SKILLS, skillId, 'scripts/comment_issue.py'), '--id', 'null', '--body', 'x'],
+    process.execPath,
+    [path.join(SKILLS, skillId, 'scripts/comment_issue.cjs'), '--id', 'null', '--body', 'x'],
     { encoding: 'utf8', cwd: REPO },
   );
-  assert(skip.status === 0, `${skillId} comment_issue.py --id null exits 0`);
-  assert(/skipped/.test(skip.stdout || ''), `${skillId} comment_issue.py --id null prints skipped`);
+  assert(skip.status === 0, `${skillId} comment_issue.cjs --id null exits 0`);
+  assert(/skipped/.test(skip.stdout || ''), `${skillId} comment_issue.cjs --id null prints skipped`);
 }
 
 const adoOverride = spawnSync(
-  pythonBin,
+  process.execPath,
   [
-    path.join(SKILLS, 'ws-spec-provider-azure-devops', 'scripts/comment_issue.py'),
+    path.join(SKILLS, 'ws-spec-provider-azure-devops', 'scripts/comment_issue.cjs'),
     '--org',
     '7focus',
     '--project',
@@ -529,18 +513,18 @@ const adoOverride = spawnSync(
 );
 assert(
   adoOverride.status === 0,
-  `ADO comment_issue.py accepts org/project overrides (got ${adoOverride.status}): ${adoOverride.stderr || adoOverride.stdout}`,
+  `ADO comment_issue.cjs accepts org/project overrides (got ${adoOverride.status}): ${adoOverride.stderr || adoOverride.stdout}`,
 );
-assert(!/unrecognized arguments/.test(adoOverride.stderr || ''), 'ADO comment_issue.py does not reject --org/--project');
-assert(/dry-run/.test(adoOverride.stdout || ''), 'ADO comment_issue.py --dry-run with overrides prints dry-run');
+assert(!/unrecognized arguments/.test(adoOverride.stderr || ''), 'ADO comment_issue.cjs does not reject --org/--project');
+assert(/dry-run/.test(adoOverride.stdout || ''), 'ADO comment_issue.cjs --dry-run with overrides prints dry-run');
 
 const adoOverrideEnv = { ...process.env };
 delete adoOverrideEnv.ADO_PAT;
 delete adoOverrideEnv.AZURE_DEVOPS_PAT;
 const adoOverrideMutating = spawnSync(
-  pythonBin,
+  process.execPath,
   [
-    path.join(SKILLS, 'ws-spec-provider-azure-devops', 'scripts/comment_issue.py'),
+    path.join(SKILLS, 'ws-spec-provider-azure-devops', 'scripts/comment_issue.cjs'),
     '--org',
     'parity-org',
     '--project',
@@ -554,7 +538,7 @@ const adoOverrideMutating = spawnSync(
 );
 assert(
   adoOverrideMutating.status === 1,
-  `ADO comment_issue.py mutating overrides exit 1 (got ${adoOverrideMutating.status}): ${adoOverrideMutating.stderr || adoOverrideMutating.stdout}`,
+  `ADO comment_issue.cjs mutating overrides exit 1 (got ${adoOverrideMutating.status}): ${adoOverrideMutating.stderr || adoOverrideMutating.stdout}`,
 );
 assert(
   /Missing PAT/i.test(adoOverrideMutating.stderr || ''),

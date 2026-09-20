@@ -367,7 +367,7 @@ assert(!/fixPrPlan|fixPrExec/.test(autoFix), 'AUTO_FIX.md contains no dual-model
 
 // AC10 — sabotage guardrail still referenced in harness test sibling
 const hermes = read('test/test-hermes-spec-to-pr-enhancements.js');
-assert(hermes.includes('run_sabotage.py'), 'sabotage guardrail test still present');
+assert(hermes.includes('run_sabotage.cjs'), 'sabotage guardrail test still present');
 
 if (failures > 0) {
   console.error(`\n${failures} failure(s)`);

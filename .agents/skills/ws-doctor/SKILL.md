@@ -1,7 +1,7 @@
 ---
 name: ws-doctor
 description: Workflow skills diagnostic inspector — read-only diagnose of path errors, tool/script recipes, config switches, and missing references across installed ws-* skills.
-version: 0.4.42
+version: 0.4.44
 disable-model-invocation: true
 invocation_names:
   - doctor
@@ -16,7 +16,7 @@ invocation_names:
 
 Read-only by default (v1): emit one structured report, then **stop**. No file edits; no fix-apply mode.
 
-Language: **en-us**. Harness-neutral: portable aliases from [`tools.md`](../ws-shared/runtime/tools.md) only (`user-gate`, path tokens, explicit `python` / `node` / `bash` launchers).
+Language: **en-us**. Harness-neutral: portable aliases from [`tools.md`](../ws-shared/runtime/tools.md) only (`user-gate`, path tokens, explicit `node` / `bash` launchers).
 
 ## Boundaries
 
@@ -63,7 +63,7 @@ Also: `@ws-doctor`, “diagnose skills”, “doctor the harness”.
 node {skillsRoot}/ws-doctor/scripts/doctor.js [--skill <id>] [--json] [--persist]
 ```
 
-Parse checks inside the engine are syntax-only (Python `ast.parse` with UTF-8 read and no `.pyc` write, `node --check`, `bash -n` when available). Soft-skip when a launcher binary is missing on PATH (report skip, do not fail the doctor process itself).
+Parse checks inside the engine are syntax-only (`node --check` for `.cjs`/`.js`, `bash -n` when available; a `.py` file under the skill tree fails closed as unshipped). Soft-skip when a launcher binary is missing on PATH (report skip, do not fail the doctor process itself).
 
 ## Report contract
 
@@ -75,7 +75,7 @@ Each broken or unresolvable path after token expansion: skill id (or hub file), 
 
 ### Tool / script diagnostics
 
-(a) Managed-script invocations missing an explicit `python` / `node` / `bash` launcher  
+(a) Managed-script invocations missing an explicit `node` / `bash` launcher  
 (b) Cited script paths that do not exist  
 (c) Skill scripts under `ws-*/scripts/` that fail lightweight parse checks — path + error summary  
 

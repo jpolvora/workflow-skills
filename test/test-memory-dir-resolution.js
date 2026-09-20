@@ -11,7 +11,6 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..');
 const SELF_LEARNING = path.join(REPO_ROOT, '.agents/skills/ws-self-learning/scripts/self_learning.cjs');
-const PY_RESOLVER_DIR = path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/scripts');
 const {
   DEFAULT_CHANGELOG_FILE,
   DEFAULT_MEMORY_DIR,
@@ -149,33 +148,6 @@ assert(resolveChangelogFileValue({ rules: { changelogFile: 42 } }) === 'CHANGELO
   assert(custom.file === path.join(freshRoot, 'docs', 'HISTORY.md'), 'explicit changelogFile respected when legacy is empty');
 }
 
-// --- 5. Python mirror parity on identical fixtures ---
-function pyResolve(fn, root) {
-  const script = [
-    'import sys, json',
-    `sys.path.insert(0, ${JSON.stringify(PY_RESOLVER_DIR)})`,
-    'import resolve_consumer_root as r',
-    `print(json.dumps(r.${fn}(${JSON.stringify(root)})[${JSON.stringify('source')}]))`,
-  ].join('\n');
-  const res = cp.spawnSync('python3', ['-c', script], { encoding: 'utf8' });
-  assert(res.status === 0, `python ${fn} exits 0 (${(res.stderr || '').trim()})`);
-  return JSON.parse(res.stdout.trim());
-}
-{
-  const root = fixture();
-  const shared = seedHub(root, {});
-  assert(pyResolve('resolve_effective_memory_paths', root) === 'configured', 'python: fresh memory resolves configured');
-  seedLegacyMemory(shared);
-  assert(pyResolve('resolve_effective_memory_paths', root) === 'legacy', 'python: legacy memory resolves legacy');
-  seedRootMemory(root);
-  assert(pyResolve('resolve_effective_memory_paths', root) === 'configured', 'python: populated root resolves configured');
-
-  const root2 = fixture();
-  const shared2 = seedHub(root2, {});
-  assert(pyResolve('resolve_changelog_path', root2) === 'configured', 'python: fresh changelog resolves configured');
-  fs.writeFileSync(path.join(shared2, 'CHANGELOG.md'), `# Changelog\n\n${ENTRY}`, 'utf8');
-  assert(pyResolve('resolve_changelog_path', root2) === 'legacy', 'python: legacy changelog resolves legacy');
-}
 
 // --- 6. E2E: self_learning --compile writes the effective location ---
 function runSelfLearning(args, cwd) {

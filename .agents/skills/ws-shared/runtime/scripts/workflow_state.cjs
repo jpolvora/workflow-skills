@@ -2161,6 +2161,8 @@ module.exports = {
   stateIdentityHash,
   jsonIdentityHash,
   canonicalStateJson,
+  jsonStatePath,
+  markdownStatePath,
   legacyStateHash,
   snapshotHashMatches,
   parseArgs,

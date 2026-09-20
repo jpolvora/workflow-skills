@@ -4,7 +4,7 @@ slug: ws-wiki-spec-sweep
 title: "ws-wiki first-time sequential spec sweep"
 source: local
 specDate: 2026-09-12
-status: draft
+status: completed
 ---
 
 # Specification — ws-wiki first-time sequential spec sweep

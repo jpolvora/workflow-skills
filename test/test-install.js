@@ -322,30 +322,30 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   if (!artifacts.includes('step-00-{slug}.spec.md')) fail('ARTIFACTS.md missing canonical step-00 spec name');
   if (!artifacts.includes('ws-testing')) fail('ARTIFACTS.md missing Step 7 Testing ownership');
   // AC9: converter shims under orch paths forward to provider canonical scripts
-  if (!fs.existsSync(path.join(parentDir, '.agents/skills/ws-spec-to-pr/scripts/github-issue-to-spec.py'))) {
-    fail('Missing github-issue-to-spec.py shim under ws-spec-to-pr/scripts');
+  if (!fs.existsSync(path.join(parentDir, '.agents/skills/ws-spec-to-pr/scripts/github-issue-to-spec.cjs'))) {
+    fail('Missing github-issue-to-spec.cjs shim under ws-spec-to-pr/scripts');
   }
-  if (!fs.existsSync(path.join(parentDir, '.agents/skills/ws-spec-to-pr/scripts/ado-workitem-to-spec.py'))) {
-    fail('Missing ado-workitem-to-spec.py shim under ws-spec-to-pr/scripts');
-  }
-  if (
-    !fs.existsSync(
-      path.join(parentDir, '.agents/skills/ws-spec-provider-github/scripts/github-issue-to-spec.py')
-    )
-  ) {
-    fail('Missing canonical github-issue-to-spec.py under ws-spec-provider-github/scripts');
+  if (!fs.existsSync(path.join(parentDir, '.agents/skills/ws-spec-to-pr/scripts/ado-workitem-to-spec.cjs'))) {
+    fail('Missing ado-workitem-to-spec.cjs shim under ws-spec-to-pr/scripts');
   }
   if (
     !fs.existsSync(
-      path.join(parentDir, '.agents/skills/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.py')
+      path.join(parentDir, '.agents/skills/ws-spec-provider-github/scripts/github-issue-to-spec.cjs')
     )
   ) {
-    fail('Missing canonical ado-workitem-to-spec.py under ws-spec-provider-azure-devops/scripts');
+    fail('Missing canonical github-issue-to-spec.cjs under ws-spec-provider-github/scripts');
+  }
+  if (
+    !fs.existsSync(
+      path.join(parentDir, '.agents/skills/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.cjs')
+    )
+  ) {
+    fail('Missing canonical ado-workitem-to-spec.cjs under ws-spec-provider-azure-devops/scripts');
   }
   // ws-spec-provider-local scripts (AC1)
   for (const rel of [
-    '.agents/skills/ws-spec-provider-local/scripts/detect_specs_dir.py',
-    '.agents/skills/ws-spec-provider-local/scripts/register_local_spec.py'
+    '.agents/skills/ws-spec-provider-local/scripts/detect_specs_dir.cjs',
+    '.agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs'
   ]) {
     if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing local-spec script: ${rel}`);
   }
@@ -353,7 +353,7 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   for (const rel of [
     '.agents/skills/ws-fix-pr/scripts/fetch_threads.cjs',
     '.agents/skills/ws-fix-pr/scripts/resolve_thread.cjs',
-    '.agents/skills/ws-fix-pr/scripts/fix_pr_azure_context.py'
+    '.agents/skills/ws-fix-pr/scripts/fix_pr_azure_context.cjs'
   ]) {
     if (!fs.existsSync(path.join(parentDir, rel))) fail(`Missing ws-fix-pr shim: ${rel}`);
   }
@@ -400,14 +400,14 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
     }
     ok('AGENTS.md/CATALOG.md documents upstream skill integrity regenerate obligation');
 
-    const verifySh = fs.readFileSync(
-      path.join(parentDir, '.agents', 'skills', 'ws-ship-pr', 'scripts', 'verify.sh'),
+    const verifyCjs = fs.readFileSync(
+      path.join(parentDir, '.agents', 'skills', 'ws-ship-pr', 'scripts', 'verify.cjs'),
       'utf8'
     );
-    if (!verifySh.includes('generate-skill-integrity.js') || !verifySh.includes('--check')) {
-      fail('ws-ship-pr/scripts/verify.sh must run generate-skill-integrity.js --check when present');
+    if (!verifyCjs.includes('generate-skill-integrity.js') || !verifyCjs.includes('--check')) {
+      fail('ws-ship-pr/scripts/verify.cjs must run generate-skill-integrity.js --check when present');
     }
-    ok('verify.sh gates on integrity --check');
+    ok('verify.cjs gates on integrity --check');
 
     const harness = fs.readFileSync(
       path.join(parentDir, '.agents', 'skills', 'ws-check-harness', 'SKILL.md'),
@@ -423,11 +423,10 @@ console.log('\n[Phase 0b] Canonicity + dry-run contract files...');
   }
   // Cheap shim --help / usage smoke: proves parents[2] / relative forward resolves
   {
-    const py = process.platform === 'win32' ? 'python' : 'python3';
     const shimHelps = [
-      [py, '.agents/skills/ws-spec-to-pr/scripts/github-issue-to-spec.py', '--help'],
-      [py, '.agents/skills/ws-spec-to-pr/scripts/ado-workitem-to-spec.py', '--help'],
-      [py, '.agents/skills/ws-fix-pr/scripts/fix_pr_azure_context.py', '--help']
+      [process.execPath, '.agents/skills/ws-spec-to-pr/scripts/github-issue-to-spec.cjs', '--help'],
+      [process.execPath, '.agents/skills/ws-spec-to-pr/scripts/ado-workitem-to-spec.cjs', '--help'],
+      [process.execPath, '.agents/skills/ws-fix-pr/scripts/fix_pr_azure_context.cjs', '--help']
     ];
     for (const [bin, rel, flag] of shimHelps) {
       const r = cp.spawnSync(bin, [path.join(parentDir, rel), flag], {
@@ -928,13 +927,13 @@ child.on('close', async (code) => {
     }
   }
   for (const rel of [
-    path.join('ws-spec-to-pr', 'scripts', 'github-issue-to-spec.py'),
-    path.join('ws-spec-to-pr', 'scripts', 'ado-workitem-to-spec.py'),
-    path.join('ws-spec-provider-local', 'scripts', 'detect_specs_dir.py'),
-    path.join('ws-spec-provider-local', 'scripts', 'register_local_spec.py'),
+    path.join('ws-spec-to-pr', 'scripts', 'github-issue-to-spec.cjs'),
+    path.join('ws-spec-to-pr', 'scripts', 'ado-workitem-to-spec.cjs'),
+    path.join('ws-spec-provider-local', 'scripts', 'detect_specs_dir.cjs'),
+    path.join('ws-spec-provider-local', 'scripts', 'register_local_spec.cjs'),
     path.join('ws-fix-pr', 'scripts', 'fetch_threads.cjs'),
     path.join('ws-fix-pr', 'scripts', 'resolve_thread.cjs'),
-    path.join('ws-fix-pr', 'scripts', 'fix_pr_azure_context.py'),
+    path.join('ws-fix-pr', 'scripts', 'fix_pr_azure_context.cjs'),
   ]) {
     if (!fs.existsSync(path.join(testSkillsDir, rel))) {
       fail(`Provider/shim script missing in consumer install: ${rel}`);
@@ -942,9 +941,8 @@ child.on('close', async (code) => {
   }
   // Consumer-side cheap shim forward smoke (installed tree)
   {
-    const py = process.platform === 'win32' ? 'python' : 'python3';
-    const helpShim = path.join(testSkillsDir, 'ws-spec-to-pr', 'scripts', 'github-issue-to-spec.py');
-    const helpResult = cp.spawnSync(py, [helpShim, '--help'], {
+    const helpShim = path.join(testSkillsDir, 'ws-spec-to-pr', 'scripts', 'github-issue-to-spec.cjs');
+    const helpResult = cp.spawnSync(process.execPath, [helpShim, '--help'], {
       encoding: 'utf8',
       cwd: path.join(__dirname)
     });
@@ -1066,7 +1064,6 @@ child.on('close', async (code) => {
   }
   // Spec-before-plan contract: register writes {specsDir} spec of record, then {plansDir} step-00
   {
-    const py = process.platform === 'win32' ? 'python' : 'python3';
     const scratch = path.join(__dirname, '.tmp-specs-first');
     fs.rmSync(scratch, { recursive: true, force: true });
     fs.mkdirSync(path.join(scratch, '.ws'), { recursive: true });
@@ -1083,10 +1080,10 @@ child.on('close', async (code) => {
       testSkillsDir,
       'ws-spec-provider-local',
       'scripts',
-      'register_local_spec.py'
+      'register_local_spec.cjs'
     );
     const run = cp.spawnSync(
-      py,
+      process.execPath,
       [register, '--input', path.join('inbox', 'us-7.spec.md'), '--source', 'github'],
       { encoding: 'utf8', cwd: scratch }
     );
@@ -1099,7 +1096,7 @@ child.on('close', async (code) => {
       'step-00-us-7.spec.md'
     );
     if (run.status !== 0) {
-      fail(`register_local_spec.py failed: status=${run.status}\n${run.stderr || run.stdout}`);
+      fail(`register_local_spec.cjs failed: status=${run.status}\n${run.stderr || run.stdout}`);
     }
     if (!fs.existsSync(specOfRecord)) {
       fail('register must write the spec of record under {specsDir} first');

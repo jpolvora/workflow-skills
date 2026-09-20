@@ -1,7 +1,7 @@
 ---
 name: ws-spec-provider-azure-devops
 description: Azure DevOps work-item→spec and PR ops. Same required intents as GitHub (scm-provider-contract). Trigger when providers.scm is azure-devops.
-version: 0.4.42
+version: 0.4.44
 disable-model-invocation: true
 invocation_names:
   - spec-provider-azure-devops
@@ -52,13 +52,13 @@ Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/runtime/scm
 | Intent | Input | Output | Implementation |
 |--------|-------|--------|----------------|
 | `fetch-to-spec` | `ADO {id}`, `WI {id}`, `{org}/{project}#{id}`, or URL | **1.** `{specsDir}/{specStem}.spec.md` + optional `{specStem}.assets/` sidecar and `## Visual References` (agentic spec of record via `ws-spec-write`) → **2.** `{us-dir}/step-00-us-{id}.spec.md` (workflow copy, `source: azure-devops`) + `{us-dir}/attachments/` when sidecar exists + optional JSON snapshot | provider fetch → shared ingest helper → `ws-spec-write` (reformulate/enhance) → `register_local_spec.cjs` |
-| `sweep-prior-work` | issue id (optional), keywords, files (optional) | JSON: PR search hits + `git log` | `sweep_prior_work.py` |
+| `sweep-prior-work` | issue id (optional), keywords, files (optional) | JSON: PR search hits + `git log` | `sweep_prior_work.cjs` |
 | `validate-auth` | none | Pass/fail + fixes | Org/project + PAT; optional WIT smoke |
 | `create-pr` | head, base, title/body | PR URL + id | Prefer `az repos pr create`; if `az` missing/fails → REST in INTENTS.md |
-| `list-threads` | PR id | Thread list | `fix_pr_azure_context.py collect` |
+| `list-threads` | PR id | Thread list | `fix_pr_azure_context.cjs collect` |
 | `check-pr-status` | PR id | CI status + per-failed-check triage | `az repos pr policy list`; build log via REST or `az pipelines runs show`; classify diff/baseline/flake |
-| `resolve-thread` | thread id (+ PR id, comment; optional `--model`) | Resolved (or dry-run); comment describes the correction (not hash-only); footer `LLM model: {id}` when `--model` set | `fix_pr_azure_context.py resolve-thread` |
-| `comment-issue` | work item id, body | WIT comment (alias `close-loop`) | `comment_issue.py` → WIT Comments `api-version=7.1-preview.4` |
+| `resolve-thread` | thread id (+ PR id, comment; optional `--model`) | Resolved (or dry-run); comment describes the correction (not hash-only); footer `LLM model: {id}` when `--model` set | `fix_pr_azure_context.cjs resolve-thread` |
+| `comment-issue` | work item id, body | WIT comment (alias `close-loop`) | `comment_issue.cjs` → WIT Comments `api-version=7.1-preview.4` |
 | `merge-pr` | PR id | Merged | Wait policies then `az repos pr update --status completed` |
 
 **Spec path rule:** `fetch-to-spec` **always** writes the agentic-enhanced spec of record first (via `ws-spec-write` / `resolve_spec_path.cjs`), then promotes it to `{us-dir}/step-00-{slug}.spec.md` via [ws-spec-provider-local](../ws-spec-provider-local/SKILL.md) `register_local_spec.cjs --source azure-devops`. Never write `step-00` straight from the converter, and never skip the `{specsDir}` copy.
@@ -73,11 +73,11 @@ Prefer these paths (legacy orch/fix-pr shims may forward here):
 
 | Script | Path |
 |--------|------|
-| Work item snapshot / base conversion | `{skillsRoot}/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.py` (default output `{specsDir}/us-{id}.spec.md`) |
+| Work item snapshot / base conversion | `{skillsRoot}/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.cjs` (default output `{specsDir}/us-{id}.spec.md`) |
 | Spec of record → workflow copy | `node {skillsRoot}/ws-spec-provider-local/scripts/register_local_spec.cjs --source azure-devops` |
-| Thread ops | `{skillsRoot}/ws-spec-provider-azure-devops/scripts/fix_pr_azure_context.py` |
-| Prior-work sweep | `{skillsRoot}/ws-spec-provider-azure-devops/scripts/sweep_prior_work.py` |
-| Comment on work item | `{skillsRoot}/ws-spec-provider-azure-devops/scripts/comment_issue.py` |
+| Thread ops | `{skillsRoot}/ws-spec-provider-azure-devops/scripts/fix_pr_azure_context.cjs` |
+| Prior-work sweep | `{skillsRoot}/ws-spec-provider-azure-devops/scripts/sweep_prior_work.cjs` |
+| Comment on work item | `{skillsRoot}/ws-spec-provider-azure-devops/scripts/comment_issue.cjs` |
 
 ## Config keys
 

@@ -38,6 +38,7 @@ try {
   const utf8Size = (rel) => Buffer.byteLength(fs.readFileSync(path.join(repoRoot, rel), 'utf8').replace(/\r\n?/g, '\n'), 'utf8');
   // Root AGENTS.md is upstream dogfood only (installer never copies it to consumers).
   assert.ok(utf8Size('.ws/AGENTS.md') <= SHARED_AGENTS_UTF8_LIMIT, `shared AGENTS.md exceeds ${SHARED_AGENTS_UTF8_LIMIT} B`);
+  assert.ok(utf8Size('.agents/skills/ws-shared/runtime/AGENTS.md') <= 14000, 'SoT consumer hub exceeds 14000 B');
   assert.ok(utf8Size('CATALOG.md') <= 24000, 'root CATALOG.md exceeds 24000 B');
   const protocols = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/PROTOCOLS.md'), 'utf8');
   const prefix = protocols.split('### Base Prompt Prefix')[1]?.split('### ')[0] || '';

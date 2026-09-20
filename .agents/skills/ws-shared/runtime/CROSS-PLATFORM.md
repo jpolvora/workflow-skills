@@ -2,10 +2,10 @@
 
 Applies to shipped recipes and temporary scripts on Windows, Linux, and macOS.
 
-## Python UTF-8
+## Node UTF-8 stdio
 
-1. Pass `encoding="utf-8"` on every text file read and write.
-2. Launch scripts that print non-ASCII with `python -X utf8`, set `PYTHONIOENCODING=utf-8`, or configure UTF-8 stdout in the script.
+1. Pass `encoding: "utf-8"` on every Node text file read and write (`fs.readFileSync(path, "utf8")`).
+2. Node stdio is UTF-8 by default; keep it that way — do not reconfigure stdio encodings in managed scripts.
 3. Prefer ASCII-only output for short-lived diagnostic helpers.
 
 ## Commands and quoting
@@ -15,12 +15,12 @@ Applies to shipped recipes and temporary scripts on Windows, Linux, and macOS.
 3. In bash, use a quoted heredoc delimiter when a heredoc is unavoidable.
 4. Do not paste shell-specific operators into another shell dialect.
 5. Keep each uncertain shell call to one simple invocation.
-6. Never put both `"` and `'` inside a single `python -c` / `node -e` payload (including character classes like `["']`). Prefer a permanent companion script. For YAML frontmatter fields use `node {skillsRoot}/ws-shared/runtime/scripts/extract_frontmatter_field.cjs`.
+6. Never put both `"` and `'` inside a single `node -e` payload (including character classes like `["']`). Prefer a permanent companion script. For YAML frontmatter fields use `node {skillsRoot}/ws-shared/runtime/scripts/extract_frontmatter_field.cjs`.
 7. Discard output with the current shell's null device only: `>/dev/null` in bash (including Git Bash on Windows) — never `>nul`, which creates a literal file named `nul`. Use `>NUL` only in cmd.exe and `$null` only in PowerShell.
 
 ## Managed scripts
 
-1. Invoke `*.py` with `python`, `*.cjs` and `*.js` with `node`, and `*.sh` with `bash`.
+1. Invoke `*.cjs` and `*.js` with `node`, and thin-adapter `*.sh` with `bash` (adapters must `exec node` a `.cjs`).
 2. Run configured consumer verification strings unchanged.
 3. Report a launcher or dialect failure instead of rewriting a managed installed script.
 

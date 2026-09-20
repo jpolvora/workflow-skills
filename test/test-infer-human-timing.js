@@ -1,5 +1,5 @@
 /**
- * AC1/AC8 smoke for infer_human_timing.py
+ * AC1/AC8 smoke for infer_human_timing.cjs
  * Run: node test/test-infer-human-timing.js
  */
 import fs from 'fs';
@@ -13,9 +13,8 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 const SCRIPT = path.join(
   REPO_ROOT,
-  '.agents/skills/ws-activity-report/scripts/infer_human_timing.py',
+  '.agents/skills/ws-activity-report/scripts/infer_human_timing.cjs',
 );
-const PYTHON = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
 
 const tmpRoots = [];
 let failures = 0;
@@ -50,8 +49,8 @@ function cleanup() {
   }
 }
 
-function runPython(args, cwd = REPO_ROOT) {
-  return cp.spawnSync(PYTHON, args, {
+function runNode(args, cwd = REPO_ROOT) {
+  return cp.spawnSync(process.execPath, args, {
     cwd,
     encoding: 'utf8',
     env: { ...process.env, PYTHONIOENCODING: 'utf-8' },
@@ -60,9 +59,9 @@ function runPython(args, cwd = REPO_ROOT) {
 
 function testScriptExists() {
   console.log('\n--- testScriptExists ---');
-  assert(fs.existsSync(SCRIPT), 'infer_human_timing.py exists');
-  const check = runPython(['-m', 'py_compile', SCRIPT]);
-  assert(check.status === 0, 'infer_human_timing.py compiles');
+  assert(fs.existsSync(SCRIPT), 'infer_human_timing.cjs exists');
+  const check = runNode(['--check', SCRIPT]);
+  assert(check.status === 0, 'infer_human_timing.cjs passes node --check');
 }
 
 function testHumanGteAgentRunning() {
@@ -94,7 +93,7 @@ function testHumanGteAgentRunning() {
     'utf8',
   );
 
-  const res = runPython([
+  const res = runNode([
     SCRIPT,
     usDir,
     '--start-iso',
@@ -142,7 +141,7 @@ function testNoEventsReportsIdleNotFabricated() {
 
   const start = '2024-01-15T22:00:00Z';
   const end = '2024-01-16T06:00:00Z';
-  const res = runPython([
+  const res = runNode([
     SCRIPT,
     usDir,
     '--start-iso',
@@ -193,7 +192,7 @@ function testLongGapBetweenAgentEventsIsIdle() {
     'utf8',
   );
 
-  const res = runPython([SCRIPT, usDir, '--start-iso', start, '--end-iso', end]);
+  const res = runNode([SCRIPT, usDir, '--start-iso', start, '--end-iso', end]);
   assert(res.status === 0, `script exit 0 (stderr: ${res.stderr?.trim()})`);
 
   let payload;

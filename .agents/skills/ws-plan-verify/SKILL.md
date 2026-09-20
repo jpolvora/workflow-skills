@@ -1,7 +1,7 @@
 ---
 name: ws-plan-verify
 description: Spec compliance scorer (0–10). Pipeline advances only at score ≥ `defaults.minVerifyScore` (default 9); below bar runs scoreAndRefine. Trigger for check-implementation or orch Step 5.
-version: 0.4.42
+version: 0.4.44
 disable-model-invocation: true
 invocation_names:
   - plan-verify
@@ -51,7 +51,7 @@ Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, opti
    - Link AC status, files, and tests (`node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs link --ledger {us-dir}/ac-ledger.json --event-id <id> --ac AC1 --status Implemented --file "path:L1-L20" --test '{"name":"...","sourceFile":"...","phase":"observed","exitCode":0}'`).
    - Link Negative & Failing Scenarios (`node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs link --ledger {us-dir}/ac-ledger.json --event-id <id> --negative NS1 --test '{...}'`).
    - Link Stack Invariant Violations (`node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs link --ledger {us-dir}/ac-ledger.json --event-id <id> --invariant-violation '{"rule":"...","severity":"Critical|Warning","evidence":"path:Lstart-Lend","message":"..."}'`). Any Critical invariant violation caps the score at 7/10 (`knownDefect`).
-   - **Regression Sabotage Check:** For bug-fix/regression tests, run `python {skillsRoot}/ws-testing/scripts/run_sabotage.py` with caller-authored invert patch. Record pass/fail/skipped+reason in the report. Link sabotage exit via `--sabotage-exit <code-or-0>`. Missing required sabotage fail-closes (`knownDefect` caps score at 8).
+   - **Regression Sabotage Check:** For bug-fix/regression tests, run `node {skillsRoot}/ws-testing/scripts/run_sabotage.cjs` with caller-authored invert patch. Record pass/fail/skipped+reason in the report. Link sabotage exit via `--sabotage-exit <code-or-0>`. Missing required sabotage fail-closes (`knownDefect` caps score at 8).
    - Optional `fable` integration: Link verdict and finding evidence before scoring (`REFUTED` floor blocks).
    - **Derive integer score (0–10):** Run `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs score --ledger {us-dir}/ac-ledger.json --boundary step5`. Read the derived score from JSON output; never author or override the numeric score.
    - Done when: integer score 0–10 is returned by `ac_ledger.cjs`.

@@ -12,7 +12,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 const GLOBAL_SKILLS = path.join(REPO_ROOT, '.agents', 'skills');
-const PYTHON = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
+const NODE = process.execPath;
 
 const tmpRoots = [];
 let failures = 0;
@@ -99,9 +99,9 @@ function testSelfLearningCompileTargetsConsumer() {
     GLOBAL_SKILLS,
     'ws-self-learning',
     'scripts',
-    'self_learning.py',
+    'self_learning.cjs',
   );
-  const result = run(PYTHON, [script, '--compile'], { cwd: consumer });
+  const result = run(NODE, [script, '--compile'], { cwd: consumer });
   assert(result.status === 0, `self_learning --compile exit 0 (${result.stderr || result.stdout})`);
 
   const memoryPath = path.join(shared, 'MEMORY.md');
@@ -199,11 +199,7 @@ function scaffoldProjectLocalSelfLearning(projectRoot) {
     path.join(GLOBAL_SKILLS, 'ws-self-learning', 'scripts', 'sanitize_memory.cjs'),
     path.join(skillScripts, 'sanitize_memory.cjs'),
   );
-  fs.copyFileSync(
-    path.join(GLOBAL_SKILLS, 'ws-self-learning', 'scripts', 'self_learning.py'),
-    path.join(skillScripts, 'self_learning.py'),
-  );
-  return path.join(skillScripts, 'self_learning.py');
+  return path.join(skillScripts, 'self_learning.cjs');
 }
 
 function seedMemoryProbe(sharedDir, marker) {
@@ -222,7 +218,7 @@ function testRepoRootOverrideWins() {
     GLOBAL_SKILLS,
     'ws-self-learning',
     'scripts',
-    'self_learning.py',
+    'self_learning.cjs',
   );
 
   const consumer = mkTmp('ws-hybrid-override-');
@@ -231,7 +227,7 @@ function testRepoRootOverrideWins() {
 
   const noHubCwd = mkTmp('ws-hybrid-nohub-cwd-');
   const noHubResult = run(
-    PYTHON,
+    NODE,
     [globalScript, '--compile', '--repo-root', consumer],
     { cwd: noHubCwd },
   );
@@ -254,7 +250,7 @@ function testRepoRootOverrideWins() {
   seedMemoryProbe(targetShared, 'repo-root override beats cwd hub');
 
   const hubResult = run(
-    PYTHON,
+    NODE,
     [globalScript, '--compile', '--repo-root', targetConsumer],
     { cwd: cwdConsumer },
   );
@@ -285,7 +281,7 @@ function testProjectLocalScriptParents4Resolves() {
   const localScript = scaffoldProjectLocalSelfLearning(projectRoot);
   const foreignCwd = mkTmp('ws-hybrid-foreign-cwd-');
 
-  const result = run(PYTHON, [localScript, '--compile'], { cwd: foreignCwd });
+  const result = run(NODE, [localScript, '--compile'], { cwd: foreignCwd });
   assert(
     result.status === 0,
     `project-local script --compile exit 0 (${result.stderr || result.stdout})`,
@@ -339,9 +335,9 @@ commits: []
     GLOBAL_SKILLS,
     'ws-spec-to-pr-lite',
     'scripts',
-    'validate_state.py',
+    'validate_state.cjs',
   );
-  const result = run(PYTHON, [script, 'us-hybrid-test', '--json'], { cwd: consumer });
+  const result = run(NODE, [script, 'us-hybrid-test', '--json'], { cwd: consumer });
   assert(result.status === 0, `validate_state exit 0 (${result.stderr || result.stdout})`);
 
   let parsed;
@@ -432,3 +428,14 @@ function main() {
 }
 
 main();
+
+
+
+
+
+
+
+
+
+
+

@@ -1,5 +1,11 @@
 # Changelog
 
+### [2026-09-20 03:15] Agent: Muse Code
+- **Prompt**: us-365 worker (standard): opt-in execution observer for ws-spec-to-pr (transcript paths in state schema, autoStartObserver default false, at most one parallel read-only watcher sharing instruction source with ws-monitor, 6 ACs).
+- **Done**: monitor.autoStartObserver schema+example+resolver (strict true) + PS1 GUI row; state agentTranscripts/observer schema fields + observer.cjs (resolve/should-dispatch/record/note-dispatch/watch, read-only outside observer/); shared runtime/observer-instructions.md referenced by both SKILL.md files; monitor snapshot surfaces stateAgentTranscripts; new test-observer-us365.js (46 checks) registered in package.json chain; integrity regen + verified (v0.4.44).
+- **Result**: AC1-AC6 delivered; observer test 46/46; npm run tests + tests:harness-efficiency green; powershell-config-editor, doc-sync, harness-clean 0 findings. Learning: recorded trap 2026-09-20-crlf-edits-and-exports (CRLF exact-match edits + missing module exports).
+
+
 ### [2026-09-19 19:13] Agent: Muse Code
 - **Prompt**: Fix config/runtime resolution to the skills installation (local `.agents/skills/ws-shared/runtime` or global `$HOME/.agents/skills/ws-shared/runtime`); keep `.ws` for local config variable files only.
 - **Done**: New candidate-order bootstrap in 46 skill scripts + ws-doctor (explicit `WORKFLOW_SKILLS_SHARED_DIR` > packaged > cwd-local > global `WORKFLOW_SKILLS_GLOBAL_DIR`/`HOME` > fail-closed; dropped `.ws/runtime` fallback); `resolveHubSource` prefers repo-local skills tree, then global, then legacy `.ws` read-only fallback; precedence matrix row 3 + config-resolution.md + installer pointer text synced to `{skillsRoot}/{globalSkillsRoot}` tokens; new test-skills-runtime-resolution.js (7 checks) registered in package.json; test-local-first-precedence.js updated to the skills-tree-wins contract; integrity regenerated + verified (v0.4.41).
