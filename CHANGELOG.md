@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-20 05:00] Agent: Muse Code (muse-spark)
+- **Prompt**: /ws-spec-index sync completed specs from latest merged PR info.
+- **Done**: Synced 5 merged specs to done in `.agents/specs/index.PRD` (Feature map + Next-specs rows + Done log): 0042 PR #370, 0066 PR #371, 0076 PR #372, 0105-us-365 PR #373, 0106 PR #374; set spec frontmatter `status: completed`. Left `us-369` as todo (no merged PR, E1 unsatisfied).
+- **Result**: Index now shows only `us-369` as true todo.
+
 ### [2026-09-20 03:00] Agent: Muse Code (muse-spark)
 - **Prompt**: ws-spec-multi worker [standard] — spec 0066 ws-shared-hub-agents-separation (consumer hub vs upstream root AGENTS.md; AC1–AC12).
 - **Done**: Consumer banner + upstream relocation in ws-shared/runtime/AGENTS.md (under 14000 B cap); dropped upstream workflow/ship tables from consumer CATALOG.md + added External dependencies mirror; root AGENTS.md do-not-confuse row; new check_hub_separation.cjs Phase 5a gate (denylist + drift + local-first precedence + fail-closed); test-hub-separation.js + context-budget cap assertion; version 0.4.43 + integrity + site rebuild. Full npm run test green; harness self-audit 0 findings.

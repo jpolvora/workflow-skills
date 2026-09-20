@@ -4,6 +4,7 @@ slug: ws-shared-hub-agents-separation
 title: "Separate consumer ws-shared hub from upstream root AGENTS.md"
 source: local
 specDate: 2026-09-06
+status: completed
 ---
 
 # Specification — Separate consumer ws-shared hub from upstream root AGENTS.md
