@@ -1,6 +1,6 @@
 # Practices & Tooling (`engineering`)
 
-> Provenance: `SKILL_AUTHORING.md`, `.agents/skills/ws-senior-developer/SKILL.md`, `.agents/skills/ws-fable-method/SKILL.md`, `.agents/skills/ws-megabrain/SKILL.md`, `package.json` engines, living synthesis of specs 0008, 0011, 0025, 0042, 0055, 0058, 0063, 0072, 0074, 0084, 0085, 0086.
+> Provenance: `SKILL_AUTHORING.md`, `.agents/skills/ws-senior-developer/SKILL.md`, `.agents/skills/ws-fable-method/SKILL.md`, `.agents/skills/ws-megabrain/SKILL.md`, `package.json` engines, living synthesis of specs 0008, 0011, 0025, 0042, 0055, 0058, 0063, 0072, 0074, 0084, 0085, 0086, 0090, 0099-us-358.
 
 ## Feature
 
@@ -19,6 +19,10 @@ Guardrail boundaries are skill-owned rather than dispatch-only: pipeline step sk
 Gate prompts stay portable through a three-option ceiling: no single `user-gate` question carries more than 3 options, because some hosts reject larger structured choices. Menus with more candidates chunk instead of truncating — the resume gate asks intent first (resume versus start fresh) and then pages unfinished workflows at most 3 per question with `More…` navigation so every candidate stays reachable. Cancel remains a dismiss action rather than a numbered option on capped hosts, and coordinator-surfaced gates in step-baton runs follow the same chunking.
 
 Workflow state hygiene requires nested telemetry maps to serialize as YAML mappings rather than Python-repr strings, duplicate `completedSteps` entries to union-sort, step artifact `status` to equal the per-step result through one derivation path, and file-list flags to accumulate only `created`, `modified`, and `deleted`. Git cleanup detaches worktrees and deletes only `uswf-*` tags, never protected branches; failures must not throw unhandled or corrupt telemetry.
+
+Single-session CLI-harness runs bind host capabilities once and never re-probe mid-run. At bootstrap the run resolves the structured-choice binding (native choice tool versus markdown fallback) and the dispatch binding (native child agents versus background runner versus inline-isolated Tier 3) a single time and logs both, and it records the host-declared command-execution posture once at session start. Under a declared no-approval posture, routine shell recipes run quietly with non-interactive subject flags while every step-boundary `user-gate` stays intact, and the ship flow auto-resolves head, base, remote, provider, commit title, stage set, and consumer prepare obligations before asking about genuine ambiguity only. Approval bypass affects command execution alone and never waives workflow planning or converts normal mode into `autoMode`; when the host declares no posture, the run assumes approval is required. The shipped skill contract stays agent- and IDE-neutral throughout the adaptation.
+
+Every skill edit consults the dependency graph first. Before changing a skill contract, the author reads `bin/skill-dependencies.json` plus package membership to identify callers and callees, verifies their inputs, outputs, scripts, and file conventions still hold against the change, and either updates them atomically in the same change or records explicit follow-ups. Integrity data regenerates and the harness checks run over the whole affected skill set in the same effort, so a change to one skill cannot silently leave a dependent contract inconsistent.
 
 ## Backend
 
