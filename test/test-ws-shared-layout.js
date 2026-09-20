@@ -232,7 +232,13 @@ try {
   );
   const installedAutoload = fs.readFileSync(path.join(newShared, 'autoload.md'), 'utf8');
   assert(installedAutoload.includes('](../.agents/skills/ws-shared/runtime/tools.md)'), 'hub-root autoload rewrites runtime-relative hub links to the skills install');
-  assert(installedAutoload.includes('](../.agents/skills/ws-spec-manager/SKILL.md)'), 'hub-root autoload rewrites skill-relative links');
+  const renderedSkillLinks = [
+    ...installedAutoload.matchAll(/\]\((?:\.\.\/\.agents\/skills\/|\{globalSkillsRoot\}\/)(ws-[A-Za-z0-9-]+)\/SKILL\.md\)/g),
+  ];
+  assert(
+    renderedSkillLinks.length > 0 && !installedAutoload.includes('](../../ws-'),
+    'hub-root autoload rewrites skill-relative links (local or global-token form)',
+  );
   for (const [name, content] of Object.entries(preserved)) {
     if (name === 'config.json') {
       const cfg = JSON.parse(fs.readFileSync(path.join(newShared, name), 'utf8'));

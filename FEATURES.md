@@ -10,8 +10,8 @@ Package version: **0.4.38** · 54 skills (Workflows + Extra) + the `ws-shared` c
 
 The consumer hub keeps a stable config root (`.ws/`) while all managed package content lives in the skills install (`{skillsRoot}/ws-shared/` locally, `{globalSkillsRoot}/ws-shared/` globally):
 
-- `runtime/` contains contracts, schemas, scripts, stack rule packs, and `hub-layout.json` required by workflow execution; it is installed inside the skills tree and is never copied to `.ws/runtime`.
-- `templates/` contains setup-only seeds such as `config.json.example`, `STACK.md.example`, and `hub.gitignore`; installed inside the skills tree and never copied to `.ws/templates`.
+- `runtime/` contains contracts, schemas, scripts, stack rule packs, and `hub-layout.json` required by workflow execution; it is installed inside the skills tree and the consumer hub never carries a `runtime/` copy.
+- `templates/` contains setup-only seeds such as `config.json.example`, `STACK.md.example`, and `hub.gitignore`; installed inside the skills tree and the consumer hub never carries a `templates/` copy.
 - `.ws/` holds consumer-owned `config.json` and maintained `STACK.md` (trackable when non-secret), the generated `AGENTS.md` entrypoint, and `autoload.md`.
 - `MEMORY.md`, `memory/`, `CHANGELOG.md`, installer manifests, integrity records, and host caches are generated/local by default.
 - A global `ws-configure-project` run resolves runtime/templates from the executing global skills install and writes only the target project's consumer configuration and accepted pointers/autoload files; project-local runs resolve the project skills install first.

@@ -87,6 +87,10 @@ function seedConsumerTree(root, { withLocalSkills = true, withAutoload = true } 
       fs.mkdirSync(d, { recursive: true });
       fs.writeFileSync(path.join(d, 'SKILL.md'), `# ${id}\n`, 'utf8');
     }
+    // Model a project-local install: the managed runtime lives in the skills tree.
+    const runtimeDir = path.join(root, '.agents', 'skills', 'ws-shared', 'runtime');
+    fs.mkdirSync(runtimeDir, { recursive: true });
+    fs.writeFileSync(path.join(runtimeDir, 'tools.md'), '# tools\n', 'utf8');
   }
   return { shared, skills };
 }
@@ -136,8 +140,12 @@ function parseJsonOut(result) {
     );
     assert(autoText.includes('](../.agents/skills/ws-shared/runtime/tools.md)'), 'consumer autoload rewrites runtime-relative hub links to the skills install');
     assert(
-      autoText.includes('](../.agents/skills/ws-spec-manager/SKILL.md)'),
+      autoText.includes('](../.agents/skills/ws-task-lifecycle/SKILL.md)'),
       'consumer autoload rewrites skill-relative links',
+    );
+    assert(
+      !autoText.includes('{globalSkillsRoot}/ws-shared/runtime/'),
+      'local autoload does not use global runtime tokens',
     );
     assert(
       rootText.includes('autoload.md') && rootText.includes('.ws/AGENTS.md'),
@@ -216,6 +224,15 @@ function parseJsonOut(result) {
       autoText.includes('{globalSkillsRoot}/ws-tdah/SKILL.md'),
       'autoload.md stores global token path',
     );
+    assert(
+      autoText.includes('{globalSkillsRoot}/ws-shared/runtime/tools.md'),
+      'global-only autoload runtime links use {globalSkillsRoot} tokens',
+    );
+    assert(
+      !autoText.includes('](../.agents/skills/'),
+      'global-only autoload has no project-relative skills-install links',
+    );
+    assert(!autoText.includes('](runtime/'), 'global-only autoload never links a .ws/runtime copy');
     assert(!path.isAbsolute(paths[0].replace(/\{[^}]+\}/g, 'x')), 'token paths are not absolute');
   }
 }

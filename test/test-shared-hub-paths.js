@@ -20,6 +20,7 @@ const SKIP_DIRS = [
   '.cursor/',
   'specs/',
   '.ws/memory/',
+  'memory/',
   '.agents/skills/ws-fix-pr/runs/',
 ];
 const SKIP_FILES = new Set([
@@ -49,6 +50,7 @@ const ALLOW = [
   { file: 'bin/cli.js', substr: '.ws/templates', reason: 'installer retires .ws/templates copies and documents the ban' },
   // --- Negative/regression tests pinning the invariant ---
   { file: 'test/test-doc-sync.js', substr: '.ws/runtime', reason: 'mirror-autoload negative assertion message' },
+  { file: 'test/test-autoload-configure.js', substr: '.ws/runtime', reason: 'global-only autoload negative assertion message' },
   { file: 'test/test-hub-separation.js', substr: '.ws/runtime', reason: 'gate fixtures prove .ws/runtime is never audited or resolved' },
   { file: 'test/test-install.js', substr: '.ws/runtime', reason: 'fresh-install negative assertion and message' },
   { file: 'test/test-local-first-precedence.js', substr: '.ws/runtime', reason: 'stale-copy fixture proving skills-tree precedence' },

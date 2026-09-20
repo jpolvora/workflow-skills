@@ -236,11 +236,28 @@ function dropExternalCompanionMembers(membership, repoRoot, { globalSkillsRoot =
   return membership.filter((row) => !external.has(row.skill));
 }
 
-function renderConsumerAutoload(text) {
+function renderConsumerAutoload(text, { repoRoot = null } = {}) {
+  // Managed runtime/skills resolve project-local when that tree exists; a
+  // global-only consumer must get {globalSkillsRoot} tokens instead of links
+  // into a project skills tree that does not exist.
+  const localRuntime = Boolean(repoRoot) &&
+    fs.existsSync(path.join(repoRoot, '.agents', 'skills', 'ws-shared', 'runtime'));
+  const runtimePrefix = localRuntime
+    ? '../.agents/skills/ws-shared/runtime/'
+    : '{globalSkillsRoot}/ws-shared/runtime/';
+  const skillTarget = (rel) => (
+    repoRoot && fs.existsSync(path.join(repoRoot, '.agents', 'skills', rel))
+      ? `../.agents/skills/${rel}`
+      : `{globalSkillsRoot}/${rel}`
+  );
+  // Normalize previously rendered prefixes so refreshes converge (no-op when
+  // the local tree exists and the prefix already matches).
+  text = text.split('](../.agents/skills/ws-shared/runtime/').join(`](${runtimePrefix}`);
+  text = text.replace(/\]\(\.\.\/\.agents\/skills\/(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
   for (const f of ['AGENTS.md', 'CROSS-PLATFORM.md', 'config-resolution.md', 'gates.md', 'host-dispatch.md', 'scm-provider-contract.md', 'setup.md', 'tools.md']) {
-    text = text.split(`](${f})`).join(`](../.agents/skills/ws-shared/runtime/${f})`);
+    text = text.split(`](${f})`).join(`](${runtimePrefix}${f})`);
   }
-  return text.replace(/\]\(\.\.\/\.\.\/(ws-[^)]+)\)/g, '](../.agents/skills/$1)');
+  return text.replace(/\]\(\.\.\/\.\.\/(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
 }
 
 function defaultAlwaysAppliedMembership() {
@@ -285,10 +302,13 @@ function ensureAutoloadMd(repoRoot, { globalSkillsRoot = null, allowGlobalSource
     }
     if (!dryRun) {
       fs.mkdirSync(path.dirname(autoloadPath), { recursive: true });
-      fs.writeFileSync(autoloadPath, renderConsumerAutoload(fs.readFileSync(source, 'utf8')), 'utf8');
+      fs.writeFileSync(autoloadPath, renderConsumerAutoload(fs.readFileSync(source, 'utf8'), { repoRoot }), 'utf8');
     }
   }
-  const text = renderConsumerAutoload(fs.existsSync(autoloadPath) ? fs.readFileSync(autoloadPath, 'utf8') : fs.readFileSync(source, 'utf8'));
+  const text = renderConsumerAutoload(
+    fs.existsSync(autoloadPath) ? fs.readFileSync(autoloadPath, 'utf8') : fs.readFileSync(source, 'utf8'),
+    { repoRoot },
+  );
   const existing = parseAlwaysAppliedRows(text);
   const preserved = membershipFromExistingRows(existing);
   let membership = preserved.length ? preserved : defaultAlwaysAppliedMembership();

@@ -173,13 +173,24 @@ This is the project-local entrypoint for the consumer hub (\`.ws/\`). Managed hu
 
 /** Hub-root autoload link prefixes (managed runtime lives in the skills install). */
 function managedRuntimeLinkPrefix() {
-  return isGlobalScope ? 'runtime/' : '../.agents/skills/ws-shared/runtime/';
+  if (isGlobalScope) return 'runtime/';
+  return fs.existsSync(path.join(targetSkillsDir, 'ws-shared', 'runtime'))
+    ? '../.agents/skills/ws-shared/runtime/'
+    : '{globalSkillsRoot}/ws-shared/runtime/';
 }
-function managedSkillLinkPrefix() {
-  return isGlobalScope ? '../' : '../.agents/skills/';
+function managedSkillLink(rel) {
+  if (isGlobalScope) return `../${rel}`;
+  return fs.existsSync(path.join(targetSkillsDir, rel))
+    ? `../.agents/skills/${rel}`
+    : `{globalSkillsRoot}/${rel}`;
 }
 function renderConsumerAutoloadText(text) {
   const runtimePrefix = managedRuntimeLinkPrefix();
+  // Normalize previously rendered prefixes so refreshes converge.
+  text = text.split('](../.agents/skills/ws-shared/runtime/').join(`](${runtimePrefix}`);
+  if (!isGlobalScope) {
+    text = text.replace(/\]\(\.\.\/\.agents\/skills\/(ws-[^)]+)\)/g, (match, rel) => `](${managedSkillLink(rel)})`);
+  }
   for (const runtimeFile of [
     'AGENTS.md',
     'CROSS-PLATFORM.md',
@@ -192,7 +203,7 @@ function renderConsumerAutoloadText(text) {
   ]) {
     text = text.split(`](${runtimeFile})`).join(`](${runtimePrefix}${runtimeFile})`);
   }
-  return text.replace(/\]\(\.\.\/\.\.\/(ws-[^)]+)\)/g, `](${managedSkillLinkPrefix()}$1)`);
+  return text.replace(/\]\(\.\.\/\.\.\/(ws-[^)]+)\)/g, (match, rel) => `](${managedSkillLink(rel)})`);
 }
 
 function renderConsumerAutoload(sourcePath) {
