@@ -29,11 +29,11 @@ node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs
 # Save Markdown report to ws-check-workflows-report.md
 node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs --report
 
-# Auto-fix mode (requires explicit --yes; never prompts, even on a TTY)
+# Auto-fix mode (requires explicit --yes on a TTY; never prompts)
 node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs --fix --yes
 
-# Report-only (default): exits non-zero when fixes are available
-node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs --fix
+# Report-only: exits 1 when a CRITICAL issue exists, 0 otherwise
+node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs
 ```
 
 ---
@@ -70,7 +70,7 @@ The validation process performs end-to-end simulation across both orchestrators:
 ## Report & Confirmation Flow
 
 1. **Detailed Simulation Report**: Generates a structured breakdown of Full and Lite workflow simulation results, along with a table of detected issues and actionable **Suggested Fixes**.
-2. **User Confirmation Gate**: `--fix` applies nothing without explicit `--yes` (fail-closed; the helper never blocks on a TTY prompt, so agents pass `--yes` after reviewing the report).
+2. **User Confirmation Gate**: `--fix` without `--yes` exits 1 on a TTY (`Pass --yes...`) instead of prompting; in non-TTY pipelines pass `--fix --yes` after reviewing the report. Exit code is 1 iff a CRITICAL issue exists.
 
 ## Done when
 
