@@ -18,15 +18,15 @@ Thread list/resolve I/O goes through `config.providers.scm` → [ws-spec-provide
 | Azure DevOps provider | `.agents/skills/ws-spec-provider-azure-devops/SKILL.md` — `list-threads` / `resolve-thread` |
 | GitHub list (canonical) | `node .agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs` |
 | GitHub resolve (canonical) | `node .agents/skills/ws-spec-provider-github/scripts/resolve_thread.cjs` |
-| Azure DevOps collect/resolve (canonical) | `python .agents/skills/ws-spec-provider-azure-devops/scripts/fix_pr_azure_context.py` |
-| Legacy shims (forward only) | `node`/`python` + `.agents/skills/ws-fix-pr/scripts/fetch_threads.cjs`, `resolve_thread.cjs`, `fix_pr_azure_context.py` |
+| Azure DevOps collect/resolve (canonical) | `node .agents/skills/ws-spec-provider-azure-devops/scripts/fix_pr_azure_context.cjs` |
+| Legacy shims (forward only) | `node` + `.agents/skills/ws-fix-pr/scripts/fetch_threads.cjs`, `resolve_thread.cjs`, `fix_pr_azure_context.cjs` |
 
 ## Platform support
 
 | Platform | How (via `providers.scm`) | Auth |
 |----------|---------------------------|------|
 | **GitHub** (`scm: github`) | Provider intents `list-threads` / `resolve-thread` → `node …/fetch_threads.cjs` / `node …/resolve_thread.cjs` | `AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN` / `GITHUB_TOKEN` / `GH_TOKEN` (+ `gh` for CLI flows) |
-| **Azure DevOps** (`scm: azure-devops`) | Provider intents `list-threads` / `resolve-thread` → `python …/fix_pr_azure_context.py` collect / resolve-thread | PAT via `issueTrackers.azureDevOps.patEnvVar` → `ADO_PAT` → `AZURE_DEVOPS_PAT` |
+| **Azure DevOps** (`scm: azure-devops`) | Provider intents `list-threads` / `resolve-thread` → `node …/fix_pr_azure_context.cjs` collect / resolve-thread | PAT via `issueTrackers.azureDevOps.patEnvVar` → `ADO_PAT` → `AZURE_DEVOPS_PAT` |
 
 Shims under `ws-fix-pr/scripts/` re-exec the provider scripts; new work should call the provider skill or canonical paths with explicit launchers ([`tools.md`](../ws-shared/runtime/tools.md) § Script launchers).
 

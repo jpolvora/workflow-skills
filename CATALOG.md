@@ -176,7 +176,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 |-------|----------------|
 | Skill design, pruning & protocol rules (mandatory) | [`SKILL_AUTHORING.md`](.agents/skills/ws-write-a-skill/SKILL_AUTHORING.md) |
 | Portability, language, folder naming | This file § [Portability & harness neutrality](#portability--harness-neutrality-mandatory) |
-| Script launchers (`python` / `node` / `bash`) | [`ws-shared/runtime/tools.md`](.agents/skills/ws-shared/runtime/tools.md) § Script launchers |
+| Script launchers (`node` / `bash`) | [`ws-shared/runtime/tools.md`](.agents/skills/ws-shared/runtime/tools.md) § Script launchers |
 | New or rewritten skills (markdown + scripts) | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) |
 | Spec shape / review | [`ws-spec-format`](.agents/skills/ws-spec-format/SKILL.md) |
 
@@ -210,7 +210,7 @@ Managed script calls use explicit launchers; do not rewrite skill scripts for sh
 |--------|-----|
 | Local code review of the working branch | `ws-code-review` → `/code-review [base=<ref>]` (commits `{base}...HEAD`, fix → re-review, max 3) |
 | Harness integrity | `ws-check-harness` (Phases 0–5c) → 0 critical |
-| Workflow / FSM simulation | `ws-check-workflows`, or `python .agents/skills/ws-check-workflows/scripts/check_workflows.py` |
+| Workflow / FSM simulation | `ws-check-workflows`, or `node .agents/skills/ws-check-workflows/scripts/check_workflows.cjs` |
 | Secrets / PII scan | `ws-secrets-leak-review` |
 | Stack invariant static scan | `node .agents/skills/ws-shared/runtime/scripts/scan_stack_invariants.cjs [--stack <name>]` |
 | Adversarial audit of claimed work | `ws-fable-judge` |
@@ -269,7 +269,7 @@ Print a board after each row (same ✅ / ❌ / ⏭ convention as [`ws-ship-pr/PR
 | 7 | **Integrity digests** | `npm run generate-integrity` && `npm run verify-integrity` | Any hashed install content changed (`bin/skill-integrity.json` must exit 0 on `--check`) |
 | 7b | **Config GUI sync** | `node test/test-powershell-config-editor.js` | Options, `config.json`, or schema changed → update GUI script |
 | 8 | **Harness audit** | `ws-check-harness` Phases 0–5c → 0 critical (+ `test-harness-clean.js`) | New/changed skills, hubs, routing, links, portability, en-us; Phase 3/4b covers skill ids + dependency graph |
-| 9 | **Workflow simulation** | `ws-check-workflows` / `python .agents/skills/ws-check-workflows/scripts/check_workflows.py` | FSM, step dispatch, gates, or simulation docs changed — 0 critical |
+| 9 | **Workflow simulation** | `ws-check-workflows` / `node .agents/skills/ws-check-workflows/scripts/check_workflows.cjs` | FSM, step dispatch, gates, or simulation docs changed — 0 critical |
 | 10 | **Hub drift** | Sync root `AGENTS.md` + `{sharedDir}/AGENTS.md` (+ `{sharedDir}/autoload.md` when the Always-applied set or specs router changed) | Routing tables or skill index changed |
 | 11 | **Human docs** | `README.md` when install/usage/safety narrative changed | Not required for skill-only doc fixes |
 | 12 | **Ship** | `ws-ship-pr` / `/ship-pr` after rows 1–11 are ✅ or justified ⏭ | Commit → push → create PR |

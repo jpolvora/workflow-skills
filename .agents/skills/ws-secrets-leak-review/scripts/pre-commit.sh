@@ -22,7 +22,7 @@ for skills_root in \
   "${HOME:-/nonexistent}/.agents/skills"; do
   [ -n "$skills_root" ] || continue
   skills_root="${skills_root//\\//}"
-  candidate="$skills_root/ws-secrets-leak-review/scripts/secrets_scanner.sh"
+  candidate="$skills_root/ws-secrets-leak-review/scripts/secrets_scanner.cjs"
   if [ -f "$candidate" ]; then
     SCANNER="$candidate"
     break
@@ -51,13 +51,18 @@ if ! command -v rg &>/dev/null; then
   exit 0
 fi
 
+if ! command -v node &>/dev/null; then
+  echo -e "${YELLOW}[secrets-leak] node not on PATH — commit NOT scanned${NC}"
+  exit 0
+fi
+
 # Staged-only + hard cap so the hook always finishes
 export GIT_STAGED_ONLY=1
 export SECRETS_SCAN_MAX_HITS="${SECRETS_SCAN_MAX_HITS:-30}"
 
 # Capture scanner output. A crashed scanner must not read as a clean scan.
 SCAN_STATUS=0
-SCAN_OUTPUT=$(bash "$SCANNER" 2>&1) || SCAN_STATUS=$?
+SCAN_OUTPUT=$(node "$SCANNER" 2>&1) || SCAN_STATUS=$?
 if [ "$SCAN_STATUS" -ne 0 ]; then
   echo -e "${YELLOW}[secrets-leak] Scanner failed (exit $SCAN_STATUS) — commit NOT scanned:${NC}"
   echo "$SCAN_OUTPUT"

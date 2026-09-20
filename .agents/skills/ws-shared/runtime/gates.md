@@ -134,7 +134,7 @@ Skip Step 2 (mark skipped, log) when **all** hold:
 - Complexity ≠ complex
 - Plan Open Questions section empty or all marked resolved
 - No `blocking` gaps from a 30s orch skim / prior step-output
-- `check_memory_conflict.py --json` did not return `force_interview: true`
+- `check_memory_conflict.cjs --json` did not return `force_interview: true`
 
 Otherwise run `ws-plan-interview` (project-context sweep before escalate; in `autoMode`, sweep-miss blocking gaps close as model-inferred — no `user-gate`). A High or Critical MEMORY trap whose `PathPattern` matches a touched plan path forces this interview even when every other skip condition passes. Choosing **End refinement and advance** at 2c **auto-sets** `shared_understanding: confirmed` (skip separate 2e). Only show 2e when 2c was not used to exit.
 

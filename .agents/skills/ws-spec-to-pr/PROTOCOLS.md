@@ -201,7 +201,7 @@ Orch `git add` must be path-scoped — never `git add .` / `git add -A` on code-
 **Terminal shipping (Phase A — once):** When `shipStatus` is terminal (`skipped`, `merged`, `stopped`, or skip-ship after close with no Step 9), run mandatory Phase A git cleanup **before** claiming the run fully ended:
 
 ```bash
-python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}
+node {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.cjs --workflow-id {workflow-id}
 ```
 
 Do **not** invoke Phase A at close when `shipStatus` is still `pending`/`pr-open`/`pushed`. Phase B stays optional (delete-temps only). Keep-all still runs Phase A when shipping is terminal. Skip auto Phase A for `failed` / `cancelled` / `paused` / active Pause. Exit 0 → claim ended; exit 2 → surface leftovers, may claim ended; exit 1 → do not claim ended.

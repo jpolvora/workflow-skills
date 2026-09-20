@@ -123,6 +123,7 @@ runGate('Phase 5a check_duplicates.cjs', 'check_duplicates.cjs', ['--json', '--r
 runGate('Phase 5a measure_harness.cjs', 'measure_harness.cjs', ['--scenario', 'standard', '--json', '--repo-root', REPO_ROOT]);
 runGate('Phase 5a check_shell_quoting.cjs', 'check_shell_quoting.cjs', ['--json', '--repo-root', REPO_ROOT]);
 runGate('Phase 5a check_pipeline_handoff.cjs', 'check_pipeline_handoff.cjs', ['--json', '--repo-root', REPO_ROOT]);
+runGate('Phase 5a check_unique_runtime.cjs', 'check_unique_runtime.cjs', ['--json', '--repo-root', REPO_ROOT]);
 runGate('Phase 2/4 links, paths, shorthand, routing', 'check_harness_links.cjs', ['--json', '--repo-root', REPO_ROOT]);
 testPackageHygiene();
 

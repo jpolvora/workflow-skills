@@ -28,6 +28,19 @@ Consumer mirror: [`.ws/AGENTS.md`](.ws/AGENTS.md) — the hub shipped by the ins
 
 ---
 
+## Skill script runtime (mandatory)
+
+The unique packaged skill/installer/test runtime is **Node 22**. No shipped skill, `bin/` entry, or `package.json` script requires a Python interpreter.
+
+| Rule | Detail |
+|------|--------|
+| **Node only** | Packaged helpers under `.agents/skills/**/scripts/` and `bin/` are Node only (skill helpers are CommonJS `.cjs` so they `require()` shared helpers regardless of root `"type": "module"`). New `.py` files are forbidden. |
+| **Recipes use `node`** | Invoke skill helpers with an explicit launcher: `node` for `.cjs`/`.js`, `bash` only for thin host adapters that locate Node and `exec` a `.cjs` (no business logic in shell). Never `python`. |
+| **No Python dependency** | Python is not a consumer dependency of this package: installing or running skills requires Node ≥ 22 only. Consumer application code may use any language; that is out of scope for this rule. |
+| **Fail closed** | `ws-check-harness` reports **critical** when any `.py` exists under `.agents/skills/` or `bin/`. |
+
+---
+
 ## Skill SoT, install scopes & config override (mandatory)
 
 Always apply this layout and resolution order. **`.agents/skills/ws-*` is the ONLY canonical source of truth for skills in this upstream package.** Author, package, hash, audit, catalog, and install from that tree. Whenever reviewing, updating, enhancing, or creating skills (`ws-*`), agents **MUST edit the authoritative files under `.agents/skills/`**. The installation source shipped by the installer is always `.agents/skills/`.

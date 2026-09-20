@@ -52,7 +52,7 @@
 
 ### Roadmap
 
-Work that is **not** in the current package: harness spec-run benchmark, skill-family renaming, unique Node script runtime, Step 5–6 deadlock (`us-235`), optional spec filename prefixes, plus inbox ideas (multi-repo orchestrator, CI/CD generator). Full table: [`FEATURES.md`](FEATURES.md) § Roadmap. Site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.github.io/workflow-skills#roadmap).
+Work that is **not** in the current package: harness spec-run benchmark, skill-family renaming, Step 5–6 deadlock (`us-235`), optional spec filename prefixes, plus inbox ideas (multi-repo orchestrator, CI/CD generator). Full table: [`FEATURES.md`](FEATURES.md) § Roadmap. Site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.github.io/workflow-skills#roadmap).
 
 ---
 
@@ -88,7 +88,7 @@ Pipeline and dependency skills are owned **here**. Consumer installs are managed
 
 ## Install, update, and uninstall
 
-Skills land in your project’s `.agents/skills/`. Prefer **Node / npx**. A bash script exists only as a thin shim to the same CLI.
+Skills land in your project’s `.agents/skills/`. Prefer **Node / npx** (requires **Node 22+**; no other interpreter). A bash script exists only as a thin shim to the same CLI.
 
 The CLI tracks managed skills in `.ws/installed-skills.json` (`skills` = all folders; `selected` = install roots). `update` refreshes tracked skills; `uninstall` removes named skills and cascades unused deps. Consumer data under `.ws/` is never deleted by uninstall.
 
@@ -271,8 +271,8 @@ The Workflows package includes [`ws-senior-developer`](.agents/skills/ws-senior-
 - **Source anonymization:** when a pasted error comes from a private consumer app, agents must not name that project in reports, commits, specs, or new GitHub issues. Use generic wording. See root `AGENTS.md`.
 - **Latest layout:** install/update migrates known flat managed hub files into `runtime/` and `templates/`, fails closed on unknown entries or destination collisions, and is idempotent. **Retired artifact hygiene:** `update` / hub refresh also prunes removed features from consumer `ws-shared/` (for example `session-lease.schema.json`, `defaults.sessionLeases`, retired `ws-patterns*` / `ws-audit` folders) without overwriting your config values.
 - **Pack hygiene:** published tarball and install copies skip `__pycache__` / `*.pyc` and consumer-owned `shared/` data.
-- **Cross-platform:** Node `fs` APIs (Windows / macOS / Linux). Bash shim sets `PYTHONIOENCODING=utf-8` for nested Python tools.
-- **Script runtimes:** **Node** is required for install/CLI. **New** managed skill scripts are Node `.cjs` only. Existing `.py` helpers stay until a tracked migration; consumers still need Python to run those leftovers. See [`tools.md`](.agents/skills/ws-shared/runtime/tools.md) § Script launchers.
+- **Cross-platform:** Node `fs` APIs (Windows / macOS / Linux). UTF-8 via `LANG`/`LC_ALL` and Node stdio.
+- **Script runtimes:** **Node 22+** is the only interpreter required to install or run this package. Packaged skill scripts are Node only (`.cjs`); Python is not required to install or run skills. See [`tools.md`](.agents/skills/ws-shared/runtime/tools.md) § Script launchers.
 
 ### Verify the package
 

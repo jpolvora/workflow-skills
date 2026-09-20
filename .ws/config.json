@@ -90,7 +90,7 @@
       "owner": "jpolvora",
       "repo": "workflow-skills",
       "cli": "gh",
-      "issueToSpecScript": ".agents/skills/ws-spec-provider-github/scripts/github-issue-to-spec.py"
+      "issueToSpecScript": ".agents/skills/ws-spec-provider-github/scripts/github-issue-to-spec.cjs"
     },
     "azureDevOps": {
       "enabled": false,
@@ -99,7 +99,7 @@
       "project": "",
       "patEnvVar": "ADO_PAT",
       "apiBase": "https://dev.azure.com",
-      "workItemToSpecScript": ".agents/skills/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.py"
+      "workItemToSpecScript": ".agents/skills/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.cjs"
     }
   },
   "verification": {
@@ -147,10 +147,10 @@
     "modelsPreset": "default",
     "modelPresets": {
       "muse-spark": {
-        "plannerModel": "current",
-        "executionModel": "current",
-        "testingModel": "current",
-        "reviewerModel": "current"
+        "plannerModel": "muse-spark-1.3-contributor",
+        "executionModel": "muse-spark-1.2-contributor",
+        "testingModel": "muse-spark-1.2-contributor",
+        "reviewerModel": "muse-spark-1.3-contributor"
       },
       "default": {
         "plannerModel": "current",
@@ -234,7 +234,7 @@
     "_comment": "Optional. /ws-preview runs preview.dryRunCommand from the consumer repo root — no packaged reviewer backend. Prefer /ws-configure-project --section preview (infers from AGENTS.md, README, MEMORY, rules.*, package.json scripts, and local skills) or set the string below. Empty → /ws-preview stops until configured.",
     "_comment_dryRunCommand": "Local dry-run mirror of .github/workflows/cursor-code-review.yml via `npm run review:dry` (same engine/model/variant/stack/prompt/threshold/patterns, --dry-run, --target-branch refs/heads/main, no --gh/--pr-id, so no PR threads are published). Requires network (downloads run.sh) and CURSOR_API_KEY at run time.",
     "dryRunCommand": "npm run review:dry",
-    "_comment_localReviewCommand": "Examples: cursor-reviewer --dry-run | python scripts/cursor-reviewer/cli.py --dry-run",
+    "_comment_localReviewCommand": "Examples: cursor-reviewer --dry-run | node scripts/cursor-reviewer/cli.cjs --dry-run",
     "localReviewCommand": "",
     "_comment_previewBeforeShip": "When true (default if omitted), ws-ship-pr runs the dry-run once after commit/push and before Create PR; failures are reported, shipping continues. Explicit false disables the gate.",
     "previewBeforeShip": true

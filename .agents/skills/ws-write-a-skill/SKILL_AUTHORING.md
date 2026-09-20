@@ -91,7 +91,7 @@ description: Drafts canonical *.spec.md feature specifications from an issue or 
 Replace vague prompt directives with deterministic scripts or shell commands whenever possible.
 
 - ❌ **Prompt Directive (Vague):** "Ensure the output JSON file has valid formatting and no missing keys."
-- ✅ **Tool Anchor (Deterministic):** "Run `python scripts/validate_json.py {targetFile}`. Done when exit code is 0."
+- ✅ **Tool Anchor (Deterministic):** "Run `node scripts/validate_json.cjs {targetFile}`. Done when exit code is 0."
 
 Using scripts eliminates LLM hallucination risk, reduces prompt size, and converts subjective guidelines into binary pass/fail verification.
 
@@ -146,7 +146,17 @@ When skills are installed globally (`$HOME/.agents/skills` or `WORKFLOW_SKILLS_G
    - Pure utility or governance skills that operate without project hub config (e.g. `ws-secrets-leak-review`, `ws-tdah`, `ws-write-a-skill`, `ws-spec-format`, `ws-check-harness`).
    - Can execute directly in any repository without prompting for `ws-configure-project`.
 
-## 10. Pipeline artifacts and host hints
+## 10. Unique skill script runtime (mandatory, Node only)
+
+The unique packaged skill/installer/test runtime is **Node 22**. No shipped skill, `bin/` entry, or `package.json` script requires a Python interpreter.
+
+1. **Forbid `.py` skill helpers:** never author a `.py` file under a skill `scripts/` folder or `bin/`. `ws-check-harness` reports **critical** when one appears.
+2. **Require `.cjs` for new skill scripts:** write new helpers as CommonJS `.cjs` so they `require()` shared helpers regardless of root `"type": "module"`. Reuse `{skillsRoot}/ws-shared/runtime/scripts/*.cjs` (`resolve_consumer_root.cjs`, `workflow_state.cjs`) instead of reimplementing root resolution.
+3. **Recipes use `node`:** deterministic tool anchors invoke `node scripts/<name>.cjs`. `bash` only for thin host adapters that locate Node and `exec` a `.cjs`. Never `python`.
+4. **Zero runtime npm dependencies:** skill scripts and `bin/cli.js` use Node stdlib plus existing in-repo `.cjs` helpers only.
+5. **Consumer contract:** installing or running skills requires Node ≥ 22. Python is not a dependency of any skill, installer, or `npm run test` path.
+
+## 11. Pipeline artifacts and host hints
 
 ### Provider-compat (optional, config only)
 
@@ -166,7 +176,7 @@ Machine-mutated workflow state uses JSON as SoT (`{workflow-id}.state.json`, led
 
 ---
 
-## 11. Skill Family Naming (`ws-{family}-{skillName}`)
+## 12. Skill Family Naming (`ws-{family}-{skillName}`)
 
 Every packaged `ws-*` skill folder and live reference follows the canonical pattern:
 1. **Pattern:** `ws-{family}-{skillName}` in kebab-case. `{family}` is a short noun grouping related skills (`spec`, `plan`, `check`, `fable`, `patterns`, `goal`).

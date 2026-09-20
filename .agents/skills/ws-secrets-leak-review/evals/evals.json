@@ -8,7 +8,7 @@
       "assertions": [
         "Agent loads secrets-leak-review",
         "Checks for API keys, tokens, PII patterns",
-        "Uses bash/python launchers on scripts/ when running hooks"
+        "Uses bash/node launchers on scripts/ when running hooks"
       ]
     },
     {

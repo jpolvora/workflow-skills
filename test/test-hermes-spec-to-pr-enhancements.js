@@ -11,7 +11,7 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(__dirname, '..');
 const SKILLS = path.join(REPO, '.agents/skills');
-const PYTHON = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
+
 
 let failures = 0;
 
@@ -68,11 +68,11 @@ assert(/git log -p -S|git log -L/i.test(writePlan), 'write-plan design intent gi
 assert(/Fix the Entire Defect Class|repo-wide/i.test(implement), 'implement-tasks defect class scope');
 assert(/beyond the diff|sibling modules/i.test(review), 'code-review sibling beyond diff');
 
-assert(/run_sabotage\.py/i.test(verify), 'verify-plan sabotage script');
+assert(/run_sabotage\.cjs/i.test(verify), 'verify-plan sabotage script');
 assert(/minVerifyScore|below the Advance bar|knownDefect caps at 8/i.test(verify), 'verify-plan sabotage fail-closed vs Advance bar');
 assert(!/below 7|cap below 7/i.test(verify), 'verify-plan no below-7 cap');
 
-assert(/run_sabotage\.py/i.test(testing), 'testing sabotage when mutation unset');
+assert(/run_sabotage\.cjs/i.test(testing), 'testing sabotage when mutation unset');
 
 assert(/prior-work sweep/i.test(stepDispatch), 'STEP-DISPATCH Step 0 sweep');
 assert(/Regression Sabotage/i.test(stepDispatch), 'STEP-DISPATCH sabotage');
@@ -98,25 +98,25 @@ assert(/prior-work|sabotage|check-pr-status|comment-issue/i.test(catalog), 'cata
 
 // sweep_prior_work dry-run JSON paths (GitHub)
 const sweepDry = spawnSync(
-  PYTHON,
+  process.execPath,
   [
-    path.join(SKILLS, 'ws-spec-provider-github/scripts/sweep_prior_work.py'),
+    path.join(SKILLS, 'ws-spec-provider-github/scripts/sweep_prior_work.cjs'),
     '--dry-run',
     '--keywords',
     'hermes',
   ],
   { cwd: REPO, encoding: 'utf8' },
 );
-assert(sweepDry.status === 0, 'GitHub sweep_prior_work.py --dry-run exits 0');
+assert(sweepDry.status === 0, 'GitHub sweep_prior_work.cjs --dry-run exits 0');
 const sweepJson = JSON.parse(sweepDry.stdout || '{}');
 assert(sweepJson.repoRoot === '.', 'GitHub sweep JSON repoRoot relative');
 assert(!/^[A-Za-z]:/.test(JSON.stringify(sweepJson)), 'GitHub sweep JSON no drive letters');
 
 // sweep_prior_work dry-run JSON paths (ADO parity)
 const adoSweepDry = spawnSync(
-  PYTHON,
+  process.execPath,
   [
-    path.join(SKILLS, 'ws-spec-provider-azure-devops/scripts/sweep_prior_work.py'),
+    path.join(SKILLS, 'ws-spec-provider-azure-devops/scripts/sweep_prior_work.cjs'),
     '--dry-run',
     '--keywords',
     'hermes',
@@ -125,7 +125,7 @@ const adoSweepDry = spawnSync(
   ],
   { cwd: REPO, encoding: 'utf8' },
 );
-assert(adoSweepDry.status === 0, 'ADO sweep_prior_work.py --dry-run exits 0');
+assert(adoSweepDry.status === 0, 'ADO sweep_prior_work.cjs --dry-run exits 0');
 const adoSweepJson = JSON.parse(adoSweepDry.stdout || '{}');
 assert(adoSweepJson.repoRoot === '.', 'ADO sweep JSON repoRoot relative');
 assert(!/^[A-Za-z]:/.test(JSON.stringify(adoSweepJson)), 'ADO sweep JSON no drive letters');
@@ -136,8 +136,8 @@ assert(
 
 // comment_issue skip + dry-run
 const commentSkip = spawnSync(
-  PYTHON,
-  [path.join(SKILLS, 'ws-spec-provider-github/scripts/comment_issue.py'), '--id', 'null', '--body', 'x'],
+  process.execPath,
+  [path.join(SKILLS, 'ws-spec-provider-github/scripts/comment_issue.cjs'), '--id', 'null', '--body', 'x'],
   { cwd: REPO, encoding: 'utf8' },
 );
 assert(commentSkip.status === 0, 'comment_issue null id skipped');
@@ -168,25 +168,25 @@ fs.writeFileSync(
   path.join(hubDir, 'config.json'),
   JSON.stringify({
     verification: {
-      backendTest: `${PYTHON} check_pass.py`,
+      backendTest: `node check_pass.cjs`,
       frontendTest: 'exit 0',
     },
   }),
   'utf8',
 );
 
-const checkScript = path.join(fixtureDir, 'check_pass.py');
+const checkScript = path.join(fixtureDir, 'check_pass.cjs');
 fs.writeFileSync(
   checkScript,
-  "import pathlib, sys\nsys.exit(0 if pathlib.Path('sample.txt').read_text(encoding='utf-8').strip() == 'PASS' else 1)\n",
+  "const fs = require('fs');\nprocess.exit(fs.readFileSync('sample.txt', 'utf8').trim() === 'PASS' ? 0 : 1);\n",
   'utf8',
 );
-const passTest = `${PYTHON} check_pass.py`;
+const passTest = `node check_pass.cjs`;
 
 const sabotage = spawnSync(
-  PYTHON,
+  process.execPath,
   [
-    path.join(SKILLS, 'ws-testing/scripts/run_sabotage.py'),
+    path.join(SKILLS, 'ws-testing/scripts/run_sabotage.cjs'),
     '--test',
     passTest,
     '--paths',
@@ -203,9 +203,9 @@ assert(fs.readFileSync(fixtureFile, 'utf8') === 'PASS\n', 'fixture restored afte
 assert(fs.readFileSync(otherFile, 'utf8') === 'dirty', 'other dirty tracked file untouched by restore proof');
 
 const sabotageFail = spawnSync(
-  PYTHON,
+  process.execPath,
   [
-    path.join(SKILLS, 'ws-testing/scripts/run_sabotage.py'),
+    path.join(SKILLS, 'ws-testing/scripts/run_sabotage.cjs'),
     '--test',
     'exit 0',
     '--paths',
@@ -221,16 +221,16 @@ const sabotageFail = spawnSync(
 assert(sabotageFail.status === 1, 'simulate restore failure aborts non-zero');
 fs.rmSync(fixtureDir, { recursive: true, force: true });
 
-const pyScripts = [
-  'ws-spec-provider-github/scripts/sweep_prior_work.py',
-  'ws-spec-provider-github/scripts/comment_issue.py',
-  'ws-spec-provider-azure-devops/scripts/sweep_prior_work.py',
-  'ws-spec-provider-azure-devops/scripts/comment_issue.py',
-  'ws-testing/scripts/run_sabotage.py',
+const nodeScripts = [
+  'ws-spec-provider-github/scripts/sweep_prior_work.cjs',
+  'ws-spec-provider-github/scripts/comment_issue.cjs',
+  'ws-spec-provider-azure-devops/scripts/sweep_prior_work.cjs',
+  'ws-spec-provider-azure-devops/scripts/comment_issue.cjs',
+  'ws-testing/scripts/run_sabotage.cjs',
 ];
-for (const rel of pyScripts) {
-  const c = spawnSync(PYTHON, ['-m', 'py_compile', path.join(SKILLS, rel)], { encoding: 'utf8' });
-  assert(c.status === 0, `py_compile ${rel}`);
+for (const rel of nodeScripts) {
+  const c = spawnSync(process.execPath, ['--check', path.join(SKILLS, rel)], { encoding: 'utf8' });
+  assert(c.status === 0, `node --check ${rel}`);
 }
 
 if (failures) {

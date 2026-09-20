@@ -10,9 +10,9 @@ const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const skillMd = path.join(root, '.agents/skills/ws-megabrain/SKILL.md');
 const depsPath = path.join(root, 'bin/skill-dependencies.json');
 const autoloadPath = path.join(root, '.agents/skills/ws-shared/runtime/autoload.md');
-const configurePy = path.join(
+const configureCjs = path.join(
   root,
-  '.agents/skills/ws-configure-project/scripts/configure_autoload.py',
+  '.agents/skills/ws-configure-project/scripts/configure_autoload.cjs',
 );
 
 let failures = 0;
@@ -66,7 +66,7 @@ for (const id of [
 
 const autoload = fs.readFileSync(autoloadPath, 'utf8');
 assert(/## Optional skills[\s\S]*\| `ws-megabrain` \|/.test(autoload), 'autoload.md Optional row (on-demand, not Always-applied)');
-const configure = fs.readFileSync(configurePy, 'utf8');
+const configure = fs.readFileSync(configureCjs, 'utf8');
 assert(!/DEFAULT_ALWAYS_APPLIED[\s\S]*?"ws-megabrain"/.test(configure.split('TASK_LIFECYCLE_ID')[0]), 'DEFAULT_ALWAYS_APPLIED excludes ws-megabrain (optional)');
 
 if (failures) {
