@@ -200,8 +200,24 @@ assert(shouldDispatchObserver({
   // Fix-pr round 8: enabled without --state fails closed (durable check
   // cannot be silently skipped).
   const noState = runObserver(['should-dispatch', '--config', configFile, '--telemetry', telemetryFile]);
-  assert(noState.status !== 0 && noState.stderr.includes('requires --state'),
+  assert(noState.status !== 0 && noState.stderr.includes('existing state JSON file'),
     'AC3 should-dispatch CLI fails closed when enabled without --state');
+  // Fix-pr round 9: missing state JSON fails closed on both paths.
+  const missingState = path.join(root, 'missing.state.json');
+  const missingGate = runObserver(['should-dispatch', '--config', configFile,
+    '--telemetry', telemetryFile, '--state', missingState]);
+  assert(missingGate.status !== 0 && missingGate.stderr.includes('existing state JSON file'),
+    'AC3 should-dispatch CLI fails closed when enabled with missing state file');
+  let missingRefused = false;
+  try {
+    noteObserverDispatch({
+      stateFile: missingState, telemetryFile,
+      config: JSON.parse(fs.readFileSync(configFile, 'utf8')),
+    });
+  } catch (error) {
+    missingRefused = /existing state JSON file/.test(error.message);
+  }
+  assert(missingRefused, 'AC3 note-dispatch fails closed when the state file is missing');
   const freshStateFile = path.join(root, 'wf-fresh.state.json');
   write(freshStateFile, JSON.stringify({
     stateVersion: 3, revision: 0, workflowId: 'wf-fresh', slug: 's',

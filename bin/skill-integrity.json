@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "3629ae3faf014ca8d34f3c0a9e3f572da7a3ef3032ccb44e98c54e41b64e9e40",
+  "fullPackageDigest": "4e6643dc25228afb5e775056029059f75396047a7cc4f6158b27a50c7fb55626",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -512,7 +512,7 @@
         "scripts/github-issue-to-spec.cjs": "cbbfa1f3acbde38abfb785a0c0c7260caf5121b1bf7478711802aea88ed6d842",
         "scripts/merge_review_jury.cjs": "957f2827997ebcfe5f0729d0937ea484987139d0f72d4a456a111a7548d866d1",
         "scripts/merge_verify_review.cjs": "345061c7acfe408b50d813e0ad8a9997c4cd7dcd0f4c00a728ba51f33c7066b2",
-        "scripts/observer.cjs": "4eea49841627f3d39a9da6972945462b4104c81c5725b6da5b2a087b458ae578",
+        "scripts/observer.cjs": "ec03514e64821899ebcd8ded687a02cc21ab700f6d21814c4b63e646b2dfbbc6",
         "scripts/plan_index.cjs": "d337d873133ed68c59616f1b9884b582ce3c62fa8ae02747b5dd94f3656cf1b9",
         "scripts/search_plan_history.cjs": "cd6b4fc6096116cb4dfcdc21c8b787366d02bc24a8ed99f7f8217105c2c6c7c0",
         "scripts/step_coordinator.cjs": "5d49a7330f45ec2f88a3c21d36c5324cff58af7cb91f8d65f8a7750687df0342",
@@ -527,7 +527,7 @@
         "WORKER-TURN-RULES.md": "bcd9848443d17da5b390d98e27c42083bfc22c3167c8ea9ea448784928844ea3",
         "ws-spec-to-pr-run-test.md": "417b103bc5ea94cd83dbaaa71aa973cbf23e29f73d7ca567667b2870be914560"
       },
-      "skillDigest": "f2f7b5337c635043f4f30d2f789e8d5d0b198602bc964a7a21ab2e12846fd20a"
+      "skillDigest": "4b81b3af49d6d273ab998090b0ad2b6b68f0c93fecdf2d80fb4af0c06cebc07c"
     },
     "ws-spec-to-pr-lite": {
       "files": {

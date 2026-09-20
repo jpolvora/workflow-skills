@@ -165,7 +165,12 @@ function noteObserverDispatch({ stateFile, telemetryFile, config, subagentId, di
     throw new Error('observer dispatch refused: monitor.autoStartObserver is not explicit true');
   }
   const jsonPath = jsonStatePath(stateFile);
-  const priorState = fs.existsSync(jsonPath) ? readJson(jsonPath) : null;
+  // Round-9 fix-pr: fail closed when the state JSON is missing, so the
+  // durable record cannot be silently skipped (mirrors record).
+  if (!fs.existsSync(jsonPath)) {
+    throw new Error(`note-dispatch requires an existing state JSON file: ${stateFile}`);
+  }
+  const priorState = readJson(jsonPath);
   if (alreadyDispatched({ telemetryEvents: events, state: priorState })) {
     throw new Error('observer dispatch refused: at most one watcher per run');
   }
@@ -360,8 +365,8 @@ function main(argv) {
     const gateStateFile = flagValue(argv, '--state');
     // Round-8 fix-pr: fail closed when enabled without --state, so the
     // durable check cannot be silently skipped.
-    if (enabled && !gateStateFile) {
-      throw new Error('should-dispatch requires --state when monitor.autoStartObserver is true');
+    if (enabled && (!gateStateFile || !fs.existsSync(jsonStatePath(gateStateFile)))) {
+      throw new Error('should-dispatch requires an existing state JSON file when monitor.autoStartObserver is true');
     }
     const gateState = gateStateFile && fs.existsSync(jsonStatePath(gateStateFile))
       ? readJson(jsonStatePath(gateStateFile))
