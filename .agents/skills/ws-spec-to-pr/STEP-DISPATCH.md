@@ -58,7 +58,7 @@ Fill 4–8 `*` bullets from that analysis. Do **not** copy a canned list from a 
 ### Execution observer dispatch (opt-in, us-365)
 
 - Gate: `node {skillsRoot}/ws-spec-to-pr/scripts/observer.cjs should-dispatch
-  --config {sharedDir}/config.json --telemetry {us-dir}/telemetry.jsonl`.
+  --config {sharedDir}/config.json --telemetry {us-dir}/telemetry.jsonl --state {state}`.
   Refused (`dispatch: false`, exit 2 only when enabled-but-already-dispatched; default-off exits 0) → dispatch nothing.
 - On allow: one `dispatch-agent` read-only watcher (report state/execution and
   skill-instruction errors per `{skillsRoot}/ws-shared/runtime/observer-instructions.md`;
