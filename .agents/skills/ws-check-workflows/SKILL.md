@@ -29,10 +29,11 @@ node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs
 # Save Markdown report to ws-check-workflows-report.md
 node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs --report
 
-# Auto-fix mode (requires explicit --yes on a TTY; never prompts)
+# Auto-fix mode (applies safe fixes; never prompts, even on a TTY)
 node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs --fix --yes
 
-# Report-only: exits 1 when a CRITICAL issue exists, 0 otherwise
+# Default is report-only (no fixes applied).
+# Exit code is 1 iff a CRITICAL issue exists, 0 otherwise (warnings alone exit 0).
 node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs
 ```
 
@@ -70,7 +71,7 @@ The validation process performs end-to-end simulation across both orchestrators:
 ## Report & Confirmation Flow
 
 1. **Detailed Simulation Report**: Generates a structured breakdown of Full and Lite workflow simulation results, along with a table of detected issues and actionable **Suggested Fixes**.
-2. **User Confirmation Gate**: `--fix` without `--yes` exits 1 on a TTY (`Pass --yes...`) instead of prompting; in non-TTY pipelines pass `--fix --yes` after reviewing the report. Exit code is 1 iff a CRITICAL issue exists.
+2. **User Confirmation Gate**: `--fix` without `--yes` exits 1 on a TTY (`Pass --yes...`) without applying fixes; in non-TTY mode it proceeds as if `--yes` were passed. Never use bare `--fix` as a dry-run gate — the default invocation (no `--fix`) is the report-only gate. With zero detected issues, bare `--fix` is a silent no-op that exits 0. Exit code is 1 iff a CRITICAL issue exists; warning-only findings exit 0 and apply no fixes.
 
 ## Done when
 
