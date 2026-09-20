@@ -5,12 +5,12 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "e1d15e57d2156d4274079b8786562ffab8dfca82fcc9a75fa24f389c7b8896e3",
+  "fullPackageDigest": "827e930f1b89245acaa64f297aa5f9135690fca7b972227d1d6c4ca645d9ef1f",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
       "runtime/ac-ledger.schema.json": "5184614c30fa70faf50b69eba272dbeee589497b7fb845f8201818e85c7c6e3b",
-      "runtime/AGENTS.md": "5e30768e09e9ae667973b4cebb188e9b47c8d46bd33b2c418fe3357037514c00",
+      "runtime/AGENTS.md": "048f76aeebefc24e738d0428d4100fabb96dc2852ea60beb17e1fe8344cf6f86",
       "runtime/autoload.md": "2ad6e41750e75c5894716a659cc6ceac6152cf310c142dac7d8eb5e66301fcbc",
       "runtime/CATALOG.md": "7ed72aad717aa0e053f348aae8430b6a049d8628f6fbaec0ca0fdc48807ce433",
       "runtime/config-resolution.md": "1359daa08acb05ace66b7e1eb0416b9b34786500183c036a99d6e9f73eba97c3",
@@ -43,12 +43,12 @@
       "runtime/scripts/step_baton.cjs": "d18f4bd9cf4720c6bf5d3322c8a143a64c94593cce480f4577341f294645d071",
       "runtime/scripts/validate_json_schema.cjs": "c6901a6ad2ed4fde4e5a6fcd85ebaa8b4c31f5707924f2928d25392d502dbbd9",
       "runtime/scripts/workflow_state.cjs": "c901bd6504cdc14ee057ac480edb0cf546583c0f0609acf1eed77ec6363ed0d9",
-      "runtime/setup.md": "725c912afebe251d46e4b910a4f1a1ce323bab41c07babe953e2ee0b6338b01b",
+      "runtime/setup.md": "1cb2f17780a2812b68d66afcde83ee7331a81660767b1902d0ccc2afbdaca4c3",
       "runtime/skill-dependencies.json": "3272091ff22566c9bdc638f4055a3ae3b3120c7ca68903221fab20a443e9ca2d",
-      "runtime/stacks/abp-angular.md": "1a9cf9cba2d5ec688153d221056f85cf3f40b16989639c251f8db98a15a2c667",
-      "runtime/stacks/nextjs-react.md": "f3b698bf6e7be5085b2ffb9f58d2ecc91265eca2df9649ee448b751d8ef05108",
-      "runtime/stacks/php-laravel.md": "ea713a759d72837cb38b6022081e27a46bbe29bf31a54c56b55bd725922bed25",
-      "runtime/stacks/typescript-node.md": "c69194b310ad9765478303ab386f7ba30b934bc70bad2f45b304e8ada184f4dc",
+      "runtime/stacks/abp-angular.md": "fc728fb3d39373b91f7bb4e0a719a24abc995a643fd55c856603a2a1f7bfd742",
+      "runtime/stacks/nextjs-react.md": "a852fc0db314c4b99c0d1e7e0a16978bd30df732480536aebe82982a72e09bad",
+      "runtime/stacks/php-laravel.md": "635b0ac523c0235dc6e22345266982aa66705bcc5c51ca659482272f2021b761",
+      "runtime/stacks/typescript-node.md": "8b6290e02dbfdf7d8ad5221627fb602bb0193e83f04853456897af5c1ec962ea",
       "runtime/step-artifact.schema.json": "85a1674590d900df2bbbf818d9f4a4c5ccaf004bdc4a1523fe2c28e4dab554a2",
       "runtime/telemetry.schema.json": "ce2a72184f68e8b765200fa8cc49789e5e7ae06d2a2bd11203f30261d80751a0",
       "runtime/tools.md": "75fa8165fe3051bfb621b12399f441380742ebf307c9272fdd31f9224f4c8a02",
@@ -58,7 +58,7 @@
       "templates/MEMORY.md.template": "1a604cb2184c9c54cfb24a2da547d3664bc5d4d8e713ffa937c3c3083c21340d",
       "templates/STACK.md.example": "829b7d3fce62b8167905fc1d921ee744db1d7e8ef895b0e7eb969f089973bebd"
     },
-    "skillDigest": "9215dfde4e77033beddd5ea4a4a1ef042e8787fd95c3907ea1de378fb244bf68"
+    "skillDigest": "177d35ab834d3b93e06d50360558c3815ac81b48b27f8e39c816c14a583da984"
   },
   "packageVersion": "0.4.44",
   "skills": {
