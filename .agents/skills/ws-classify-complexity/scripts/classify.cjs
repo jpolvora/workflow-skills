@@ -3,7 +3,7 @@
 
 /**
  * ws-classify-complexity — threshold-based lite|standard pipeline recommendation.
- * No npm dependencies. Manual YAML frontmatter mini-parser (validate_state.py spirit).
+ * No npm dependencies. Manual YAML frontmatter mini-parser (validate_state.cjs spirit).
  */
 
 const fs = require('fs');

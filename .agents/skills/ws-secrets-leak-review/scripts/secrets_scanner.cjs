@@ -15,8 +15,14 @@ const STAGED_ONLY = process.env.GIT_STAGED_ONLY === '1';
 const MAX_HITS = parseInt(process.env.SECRETS_SCAN_MAX_HITS || '50', 10) || 50;
 
 function have(cmd) {
-  const r = spawnSync(process.platform === 'win32' ? 'where' : 'command', process.platform === 'win32' ? [cmd] : ['-v', cmd], { encoding: 'utf8' });
-  return r.status === 0;
+  // `command -v` is a shell builtin: spawn it through sh on POSIX (`where`
+  // on Windows, `which` as a no-shell fallback when sh is unavailable).
+  if (process.platform === 'win32') {
+    return spawnSync('where', [cmd], { encoding: 'utf8' }).status === 0;
+  }
+  const viaSh = spawnSync('sh', ['-c', 'command -v ' + cmd], { encoding: 'utf8' });
+  if (viaSh.status === 0) return true;
+  return spawnSync('which', [cmd], { encoding: 'utf8' }).status === 0;
 }
 
 function repoRoot() {

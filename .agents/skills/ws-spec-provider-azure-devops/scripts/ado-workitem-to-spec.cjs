@@ -665,7 +665,7 @@ async function main() {
 
   console.log(`Spec written to: ${outputPath}`);
   console.log('Next: register into the workflow copy via ws-spec-provider-local');
-  console.log(`  register_local_spec.py --input ${outputPath} --source azure-devops`);
+  console.log(`  node {skillsRoot}/ws-spec-provider-local/scripts/register_local_spec.cjs --input ${outputPath} --source azure-devops`);
   return 0;
 }
 
