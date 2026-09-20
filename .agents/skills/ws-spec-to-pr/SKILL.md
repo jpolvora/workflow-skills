@@ -70,7 +70,10 @@ both sides reference that file; never duplicate its contract here.
   AC3 accounting):
   `node {skillsRoot}/ws-spec-to-pr/scripts/observer.cjs should-dispatch
   --config {sharedDir}/config.json --telemetry {us-dir}/telemetry.jsonl --state {state}`.
-  On allow, record with `observer.cjs note-dispatch`; a second dispatch is refused.
+  On allow, first reserve the slot (fail-closed when already taken)
+  `node {skillsRoot}/ws-spec-to-pr/scripts/observer.cjs note-dispatch
+  --state {state} --telemetry {us-dir}/telemetry.jsonl --config {sharedDir}/config.json`,
+  then dispatch the watcher; a second reservation is refused.
   Full dispatch protocol: [`STEP-DISPATCH.md`](STEP-DISPATCH.md) § Execution observer dispatch.
 - The watcher reports state/execution and skill-instruction errors and never
   blocks step advancement; it writes only its own `<usDir>/observer/` log +

@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "dbe180f35a50f7adae547de66b38345368970c7981de78594932bc0a051d03ee",
+  "fullPackageDigest": "29b9c6c1cdbc67c43d8a033bb56367685c8bad59b53145f1ae0e08479dcab14c",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -522,12 +522,12 @@
         "scripts/write_sequential_dag.cjs": "5bb4e07ad9128cc25e497087833b54e27be8d1f31664cfebd9585a041046d354",
         "scripts/write_simple_plan_stub.cjs": "2d4975909212e9cfc5331d460bbb081f6eaa92b442e0a26e86b3f2b1b8660cab",
         "scripts/write_verification_manifest.cjs": "42453e3f2268f0ec0cc5286ff468bf5b4a65612d8693c5e8be2a125c3a429dd0",
-        "SKILL.md": "f02665db57af4aa8951228e62c0f37fe330324e08f2925bf2df5549194b4c0a3",
-        "STEP-DISPATCH.md": "29b2464ed4129bb1ad9355f2b823b49ae930c32bb24ad888f256ed5c71b8f1a1",
+        "SKILL.md": "c6a80fc61a62739867781250212db68f2d1feb43b8ecf797d381ac957948e6a5",
+        "STEP-DISPATCH.md": "00b1724ac9b9d7dbf3a7872ec798f34b500d1e217a681abeb886fb8ac9b94e2e",
         "WORKER-TURN-RULES.md": "bcd9848443d17da5b390d98e27c42083bfc22c3167c8ea9ea448784928844ea3",
         "ws-spec-to-pr-run-test.md": "417b103bc5ea94cd83dbaaa71aa973cbf23e29f73d7ca567667b2870be914560"
       },
-      "skillDigest": "66003b1fa0f329ac8cbf6263fa113c1dc816956432a46601dd14a8648cd7f6f5"
+      "skillDigest": "26ccd5c7d8505cf98bc1abe5cf5d4ff19e383731150ea4f10ad6b621005d1b32"
     },
     "ws-spec-to-pr-lite": {
       "files": {
