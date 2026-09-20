@@ -184,6 +184,12 @@ try {
   const rootCatalog = fs.readFileSync(path.join(repoRoot, 'CATALOG.md'), 'utf8');
   assert.ok(rootCatalog.includes('Before ship PR'), 'root CATALOG remains the upstream inventory SoT');
 
+  // AC1: consumer-identity banner names the installed runtime hub path.
+  assert.ok(
+    hubText.includes('`{sharedDir}/runtime/AGENTS.md` as installed'),
+    'consumer banner cites the installed runtime hub path',
+  );
+
   // AC9: size cap is enforced here as well as in test-context-budget.js.
   const bytes = Buffer.byteLength(hubText.replace(/\r\n?/g, '\n'), 'utf8');
   assert.ok(bytes <= 14000, `SoT consumer hub is ${bytes} B (cap 14000)`);

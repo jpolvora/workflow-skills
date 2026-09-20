@@ -1,6 +1,6 @@
 # Consumer Hub — Workflow Config & Shared Project Data
 
-> **You are in the consumer hub** (`{sharedDir}/AGENTS.md` as installed; authoring source at `.agents/skills/ws-shared/runtime/AGENTS.md`). This is **not** the upstream authoring hub: package skill authoring, ship checklists, and source-repo workflows live in the upstream repo's root `AGENTS.md` / `CATALOG.md` and are out of scope here. An optional consumer repo-root `AGENTS.md` may override autoload via `autoload.md`; otherwise this file is the routing contract.
+> **You are in the consumer hub** (`{sharedDir}/runtime/AGENTS.md` as installed; thin entrypoint at `{sharedDir}/AGENTS.md`; authoring source at `.agents/skills/ws-shared/runtime/AGENTS.md`). This is **not** the upstream authoring hub: package skill authoring, ship checklists, and source-repo workflows live in the upstream repo's root `AGENTS.md` / `CATALOG.md` and are out of scope here. An optional consumer repo-root `AGENTS.md` may override autoload via `autoload.md`; otherwise this file is the routing contract.
 
 **Audience: agents** (config resolution, gates, skill loading, consumer-owned paths). Humans: install narrative in the project README.
 
@@ -30,10 +30,10 @@
 |------|---------|
 | [`config.json.example`](../templates/config.json.example) | Project config template — seeded to `config.json`; fill via [`ws-configure-project`](../../ws-configure-project/SKILL.md); track only when non-secret |
 | [`config.schema.json`](config.schema.json) | JSON Schema for `config.json` validation |
-| [`config-resolution.md`](config-resolution.md) | Canonical config path + SCM resolution (dual-mode) |
+| [`config-resolution.md`](config-resolution.md) | Config path + SCM resolution |
 | [`scm-provider-contract.md`](scm-provider-contract.md) | Required SCM intents (`ws-spec-provider-github` ↔ `ws-spec-provider-azure-devops` parity) |
-| [`gates.md`](gates.md) | Shared user-gate / delivery / ship / session-model banner (dual-mode) |
-| [`tools.md`](tools.md) | Tool aliases, path tokens `{skillsRoot}` / `{sharedDir}` / `{plansDir}`, launchers (`node` / `bash`). Load with `config.json`. |
+| [`gates.md`](gates.md) | User-gate / delivery / ship / session-model banner |
+| [`tools.md`](tools.md) | Tool aliases, path tokens, launchers (`node` / `bash`). Load with `config.json`. |
 | [`CATALOG.md`](CATALOG.md) | On-demand promoted-skill inventory and consumer task router |
 | [`CROSS-PLATFORM.md`](CROSS-PLATFORM.md) | UTF-8, quoting, and explicit-launcher runtime contract |
 | [`autoload.md`](autoload.md) | Always-applied list, specs skill router, hub contracts (SCM, verify score) |
@@ -77,7 +77,7 @@ Consumers may add a **root** `AGENTS.md` (installer never writes it; generate vi
 
 **Hub contracts (load on demand):** SCM parity → [`scm-provider-contract.md`](scm-provider-contract.md), then **one** provider skill. Verify score / `scoreAndRefine` → orch Step 5 or [`ws-plan-verify`](../../ws-plan-verify/SKILL.md); gate copy in [`gates.md`](gates.md) (advance at `defaults.minVerifyScore`, default 9). Config / tokens / gates → `config.json` + [`tools.md`](tools.md) / [`gates.md`](gates.md).
 
-When **both** hubs load, root `AGENTS.md` skill-loading and precedence sections **win** for autoload decisions.
+When **both** hubs load, root `AGENTS.md` sections **win** for autoload decisions.
 
 See also: [`setup.md`](setup.md) § External dependencies.
 
@@ -162,7 +162,7 @@ Run this checklist before `/ship-pr` or shipping features:
 - [ ] **1. Run Tests & Verification**: Execute `verification.backendTest` / `verification.frontendTest` and the stack invariant scan (`node .ws/runtime/scripts/scan_stack_invariants.cjs`).
 - [ ] **2. Harness & Workflow Audit**: Run `ws-check-harness` / `ws-check-workflows` to ensure 0 critical findings.
 - [ ] **3. Configure & Verify Project**: Verify `.ws/config.json` settings and stack definitions.
-- [ ] **4. Clean Docs & Artifacts**: Ensure documentation files have no merge conflict markers or uncommitted scratch files.
+- [ ] **4. Clean Docs & Artifacts**: Ensure no merge conflict markers or uncommitted scratch files.
 - [ ] **5. Ship via `ship-pr`**: Execute `/ship-pr` (runs Prepare Board, commits, pushes, creates PR).
 
 ### Package authoring (upstream source repo only)
@@ -179,4 +179,4 @@ Installed skills live at `.agents/skills/<name>/SKILL.md`. Load on demand from o
 
 ## External dependencies
 
-Full table and Code review proof notes: [`CATALOG.md`](CATALOG.md) § External dependencies. Resolve `rules.*` and workflow artifact paths from project `config.json` (first match wins).
+Full table: [`CATALOG.md`](CATALOG.md) § External dependencies. Resolve `rules.*` and artifact paths from project `config.json` (first match wins).

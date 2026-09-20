@@ -5,12 +5,12 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "dd149d53ee352123e250177cea2631662b4d7167d7b85c08edd688df9a56d6d7",
+  "fullPackageDigest": "731a7c012d976977a014992efbc4cb869affec0ce41178f7298e080a5bd45040",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
       "runtime/ac-ledger.schema.json": "5184614c30fa70faf50b69eba272dbeee589497b7fb845f8201818e85c7c6e3b",
-      "runtime/AGENTS.md": "840f7f269ec9fa35800e18fc42338964588f7ba3dfda75d22493f2c0d85d48f6",
+      "runtime/AGENTS.md": "9d2f00927165de86a98c7ece0420c58d68a9432cef71f5ec25e090072547a840",
       "runtime/autoload.md": "2ad6e41750e75c5894716a659cc6ceac6152cf310c142dac7d8eb5e66301fcbc",
       "runtime/CATALOG.md": "7ed72aad717aa0e053f348aae8430b6a049d8628f6fbaec0ca0fdc48807ce433",
       "runtime/config-resolution.md": "f7a9d382d01aae7a0b9375db06fcb09572e5a0595febbda51cf988c33e17fcc4",
@@ -57,7 +57,7 @@
       "templates/MEMORY.md.template": "1a604cb2184c9c54cfb24a2da547d3664bc5d4d8e713ffa937c3c3083c21340d",
       "templates/STACK.md.example": "829b7d3fce62b8167905fc1d921ee744db1d7e8ef895b0e7eb969f089973bebd"
     },
-    "skillDigest": "0c2be635bed9508409b2c72c4aeb6f79ee15a3bef92a4c9515d4ebab3d7e3f51"
+    "skillDigest": "2e3195da2f3dd8b1933448de8c7c6f36a6c84549468d1d27225a2137b3fa5674"
   },
   "packageVersion": "0.4.43",
   "skills": {
