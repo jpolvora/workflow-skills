@@ -307,7 +307,7 @@ class WorkflowChecker {
     if (fs.existsSync(liteValState)) {
       const code = fs.readFileSync(liteValState, 'utf8');
       if (!code.includes('config.json') || (!code.includes('ws-shared') && !code.includes('.ws'))) {
-        this.addIssue('WARNING', 'Config Sharing', 'ws-spec-to-pr-lite/scripts/validate_state.cjs', 'Lite validate_state.cjs does not target the shared hub config.json.', 'Update script to reference .ws/config.json.');
+        this.addIssue('WARNING', 'Config Sharing', 'ws-spec-to-pr-lite/scripts/validate_state.cjs', 'Lite validate_state.cjs does not target the shared hub config.json.', 'Update script to reference {sharedDir}/config.json.');
       }
     }
   }

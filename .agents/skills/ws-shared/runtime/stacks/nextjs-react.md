@@ -40,6 +40,6 @@ Non-negotiable architectural, security, concurrency, and lifecycle invariant rul
 - [ ] Verify cleanup returns in all event or timer `useEffect` hooks.
 - [ ] Verify zero direct mutations of React state.
 - [ ] Verify browser globals are SSR-safe.
-- [ ] Run invariant scan: `node .ws/runtime/scripts/scan_stack_invariants.cjs --stack nextjs-react`
+- [ ] Run invariant scan: `node {sharedDir}/runtime/scripts/scan_stack_invariants.cjs --stack nextjs-react`
 - [ ] Run Next.js build: `npm run build`
 - [ ] Run tests: `npm test`

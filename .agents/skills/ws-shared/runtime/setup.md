@@ -45,8 +45,8 @@ Same entry paths for **standard** and **lite**. Resolve provider from `config.js
 Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDir`, default `.agents/specs`); the workflow `step-00-{slug}.spec.md` under `{us-dir}` is created by register (or provider fetch) when a run starts. Downstream workflow skills **always** read `step-00-{slug}.spec.md` under `{us-dir}` — never `{specsDir}` and never `*.issue.json`.
 
 
-1. **Config check**: Check if `.ws/config.json` exists (fresh install normally seeds it from `templates/config.json.example`).
-   - If missing: `cp .ws/templates/config.json.example .ws/config.json`.
+1. **Config check**: Check if `{sharedDir}/config.json` exists (fresh install normally seeds it from `{sharedDir}/templates/config.json.example`).
+   - If missing: `cp {sharedDir}/templates/config.json.example {sharedDir}/config.json` (defaults: `.ws/templates/config.json.example` → `.ws/config.json`).
    - Load path tokens early ([`tools.md`](tools.md) § Path tokens): `pathTokens.skillsRoot` / `sharedDir` (defaults `.agents/skills` / `.ws`) plus `{plansDir}` ← `plans.dir`, `{specsDir}` ← `plans.specsDir`. Expand braces before Read/Grep/Shell.
    - User-gate: **Configure now (Recommended)** / **Skip**.
    - If **Configure now** (or config exists but required fields are placeholders/`<…>` / empty): load and run [`ws-configure-project`](../../ws-configure-project/SKILL.md) (same session). Pass `--section` only when fixing one area mid-workflow.

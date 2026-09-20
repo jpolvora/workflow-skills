@@ -5,19 +5,19 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "4e6643dc25228afb5e775056029059f75396047a7cc4f6158b27a50c7fb55626",
+  "fullPackageDigest": "f707422fda2151df7c5e8170f469f36d9b1e9b435bc07e9e62ffdd21c4238c6c",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
       "runtime/ac-ledger.schema.json": "5184614c30fa70faf50b69eba272dbeee589497b7fb845f8201818e85c7c6e3b",
-      "runtime/AGENTS.md": "9d2f00927165de86a98c7ece0420c58d68a9432cef71f5ec25e090072547a840",
+      "runtime/AGENTS.md": "5e30768e09e9ae667973b4cebb188e9b47c8d46bd33b2c418fe3357037514c00",
       "runtime/autoload.md": "2ad6e41750e75c5894716a659cc6ceac6152cf310c142dac7d8eb5e66301fcbc",
       "runtime/CATALOG.md": "7ed72aad717aa0e053f348aae8430b6a049d8628f6fbaec0ca0fdc48807ce433",
-      "runtime/config-resolution.md": "f7a9d382d01aae7a0b9375db06fcb09572e5a0595febbda51cf988c33e17fcc4",
+      "runtime/config-resolution.md": "1359daa08acb05ace66b7e1eb0416b9b34786500183c036a99d6e9f73eba97c3",
       "runtime/config.schema.json": "829e958887760396c99a14962156c9246dac1d26990ab9ce7fa67910609f2a02",
       "runtime/CROSS-PLATFORM.md": "19fbaa74276b4f31a1f6c8bf60e0ddf175b8ba8da8b3fe39e61d8841867ff704",
       "runtime/evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
-      "runtime/gates.md": "113b959a7a8013333d88ccf48d93d5086178468b9ba285c6d04bd01e46d59f8f",
+      "runtime/gates.md": "7398cb3e1748e0413be993eb3f5e8185fdfa758497adf25a845689720cd6b034",
       "runtime/host-capability-tokens.md": "66ccef0e08d5518954982bf36b74bc39f727ed07d4c2040090fc4a4e7085395f",
       "runtime/host-dispatch.md": "de8446ce1b19db0371105fc364b43a2c2b5c3404e39646b05bedb2b0cb43ca70",
       "runtime/host-tool-map.json": "3d9ba399da3b049f29ca927ae3179a1618a222ab84dd25497da066c02e3bdbe0",
@@ -43,12 +43,12 @@
       "runtime/scripts/step_baton.cjs": "d18f4bd9cf4720c6bf5d3322c8a143a64c94593cce480f4577341f294645d071",
       "runtime/scripts/validate_json_schema.cjs": "c6901a6ad2ed4fde4e5a6fcd85ebaa8b4c31f5707924f2928d25392d502dbbd9",
       "runtime/scripts/workflow_state.cjs": "c901bd6504cdc14ee057ac480edb0cf546583c0f0609acf1eed77ec6363ed0d9",
-      "runtime/setup.md": "4f5a93aed599820a101d6bc6b892042dc5a18b60d71681b71ae9fc77135af309",
+      "runtime/setup.md": "725c912afebe251d46e4b910a4f1a1ce323bab41c07babe953e2ee0b6338b01b",
       "runtime/skill-dependencies.json": "3272091ff22566c9bdc638f4055a3ae3b3120c7ca68903221fab20a443e9ca2d",
-      "runtime/stacks/abp-angular.md": "83b756ab70e9a81b84d724371e4bbe40715730f1241676f84e3a29a86a17c367",
-      "runtime/stacks/nextjs-react.md": "d18c08c856f5ade82ba921c94e3d55a0ed8dd97bd20d382ba4244b9459ab81b3",
-      "runtime/stacks/php-laravel.md": "8383cd1b7e5c591e1dcd3d176ec37c0bb281733afd1bd54abbd4ccc8fd8e56c4",
-      "runtime/stacks/typescript-node.md": "091c6e5d1acf422bea3365ae6d0b6c3340da33d6af7d6815838a27cfae86df04",
+      "runtime/stacks/abp-angular.md": "1a9cf9cba2d5ec688153d221056f85cf3f40b16989639c251f8db98a15a2c667",
+      "runtime/stacks/nextjs-react.md": "f3b698bf6e7be5085b2ffb9f58d2ecc91265eca2df9649ee448b751d8ef05108",
+      "runtime/stacks/php-laravel.md": "ea713a759d72837cb38b6022081e27a46bbe29bf31a54c56b55bd725922bed25",
+      "runtime/stacks/typescript-node.md": "c69194b310ad9765478303ab386f7ba30b934bc70bad2f45b304e8ada184f4dc",
       "runtime/step-artifact.schema.json": "85a1674590d900df2bbbf818d9f4a4c5ccaf004bdc4a1523fe2c28e4dab554a2",
       "runtime/telemetry.schema.json": "ce2a72184f68e8b765200fa8cc49789e5e7ae06d2a2bd11203f30261d80751a0",
       "runtime/tools.md": "75fa8165fe3051bfb621b12399f441380742ebf307c9272fdd31f9224f4c8a02",
@@ -58,7 +58,7 @@
       "templates/MEMORY.md.template": "1a604cb2184c9c54cfb24a2da547d3664bc5d4d8e713ffa937c3c3083c21340d",
       "templates/STACK.md.example": "829b7d3fce62b8167905fc1d921ee744db1d7e8ef895b0e7eb969f089973bebd"
     },
-    "skillDigest": "9fc68042a54a8d15a5afd4d8ba39ac02633dfca30828b08a77b1a2ae61706e6c"
+    "skillDigest": "9215dfde4e77033beddd5ea4a4a1ef042e8787fd95c3907ea1de378fb244bf68"
   },
   "packageVersion": "0.4.44",
   "skills": {
@@ -108,19 +108,19 @@
     "ws-check-workflows": {
       "files": {
         "evals/evals.json": "3b75c793fe10d929f380ae3c90232b22e00cbe91149ae5187a56054ddc676630",
-        "scripts/check_workflows.cjs": "a5c8269da6b52b2848fe0d5cd867376f45e9e768c11ed665d62baacd5ca46e54",
+        "scripts/check_workflows.cjs": "3f351573f1bac6bb3d3ee7797a18f8b4b51a507a6daddad9da2b822a0bff23cd",
         "SKILL.md": "8e0e15e3092bc383e43c2a314dad4577b80ea7c4ea0a2eeec7d973425bcac3b5"
       },
-      "skillDigest": "3b30e8058b359f35c24b3f1a7226d984e05b314fb2ca4e498b7519702e4b2e62"
+      "skillDigest": "a1751a1b5e3223d046fb2104050c2bf235d119082d393eedb4e4762819d7904a"
     },
     "ws-classify-complexity": {
       "files": {
         "evals/evals.json": "504884fb9b89dec24d41c219daa4a093bfff24832dbdb8f30ab704cc09fec88e",
-        "references/THRESHOLDS.md": "9788307563ca3fcf05e35a51ea4cb179d6888cfb3a7e77e8e4f44a1c905bdc8d",
+        "references/THRESHOLDS.md": "b33515e56e3ec6cbb7386bbc7c1caadf202f41676e51bd23ea52b85270231a9e",
         "scripts/classify.cjs": "be15f9ff57a45275ad3b9bd14aeb2bc9240a8d9a33a16fe60c1c51f3508c8aa0",
         "SKILL.md": "57df9de256c7c2aee1619e2a34f23ec8f23e2f4dde7fd235ab1408b8d2f93edf"
       },
-      "skillDigest": "bb9937a50247c788f48d676cef233287aeaea7a6ae03eafa288467ed5e6b3380"
+      "skillDigest": "5f71d342edcdf9c94a112f23a20cfef729ff304fd3197635afd16bdf0e97488b"
     },
     "ws-cleanup": {
       "files": {
