@@ -94,6 +94,38 @@ try {
     assert.ok(!hubText.includes(phrase), `consumer hub does not surface ${phrase}`);
   }
 
+  // AC7/AC8: global-hybrid resolution audits the effective runtime hub, not the thin pointer.
+  const hybridRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-hub-sep-hybrid-'));
+  tmpRoots.push(hybridRoot);
+  const globalRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-hub-sep-global-'));
+  tmpRoots.push(globalRoot);
+  fs.mkdirSync(path.join(hybridRoot, '.ws'), { recursive: true });
+  fs.writeFileSync(path.join(hybridRoot, '.ws', 'AGENTS.md'), '# Consumer pointer\n\n> You are in the consumer hub.\n', 'utf8');
+  const globalRuntime = path.join(globalRoot, 'ws-shared', 'runtime');
+  fs.mkdirSync(globalRuntime, { recursive: true });
+  fs.writeFileSync(
+    path.join(globalRuntime, 'AGENTS.md'),
+    `${fs.readFileSync(SOT_HUB, 'utf8')}\nRun npm run generate-integrity before ship.\n`,
+    'utf8',
+  );
+  const hybrid = run(CHECKER, ['--json', '--repo-root', hybridRoot, '--mode', 'consumer'], {
+    env: { WORKFLOW_SKILLS_GLOBAL_DIR: globalRoot },
+  });
+  assert.strictEqual(hybrid.status, 1, 'contaminated global runtime exits 1');
+  assert.ok(
+    JSON.parse(hybrid.stdout).findings.some((row) => row.kind === 'upstream-phrase'),
+    'global runtime contamination reported',
+  );
+
+  // Fail closed: a missing effective hub is critical in consumer mode.
+  const emptyRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-hub-sep-empty-'));
+  tmpRoots.push(emptyRoot);
+  const missing = run(CHECKER, ['--json', '--repo-root', emptyRoot, '--mode', 'consumer'], {
+    env: { WORKFLOW_SKILLS_GLOBAL_DIR: path.join(emptyRoot, 'no-global') },
+  });
+  assert.strictEqual(missing.status, 1, 'missing hub exits 1 in consumer mode');
+  assert.ok(JSON.parse(missing.stdout).findings.some((row) => row.kind === 'hub-missing'), 'missing hub reported');
+
   // AC4: consumer CATALOG keeps no upstream-only sections; root keeps them.
   const catalog = fs.readFileSync(SOT_CATALOG, 'utf8');
   for (const phrase of ['Before ship PR', 'Upstream developer workflow', 'generate-integrity', 'build-site:bump']) {

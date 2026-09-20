@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "d4751c82b2f3ddb3b9d351b3e7666ded0ca9ee77d6bfc9fed03ea9af93e942aa",
+  "fullPackageDigest": "13c792c501a2c0455d391f61bb6cb060e79e74d096291c7db03de5e633afd68b",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -90,11 +90,11 @@
     "ws-check-harness": {
       "files": {
         "evals/evals.json": "35bcc6ef297fa47efe448093357610e39775a8ed751d0ae4cdc143bd0c803147",
-        "PHASES.md": "6efb453fc3eb1c34d745056ff6485d1c551b6dc718e89396e26d30ea0be6e25e",
+        "PHASES.md": "2be35d513387f4495664d9ed2eeac9ad1bac8f8a1d096b10b4927f71a9208315",
         "REPORT-FORMAT.md": "a54e34f1545924f2a8c84b2d715ba1c537efcec4e51f04a5f81cfd03b4e5a23a",
         "scripts/check_duplicates.cjs": "c914ccabd36060733a54d88d17558b0a28348babdbbc3b129611437e6fe51eda",
         "scripts/check_harness_links.cjs": "c5db0e55cec62c77817636fd78e792f1f2ffb99b66226447fc7a89dc400b6a3d",
-        "scripts/check_hub_separation.cjs": "1285aef82cc07745898632a555a7e4d905fb4bcb5de55f5a79535c0cd4d3608f",
+        "scripts/check_hub_separation.cjs": "f69bfc844b63b3fafc4f45c33e18e123ee6daa230fb06bb9d653c4c4a5db33a9",
         "scripts/check_pipeline_handoff.cjs": "79c9fbb7d0b703ee8f7e076ca23ff64a18b012490afce08eca2d4f9f24db22bb",
         "scripts/check_shell_quoting.cjs": "3f242c909cb07aa533178d2bf5af89a3db234b5477ef638f7682cf92a5677146",
         "scripts/check_unique_runtime.cjs": "e73b9f0804761f0659c3c5d45df93d95f4dcb66761f1fb5c76cb67f00e9f2596",
@@ -102,7 +102,7 @@
         "scripts/measure_harness.cjs": "659beaded017aa8c3090ffc6fd38c7ae58aeb685c2485d6f16e969760bcff3c9",
         "SKILL.md": "79f8286c61f85bd8f69a7a12a8510d5056a902361d1579933faa8ecc99dac7a1"
       },
-      "skillDigest": "9af112349d41e70a71dddb5b039981be46e62cfaf1b0aef3f356a3f2750a8a3a"
+      "skillDigest": "deb1ef917cc68b192bc5efc1cbd6b63eed2406e46f2036f9e7bbdef53a5f6c43"
     },
     "ws-check-workflows": {
       "files": {

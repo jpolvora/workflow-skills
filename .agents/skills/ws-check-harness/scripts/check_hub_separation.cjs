@@ -58,15 +58,17 @@ function detectMode(repoRoot) {
 
 function resolveConsumerHub(repoRoot, mode) {
   if (mode === 'upstream') return path.join(repoRoot, SOT_HUB);
+  const globalRoot =
+    process.env.WORKFLOW_SKILLS_GLOBAL_DIR ||
+    path.join(process.env.HOME || process.env.USERPROFILE || '', '.agents', 'skills');
+  // Mirror resolveHubSource / resolveConsumerContext: audit the effective runtime hub, not the thin pointer.
   const candidates = [
     path.join(repoRoot, '.ws', 'runtime', 'AGENTS.md'),
+    path.join(repoRoot, '.agents', 'skills', 'ws-shared', 'runtime', 'AGENTS.md'),
+    path.join(globalRoot, 'ws-shared', 'runtime', 'AGENTS.md'),
     path.join(repoRoot, '.ws', 'AGENTS.md'),
+    path.join(globalRoot, 'ws-shared', 'AGENTS.md'),
   ];
-  const globalRoot = process.env.WORKFLOW_SKILLS_GLOBAL_DIR || path.join(process.env.HOME || process.env.USERPROFILE || '', '.agents', 'skills');
-  if (globalRoot) {
-    candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'AGENTS.md'));
-    candidates.push(path.join(globalRoot, 'ws-shared', 'AGENTS.md'));
-  }
   return candidates.find((file) => fs.existsSync(file)) || candidates[0];
 }
 
@@ -76,6 +78,10 @@ function analyze(repoRoot, modeOverride) {
   const rel = path.relative(repoRoot, hub).replace(/\\/g, '/');
   const findings = [];
   if (!fs.existsSync(hub)) {
+    if (mode === 'consumer') {
+      findings.push({ severity: 'critical', file: rel, kind: 'hub-missing', message: 'effective consumer runtime hub not found' });
+      return { ok: false, mode, hub: rel, total: findings.length, findings };
+    }
     findings.push({ severity: 'warning', file: rel, kind: 'hub-missing', message: 'consumer hub not found; nothing to gate' });
     return { ok: true, mode, hub: rel, total: 0, findings };
   }
