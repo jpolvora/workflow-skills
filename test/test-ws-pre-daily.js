@@ -1,5 +1,5 @@
 /**
- * Test suite for ws-pre-daily skill & collect_window.py
+ * Test suite for ws-pre-daily skill & collect_window.cjs
  * Run: node test/test-ws-pre-daily.js
  */
 import fs from 'fs';
@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 const SCRIPT = path.join(
   REPO_ROOT,
-  '.agents/skills/ws-pre-daily/scripts/collect_window.py',
+  '.agents/skills/ws-pre-daily/scripts/collect_window.cjs',
 );
 const SKILL_MD = path.join(
   REPO_ROOT,
@@ -24,7 +24,6 @@ const OUTPUT_MD = path.join(
   '.agents/skills/ws-pre-daily/references/OUTPUT.md',
 );
 const DEPS_JSON = path.join(REPO_ROOT, 'bin/skill-dependencies.json');
-const PYTHON = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
 
 const tmpRoots = [];
 let failures = 0;
@@ -67,8 +66,8 @@ function runGit(repo, args) {
   });
 }
 
-function runPython(args, cwd = REPO_ROOT) {
-  return cp.spawnSync(PYTHON, args, {
+function runNode(args, cwd = REPO_ROOT) {
+  return cp.spawnSync(process.execPath, args, {
     cwd,
     encoding: 'utf8',
     env: { ...process.env, PYTHONIOENCODING: 'utf-8' },
@@ -81,7 +80,7 @@ try {
   // Test 1: SKILL.md and OUTPUT.md exist and have correct metadata
   assert(fs.existsSync(SKILL_MD), 'ws-pre-daily/SKILL.md exists');
   assert(fs.existsSync(OUTPUT_MD), 'ws-pre-daily/references/OUTPUT.md exists');
-  assert(fs.existsSync(SCRIPT), 'ws-pre-daily/scripts/collect_window.py exists');
+  assert(fs.existsSync(SCRIPT), 'ws-pre-daily/scripts/collect_window.cjs exists');
 
   const pkg = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'package.json'), 'utf8'));
   const skillContent = fs.readFileSync(SKILL_MD, 'utf8');
@@ -104,7 +103,7 @@ try {
 
   // Test 3: Non-git repo handling
   const emptyDir = mkTmp('ws-pre-daily-empty-');
-  const resEmpty = runPython([SCRIPT, '--repo', emptyDir]);
+  const resEmpty = runNode([SCRIPT, '--repo', emptyDir]);
   assert(resEmpty.status !== 0, 'collect_window exits non-zero on non-git dir');
   const jsonEmpty = JSON.parse(resEmpty.stdout.trim());
   assert(jsonEmpty.ok === false, 'collect_window returns ok: false on non-git dir');
@@ -158,7 +157,7 @@ pr: "https://github.com/example/repo/pull/123"
   fs.writeFileSync(changelogPath, changelogContent);
 
   // Execute collector on fixture
-  const resFixture = runPython([
+  const resFixture = runNode([
     SCRIPT,
     '--repo',
     fixtureRepo,
@@ -195,7 +194,7 @@ pr: "https://github.com/example/repo/pull/123"
   assert(jsonFixture.gaps.length === 0, 'no gaps reported when all paths valid');
 
   // Test 5: Gap reporting when paths are missing
-  const resMissing = runPython([
+  const resMissing = runNode([
     SCRIPT,
     '--repo',
     fixtureRepo,
@@ -210,7 +209,7 @@ pr: "https://github.com/example/repo/pull/123"
   assert(jsonMissing.gaps.includes('changelog-missing'), 'reports changelog-missing gap');
 
   // Test 6: Timezone support
-  const resTz = runPython([
+  const resTz = runNode([
     SCRIPT,
     '--repo',
     fixtureRepo,

@@ -8,7 +8,7 @@
  *
  * Unit under test: requireProjectConfig() in
  * .agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs
- * (Node SoT; mirrored by require_project_config() in resolve_consumer_root.py).
+ * (Node-only; no Python mirror remains).
  *
  * Run: node test/test-global-config-missing.js
  */

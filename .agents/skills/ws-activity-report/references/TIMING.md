@@ -23,7 +23,7 @@ Folder: `{us-dir}` = `{plansDir}/{slug}/`.
 
 ### Bulk-sync override
 
-If many candidates share the same artificial ctime second **and** state frontmatter `startedAt` is materially earlier, prefer `startedAt` (treating file ctimes as a later sync). Script `bootstrap_start.py` applies this when `--json` shows `override: startedAt`.
+If many candidates share the same artificial ctime second **and** state frontmatter `startedAt` is materially earlier, prefer `startedAt` (treating file ctimes as a later sync). Script `bootstrap_start.cjs` applies this when `--json` shows `override: startedAt`.
 
 `.runtime/started-at.txt` / YAML `startedAt` always appear in the technical audit; the **billing clock** follows the rule above (file creation, unless override fires).
 
@@ -69,7 +69,7 @@ Always emit **real** clocks (start → end). Warn when entries overlap on the ta
 
 ## Inferred Human Work Duration & Billing Telemetry
 
-Run `python {skillsRoot}/ws-activity-report/scripts/infer_human_timing.py {us-dir}` to compute billable human work time, agent running time, idle gaps, and activity category breakdowns.
+Run `node {skillsRoot}/ws-activity-report/scripts/infer_human_timing.cjs {us-dir}` to compute billable human work time, agent running time, idle gaps, and activity category breakdowns.
 
 ### Invariant (billable)
 

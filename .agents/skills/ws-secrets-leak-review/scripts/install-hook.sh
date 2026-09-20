@@ -27,7 +27,7 @@ is_our_hook() {
   grep -q "$MARKER" "$HOOK_DST" 2>/dev/null ||
     {
       grep -q "Secrets leak check for git pre-commit hook" "$HOOK_DST" 2>/dev/null &&
-        grep -q "secrets-leak-review/scripts/secrets_scanner.sh" "$HOOK_DST" 2>/dev/null
+        grep -q "secrets-leak-review/scripts/secrets_scanner" "$HOOK_DST" 2>/dev/null
     }
 }
 

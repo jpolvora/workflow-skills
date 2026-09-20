@@ -695,24 +695,9 @@ function parseCheckScript(fileAbs) {
   const relHint = toPosix(fileAbs);
 
   if (ext === '.py') {
-    if (!ensureLauncherProbe('python')) {
-      return { status: 'skipped', error: 'python launcher not on PATH' };
-    }
-    // ast.parse — no .pyc write (read-only preference)
-    const r = spawnSync(
-      'python',
-      [
-        '-c',
-        'import ast,sys; p=sys.argv[1]; ast.parse(open(p,encoding="utf-8").read())',
-        fileAbs,
-      ],
-      { encoding: 'utf8', shell: false },
-    );
-    if (r.status === 0) return { status: 'ok', error: null };
-    const errLines = asciiSafe((r.stderr || r.stdout || 'parse failed').trim()).split(/\r?\n/);
-    const interesting =
-      errLines.find((ln) => /Error|Syntax|invalid/i.test(ln)) || errLines[errLines.length - 1] || 'parse failed';
-    return { status: 'fail', error: interesting };
+    // Unique runtime (Node only): a .py file under the skill tree is unshipped
+    // (ws-check-harness reports critical), so fail closed without spawning Python.
+    return { status: 'fail', error: 'Python helpers are not shipped; use the Node .cjs port' };
   }
 
   if (ext === '.js' || ext === '.cjs' || ext === '.mjs') {
@@ -807,7 +792,7 @@ function scanPathAndRefs(files, projectRoot, tokenMap, skillId) {
             skillId,
             source: sourceRel,
             cited: val,
-            issue: 'managed script invocation missing explicit python/node/bash launcher',
+            issue: 'managed script invocation missing explicit node/bash launcher',
           });
         }
 

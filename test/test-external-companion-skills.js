@@ -12,7 +12,6 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '..');
-const PYTHON = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
 
 function assert(cond, msg) {
   if (!cond) throw new Error(msg);
@@ -75,16 +74,16 @@ assert(
   'autoload.md needs External companion skills section',
 );
 
-const configurePy = fs.readFileSync(
-  path.join(repoRoot, '.agents/skills/ws-configure-project/scripts/configure_autoload.py'),
+const configureCjs = fs.readFileSync(
+  path.join(repoRoot, '.agents/skills/ws-configure-project/scripts/configure_autoload.cjs'),
   'utf8',
 );
 assert(
-  configurePy.includes('drop_external_companion_members'),
-  'configure_autoload.py must drop external companions from Always-applied writes',
+  configureCjs.includes('dropExternalCompanionMembers'),
+  'configure_autoload.cjs must drop external companions from Always-applied writes',
 );
 assert(
-  !/DEFAULT_ALWAYS_APPLIED[\s\S]*ws-memo/.test(configurePy),
+  !/DEFAULT_ALWAYS_APPLIED[\s\S]*ws-memo/.test(configureCjs),
   'DEFAULT_ALWAYS_APPLIED must not include ws-memo',
 );
 
@@ -179,25 +178,12 @@ try {
   assert(text.includes('| `ws-memo` | `{skillsRoot}/ws-memo/SKILL.md` | Session start |'), 'poison insert failed');
   const script = path.join(
     repoRoot,
-    '.agents/skills/ws-configure-project/scripts/configure_autoload.py',
+    '.agents/skills/ws-configure-project/scripts/configure_autoload.cjs',
   );
   const checkArgs = ['--check', '--json', '--repo-root', poisoned];
-  let check = { status: 1, stdout: '', stderr: '' };
-  for (const spec of [
-    { cmd: PYTHON, prefix: [] },
-    { cmd: 'py', prefix: ['-3'] },
-    { cmd: 'python3', prefix: [] },
-    { cmd: 'python', prefix: [] },
-  ]) {
-    if (!spec.cmd) continue;
-    const attempt = cp.spawnSync(spec.cmd, [...spec.prefix, script, ...checkArgs], {
-      encoding: 'utf8',
-    });
-    if (attempt.stdout && attempt.stdout.trim().startsWith('{')) {
-      check = attempt;
-      break;
-    }
-  }
+  const check = cp.spawnSync(process.execPath, [script, ...checkArgs], {
+    encoding: 'utf8',
+  });
   assert(
     check.stdout && check.stdout.trim().startsWith('{'),
     `configure_autoload --check JSON missing\n${check.stderr}\n${check.stdout}`,
@@ -215,23 +201,9 @@ try {
   );
 
   const rootArgs = ['--write-root-agents', '--repo-root', poisoned];
-  let wroteRoot = { status: 1, stdout: '', stderr: '' };
-  for (const spec of [
-    { cmd: PYTHON, prefix: [] },
-    { cmd: 'py', prefix: ['-3'] },
-    { cmd: 'python3', prefix: [] },
-    { cmd: 'python', prefix: [] },
-  ]) {
-    if (!spec.cmd) continue;
-    const attempt = cp.spawnSync(spec.cmd, [...spec.prefix, script, ...rootArgs], {
-      encoding: 'utf8',
-    });
-    if (attempt.status === 0) {
-      wroteRoot = attempt;
-      break;
-    }
-    wroteRoot = attempt;
-  }
+  const wroteRoot = cp.spawnSync(process.execPath, [script, ...rootArgs], {
+    encoding: 'utf8',
+  });
   assert(
     wroteRoot.status === 0,
     `write-root-agents failed\n${wroteRoot.stderr}\n${wroteRoot.stdout}`,
@@ -246,3 +218,5 @@ try {
 }
 
 console.log('test-external-companion-skills: ok');
+
+

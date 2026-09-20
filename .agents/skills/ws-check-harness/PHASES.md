@@ -43,8 +43,8 @@ Run `node {skillsRoot}/ws-check-harness/scripts/detect_install_mode.cjs --json -
 - Phase 5b sprawl on managed upstream skills → **Upstream debt (informational)**; do **not** count toward consumer “Problems found” unless the user asked to optimize those skills.
 - **Dual-hub `ws-senior-developer`:** When consumer root `AGENTS.md` autoloads `ws-senior-developer` while `{sharedDir}/AGENTS.md` documents on-demand opt-in, treat as **intentional consumer override** — not hub drift, not a correction-plan item. Same when upstream root `AGENTS.md` autoloads for dogfood while the shared hub stays opt-in default.
 - **Dual-hub via `autoload.md`:** When root `AGENTS.md` references `{sharedDir}/autoload.md` (or `.ws/autoload.md`) and Always-applied skills differ from shared-hub on-demand defaults, treat as **intentional consumer root override** — not dual-hub drift. Missing root `AGENTS.md` remains **OK** when effective `defaults.autoload` is false/omitted.
-- **`defaults.autoload` flag-gated root check:** Effective value is `true` only when project `config.json` exists and `defaults.autoload` is JSON boolean `true` (omitted/missing/not-true → false). When effective **true**: missing root `AGENTS.md`, or root that does not instruct loading Always-applied via an `autoload.md` reference → **critical** (suggest `ws-configure-project --section autoload`). When effective **false**: missing root remains **OK**. Helper SoT: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --check`.
-- **`autoload.md` Always-applied (when file present):** For each skill id in the Always-applied table, path form must be repo-relative (`.agents/skills/...`) or a declared token (`{skillsRoot}` / `{globalSkillsRoot}`). Absolute author-machine paths → **critical**. If `SKILL.md` is missing from both `{skillsRoot}` and `{globalSkillsRoot}` → **warning** (suggest install skill or remove row). Optional helper: `python {skillsRoot}/ws-configure-project/scripts/configure_autoload.py --check`.
+- **`defaults.autoload` flag-gated root check:** Effective value is `true` only when project `config.json` exists and `defaults.autoload` is JSON boolean `true` (omitted/missing/not-true → false). When effective **true**: missing root `AGENTS.md`, or root that does not instruct loading Always-applied via an `autoload.md` reference → **critical** (suggest `ws-configure-project --section autoload`). When effective **false**: missing root remains **OK**. Helper SoT: `node {skillsRoot}/ws-configure-project/scripts/configure_autoload.cjs --check`.
+- **`autoload.md` Always-applied (when file present):** For each skill id in the Always-applied table, path form must be repo-relative (`.agents/skills/...`) or a declared token (`{skillsRoot}` / `{globalSkillsRoot}`). Absolute author-machine paths → **critical**. If `SKILL.md` is missing from both `{skillsRoot}` and `{globalSkillsRoot}` → **warning** (suggest install skill or remove row). Optional helper: `node {skillsRoot}/ws-configure-project/scripts/configure_autoload.cjs --check`.
 
 ## Path token expand algorithm
 
@@ -229,25 +229,15 @@ Run **all** scan phases (0–5c) before assembling the plan (6). Phase 7 only oc
 1. Confirm branch and git state (`git status --short`) — uncommitted local changes may explain "missing" paths.
 2. Record date/time and requested scope (full vs. specific file).
 3. **Resolve Install mode + Install scope + primary hub + skills scan root(s)** per § Hub resolution. Run `node {skillsRoot}/ws-check-harness/scripts/detect_install_mode.cjs --json --repo-root {repoRoot}` when available. Record evidence in Phase 0 notes: which markers matched/failed, whether SoT (`.agents/skills/ws-*/SKILL.md`) was present, local/global ws-* counts, resolved `Install mode` + `Install scope`, resolved `Skills scan root(s)`, `coexistence` (upstream + global), and which hub file(s) will be used for Phase 4 routing.
-4. **Windows stdio (mandatory when using Python print scans):** skill/hub markdown contains `→` (U+2192) and other non-cp1252 glyphs. Before any Python one-liner that **prints** file contents, force UTF-8 or set `PYTHONIOENCODING=utf-8`. Otherwise Windows consoles raise `UnicodeEncodeError: 'charmap' codec can't encode character '\u2192'`.
-
-```bash
-# Prefer env for the whole scan shell:
-export PYTHONIOENCODING=utf-8
-# Or at the top of each python - <<'PY' block:
-# import sys
-# sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-# sys.stderr.reconfigure(encoding="utf-8", errors="replace")
-```
-
-5. **Python heredoc string escapes (Windows / bash):** never write `replace('\', '/')` inside `python - <<'PY'` — the `\'` ends the string early → `SyntaxError: unterminated string literal`. Prefer `Path.as_posix()`, or write a temp `.py` file, or use `replace(chr(92), "/")` / `replace("\\", "/")` with a double-quoted Python string. Prefer compiling skill scripts with `python -m py_compile` over ad-hoc one-liners when validating syntax.
+4. **Windows stdio:** skill/hub markdown contains non-cp1252 glyphs. Node stdio is UTF-8 by default; keep `LANG`/`LC_ALL` on `C.UTF-8` for locale-sensitive tools. Never set `PYTHONUTF8` / `PYTHONIOENCODING` as part of a packaged scan (no Python in the skill surface).
+5. **Node quoting (Windows / bash):** never put both `"` and `'` inside a single `node -e` payload. Prefer a permanent companion script. Prefer validating skill scripts with `node --check` on the real `.cjs` path over ad-hoc one-liners.
 6. **Load path token map** (§ Path token map) from `{sharedDir}/config.json` when present (else `{sharedDir}/templates/config.json.example` defaults) + [`tools.md`](../ws-shared/runtime/tools.md) § Path tokens. Record the resolved map in the Phase 0 notes / report. **Do not** run Phase 1/2 path existence or relative rewrites until this map is loaded.
 
 ### Phase 1 — Reference extraction
 
 For each inventory file (§ Scope):
 
-1. Extract Markdown links `(...)` and inline mentions of paths (`.md`, `.mdc`, `.py`/`.cjs`/`.sh` scripts), including brace tokens (`{skillsRoot}`, `{sharedDir}`, `{plansDir}`, `{reviewsDir}`, `{memoryDir}`, `{us-dir}`).
+1. Extract Markdown links `(...)` and inline mentions of paths (`.md`, `.mdc`, `.cjs`/`.js`/`.sh` scripts), including brace tokens (`{skillsRoot}`, `{sharedDir}`, `{plansDir}`, `{reviewsDir}`, `{memoryDir}`, `{us-dir}`).
 2. Normalize: strip anchors (`#`), query strings, `file://` prefixes.
 3. Classify each reference:
    - **Path token** — contains a declared brace token → expand via § Path token map (repo-root existence later)
@@ -298,9 +288,9 @@ For each internal reference (post-expansion when applicable):
 | Hybrid harness resolution | Consumer hybrid tree (skills under `{globalSkillsRoot}`, project-local `ws-shared/` with consumer data): configured `rules.harness` must resolve — local `{sharedDir}/AGENTS.md` present (full hub or thin global pointer seeded by installer `update`), **or** `{globalSkillsRoot}/ws-shared/AGENTS.md` present as the documented fallback (`config-resolution.md` § Harness entrypoint fallback). Missing local file with no global hub → **warning** (run installer `update` to seed the pointer) |
 | Upstream-only package docs | Hub maintainer checklist citing package-root `FEATURES.md` — missing in a consumer clone is **intentional omission** (not a broken hub link) |
 | Consumer `config.json` | Missing while `{sharedDir}/templates/config.json.example` exists → **warning** (seed/copy); placeholders after seed → **suggestion** (`ws-configure-project`), not a broken-link warning |
-| `autoload.md` Always-applied paths | Absolute path → **critical**; non-portable path form → **warning**; skill id missing under `{skillsRoot}` and `{globalSkillsRoot}` → **warning** (install or remove row). Helper: `configure_autoload.py --check` |
+| `autoload.md` Always-applied paths | Absolute path → **critical**; non-portable path form → **warning**; skill id missing under `{skillsRoot}` and `{globalSkillsRoot}` → **warning** (install or remove row). Helper: `configure_autoload.cjs --check` |
 | Root `AGENTS.md` + `autoload.md` | When root references `autoload.md`, Always-applied vs shared-hub on-demand mismatch is **intentional override** (not drift). Missing root remains **OK** when `defaults.autoload` effective false |
-| `defaults.autoload` + root `AGENTS.md` | When effective `defaults.autoload` is **true**: missing root or root without `autoload.md` Always-applied instruction → **critical** (suggest `ws-configure-project --section autoload`). When false/omitted/missing config: missing root **OK**. Helper: `configure_autoload.py --check` |
+| `defaults.autoload` + root `AGENTS.md` | When effective `defaults.autoload` is **true**: missing root or root without `autoload.md` Always-applied instruction → **critical** (suggest `ws-configure-project --section autoload`). When false/omitted/missing config: missing root **OK**. Helper: `configure_autoload.cjs --check` |
 
 **Resolution rule:**
 
@@ -483,6 +473,7 @@ node {skillsRoot}/ws-check-harness/scripts/measure_harness.cjs --scenario standa
 node {skillsRoot}/ws-check-harness/scripts/check_shell_quoting.cjs --json --repo-root {repoRoot}
 node {skillsRoot}/ws-check-harness/scripts/check_pipeline_handoff.cjs --json --repo-root {repoRoot}
 node {skillsRoot}/ws-check-harness/scripts/check_harness_links.cjs --json --repo-root {repoRoot}
+node {skillsRoot}/ws-check-harness/scripts/check_unique_runtime.cjs --json --repo-root {repoRoot}
 ```
 
 - `check_duplicates.cjs`: exit 1 when any normative block (≥ 6 lines) repeats across tracked files outside the allowlist.
@@ -490,6 +481,7 @@ node {skillsRoot}/ws-check-harness/scripts/check_harness_links.cjs --json --repo
 - `check_shell_quoting.cjs`: exit 1 when skill-tree recipes contain nested-quote `python -c` / `node -e` payloads (both `"` and `'` / `["']` character classes). Severity **critical**. Correction: permanent script + explicit launcher; frontmatter fields → `{sharedDir}/runtime/scripts/extract_frontmatter_field.cjs`.
 - `check_pipeline_handoff.cjs`: exit 1 when any of the eleven pipeline SKILL.md files omits the substring `state.handoffs`.
 - `check_harness_links.cjs`: exit 1 on broken internal links, author-machine absolute paths, declared tokens inside link targets, bare `ws-shared/` shorthand (outside rule text and link labels), or skills on disk without routing. Deterministic mirror of Phase 2/4; upstream release proof runs it via `node test/test-harness-clean.js`.
+- `check_unique_runtime.cjs`: exit 1 when any `.py` file exists under the skills scan root or `bin/` (unique Node 22 runtime). Severity **critical**. Correction: port the helper to `.cjs` (same CLI flags, `--json` shape, exit codes) and delete the `.py` copy; new `.py` files are forbidden.
 - Record `defaults.contextBudget` (config) against the JSON `completeDispatchBytes` field in the Phase 6 report. The scripts remain the fail-closed gates; qualitative Phase 5c.1 counts stay informational.
 
 On `--json`, keep the stdout payloads in the scan evidence. Skip neither script in upstream Install mode.

@@ -6,7 +6,7 @@
 /ship-pr feat(flags): legacy product_analytics wire compat
 ```
 
-1. On `develop`; `bash .agents/skills/ws-ship-pr/scripts/detect-base-branch.sh` → `main` (or configured `baseBranch`)
+1. On `develop`; `bash .agents/skills/ws-ship-pr/scripts/detect-base-branch.cjs` → `main` (or configured `baseBranch`)
 2. **Prepare to PR** board: coverage → build → tests → ws-secrets-leak-review → **discover** local prepare/before-push rules (AGENTS / rules.* / CONTRIBUTING) and **wait** until done → show board (all ✅/⏭)
 3. Code-review auto-fix until **No feedback** (≤3 rounds) unless orch already reviewed
 4. Commit → `git push origin develop` (only if prepare green)

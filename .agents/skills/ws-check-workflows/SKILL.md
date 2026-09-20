@@ -24,16 +24,16 @@ Run deep simulation and validation against both workflows:
 
 ```bash
 # Standard report execution
-python {skillsRoot}/ws-check-workflows/scripts/check_workflows.py
+node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs
 
 # Save Markdown report to ws-check-workflows-report.md
-python {skillsRoot}/ws-check-workflows/scripts/check_workflows.py --report
+node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs --report
 
 # Interactive auto-fix mode (prompts for confirmation before applying)
-python {skillsRoot}/ws-check-workflows/scripts/check_workflows.py --fix
+node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs --fix
 
 # Non-interactive auto-fix (CI / automated runner)
-python {skillsRoot}/ws-check-workflows/scripts/check_workflows.py --fix --yes
+node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs --fix --yes
 ```
 
 ---
@@ -48,7 +48,7 @@ The validation process performs end-to-end simulation across both orchestrators:
 - **Linked Skill Check**: Verifies that every step links to an existing skill under `{skillsRoot}/<skill>/SKILL.md` (upstream SoT is `.agents/skills/`).
 
 ### 2. Script Syntax & Execution Check
-- Compiles Python scripts (`.py`) via `py_compile` and checks Node.js scripts (`.cjs`/`.js`) via `node --check`.
+- Checks Node.js scripts (`.cjs`/`.js`) via `node --check`.
 - Flags syntax errors, invalid imports, or execution issues as critical broken steps.
 
 ### 3. Orchestrator Dependency Closure
@@ -74,5 +74,5 @@ The validation process performs end-to-end simulation across both orchestrators:
 
 ## Done when
 
-- `python {skillsRoot}/ws-check-workflows/scripts/check_workflows.py` exits 0 (or `--report` wrote `ws-check-workflows-report.md` with 0 critical).
+- `node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs` exits 0 (or `--report` wrote `ws-check-workflows-report.md` with 0 critical).
 - If `--fix`: user confirmed (or `--yes`) and re-run exits 0.

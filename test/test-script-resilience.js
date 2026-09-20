@@ -9,7 +9,7 @@ const validate = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/valid
 const memory = path.join(repoRoot, '.agents/skills/ws-self-learning/scripts/self_learning.cjs');
 const detect = path.join(repoRoot, '.agents/skills/ws-spec-provider-local/scripts/detect_specs_dir.cjs');
 const register = path.join(repoRoot, '.agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs');
-const frozenUpdate = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/update_state.py');
+const cjsUpdate = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/update_state.cjs');
 
 for (const [script, needle] of [
   [validate, 'Usage:'],
@@ -22,8 +22,8 @@ for (const [script, needle] of [
   assert.match(result.stdout, new RegExp(needle));
 }
 
-const frozen = require('fs').readFileSync(frozenUpdate, 'utf8');
-assert.match(frozen, /update_state\.cjs/, 'update_state.py execs Node SoT');
+const cjsSource = require('fs').readFileSync(cjsUpdate, 'utf8');
+assert.match(cjsSource, /workflow_state\.cjs/, 'update_state.cjs delegates to the workflow-state core');
 
 let calls = 0;
 const fakeFetch = async () => {

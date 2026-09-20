@@ -4,10 +4,10 @@
     {
       "id": 1,
       "prompt": "Convert GitHub issue #42 to a local spec for oauth-login.",
-      "expected_output": "fetch-to-spec via github-issue-to-spec.py writes {specsDir}/us-{n}.spec.md, then register_local_spec.py copies to step-00 under {plansDir}.",
+      "expected_output": "fetch-to-spec via github-issue-to-spec.cjs writes {specsDir}/us-{n}.spec.md, then register_local_spec.cjs copies to step-00 under {plansDir}.",
       "assertions": [
         "Agent loads ws-spec-provider-github",
-        "Uses scripts/github-issue-to-spec.py with python launcher",
+        "Uses scripts/github-issue-to-spec.cjs with node launcher",
         "Does not hardcode org/repo names"
       ]
     },

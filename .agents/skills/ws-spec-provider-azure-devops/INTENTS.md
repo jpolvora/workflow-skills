@@ -7,7 +7,7 @@ Load when executing an intent from [`SKILL.md`](SKILL.md). Shared intent ids: [`
 1. Read `org`, `project`, `apiBase`, `patEnvVar` from `issueTrackers.azureDevOps` in `{sharedDir}/config.json`.
 2. Resolve PAT: env named by `patEnvVar` → `ADO_PAT` → `AZURE_DEVOPS_PAT` (legacy file secret only if env empty and legacy config path exists).
 3. If org/project missing or PAT empty → print fix instructions; **STOP**.
-4. Optional smoke: GET `{apiBase}/{org}/{project}/_apis/wit/fields/System.State?api-version=7.1` with Basic auth (empty user + PAT), or `fix_pr_azure_context.py` smoke.
+4. Optional smoke: GET `{apiBase}/{org}/{project}/_apis/wit/fields/System.State?api-version=7.1` with Basic auth (empty user + PAT), or `fix_pr_azure_context.cjs` smoke.
 
 ## `fetch-to-spec`
 
@@ -23,7 +23,7 @@ Load when executing an intent from [`SKILL.md`](SKILL.md). Shared intent ids: [`
 mkdir -p {plansDir}/us-{id}
 
 # 1. Fetch raw work-item snapshot
-python .agents/skills/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.py \
+node .agents/skills/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.cjs \
   --org {org} --project {project} --id {id} \
   --api-base {apiBase} --pat-env {patEnvVar} \
   --snapshot {plansDir}/us-{id}/step-00-us-{id}.issue.json
@@ -50,7 +50,7 @@ node .agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs \
 ## `sweep-prior-work`
 
 ```bash
-python .agents/skills/ws-spec-provider-azure-devops/scripts/sweep_prior_work.py \
+node .agents/skills/ws-spec-provider-azure-devops/scripts/sweep_prior_work.cjs \
   --issue {id} \
   --keywords {k1} {k2} \
   --files path/to/file1
@@ -81,7 +81,7 @@ az repos pr create \
 ## `list-threads`
 
 ```bash
-python .agents/skills/ws-spec-provider-azure-devops/scripts/fix_pr_azure_context.py collect \
+node .agents/skills/ws-spec-provider-azure-devops/scripts/fix_pr_azure_context.cjs collect \
   --pr-id {PR_ID} \
   --output .agents/skills/ws-fix-pr/runs/pr-{PR_ID}/context.json
 ```
@@ -106,7 +106,7 @@ az repos pr policy list --id {PR_ID} --organization "https://dev.azure.com/{org}
 Alias in [`tools.md`](../ws-shared/runtime/tools.md): `close-loop`.
 
 ```bash
-python .agents/skills/ws-spec-provider-azure-devops/scripts/comment_issue.py \
+node .agents/skills/ws-spec-provider-azure-devops/scripts/comment_issue.cjs \
   --id {id} \
   --body-file {plansDir}/close-loop-body.md \
   [--org {org} --project {project} --api-base {apiBase} --pat-env {patEnvVar}] \
@@ -121,7 +121,7 @@ python .agents/skills/ws-spec-provider-azure-devops/scripts/comment_issue.py \
 ## `resolve-thread`
 
 ```bash
-python .agents/skills/ws-spec-provider-azure-devops/scripts/fix_pr_azure_context.py resolve-thread \
+node .agents/skills/ws-spec-provider-azure-devops/scripts/fix_pr_azure_context.cjs resolve-thread \
   --pr-id {PR_ID} \
   --thread-id {THREAD_ID} \
   --comment "{resolution note}" \

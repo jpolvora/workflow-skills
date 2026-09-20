@@ -47,7 +47,7 @@ Workflow (ws-spec-to-pr Step 2): dispatched when the orchestrator does not skip 
 3. **Surgical escalation** — ask exactly one question per round; include the recommended solution as the first choice.
 4. **Escalation cap** — max 3 rounds of user questions; on the 4th, apply sensible defaults and exit.
 5. **No code edits** — write only refined plans and metadata.
-6. **`force_interview` wins** — `check_memory_conflict.py` returning `force_interview: true` (MEMORY PathPattern match) overrides `softSkipEligible`; never soft-skip or auto-confirm shared understanding in that case.
+6. **`force_interview` wins** — `check_memory_conflict.cjs` returning `force_interview: true` (MEMORY PathPattern match) overrides `softSkipEligible`; never soft-skip or auto-confirm shared understanding in that case.
 
 ## Steps
 

@@ -31,7 +31,7 @@
 | [`config-resolution.md`](config-resolution.md) | Canonical config path + SCM resolution (dual-mode) |
 | [`scm-provider-contract.md`](scm-provider-contract.md) | Required SCM intents (`ws-spec-provider-github` ↔ `ws-spec-provider-azure-devops` parity) |
 | [`gates.md`](gates.md) | Shared user-gate / delivery / ship / session-model banner (dual-mode) |
-| [`tools.md`](tools.md) | Tool aliases, path tokens `{skillsRoot}` / `{sharedDir}` / `{plansDir}`, launchers (`python` / `node` / `bash`). Load with `config.json`. |
+| [`tools.md`](tools.md) | Tool aliases, path tokens `{skillsRoot}` / `{sharedDir}` / `{plansDir}`, launchers (`node` / `bash`). Load with `config.json`. |
 | [`CATALOG.md`](CATALOG.md) | On-demand promoted-skill inventory and consumer task router |
 | [`CROSS-PLATFORM.md`](CROSS-PLATFORM.md) | UTF-8, quoting, and explicit-launcher runtime contract |
 | [`autoload.md`](autoload.md) | Always-applied list, specs skill router, hub contracts (SCM, verify score) |
@@ -40,7 +40,7 @@
 | [`MEMORY.md.template`](../templates/MEMORY.md.template) | Empty memory index template (legacy reference; fresh memory is created at `rules.memoryDir` on first use) |
 | [`CHANGELOG.md.template`](../templates/CHANGELOG.md.template) | Empty ws-changelog stub (legacy reference; fresh changelog is created at `rules.changelogFile` on first use) |
 | [`skill-dependencies.json`](skill-dependencies.json) | Install graph + **`packageVersion`** + single **`upstream`** ownership block (no per-skill `upstream:` in SKILL.md) |
-| [`scripts/`](scripts/) | [`resolve_consumer_root.cjs`](scripts/resolve_consumer_root.cjs) (Node SoT) and [`resolve_consumer_root.py`](scripts/resolve_consumer_root.py) (Python imports). `--repo-root` → cwd hub. |
+| [`scripts/`](scripts/) | [`resolve_consumer_root.cjs`](scripts/resolve_consumer_root.cjs) (Node only). `--repo-root` → cwd hub. |
 
 ## Consumer-owned (local only)
 
@@ -131,8 +131,8 @@ Skills under `.agents/skills/` (except consumer-owned `ws-shared/` data) are **m
 | Context | Do | Do not |
 |---------|----|--------|
 | **Consumer repo / CI / Actions** | Verify a real runtime bug with evidence. If a lasting skill/script fix is needed, **tell the user to fix upstream** ([workflow-skills](https://github.com/jpolvora/workflow-skills) PR) or open that PR; local experiments are temporary only. | Autonomously reorder, “hygiene-refactor,” or rewrite managed skill scripts from a false positive (e.g. Python same-module call-before-`def` is not a `NameError`). |
-| **Managed script calls** | Invoke with explicit launchers (`python` / `node` / `bash`) per [`tools.md`](tools.md) § Script launchers. On failure: report and stop. | Rewrite managed scripts for shell quirks, or invent temp scanners/bridges when a recipe fails. |
-| **Agent shell scans** | Prefer `python -m py_compile` on real `*.py` paths, or a short **uncommitted** temp script if a one-liner heredoc breaks on quoting. Delete temps when done. | Commit throwaway scanners into the consumer tree, or treat shell `SyntaxError` in an embedded heredoc as a skill-script bug. |
+| **Managed script calls** | Invoke with explicit launchers (`node` / `bash`) per [`tools.md`](tools.md) § Script launchers. On failure: report and stop. | Rewrite managed scripts for shell quirks, or invent temp scanners/bridges when a recipe fails. |
+| **Agent shell scans** | Prefer `node --check` on real `*.cjs` paths, or a short **uncommitted** temp script if a one-liner heredoc breaks on quoting. Delete temps when done. | Commit throwaway scanners into the consumer tree, or treat shell `SyntaxError` in an embedded heredoc as a skill-script bug. |
 
 ---
 
@@ -144,7 +144,7 @@ PowerShell rules (avoid runtime errors and on-the-fly script patching):
 
 1. No `&&` / `||` chaining: separate commands with `;` and gate on `$LASTEXITCODE`.
 2. No inline JSON on the command line (the shell strips quotes): use `key=value` flags, payload files, or an in-process driver.
-3. One simple invocation per uncertain call; route nested quotes, JSON, or multiline source through a temp script plus an explicit `node` / `python` launcher.
+3. One simple invocation per uncertain call; route nested quotes, JSON, or multiline source through a temp script plus an explicit `node` launcher.
 4. Content edits go through file tools only; never rewrite tracked file bytes from a shell one-liner, and never bulk-rewrite line endings via shell.
 5. Never patch a managed or installed script to work around a shell error: fix the invocation, or report and stop. Script changes are deliberate source edits with tests, never on-the-fly fixes.
 6. After one failed invocation variant, try at most one different quoting/chaining approach, then report the observed error instead of burning more turns. A repeated shell failure is evidence, not a reason to rewrite the callee.

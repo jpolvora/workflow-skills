@@ -7,8 +7,6 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, "..");
 const scriptPath = path.join(rootDir, ".agents", "skills", "ws-self-learning", "scripts", "self_learning.cjs");
-const pythonTwin = path.join(rootDir, ".agents", "skills", "ws-self-learning", "scripts", "self_learning.py");
-const PYTHON = process.env.PYTHON || (process.platform === "win32" ? "python" : "python3");
 
 const FIXTURE = [
   "### [2026-07-30] Test Actionable Directives",
@@ -41,14 +39,6 @@ function runNode(args, cwd = rootDir) {
   return spawnSync(process.execPath, [scriptPath, ...args], {
     cwd,
     encoding: "utf-8",
-  });
-}
-
-function runPython(args, cwd = rootDir) {
-  return spawnSync(PYTHON, [pythonTwin, ...args], {
-    cwd,
-    encoding: "utf-8",
-    env: { ...process.env, PYTHONIOENCODING: "utf-8" },
   });
 }
 
@@ -147,19 +137,5 @@ try {
   fs.rmSync(colonAndBom, { recursive: true, force: true });
 }
 
-const pythonParity = tmpRoot();
-try {
-  const { compiled } = writeHub(pythonParity, { "2026-07-30-test-actionable-format.md": FIXTURE });
-  const viaNode = runNode(["--compile", "--repo-root", pythonParity]);
-  assert(viaNode.status === 0, `node compile: ${viaNode.stderr}`);
-  const nodeBytes = fs.readFileSync(compiled);
-  fs.unlinkSync(compiled);
-  const viaPy = runPython(["--compile", "--repo-root", pythonParity]);
-  assert(viaPy.status === 0, `python twin compile: ${viaPy.stderr || viaPy.stdout}`);
-  assert(viaPy.stdout === viaNode.stdout, `python twin stdout must match Node SoT\nnode: ${viaNode.stdout}\npy: ${viaPy.stdout}`);
-  assert(Buffer.compare(nodeBytes, fs.readFileSync(compiled)) === 0, "python twin MEMORY.md must match Node SoT bytes");
-} finally {
-  fs.rmSync(pythonParity, { recursive: true, force: true });
-}
 
 console.log("✅ Memory formatting and path-pattern tests PASSED successfully!");

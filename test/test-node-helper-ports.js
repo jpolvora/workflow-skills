@@ -87,15 +87,18 @@ assert.strictEqual(run(memoryScript, ['--compile', '--repo-root', root]).status,
 assert.match(fs.readFileSync(path.join(root, '.ws/MEMORY.md'), 'utf8'), /Node port/);
 
 for (const relative of [
-  '.agents/skills/ws-spec-provider-local/scripts/register_local_spec.py',
-  '.agents/skills/ws-spec-provider-local/scripts/detect_specs_dir.py',
-  '.agents/skills/ws-self-learning/scripts/self_learning.py',
-  '.agents/skills/ws-spec-to-pr/scripts/update_state.py',
-  '.agents/skills/ws-spec-to-pr-lite/scripts/update_state.py',
-  '.agents/skills/ws-spec-to-pr/scripts/validate_state.py',
+  '.agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs',
+  '.agents/skills/ws-spec-provider-local/scripts/detect_specs_dir.cjs',
+  '.agents/skills/ws-self-learning/scripts/self_learning.cjs',
+  '.agents/skills/ws-spec-to-pr/scripts/update_state.cjs',
+  '.agents/skills/ws-spec-to-pr-lite/scripts/update_state.cjs',
+  '.agents/skills/ws-spec-to-pr/scripts/validate_state.cjs',
+  '.agents/skills/ws-spec-to-pr-lite/scripts/validate_state.cjs',
+  '.agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs',
 ]) {
-  const py = fs.readFileSync(path.join(repoRoot, relative), 'utf8');
-  assert.ok(fs.existsSync(path.join(repoRoot, relative)), `frozen Python helper remains: ${relative}`);
-  assert.match(py, /\.cjs/, `${relative} execs Node SoT`);
+  assert.ok(fs.existsSync(path.join(repoRoot, relative)), `Node helper is the only surface: ${relative}`);
+  assert.ok(!fs.existsSync(path.join(repoRoot, relative.replace(/\.cjs$/, '.py'))), `dual Python copy is gone: ` + relative);
 }
 console.log('test-node-helper-ports: ok');
+
+

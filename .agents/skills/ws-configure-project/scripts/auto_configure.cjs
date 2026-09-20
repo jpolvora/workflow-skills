@@ -548,7 +548,7 @@ function buildWanted(repoRoot, example, schema) {
     }
   }
   if (!hasNode && !hasDotnet && !hasPython && !hasGo && !hasRust && fileExists(repoRoot, '.agents', 'skills')) {
-    want('verification.backendTest', 'python .agents/skills/ws-check-workflows/scripts/check_workflows.py', 'detected');
+    want('verification.backendTest', 'node .agents/skills/ws-check-workflows/scripts/check_workflows.cjs', 'detected');
   }
   wantFallback('verification.mutationThreshold');
   wantFallback('verification.testGlobs');

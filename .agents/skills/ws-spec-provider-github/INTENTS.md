@@ -27,7 +27,7 @@ gh issue view {n} --json number,title,body,state,labels,assignees,comments,url \
 # 2. Spec of record → {specsDir}/{specStem}.spec.md (enhanced via ws-spec-write; resolves plans.specsDir)
 # Base converter parses the snapshot, subprocesses ingest_visual_attachments.cjs for allowlisted images,
 # then ws-spec-write reformulates into an agentic-enhanced spec:
-python .agents/skills/ws-spec-provider-github/scripts/github-issue-to-spec.py \
+node .agents/skills/ws-spec-provider-github/scripts/github-issue-to-spec.cjs \
   --input {plansDir}/us-{n}/step-00-us-{n}.issue.json \
   --repo {owner}/{repo}
 
@@ -49,7 +49,7 @@ node .agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs \
 ## `sweep-prior-work`
 
 ```bash
-python .agents/skills/ws-spec-provider-github/scripts/sweep_prior_work.py \
+node .agents/skills/ws-spec-provider-github/scripts/sweep_prior_work.cjs \
   --issue {n} \
   --keywords {k1} {k2} \
   --files path/to/file1 path/to/file2
@@ -93,7 +93,7 @@ gh pr checks {PR_ID}
 Alias in [`tools.md`](../ws-shared/runtime/tools.md): `close-loop` (same intent id).
 
 ```bash
-python .agents/skills/ws-spec-provider-github/scripts/comment_issue.py \
+node .agents/skills/ws-spec-provider-github/scripts/comment_issue.cjs \
   --id {n} \
   --body-file {plansDir}/close-loop-body.md \
   [--dry-run]

@@ -47,7 +47,7 @@ const STEP_DISPATCH = path.join(
   '.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md',
 );
 
-const PYTHON = process.env.PYTHON || (process.platform === 'win32' ? 'python' : 'python3');
+
 const tmpRoots = [];
 let failures = 0;
 
@@ -89,9 +89,6 @@ function run(cmd, args, opts = {}) {
   });
 }
 
-function runPython(script, args, opts = {}) {
-  return run(PYTHON, [script, ...args], opts);
-}
 
 function writeState(usDir, slug, workflowId, extraFm = '', opts = {}) {
   fs.mkdirSync(usDir, { recursive: true });
@@ -911,3 +908,5 @@ if (failures > 0) {
 }
 console.log('All quality-gates tests passed.');
 process.exit(0);
+
+

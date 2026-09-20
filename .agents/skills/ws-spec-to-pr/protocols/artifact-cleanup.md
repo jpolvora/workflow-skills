@@ -16,7 +16,7 @@ Gate options for Phase B (folded into the Step 8 combined gate close phase, or S
 **dryRun:** Pass `--dry-run` — log intended removals only; zero git mutations.
 
 ```bash
-python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}
+node {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.cjs --workflow-id {workflow-id}
 # optional:
 #   --dry-run
 #   --repo {repo-root}

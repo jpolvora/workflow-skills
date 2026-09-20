@@ -298,7 +298,7 @@ Workflows do not provide an in-gate model selector.
 On terminal shipping (`shipStatus`: `skipped`, `merged`, or `stopped`), orch runs **Phase A** git runtime cleanup for that `{workflow-id}` via:
 
 ```bash
-python {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.py --workflow-id {workflow-id}
+node {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.cjs --workflow-id {workflow-id}
 ```
 
 This is **mandatory** even if you chose **Keep all artifacts** (that choice only skips Phase B plan-dir temp markdown). See [`protocols/artifact-cleanup.md`](../protocols/artifact-cleanup.md).

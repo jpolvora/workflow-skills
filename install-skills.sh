@@ -6,8 +6,7 @@ set -eu
 set -o pipefail
 
 # Prefer UTF-8 for any tool output nested under this shim (Windows Git Bash / Cygwin).
-export PYTHONUTF8="${PYTHONUTF8:-1}"
-export PYTHONIOENCODING="${PYTHONIOENCODING:-utf-8}"
+# Node stdio is UTF-8 by default; LANG/LC_ALL cover the remaining locale-sensitive tools.
 export LANG="${LANG:-C.UTF-8}"
 export LC_ALL="${LC_ALL:-C.UTF-8}"
 

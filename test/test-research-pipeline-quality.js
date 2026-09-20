@@ -160,11 +160,11 @@ const liteEvent = fs.readFileSync(path.join(liteRoot, '.agents/plans/lite/teleme
   .trim().split('\n').map(JSON.parse).find((row) => row.type === 'finish');
 assert.strictEqual(liteEvent.juryIgnored, 'lite-inline');
 
-const pyUpdate = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/update_state.py'), 'utf8');
-const pyValidate = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/validate_state.py'), 'utf8');
-assert.match(pyUpdate, /subprocess\.call/);
-assert.match(pyUpdate, /Do not reimplement dispatch/);
-assert.match(pyValidate, /subprocess\.call/);
+const cjsUpdate = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/update_state.cjs'), 'utf8');
+const cjsValidate = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/validate_state.cjs'), 'utf8');
+assert.match(cjsUpdate, /workflow_state\.cjs/);
+assert.match(cjsUpdate, /runUpdateCli/);
+assert.match(cjsValidate, /workflow_state\.cjs/);
 
 const contextScript = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs');
 const fixture = path.join(repoRoot, 'test', `.tmp-handoff-dispatch-${process.pid}`);

@@ -107,7 +107,7 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
    - **[ws-spec-to-pr-lite]**: Inject `workflowType: lite`.
 5b. **Feature branch gate (new workflow only)** — runs after Identity when this is a **new** start (not resume). Resume paths skip 5b entirely (see [Resume / reset](#resume--reset) § branch resume). Do not stage or commit at bootstrap (`git add -A` forbidden).
 
-   **Resolve `{baseBranch}`** (before the gate): read `config.json` → `project.baseBranch` when set; else `Shell` `bash {skillsRoot}/ws-ship-pr/scripts/detect-base-branch.sh`. Gate copy uses `{baseBranch}` — never treat `master` as the sole hardcoded base example.
+   **Resolve `{baseBranch}`** (before the gate): read `config.json` → `project.baseBranch` when set; else `Shell` `node {skillsRoot}/ws-ship-pr/scripts/detect-base-branch.cjs`. Gate copy uses `{baseBranch}` — never treat `master` as the sole hardcoded base example.
 
    **Resolve `{currentBranch}`:** `git rev-parse --abbrev-ref HEAD`. Detached HEAD (`HEAD`): **stay is invalid**; require create-from-current (names a branch at HEAD) or create-from-base.
 

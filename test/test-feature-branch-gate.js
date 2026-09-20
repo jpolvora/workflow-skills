@@ -92,8 +92,8 @@ function testBaseBranchResolution() {
     'testBaseBranchResolution: setup.md cites config.project.baseBranch',
   );
   assert(
-    /detect-base-branch\.sh/.test(setup),
-    'testBaseBranchResolution: setup.md cites detect-base-branch.sh',
+    /detect-base-branch\.cjs/.test(setup),
+    'testBaseBranchResolution: setup.md cites detect-base-branch.cjs',
   );
   assert(
     /never treat `master` as the sole hardcoded base/i.test(setup),

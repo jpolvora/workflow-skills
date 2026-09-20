@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-09-19 21:00] Agent: Muse Code (muse-spark)
+- **Prompt**: ws-spec-multi worker — finish standard flow for 0042 unique-skill-script-runtime (Node-22 unique runtime).
+- **Done**: Deleted remaining 22 `.py` + 3 `.sh` sources (zero tracked Python); fixed 4 port parity bugs (naive-time UTC, loadConfig import, resolveRepoRoot options, azure --help deferral) plus global-runtime bootstrap in 11 ports; retargeted 40+ docs, evals, bin strings, and 20 tests; added `check_unique_runtime.cjs` Phase 5a critical gate + `test-unique-runtime.js`; regenerated integrity. Full `npm run test` green.
+- **Result**: Committed on `feature/0042-unique-skill-script-runtime`; PR vs `main` pending review threads.
+
+### [2026-09-19 23:16] Agent: Muse Code (muse-spark)
+- **Prompt**: Queue newest pending specs and implement them all (ws-spec-multi).
+- **Done**: Blank-scan found 5 pending; probe showed no prior delivery/PR evidence. Created run state `.agents/plans/ws-spec-multi/ms-20260919T231639Z.state.md` (baseBranch main, oldest-first per user gate). Synced `feature/0042-unique-skill-script-runtime` from main and dispatched worker 1 (flowMode standard).
+- **Result**: Run active; worker 1 in progress, items 2-5 pending.
+
 ### [2026-09-06 12:10] Agent: Cursor
 - **Prompt**: bump version, update website, ship release with OpenCode CI + new skills
 - **Done**: Bumped package to `0.3.63`; switched agentic PR reviews to OpenCode on `pull_request`; shipped `ws-benchmarks` and `ws-spec-manager`; synced `docs/index.html`, `FEATURES.md`, skill frontmatter, dependency manifests, and `bin/skill-integrity.json`.
