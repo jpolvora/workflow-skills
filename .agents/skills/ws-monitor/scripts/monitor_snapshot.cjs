@@ -980,6 +980,42 @@ function resolveStateAgentTranscripts(state) {
   return null;
 }
 
+// us-365 fix-pr: state-recorded transcript paths drive the primary
+// transcript source before host-store discovery, so default-off discovery
+// runs stay consistent (no available/unavailable contradiction) and stall
+// detection keys off the recorded session. Shape matches the discovery
+// branch (no raw paths in transcriptSource).
+function resolveStateTranscriptSource(stateTx, repoRoot) {
+  if (!stateTx || typeof stateTx !== 'object') return null;
+  const repoRootResolved = path.resolve(repoRoot);
+  if (stateTx.status === 'available' && Array.isArray(stateTx.paths) && stateTx.paths.length > 0) {
+    const primary = String(stateTx.paths[0]);
+    const absolute = path.isAbsolute(primary) ? primary : path.join(repoRootResolved, primary);
+    let sessionMtime = null;
+    try {
+      if (fs.existsSync(absolute)) sessionMtime = new Date(fs.statSync(absolute).mtimeMs).toISOString();
+    } catch {
+      sessionMtime = null;
+    }
+    return {
+      status: 'available',
+      adapter: guessTranscriptAdapter(primary),
+      locationClass: path.relative(repoRootResolved, absolute).startsWith('..') ? 'user' : 'workspace',
+      sessionMtime,
+      pathCount: stateTx.paths.length,
+      source: 'state-recorded',
+    };
+  }
+  if (stateTx.status === 'transcript-unavailable') {
+    return {
+      status: 'transcript-unavailable',
+      reason: stateTx.reason || 'no-matching-session',
+      source: 'state-recorded',
+    };
+  }
+  return null;
+}
+
 function resolveTranscriptSource(workflow, scannedFiles, discoveryEnabled, repoRoot, scanMeta = {}) {
   if (!discoveryEnabled) {
     return { status: 'transcript-unavailable', reason: 'discovery-disabled' };
@@ -1165,7 +1201,8 @@ function snapshot(options) {
       workflow.transcriptSource = null;
       continue;
     }
-    workflow.transcriptSource = resolveTranscriptSource(
+    workflow.transcriptSource = resolveStateTranscriptSource(workflow.stateAgentTranscripts, context.repoRoot)
+      || resolveTranscriptSource(
       { slug: workflow.slug, workflowId: workflow.workflowId },
       transcript.files,
       discoveryEnabled,
@@ -1389,6 +1426,7 @@ module.exports = {
   sanitizeReportPath,
   readBoundedTailText,
   resolveStateAgentTranscripts,
+  resolveStateTranscriptSource,
   resolveTranscriptSource,
   guessTranscriptAdapter,
   resolveMuseSessionsRoot,

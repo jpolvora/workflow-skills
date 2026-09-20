@@ -27,7 +27,7 @@ const {
   noteObserverDispatch,
   watchRun,
 } = require(OBSERVER);
-const { resolveStateAgentTranscripts } = require(MONITOR);
+const { resolveStateAgentTranscripts, resolveStateTranscriptSource } = require(MONITOR);
 const { loadJsonSchema, validateNode } = require(
   path.join(REPO, '.agents/skills/ws-shared/runtime/scripts/validate_json_schema.cjs'),
 );
@@ -111,6 +111,17 @@ try {
   threw = true;
 }
 assert(threw, 'AC1 marker without paths or reason fails closed');
+// Fix-pr round 1: schema rejects available-without-paths and
+// unavailable-without-reason (contract hole: valid-but-meaningless markers).
+for (const bad of [
+  { status: 'available' },
+  { status: 'available', paths: [] },
+  { status: 'transcript-unavailable' },
+  { status: 'bogus' },
+]) {
+  assert(validateNode({ agentTranscripts: bad }, markerSchema, 'agentTranscripts.negative').length > 0,
+    `AC1 schema rejects ${JSON.stringify(bad)}`);
+}
 
 // AC1: record into a state file (JSON + md dual write round-trip).
 {
@@ -135,6 +146,15 @@ assert(threw, 'AC1 marker without paths or reason fails closed');
     'AC1 ws-monitor resolves the absent marker with reason');
   fs.rmSync(root, { recursive: true, force: true });
 }
+
+// Fix-pr round 1: state transcript source preference (unit).
+assert(resolveStateTranscriptSource(null, '/repo') === null, 'AC1 no marker → null source');
+assert(resolveStateTranscriptSource(
+  { status: 'available', paths: ['.agents/transcripts/s1.jsonl'] }, '/repo').source === 'state-recorded',
+  'AC1 available marker → state-recorded source');
+assert(resolveStateTranscriptSource(
+  { status: 'transcript-unavailable', reason: 'scan-capped' }, '/repo').reason === 'scan-capped',
+  'AC1 absent marker carries state reason into transcriptSource');
 
 // AC3: dispatch gate — zero when disabled, at most one when enabled.
 assert(shouldDispatchObserver({ config: {}, telemetryEvents: [] }) === false, 'AC3 disabled → no dispatch');
@@ -252,6 +272,12 @@ assert(shouldDispatchObserver({
     cwd: root, encoding: 'utf8', env: childEnv,
   });
   assert(md.stdout.includes('State transcripts: available (1 paths)'), 'AC1 snapshot markdown names state transcripts');
+  // Fix-pr round 1: state-recorded paths drive the primary transcriptSource
+  // even with host discovery off (no available/unavailable contradiction).
+  assert(workflow?.transcriptSource?.status === 'available', 'AC1 state paths drive transcriptSource');
+  assert(workflow?.transcriptSource?.source === 'state-recorded', 'AC1 transcriptSource names state-recorded source');
+  assert(!md.stdout.includes('Transcript: transcript-unavailable'),
+    'AC1 no contradictory transcript-unavailable line alongside state paths');
   fs.rmSync(root, { recursive: true, force: true });
 }
 

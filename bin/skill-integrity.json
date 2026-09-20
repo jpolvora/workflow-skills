@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "df7eaf54536b56d2dd18743b175e2e8a00d8289d560f18c18b5977a64fa347e5",
+  "fullPackageDigest": "0a4fe4a4b60a2dc2dad282a7aa622f7eb5eb94940afb1729b877720251b708d6",
   "hub": {
     "files": {
       ".gitignore": "ee377bde80145d579dd76b4283434854eec2a6dd943672c0952e4912584dd97d",
@@ -41,7 +41,7 @@
       "runtime/scripts/retired_artifacts.cjs": "4f0f43720824bd7df82002bc98cc7d95b3f70b9477e57bfba466f6e04c87222a",
       "runtime/scripts/scan_stack_invariants.cjs": "f186e197040142066fa7e78b563b11a171c8dc5a62c8026a135457fa82faf5e7",
       "runtime/scripts/step_baton.cjs": "d18f4bd9cf4720c6bf5d3322c8a143a64c94593cce480f4577341f294645d071",
-      "runtime/scripts/validate_json_schema.cjs": "db5bc07614c6496ae92ad7356b6f4c26cb8df5dd72681cfa228f1c76502bed61",
+      "runtime/scripts/validate_json_schema.cjs": "c6901a6ad2ed4fde4e5a6fcd85ebaa8b4c31f5707924f2928d25392d502dbbd9",
       "runtime/scripts/workflow_state.cjs": "c901bd6504cdc14ee057ac480edb0cf546583c0f0609acf1eed77ec6363ed0d9",
       "runtime/setup.md": "4f5a93aed599820a101d6bc6b892042dc5a18b60d71681b71ae9fc77135af309",
       "runtime/skill-dependencies.json": "3272091ff22566c9bdc638f4055a3ae3b3120c7ca68903221fab20a443e9ca2d",
@@ -52,13 +52,13 @@
       "runtime/step-artifact.schema.json": "85a1674590d900df2bbbf818d9f4a4c5ccaf004bdc4a1523fe2c28e4dab554a2",
       "runtime/telemetry.schema.json": "ce2a72184f68e8b765200fa8cc49789e5e7ae06d2a2bd11203f30261d80751a0",
       "runtime/tools.md": "75fa8165fe3051bfb621b12399f441380742ebf307c9272fdd31f9224f4c8a02",
-      "runtime/workflow-state.schema.json": "4cfb550fc29812bff544b43d3d88385bbb47be9db577f1eb7c6bc4f0211b6284",
+      "runtime/workflow-state.schema.json": "c03329ce93772b134c257518ebc72239e52bf708489f29fd8397dca52104e46f",
       "templates/CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
       "templates/config.json.example": "602d46897ae30f0b62a0a837b2362b21dad6b26d751d2dd91522b8d8370beff1",
       "templates/MEMORY.md.template": "1a604cb2184c9c54cfb24a2da547d3664bc5d4d8e713ffa937c3c3083c21340d",
       "templates/STACK.md.example": "829b7d3fce62b8167905fc1d921ee744db1d7e8ef895b0e7eb969f089973bebd"
     },
-    "skillDigest": "afaefc410ce9bbd75d3386ece713de7bf7c2827884c52e82ca89e39f73637a31"
+    "skillDigest": "4398ad2717db42b72159f4f9374ff9dceb5d38da70c9fbc08d25b116739582be"
   },
   "packageVersion": "0.4.44",
   "skills": {
@@ -251,10 +251,10 @@
         "references/audit-report-template.md": "9c8f11b2ebe6c00cd89a9b00208cf128d62b338ba1cc71c3710deca83603d39a",
         "references/host-adapters.md": "6f1a977d1edbfaa0ff90917274be57011440c8ec4872479e645a4fb4e135b99d",
         "references/upstream-issue-template.md": "ab0c45d7e23b3cf78e4a05dd7923dff7e8fe8db2b80d49a8c83015a5ac59a311",
-        "scripts/monitor_snapshot.cjs": "09b6a2c5414284f74188894189daa2ce56a2381b9efe3eca9ad777d8414d0033",
+        "scripts/monitor_snapshot.cjs": "9c3690c24c58afe4db4882efb5994fcca6f1f8b08c6c633e81f927769c80bb8a",
         "SKILL.md": "fcbb1b9eb98a3d758838323235cf36646d6458a9bf3ab43c894f86aae4530c27"
       },
-      "skillDigest": "ab877a3dab389a2a007daefa88bbe3a02072b6d08b0f397a09b9a5b1783a5d2d"
+      "skillDigest": "30ecbce003ff82890cd6456824101aa39310caded103e206348f005bb8c697a5"
     },
     "ws-plan-interview": {
       "files": {

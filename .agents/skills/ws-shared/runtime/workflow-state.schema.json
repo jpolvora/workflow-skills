@@ -58,20 +58,44 @@
       "type": "object",
       "description": "us-365: available agent transcript paths recorded by the orchestrator so ws-monitor (and the opt-in watcher) can follow execution. Explicit absent marker when unavailable.",
       "additionalProperties": false,
-      "required": ["status"],
       "properties": {
         "status": { "enum": ["available", "transcript-unavailable"] },
         "paths": {
           "type": "array",
-          "items": { "type": "string" },
-          "description": "Transcript/session paths correlated to this run (present only when status is available)."
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
         },
         "reason": {
-          "enum": ["discovery-disabled", "no-matching-session", "scan-capped"],
-          "description": "Why no transcript is recorded (present only when status is transcript-unavailable)."
+          "enum": ["discovery-disabled", "no-matching-session", "scan-capped"]
         },
-        "recordedAt": { "type": "string", "format": "date-time" }
-      }
+        "recordedAt": { "type": "string" }
+      },
+      "oneOf": [
+        {
+          "required": ["status", "paths"],
+          "properties": {
+            "status": { "const": "available" },
+            "paths": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": "string", "minLength": 1 },
+              "description": "Transcript/session paths correlated to this run."
+            },
+            "recordedAt": { "type": "string", "format": "date-time" }
+          }
+        },
+        {
+          "required": ["status", "reason"],
+          "properties": {
+            "status": { "const": "transcript-unavailable" },
+            "reason": {
+              "enum": ["discovery-disabled", "no-matching-session", "scan-capped"],
+              "description": "Why no transcript is recorded."
+            },
+            "recordedAt": { "type": "string", "format": "date-time" }
+          }
+        }
+      ]
     },
     "observer": {
       "type": "object",
