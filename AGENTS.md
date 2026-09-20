@@ -105,6 +105,8 @@ Consumer projects keep hybrid rules unchanged: local `{skillsRoot}` overrides `{
 | **Installed `…/skills/*/SKILL.md`** | Agents (consumers) | Progressive disclosure after project-local or global install |
 | **Optional host pointer** | Agents (host-specific) | Thin pointer to this hub if the consumer’s IDE needs one — not required by skills; not a portable dependency |
 
+**Do not confuse the two hubs:** repo-root `AGENTS.md` (this file) is the **upstream authoring hub**; `{sharedDir}/AGENTS.md` is the **installed consumer hub**. Upstream mode loads root `AGENTS.md` (plus dual-hub drift vs the shared hub); consumer mode loads `{sharedDir}/AGENTS.md` only — a consumer repo-root `AGENTS.md` is an optional override, never required.
+
 When editing harness docs: put **agent obligations** here; put **human install/UX prose** in `README.md`. Keep them aligned on facts (paths, install commands) without duplicating full skill bodies.
 
 ---
