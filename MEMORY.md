@@ -15,6 +15,15 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 - **DO NOT**: assume site-builder extraction regexes accept the same id shapes that specs and wiki prose now use, nor write wiki sentences that name retired paths even as historical contrast.
 - **INSTEAD DO**: after any sweep, run `test-site-wiki.js` + `test-doc-sync.js` + `test-shared-hub-paths.js` before ship; keep builder regexes slug-open (`([^\n.]+)`-style); phrase relocation history with tokens (`{sharedDir}` / `{skillsRoot}`), never retired literals.
 
+### [2026-09-20] Managed runtime relocation traps (`.ws/runtime` retirement)
+- **Layer**: `Tests`
+- **Module**: `managed-runtime`
+- **Severity**: `High`
+- **PathPattern**: `bin/cli.js, .agents/skills/ws-shared/**, test/test-install.js, test/test-ws-shared-layout.js, test/test-skills-runtime-resolution.js`
+- **Scenario / Context**: Moving the managed `ws-shared` tree (runtime + templates) out of the consumer hub (`.ws/runtime`) into the skills install broke several pinned contracts before green: the alias `templates/hub.gitignore` -> `ws-shared/.gitignore` is part of the integrity manifest shape, so writing it only to `.ws` failed consumer verify (`hub/.gitignore missing`); generated `.ws/AGENTS.md` pointers are preserve-on-update, so stale pointers kept dead `.ws/runtime` links; tracked `test/.ws` fixtures persist between runs and served stale hub docs; 59 duplicated skill bootstrap snippets each carried a `'.ws', 'runtime'` fallback; and consumer `$schema`/`toolsFile` values stayed hub-relative.
+- **DO NOT**: write the hub alias to only one of the two roots; assume installer updates refresh generated hub pointers; rely on `test/.ws` being cleaned; sweep the resolver without sweeping the 59 bootstrap copies; leave config `$schema`/`toolsFile` pointing at a retired path.
+- **INSTEAD DO**: when moving managed hub content, sweep in one pass: `bin/cli.js` (copy roots, alias dest, pointer refresh via `isGeneratedHubEntrypoint`, legacy extraction), `resolve_consumer_root.cjs`, `check_hub_separation.cjs`, `check_harness_links.cjs` hub list, all bootstrap snippets (`rg "'\.ws', 'runtime'"`), templates/config example, and every suite fixture that builds `.ws/{runtime,templates}`; then regenerate integrity, rebuild site/wiki, and run `test-install`, `test-ws-shared-layout`, `test-skills-runtime-resolution`, `test-hub-separation`, `test-shared-hub-paths`, `test-doc-sync`, and `test-harness-clean` before ship.
+
 ### [2026-09-20] CRLF files defeat exact-match edits; shared helpers need export checks
 - **Layer**: `Infrastructure`
 - **Module**: `observer-us365`
