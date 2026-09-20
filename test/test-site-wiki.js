@@ -276,6 +276,37 @@ x
   assert(!html.includes('0097-</code>') && !html.includes('>0097-<'), 'infobox not truncated at hyphen');
 }
 
+function testInfoboxIgnoresSpecTitle() {
+  const wikiDir = tempDir('wiki-provtitle-');
+  const outDir = tempDir('wiki-provtitle-out-');
+  write(
+    path.join(wikiDir, 'index.wiki.md'),
+    `# ProvTitle Home
+`,
+  );
+  write(
+    path.join(wikiDir, 'specs', 'spec-lifecycle.md'),
+    `# Spec Lifecycle (\`specs\`)
+
+> Provenance: living synthesis of specs 0009, 0040, 0084.
+
+## Feature Overview
+x
+
+## Business Rules & Logic
+x
+
+## Technical Architecture
+x
+`,
+  );
+  buildWikiSite({ repoRoot: REPO_ROOT, wikiDir, outDir, check: false });
+  const html = read(path.join(outDir, 'specs/spec-lifecycle.html'));
+  const cell = html.match(/<th>Provenance<\/th>\s*<td>([\s\S]*?)<\/td>/);
+  assert(cell && cell[1].includes('0009'), 'infobox keeps real spec 0009');
+  assert(cell && !cell[1].includes('Lifecycle'), 'infobox does not echo the H1 title');
+}
+
 function testSitemapListsWikiLocs() {
   const wikiDir = tempDir('wiki-sitemap-');
   const outDir = tempDir('wiki-sitemap-out-');
@@ -404,6 +435,7 @@ const tests = [
   testCheckFailsOnStaleWikiHtml,
   testCheckPassesWhenFresh,
   testInfoboxProvenanceSlugIds,
+  testInfoboxIgnoresSpecTitle,
   testSitemapListsWikiLocs,
   testRendersHeadingsListsCodeLinks,
   testWikiCssUsesThemeTokens,
