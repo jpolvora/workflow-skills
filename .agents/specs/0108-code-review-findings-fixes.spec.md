@@ -4,6 +4,7 @@ slug: code-review-findings-fixes
 title: "Harness & Skills Hardening from Code Review of Recent PRs"
 source: local
 specDate: 2026-09-20
+status: completed
 ---
 
 # Specification — Harness & Skills Hardening from Code Review of Recent PRs
