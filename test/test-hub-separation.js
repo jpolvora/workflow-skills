@@ -100,6 +100,16 @@ try {
     assert.ok(!catalog.includes(phrase), `consumer CATALOG lacks upstream-only ${phrase}`);
   }
   assert.ok(catalog.includes('## Task router'), 'consumer CATALOG keeps the task router');
+  for (const anchor of ['#development-commands-this-repo', '#review--audit-commands']) {
+    assert.ok(!catalog.includes(anchor), `consumer CATALOG must not link to removed upstream anchor ${anchor}`);
+  }
+  const slugify = (heading) => heading.toLowerCase().replace(/[^a-z0-9 _-]/g, '').trim().replace(/\s+/g, '-');
+  const headings = new Set(
+    catalog.split('\n').filter((line) => /^#{1,6}\s/.test(line)).map((line) => slugify(line.replace(/^#{1,6}\s+/, ''))),
+  );
+  for (const match of catalog.matchAll(/\]\(#(.*?)\)/g)) {
+    assert.ok(headings.has(match[1]), `consumer CATALOG anchor #${match[1]} resolves to a heading in the same file`);
+  }
   assert.ok(catalog.includes('## External dependencies'), 'consumer CATALOG keeps the dependencies mirror');
   const rootCatalog = fs.readFileSync(path.join(repoRoot, 'CATALOG.md'), 'utf8');
   assert.ok(rootCatalog.includes('Before ship PR'), 'root CATALOG remains the upstream inventory SoT');

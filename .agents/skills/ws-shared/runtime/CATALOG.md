@@ -130,8 +130,8 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Bulk-import GH issues / ADO US → local specs | `ws-spec-from-provider` |
 | Session autoload set (which skills load every prompt) | [`{sharedDir}/runtime/autoload.md`](autoload.md) § Always-applied (a consumer root `AGENTS.md` may override membership) |
 | Specs keywords / which skill to invoke | [`{sharedDir}/runtime/autoload.md`](autoload.md) § Specs skill router |
-| Dev commands (deps, tests, local install, integrity, site) | § [Development commands](#development-commands-this-repo) |
-| Local code review / audits | § [Review & audit commands](#review--audit-commands) |
+| Package release tasks (deps, integrity, site) | Upstream source repo only — see root `CATALOG.md` |
+| Local code review / audits | `ws-code-review` (review `{base}...HEAD`; fix → re-review, max 3) |
 | Auto-update feature specs after code changes | `ws-spec-update` |
 | Resolve spec path / organize board specs | `ws-spec-organizer` |
 | Manage / route all spec operations (unified front door) | `ws-spec-manager` |
