@@ -142,11 +142,19 @@ function countObserverDispatches(telemetryEvents) {
     .filter((event) => event && event.type === 'observer-dispatch').length;
 }
 
+// Round-4 fix-pr: the durable state record backs the telemetry gate, so a
+// truncated/rotated/lost telemetry file cannot reopen dispatch.
+function alreadyDispatched({ telemetryEvents, state } = {}) {
+  if (countObserverDispatches(telemetryEvents) >= MAX_WATCHER_DISPATCHES) return true;
+  const count = state && state.observer ? state.observer.dispatchCount : undefined;
+  return Number.isInteger(count) && count >= MAX_WATCHER_DISPATCHES;
+}
+
 // Gate: default-off resolves false (zero dispatches); an already-dispatched
 // run refuses a second watcher (at most one per run, fail closed).
-function shouldDispatchObserver({ config, telemetryEvents } = {}) {
+function shouldDispatchObserver({ config, telemetryEvents, state } = {}) {
   if (!resolveAutoStartObserver(config)) return false;
-  return countObserverDispatches(telemetryEvents) === 0;
+  return !alreadyDispatched({ telemetryEvents, state });
 }
 
 // Orchestrator-side accounting: note the single allowed watcher dispatch in
@@ -156,14 +164,15 @@ function noteObserverDispatch({ stateFile, telemetryFile, config, subagentId, di
   if (!resolveAutoStartObserver(config)) {
     throw new Error('observer dispatch refused: monitor.autoStartObserver is not explicit true');
   }
-  if (countObserverDispatches(events) >= MAX_WATCHER_DISPATCHES) {
+  const jsonPath = jsonStatePath(stateFile);
+  const priorState = fs.existsSync(jsonPath) ? readJson(jsonPath) : null;
+  if (alreadyDispatched({ telemetryEvents: events, state: priorState })) {
     throw new Error('observer dispatch refused: at most one watcher per run');
   }
   const at = dispatchedAt || nowIso();
   const record = { type: 'observer-dispatch', at, subagentId: subagentId || null };
   fs.mkdirSync(path.dirname(telemetryFile), { recursive: true });
   fs.appendFileSync(telemetryFile, `${JSON.stringify(record)}\n`, 'utf8');
-  const jsonPath = jsonStatePath(stateFile);
   if (fs.existsSync(jsonPath)) {
     const state = readJson(jsonPath);
     state.observer = state.observer && typeof state.observer === 'object' ? state.observer : {};
@@ -318,7 +327,7 @@ function printHelp() {
   process.stdout.write(
     'Usage: node observer.cjs <resolve-config|should-dispatch|record|note-dispatch|watch> [options]\n'
     + '  resolve-config --config <config.json>\n'
-    + '  should-dispatch --config <config.json> --telemetry <telemetry.jsonl>\n'
+    + '  should-dispatch --config <config.json> --telemetry <telemetry.jsonl> [--state <state>]\n'
     + '  record --state <state.json|state.md> (--paths a,b | --reason <reason>)\n'
     + '  note-dispatch --state <state> --telemetry <telemetry.jsonl> --config <config.json> [--subagent-id ID]\n'
     + '  watch --state <state> --us-dir <dir> [--telemetry <telemetry.jsonl>] [--config <config.json>]\n',
@@ -348,7 +357,15 @@ function main(argv) {
     const config = configFile && fs.existsSync(configFile) ? readJson(configFile) : {};
     const telemetryFile = flagValue(argv, '--telemetry');
     const enabled = resolveAutoStartObserver(config);
-    const allowed = shouldDispatchObserver({ config, telemetryEvents: readTelemetryEvents(telemetryFile) });
+    const gateStateFile = flagValue(argv, '--state');
+    const gateState = gateStateFile && fs.existsSync(jsonStatePath(gateStateFile))
+      ? readJson(jsonStatePath(gateStateFile))
+      : null;
+    const allowed = shouldDispatchObserver({
+      config,
+      telemetryEvents: readTelemetryEvents(telemetryFile),
+      state: gateState,
+    });
     process.stdout.write(`${JSON.stringify({ dispatch: allowed, enabled })}\n`);
     // Round-2 fix-pr: exit 2 only when enabled but refused (already
     // dispatched); default-off (enabled false) is normal operation, exit 0.
@@ -429,6 +446,7 @@ module.exports = {
   recordAgentTranscripts,
   readTelemetryEvents,
   countObserverDispatches,
+  alreadyDispatched,
   shouldDispatchObserver,
   noteObserverDispatch,
   observerPaths,

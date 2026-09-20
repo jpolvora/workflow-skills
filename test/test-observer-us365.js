@@ -202,6 +202,25 @@ assert(shouldDispatchObserver({
   assert(fresh.status === 0 && JSON.parse(fresh.stdout).dispatch === true,
     'AC3 should-dispatch CLI exits 0 with dispatch true on fresh enabled run');
   write(configFile, JSON.stringify({}));
+  // Fix-pr round 4: telemetry loss must not reopen dispatch when durable
+  // state still records the single allowed dispatch.
+  write(configFile, JSON.stringify({ monitor: { autoStartObserver: true } }));
+  write(telemetryFile, '');
+  const lostGate = runObserver(['should-dispatch', '--config', configFile,
+    '--telemetry', telemetryFile, '--state', stateFile]);
+  assert(lostGate.status === 2 && JSON.parse(lostGate.stdout).dispatch === false,
+    'AC3 lost telemetry + durable state dispatch → refused (exit 2)');
+  let lostRefused = false;
+  try {
+    noteObserverDispatch({
+      stateFile, telemetryFile,
+      config: JSON.parse(fs.readFileSync(configFile, 'utf8')),
+    });
+  } catch {
+    lostRefused = true;
+  }
+  assert(lostRefused, 'AC3 note-dispatch refuses on durable state despite empty telemetry');
+  write(configFile, JSON.stringify({}));
   const offGate = runObserver(['should-dispatch', '--config', configFile, '--telemetry', telemetryFile]);
   assert(offGate.status === 0 && JSON.parse(offGate.stdout).dispatch === false
     && JSON.parse(offGate.stdout).enabled === false,
