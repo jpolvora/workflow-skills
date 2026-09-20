@@ -101,6 +101,14 @@ function assertValidMarker(marker) {
   } else {
     throw new Error('agentTranscripts status must be available|transcript-unavailable');
   }
+  // Round-2 fix-pr: forbid cross-branch fields so a marker is unambiguous.
+  if (marker.status === 'available' && marker.reason !== undefined) {
+    throw new Error('available agentTranscripts must not carry a reason');
+  }
+  if (marker.status === 'transcript-unavailable'
+    && Array.isArray(marker.paths) && marker.paths.length > 0) {
+    throw new Error('transcript-unavailable agentTranscripts must not carry paths');
+  }
 }
 
 // Orchestrator-side annotation: record the transcript marker in the state
@@ -339,9 +347,12 @@ function main(argv) {
     const configFile = flagValue(argv, '--config');
     const config = configFile && fs.existsSync(configFile) ? readJson(configFile) : {};
     const telemetryFile = flagValue(argv, '--telemetry');
+    const enabled = resolveAutoStartObserver(config);
     const allowed = shouldDispatchObserver({ config, telemetryEvents: readTelemetryEvents(telemetryFile) });
-    process.stdout.write(`${JSON.stringify({ dispatch: allowed })}\n`);
-    if (!allowed) process.exitCode = 2;
+    process.stdout.write(`${JSON.stringify({ dispatch: allowed, enabled })}\n`);
+    // Round-2 fix-pr: exit 2 only when enabled but refused (already
+    // dispatched); default-off (enabled false) is normal operation, exit 0.
+    if (enabled && !allowed) process.exitCode = 2;
     return;
   }
   if (command === 'record') {

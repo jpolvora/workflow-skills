@@ -118,6 +118,8 @@ for (const bad of [
   { status: 'available', paths: [] },
   { status: 'transcript-unavailable' },
   { status: 'bogus' },
+  { status: 'available', paths: ['a'], reason: 'discovery-disabled' },
+  { status: 'transcript-unavailable', reason: 'discovery-disabled', paths: ['a'] },
 ]) {
   assert(validateNode({ agentTranscripts: bad }, markerSchema, 'agentTranscripts.negative').length > 0,
     `AC1 schema rejects ${JSON.stringify(bad)}`);
@@ -193,8 +195,17 @@ assert(shouldDispatchObserver({
   assert(countObserverDispatches(fs.readFileSync(telemetryFile, 'utf8').trim().split('\n').map((line) => JSON.parse(line))) === 1,
     'AC3 dispatch count stays at one');
   const gate = runObserver(['should-dispatch', '--config', configFile, '--telemetry', telemetryFile]);
-  assert(gate.status === 2, 'AC3 should-dispatch CLI exits 2 once dispatched');
+  assert(gate.status === 2, 'AC3 should-dispatch CLI exits 2 when enabled but already dispatched');
+  write(configFile, JSON.stringify({ monitor: { autoStartObserver: true } }));
+  write(telemetryFile, '');
+  const fresh = runObserver(['should-dispatch', '--config', configFile, '--telemetry', telemetryFile]);
+  assert(fresh.status === 0 && JSON.parse(fresh.stdout).dispatch === true,
+    'AC3 should-dispatch CLI exits 0 with dispatch true on fresh enabled run');
   write(configFile, JSON.stringify({}));
+  const offGate = runObserver(['should-dispatch', '--config', configFile, '--telemetry', telemetryFile]);
+  assert(offGate.status === 0 && JSON.parse(offGate.stdout).dispatch === false
+    && JSON.parse(offGate.stdout).enabled === false,
+    'AC3 should-dispatch CLI exits 0 (not 2) when disabled');
   const off = runObserver(['note-dispatch', '--state', stateFile, '--telemetry', telemetryFile, '--config', configFile]);
   assert(off.status !== 0, 'AC3 note-dispatch refused when disabled');
   fs.rmSync(root, { recursive: true, force: true });
