@@ -66,8 +66,12 @@ both sides reference that file; never duplicate its contract here.
 - Default off: `monitor.autoStartObserver` omitted or `false` dispatches zero
   watcher subagents and changes no current behavior.
 - When explicit `true`, the orchestrator may dispatch **at most one** parallel
-  read-only watcher subagent per run (gate with `observer.cjs should-dispatch`,
-  record with `observer.cjs note-dispatch`; a second dispatch is refused).
+  read-only watcher subagent per run. Gate (must pass `--state` for durable
+  AC3 accounting):
+  `node {skillsRoot}/ws-spec-to-pr/scripts/observer.cjs should-dispatch
+  --config {sharedDir}/config.json --telemetry {us-dir}/telemetry.jsonl --state {state}`.
+  On allow, record with `observer.cjs note-dispatch`; a second dispatch is refused.
+  Full dispatch protocol: [`STEP-DISPATCH.md`](STEP-DISPATCH.md) § Execution observer dispatch.
 - The watcher reports state/execution and skill-instruction errors and never
   blocks step advancement; it writes only its own `<usDir>/observer/` log +
   report pair — no product edits, no state writes, no commits or PRs.
