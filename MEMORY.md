@@ -15,6 +15,24 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 - **DO NOT**: assume site-builder extraction regexes accept the same id shapes that specs and wiki prose now use, nor write wiki sentences that name retired paths even as historical contrast.
 - **INSTEAD DO**: after any sweep, run `test-site-wiki.js` + `test-doc-sync.js` + `test-shared-hub-paths.js` before ship; keep builder regexes slug-open (`([^\n.]+)`-style); phrase relocation history with tokens (`{sharedDir}` / `{skillsRoot}`), never retired literals.
 
+### [2026-09-20] Spec validator matches `- AC<n>:` bullets document-wide
+- **Layer**: `Tests`
+- **Module**: `spec-format`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-format/scripts/validate_spec.cjs, .agents/specs/*.spec.md`
+- **Scenario / Context**: Authoring spec 0109, the `## Validation & Observation Notes` bullets were written as `- AC1: ...` to reference acceptance criteria. `validate_spec.cjs` collects AC rows with `/^- (AC([1-9][0-9]*)):\s*(.+)$/gm` over the whole document, so those bullets entered the AC sequence and produced `ac-sequence` errors (`Expected AC16, found AC1`) even though the `## Acceptance Criteria` list was sequential.
+- **DO NOT**: start any non-AC bullet in a `*.spec.md` with `- AC<n>:` (for example in Validation, Notes, or Negative scenarios).
+- **INSTEAD DO**: prefix the reference with context, e.g. `- State-write test (AC1) must fail if ...`, keeping the strict `- AC<n>:` shape exclusive to the `## Acceptance Criteria` section.
+
+### [2026-09-20] Re-verify review findings when HEAD can move mid-session
+- **Layer**: `DevOps`
+- **Module**: `code-review`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/plans/**, .agents/specs/**`
+- **Scenario / Context**: A read-only review of `dcc3aa10..origin/main` ran while a previously dispatched workflow (`code-review-findings-fixes`) finished its step 8 in another process. HEAD advanced from `3cbdd0b9` to `257de1e5` and then `2b9d5b89` mid-review; subagent findings captured against the earlier tree risked reporting issues that the concurrent commits had already fixed.
+- **DO NOT**: trust review findings gathered at session start when the working tree or HEAD can change during the session, and do not report a finding without re-checking it against the current tree.
+- **INSTEAD DO**: record the HEAD SHA at review start, re-verify every finding against the current working tree (grep/read the exact file:line) before consolidating, and state the verified SHA in the report and spec.
+
 ### [2026-09-20] Migrate legacy rendered autoload forms on update; exclude fix-pr scratch from link gates
 - **Layer**: `Domain`
 - **Module**: `managed-hub-links`

@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-20 19:32] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: Read-only code review of `dcc3aa10..origin/main` (HEAD~20 vs main), check already-fixed findings, then author a fix spec via `/ws-spec-write`.
+- **Done**: Five parallel read-only review passes over `bin/`+CI, orchestrators, providers/utilities, `ws-shared` hub, and `test/`; every finding re-verified against the current tree (HEAD moved `3cbdd0b9` -> `2b9d5b89` mid-review when the prior workflow shipped step 8). Confirmed spec 0108's six topics fixed and excluded them. Spec `.agents/specs/0109-code-review-round-2-fixes.spec.md` written (15 ACs, F01-F27 traceability), `validate_spec.cjs --mode=authoring` PASS, tracked in `index.PRD` (row 114). Two memory traps recorded and compiled.
+- **Result**: 27 open findings (5 high / 16 medium / 6 low) captured with evidence and suggested fixes; no source files modified.
+
 ### [2026-09-20 12:31] Agent: opencode (deepseek-v4.1-flash)
 - **Prompt**: Enforce managed-runtime location: never allow `.ws/runtime`; runtime must resolve from `{projectRoot|globalSkillsRoot}/.agents/skills/ws-shared/runtime`.
 - **Done**: Installer now copies the managed `ws-shared` tree (runtime + templates) into the skills install and retires `.ws/runtime`/`.ws/templates` on install/update; `.ws` keeps consumer config, the generated `AGENTS.md` entrypoint, and `autoload.md`. Resolver, hub-separation gate, and link checker drop the `.ws` fallback; 59 skill bootstraps drop the deprecated `.ws` fallback; seed templates get refreshed. Consumer config `$schema`/`toolsFile` repoint to the managed runtime. Hub/root docs, README, FEATURES, CATALOG, SPEC-MANAGEMENT, install shim banner, and wiki pages retargeted to `{skillsRoot}|{globalSkillsRoot}/ws-shared`. Tests updated + new negative invariant (`.ws/runtime` never resolves or installs); version 0.4.46 + integrity regen + site/wiki rebuild.

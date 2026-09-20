@@ -159,6 +159,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] .ws resolution vs ws-shared folders cleanup (`spec: 0106-ws-shared-resolution-cleanup.spec.md`) — PR #374 MERGED
 - [ ] ws-monitor transcript signals fire false positives on healthy runs (hybrid-path-resolution, model-fallback, subagent-error) (`spec: 0107-us-369.spec.md`)
 - [x] Harness & Skills Hardening from Code Review of Recent PRs (`spec: 0108-code-review-findings-fixes.spec.md`)
+- [ ] Harness Hardening Round 2 — Open Findings from the 20-Commit Read-Only Review (`spec: 0109-code-review-round-2-fixes.spec.md`)
+
 
 
 
@@ -341,6 +343,8 @@ All Next-specs closed except true todo: `us-369`.
 | 112 | `us-369` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor transcript signals fire false positives on healthy runs (hybrid-path-resolution, model-fallback, subagent-error) |
 
 | 113 | `code-review-findings-fixes` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Harness & Skills Hardening from Code Review of Recent PRs |
+
+| 114 | `code-review-round-2-fixes` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Harness Hardening Round 2 — Open Findings from the 20-Commit Read-Only Review |
 
 ## 9. Inbox
 
