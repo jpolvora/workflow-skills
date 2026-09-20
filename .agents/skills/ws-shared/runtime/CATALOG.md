@@ -163,7 +163,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 
 ### Upstream authoring (source repo only)
 
-Package skill authoring, development commands, review commands, and the ship checklist live in the upstream repo's root `CATALOG.md` (authoring-only; not copied to consumer installs). Consumer delivery follows the installed `{sharedDir}/AGENTS.md` § Recommended Feature Delivery Checklist — not an upstream table here.
+Package skill authoring, development commands, review commands, and the ship checklist live in the upstream repo's root `CATALOG.md` (authoring-only; not copied to consumer installs). Consumer delivery follows the installed `{sharedDir}/runtime/AGENTS.md` § Recommended Feature Delivery Checklist — not an upstream table here.
 
 ---
 
