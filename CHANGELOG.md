@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-20 03:00] Agent: Muse Code (muse-spark)
+- **Prompt**: ws-spec-multi worker [standard] — spec 0066 ws-shared-hub-agents-separation (consumer hub vs upstream root AGENTS.md; AC1–AC12).
+- **Done**: Consumer banner + upstream relocation in ws-shared/runtime/AGENTS.md (under 14000 B cap); dropped upstream workflow/ship tables from consumer CATALOG.md + added External dependencies mirror; root AGENTS.md do-not-confuse row; new check_hub_separation.cjs Phase 5a gate (denylist + drift + local-first precedence + fail-closed); test-hub-separation.js + context-budget cap assertion; version 0.4.43 + integrity + site rebuild. Full npm run test green; harness self-audit 0 findings.
+- **Result**: Merged to main as PR #371 (6 commits: 1 feat + 5 review fixes; 8 review threads fixed and resolved; CI test green).
+
 ### [2026-09-19 21:00] Agent: Muse Code (muse-spark)
 - **Prompt**: ws-spec-multi worker — finish standard flow for 0042 unique-skill-script-runtime (Node-22 unique runtime).
 - **Done**: Deleted remaining 22 `.py` + 3 `.sh` sources (zero tracked Python); fixed 4 port parity bugs (naive-time UTC, loadConfig import, resolveRepoRoot options, azure --help deferral) plus global-runtime bootstrap in 11 ports; retargeted 40+ docs, evals, bin strings, and 20 tests; added `check_unique_runtime.cjs` Phase 5a critical gate + `test-unique-runtime.js`; regenerated integrity. Full `npm run test` green.
