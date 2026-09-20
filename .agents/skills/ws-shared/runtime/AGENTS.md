@@ -167,7 +167,7 @@ Run this checklist before `/ship-pr` or shipping features:
 
 ### Package authoring (upstream source repo only)
 
-Ship checklist and authoring workflow: see root [`CATALOG.md`](../../../../CATALOG.md) and root [`AGENTS.md`](../../../../AGENTS.md).
+Ship checklist and authoring workflow live in the upstream repo's root `CATALOG.md` and `AGENTS.md` (authoring-only; not copied to consumer installs).
 
 ---
 
