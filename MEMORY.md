@@ -6,6 +6,24 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 
 ---
 
+### [2026-09-21] Win32 npm shims need a ComSpec retry, not shell:false or a .cmd suffix
+- **Layer**: `Infrastructure`
+- **Module**: `cli-spawn-shim`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/scripts/cli_spawn.cjs, .agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs, .agents/skills/ws-monitor/scripts/monitor_snapshot.cjs, .agents/skills/ws-spec-memo/scripts/*.cjs`
+- **Scenario / Context**: AC3 switched spec-memo CLI probes from `shell: process.platform === 'win32'` to `shell: false` to keep spaced `--cwd` paths intact. Review threads (PR #377, score 7/10) correctly flagged the regression: on Windows, configured launchers like `memo` / `npx -y ...` resolve to `*.cmd` shims that `shell: false` cannot execute (bare name -> ENOENT). The suggested fix (append `.cmd`, keep `shell: false`) was empirically refuted on Node 22 win32: `spawnSync('x.cmd', { shell: false })` -> EINVAL, because batch files cannot execute without a shell at all.
+- **DO NOT**: spawn a configured CLI bin with `shell: false` on win32 and assume npm shims resolve; nor "fix" it by appending `.cmd` while keeping `shell: false`; nor revert to `shell: true` with an argv array (re-splits spaced paths, the original AC3 defect).
+- **INSTEAD DO**: route configured-CLI spawns through `spawnCliSync` (`ws-shared/runtime/scripts/cli_spawn.cjs`): first attempt `shell: false` everywhere, and only on win32 ENOENT retry once through ComSpec with a pre-quoted command line (`quoteCmdArg` + `shell: true` with a caller-quoted string) so PATHEXT shims resolve while spaced args stay intact. Cover with `test/test-cli-spawn-shim.js` (native passthrough, spaced argv, quoting units, missing-bin surfacing, win32-only live `.cmd` fixture test).
+
+### [2026-09-21] G2-Code Completeness and Ledger scoreState Boundary
+- **Layer**: `Tests / Workflow harness`
+- **Module**: `ws-spec-to-pr (commit_g2_code, update_state, ac_ledger)`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/plans/*/`, `.agents/skills/ws-spec-to-pr/scripts/*`
+- **Scenario / Context**: Standard run where a scoreAndRefine worker edited product files without calling `update_state finish` (the re-verify step does the finish). The Step 5 G2 commit then staged only manifest-recorded files, silently leaving the refine round's files uncommitted, and pre-advance 6 failed on the leftover dirt. Separately, an orch `ac_ledger link` without `--boundary` persisted scoreState at `pre-step6`, which failed pre-advance 7 (`step5` boundary expected), and `verify --persist-score` is not wired so it silently did not persist.
+- **DO NOT**: assume a G2-code commit captured the whole worktree, or assume any ledger mutation leaves scoreState valid for the next gate.
+- **INSTEAD DO**: after every G2-code commit, diff `git status` against the state manifest `files_touched`; merge leftovers via `update_state finish --step N --created/--modified` and commit the remainder before advancing. After any `ac_ledger link`, persist scoreState at the exact boundary the next pre-advance expects (`link --boundary step5 --plan-index …` when the next gate is Step 7; default `pre-step6` only fits Step 6). Verify with `validate_state --pre-advance N` before dispatching.
+
 ### [2026-09-20] Wiki sweep follow-through traps
 - **Layer**: `Tests`
 - **Module**: `wiki-sweep`

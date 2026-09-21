@@ -16,7 +16,7 @@ const HUB_SCRIPTS_DIR = (() => {
     return require('../../ws-shared/runtime/scripts/bootstrap_runtime.cjs').resolveHubScriptsDir(__dirname);
   } catch {
     const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
-    const candidates = [packaged];
+    const candidates = [];
     const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
     if (explicitShared && String(explicitShared).trim()) {
       candidates.unshift(path.join(path.resolve(String(explicitShared).trim()), 'runtime', 'scripts'));
@@ -31,6 +31,7 @@ const HUB_SCRIPTS_DIR = (() => {
       ? path.resolve(String(globalDir).trim())
       : path.join(require('os').homedir(), '.agents', 'skills');
     candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
+    candidates.push(packaged);
     for (const candidate of [...new Set(candidates)]) {
       try {
         require.resolve(path.join(candidate, 'resolve_consumer_root.cjs'));

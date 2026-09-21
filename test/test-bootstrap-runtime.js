@@ -147,9 +147,43 @@ function testTempGlobalHermetic() {
   }
 }
 
+function testLocalBeatsPackaged() {
+  // Local-first precedence: a consumer-local ws-shared runtime must win over
+  // the packaged copy bundled with the calling skill (and over global).
+  const work = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-localfirst-'));
+  const localScripts = path.join(work, 'repo', '.agents', 'skills', 'ws-shared', 'runtime', 'scripts');
+  const tempGlobalScripts = path.join(work, 'global', 'ws-shared', 'runtime', 'scripts');
+  fs.mkdirSync(localScripts, { recursive: true });
+  fs.mkdirSync(tempGlobalScripts, { recursive: true });
+  fs.writeFileSync(path.join(localScripts, 'resolve_consumer_root.cjs'), '// local mock\n', 'utf8');
+  fs.writeFileSync(path.join(tempGlobalScripts, 'resolve_consumer_root.cjs'), '// global mock\n', 'utf8');
+  try {
+    const callerDir = path.join(repoRoot, '.agents', 'skills', 'ws-check-harness', 'scripts');
+    const childJs = `console.log(require(${JSON.stringify(bootstrapHelperPath)}).resolveHubScriptsDir(${JSON.stringify(callerDir)}))`;
+    const res = cp.spawnSync(process.execPath, ['-e', childJs], {
+      cwd: path.join(work, 'repo'),
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        WORKFLOW_SKILLS_GLOBAL_DIR: path.join(work, 'global'),
+        WORKFLOW_SKILLS_SHARED_DIR: '',
+      },
+    });
+    assert.strictEqual(res.status, 0, 'local-first resolution without error, stderr: ' + res.stderr);
+    assert.strictEqual(
+      path.resolve(String(res.stdout || '').trim()),
+      path.resolve(localScripts),
+      'consumer-local runtime beats packaged and global copies',
+    );
+  } finally {
+    fs.rmSync(work, { recursive: true, force: true });
+  }
+}
+
 testResolveHubScriptsDir();
 testSeveredUtf8ChunkDecoding();
 testBannedRuntimeDirectoryDetection();
 testTempGlobalHermetic();
+testLocalBeatsPackaged();
 
 console.log('test-bootstrap-runtime: ok');

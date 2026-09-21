@@ -35,6 +35,11 @@ function testQuoteCmdArg() {
     '"C:\\Users\\test user\\repo"',
     'spaced win32 path quoted'
   );
+  assert.strictEqual(quoteCmdArg('C:\\repo&whoami'), '"C:\\repo&whoami"', 'ampersand path quoted neutralizing cmd metachar');
+  assert.strictEqual(quoteCmdArg('a|b'), '"a|b"', 'pipe arg quoted');
+  assert.strictEqual(quoteCmdArg('100%'), '"100%"', 'percent stays single: doubling arrives doubled through cmd /c');
+  assert.strictEqual(quoteCmdArg('(x86)'), '"(x86)"', 'parens quoted: unquoted parens group cmd commands');
+  assert.strictEqual(quoteCmdArg('say "hi"'), '"say ""hi"""', 'embedded quotes still double inside metachar quoting');
   console.log('ok quoteCmdArg units');
 }
 
@@ -91,6 +96,18 @@ function testWin32CmdShim() {
       );
       assert.strictEqual(explicit.status, 0, 'explicit .cmd launcher executes, got ' + JSON.stringify(explicit.error || explicit.stderr || explicit.status));
       assert.ok((explicit.stdout || '').includes('spaced dir'), 'spaced --cwd survives the explicit .cmd round-trip: ' + JSON.stringify(explicit.stdout));
+      // Metacharacter round-trip: quoting must neutralize cmd operators so
+      // args arrive literally and no second command executes.
+      const meta = spawnCliSync(
+        'ws-shim-fixture-xyz',
+        ['a&b', '100%x', '(p)q', 'a|b', 'a&echo INJECTED'],
+        { encoding: 'utf8', timeout: 30000 }
+      );
+      assert.strictEqual(meta.status, 0, 'metachar args execute, got ' + JSON.stringify(meta.error || meta.stderr || meta.status));
+      for (const want of ['a&b', '100%x', '(p)q', 'a|b', 'a&echo INJECTED']) {
+        assert.ok((meta.stdout || '').includes(want), 'metachar arg arrives literally: ' + want + ' in ' + JSON.stringify(meta.stdout));
+      }
+      assert.ok(!(meta.stdout || '').split('\n').some((l) => l.trim() === 'INJECTED'), 'no injected second command runs');
     } finally {
       process.env.PATH = oldPath;
     }

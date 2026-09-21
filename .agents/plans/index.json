@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 15,
-  "generatedAt": "2026-09-20T23:15:31Z",
+  "revision": 21,
+  "generatedAt": "2026-09-21T02:02:21Z",
   "workflows": [
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
@@ -68,6 +68,17 @@
       "currentStep": 9,
       "updatedAt": "2026-09-20T23:15:31Z",
       "runPath": ".agents/plans/code-review-findings-fixes/code-review-findings-fixes.state.json"
+    },
+    {
+      "workflowId": "code-review-round-2-fixes",
+      "slug": "code-review-round-2-fixes",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/code-review-round-2-fixes/code-review-round-2-fixes.state.md",
+      "stateSha256": "c8a5ede83b35eafd7a590ad20a95457a8f57112061a146f1471d24496ca9d44f",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-21T02:02:21Z",
+      "runPath": ".agents/plans/code-review-round-2-fixes/code-review-round-2-fixes.state.json"
     },
     {
       "workflowId": "configurable-consumer-autoload-20260810T194555Z",

@@ -13,7 +13,7 @@ const HUB_SCRIPTS_DIR = (() => {
     return require('../../ws-shared/runtime/scripts/bootstrap_runtime.cjs').resolveHubScriptsDir(__dirname);
   } catch {
     const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
-    const candidates = [packaged];
+    const candidates = [];
     const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
     if (explicitShared && String(explicitShared).trim()) {
       candidates.unshift(path.join(path.resolve(String(explicitShared).trim()), 'runtime', 'scripts'));
@@ -28,6 +28,7 @@ const HUB_SCRIPTS_DIR = (() => {
       ? path.resolve(String(globalDir).trim())
       : path.join(os.homedir(), '.agents', 'skills');
     candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
+    candidates.push(packaged);
     for (const candidate of [...new Set(candidates)]) {
       try {
         require.resolve(path.join(candidate, 'resolve_consumer_root.cjs'));
@@ -236,10 +237,12 @@ function readBoundedTailText(file, maxBytes = TRANSCRIPT_LIMITS.maxBytesPerFile)
     : [file];
   const tailChunks = [];
   let totalBytes = 0;
-  const decoder = new StringDecoder('utf8');
   let decodedText = '';
   try {
     for (const tailTarget of tailTargets) {
+      // Per-file decoder: each tail is a separate byte stream; a shared decoder
+      // would carry a trailing partial sequence into the next file.
+      const decoder = new StringDecoder('utf8');
       const handle = fs.openSync(tailTarget, 'r');
       try {
         const stat = fs.fstatSync(handle);
@@ -249,11 +252,11 @@ function readBoundedTailText(file, maxBytes = TRANSCRIPT_LIMITS.maxBytesPerFile)
         fs.readSync(handle, buffer, 0, length, start);
         decodedText += decoder.write(buffer);
         totalBytes += length;
+        decodedText += decoder.end();
       } finally {
         fs.closeSync(handle);
       }
     }
-    decodedText += decoder.end();
     return { text: decodedText, bytesRead: totalBytes, reason: null };
   } catch (error) {
     return { text: null, bytesRead: 0, reason: error.message };
