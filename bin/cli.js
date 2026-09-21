@@ -224,6 +224,53 @@ function renderConsumerAutoload(sourcePath) {
   return renderConsumerAutoloadText(fs.readFileSync(sourcePath, 'utf8'));
 }
 
+/** Generator-managed external skill ids: hub-hosted bodies, never installed/hashed. */
+function generatorManagedSkillIds() {
+  const ids = new Set();
+  for (const item of loadSkillGraph().externalSkills || []) {
+    if (item && typeof item === 'object' && item.generatorManaged === true) {
+      const id = String(item.id || '').trim();
+      if (id.startsWith('ws-')) ids.add(id);
+    }
+  }
+  return ids;
+}
+
+/**
+ * Re-attach generator-managed Always-applied rows (e.g. `ws-project-patterns`)
+ * after a stale-autoload refresh. The managed installer template carries no such
+ * row, and `configure_autoload.cjs` keeps one only while its hub body exists, so
+ * overwriting the hub file wholesale would silently stop loading generated
+ * project patterns while leaving the body on disk.
+ */
+function preserveGeneratorAutoloadRows(rendered, existingText, sharedDir) {
+  const generated = generatorManagedSkillIds();
+  if (!generated.size) return rendered;
+  const preserved = [];
+  let inSection = false;
+  for (const line of String(existingText).split('\n')) {
+    if (line.startsWith('## Always-applied')) { inSection = true; continue; }
+    if (inSection && line.startsWith('## ')) break;
+    if (!inSection) continue;
+    const match = /^\|\s*`(ws-[a-z0-9-]+)`\s*\|\s*([^|]+)\|\s*([^|]+)\|\s*$/.exec(line);
+    if (!match) continue;
+    const id = match[1];
+    if (!generated.has(id)) continue;
+    if (!fs.existsSync(path.join(sharedDir, id, 'SKILL.md'))) continue;
+    preserved.push({ id, trigger: match[3].trim() || 'Generated project patterns' });
+  }
+  if (!preserved.length) return rendered;
+  const pattern = /(## Always-applied skills\r?\n(?:.*\r?\n)*?)(\| Skill \| Path \| Trigger \|\r?\n\|[-| ]+\|\r?\n(?:\|[^\r\n]*\|\r?\n)+)/;
+  const match = pattern.exec(rendered);
+  if (!match) return rendered;
+  let table = match[2];
+  for (const row of preserved) {
+    if (new RegExp('`' + row.id + '`').test(table)) continue;
+    table += `| \`${row.id}\` | \`${row.id}/SKILL.md\` | ${row.trigger} |\n`;
+  }
+  return rendered.slice(0, match.index + match[1].length) + table + rendered.slice(match.index + match[0].length);
+}
+
 /** Root host pointers are consumer/host-owned — installer never seeds or overwrites them. */
 
 let skillGraph = null;
@@ -1151,13 +1198,17 @@ function ensureSharedHubInstalled(mode = 'install') {
   ensureSharedConsumerArtifacts(mode);
   const autoloadPath = path.join(destShared, 'autoload.md');
   const autoloadSource = packageHubPath('runtime', 'autoload.md');
-  const staleAutoload = fs.existsSync(autoloadPath) &&
+  const existingAutoload = fs.existsSync(autoloadPath) ? fs.readFileSync(autoloadPath, 'utf8') : null;
+  const staleAutoload = existingAutoload !== null &&
     [...RETIRED_SKILL_DIRS, ...RETIRED_BARE_IDS].some((id) => {
       const escaped = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      return new RegExp(`\\b${escaped}\\b`).test(fs.readFileSync(autoloadPath, 'utf8'));
+      return new RegExp(`\\b${escaped}\\b`).test(existingAutoload);
     });
-  if (fs.existsSync(autoloadSource) && (!fs.existsSync(autoloadPath) || staleAutoload)) {
-    fs.writeFileSync(autoloadPath, renderConsumerAutoload(autoloadSource));
+  if (fs.existsSync(autoloadSource) && (existingAutoload === null || staleAutoload)) {
+    const refreshedAutoload = existingAutoload === null
+      ? renderConsumerAutoload(autoloadSource)
+      : preserveGeneratorAutoloadRows(renderConsumerAutoload(autoloadSource), existingAutoload, destShared);
+    fs.writeFileSync(autoloadPath, refreshedAutoload);
     if (staleAutoload) console.log(`    Refreshed stale ${hubDisplay()}autoload.md`);
   } else if (fs.existsSync(autoloadPath)) {
     const currentAutoload = fs.readFileSync(autoloadPath, 'utf8');

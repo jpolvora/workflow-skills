@@ -1675,12 +1675,19 @@ child.on('close', async (code) => {
     ];
     const bareIds = ['azure-devops', 'caveman', 'code-review', 'fix-pr', 'plan-us', 'us-delivery-workflow'];
     // Poison autoload.md with pre-rename ids + phantom links (AC1 pre-fix reproduction).
+    // us-382: also carry a generator-managed Always-applied row whose hub body
+    // exists — the stale refresh must preserve the row, not drop it.
+    fs.mkdirSync(path.join(shared, 'ws-project-patterns'), { recursive: true });
+    fs.writeFileSync(path.join(shared, 'ws-project-patterns', 'SKILL.md'), '# ws-project-patterns\n');
     const staleAutoload = [
       '# Autoload (stale pre-rename fixture)',
       '',
-      '| Skill | Link |',
-      '|---|---|',
-      ...retiredWsIds.map((id) => `| \`${id}\` | [SKILL](../${id}/SKILL.md) |`),
+      '## Always-applied skills',
+      '',
+      '| Skill | Path | Trigger |',
+      '|-------|------|---------|',
+      ...retiredWsIds.map((id) => `| \`${id}\` | \`${id}/SKILL.md\` | Stale |`),
+      '| `ws-project-patterns` | `ws-project-patterns/SKILL.md` | Project patterns |',
       '',
     ].join('\n');
     fs.writeFileSync(path.join(shared, 'autoload.md'), staleAutoload);
@@ -1721,6 +1728,13 @@ child.on('close', async (code) => {
       if (afterAutoload.includes(retired)) {
         fail(`post-update autoload.md still cites retired ${retired} (AC1)`);
       }
+    }
+    // us-382: the generator-managed row survives the stale refresh while its hub body exists.
+    if (!/^\| `ws-project-patterns` \| `ws-project-patterns\/SKILL\.md` \| Project patterns \|$/m.test(afterAutoload)) {
+      fail('post-update autoload.md must preserve the generator-managed ws-project-patterns row (us-382)');
+    }
+    if ((afterAutoload.match(/`ws-project-patterns`/g) || []).length !== 1) {
+      fail('post-update autoload.md must list ws-project-patterns exactly once (us-382)');
     }
     const linkTargets = [...afterAutoload.matchAll(/\.\.\/\.agents\/skills\/(ws-[A-Za-z0-9-]+)\/SKILL\.md/g)].map((m) => m[1]);
     if (linkTargets.length === 0) {
