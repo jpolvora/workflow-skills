@@ -1,7 +1,7 @@
 ---
 name: ws-monitor
 description: Read-only live observer for active Spec-to-PR and multi-spec workflow runs, memory vault status, telemetry, artifacts, and multi-host transcripts.
-version: 0.4.47
+version: 0.4.49
 disable-model-invocation: true
 invocation_names:
   - monitor
@@ -109,11 +109,11 @@ Transcripts provide secondary evidence to diagnose why a subagent or orchestrato
   - Workspace candidate roots are auto-discovered if they exist in the repository.
   - User-level / host IDE transcript paths are scanned when passing `--discover-host-transcripts` or configured via `monitor.discoverHostTranscripts` (`monitor.hostHome` overrides the home; `monitor.transcriptRoots` adds explicit roots) or `--transcript-root <path>`.
 - **Diagnostic pattern scanning:**
-  - `hybrid-path-resolution`: `ENOENT`, `build_dispatch_context` (missing skills or path resolution failures).
-  - `model-fallback`: rejected, unsupported, or unavailable model identifiers.
+  - `hybrid-path-resolution`: a resolution failure (`ENOENT` family) adjacent to dispatch-context construction (missing skills or path resolution failures; bare script-name substrings stay silent).
+  - `model-fallback`: a rejected, unsupported, or unavailable model identifier inside a dispatch record (docs prose and reconciler outcomes stay silent).
   - `turn-ended`: turn ended before workflow handoff block was emitted.
   - `generic-dispatch`: generic subagent used where named specialized subagent was expected.
-  - `subagent-error`: fatal errors, unhandled promise rejections, or worker exceptions.
+  - `subagent-error`: a fatal error, unhandled rejection, or worker exception beside a stack trace (prose and retried-then-succeeded attempts stay silent).
 - **Anonymization guardrail:** Transcripts may contain sensitive workspace tokens, prompt history, or private code. Always sanitize before reporting or filing upstream.
 
 ## Signal map
@@ -125,8 +125,8 @@ Transcripts provide secondary evidence to diagnose why a subagent or orchestrato
 | Completed mutating step with empty `filesTouched` | Warning | The subagent handoff did not reach telemetry (silent only with an explicit no-op declaration on the finish event, or a skip reason) |
 | Missing exec artifact on a truly completed Step 3 (`missing-exec-artifact`) | Critical | Step 3 finished `completed` but `step-03-*.plan.exec.md` is absent; a `dag-disabled` skip is the designed sequential shape (no stubs written) and stays silent as grandfathered |
 | `packageVersion: "unknown"` | Warning | Runtime provenance is unavailable |
-| `ENOENT` or `build_dispatch_context` in a transcript | Critical | A path or hybrid installation resolution failed |
-| Rejected/unavailable model in a transcript | Warning | Dispatch should fall back to the active session model |
+| `ENOENT`-family failure adjacent to dispatch-context construction in a transcript | Critical | A path or hybrid installation resolution failed |
+| Rejected/unavailable model inside a dispatch record in a transcript | Warning | Dispatch should fall back to the active session model |
 | `turn_ended` before handoff | Warning | A host turn may have interrupted execution |
 | Telemetry ahead of selected state (`stale-state`) | Critical or warning | The monitor must not report an older step as current without explaining the state-source mismatch |
 | State branch/HEAD/worktree differs from active checkout (`context-mismatch`) | Critical or warning | Orchestrator and monitor resolved different local/global roots, or config changed mid-run |
@@ -135,7 +135,7 @@ Transcripts provide secondary evidence to diagnose why a subagent or orchestrato
 | Multi-spec queue item failed (`multi-spec-failed-item`) | Warning | A spec within the batch run encountered a terminal failure |
 | Multi-spec queue active with no progress (`multi-spec-idle`) | Info | Batch run is active but all queue items are processed or none pending |
 | Memory vault records active workflow missing on disk (`vault-unreconciled-workflow`) | Info | Memory vault lists an active workflow that does not exist in local plans |
-| Transcript contains unhandled error or exception (`subagent-error`) | Warning | Subagent or worker crashed or threw an unhandled exception |
+| Transcript contains an unhandled error with a stack trace (`subagent-error`) | Warning | Subagent or worker crashed or threw an unhandled exception |
 | Worker session idle while workflow is active (`worker-session-stall`) | Warning | The correlated session shows no recent activity; possible stall |
 
 ## Launcher

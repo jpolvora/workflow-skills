@@ -216,6 +216,7 @@ Diagnostics can be persisted under `plans.diagnosticsDir`. `workflow-skills tele
 | `ws-activity-report` | Timesheet entries for a delivery day. Start is the earliest bootstrap file in the plan folder; end is the later of the last PR thread comment or the last delivery commit. Splits human versus agent duration |
 | `ws-pre-daily` | Standup briefing covering the last 36 hours: delivered, made, ongoing, next |
 | `ws-megabrain` | Vibe-coding implementer (no spec required): what-next menu, specialists, consumes fable/senior/tdah |
+| `ws-patterns-generator` | Consumer project-patterns generator: harvests workflow runs, changelog, MEMORY, docs, and wiki into a seeded/refreshed autoloaded patterns skill |
 | `ws-spec-explain` | Read-only panorama of a spec or US/issue: status, what it does, what it delivered, how to check in the project/UI, and how to test |
 | `ws-spec-archive` | Harvests `{plansDir}` state, artifacts, git/changelog/MEMORY (and optional SCM) into `{specsDir}/index.PRD` Archive, then proposes a commit that removes eligible shipped plan folders |
 | `ws-cleanup` | Lists disposable workflow leftovers (telemetry, `.runtime`, audit logs, shipped plan dirs, untracked orphans under partially tracked shipped plans), confirms via user-gate, deletes only approved untracked paths, and suggests missing `.gitignore` patterns |
@@ -232,7 +233,7 @@ Diagnostics can be persisted under `plans.diagnosticsDir`. `workflow-skills tele
 | `ws-goal-loop` | Generic convergence primitive: sentinel management, heartbeat and settle timers, re-check control. Backs `ws-goal-fix-pr` |
 | `ws-plan-update` | Post-ship QA delta manager: capture manual findings, plan and execute delta fixes, update the delivery summary |
 
-Autoload set (loaded every prompt when a project opts in via `{sharedDir}/autoload.md`): required `ws-senior-developer`, `ws-self-learning`, `ws-tdah`, `ws-spec-memo`, `ws-task-lifecycle`; on-demand only `ws-changelog`, `ws-fable-method`, `ws-megabrain`. Precedence among them is documented and deterministic.
+Autoload set (loaded every prompt when a project opts in via `{sharedDir}/autoload.md`): required `ws-senior-developer`, `ws-self-learning`, `ws-tdah`, `ws-spec-memo`, `ws-task-lifecycle`; on-demand only `ws-changelog`, `ws-fable-method`, `ws-megabrain`, `ws-patterns-generator`. Precedence among them is documented and deterministic.
 
 **Source anonymization:** agents must not name private consumer projects in closing reports, commits, specs, or new tracker issues. Pasted consumer traces stay in-chat for diagnosis; published wording describes the failure class with generic examples.
 
@@ -454,6 +455,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-spec-explain`](.agents/skills/ws-spec-explain/SKILL.md) | W | Spec/US status & delivery panorama |
 | [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) | W | Archive plan history into `index.PRD`; propose plan-dir cleanup |
 | [`ws-cleanup`](.agents/skills/ws-cleanup/SKILL.md) | W | Workflow leftover cleanup with confirm gate |
+| [`ws-patterns-generator`](.agents/skills/ws-patterns-generator/SKILL.md) | W | Consumer project-patterns skill generator + seed script |
 
 ### Hub (not a skill)
 

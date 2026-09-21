@@ -1,0 +1,9 @@
+### [2026-09-21] Write containment must resolve the full target path, and fail closed on a dangling leaf
+
+- **Layer**: `Infrastructure`
+- **Module**: `ws-patterns-generator seed script`
+- **Severity**: `Critical`
+- **PathPattern**: `.agents/skills/ws-patterns-generator/scripts/seed_generated_skill.cjs`
+- **Scenario / Context**: The seed script's containment gate was hardened in three review rounds, each time closing one variant of the same escape. Round 1 resolved nothing: lexical `path.resolve` + `startsWith` only, so a symlinked/junctioned skills root wrote outside. Round 2 resolved the configured root but rebuilt the target from lexical leaves (`join(resolvedRoot, GENERATED_ID, 'SKILL.md')`), so a linked `ws-project-patterns` directory outside the repo still passed. Round 3 resolved the target's parent but rebuilt the leaf, so a **dangling `SKILL.md` symlink** to an external path passed the gate (`existsSync` follows the link and reports false) and `writeFileSync` created the file outside the repository. Each round scored 9/10 CRITICAL with a concrete reproduction.
+- **DO NOT**: Validate containment on a path that is partly resolved and partly reconstructed lexically. Do not resolve only the configured root, only the target parent, or trust a leaf that could itself be a link. Do not treat the containment gate as satisfied when resolution cannot be performed.
+- **INSTEAD DO**: Resolve the **entire target path** (`realpathLoose(target)` — deepest existing ancestor realpath plus rejoined missing leaves) and require the resolved target to start with the resolved root + separator. Fail closed (refuse the write) when resolution returns `null`, which is what a dangling symlink produces. Probe existence with `fs.lstatSync`, never `fs.existsSync`, inside the resolver. Cover all three variants in fixtures: linked skills root, linked generated-skill directory, and dangling `SKILL.md` leaf, each with an in-repo positive control.

@@ -177,6 +177,16 @@ function tempDir() {
       );
     }
   }
+  // Live ws-patterns-* ids must never match the retired ws-patterns pattern.
+  {
+    const stale = STALE_LIVE_REFERENCE_PATTERNS.find((p) => p.id === 'ws-patterns skill');
+    for (const live of ['ws-patterns-generator', 'ws-project-patterns']) {
+      assert.ok(!stale.re.test(`live skill ${live} reference`), `retired ws-patterns pattern must not match ${live}`);
+    }
+    for (const retired of ['ws-patterns', 'ws-patterns-backend', 'ws-patterns-frontend']) {
+      assert.ok(stale.re.test(`retired skill ${retired} reference`), `retired ws-patterns pattern must match ${retired}`);
+    }
+  }
   // Helper flags stale ids in both manifest lists.
   assert.deepStrictEqual(
     listRetiredManifestIds({ skills: ['ws-spec-to-pr', 'ws-write-spec', 'caveman'], selected: ['ws-sync-spec', 'plan-us'] }).sort(),

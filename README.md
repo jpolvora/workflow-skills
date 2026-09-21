@@ -332,6 +332,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | [`ws-activity-report`](.agents/skills/ws-activity-report/SKILL.md) | Timesheet / activity hours for a delivery day (Extra; plan bootstrap start → latest PR thread comment or delivery commit; human vs agent duration split) |
 | [`ws-pre-daily`](.agents/skills/ws-pre-daily/SKILL.md) | Standup briefing of the last 36 hours |
 | [`ws-megabrain`](.agents/skills/ws-megabrain/SKILL.md) | Vibe-coding implementer without a spec; specialists; consumes fable |
+| [`ws-patterns-generator`](.agents/skills/ws-patterns-generator/SKILL.md) | Consumer project-patterns skill generator: harvests run artifacts and project knowledge to seed and refresh an autoloaded patterns skill |
 | [`ws-spec-explain`](.agents/skills/ws-spec-explain/SKILL.md) | Spec/US status panorama — what it does, what it delivered, how to check & test |
 | [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) | Archive `{plansDir}` delivery facts into `index.PRD`, then propose cleanup of shipped plan folders |
 | [`ws-cleanup`](.agents/skills/ws-cleanup/SKILL.md) | Confirm-gated cleanup of workflow leftovers (telemetry, `.runtime`, shipped plans) + `.gitignore` suggestions |

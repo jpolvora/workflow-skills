@@ -161,8 +161,8 @@ write(
 );
 write(path.join(emptyWorkflowDir, `step-00-${emptySlug}.spec.md`), '');
 const transcripts = path.join(root, 'transcripts');
-write(path.join(transcripts, 'agent.jsonl'), `wf-monitor ${slug}: ENOENT while loading build_dispatch_context; unsupported model id\n`);
-write(path.join(transcripts, 'unrelated.jsonl'), 'unrelated-history: ENOENT while loading build_dispatch_context; unsupported model id\n');
+write(path.join(transcripts, 'agent.jsonl'), `wf-monitor ${slug}: ENOENT while loading build_dispatch_context; dispatch step=3 agentType=worker: unsupported model id zzz-9\n`);
+write(path.join(transcripts, 'unrelated.jsonl'), 'unrelated-history: ENOENT while loading build_dispatch_context; dispatch step=3 agentType=worker: unsupported model id zzz-9\n');
 
 const unboundedWatch = run(['--repo-root', root, '--watch', '--json'], root);
 if (unboundedWatch.status === 0 || !unboundedWatch.stderr.includes('--watch requires --iterations <count>')) {
@@ -480,7 +480,7 @@ if (vaultResult.records.length === 0) {
 
 // Test workspace candidate transcript roots auto-discovery
 const cursorTranscripts = path.join(root, '.cursor', 'transcripts');
-write(path.join(cursorTranscripts, 'session.jsonl'), 'subagent fatal error in step 4\n');
+write(path.join(cursorTranscripts, 'session.jsonl'), 'subagent fatal error in step 4\nError: worker crashed\n    at runStep (worker.js:10:5)\n');
 const candidateRoots = resolveCandidateTranscriptRoots({ repoRoot: root, config: {} });
 if (!candidateRoots.some((r) => r.includes('.cursor'))) {
   throw new Error('resolveCandidateTranscriptRoots failed to discover workspace .cursor/transcripts');
@@ -500,6 +500,60 @@ if (subagentErrResult.status !== 0) {
 const subagentErrReport = JSON.parse(subagentErrResult.stdout);
 if (!subagentErrReport.findings.some((f) => f.code === 'subagent-error')) {
   throw new Error('monitor failed to detect subagent-error signal in transcript');
+}
+
+// PR #383 thread 2: a failed attempt that later succeeded on retry is not an
+// unhandled error; a recovery that precedes a later failure still counts.
+const recoveredTranscripts = path.join(root, 'transcripts-recovered');
+write(path.join(recoveredTranscripts, 'session.jsonl'), [
+  'wf-recovered fatal error in subagent dispatch',
+  '    at runStep (worker.js:10:5)',
+  'stream attempt 1 failed, retrying',
+  'stream attempt 2 succeeded.',
+].join('\n'));
+const recoveredResult = run(['--repo-root', root, '--workflow-id', 'wf-recovered', '--transcript-root', recoveredTranscripts, '--json'], root);
+if (recoveredResult.status !== 0) {
+  throw new Error(recoveredResult.stderr || recoveredResult.stdout);
+}
+const recoveredReport = JSON.parse(recoveredResult.stdout);
+if (recoveredReport.findings.some((f) => f.code === 'subagent-error')) {
+  throw new Error('monitor false-positive: recovered attempt reported as subagent-error');
+}
+
+const unrecoveredTranscripts = path.join(root, 'transcripts-unrecovered');
+write(path.join(unrecoveredTranscripts, 'session.jsonl'), [
+  'wf-unrecovered stream attempt 1 failed, retrying; attempt 2 succeeded.',
+  'unhandled rejection: subagent died',
+  '    at runStep (worker.js:22:9)',
+].join('\n'));
+const unrecoveredResult = run(['--repo-root', root, '--workflow-id', 'wf-unrecovered', '--transcript-root', unrecoveredTranscripts, '--json'], root);
+if (unrecoveredResult.status !== 0) {
+  throw new Error(unrecoveredResult.stderr || unrecoveredResult.stdout);
+}
+const unrecoveredReport = JSON.parse(unrecoveredResult.stdout);
+if (!unrecoveredReport.findings.some((f) => f.code === 'subagent-error')) {
+  throw new Error('monitor missed a failure that followed a recovered attempt');
+}
+
+// Issue #369: benign-only transcript stays silent for the three signals.
+const greenTranscripts = path.join(root, 'transcripts-green');
+write(path.join(greenTranscripts, 'session.jsonl'), [
+  `wf-green ${slug}: directory listing scripts/build_dispatch_context.cjs scripts/workflow_state.cjs`,
+  'docs: when a model is rejected by the dispatcher, fall back to the next configured model.',
+  'reconciler outcome: ok, no action required, run healthy.',
+  'stream attempt 1 timed out, retrying; stream attempt 2 succeeded.',
+  'policy: log every fatal error to the audit trail for quarterly review.',
+  'verify score 10, all steps completed except designed sequential skip, zero errors.',
+].join('\n'));
+const greenResult = run(['--repo-root', root, '--workflow-id', 'wf-green', '--transcript-root', greenTranscripts, '--json'], root);
+if (greenResult.status !== 0) {
+  throw new Error(greenResult.stderr || greenResult.stdout);
+}
+const greenReport = JSON.parse(greenResult.stdout);
+for (const code of ['hybrid-path-resolution', 'model-fallback', 'subagent-error']) {
+  if (greenReport.findings.some((finding) => finding.code === code)) {
+    throw new Error(`monitor false-positive on benign transcript: ${code}`);
+  }
 }
 
 for (const directory of tempRoots) fs.rmSync(directory, { recursive: true, force: true });

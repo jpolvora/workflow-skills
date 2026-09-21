@@ -864,6 +864,37 @@ function resolveCandidateTranscriptRoots(context, explicitRoots = [], options = 
   return [...new Set(roots.filter(Boolean).map((r) => path.isAbsolute(r) ? r : path.resolve(context.repoRoot, r)))];
 }
 
+// Issue #369: transcript signals require failure-shaped evidence. Bare
+// substrings (script names in listings, docs prose, reconciler notes) stay silent.
+const HYBRID_FAILURE_NEAR_CONTEXT = /(?:ENOENT|MODULE_NOT_FOUND|ERR_MODULE_NOT_FOUND)[\s\S]{0,200}(?:build_dispatch_context|dispatch[_ -]?context)|(?:build_dispatch_context|dispatch[_ -]?context)[\s\S]{0,200}(?:ENOENT|MODULE_NOT_FOUND|ERR_MODULE_NOT_FOUND)/i;
+
+function hasModelFallback(text) {
+  // A rejected/unavailable model counts only inside a dispatch record: one
+  // record (line) carrying dispatch + model + rejection markers together.
+  // Docs prose and reconciler outcome lines carry no dispatch record.
+  return String(text).split('\n').some((line) =>
+    /\bdispatch\b/i.test(line)
+    && /\bmodel\b/i.test(line)
+    && /(unsupported|invalid|reject|not available)/i.test(line));
+}
+
+function hasSubagentError(text) {
+  // An unhandled-exception marker counts only beside trace shape (V8 `at`
+  // frames, Python tracebacks, Go goroutine dumps). Prose mentions and
+  // retried-then-succeeded attempts have no trace.
+  if (!/(fatal error|unhandled rejection|exception in subagent)/i.test(text)) return false;
+  // Locate the last failure evidence, then correlate any recovery after it: an
+  // attempt that failed and later succeeded on retry is not an unhandled error.
+  // Recovery evidence before a later failure never suppresses that failure.
+  const trace = /(^\s*at\s+\S+.*:\d+|Traceback \(most recent call last\)|^goroutine \d+ \[)/gim;
+  let lastFailure = -1;
+  let match;
+  while ((match = trace.exec(text)) !== null) lastFailure = match.index + match[0].length;
+  if (lastFailure < 0) return false;
+  return !/(?:retry|attempt\s+\d+)[\s\S]{0,200}\b(?:succeeded|successful|completed)\b/i
+    .test(text.slice(lastFailure));
+}
+
 function scanTranscriptRoots(context, roots, filter = {}) {
   // us-356: per-tick budget (time/read caps, recent-window tails only).
   const startedAt = Date.now();
@@ -923,16 +954,16 @@ function scanTranscriptRoots(context, roots, filter = {}) {
     }
     scannedFiles.push({ file, mtimeMs, tail: text.slice(-8000) });
     const evidence = sanitizeReportPath(toRepoRelative(context.repoRoot, file, { allowOutside: true }), hostHome);
-    if (/ENOENT|build_dispatch_context/i.test(text)) {
+    if (HYBRID_FAILURE_NEAR_CONTEXT.test(text)) {
       addFinding(findings, 'critical', 'hybrid-path-resolution', 'Transcript contains a missing-skill or dispatch-context path failure', [evidence]);
     }
-    if (/unsupported.{0,32}model|invalid.{0,32}model|model.{0,32}(reject|not available)/i.test(text)) {
+    if (hasModelFallback(text)) {
       addFinding(findings, 'warning', 'model-fallback', 'Transcript contains a rejected or unavailable model identifier', [evidence]);
     }
     if (/turn[_ -]ended/i.test(text)) {
       addFinding(findings, 'warning', 'turn-ended', 'Transcript contains a turn-ended signal before the workflow handoff', [evidence]);
     }
-    if (/fatal error|unhandled rejection|exception in subagent/i.test(text)) {
+    if (hasSubagentError(text)) {
       addFinding(findings, 'warning', 'subagent-error', 'Transcript contains an unhandled error or exception trace', [evidence]);
     }
     if (/generic.{0,20}(subagent|dispatch)/i.test(text)) {

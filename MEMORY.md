@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 
 ---
 
+### [2026-09-21] Write containment must resolve the full target path, and fail closed on a dangling leaf
+- **Layer**: `Infrastructure`
+- **Module**: `ws-patterns-generator seed script`
+- **Severity**: `Critical`
+- **PathPattern**: `.agents/skills/ws-patterns-generator/scripts/seed_generated_skill.cjs`
+- **Scenario / Context**: The seed script's containment gate was hardened in three review rounds, each time closing one variant of the same escape. Round 1 resolved nothing: lexical `path.resolve` + `startsWith` only, so a symlinked/junctioned skills root wrote outside. Round 2 resolved the configured root but rebuilt the target from lexical leaves (`join(resolvedRoot, GENERATED_ID, 'SKILL.md')`), so a linked `ws-project-patterns` directory outside the repo still passed. Round 3 resolved the target's parent but rebuilt the leaf, so a **dangling `SKILL.md` symlink** to an external path passed the gate (`existsSync` follows the link and reports false) and `writeFileSync` created the file outside the repository. Each round scored 9/10 CRITICAL with a concrete reproduction.
+- **DO NOT**: Validate containment on a path that is partly resolved and partly reconstructed lexically. Do not resolve only the configured root, only the target parent, or trust a leaf that could itself be a link. Do not treat the containment gate as satisfied when resolution cannot be performed.
+- **INSTEAD DO**: Resolve the **entire target path** (`realpathLoose(target)` — deepest existing ancestor realpath plus rejoined missing leaves) and require the resolved target to start with the resolved root + separator. Fail closed (refuse the write) when resolution returns `null`, which is what a dangling symlink produces. Probe existence with `fs.lstatSync`, never `fs.existsSync`, inside the resolver. Cover all three variants in fixtures: linked skills root, linked generated-skill directory, and dangling `SKILL.md` leaf, each with an in-repo positive control.
+
 ### [2026-09-21] Win32 npm shims need a ComSpec retry, not shell:false or a .cmd suffix
 - **Layer**: `Infrastructure`
 - **Module**: `cli-spawn-shim`
@@ -15,6 +24,15 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 - **DO NOT**: spawn a configured CLI bin with `shell: false` on win32 and assume npm shims resolve; nor "fix" it by appending `.cmd` while keeping `shell: false`; nor revert to `shell: true` with an argv array (re-splits spaced paths, the original AC3 defect).
 - **INSTEAD DO**: route configured-CLI spawns through `spawnCliSync` (`ws-shared/runtime/scripts/cli_spawn.cjs`): first attempt `shell: false` everywhere, and only on win32 ENOENT retry once through ComSpec with a pre-quoted command line (`quoteCmdArg` + `shell: true` with a caller-quoted string) so PATHEXT shims resolve while spaced args stay intact. Cover with `test/test-cli-spawn-shim.js` (native passthrough, spaced argv, quoting units, missing-bin surfacing, win32-only live `.cmd` fixture test).
 
+### [2026-09-21] Transcript error heuristics must correlate the attempt outcome, not just error shape
+- **Layer**: `Application`
+- **Module**: `ws-monitor`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs, test/test-ws-monitor.js`
+- **Scenario / Context**: `hasSubagentError` flagged a transcript whenever an exception marker (`fatal error`, `unhandled rejection`, `exception in subagent`) appeared together with trace shape (V8 `at` frames, Python traceback, Go goroutine). Issue #369 narrowed this to failure-shaped evidence, but the check never correlated the attempt outcome, so a run that failed and then succeeded on retry still produced a `subagent-error` finding. Review raised it twice: first at score 5 (declined as an ownership boundary), then at score 6 with a concrete recovery-suppression proposal; the second time it was fixed.
+- **DO NOT**: Decide an "unhandled error" finding from a marker plus trace shape alone, and do not suppress on recovery evidence that appears anywhere in the text: a recovery line before a later failure would hide a real trailing error.
+- **INSTEAD DO**: Locate the **last** failure evidence (iterate the trace regex with `lastIndex`), then search only the slice after it for recovery evidence (`retry` / `attempt N` within 200 chars of `succeeded|successful|completed`). Suppress only when the recovery follows the last failure. Cover both directions in tests with correlatable `--workflow-id` fixtures: recovered-after-failure stays silent; recovery-before-a-later-failure still reports.
+
 ### [2026-09-21] Resolver precedence and same-installation coherence
 - **Layer**: `Tests / Workflow harness`
 - **Module**: `ws-shared bootstrap (`bootstrap_runtime.cjs` + standalone fallback copies), `cli_spawn.cjs`
@@ -23,6 +41,15 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 - **Scenario / Context**: Review threads flagged the runtime resolver checking the packaged copy before consumer-local/global roots, contradicting the documented local-first contract. Applying the suggestion literally (packaged strictly last) broke the repo's own spawned children: with a runtime-less cwd they resolved a stale machine-global runtime missing new modules (`test-ws-monitor-us356.js` child crash). The same class existed in 60 standalone fallback copies.
 - **DO NOT**: Order resolver candidates packaged-first (ignores consumer-local overrides), nor packaged-last without checking same-installation coherence; do not apply reviewer-suggested reorderings without running the repo's own suite, which exercises foreign-cwd child spawns.
 - **INSTEAD DO**: Order explicit override, repo-local, packaged same-installation copy, global root last; sweep the whole class with a deterministic EOL-preserving codemod (abort on non-unique anchors) plus an order verifier; cover with a local-beats-packaged precedence test and re-run `npm run test`, `test-harness-clean.js`, and integrity regen before ship.
+
+### [2026-09-21] PowerShell redirection and CRLF edit mismatches on Windows
+- **Layer**: `devops`
+- **Module**: `provider-snapshot-recipes`
+- **Severity**: `Medium`
+- **PathPattern**: `*.issue.json`, `.ws/CHANGELOG.md`
+- **Scenario / Context**: Running provider fetch-to-spec snapshot recipes and changelog inserts from Windows PowerShell during a spec import. Three attempts failed before passing: gh output redirected with `>` landed as UTF-16LE which the Node JSON converter rejected, and two exact-match edits missed because the target markdown uses CRLF while the match text used LF.
+- **DO NOT**: Capture JSON for Node scripts with bare PowerShell `>` redirection; assume LF bytes when exact-matching edits inside CRLF files.
+- **INSTEAD DO**: Write snapshot JSON as UTF-8 explicitly ([System.IO.File]::WriteAllText with UTF8Encoding no-BOM); for CRLF files either match CRLF bytes exactly or edit through encoding-preserving PowerShell (ReadAllLines plus WriteAllText with BOM detection).
 
 ### [2026-09-21] Package membership excludes external ws-* companions; resolver requires package presence
 - **Layer**: `Tests / Workflow harness`
@@ -42,6 +69,24 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 - **DO NOT**: Call `toRepoRelative(repoRoot, path)` on a path that can be outside the repository (global skills root, `WORKFLOW_SKILLS_SHARED_DIR` override). Do not "fix" it with `allowOutside: true` alone: that overload collapses an outside path to its basename, which merges distinct files and breaks resolvability.
 - **INSTEAD DO**: Use a local non-throwing display helper `displayPath(repoRoot, value)` = `path.relative(resolve(repoRoot), resolve(value))` normalized to `/` (never throws; keeps `..`- or cross-drive absolute form). Resolve it back with `path.resolve(repoRoot, display)` in the reader, and keep occurrence paths resolvable. Cover with a fixture that installs two skills only under `WORKFLOW_SKILLS_GLOBAL_DIR` and asserts the duplicate is reported without throwing. Related: `2026-09-21-skills-root-package-membership.md`.
 
+### [2026-09-21] Lexical path containment must be re-verified on realpaths before writes
+- **Layer**: `Infrastructure`
+- **Module**: `ws-patterns-generator seed script`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-patterns-generator/scripts/seed_generated_skill.cjs`
+- **Scenario / Context**: The seed script gated writes with `path.resolve` + `startsWith` prefix checks only. A consumer `.agents/skills` directory that is a symlink (or junction) to a location outside the repository passes the lexical check while Node writes follow the link, so the generated skill body lands outside the repo. PR review flagged the escape; the fix resolves both roots before comparing.
+- **DO NOT**: Trust `path.resolve` + `startsWith` prefix checks as a write-containment guarantee when any path segment can be a symlink or junction; call `fs.realpathSync` directly on a path whose leaf may not exist yet (it throws on ENOENT).
+- **INSTEAD DO**: Re-verify containment on resolved real paths before writing: `fs.realpathSync` the verified-existing root, resolve the target root through its deepest existing ancestor (`realpathLoose`: walk up past missing leaves, realpath, rejoin), and require the resolved target to start with the resolved root + separator. Cover with a fixture test that links the skills root outside the repo (junction on win32, dir symlink elsewhere) and asserts refusal plus zero writes outside, and a positive control where an in-repo link still seeds.
+
+### [2026-09-21] Host capability `--declare` requires capability tokens, not binding aliases
+- **Layer**: `Domain`
+- **Module**: `host-dispatch`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/scripts/probe_host_capabilities.cjs, .ws/host-capabilities.json, .agents/skills/ws-shared/runtime/host-tool-map.json`
+- **Scenario / Context**: While enabling generic subagent dispatch for a Muse session, the planned command used `--declare subagentTool=subagent_spawn`. `parseDeclared` accepts only the seven capability tokens (`readFile`, `writeFile`, `editFile`, `shellExec`, `dispatchAgent`, `askQuestion`, `browserVerify`); the alias pair is silently dropped, so the binding falls back to the pre-map or minimal set. Separately, `--key muse::muse-spark-1.3-contributor` cannot infer a host shape because `muse` does not match `muse-spark-like` (neither equality, prefix, nor suffix), so an unknown-shape probe degrades `dispatchAgent` to `none` and the orchestrator silently executed every step as Tier 3 `inline:session` (0 subagents).
+- **DO NOT**: Pass binding aliases (`subagentTool`, `askQuestionTool`) to `--declare`; assume the host-id segment of `--key` infers a pre-map shape when it does not equal the shape base name (`muse-spark`).
+- **INSTEAD DO**: Declare capability tokens (`--declare dispatchAgent=subagent_spawn`) and pass `--host-shape muse-spark-like` explicitly when the host id does not match a shape name; then verify `.ws/host-capabilities.json` has `binding.subagentTool` set and `knownShape: true` for the session key.
+
 ### [2026-09-21] Harness gates must scope recursive scans to package membership
 - **Layer**: `Tests / Workflow harness`
 - **Module**: `ws-check-harness Phase 5a gates (`check_unique_runtime.cjs`, `check_duplicates.cjs`, `check_harness_links.cjs`, `check_shell_quoting.cjs`)`
@@ -59,6 +104,15 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 - **Scenario / Context**: Standard run where a scoreAndRefine worker edited product files without calling `update_state finish` (the re-verify step does the finish). The Step 5 G2 commit then staged only manifest-recorded files, silently leaving the refine round's files uncommitted, and pre-advance 6 failed on the leftover dirt. Separately, an orch `ac_ledger link` without `--boundary` persisted scoreState at `pre-step6`, which failed pre-advance 7 (`step5` boundary expected), and `verify --persist-score` is not wired so it silently did not persist.
 - **DO NOT**: assume a G2-code commit captured the whole worktree, or assume any ledger mutation leaves scoreState valid for the next gate.
 - **INSTEAD DO**: after every G2-code commit, diff `git status` against the state manifest `files_touched`; merge leftovers via `update_state finish --step N --created/--modified` and commit the remainder before advancing. After any `ac_ledger link`, persist scoreState at the exact boundary the next pre-advance expects (`link --boundary step5 --plan-index …` when the next gate is Step 7; default `pre-step6` only fits Step 6). Verify with `validate_state --pre-advance N` before dispatching.
+
+### [2026-09-21] Edit tool multi-line matches fail on CRLF files
+- **Layer**: `Domain`
+- **Module**: `ws-monitor`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs, test/test-ws-monitor.js`
+- **Scenario / Context**: A new benign-transcript negative test passed `--transcript-root <green-dir>` with no filter and falsely failed: `resolveCandidateTranscriptRoots` appends explicit roots to auto-discovered workspace roots (`.cursor/transcripts`), so an earlier true-positive fixture in the same temp root leaked into the green run. Adding `--workflow-id wf-green` scoped the scan to the green file only.
+- **DO NOT**: Assume `--transcript-root` replaces discovery; run an unfiltered monitor assertion in a temp root that also holds positive fixtures.
+- **INSTEAD DO**: Pass `--workflow-id` (or `--slug`) matching only the target transcript in every monitor test that asserts absence of findings, and keep positive and negative fixtures correlatable to distinct workflow ids.
 
 ### [2026-09-21] Config GUI rows must bind schema scalar types to matching controls
 - **Layer**: `Domain`

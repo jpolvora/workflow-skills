@@ -330,7 +330,7 @@ fs.utimesSync(sessionFile, new Date(Date.now() - 3600_000), new Date(Date.now() 
   const dbFile = path.join(museSessionsDir, `${slug}-live`, 'state.vscdb');
   const walFile = `${dbFile}-wal`;
   write(dbFile, 'sqlite-format-3-binary-payload');
-  write(walFile, `wal-frame-payload ${workflowId} ${slug}\nfatal error WALONLY-BOOM-159753 wal-only-marker-line\n`);
+  write(walFile, `wal-frame-payload ${workflowId} ${slug}\nfatal error WALONLY-BOOM-159753 wal-only-marker-line\n    at commitStore (store.js:1:1)\n`);
   // Large store created before the entries snapshot so later runs also cover
   // multi-megabyte in-place tails.
   const bigDb = path.join(museSessionsDir, `${slug}-live`, 'big-store.vscdb');

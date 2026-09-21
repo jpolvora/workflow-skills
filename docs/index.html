@@ -159,7 +159,7 @@
     <span class="badge-dot"></span>
     <span>Deterministic Spec-Driven Harness</span>
     <span style="color:var(--text-dim)">&bull;</span>
-    <span style="color:var(--accent-cyan);font-family:var(--font-mono)">v0.4.47</span>
+    <span style="color:var(--accent-cyan);font-family:var(--font-mono)">v0.4.49</span>
   </a>
   <h1>From Spec to <span class="gradient-text">Delivery</span></h1>
   <p class="hero-brand">Workflow Skills</p>
@@ -1311,7 +1311,7 @@ disable-model-invocation: true
       <p class="section-subtitle">Discover every shipped skill. Search by name, layer, or full vs lite.</p>
     </div>
     <div class="catalog-stats">
-      <span class="catalog-counter"><strong id="visible-skills-count">54</strong> skills available</span>
+      <span class="catalog-counter"><strong id="visible-skills-count">55</strong> skills available</span>
     </div>
   </div>
 
@@ -1715,7 +1715,7 @@ disable-model-invocation: true
   <div class="layer" data-layer-id="layer-5">
     <div class="layer-header">
       <h3><span class="layer-tag">Layer 5</span> — Utility & meta</h3>
-      <span class="count">27 skills</span>
+      <span class="count">28 skills</span>
     </div>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/ws-activity-report/SKILL.md" data-name="ws-activity-report" data-slug="ws-activity-report" data-desc="timesheet entries (date, start, end, description) for ws-spec-to-pr / ws-spec-to-pr-lite deliveries. start = earliest bootstrap file creation in the plan folder; end = latest of last pr thread comment or last delivery commit. trigger on activity-report {date}, log hours, timesheet, or activities for a day." data-deps="" data-layer="layer-5" data-full="false" data-lite="false">
@@ -1822,6 +1822,16 @@ disable-model-invocation: true
         <div class="skill-card-bottom">
           <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (5):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-fable-method">ws-fable-method</span><span class="dep-pill" data-dep="ws-senior-developer">ws-senior-developer</span><span class="dep-pill" data-dep="ws-tdah">ws-tdah</span><span class="dep-pill" data-dep="ws-self-learning">ws-self-learning</span><span class="dep-pill" data-dep="ws-changelog">ws-changelog</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/ws-megabrain/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/ws-patterns-generator/SKILL.md" data-name="ws-patterns-generator" data-slug="ws-patterns-generator" data-desc="consumer project-patterns skill generator that harvests run artifacts and project knowledge to seed and refresh an autoloaded ws-project-patterns skill." data-deps="ws-configure-project ws-self-learning ws-changelog ws-secrets-leak-review" data-layer="layer-5" data-full="false" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">ws-patterns-generator</div>
+        </div>
+        <div class="desc">Consumer project-patterns skill generator that harvests run artifacts and project knowledge to seed and refresh an autoloaded ws-project-patterns skill.</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (4):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-configure-project">ws-configure-project</span><span class="dep-pill" data-dep="ws-self-learning">ws-self-learning</span><span class="dep-pill" data-dep="ws-changelog">ws-changelog</span><span class="dep-pill" data-dep="ws-secrets-leak-review">ws-secrets-leak-review</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-patterns-generator/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
       <div class="skill-card" data-path=".agents/skills/ws-pre-daily/SKILL.md" data-name="ws-pre-daily" data-slug="ws-pre-daily" data-desc="standup briefing of the last 36 hours — delivered, made, ongoing, next." data-deps="ws-configure-project" data-layer="layer-5" data-full="false" data-lite="false">
@@ -2071,9 +2081,9 @@ disable-model-invocation: true
         <span class="package-shortcut">Shortcut: <code>w</code></span>
       </div>
       <h4>Workflows Package</h4>
-      <p class="package-desc">Workflows package — 46 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the consumer (<code>.ws/</code>) hub.</p>
+      <p class="package-desc">Workflows package — 47 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the consumer (<code>.ws/</code>) hub.</p>
       <div class="package-preview">
-        <strong>Included core skills:</strong> <code>ws-spec-to-pr</code>, <code>ws-spec-to-pr-lite</code>, <code>ws-spec-write</code>, <code>ws-classify-complexity</code>, <code>ws-plan-write</code>, <code>ws-plan-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, … (+38)
+        <strong>Included core skills:</strong> <code>ws-spec-to-pr</code>, <code>ws-spec-to-pr-lite</code>, <code>ws-spec-write</code>, <code>ws-classify-complexity</code>, <code>ws-plan-write</code>, <code>ws-plan-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, … (+39)
       </div>
     </div>
 
@@ -2791,7 +2801,7 @@ npx --yes github:jpolvora/workflow-skills --global
 <div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.4.47 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.4.49 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
 <!-- Skill Viewer Slide-Over Drawer -->

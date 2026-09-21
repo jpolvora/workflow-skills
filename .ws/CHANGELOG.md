@@ -1,4 +1,19 @@
 # Changelog
+### [2026-09-21 08:51] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: Enable generic subagent dispatch for the Muse session (`hostAdapter` + capability re-probe), without specialized subagents.
+- **Done**: Added `defaults.hostAdapter.mode: "native-tool"` to `.ws/config.json` (GUI already binds `defaults.hostAdapter`; no GUI change needed). Re-probed `.ws/host-capabilities.json` for `muse::muse-spark-1.3-contributor` and `muse::muse-spark` with `--host-shape muse-spark-like --declare dispatchAgent=subagent_spawn --refresh`; both keys now bind `subagentTool: subagent_spawn` with `knownShape: true`. Corrected the declare token (`dispatchAgent`, not the `subagentTool` alias; alias names are silently ignored by `parseDeclared`).
+- **Result**: Config parses and validates against `config.schema.json` (exit 0); capabilities cache gitignored; `specializedSubagents.enabled` stays false. Recorded trap `memory/2026-09-21-host-capability-declare-token.md` (compile: 19 entries).
+
+### [2026-09-21 00:51] Agent: muse (muse-spark)
+- **Prompt**: `/ws-spec-from-provider` for https://github.com/jpolvora/workflow-skills/issues/378 - bulk-import open GitHub issues into local specs.
+- **Done**: Tracker resolved to github (active=local, enabled github tracker); `gh auth status` pass; list returned 1 open issue (#378, no skips). Snapshot rewritten as UTF-8 after PowerShell `>` produced UTF-16 the converter rejects; base convert, agentic reformulation to 13 ACs with closure tables, DoR, validation notes, prior-work sweep, greenfield design-intent note, plus fit-analysis companion; full register to `step-00-us-378.spec.md`.
+- **Result**: Imported 1 / skipped 0 / failed 0. `validate_spec.cjs --mode=authoring` PASS (13 ACs) before and after register. Paths: `.agents/specs/0110-us-378.spec.md`, `.agents/specs/0110-us-378.context.md`, `.agents/plans/us-378/step-00-us-378.spec.md`.
+
+
+### [2026-09-21 00:47] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: Set `defaults.autoload: true`, then make root `AGENTS.md` actually autoload the Always-applied live skills.
+- **Done**: `.ws/config.json` `defaults.autoload` true (set via `configure_autoload.cjs`; helper's unrelated formatting normalizations reverted to a one-line diff). Root `AGENTS.md` § Skill loading: session start now loads `ws-senior-developer`, `ws-self-learning`, `ws-tdah`, `ws-spec-memo`, `ws-task-lifecycle` from `{skillsRoot}` (local-first, global fallback; documented exception to Global vs local rule 1); new table row, progressive-disclosure Session start row, dual-hub precedence text, and Precedence note updated; all other live `ws-*` bodies stay banned for autoload.
+- **Result**: `configure_autoload.cjs --check` effectiveAutoload=true, 0 findings; `test-harness-clean.js` 0 findings; `test-doc-sync.js` ok; `test-autoload-configure.js` green; `test-hub-separation.js` ok. No version bump or integrity regen (root hub is not hashed; no package content changed).
 
 ### [2026-09-21 06:00] Agent: opencode (deepseek-v4.1-flash)
 - **Prompt**: Test-suite runner refactor — replace the giant `&&`-chained npm test scripts with a single wrapper.
