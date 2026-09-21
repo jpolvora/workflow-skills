@@ -14,7 +14,7 @@ invocation_names:
 
 **Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check. This skill is config-dependent: without project `{sharedDir}/config.json`, use `user-gate` to recommend `ws-configure-project`; cancel stops the run.
 
-Recurring generator for the consumer project. It harvests findings and (re)writes the consumer-owned skill `{sharedDir}/ws-project-patterns/SKILL.md`: blank skeleton on first run, full rewrite when stale, appended bullets otherwise. The body is hub-hosted and autoload-only: the installer never ships or overwrites it, and it is loaded through its Always-applied row in `{sharedDir}/autoload.md`, not through skills-root discovery. Complements `ws-self-learning` (MEMORY traps) without writing MEMORY itself.
+Recurring generator for the consumer project. It harvests findings and (re)writes the consumer-owned skill `.ws/ws-project-patterns/SKILL.md`: blank skeleton on first run, full rewrite when stale, appended bullets otherwise. The body is hub-hosted and autoload-only: the installer never ships or overwrites it, and it is loaded through its Always-applied row in `.ws/autoload.md`, not through skills-root discovery. Complements `ws-self-learning` (MEMORY traps) without writing MEMORY itself.
 
 ## Invocation
 
@@ -30,7 +30,7 @@ Recurring generator for the consumer project. It harvests findings and (re)write
 
 ## Steps
 
-1. **Resolve paths** — Expand `{skillsRoot}` / `{sharedDir}` / `{plansDir}` / `{specsDir}` from project config. Generated body: `.ws/ws-project-patterns/SKILL.md` (the project hub root is fixed at `.ws`; the body is hub-relative to it). Consumer autoload table: `.ws/autoload.md`.
+1. **Resolve paths** — Expand `{skillsRoot}` / `{plansDir}` / `{specsDir}` from project config. The generated body and the consumer autoload table use the fixed project hub `.ws/` (the body is hub-relative to it): body `.ws/ws-project-patterns/SKILL.md`, autoload `.ws/autoload.md`. An explicit `pathTokens.sharedDir` is not a relocation mechanism for hub-hosted content yet.
    - Done when: generated path and autoload path are resolved and config is verified.
 
 2. **Seed when missing** — Run `node {skillsRoot}/ws-patterns-generator/scripts/seed_generated_skill.cjs --repo-root .` (exit 0). The script writes to the fixed `.ws` hub, writes only when the body is missing, and refuses any path that resolves outside the repository. When this run seeded the body (first run), append the Always-applied row for `ws-project-patterns` to the consumer autoload table when missing; never duplicate an existing row. Later runs never edit autoload. Opt out: `stop ws-project-patterns`.

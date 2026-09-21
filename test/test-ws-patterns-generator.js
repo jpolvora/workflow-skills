@@ -535,6 +535,23 @@ for (const check of ['check_duplicates.cjs', 'check_harness_links.cjs', 'check_h
   assert(r.status === 0, `${check} exit 0${r.status === 0 ? '' : `: ${(r.stdout || '') + (r.stderr || '')}`.slice(0, 400)}`);
 }
 
+// --- AC14: fixed-hub documentation coherence -----------------------------------
+{
+  const resolveStep = (skill.match(/^1\. \*\*Resolve paths\*\*.*$/m) || [''])[0];
+  assert(resolveStep.includes('.ws/'), 'resolve step names the fixed .ws hub');
+  assert(!resolveStep.includes('{sharedDir}'), 'resolve step does not advertise {sharedDir} hub relocation');
+  for (const rel of [
+    '.agents/skills/ws-shared/runtime/tools.md',
+    '.agents/skills/ws-shared/runtime/config-resolution.md',
+  ]) {
+    const doc = fs.readFileSync(path.join(root, rel), 'utf8');
+    assert(
+      /not (yet )?a relocation mechanism/i.test(doc),
+      `${path.basename(rel)} states pathTokens.sharedDir is not a relocation mechanism for hub-hosted content`,
+    );
+  }
+}
+
 if (failures) {
   console.error(`\n${failures} failure(s)`);
   process.exit(1);
