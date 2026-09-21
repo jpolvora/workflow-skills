@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-21 05:15] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: `ws-goal-fix-pr 377` round 5 (inline fix loop) — 1 review thread on the config GUI editor.
+- **Done**: `Edit-WorkflowSkillsConfig.ps1` gained a `number` control branch (`Add-ConfigFieldRow`, NumericUpDown with 2 decimal places, persists `[double]`) and `defaults.convergence.backoff` now binds `-Type 'number' -MinVal 1 -MaxVal 100 -DefaultVal 1.5`, matching `config.schema.json` (`number`, minimum 1). `test-powershell-config-editor.js` adds Test 9b scalar-type parity (schema `number`/`integer`/`boolean`/`string` vs row type) plus a numeric round-trip asserting `convergence.backoff` persists as a JSON number.
+- **Result**: `test-powershell-config-editor.js` 10/10 PASS; `npm run test` green; `test-harness-clean.js` 0 findings; `verify-integrity` OK (v0.4.47).
+
 ### [2026-09-21 04:30] Agent: opencode (deepseek-v4.1-flash)
 - **Prompt**: `ws-goal-fix-pr 377` round 4 (inline fix loop) — 2 new review threads on the autoload runtime-link renderer.
 - **Done**: `renderConsumerAutoload` (`configure_autoload.cjs`) and `renderConsumerAutoloadText` (`bin/cli.js`) now resolve the local-vs-global runtime prefix per file (`runtimePrefixFor(rel)` / `managedRuntimeLinkPrefixFor(rel)`) instead of from directory existence, so a partial-hybrid local runtime keeps `{globalSkillsRoot}` tokens for files that only exist globally. Rewrite regexes capture `rel`; the bare-file loop uses the per-file prefix. Fixtures updated: partial local runtime keeps existing file project-relative and missing sibling global; new global-only + partial assertions.

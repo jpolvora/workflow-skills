@@ -199,6 +199,7 @@ try {
     . '${SCRIPT_PATH.replace(/\\/g, '\\\\')}' -ConfigPath '${tmpConfig.replace(/\\/g, '\\\\')}' -RepoRoot '${REPO_ROOT.replace(/\\/g, '\\\\')}' -FunctionsOnly
     Set-ConfigValue -Path 'defaults.enableDag' -Value $false
     Set-ConfigValue -Path 'defaults.minVerifyScore' -Value 8
+    Set-ConfigValue -Path 'defaults.convergence.backoff' -Value ([double]1.5)
     Save-ConfigurationFile
   `;
   const saveRun = runPowerShell(testScript);
@@ -216,6 +217,12 @@ try {
   const updatedJson = JSON.parse(fs.readFileSync(tmpConfig, 'utf8'));
   assert.strictEqual(updatedJson.defaults.enableDag, false, 'enableDag was not updated to false');
   assert.strictEqual(updatedJson.defaults.minVerifyScore, 8, 'minVerifyScore was not updated to 8');
+  assert.strictEqual(
+    typeof updatedJson.defaults.convergence.backoff,
+    'number',
+    'numeric scalar (convergence.backoff) must persist as a JSON number, not a quoted string'
+  );
+  assert.strictEqual(updatedJson.defaults.convergence.backoff, 1.5, 'convergence.backoff value must round-trip');
 
   // Verify all original comments are still present in updated JSON
   const updatedCommentKeys = [];
@@ -444,6 +451,52 @@ assert.match(
   'defaults.runners row must use -Type json'
 );
 console.log('  PASS: No structured schema node is bound as a plain string row; baton rows use json.');
+
+console.log('Test 9b: Verifying scalar schema types map to compatible GUI control types...');
+const SCALAR_CONTROL_TYPES = {
+  integer: ['int'],
+  number: ['number', 'int'],
+  boolean: ['bool'],
+  string: ['string', 'enum', 'path-file', 'path-folder'],
+};
+const scalarMismatches = [];
+const scalarRowRegex = /-Section\s+['"]([^'"]+)['"]\s+-Key\s+['"]([^'"]+)['"][\s\S]*?-Type\s+['"]([^'"]+)['"]/g;
+let scalarMatch;
+while ((scalarMatch = scalarRowRegex.exec(guiScript)) !== null) {
+  const [, section, key, rowType] = scalarMatch;
+  let node = schema.properties || {};
+  let resolved = true;
+  for (const segment of [...section.split('.'), key]) {
+    const props = node.properties || node;
+    if (!props || typeof props !== 'object' || !(segment in props)) {
+      resolved = false;
+      break;
+    }
+    node = props[segment];
+  }
+  if (!resolved || !node || typeof node !== 'object') continue;
+  const schemaType = Array.isArray(node.type) ? node.type[0] : node.type;
+  const allowed = SCALAR_CONTROL_TYPES[schemaType];
+  if (!allowed) continue;
+  if (!allowed.includes(rowType)) {
+    scalarMismatches.push(`${section}.${key} (row -Type '${rowType}', schema type '${schemaType}')`);
+  }
+}
+assert.strictEqual(
+  scalarMismatches.length,
+  0,
+  `GUI scalar rows bind an incompatible control type (persists the wrong JSON type): ${scalarMismatches.join('; ')}`
+);
+assert.match(
+  guiScript,
+  /-Section\s+['"]defaults\.convergence['"]\s+-Key\s+['"]backoff['"][\s\S]*?-Type\s+['"]number['"]/,
+  'defaults.convergence.backoff must bind -Type number (schema type number)'
+);
+assert(
+  guiScript.includes("$Type -eq 'number'"),
+  "Add-ConfigFieldRow has no 'number' branch for number-typed config keys"
+);
+console.log('  PASS: Scalar schema types map to compatible GUI control types (convergence.backoff is number).');
 
 console.log('Test 10: Verifying AC8 GUI round-trip and schema parity (owner, tri-state false, karpathy default)...');
 const guiKeys10 = new Set();

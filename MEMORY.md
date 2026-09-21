@@ -42,6 +42,15 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 - **DO NOT**: assume a G2-code commit captured the whole worktree, or assume any ledger mutation leaves scoreState valid for the next gate.
 - **INSTEAD DO**: after every G2-code commit, diff `git status` against the state manifest `files_touched`; merge leftovers via `update_state finish --step N --created/--modified` and commit the remainder before advancing. After any `ac_ledger link`, persist scoreState at the exact boundary the next pre-advance expects (`link --boundary step5 --plan-index …` when the next gate is Step 7; default `pre-step6` only fits Step 6). Verify with `validate_state --pre-advance N` before dispatching.
 
+### [2026-09-21] Config GUI rows must bind schema scalar types to matching controls
+- **Layer**: `Domain`
+- **Module**: `config-editor`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1, test/test-powershell-config-editor.js`
+- **Scenario / Context**: PR #377 review thread (score 6) flagged `defaults.convergence.backoff` bound as `-Type 'string' -DefaultVal '1.5'` while `config.schema.json` declares it `number, minimum 1, default 1.5`. Saving through the GUI persisted `"1.5"` (a quoted string) and produced a schema-invalid config; runtime `Number()` coercion does not repair the persisted violation. The editor had no decimal control type, so the reviewer's `-Type 'number'` suggestion could not be applied as-is.
+- **DO NOT**: Bind a numeric/boolean schema scalar to a `string` text row; apply a schema-type change without extending the editor's control vocabulary; rely on the runtime coercing a persisted string.
+- **INSTEAD DO**: Add a `number` branch to `Add-ConfigFieldRow` (NumericUpDown with `DecimalPlaces`, persists `[double]`) alongside `int`/`bool`, bind `number`-typed schema keys to it, and enforce the invariant in `test-powershell-config-editor.js` (scalar-type parity map + numeric round-trip asserting `typeof === 'number'`). Keep GUI rows in lockstep with `config.schema.json` per the root AGENTS GUI-sync obligation.
+
 ### [2026-09-21] Autoload runtime links resolve local-first per file, not per directory
 - **Layer**: `Domain`
 - **Module**: `managed-hub-links`

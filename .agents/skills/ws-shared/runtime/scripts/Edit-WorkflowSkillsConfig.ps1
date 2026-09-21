@@ -675,7 +675,7 @@ function Add-ConfigFieldRow {
         [string]$Section,
         [string]$Key,
         [string]$LabelText,
-        [string]$Type, # 'bool', 'string', 'path-folder', 'path-file', 'enum', 'int', 'array', 'json'
+        [string]$Type, # 'bool', 'string', 'path-folder', 'path-file', 'enum', 'int', 'number', 'array', 'json'
         $DefaultVal = $null,
         [string[]]$Options = @(),
         [int]$MinVal = 0,
@@ -958,6 +958,44 @@ function Add-ConfigFieldRow {
                 Path    = $configPath
             }
         }
+        elseif ($Type -eq 'number') {
+            # Decimal scalar (JSON Schema "number"): persists a JSON number, not a
+            # quoted string, so schema validation accepts the saved value.
+            $numDec = New-Object System.Windows.Forms.NumericUpDown
+            $numDec.DecimalPlaces = 2
+            $numDec.Increment = [decimal]'0.1'
+            $numDec.Minimum = [decimal]$MinVal
+            $numDec.Maximum = [decimal]$MaxVal
+            $numDec.Font = New-Object System.Drawing.Font 'Segoe UI', 9
+            $numDec.BackColor = $palette.InputBackColor
+            $numDec.ForeColor = $palette.InputForeColor
+            $numDec.Location = New-Object System.Drawing.Point(8, $innerY)
+            $numDec.Width = 120
+            $numDec.Tag = $configPath
+
+            $decVal = [decimal]0
+            if ([decimal]::TryParse([string]$currentVal, [ref]$decVal)) {
+                $numDec.Value = [decimal]([Math]::Max([decimal]$MinVal, [Math]::Min([decimal]$MaxVal, $decVal)))
+            }
+            else {
+                $numDec.Value = [decimal]$MinVal
+            }
+
+            $numDec.Add_ValueChanged({
+                if ($this.Tag) {
+                    Set-ConfigValue -Path ([string]$this.Tag) -Value ([double]$this.Value)
+                }
+            })
+
+            $rowPanel.Controls.Add($numDec)
+            $innerY += 28
+
+            $script:FieldControls += @{
+                Type    = 'number'
+                Control = $numDec
+                Path    = $configPath
+            }
+        }
         elseif ($Type -eq 'array') {
             $txtArr = New-Object System.Windows.Forms.TextBox
             $txtArr.Multiline = $true
@@ -1202,7 +1240,7 @@ function Populate-Sections {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.convergence' -Key 'initialDelaySec' -LabelText 'Fix-PR Initial Delay (s)' -Type 'int' -MinVal 0 -MaxVal 3600 -DefaultVal 0
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.convergence' -Key 'minPollSec' -LabelText 'Fix-PR Min Poll (s)' -Type 'int' -MinVal 0 -MaxVal 3600 -DefaultVal 30
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.convergence' -Key 'maxPollSec' -LabelText 'Fix-PR Max Poll (s)' -Type 'int' -MinVal 0 -MaxVal 3600 -DefaultVal 300
-                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.convergence' -Key 'backoff' -LabelText 'Fix-PR Backoff Factor' -Type 'string' -DefaultVal '1.5'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.convergence' -Key 'backoff' -LabelText 'Fix-PR Backoff Factor' -Type 'number' -MinVal 1 -MaxVal 100 -DefaultVal 1.5
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.convergence' -Key 'maxIterations' -LabelText 'Fix-PR Max Iterations' -Type 'int' -MinVal 1 -MaxVal 100 -DefaultVal 20
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.hostAdapter' -Key 'browserTool' -LabelText 'Host Adapter Browser Tool' -Type 'string'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.hostAdapter' -Key 'stepOverrides' -LabelText 'Host Adapter Step Overrides (JSON)' -Type 'json' -Placeholder '{"<step>":{"mode":"cli-command"}}'
