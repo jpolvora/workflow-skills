@@ -51,6 +51,15 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 - **DO NOT**: Capture JSON for Node scripts with bare PowerShell `>` redirection; assume LF bytes when exact-matching edits inside CRLF files.
 - **INSTEAD DO**: Write snapshot JSON as UTF-8 explicitly ([System.IO.File]::WriteAllText with UTF8Encoding no-BOM); for CRLF files either match CRLF bytes exactly or edit through encoding-preserving PowerShell (ReadAllLines plus WriteAllText with BOM detection).
 
+### [2026-09-21] PowerShell one-liner quoting breaks with nested double quotes and backticks
+- **Layer**: `Infrastructure`
+- **Module**: `agent-shell`
+- **Severity**: `Low`
+- **PathPattern**: `N/A (session shell usage)`
+- **Scenario / Context**: While sweeping spec tracking state, two one-liners failed before passing: backtick-quoted slug construction inside a double-quoted command mangled `$slug` interpolation (parser error), and JSON-escaped `\"` paths reached PowerShell as literal backslash-quotes so plan-dir lookups silently returned empty.
+- **DO NOT**: Nest double quotes or raw backticks inside PowerShell one-liners; trust empty results from a quoted path without re-checking unquoted.
+- **INSTEAD DO**: Build one-liners from single-quoted strings, `[char]96` for backticks, and `Join-Path` for paths; re-run with plain quoting when a lookup returns suspiciously empty.
+
 ### [2026-09-21] Package membership excludes external ws-* companions; resolver requires package presence
 - **Layer**: `Tests / Workflow harness`
 - **Module**: `ws-check-harness Phase 5a gates + ws-shared resolver (`check_unique_runtime.cjs`, `check_harness_links.cjs`, `check_shell_quoting.cjs`, `check_duplicates.cjs`, `resolve_consumer_root.cjs`)`

@@ -159,7 +159,15 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] .ws resolution vs ws-shared folders cleanup (`spec: 0106-ws-shared-resolution-cleanup.spec.md`) — PR #374 MERGED
 - [ ] ws-monitor transcript signals fire false positives on healthy runs (hybrid-path-resolution, model-fallback, subagent-error) (`spec: 0107-us-369.spec.md`)
 - [x] Harness & Skills Hardening from Code Review of Recent PRs (`spec: 0108-code-review-findings-fixes.spec.md`)
-- [ ] Harness Hardening Round 2 — Open Findings from the 20-Commit Read-Only Review (`spec: 0109-code-review-round-2-fixes.spec.md`)
+- [x] Harness Hardening Round 2 — Open Findings from the 20-Commit Read-Only Review (`spec: 0109-code-review-round-2-fixes.spec.md`)
+- [x] create a skill generator for the consumer project (`spec: 0110-us-378.spec.md`)
+- [ ] draft integration ws-self-learning skill with ws-project-patterns (`spec: 0111-us-382.spec.md`)
+- [ ] enhance ps1 config gui (`spec: 0112-us-381.spec.md`)
+- [ ] increase test coverage to near 100% (`spec: 0113-us-380.spec.md`)
+
+
+
+
 
 
 
@@ -270,7 +278,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 68 | `us-250` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Remove retired ws-patterns references from hub templates/seeds (PR #251) |
 | 69 | `us-272` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Prune retired skill ids on update + hybrid harness fallback (PR #273) |
 
-All Next-specs closed except true todo: `us-369`.
+All Next-specs closed except true todos: `us-369`, `us-380`, `us-381`, `us-382`.
 
 | 70 | `ws-benchmarks-skill` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-benchmarks: benchmark commands and evolution report manager |
 | 71 | `ws-spec-manager-skill` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-manager: unified specification router and lifecycle manager |
@@ -344,7 +352,15 @@ All Next-specs closed except true todo: `us-369`.
 
 | 113 | `code-review-findings-fixes` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Harness & Skills Hardening from Code Review of Recent PRs |
 
-| 114 | `code-review-round-2-fixes` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Harness Hardening Round 2 — Open Findings from the 20-Commit Read-Only Review |
+| 114 | `code-review-round-2-fixes` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Harness Hardening Round 2 — Open Findings from the 20-Commit Read-Only Review |
+
+| 115 | `us-378` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | create a skill generator for the consumer project |
+
+| 116 | `us-382` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | draft integration ws-self-learning skill with ws-project-patterns |
+
+| 117 | `us-381` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | enhance ps1 config gui |
+
+| 118 | `us-380` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | increase test coverage to near 100% |
 
 ## 9. Inbox
 
@@ -464,6 +480,8 @@ All Next-specs closed except true todo: `us-369`.
 | 2026-09-20 | `us-365` | ws-spec-to-pr orchestrator could dispatch and observer/watcher for errors during execution | [PR #373](https://github.com/jpolvora/workflow-skills/pull/373) |
 | 2026-09-20 | `ws-shared-resolution-cleanup` | .ws resolution vs ws-shared folders cleanup | [PR #374](https://github.com/jpolvora/workflow-skills/pull/374) |
 | 2026-09-20 | `code-review-findings-fixes` | Harness & Skills Hardening from Code Review of Recent PRs | `3cbdd0b9` (develop) |
+| 2026-09-21 | `code-review-round-2-fixes` | Harness Hardening Round 2 — Open Findings from the 20-Commit Read-Only Review | `f78199d8` (develop) |
+| 2026-09-21 | `us-378` | create a skill generator for the consumer project (ws-patterns-generator) | [PR #383](https://github.com/jpolvora/workflow-skills/pull/383) |
 
 ## 11. Maintenance checklist
 

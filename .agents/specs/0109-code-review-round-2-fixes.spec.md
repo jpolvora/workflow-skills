@@ -4,6 +4,7 @@ slug: code-review-round-2-fixes
 title: "Harness Hardening Round 2 — Open Findings from the 20-Commit Read-Only Review"
 source: local
 specDate: 2026-09-20
+status: completed
 ---
 
 # Specification — Harness Hardening Round 2 — Open Findings from the 20-Commit Read-Only Review

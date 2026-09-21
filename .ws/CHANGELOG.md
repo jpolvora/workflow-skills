@@ -1,4 +1,19 @@
 # Changelog
+### [2026-09-21 13:34] Agent: muse (muse-spark)
+- **Prompt**: track untracked specs and update state (completed vs pending) from latest PRs/commits/deliveries.
+- **Done**: swept 115 spec files; tracked 4 (us-378/us-380/us-381/us-382, rows 115-118) via track_index.cjs. E1: us-378 completed (delivery 78a02811, state completed/pr-open, PR #383 MERGED verified via gh) -> [x] + Done row + status completed; us-380/381/382 pending (import-only, no runs); us-369 stays pending (no workflow evidence; PR #379 merge outside E1 signal).
+- **Result**: untracked remaining 0; open todos us-369/us-380/us-381/us-382; stale closed-except note corrected.
+
+### [2026-09-21 13:30] Agent: muse (muse-spark)
+- **Prompt**: /ws-spec-index sync — sync shipped work to index status, checkboxes, and Done log.
+- **Done**: E1 sweep over open todos; closed code-review-round-2-fixes (delivery commit f78199d8, state completed, step-08 result) via Feature-map [x], Next-specs row 114 [x] done, Done-log row, spec frontmatter status completed. Skipped us-369 (no step-08/delivery evidence; fixed outside workflow) and us-378/us-380/us-381/us-382 (no index mapping and/or no ship evidence) without edits.
+- **Result**: updated [code-review-round-2-fixes]; only true todo left is us-369; CRLF endings preserved per recorded trap.
+
+### [2026-09-21 13:25] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: `/ws-goal-fix-pr 378` → PR #378 does not exist; took over the abandoned fix loop for the us-378 PR **#383** (`develop` → `main`) and drove it to zero open threads.
+- **Done**: Round 2 (commit `6f887119`) fixed `PRRT_kwDOTFajc86kW676` (generated-skill parent-directory symlink escape) and `PRRT_kwDOTFajc86kW361` (`hasSubagentError` had no attempt/outcome correlation). Round 3 (commit `e764967a`) fixed `PRRT_kwDOTFajc86kWkXRxG` (dangling `SKILL.md` leaf symlink escaping the parent-only resolution) by resolving the full target path with `realpathLoose(target)` and failing closed on `null`; regression fixtures added for all three link variants.
+- **Result**: `activeThreads: []`; `review` + `test` ×2 green on `e764967a`; `npm run test` 103/103; integrity regenerated + verified; round reports `PR-383-round-{2,3}.md`; memory traps updated (containment full-path rule, transcript outcome correlation). Foreign WIP from the concurrent `/ws-spec-from-provider` run left unstaged.
+
 ### [2026-09-21 13:11] Agent: muse (muse-spark)
 - **Prompt**: `/ws-spec-from-provider` — bulk-import open GitHub issues into local specs.
 - **Done**: Tracker github (active=local fallback to enabled github tracker); auth pass; list 4 open; skip 1 registered (#378); import 3 (#382, #381, #380) via snapshot, base convert, agentic reformulation, full register; authoring validate PASS before each register.
