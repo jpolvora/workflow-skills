@@ -1,7 +1,7 @@
 ---
 name: ws-implement-tasks
 description: Task implementation & fix executor — builds planned features following task DAGs or applies surgical defect fixes from code review findings.
-version: 0.4.45
+version: 0.4.46
 disable-model-invocation: true
 invocation_names:
   - implement-tasks
@@ -51,7 +51,7 @@ Workflow (ws-spec-to-pr Step 4 build; Step 5 `scoreAndRefine` second pass; Step 
 5. **Fix the Entire Defect Class** — After Implement (build mode), repo-wide search/grep for the same defect pattern or vulnerability class (not style-only). Fix same-class siblings in scope; list remaining hits or exemptions (path + reason) in `step-output.summary`. Fix mode step 4 widens sibling sweep from modified directories to **repo-wide same pattern** with the same exemption rule.
    - Done when: search performed; remaining hits listed or justified.
 
-6. **Stack Invariant Scan** — Run deterministic static check `node {skillsRoot}/ws-shared/runtime/scripts/scan_stack_invariants.cjs` against modified files and the project stack rule pack (`{sharedDir}/runtime/stacks/`); honor that pack's rules before declaring the task done.
+6. **Stack Invariant Scan** — Run deterministic static check `node {skillsRoot}/ws-shared/runtime/scripts/scan_stack_invariants.cjs` against modified files and the project stack rule pack (`{skillsRoot}/ws-shared/runtime/stacks/`); honor that pack's rules before declaring the task done.
    - Done when: scan exits 0 with zero Critical violations.
 
 7. **Validate** — Run build and unit tests for modified layers from `config.json.verification`.

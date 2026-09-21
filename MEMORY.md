@@ -15,6 +15,33 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 - **DO NOT**: assume site-builder extraction regexes accept the same id shapes that specs and wiki prose now use, nor write wiki sentences that name retired paths even as historical contrast.
 - **INSTEAD DO**: after any sweep, run `test-site-wiki.js` + `test-doc-sync.js` + `test-shared-hub-paths.js` before ship; keep builder regexes slug-open (`([^\n.]+)`-style); phrase relocation history with tokens (`{sharedDir}` / `{skillsRoot}`), never retired literals.
 
+### [2026-09-20] Migrate legacy rendered autoload forms on update; exclude fix-pr scratch from link gates
+- **Layer**: `Domain`
+- **Module**: `managed-hub-links`
+- **Severity**: `High`
+- **PathPattern**: `bin/cli.js, .agents/skills/ws-configure-project/scripts/configure_autoload.cjs, .agents/skills/ws-check-harness/scripts/check_harness_links.cjs`
+- **Scenario / Context**: After the managed runtime moved to the skills install, the renderers normalized only bare filenames, `../.agents/skills/...`, and `../../ws-*` forms. Existing consumer `.ws/autoload.md` files from the pre-0.4.46 renderer kept dead `](runtime/tools.md)` and `](../ws-<id>/SKILL.md)` links forever (update refresh is preserve-on-change), so agents followed non-existent paths (PR #376 round-2 review threads, score 8/10 each). Separately, gitignored `.agents/skills/ws-fix-pr/runs/**` gate prose tripped `check_harness_links` twice with link-like text such as `](runtime/<file>)`.
+- **DO NOT**: normalize only the newest rendered form when migrating generated markdown; assume `update` rewrites already-prefixed links; let gitignored fix-pr scratch participate in harness link scanning.
+- **INSTEAD DO**: in every hub-autoload renderer, normalize all previously rendered target forms to the current resolution: legacy `](runtime/<file>)` -> managed prefix; `](../ws-<id>/...)` -> per-skill resolved link; and `]({globalSkillsRoot}/ws-shared/runtime/...)` / `]({globalSkillsRoot}/ws-<id>/...)` tokens -> project-relative when the local skills install exists (local-first precedence). Keep every conversion idempotent, add regressions that seed legacy and token forms then run `update`/`--write-autoload` and assert migration, and exclude `ws-fix-pr/runs/**` from `check_harness_links` EXCLUDED_MD.
+
+### [2026-09-20] Managed runtime relocation traps (`.ws/runtime` retirement)
+- **Layer**: `Tests`
+- **Module**: `managed-runtime`
+- **Severity**: `High`
+- **PathPattern**: `bin/cli.js, .agents/skills/ws-shared/**, test/test-install.js, test/test-ws-shared-layout.js, test/test-skills-runtime-resolution.js`
+- **Scenario / Context**: Moving the managed `ws-shared` tree (runtime + templates) out of the consumer hub (`.ws/runtime`) into the skills install broke several pinned contracts before green: the alias `templates/hub.gitignore` -> `ws-shared/.gitignore` is part of the integrity manifest shape, so writing it only to `.ws` failed consumer verify (`hub/.gitignore missing`); generated `.ws/AGENTS.md` pointers are preserve-on-update, so stale pointers kept dead `.ws/runtime` links; tracked `test/.ws` fixtures persist between runs and served stale hub docs; 59 duplicated skill bootstrap snippets each carried a `'.ws', 'runtime'` fallback; and consumer `$schema`/`toolsFile` values stayed hub-relative.
+- **DO NOT**: write the hub alias to only one of the two roots; assume installer updates refresh generated hub pointers; rely on `test/.ws` being cleaned; sweep the resolver without sweeping the 59 bootstrap copies; leave config `$schema`/`toolsFile` pointing at a retired path.
+- **INSTEAD DO**: when moving managed hub content, sweep in one pass: `bin/cli.js` (copy roots, alias dest, pointer refresh via `isGeneratedHubEntrypoint`, legacy extraction), `resolve_consumer_root.cjs`, `check_hub_separation.cjs`, `check_harness_links.cjs` hub list, all bootstrap snippets (`rg "'\.ws', 'runtime'"`), templates/config example, and every suite fixture that builds `.ws/{runtime,templates}`; then regenerate integrity, rebuild site/wiki, and run `test-install`, `test-ws-shared-layout`, `test-skills-runtime-resolution`, `test-hub-separation`, `test-shared-hub-paths`, `test-doc-sync`, and `test-harness-clean` before ship.
+
+### [2026-09-20] Global-only consumers: never hardcode project-relative managed links
+- **Layer**: `Domain`
+- **Module**: `managed-hub-links`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-configure-project/scripts/configure_autoload.cjs, bin/cli.js`
+- **Scenario / Context**: The hub-root autoload renderer hardcoded `../.agents/skills/ws-shared/runtime/` and `../.agents/skills/` prefixes while the same command supports global-only execution (`resolveRuntimeSource` + `emitSkillPath` already emit `{globalSkillsRoot}/...` rows for skills). A global-only project got `.ws/autoload.md` full of links into a project skills tree that does not exist, so agents could not load the runtime contract or referenced skills (PR #376 review thread, score 8/10).
+- **DO NOT**: assume a project-local skills tree exists when rendering managed-hub links; use one scope flag for both runtime and per-skill links; ship a renderer without asserting the global-only output.
+- **INSTEAD DO**: derive each link from on-disk existence (`{repoRoot}/.agents/skills/ws-shared/runtime` for the runtime prefix; `{repoRoot}/.agents/skills/<id>` per skill), fall back to `{globalSkillsRoot}/...` tokens, normalize previously rendered prefixes so refreshes converge, and assert both modes in tests (local fixture seeds the managed runtime; global-only fixture asserts tokens and absence of project-relative links). The same scope rule applies to seeded configs: scope-normalize a freshly seeded `config.json` before writing (`./runtime/...` in the global hub; project-relative in the consumer hub), and normalize every managed `toolsFile` form so a global install never points at `../.agents/skills/...`.
+
 ### [2026-09-20] CRLF files defeat exact-match edits; shared helpers need export checks
 - **Layer**: `Infrastructure`
 - **Module**: `observer-us365`

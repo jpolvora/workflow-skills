@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-20 12:31] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: Enforce managed-runtime location: never allow `.ws/runtime`; runtime must resolve from `{projectRoot|globalSkillsRoot}/.agents/skills/ws-shared/runtime`.
+- **Done**: Installer now copies the managed `ws-shared` tree (runtime + templates) into the skills install and retires `.ws/runtime`/`.ws/templates` on install/update; `.ws` keeps consumer config, the generated `AGENTS.md` entrypoint, and `autoload.md`. Resolver, hub-separation gate, and link checker drop the `.ws` fallback; 59 skill bootstraps drop the deprecated `.ws` fallback; seed templates get refreshed. Consumer config `$schema`/`toolsFile` repoint to the managed runtime. Hub/root docs, README, FEATURES, CATALOG, SPEC-MANAGEMENT, install shim banner, and wiki pages retargeted to `{skillsRoot}|{globalSkillsRoot}/ws-shared`. Tests updated + new negative invariant (`.ws/runtime` never resolves or installs); version 0.4.46 + integrity regen + site/wiki rebuild.
+- **Result**: `npm run tests` green (54 skills); `test-harness-clean` 0 findings; `verify-integrity` OK (v0.4.46).
+
 ### [2026-09-20 05:00] Agent: Muse Code (muse-spark)
 - **Prompt**: /ws-spec-index sync completed specs from latest merged PR info.
 - **Done**: Synced 5 merged specs to done in `.agents/specs/index.PRD` (Feature map + Next-specs rows + Done log): 0042 PR #370, 0066 PR #371, 0076 PR #372, 0105-us-365 PR #373, 0106 PR #374; set spec frontmatter `status: completed`. Left `us-369` as todo (no merged PR, E1 unsatisfied).

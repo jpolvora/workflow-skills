@@ -8,14 +8,14 @@ Package version: **0.4.38** · 54 skills (Workflows + Extra) + the `ws-shared` c
 
 ### ws-shared hybrid configuration boundary
 
-The shared hub keeps its stable consumer root while separating managed package content:
+The consumer hub keeps a stable config root (`.ws/`) while all managed package content lives in the skills install (`{skillsRoot}/ws-shared/` locally, `{globalSkillsRoot}/ws-shared/` globally):
 
-- `runtime/` contains contracts, schemas, scripts, stack rule packs, and `hub-layout.json` required by workflow execution.
-- `templates/` contains setup-only seeds such as `config.json.example`, `STACK.md.example`, and `hub.gitignore`.
-- Root `config.json` and maintained `STACK.md` are consumer-owned and trackable when non-secret.
+- `runtime/` contains contracts, schemas, scripts, stack rule packs, and `hub-layout.json` required by workflow execution; it is installed inside the skills tree and the consumer hub never carries a `runtime/` copy.
+- `templates/` contains setup-only seeds such as `config.json.example`, `STACK.md.example`, and `hub.gitignore`; installed inside the skills tree and the consumer hub never carries a `templates/` copy.
+- `.ws/` holds consumer-owned `config.json` and maintained `STACK.md` (trackable when non-secret), the generated `AGENTS.md` entrypoint, and `autoload.md`.
 - `MEMORY.md`, `memory/`, `CHANGELOG.md`, installer manifests, integrity records, and host caches are generated/local by default.
-- A global `ws-configure-project` run resolves runtime/templates from the executing global hub and writes only the target project's consumer configuration and accepted pointers/autoload files. A project-local run uses the local hub without copying global content.
-- Generated hub-root `autoload.md` rewrites links for its root-relative location; `ws-doctor` validates the selected local/global runtime source; external companion skill IDs stay outside installer manifest and integrity ownership.
+- A global `ws-configure-project` run resolves runtime/templates from the executing global skills install and writes only the target project's consumer configuration and accepted pointers/autoload files; project-local runs resolve the project skills install first.
+- Generated `.ws/autoload.md` rewrites links to the skills-install runtime; `ws-doctor` validates the selected local/global runtime source; external companion skill IDs stay outside installer manifest and integrity ownership.
 
 The machine-readable classification source is [`.agents/skills/ws-shared/runtime/hub-layout.json`](.agents/skills/ws-shared/runtime/hub-layout.json). Configure-project JSON output includes the corresponding source-control matrix.
 
@@ -457,7 +457,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 
 ### Hub (not a skill)
 
-[`.ws`](.ws/AGENTS.md) — consumer-owned hub holding `config.json`, `autoload.md`, `gates.md`, `tools.md`, `scm-provider-contract.md`, `config-resolution.md`, `MEMORY.md`, `backend.md`, `frontend.md`, `STACK.md`, and `CHANGELOG.md`.
+[`.ws`](.ws/AGENTS.md) — consumer-owned hub holding `config.json`, `STACK.md`, the generated `AGENTS.md` entrypoint, `autoload.md`, and installer metadata. Managed contracts, schemas, scripts, stack packs, and seed templates live in the skills install at `{skillsRoot}/ws-shared/` (global fallback `{globalSkillsRoot}/ws-shared/`).
 
 ---
 

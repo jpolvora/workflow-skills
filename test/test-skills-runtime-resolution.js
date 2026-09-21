@@ -6,7 +6,7 @@
  * the global skills tree ({globalSkillsRoot}/ws-shared, override via
  * WORKFLOW_SKILLS_GLOBAL_DIR). An explicit WORKFLOW_SKILLS_SHARED_DIR wins
  * over both. The project consumer hub (<repo>/.ws) holds only local config
- * variable files; legacy .ws/runtime copies are a last-resort read fallback.
+ * variable files; `.ws/runtime` is never a resolution source.
  *
  * Run: node test/test-skills-runtime-resolution.js
  */
@@ -82,7 +82,7 @@ function withEnv(vars, fn) {
 
 const anchorScript = path.join(repoRoot, '.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs');
 
-// 1. Local skills-tree runtime wins over global and legacy .ws copies.
+// 1. Local skills-tree runtime wins over global and stale `.ws` copies.
 {
   const consumer = mkTmp('ws-rt-local-');
   writeConfig(consumer);
@@ -93,8 +93,8 @@ const anchorScript = path.join(repoRoot, '.agents/skills/ws-monitor/scripts/moni
   const ctx = withEnv({ WORKFLOW_SKILLS_GLOBAL_DIR: globalRoot, WORKFLOW_SKILLS_SHARED_DIR: undefined }, () =>
     resolver.resolveConsumerContext({ repoRoot: consumer, scriptFile: anchorScript }),
   );
-  check(String(ctx.runtimeSource).includes('.agents'), 'local skills-tree runtime wins over global and legacy .ws');
-  check(String(ctx.templateSource).includes('.agents'), 'local skills-tree templates win over global and legacy .ws');
+  check(String(ctx.runtimeSource).includes('.agents'), 'local skills-tree runtime wins over global and stale .ws');
+  check(String(ctx.templateSource).includes('.agents'), 'local skills-tree templates win over global and stale .ws');
 }
 
 // 2. Global skills tree wins when the project has no local ws-shared runtime.
@@ -109,7 +109,7 @@ const anchorScript = path.join(repoRoot, '.agents/skills/ws-monitor/scripts/moni
   check(String(ctx.runtimeSource).includes(globalRoot), 'global skills-tree runtime wins when local is absent');
 }
 
-// 3. Legacy .ws/runtime is a last resort when no skills-tree runtime exists.
+// 3. `.ws/runtime` is never a resolution source, even when no skills-tree runtime exists.
 {
   const consumer = mkTmp('ws-rt-legacy-');
   writeConfig(consumer);
@@ -118,7 +118,11 @@ const anchorScript = path.join(repoRoot, '.agents/skills/ws-monitor/scripts/moni
   const ctx = withEnv({ WORKFLOW_SKILLS_GLOBAL_DIR: emptyGlobal, WORKFLOW_SKILLS_SHARED_DIR: undefined }, () =>
     resolver.resolveConsumerContext({ repoRoot: consumer, scriptFile: anchorScript }),
   );
-  check(String(ctx.runtimeSource).includes('.ws'), 'legacy .ws/runtime applies only with no skills-tree runtime');
+  check(!String(ctx.runtimeSource).includes('.ws'), '.ws/runtime is never selected as the runtime source');
+  check(
+    String(ctx.runtimeSource).includes(path.join('.agents', 'skills', 'ws-shared', 'runtime')),
+    'runtime falls back to the expected skills-tree path when nothing exists',
+  );
 }
 
 // 4. Explicit WORKFLOW_SKILLS_SHARED_DIR wins over every candidate.
@@ -161,11 +165,11 @@ const anchorScript = path.join(repoRoot, '.agents/skills/ws-monitor/scripts/moni
   );
 }
 
-// 6. Bootstrap order: every managed skill script tries the global skills
-// runtime before the deprecated legacy .ws/runtime copy (last resort).
+// 6. Bootstrap invariant: every managed skill script resolves the global
+// skills runtime and never carries a `.ws/runtime` fallback.
 {
-  const unordered = [];
   const missingGlobal = [];
+  const legacyFallback = [];
   const walk = (dir) => {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       const full = path.join(dir, entry.name);
@@ -174,28 +178,27 @@ const anchorScript = path.join(repoRoot, '.agents/skills/ws-monitor/scripts/moni
         const body = fs.readFileSync(full, 'utf8');
         if (!body.includes('const HUB_SCRIPTS_DIR = (() => {') && !body.includes('function resolveHubScriptsDir()')) return;
         if (!body.includes('WORKFLOW_SKILLS_GLOBAL_DIR')) missingGlobal.push(path.relative(repoRoot, full));
-        const legacyAt = body.indexOf("'..', '..', '..', '..', '.ws'");
-        const globalAt = body.indexOf('globalRoot');
-        if (legacyAt !== -1 && globalAt !== -1 && legacyAt < globalAt) unordered.push(path.relative(repoRoot, full));
+        if (body.includes("'.ws', 'runtime'")) legacyFallback.push(path.relative(repoRoot, full));
       }
     }
   };
   walk(path.join(repoRoot, '.agents/skills'));
   check(missingGlobal.length === 0, `every bootstrap tries the global skills runtime${missingGlobal.length ? `: ${missingGlobal.join(', ')}` : ''}`);
-  check(unordered.length === 0, `.ws/runtime is last resort everywhere${unordered.length ? `: ${unordered.join(', ')}` : ''}`);
+  check(legacyFallback.length === 0, `no bootstrap falls back to .ws/runtime${legacyFallback.length ? `: ${legacyFallback.join(', ')}` : ''}`);
 }
 
-// 7. Partial consumer tree (provider script, no ws-shared) + full .ws/runtime
-// copy + no reachable global resolves without MODULE_NOT_FOUND (CI fixture).
+// 7. Partial consumer tree (provider script + skills-tree ws-shared copy, no
+// global) resolves without MODULE_NOT_FOUND (CI fixture); a `.ws/runtime`-only
+// tree is not a fallback.
 {
-  const t = mkTmp('ws-rt-legacyfallback-');
+  const t = mkTmp('ws-rt-partialtree-');
   const skillScripts = path.join(t, '.agents', 'skills', 'ws-spec-provider-github', 'scripts');
   fs.mkdirSync(skillScripts, { recursive: true });
   fs.copyFileSync(
     path.join(repoRoot, '.agents/skills/ws-spec-provider-github/scripts/resolve_thread.cjs'),
     path.join(skillScripts, 'resolve_thread.cjs'),
   );
-  const hubScripts = path.join(t, '.ws', 'runtime', 'scripts');
+  const hubScripts = path.join(t, '.agents', 'skills', 'ws-shared', 'runtime', 'scripts');
   fs.mkdirSync(hubScripts, { recursive: true });
   for (const entry of fs.readdirSync(path.join(repoRoot, '.agents/skills/ws-shared/runtime/scripts'), { withFileTypes: true })) {
     if (!entry.isFile()) continue;
@@ -211,8 +214,36 @@ const anchorScript = path.join(repoRoot, '.agents/skills/ws-monitor/scripts/moni
     env: { ...process.env, WORKFLOW_SKILLS_GLOBAL_DIR: emptyGlobal, WORKFLOW_SKILLS_SHARED_DIR: '' },
   });
   const combined = `${result.stdout || ''}${result.stderr || ''}`;
-  check(!/MODULE_NOT_FOUND|Cannot find module/i.test(combined), 'partial tree + .ws fallback loads without MODULE_NOT_FOUND');
-  check(result.status !== 0 && /Usage:/i.test(combined), 'partial tree + .ws fallback reaches script usage');
+  check(!/MODULE_NOT_FOUND|Cannot find module/i.test(combined), 'partial tree + skills-tree hub loads without MODULE_NOT_FOUND');
+  check(result.status !== 0 && /Usage:/i.test(combined), 'partial tree + skills-tree hub reaches script usage');
+
+  // Negative: the same tree with the hub only under `.ws/runtime` no longer resolves silently.
+  const legacyOnly = mkTmp('ws-rt-legacyonly-');
+  const legacySkillScripts = path.join(legacyOnly, '.agents', 'skills', 'ws-spec-provider-github', 'scripts');
+  fs.mkdirSync(legacySkillScripts, { recursive: true });
+  fs.copyFileSync(
+    path.join(repoRoot, '.agents/skills/ws-spec-provider-github/scripts/resolve_thread.cjs'),
+    path.join(legacySkillScripts, 'resolve_thread.cjs'),
+  );
+  const legacyHubScripts = path.join(legacyOnly, '.ws', 'runtime', 'scripts');
+  fs.mkdirSync(legacyHubScripts, { recursive: true });
+  for (const entry of fs.readdirSync(path.join(repoRoot, '.agents/skills/ws-shared/runtime/scripts'), { withFileTypes: true })) {
+    if (!entry.isFile()) continue;
+    fs.copyFileSync(
+      path.join(repoRoot, '.agents/skills/ws-shared/runtime/scripts', entry.name),
+      path.join(legacyHubScripts, entry.name),
+    );
+  }
+  const legacyResult = cp.spawnSync(process.execPath, [path.join(legacySkillScripts, 'resolve_thread.cjs')], {
+    encoding: 'utf8',
+    cwd: legacyOnly,
+    env: { ...process.env, WORKFLOW_SKILLS_GLOBAL_DIR: emptyGlobal, WORKFLOW_SKILLS_SHARED_DIR: '' },
+  });
+  const legacyCombined = `${legacyResult.stdout || ''}${legacyResult.stderr || ''}`;
+  check(
+    /MODULE_NOT_FOUND|Cannot find module/i.test(legacyCombined),
+    '.ws/runtime alone does not bootstrap the managed runtime (fail closed)',
+  );
 }
 
 for (const dir of tmpRoots) fs.rmSync(dir, { recursive: true, force: true });

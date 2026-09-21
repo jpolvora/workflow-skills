@@ -61,10 +61,8 @@ function resolveConsumerHub(repoRoot, mode) {
   const globalRoot =
     process.env.WORKFLOW_SKILLS_GLOBAL_DIR ||
     path.join(process.env.HOME || process.env.USERPROFILE || '', '.agents', 'skills');
-  // Mirror resolveHubSource / resolveConsumerContext local-first precedence
-  // (PRECEDENCE_MATRIX rank 3): explicit shared-dir override, then the
-  // skills-tree runtime agents actually load, then global, then legacy
-  // installed copies and thin pointers.
+  // Managed hub content lives only in the skills install (project-local, then
+  // global). The consumer hub (.ws) never carries runtime copies.
   const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
   const candidates = [];
   if (explicitShared && String(explicitShared).trim()) {
@@ -73,9 +71,6 @@ function resolveConsumerHub(repoRoot, mode) {
   candidates.push(
     path.join(repoRoot, '.agents', 'skills', 'ws-shared', 'runtime', 'AGENTS.md'),
     path.join(globalRoot, 'ws-shared', 'runtime', 'AGENTS.md'),
-    path.join(repoRoot, '.ws', 'runtime', 'AGENTS.md'),
-    path.join(repoRoot, '.ws', 'AGENTS.md'),
-    path.join(globalRoot, 'ws-shared', 'AGENTS.md'),
   );
   return candidates.find((file) => fs.existsSync(file)) || candidates[0];
 }

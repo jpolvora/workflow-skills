@@ -134,7 +134,7 @@ Local tags **never pushed**: `uswf/{workflow-id}/before-step-{N}`.
 
 ## Dual-mode
 
-Same skills, `{sharedDir}/config.json`, `{sharedDir}/runtime/gates.md`. `workflowType`: `standard` | `lite` — no cross-resume. Lite has **no** Testing step.
+Same skills, `{sharedDir}/config.json`, `{skillsRoot}/ws-shared/runtime/gates.md`. `workflowType`: `standard` | `lite` — no cross-resume. Lite has **no** Testing step.
 
 ---
 

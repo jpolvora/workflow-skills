@@ -1,7 +1,7 @@
 ---
 name: ws-plan-write
 description: Implementation plan generator — transforms feature specifications into structured, technical step-01 implementation plans.
-version: 0.4.45
+version: 0.4.46
 disable-model-invocation: true
 invocation_names:
   - plan-write
@@ -46,7 +46,7 @@ Workflow (ws-spec-to-pr Step 1): orchestrator passes `specInput` (path to `step-
 
 
 2. **Draft plan** — Write `{us-dir}/step-01-{slug}.plan.md` following [`references/PLAN-TEMPLATE.md`](references/PLAN-TEMPLATE.md) (sections 0–8).
-   - Mandate `## 6. Stack & Security Invariants Verification Plan` identifying touched framework boundaries (authorization, async safety, DTO validation, subscription cleanup) loaded from `{sharedDir}/runtime/stacks/`.
+   - Mandate `## 6. Stack & Security Invariants Verification Plan` identifying touched framework boundaries (authorization, async safety, DTO validation, subscription cleanup) loaded from `{skillsRoot}/ws-shared/runtime/stacks/` (global fallback `{globalSkillsRoot}/ws-shared/runtime/stacks/`).
    - For bugfix/regression ACs: §3 Step-by-Step Plan and §5 Test Coverage must name **defect-class sibling sweep** (repo-wide) and **sabotage verification** (`run_sabotage.cjs` when mutation unset).
    - Done when: every section 0–8 is filled; each requirement maps to ≥1 Step-by-Step Plan entry; every AC maps to ≥1 test case in section 5; section 6 establishes verification for all touched framework boundaries.
 

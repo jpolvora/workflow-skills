@@ -145,12 +145,12 @@ function makeGlobalWithoutHub() {
   check(/ws-configure-project/.test(String(error && error.message)), 'local fail-closed error points at ws-configure-project');
 }
 
-// 4. Example-only fixture: a consumer with only
-// .ws/templates/config.json.example (no .ws/config.json) must also fail
-// closed — the seeded template never counts as a project hub.
+// 4. Example-only fixture: a consumer with only the managed
+// .agents/skills/ws-shared/templates/config.json.example (no .ws/config.json)
+// must also fail closed — the seeded template never counts as a project hub.
 {
   const consumer = mkTmp('ws-gcm-example-');
-  write(path.join(consumer, '.ws', 'templates', 'config.json.example'), JSON.stringify({ project: { name: 'template' } }));
+  write(path.join(consumer, '.agents', 'skills', 'ws-shared', 'templates', 'config.json.example'), JSON.stringify({ project: { name: 'template' } }));
   const ctx = withEnv(
     { WORKFLOW_SKILLS_GLOBAL_DIR: mkTmp('ws-gcm-noglobal2-'), WORKFLOW_SKILLS_SHARED_DIR: undefined },
     () => resolver.resolveConsumerContext({ repoRoot: consumer }),

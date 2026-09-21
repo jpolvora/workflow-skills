@@ -1,6 +1,6 @@
 ---
 name: ws-megabrain
-version: 0.4.45
+version: 0.4.46
 description: >-
   Vibe-coding task implementer without a spec. Scan dirty work when asked what
   next; route specialists; consume fable/senior/tdah. Trigger on

@@ -13,7 +13,7 @@ const TOKENS = {
   '{memoryDir}': '.',
   '{specsDir}': '.agents/specs',
 };
-const EXCLUDED_MD = /(^|[\\/])(CHANGELOG\.md|MEMORY\.md|memory[\\/]|evals[\\/])/;
+const EXCLUDED_MD = /(^|[\\/])(CHANGELOG\.md|MEMORY\.md|memory[\\/]|evals[\\/]|ws-fix-pr[\\/]runs[\\/])/;
 const ROOT_DOCS = ['AGENTS.md', 'CATALOG.md', 'README.md', 'FEATURES.md', 'RESEARCH.md', 'STACK.md'];
 
 function walk(dir, filter, out = []) {
@@ -134,7 +134,7 @@ function analyze(repoRoot) {
     .filter((entry) => fs.existsSync(path.join(skillsDir, entry.name, 'SKILL.md')))
     .map((entry) => entry.name)
     .sort();
-  const hubText = ['AGENTS.md', 'CATALOG.md', '.ws/AGENTS.md', '.ws/runtime/AGENTS.md', '.ws/runtime/CATALOG.md', '.ws/autoload.md', '.agents/skills/ws-shared/runtime/AGENTS.md', '.agents/skills/ws-shared/runtime/CATALOG.md']
+  const hubText = ['AGENTS.md', 'CATALOG.md', '.ws/AGENTS.md', '.ws/autoload.md', '.agents/skills/ws-shared/runtime/AGENTS.md', '.agents/skills/ws-shared/runtime/CATALOG.md']
     .map((rel) => {
       const full = path.join(repoRoot, rel);
       return fs.existsSync(full) ? fs.readFileSync(full, 'utf8') : '';

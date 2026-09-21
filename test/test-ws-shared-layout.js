@@ -203,35 +203,48 @@ try {
     { cwd: legacyRoot, encoding: 'utf8', env: { ...process.env, FORCE_COLOR: '0' } },
   );
   assert(install.status === 0, `${install.stdout || ''}${install.stderr || ''}`);
-  assert(!fs.existsSync(legacyShared), 'relocation removes the emptied legacy hub dir');
-  assert(fs.existsSync(path.join(newShared, 'runtime', 'tools.md')), 'migration moves flat runtime files');
-  assert(fs.existsSync(path.join(newShared, 'templates', 'config.json.example')), 'migration installs templates');
   assert(
-    fs.existsSync(path.join(newShared, 'templates', 'STACK.md.example')),
+    fs.existsSync(path.join(legacyShared, 'runtime', 'tools.md')),
+    'managed runtime stays in the skills install',
+  );
+  assert(
+    fs.existsSync(path.join(legacyShared, 'templates', 'config.json.example')),
+    'managed templates stay in the skills install',
+  );
+  assert(
+    fs.existsSync(path.join(legacyShared, 'templates', 'STACK.md.example')),
     'migration moves STACK.md.example without case-alias ENOENT',
   );
-  assert(!fs.existsSync(path.join(newShared, 'STACK.md.example')), 'migration removes legacy flat STACK.md.example');
-  assert(!fs.existsSync(path.join(newShared, 'tools.md')), 'migration removes the legacy flat runtime file');
+  assert(!fs.existsSync(path.join(legacyShared, 'STACK.md.example')), 'migration removes legacy flat STACK.md.example');
+  assert(!fs.existsSync(path.join(legacyShared, 'tools.md')), 'migration removes the legacy flat runtime file');
   assert(
-    !fs.existsSync(path.join(newShared, 'CATALOG.md.bak_20260907-1756')),
+    !fs.existsSync(path.join(legacyShared, 'CATALOG.md.bak_20260907-1756')),
     'migration prunes hub backup artifacts instead of failing',
   );
   assert(fs.existsSync(path.join(newShared, '.gitignore')), 'migration installs the aliased hub ignore file');
+  assert(!fs.existsSync(path.join(newShared, 'runtime')), 'consumer hub never receives a runtime copy');
+  assert(!fs.existsSync(path.join(newShared, 'templates')), 'consumer hub never receives a templates copy');
   const localPointer = fs.readFileSync(path.join(newShared, 'AGENTS.md'), 'utf8');
-  assert(localPointer.includes('`runtime/AGENTS.md`'), 'local hub pointer links to the installed runtime contract');
+  assert(localPointer.includes('{skillsRoot}/ws-shared/runtime/AGENTS.md'), 'local hub pointer links to the managed runtime contract');
   assert(
-    !localPointer.includes('{globalSkillsRoot}/ws-shared/runtime/AGENTS.md'),
-    'local hub pointer does not require a global-only runtime path',
+    !localPointer.includes('`runtime/AGENTS.md`'),
+    'local hub pointer never links a .ws/runtime copy',
   );
   const installedAutoload = fs.readFileSync(path.join(newShared, 'autoload.md'), 'utf8');
-  assert(installedAutoload.includes('](runtime/tools.md)'), 'hub-root autoload rewrites runtime-relative hub links');
-  assert(installedAutoload.includes('](../ws-spec-manager/SKILL.md)'), 'hub-root autoload rewrites skill-relative links');
+  assert(installedAutoload.includes('](../.agents/skills/ws-shared/runtime/tools.md)'), 'hub-root autoload rewrites runtime-relative hub links to the skills install');
+  const renderedSkillLinks = [
+    ...installedAutoload.matchAll(/\]\((?:\.\.\/\.agents\/skills\/|\{globalSkillsRoot\}\/)(ws-[A-Za-z0-9-]+)\/SKILL\.md\)/g),
+  ];
+  assert(
+    renderedSkillLinks.length > 0 && !installedAutoload.includes('](../../ws-'),
+    'hub-root autoload rewrites skill-relative links (local or global-token form)',
+  );
   for (const [name, content] of Object.entries(preserved)) {
     if (name === 'config.json') {
       const cfg = JSON.parse(fs.readFileSync(path.join(newShared, name), 'utf8'));
       assert(cfg.project?.name === 'legacy-consumer', 'migration preserves consumer-owned config.json values');
-      assert(cfg.toolsFile === 'runtime/tools.md', 'upgrade migrates legacy toolsFile');
-      assert(cfg.$schema === './runtime/config.schema.json', 'upgrade normalizes $schema');
+      assert(cfg.toolsFile === '../.agents/skills/ws-shared/runtime/tools.md', 'upgrade migrates legacy toolsFile to the managed runtime');
+      assert(cfg.$schema === '../.agents/skills/ws-shared/runtime/config.schema.json', 'upgrade normalizes $schema to the managed runtime');
       assert(Boolean(cfg.pathTokens?.sharedDir), 'upgrade ensures pathTokens');
       assert(cfg.pathTokens?.sharedDir === '.ws', 'upgrade seeds pathTokens.sharedDir at the new hub root');
       assert(!('sessionLeases' in (cfg.defaults || {})), 'upgrade strips retired defaults keys');
@@ -254,10 +267,46 @@ try {
     { cwd: legacyRoot, encoding: 'utf8', env: { ...process.env, FORCE_COLOR: '0' } },
   );
   assert(secondInstall.status === 0, `${secondInstall.stdout || ''}${secondInstall.stderr || ''}`);
-  assert(!fs.existsSync(path.join(newShared, 'templates', 'hub.gitignore')), 'migration does not retain alias source');
+  assert(
+    !fs.existsSync(path.join(legacyShared, 'templates', 'hub.gitignore')),
+    'migration does not retain alias source',
+  );
   assert(
     fs.readFileSync(path.join(newShared, '.gitignore'), 'utf8').includes('config.json.bak'),
     'update refreshes managed .gitignore from template alias',
+  );
+
+  // Legacy pre-0.4.46 rendered autoload links are migrated on update.
+  let legacyAutoload = installedAutoload
+    .replaceAll('](../.agents/skills/ws-shared/runtime/tools.md)', '](runtime/tools.md)');
+  if (legacyAutoload.includes('](../.agents/skills/ws-tdah/SKILL.md)')) {
+    legacyAutoload = legacyAutoload.replaceAll('](../.agents/skills/ws-tdah/SKILL.md)', '](../ws-tdah/SKILL.md');
+  } else {
+    legacyAutoload += '\n\n[legacy skill](../ws-tdah/SKILL.md)\n';
+  }
+  // Global-token links from a previous global-only render must re-resolve locally.
+  legacyAutoload += '\n\n[global runtime]({globalSkillsRoot}/ws-shared/runtime/gates.md)\n[global skill]({globalSkillsRoot}/ws-tdah/SKILL.md)\n';
+  fs.writeFileSync(path.join(newShared, 'autoload.md'), legacyAutoload, 'utf8');
+  const thirdInstall = cp.spawnSync(
+    process.execPath,
+    [path.join(repoRoot, 'bin', 'cli.js'), 'update', '--yes'],
+    { cwd: legacyRoot, encoding: 'utf8', env: { ...process.env, FORCE_COLOR: '0' } },
+  );
+  assert(thirdInstall.status === 0, `${thirdInstall.stdout || ''}${thirdInstall.stderr || ''}`);
+  const migratedAutoload = fs.readFileSync(path.join(newShared, 'autoload.md'), 'utf8');
+  assert(!migratedAutoload.includes('](runtime/tools.md)'), 'update migrates legacy ](runtime/...) autoload links');
+  assert(!migratedAutoload.includes('](../ws-tdah/SKILL.md)'), 'update migrates legacy ](../ws-*/...) autoload links');
+  assert(
+    !migratedAutoload.includes(']({globalSkillsRoot}/ws-shared/runtime/'),
+    'update re-resolves global-token runtime links to the local managed path',
+  );
+  assert(
+    migratedAutoload.includes('](../.agents/skills/ws-shared/runtime/tools.md)'),
+    'migrated runtime link points at the managed skills install',
+  );
+  assert(
+    migratedAutoload.includes('](../.agents/skills/ws-shared/runtime/gates.md)'),
+    'global-token runtime link resolved to the managed skills install',
   );
 
   // us-351: collision (both legacy hub and .ws/ present) leaves both in place.

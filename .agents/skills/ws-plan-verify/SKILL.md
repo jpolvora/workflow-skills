@@ -1,7 +1,7 @@
 ---
 name: ws-plan-verify
 description: Spec compliance scorer (0–10). Pipeline advances only at score ≥ `defaults.minVerifyScore` (default 9); below bar runs scoreAndRefine. Trigger for check-implementation or orch Step 5.
-version: 0.4.45
+version: 0.4.46
 disable-model-invocation: true
 invocation_names:
   - plan-verify
@@ -42,7 +42,7 @@ Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, opti
    - Done when: the resolved plan (and, in full mode, spec) path is known.
 
 2. **Evaluate**: Inspect code and tests using tools. Quick Score evaluates Completeness, Correctness & Style, and Testing. US Verification maps every plan feature and acceptance criterion to **Implemented**, **Not implemented**, or **Implemented differently**, each with file:line evidence. Also map spec **negative test** scenarios (`negativeScenarios` from Validation Notes / failing cases) to covering tests before advancing; missing negative coverage is a gap, not an implicit pass.
-   - Run **Stack Invariant Audit**: execute `node {skillsRoot}/ws-shared/runtime/scripts/scan_stack_invariants.cjs` against touched files and the project framework invariant rules (`{sharedDir}/runtime/stacks/`); flag violations per that pack.
+   - Run **Stack Invariant Audit**: execute `node {skillsRoot}/ws-shared/runtime/scripts/scan_stack_invariants.cjs` against touched files and the project framework invariant rules (`{skillsRoot}/ws-shared/runtime/stacks/`); flag violations per that pack.
    - Optional `fable` integration: If `config.json.fable.enabled` and `autoAudit` are `true`, run [`ws-fable-judge`](../ws-fable-judge/SKILL.md) against `git diff` ground truth. Record verdict (`VERIFIED`, `VERIFIED WITH CAVEATS`, `REFUTED`) and fraud findings in the report.
    - Done when: every planned feature/AC, spec negative scenario, and stack invariant audit has observed evidence.
 

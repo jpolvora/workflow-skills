@@ -158,14 +158,15 @@ try {
   }
 
   const poisoned = path.join(tmp, 'poison-autoload');
-  fs.mkdirSync(path.join(poisoned, '.ws', 'runtime'), { recursive: true });
+  fs.mkdirSync(path.join(poisoned, '.ws'), { recursive: true });
+  fs.mkdirSync(path.join(poisoned, '.agents', 'skills', 'ws-shared', 'runtime'), { recursive: true });
   fs.copyFileSync(
     path.join(repoRoot, '.agents/skills/ws-shared/runtime/autoload.md'),
     path.join(poisoned, '.ws/autoload.md'),
   );
   fs.copyFileSync(
     path.join(repoRoot, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
-    path.join(poisoned, '.ws/runtime/skill-dependencies.json'),
+    path.join(poisoned, '.agents', 'skills', 'ws-shared', 'runtime', 'skill-dependencies.json'),
   );
   let text = fs.readFileSync(path.join(poisoned, '.ws/autoload.md'), 'utf8');
   if (!text.includes('| `ws-memo` | `{skillsRoot}/ws-memo/SKILL.md` | Session start |')) {

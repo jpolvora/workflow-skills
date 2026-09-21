@@ -34,7 +34,6 @@ const HUB_SCRIPTS_DIR = (() => {
     ? path.resolve(String(globalDir).trim())
     : path.join(require('os').homedir(), '.agents', 'skills');
   candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
-  candidates.push(path.resolve(__dirname, '..', '..', '..', '..', '.ws', 'runtime', 'scripts'));
   for (const candidate of [...new Set(candidates)]) {
     try {
       require.resolve(path.join(candidate, 'resolve_consumer_root.cjs'));

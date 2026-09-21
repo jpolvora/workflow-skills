@@ -87,6 +87,10 @@ function seedConsumerTree(root, { withLocalSkills = true, withAutoload = true } 
       fs.mkdirSync(d, { recursive: true });
       fs.writeFileSync(path.join(d, 'SKILL.md'), `# ${id}\n`, 'utf8');
     }
+    // Model a project-local install: the managed runtime lives in the skills tree.
+    const runtimeDir = path.join(root, '.agents', 'skills', 'ws-shared', 'runtime');
+    fs.mkdirSync(runtimeDir, { recursive: true });
+    fs.writeFileSync(path.join(runtimeDir, 'tools.md'), '# tools\n', 'utf8');
   }
   return { shared, skills };
 }
@@ -134,10 +138,14 @@ function parseJsonOut(result) {
       autoText.includes('.agents/skills/ws-senior-developer/SKILL.md'),
       'local install emits .agents/skills paths in autoload.md',
     );
-    assert(autoText.includes('](runtime/tools.md)'), 'consumer autoload rewrites runtime-relative hub links');
+    assert(autoText.includes('](../.agents/skills/ws-shared/runtime/tools.md)'), 'consumer autoload rewrites runtime-relative hub links to the skills install');
     assert(
-      autoText.includes('](../ws-spec-manager/SKILL.md)'),
+      autoText.includes('](../.agents/skills/ws-task-lifecycle/SKILL.md)'),
       'consumer autoload rewrites skill-relative links',
+    );
+    assert(
+      !autoText.includes('{globalSkillsRoot}/ws-shared/runtime/'),
+      'local autoload does not use global runtime tokens',
     );
     assert(
       rootText.includes('autoload.md') && rootText.includes('.ws/AGENTS.md'),
@@ -215,6 +223,41 @@ function parseJsonOut(result) {
     assert(
       autoText.includes('{globalSkillsRoot}/ws-tdah/SKILL.md'),
       'autoload.md stores global token path',
+    );
+    assert(
+      autoText.includes('{globalSkillsRoot}/ws-shared/runtime/tools.md'),
+      'global-only autoload runtime links use {globalSkillsRoot} tokens',
+    );
+    assert(
+      !autoText.includes('](../.agents/skills/'),
+      'global-only autoload has no project-relative skills-install links',
+    );
+    assert(!autoText.includes('](runtime/'), 'global-only autoload never links a .ws/runtime copy');
+
+    // Transition: a local skills tree appears -> global-token links re-resolve locally.
+    const localRuntimeDir = path.join(root, '.agents', 'skills', 'ws-shared', 'runtime');
+    fs.mkdirSync(localRuntimeDir, { recursive: true });
+    fs.writeFileSync(path.join(localRuntimeDir, 'tools.md'), '# tools\n', 'utf8');
+    const localTaskLifecycle = path.join(root, '.agents', 'skills', 'ws-task-lifecycle');
+    fs.mkdirSync(localTaskLifecycle, { recursive: true });
+    fs.writeFileSync(path.join(localTaskLifecycle, 'SKILL.md'), '# ws-task-lifecycle\n', 'utf8');
+    const transition = runNode([
+      '--repo-root',
+      root,
+      '--global-skills-root',
+      globalRoot,
+      '--write-autoload',
+      '--json',
+    ]);
+    assert(transition.status === 0, 'global-to-local transition rerun exits 0');
+    const transitionText = fs.readFileSync(path.join(root, '.ws/autoload.md'), 'utf8');
+    assert(
+      transitionText.includes('](../.agents/skills/ws-shared/runtime/tools.md)'),
+      'transition rewrites runtime token link to the local managed path',
+    );
+    assert(
+      transitionText.includes('](../.agents/skills/ws-task-lifecycle/SKILL.md)'),
+      'transition rewrites skill token link to the local path',
     );
     assert(!path.isAbsolute(paths[0].replace(/\{[^}]+\}/g, 'x')), 'token paths are not absolute');
   }
@@ -484,11 +527,11 @@ function parseJsonOut(result) {
 }
 
 function seedConfigExample(root) {
-  const shared = path.join(root, '.ws');
-  fs.mkdirSync(path.join(shared, 'templates'), { recursive: true });
+  const templates = path.join(root, '.agents', 'skills', 'ws-shared', 'templates');
+  fs.mkdirSync(templates, { recursive: true });
   fs.copyFileSync(
     path.join(REPO_ROOT, '.agents/skills/ws-shared/templates/config.json.example'),
-    path.join(shared, 'templates', 'config.json.example'),
+    path.join(templates, 'config.json.example'),
   );
 }
 
@@ -512,7 +555,7 @@ function seedConfigExample(root) {
   const cfgPath = path.join(rootOmitted, '.ws/config.json');
   const example = JSON.parse(
     fs.readFileSync(
-      path.join(rootOmitted, '.ws/templates/config.json.example'),
+      path.join(rootOmitted, '.agents', 'skills', 'ws-shared', 'templates', 'config.json.example'),
       'utf8',
     ),
   );
@@ -639,7 +682,7 @@ function seedConfigExample(root) {
   seedConfigExample(root);
   const example = JSON.parse(
     fs.readFileSync(
-      path.join(root, '.ws/templates/config.json.example'),
+      path.join(root, '.agents', 'skills', 'ws-shared', 'templates', 'config.json.example'),
       'utf8',
     ),
   );

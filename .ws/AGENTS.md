@@ -1,6 +1,6 @@
-# Shared — Workflow Config & Consumer Data Hub
+# Shared - Workflow Config & Consumer Data Hub
 
-This is the project-local entrypoint for the shared hub (`.ws/`). The managed consumer hub contract is in [`runtime/AGENTS.md`](runtime/AGENTS.md) (installed managed copy in consumers; authoring source of truth at [`.agents/skills/ws-shared/runtime/AGENTS.md`](../.agents/skills/ws-shared/runtime/AGENTS.md) in this upstream package).
+This is the project-local entrypoint for the shared hub (`.ws/`). The managed consumer hub contract lives in the skills install: [`{skillsRoot}/ws-shared/runtime/AGENTS.md`](../.agents/skills/ws-shared/runtime/AGENTS.md) (global fallback `{globalSkillsRoot}/ws-shared/runtime/AGENTS.md`).
 
 Project-specific data stays at this directory root:
 
@@ -10,10 +10,10 @@ Project-specific data stays at this directory root:
 
 `MEMORY.md` + `memory/*` and `CHANGELOG.md` live at their configured locations (`rules.memoryDir` / `rules.changelogFile`, both defaulting to the repo root); legacy copies under this directory remain as fallback when they hold entries.
 
-Managed runtime files are under [`runtime/`](runtime/) in consumers (installed copies), and setup-only seed files are under [`templates/`](templates/). A global-hybrid install may contain only this entrypoint and consumer-owned configuration; its managed runtime is resolved from `{globalSkillsRoot}/ws-shared/runtime/`.
+Managed hub content (runtime contracts, schemas, scripts, stack packs, and setup seed templates) resolves from the project skills install (`{skillsRoot}/ws-shared/runtime/` and `{skillsRoot}/ws-shared/templates/`); a global/hybrid install falls back to `{globalSkillsRoot}/ws-shared/`. This hub never carries `runtime/` or `templates/` copies.
 
-Generated hub-root `autoload.md` uses root-relative links, while `ws-doctor` resolves the active local or global runtime before validating config and hub files.
+Generated hub-root `autoload.md` uses project-relative links into the skills install, while `ws-doctor` resolves the active local or global runtime before validating config and hub files.
 
 Project-local configuration takes precedence over global configuration. Do not place credentials in `config.json`; use environment-variable references.
 
-Source control: track non-secret `config.json` and a maintained `STACK.md`; ignore generated memory/history, managed `runtime/` and `templates/`, and installer metadata. The installed hub `.gitignore` reflects this default.
+Source control: track non-secret `config.json` and a maintained `STACK.md`; ignore generated memory/history and installer metadata. The installed hub `.gitignore` reflects this default.

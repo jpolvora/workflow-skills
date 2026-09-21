@@ -979,10 +979,10 @@ acImplemented: 0
   const workflowId2 = 'wf-artfb';
   const stateRel2 = `.agents/plans/${slug2}/wf.state.md`;
   const usDir2 = path.join(testRoot2, '.agents/plans', slug2);
-  fs.mkdirSync(path.join(testRoot2, '.ws/runtime'), { recursive: true });
+  fs.mkdirSync(path.join(testRoot2, '.agents', 'skills', 'ws-shared', 'runtime'), { recursive: true });
   fs.copyFileSync(
     path.join(repoRoot, '.agents/skills/ws-shared/runtime/skill-dependencies.json'),
-    path.join(testRoot2, '.ws/runtime/skill-dependencies.json'),
+    path.join(testRoot2, '.agents', 'skills', 'ws-shared', 'runtime', 'skill-dependencies.json'),
   );
   write(path.join(testRoot2, '.ws/config.json'), JSON.stringify({
     plans: { dir: '.agents/plans' },

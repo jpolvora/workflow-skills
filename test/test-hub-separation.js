@@ -1,5 +1,7 @@
 /**
- * Consumer vs upstream hub separation (spec 0066 AC4/AC7/AC8/AC9/AC12).
+ * Consumer vs upstream hub separation (spec 0066 AC4/AC7/AC8/AC9/AC12) plus the
+ * managed-runtime location invariant: runtime lives in the skills install
+ * ({skillsRoot}|{globalSkillsRoot}/ws-shared/runtime), never `.ws/runtime`.
  * Run: node test/test-hub-separation.js
  */
 import fs from 'fs';
@@ -11,25 +13,18 @@ const CHECKER = path.join(repoRoot, '.agents', 'skills', 'ws-check-harness', 'sc
 const SOT_HUB = path.join(repoRoot, '.agents', 'skills', 'ws-shared', 'runtime', 'AGENTS.md');
 const SOT_CATALOG = path.join(repoRoot, '.agents', 'skills', 'ws-shared', 'runtime', 'CATALOG.md');
 
-const DENYLIST = [
-  'Upstream session contract',
-  'Global vs local',
-  'Skill SoT',
-  'generate-integrity',
-  'build-site:bump',
-  'Upstream Maintainers',
-  'Upstream developer workflow',
-  'Before ship PR',
-];
-
 const tmpRoots = [];
+
+function treeRuntimePath(root) {
+  return path.join(root, '.agents', 'skills', 'ws-shared', 'runtime', 'AGENTS.md');
+}
 
 function mkConsumerHub(extra = '') {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-hub-sep-'));
   tmpRoots.push(root);
-  const dir = path.join(root, '.ws', 'runtime');
-  fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, 'AGENTS.md'), `${fs.readFileSync(SOT_HUB, 'utf8')}${extra}`, 'utf8');
+  const runtime = path.join(root, '.agents', 'skills', 'ws-shared', 'runtime');
+  fs.mkdirSync(runtime, { recursive: true });
+  fs.writeFileSync(path.join(runtime, 'AGENTS.md'), `${fs.readFileSync(SOT_HUB, 'utf8')}${extra}`, 'utf8');
   return root;
 }
 
@@ -66,11 +61,11 @@ try {
 
   // AC8: missing consumer banner is critical.
   const noBanner = mkConsumerHub();
-  const bannerStripped = fs.readFileSync(path.join(noBanner, '.ws', 'runtime', 'AGENTS.md'), 'utf8')
+  const bannerStripped = fs.readFileSync(treeRuntimePath(noBanner), 'utf8')
     .split('\n')
     .filter((line) => !/you are in the consumer hub/i.test(line))
     .join('\n');
-  fs.writeFileSync(path.join(noBanner, '.ws', 'runtime', 'AGENTS.md'), bannerStripped, 'utf8');
+  fs.writeFileSync(treeRuntimePath(noBanner), bannerStripped, 'utf8');
   const bannerResult = check(noBanner, 'consumer');
   assert.strictEqual(bannerResult.result.status, 1, 'missing banner exits 1');
   assert.ok(
@@ -92,7 +87,7 @@ try {
   const consumerResult = check(consumerOnly, 'consumer');
   assert.strictEqual(consumerResult.result.status, 0, consumerResult.result.stderr || 'consumer-only tree passes without root AGENTS.md');
   assert.ok(!fs.existsSync(path.join(consumerOnly, 'AGENTS.md')), 'fixture has no root AGENTS.md');
-  const hubText = fs.readFileSync(path.join(consumerOnly, '.ws', 'runtime', 'AGENTS.md'), 'utf8');
+  const hubText = fs.readFileSync(treeRuntimePath(consumerOnly), 'utf8');
   for (const phrase of ['Skill SoT', 'Global vs local', 'Upstream session contract']) {
     assert.ok(!hubText.includes(phrase), `consumer hub does not surface ${phrase}`);
   }
@@ -125,12 +120,26 @@ try {
   assert.strictEqual(missing.result.status, 1, 'missing hub exits 1 in consumer mode');
   assert.ok(JSON.parse(missing.result.stdout).findings.some((row) => row.kind === 'hub-missing'), 'missing hub reported');
 
-  // Local-first: a contaminated skills-tree runtime wins over a clean legacy installed copy.
-  const localFirstRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-hub-sep-localfirst-'));
-  tmpRoots.push(localFirstRoot);
-  const legacyRuntime = path.join(localFirstRoot, '.ws', 'runtime');
+  // Invariant: `.ws/runtime/AGENTS.md` is never a resolution source.
+  // (a) only `.ws/runtime` present -> fail closed, hub missing.
+  const legacyOnly = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-hub-sep-legacyonly-'));
+  tmpRoots.push(legacyOnly);
+  const legacyRuntime = path.join(legacyOnly, '.ws', 'runtime');
   fs.mkdirSync(legacyRuntime, { recursive: true });
   fs.writeFileSync(path.join(legacyRuntime, 'AGENTS.md'), fs.readFileSync(SOT_HUB, 'utf8'), 'utf8');
+  const legacyOnlyResult = check(legacyOnly, 'consumer');
+  assert.strictEqual(legacyOnlyResult.result.status, 1, '.ws/runtime alone does not satisfy the consumer gate');
+  assert.ok(
+    JSON.parse(legacyOnlyResult.result.stdout).findings.some((row) => row.kind === 'hub-missing'),
+    '.ws/runtime alone reports hub-missing',
+  );
+
+  // (b) contaminated skills-tree runtime wins over a clean `.ws/runtime` copy.
+  const localFirstRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-hub-sep-localfirst-'));
+  tmpRoots.push(localFirstRoot);
+  const staleRuntime = path.join(localFirstRoot, '.ws', 'runtime');
+  fs.mkdirSync(staleRuntime, { recursive: true });
+  fs.writeFileSync(path.join(staleRuntime, 'AGENTS.md'), fs.readFileSync(SOT_HUB, 'utf8'), 'utf8');
   const treeRuntime = path.join(localFirstRoot, '.agents', 'skills', 'ws-shared', 'runtime');
   fs.mkdirSync(treeRuntime, { recursive: true });
   fs.writeFileSync(
@@ -144,6 +153,22 @@ try {
     JSON.parse(localFirst.result.stdout).hub.endsWith('.agents/skills/ws-shared/runtime/AGENTS.md'),
     'skills-tree runtime is the audited hub',
   );
+
+  // (c) a clean skills-tree runtime is audited even when `.ws/runtime` is contaminated.
+  const staleContaminated = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-hub-sep-stale-'));
+  tmpRoots.push(staleContaminated);
+  const staleDir = path.join(staleContaminated, '.ws', 'runtime');
+  fs.mkdirSync(staleDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(staleDir, 'AGENTS.md'),
+    `${fs.readFileSync(SOT_HUB, 'utf8')}\nRun npm run generate-integrity before ship.\n`,
+    'utf8',
+  );
+  const cleanTree = path.join(staleContaminated, '.agents', 'skills', 'ws-shared', 'runtime');
+  fs.mkdirSync(cleanTree, { recursive: true });
+  fs.writeFileSync(path.join(cleanTree, 'AGENTS.md'), fs.readFileSync(SOT_HUB, 'utf8'), 'utf8');
+  const staleClean = check(staleContaminated, 'consumer');
+  assert.strictEqual(staleClean.result.status, 0, '.ws/runtime contamination is ignored when the skills-tree hub is clean');
 
   // Explicit shared-dir override is audited when it is the effective source.
   const overrideRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-hub-sep-override-'));
@@ -184,10 +209,14 @@ try {
   const rootCatalog = fs.readFileSync(path.join(repoRoot, 'CATALOG.md'), 'utf8');
   assert.ok(rootCatalog.includes('Before ship PR'), 'root CATALOG remains the upstream inventory SoT');
 
-  // AC1: consumer-identity banner names the installed runtime hub path.
+  // AC1: consumer-identity banner names the managed runtime hub path.
   assert.ok(
-    hubText.includes('`{sharedDir}/runtime/AGENTS.md` as installed'),
-    'consumer banner cites the installed runtime hub path',
+    hubText.includes('`{skillsRoot}/ws-shared/runtime/AGENTS.md`'),
+    'consumer banner cites the managed runtime hub path',
+  );
+  assert.ok(
+    !hubText.includes('{sharedDir}/runtime/AGENTS.md'),
+    'consumer banner never cites a {sharedDir}/runtime hub path',
   );
 
   // AC9: size cap is enforced here as well as in test-context-budget.js.

@@ -72,8 +72,8 @@ jobs:
             -o /tmp/agentic-code-reviewers-run.sh
           bash /tmp/agentic-code-reviewers-run.sh \
             --engine cursor-sdk \
-            --model composer-2.5 \
-            --variant high \
+            --model gpt-5.6-luna \
+            --variant medium \
             --gh \
             --pr-id "${{ steps.pr.outputs.number }}" \
             --stack Custom \

@@ -115,12 +115,15 @@ function runAutoConfigure(args, cwd = REPO_ROOT, env = process.env) {
 }
 
 function setupMockRepo(mockRoot, { withCursor = true, withConfig = false, subagentsConfig = null } = {}) {
-  // Create minimal structure mirroring repo
+  // Create minimal structure mirroring repo: consumer config at .ws/, managed
+  // hub content (runtime + templates) in the skills install.
   const sharedDir = path.join(mockRoot, '.ws');
-  const templatesDir = path.join(sharedDir, 'templates');
-  const runtimeDir = path.join(sharedDir, 'runtime');
+  const managedDir = path.join(mockRoot, '.agents', 'skills', 'ws-shared');
+  const templatesDir = path.join(managedDir, 'templates');
+  const runtimeDir = path.join(managedDir, 'runtime');
   const runtimeScriptsDir = path.join(runtimeDir, 'scripts');
 
+  fs.mkdirSync(sharedDir, { recursive: true });
   fs.mkdirSync(templatesDir, { recursive: true });
   fs.mkdirSync(runtimeScriptsDir, { recursive: true });
 

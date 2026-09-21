@@ -1,6 +1,6 @@
 # Consumer Hub — Workflow Config & Shared Project Data
 
-> **You are in the consumer hub** (`{sharedDir}/runtime/AGENTS.md` as installed; thin entrypoint at `{sharedDir}/AGENTS.md`; authoring source at `.agents/skills/ws-shared/runtime/AGENTS.md`). This is **not** the upstream authoring hub: package skill authoring, ship checklists, and source-repo workflows live in the upstream repo's root `AGENTS.md` / `CATALOG.md` and are out of scope here. An optional consumer repo-root `AGENTS.md` may override autoload via `autoload.md`; otherwise this file is the routing contract.
+> **You are in the consumer hub** (`{skillsRoot}/ws-shared/runtime/AGENTS.md` project install, else `{globalSkillsRoot}/ws-shared/runtime/AGENTS.md`; thin entrypoint at `{sharedDir}/AGENTS.md`; authoring source at `.agents/skills/ws-shared/runtime/AGENTS.md`). This is **not** the upstream authoring hub: package skill authoring, ship checklists, and source-repo workflows live in the upstream repo's root `AGENTS.md` / `CATALOG.md` and are out of scope here. An optional consumer repo-root `AGENTS.md` may override autoload via `autoload.md`; otherwise this file is the routing contract.
 
 **Audience: agents** (config resolution, gates, skill loading, consumer-owned paths). Humans: install narrative in the project README.
 
@@ -9,7 +9,7 @@
 > This folder is **not** an installable skill package. The installer copies this managed runtime and the sibling setup templates when a workflow or Full package is selected.
 >
 > **Consumer-owned** (preserved on update; never overwritten by upstream):
-> `config.json`, `STACK.md`, `installed-skills.json`, plus legacy `MEMORY.md`, `memory/*`, and `CHANGELOG.md` when present under `ws-shared/`.
+> `config.json`, `STACK.md`, `installed-skills.json`, plus legacy `MEMORY.md`, `memory/*`, and `CHANGELOG.md` when present in the consumer hub (`.ws/`) or an older `ws-shared/` data dir.
 > Fresh install seeds `config.json` from `../templates/config.json.example` and `STACK.md` from `../templates/STACK.md.example`. `MEMORY.md` + `memory/` and `CHANGELOG.md` default to the repo root (`rules.memoryDir` / `rules.changelogFile`) and are created on first use. Prefer [`ws-configure-project`](../../ws-configure-project/SKILL.md) to fill placeholders.
 >
 > **Installer scope:** skill packages install to **project-local** `.agents/skills/` and/or **global** `$HOME/.agents/skills/` (`--global` / `WORKFLOW_SKILLS_GLOBAL_DIR`). The installer never creates or overwrites consumer repo-root files (root `AGENTS.md`, host pointers).
@@ -161,7 +161,7 @@ Run this checklist before `/ship-pr` or shipping features:
 
 - [ ] **1. Run Tests & Verification**: Execute `verification.backendTest` / `verification.frontendTest` and the stack invariant scan (`node {skillsRoot}/ws-shared/runtime/scripts/scan_stack_invariants.cjs`).
 - [ ] **2. Harness & Workflow Audit**: Run `ws-check-harness` / `ws-check-workflows` to ensure 0 critical findings.
-- [ ] **3. Configure & Verify Project**: Verify `.ws/config.json` settings and stack definitions.
+- [ ] **3. Configure & Verify Project**: Verify `{sharedDir}/config.json` settings and stack definitions.
 - [ ] **4. Clean Docs & Artifacts**: Ensure no merge conflict markers or uncommitted scratch files.
 - [ ] **5. Ship via `ship-pr`**: Execute `/ship-pr` (runs Prepare Board, commits, pushes, creates PR).
 

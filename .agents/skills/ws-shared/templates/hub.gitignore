@@ -4,8 +4,6 @@
 
 AGENTS.md
 autoload.md
-runtime/
-templates/
 config.local.json
 stack.md
 MEMORY.md
