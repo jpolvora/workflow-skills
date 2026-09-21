@@ -15,6 +15,15 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 - **DO NOT**: spawn a configured CLI bin with `shell: false` on win32 and assume npm shims resolve; nor "fix" it by appending `.cmd` while keeping `shell: false`; nor revert to `shell: true` with an argv array (re-splits spaced paths, the original AC3 defect).
 - **INSTEAD DO**: route configured-CLI spawns through `spawnCliSync` (`ws-shared/runtime/scripts/cli_spawn.cjs`): first attempt `shell: false` everywhere, and only on win32 ENOENT retry once through ComSpec with a pre-quoted command line (`quoteCmdArg` + `shell: true` with a caller-quoted string) so PATHEXT shims resolve while spaced args stay intact. Cover with `test/test-cli-spawn-shim.js` (native passthrough, spaced argv, quoting units, missing-bin surfacing, win32-only live `.cmd` fixture test).
 
+### [2026-09-21] Resolver precedence and same-installation coherence
+- **Layer**: `Tests / Workflow harness`
+- **Module**: `ws-shared bootstrap (`bootstrap_runtime.cjs` + standalone fallback copies), `cli_spawn.cjs`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/**/scripts/*.cjs`, `.agents/skills/**/scripts/*.js`
+- **Scenario / Context**: Review threads flagged the runtime resolver checking the packaged copy before consumer-local/global roots, contradicting the documented local-first contract. Applying the suggestion literally (packaged strictly last) broke the repo's own spawned children: with a runtime-less cwd they resolved a stale machine-global runtime missing new modules (`test-ws-monitor-us356.js` child crash). The same class existed in 60 standalone fallback copies.
+- **DO NOT**: Order resolver candidates packaged-first (ignores consumer-local overrides), nor packaged-last without checking same-installation coherence; do not apply reviewer-suggested reorderings without running the repo's own suite, which exercises foreign-cwd child spawns.
+- **INSTEAD DO**: Order explicit override, repo-local, packaged same-installation copy, global root last; sweep the whole class with a deterministic EOL-preserving codemod (abort on non-unique anchors) plus an order verifier; cover with a local-beats-packaged precedence test and re-run `npm run test`, `test-harness-clean.js`, and integrity regen before ship.
+
 ### [2026-09-21] G2-Code Completeness and Ledger scoreState Boundary
 - **Layer**: `Tests / Workflow harness`
 - **Module**: `ws-spec-to-pr (commit_g2_code, update_state, ac_ledger)`
