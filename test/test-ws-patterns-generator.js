@@ -401,6 +401,10 @@ function autoloadRowIds(doc) {
     assert(wr.status === 0, `configure --write-root-agents exit 0 (got ${wr.status}: ${wr.stderr || ''})`);
     const rootAg = fs.readFileSync(path.join(fxh, 'AGENTS.md'), 'utf8');
     assert(rootAg.includes('(.ws/autoload.md)'), 'root AGENTS.md links the fixed .ws autoload');
+    assert(
+      rootAg.includes('`.ws/ws-project-patterns/SKILL.md`'),
+      'root AGENTS.md table renders the generated row repo-relative',
+    );
   } finally {
     rmFixture(fxh);
   }

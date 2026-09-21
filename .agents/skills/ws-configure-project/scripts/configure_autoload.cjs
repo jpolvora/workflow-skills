@@ -216,22 +216,25 @@ function hubPointerPath(repoRoot) {
   return path.join(hubRootFor(repoRoot), 'AGENTS.md');
 }
 
-function expectedGeneratedRowPath(repoRoot, skillId) {
-  // Hub-hosted rows are hub-relative: autoload.md lives in the hub, so a
-  // Markdown resolver must not see the hub prefix repeated.
-  return `${skillId}/SKILL.md`;
+function expectedGeneratedRowPath(repoRoot, skillId, { hubRelative = true } = {}) {
+  // The row is resolved relative to the file that carries it: hub-relative
+  // inside the hub's autoload.md, repo-relative in the repository-root AGENTS.md
+  // (which sits one level above the hub).
+  return hubRelative ? `${skillId}/SKILL.md` : `.ws/${skillId}/SKILL.md`;
 }
 
 function isGeneratorManagedId(repoRoot, skillId, { globalSkillsRoot = null, allowGlobalSource = false } = {}) {
   return loadGeneratorManagedIds(repoRoot, { globalSkillsRoot, allowGlobalSource }).has(skillId);
 }
 
-function emitSkillPath(repoRoot, skillId, { skillsRootRel = '.agents/skills', globalSkillsRoot = null, allowGlobalSource = false } = {}) {
+function emitSkillPath(repoRoot, skillId, { skillsRootRel = '.agents/skills', globalSkillsRoot = null, allowGlobalSource = false, hubRelative = true } = {}) {
   // Hub-hosted generated consumer skills are never installed: their row points
   // at the shared-hub path (existence is checked by the membership filter).
   if (isGeneratorManagedId(repoRoot, skillId, { globalSkillsRoot, allowGlobalSource })) {
-    // Hub-relative (the row is rendered inside the hub's autoload.md).
-    return [expectedGeneratedRowPath(repoRoot, skillId), !generatorManagedTreeExists(repoRoot, skillId, globalSkillsRoot)];
+    return [
+      expectedGeneratedRowPath(repoRoot, skillId, { hubRelative }),
+      !generatorManagedTreeExists(repoRoot, skillId, globalSkillsRoot),
+    ];
   }
   const localSkill = path.join(repoRoot, skillsRootRel, skillId, 'SKILL.md');
   if (fs.existsSync(localSkill)) return [`.agents/skills/${skillId}/SKILL.md`, false];
@@ -399,14 +402,14 @@ function membershipFromExistingRows(rows) {
   return out;
 }
 
-function buildAlwaysAppliedTable(repoRoot, { globalSkillsRoot = null, membership = null, allowGlobalSource = false } = {}) {
+function buildAlwaysAppliedTable(repoRoot, { globalSkillsRoot = null, membership = null, allowGlobalSource = false, hubRelative = true } = {}) {
   const rows = ['| Skill | Path | Trigger|', '|-------|------|---------|'];
   // Note: header row below is normalized by the writer; keep exact canonical form:
   rows[0] = '| Skill | Path | Trigger |';
   const meta = [];
   const members = membership !== null ? membership : defaultAlwaysAppliedMembership();
   for (const member of members) {
-    const [pathForm, missing] = emitSkillPath(repoRoot, member.skill, { globalSkillsRoot, allowGlobalSource });
+    const [pathForm, missing] = emitSkillPath(repoRoot, member.skill, { globalSkillsRoot, allowGlobalSource, hubRelative });
     rows.push(`| \`${member.skill}\` | \`${pathForm}\` | ${member.trigger} |`);
     meta.push({ skill: member.skill, path: pathForm, missing, trigger: member.trigger });
   }
@@ -502,7 +505,7 @@ function writeRootAgents(repoRoot, { globalSkillsRoot = null, allowGlobalSource 
   const tableLines = ['| Skill | Path |', '|-------|------|'];
   const meta = [];
   for (const member of membership) {
-    const [pathForm, missing] = emitSkillPath(repoRoot, member.skill, { globalSkillsRoot, allowGlobalSource });
+    const [pathForm, missing] = emitSkillPath(repoRoot, member.skill, { globalSkillsRoot, allowGlobalSource, hubRelative: false });
     tableLines.push(`| \`${member.skill}\` | \`${pathForm}\` |`);
     meta.push({ skill: member.skill, path: pathForm, missing });
   }
