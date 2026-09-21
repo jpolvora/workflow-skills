@@ -37,7 +37,8 @@ function testQuoteCmdArg() {
   );
   assert.strictEqual(quoteCmdArg('C:\\repo&whoami'), '"C:\\repo&whoami"', 'ampersand path quoted neutralizing cmd metachar');
   assert.strictEqual(quoteCmdArg('a|b'), '"a|b"', 'pipe arg quoted');
-  assert.strictEqual(quoteCmdArg('100%'), '"100%"', 'percent stays single: doubling arrives doubled through cmd /c');
+  assert.strictEqual(quoteCmdArg('100%'), '"100%"', 'unpaired percent stays single so batch shims receive it literally');
+  assert.strictEqual(quoteCmdArg('C:\\work\\%TEMP%\\repo'), '"C:\\work\\%%TEMP%%\\repo"', 'paired percent expression doubles so cmd cannot expand it');
   assert.strictEqual(quoteCmdArg('(x86)'), '"(x86)"', 'parens quoted: unquoted parens group cmd commands');
   assert.strictEqual(quoteCmdArg('say "hi"'), '"say ""hi"""', 'embedded quotes still double inside metachar quoting');
   console.log('ok quoteCmdArg units');

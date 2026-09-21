@@ -20,13 +20,14 @@ const { spawnSync } = require('child_process');
 // Quote one argv element for cmd.exe: wrap in double quotes when it contains
 // whitespace, a double quote, a cmd metacharacter, or is empty. Embedded quotes double (MSVCRT
 // convention) and stay literal-safe; the quotes also neutralize &|<>()^ (literal inside quotes in cmd.exe).
-// Embedded % still expands inside quotes, so it stays single (doubling arrives doubled through cmd /c into batch targets; verified on win32).
+// Embedded % still expands inside quotes. Doubling is conditional: paired %NAME% doubles to %% (literal through cmd's own parse, e.g. native targets), while unpaired % stays single (batch shims echo it literally; doubling would arrive doubled). Residual cmd design limit, verified live: paired %NAME% bound for a batch shim is re-parsed at batch dispatch and arrives as %VALUE% either way.
 // A ! stays literal unless the child enables delayed expansion (off by default) — accepted residual for
 // this thin deterministic layer, not a shell parser.
 function quoteCmdArg(value) {
   const text = String(value);
   if (text === '' || /[\s"&|<>^%!()]/.test(text)) {
-    return `"${text.replace(/"/g, '""')}"`;
+    const body = text.replace(/"/g, '""').replace(/%([A-Za-z_][A-Za-z0-9_]*)%/g, '%%$1%%');
+    return `"${body}"`;
   }
   return text;
 }
