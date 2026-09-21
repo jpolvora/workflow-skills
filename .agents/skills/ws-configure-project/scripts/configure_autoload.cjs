@@ -372,26 +372,32 @@ function renderConsumerAutoload(text, { repoRoot = null } = {}) {
   const localRuntimeDir = repoRoot
     ? path.join(repoRoot, '.agents', 'skills', 'ws-shared', 'runtime')
     : null;
+  // Generated links are relative to the hub that hosts autoload.md, not to the
+  // repository root: a nested configured hub (config/hub) needs its own prefix.
+  const hubRoot = repoRoot ? hubRootFor(repoRoot) : null;
+  const relFromHub = (target) => path.relative(hubRoot, target).split(path.sep).join('/');
   const runtimePrefixFor = (rel) => (
     localRuntimeDir && rel && fs.existsSync(path.join(localRuntimeDir, rel))
-      ? '../.agents/skills/ws-shared/runtime/'
+      ? `${relFromHub(localRuntimeDir)}/`
       : '{globalSkillsRoot}/ws-shared/runtime/'
   );
   const skillTarget = (rel) => (
     repoRoot && fs.existsSync(path.join(repoRoot, '.agents', 'skills', rel))
-      ? `../.agents/skills/${rel}`
+      ? relFromHub(path.join(repoRoot, '.agents', 'skills', rel))
       : `{globalSkillsRoot}/${rel}`
   );
   // Normalize previously rendered prefixes so refreshes converge (no-op when
-  // the local file exists and the prefix already matches).
+  // the local file exists and the prefix already matches). Anchor on the
+  // generated link shapes so the rewrite stays bounded, and accept any number
+  // of "../" segments so nested hubs converge too.
   text = text.replace(
-    /\]\(\.\.\/\.agents\/skills\/ws-shared\/runtime\/([^)]+)\)/g,
+    /\]\((?:\.\.\/)+\.agents\/skills\/ws-shared\/runtime\/([^)]+)\)/g,
     (match, rel) => `](${runtimePrefixFor(rel)}${rel})`,
   );
-  text = text.replace(/\]\(\.\.\/\.agents\/skills\/(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
+  text = text.replace(/\]\((?:\.\.\/)+\.agents\/skills\/(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
   // Legacy pre-0.4.46 rendered forms: `](runtime/<file>)` and `](../ws-<id>/...)`.
   text = text.replace(/\]\(runtime\/([^)]+)\)/g, (match, rel) => `](${runtimePrefixFor(rel)}${rel})`);
-  text = text.replace(/\]\(\.\.\/(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
+  text = text.replace(/\]\((?:\.\.\/)+(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
   // Global-token links re-resolve once a local runtime file exists (local-first).
   text = text.replace(
     /\]\(\{globalSkillsRoot\}\/ws-shared\/runtime\/([^)]+)\)/g,
@@ -401,7 +407,7 @@ function renderConsumerAutoload(text, { repoRoot = null } = {}) {
   for (const f of ['AGENTS.md', 'CROSS-PLATFORM.md', 'config-resolution.md', 'gates.md', 'host-dispatch.md', 'scm-provider-contract.md', 'setup.md', 'tools.md']) {
     text = text.split(`](${f})`).join(`](${runtimePrefixFor(f)}${f})`);
   }
-  return text.replace(/\]\(\.\.\/\.\.\/(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
+  return text.replace(/\]\((?:\.\.\/)+\/(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
 }
 
 function defaultAlwaysAppliedMembership() {

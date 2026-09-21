@@ -452,6 +452,63 @@ function autoloadRowIds(doc) {
     rmFixture(fxg);
     rmFixture(groutex);
   }
+  // A nested configured hub must render links relative to the hub directory.
+  const fxn = makeFixture('ws-pg-nestedhub-');
+  try {
+    fs.mkdirSync(path.join(fxn, '.ws'), { recursive: true });
+    fs.writeFileSync(
+      path.join(fxn, '.ws/config.json'),
+      JSON.stringify({ pathTokens: { sharedDir: 'config/hub' } }),
+      'utf8',
+    );
+    fs.mkdirSync(path.join(fxn, 'config/hub/ws-project-patterns'), { recursive: true });
+    fs.writeFileSync(path.join(fxn, 'config/hub/ws-project-patterns/SKILL.md'), '# ws-project-patterns\n', 'utf8');
+    fs.mkdirSync(path.join(fxn, '.agents/skills/ws-shared/runtime'), { recursive: true });
+    fs.writeFileSync(path.join(fxn, '.agents/skills/ws-shared/runtime/tools.md'), '# tools\n', 'utf8');
+    fs.writeFileSync(
+      path.join(fxn, '.agents/skills/ws-shared/runtime/autoload.md'),
+      [
+        '# Autoload (template)',
+        '',
+        '## Always-applied skills',
+        '',
+        '| Skill | Path | Trigger |',
+        '|-------|------|---------|',
+        '| `ws-tdah` | `{skillsRoot}/ws-tdah/SKILL.md` | Every prompt |',
+        '',
+        '[runtime tools](runtime/tools.md)',
+        '[skill](../ws-tdah/SKILL.md)',
+        '',
+        '## Optional skills',
+        '',
+      ].join('\n'),
+      'utf8',
+    );
+    fs.mkdirSync(path.join(fxn, '.agents/skills/ws-tdah'), { recursive: true });
+    fs.writeFileSync(path.join(fxn, '.agents/skills/ws-tdah/SKILL.md'), '# ws-tdah\n', 'utf8');
+    fs.mkdirSync(path.join(fxn, 'bin'), { recursive: true });
+    fs.writeFileSync(
+      path.join(fxn, 'bin/skill-dependencies.json'),
+      JSON.stringify({ externalSkills: [{ id: 'ws-project-patterns', sourcePackage: 'consumer', generatorManaged: true }] }),
+      'utf8',
+    );
+    const rn = runNode([configureCjs, '--write-autoload', '--repo-root', fxn], { cwd: root });
+    assert(rn.status === 0, `nested hub --write-autoload exit 0 (got ${rn.status}: ${rn.stderr || ''})`);
+    const hubDir = path.join(fxn, 'config/hub');
+    const nestedText = fs.readFileSync(path.join(hubDir, 'autoload.md'), 'utf8');
+    const links = [...nestedText.matchAll(/\]\(([^)]+)\)/g)]
+      .map((m) => m[1])
+      .filter((l) => !l.startsWith('{') && !/^https?:/.test(l));
+    const broken = links.filter((l) => !fs.existsSync(path.resolve(hubDir, l.split('#')[0])));
+    assert(broken.length === 0, `nested hub links resolve from the hub dir: ${broken.join(', ')}`);
+    const rr = runNode([configureCjs, '--write-autoload', '--repo-root', fxn], { cwd: root });
+    assert(
+      rr.status === 0 && fs.readFileSync(path.join(hubDir, 'autoload.md'), 'utf8') === nestedText,
+      'nested hub render converges on rerun',
+    );
+  } finally {
+    rmFixture(fxn);
+  }
   // A configured hub that escapes the repository must never receive writes.
   const fxe = makeFixture('ws-pg-escapehub-');
   try {
