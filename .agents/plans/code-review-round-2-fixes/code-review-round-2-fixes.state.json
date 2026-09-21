@@ -1294,7 +1294,8 @@
     5,
     6,
     7,
-    8
+    8,
+    9
   ],
   "currentModel": "current",
   "currentStep": 9,
@@ -1535,14 +1536,31 @@
       "summary": "Finished step 8",
       "workflowId": "code-review-round-2-fixes",
       "workflowType": "standard"
+    },
+    "9": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "code-review-round-2-fixes",
+      "status": "completed",
+      "step": 9,
+      "summary": "Finished step 9",
+      "workflowId": "code-review-round-2-fixes",
+      "workflowType": "standard"
     }
   },
   "modelsPreset": "default",
-  "nextAction": "Finish step 9",
+  "nextAction": "Run step 9",
   "preExistingDirty": [
     ".ws/config.json"
   ],
-  "revision": 21,
+  "revision": 22,
   "shipStatus": "pending",
   "skippedSteps": [
     {
@@ -1611,7 +1629,7 @@
     "6": "completed",
     "7": "completed",
     "8": "completed",
-    "9": "active"
+    "9": "completed"
   },
   "telemetry": {
     "steps": [
@@ -1861,9 +1879,27 @@
         "model": "current",
         "promptTokens": 0,
         "subagentId": null
+      },
+      {
+        "N": 9,
+        "agentType": "generic:subagent_spawn",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-21T02:02:21Z",
+        "elapsedSec": 1938,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-21T02:34:39Z",
+        "label": "Fix PR",
+        "model": "current",
+        "promptTokens": 0,
+        "subagentId": null
       }
     ],
-    "totalElapsedSec": 4590,
+    "totalElapsedSec": 6528,
     "totalTokens": 0,
     "workflowEndedAt": "2026-09-21T01:55:33.994Z"
   },
