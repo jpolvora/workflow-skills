@@ -452,7 +452,35 @@ function autoloadRowIds(doc) {
     rmFixture(fxg);
     rmFixture(groutex);
   }
-  // A hub body linked outside the repository is not "present" for the validator.
+  // A configured hub that escapes the repository must never receive writes.
+  const fxe = makeFixture('ws-pg-escapehub-');
+  try {
+    fs.mkdirSync(path.join(fxe, '.ws'), { recursive: true });
+    fs.writeFileSync(
+      path.join(fxe, '.ws/config.json'),
+      JSON.stringify({ pathTokens: { sharedDir: '..' } }),
+      'utf8',
+    );
+    writeAutoloadFixture(fxe, ['| `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Every prompt |']);
+    const outsideDir = path.resolve(fxe, '..');
+    const outsideAutoload = path.join(outsideDir, 'autoload.md');
+    const hadOutside = fs.existsSync(outsideAutoload);
+    const we = runNode([configureCjs, '--write-autoload', '--repo-root', fxe], { cwd: root });
+    assert(we.status === 0, `escaping sharedDir does not crash (got ${we.status}: ${we.stderr || ''})`);
+    if (!hadOutside) {
+      assert(!fs.existsSync(outsideAutoload), 'no autoload written outside the repo through sharedDir');
+    }
+    assert(fs.existsSync(path.join(fxe, '.ws/autoload.md')), 'writes fail closed to the default in-repo hub');
+    const echk = runNode([configureCjs, '--check', '--repo-root', fxe, '--json'], { cwd: root });
+    const efinds = (JSON.parse(echk.stdout).check || {}).findings || [];
+    assert(
+      efinds.some((f) => /resolves outside the repository/.test(f.message || '')),
+      'check reports the escaping sharedDir as critical',
+    );
+  } finally {
+    rmFixture(fxe);
+  }
+
   const fxs = makeFixture('ws-pg-linkedbody-');
   const outdir = makeFixture('ws-pg-linkedbody-out-');
   try {

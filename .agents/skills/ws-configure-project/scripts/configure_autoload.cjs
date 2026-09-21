@@ -199,7 +199,7 @@ function resolveTemplateSource(repoRoot, globalSkillsRoot, allowGlobalSource = f
   return path.join(globalSkillsRoot, 'ws-shared', 'templates');
 }
 
-function hubRootFor(repoRoot) {
+function hubRootRel(repoRoot) {
   // Bootstrap discovery location for the hub root is always <repo>/.ws/config.json;
   // a configured pathTokens.sharedDir then relocates hub content (autoload,
   // pointer, generated consumer skills) to that root.
@@ -214,7 +214,26 @@ function hubRootFor(repoRoot) {
   } catch {
     hubRel = '.ws';
   }
-  return path.resolve(repoRoot, hubRel);
+  return hubRel;
+}
+
+function hubEscapesRepo(repoRoot) {
+  // Fail closed: a configured hub (or a symlinked .ws) that resolves outside
+  // the repository must never receive consumer writes.
+  const hubRoot = path.resolve(repoRoot, hubRootRel(repoRoot));
+  let rootReal;
+  try {
+    rootReal = fs.realpathSync(path.resolve(repoRoot));
+  } catch {
+    return false;
+  }
+  const hubReal = realpathLoose(hubRoot);
+  return !hubReal || !(hubReal === rootReal || hubReal.startsWith(rootReal + path.sep));
+}
+
+function hubRootFor(repoRoot) {
+  const hubRoot = path.resolve(repoRoot, hubRootRel(repoRoot));
+  return hubEscapesRepo(repoRoot) ? path.resolve(repoRoot, '.ws') : hubRoot;
 }
 
 function sharedAutoloadPath(repoRoot) {
@@ -595,6 +614,9 @@ function appendEffectiveAutoloadRootFindings(findings, { effective, rootAgents, 
 
 function checkAutoload(repoRoot, { globalSkillsRoot = null, allowGlobalSource = false } = {}) {
   const findings = [];
+  if (hubEscapesRepo(repoRoot)) {
+    findings.push({ severity: 'critical', file: '.ws/config.json', message: 'Configured pathTokens.sharedDir resolves outside the repository; hub writes fail closed to .ws', fix: 'Set pathTokens.sharedDir to a path inside the repository (or remove the key)' });
+  }
   const shared = hubRootFor(repoRoot);
   const autoloadPath = path.join(shared, 'autoload.md');
   const rootAgents = path.join(repoRoot, 'AGENTS.md');
