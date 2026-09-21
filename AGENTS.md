@@ -330,15 +330,16 @@ Frontmatter: `id: {n}|null`, `slug`, `title`, `source: {local|github|azure-devop
 
 ## Skill loading (mandatory)
 
-**Session start:** this file is the hub. Apply § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only) before acting on the first prompt. Do **not** `Read` live `ws-tdah` / `ws-senior-developer` / `ws-fable-method` / `ws-self-learning` / `ws-changelog` / `ws-spec-write` / `ws-spec-format` SKILL.md for session autoload. Do not `Read` a separate harness skill.
+**Session start:** this file is the hub. Apply § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only) before acting on the first prompt. When `defaults.autoload` is `true` (currently true), also load the § Always-applied live bodies listed in the table below. Do **not** `Read` any other live `ws-*` body (e.g. `ws-fable-method`, `ws-changelog`, `ws-spec-write`, `ws-spec-format`) for session autoload. Do not `Read` a separate harness skill.
 
-[`ws-shared/runtime/autoload.md`](.agents/skills/ws-shared/runtime/autoload.md) still owns **specs vocabulary**, **specs skill router**, and **hub contracts** (SCM parity, verify score). Load those sections when the user mentions specs / plans / Spec-to-PR / SCM intents / verify score without naming a skill. Do **not** follow `autoload.md` § Always-applied in this repo (those rows point at live `ws-*` bodies).
+[`ws-shared/runtime/autoload.md`](.agents/skills/ws-shared/runtime/autoload.md) still owns **specs vocabulary**, **specs skill router**, and **hub contracts** (SCM parity, verify score). Load those sections when the user mentions specs / plans / Spec-to-PR / SCM intents / verify score without naming a skill. In this repo, follow `autoload.md` § Always-applied **only while `defaults.autoload` is `true`** (currently true) and resolve those live bodies `{skillsRoot}` first (documented session-autoload exception to § [Global vs local `ws-*` (this repo only — mandatory)](#global-vs-local-ws--this-repo-only--mandatory) rule 1), `{globalSkillsRoot}` fallback.
 
 The table below is the root-hub set that always loads in **this** repo.
 
 | Item | Path | Trigger |
 |------|------|---------|
 | Upstream session contract | This file § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only) | Every prompt — compact dogfood snapshot (**this repo only; not a skill**) |
+| Always-applied (live bodies) | [`{sharedDir}/autoload.md`](.ws/autoload.md) § Always-applied → `{skillsRoot}/ws-<id>/SKILL.md` | Every prompt when `defaults.autoload: true` (currently true) — `ws-senior-developer`, `ws-self-learning`, `ws-tdah`, `ws-spec-memo`, `ws-task-lifecycle` |
 | `using-superpowers` | `(global)` | Session start — skill discovery |
 
 **Upstream dogfood (this repo only):** Apply the inlined contract above. Consumers still load installed `ws-*` skills from their hub (`ws-shared` keeps `ws-tdah` / `ws-senior-developer` on-demand). Load a live `ws-*` body here only when needed: **author / test that id** → `$PWD/.agents/skills/ws-*`; **otherwise invoke** `{globalSkillsRoot}/ws-*` when that install exists (see § [Global vs local `ws-*` (this repo only — mandatory)](#global-vs-local-ws--this-repo-only--mandatory)).
@@ -349,7 +350,7 @@ Only the sets above load unconditionally. Everything else is **pull, not push** 
 
 | Situation | Do this |
 |-----------|---------|
-| Session start | This file (including § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only)). Nothing else. Do not load `autoload.md` § Always-applied. |
+| Session start | This file (including § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only)) + Always-applied live bodies when `defaults.autoload` is true (currently true). Nothing else from `autoload.md`. |
 | Task with a clear intent | Match one row in § [Task router](#task-router) → load that single skill (or use § [5. Write a spec](#5-write-a-spec-on-demand)). Do not preload sibling or downstream skills. Duplicate `ws-*` paths: § [Global vs local `ws-*` (this repo only — mandatory)](#global-vs-local-ws--this-repo-only--mandatory). |
 | Spec / plan / `index.PRD` / Spec-to-PR wording without a named skill | Load [`autoload.md`](.agents/skills/ws-shared/runtime/autoload.md) § Specs vocabulary + § Specs skill router (or § Keyword → skill) → load **only** the matching skill, except standalone draft-spec uses § [5. Write a spec](#5-write-a-spec-on-demand). Never load the whole specs family. |
 | SCM / verify-score wording without a named skill | Load [`autoload.md`](.agents/skills/ws-shared/runtime/autoload.md) § Hub contracts → then that hub file or one skill. |
@@ -365,7 +366,7 @@ Only the sets above load unconditionally. Everything else is **pull, not push** 
 
 ### Dual-hub precedence (root override)
 
-This **root** hub applies § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only) instead of live `ws-tdah` / `ws-senior-developer` SKILL.md. The installed consumer hub ([`.ws/AGENTS.md`](.ws/AGENTS.md)) still treats those packaged skills as **on-demand** by default (`ws-tdah` via invoke; `ws-senior-developer` via `rules.seniorDeveloper`).
+This **root** hub applies § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only) **plus** the Always-applied live bodies (`defaults.autoload: true`), and does not load other live `ws-*` bodies for session autoload; the inlined sections stay authoritative where a live body differs (Precedence #2). The installed consumer hub ([`.ws/AGENTS.md`](.ws/AGENTS.md)) still treats those packaged skills as **on-demand** by default (`ws-tdah` via invoke; `ws-senior-developer` via `rules.seniorDeveloper`).
 
 Consumers may add their own root `AGENTS.md` with the same override pattern. When root and ws-shared hubs both load, **root hub** skill-loading and precedence sections win for autoload decisions. This is intentional — not a harness drift defect. See ws-shared § Consumer root override.
 
@@ -378,6 +379,8 @@ Consumers may add their own root `AGENTS.md` with the same override pattern. Whe
 5. Investigate loop (§ [2. Investigate loop](#2-investigate-loop-ws-fable-method); defer Plan-First when orch owns session or senior plan already confirmed)
 6. Reply shape (§ [3. Reply shape](#3-reply-shape-ws-tdah); opt out `stop ws-tdah` / `stop verbosity` / `normal mode`)
 7. `ws-megabrain` when autoloaded (defer orch; opt out `stop ws-megabrain`)
+
+Always-applied live bodies supply packaged detail for rows 4–6 (`ws-senior-developer`, `ws-tdah`, `ws-self-learning`); `ws-spec-memo` / `ws-task-lifecycle` load beneath this file and defer to it for authoring-hub work.
 
 ### Opt-out
 

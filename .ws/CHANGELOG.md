@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-21 00:47] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: Set `defaults.autoload: true`, then make root `AGENTS.md` actually autoload the Always-applied live skills.
+- **Done**: `.ws/config.json` `defaults.autoload` true (set via `configure_autoload.cjs`; helper's unrelated formatting normalizations reverted to a one-line diff). Root `AGENTS.md` § Skill loading: session start now loads `ws-senior-developer`, `ws-self-learning`, `ws-tdah`, `ws-spec-memo`, `ws-task-lifecycle` from `{skillsRoot}` (local-first, global fallback; documented exception to Global vs local rule 1); new table row, progressive-disclosure Session start row, dual-hub precedence text, and Precedence note updated; all other live `ws-*` bodies stay banned for autoload.
+- **Result**: `configure_autoload.cjs --check` effectiveAutoload=true, 0 findings; `test-harness-clean.js` 0 findings; `test-doc-sync.js` ok; `test-autoload-configure.js` green; `test-hub-separation.js` ok. No version bump or integrity regen (root hub is not hashed; no package content changed).
+
 ### [2026-09-21 06:00] Agent: opencode (deepseek-v4.1-flash)
 - **Prompt**: Test-suite runner refactor — replace the giant `&&`-chained npm test scripts with a single wrapper.
 - **Done**: Added `test/run-tests.cjs` (sequential, fail-fast, Node launcher, modes `local`/`--remote`/`--harness-efficiency`, `--list`) backed by `test/test-suites.json` (ordered argv lists). `package.json` `tests` / `tests:remote` / `tests:harness-efficiency` are now one short command each. `test-spec-dor-tdd.js` and `test-repeated-file-list-flags.js` now assert suite registration against `test-suites.json`.
