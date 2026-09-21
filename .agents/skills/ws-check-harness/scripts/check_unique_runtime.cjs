@@ -82,11 +82,26 @@ function collectPyFiles(dir, out) {
 
 // Package membership: only this package's own directories are audited. A
 // shared global skills root may also hold unrelated user skills; their Python
-// helpers must never fail the workflow-skills Node-only gate.
-function packageRoots(dir) {
+// helpers must never fail the workflow-skills Node-only gate. Explicitly
+// external ws-* companions (bin/skill-dependencies.json externalSkills,
+// e.g. ws-memo) are also excluded: they are not shipped by this package.
+function externalSkillIds(repoRoot) {
+  try {
+    const manifest = path.join(path.resolve(repoRoot || process.cwd()), 'bin', 'skill-dependencies.json');
+    const parsed = JSON.parse(fs.readFileSync(manifest, 'utf8'));
+    const ids = (parsed.externalSkills || []).map((entry) => entry.id).filter(Boolean);
+    if (ids.length) return new Set(ids);
+  } catch {
+    // Fall through to the known-external fallback below.
+  }
+  return new Set(['ws-memo', 'ws-session-tracking']);
+}
+
+function packageRoots(dir, repoRoot) {
   if (!fs.existsSync(dir)) return [];
+  const external = externalSkillIds(repoRoot);
   return fs.readdirSync(dir, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && (entry.name === 'ws-shared' || entry.name.startsWith('ws-')))
+    .filter((entry) => entry.isDirectory() && (entry.name === 'ws-shared' || (entry.name.startsWith('ws-') && !external.has(entry.name))))
     .map((entry) => path.join(dir, entry.name));
 }
 
@@ -115,7 +130,7 @@ function main() {
   const skillsRootRel = path.relative(repoRoot, skillsAbs).replace(/\\/g, '/') || '.';
   const binAbs = path.resolve(repoRoot, 'bin');
 
-  const hits = packageRoots(skillsAbs)
+  const hits = packageRoots(skillsAbs, repoRoot)
     .reduce((acc, dir) => acc.concat(collectPyFiles(dir)), [])
     .concat(collectPyFiles(binAbs));
   const findings = hits.map((abs) => ({

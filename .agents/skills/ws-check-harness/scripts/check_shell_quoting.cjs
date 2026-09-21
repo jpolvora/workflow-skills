@@ -91,11 +91,25 @@ function walk(dir, out) {
 
 // Package membership: only this package's own directories are audited. A
 // shared global skills root may also hold unrelated user skills whose scripts
-// are not shipped package content.
-function packageRoots(dir) {
+// are not shipped package content. Explicitly external ws-* companions
+// (bin/skill-dependencies.json externalSkills, e.g. ws-memo) are excluded.
+function externalSkillIds(repoRoot) {
+  try {
+    const manifest = path.join(path.resolve(repoRoot || process.cwd()), 'bin', 'skill-dependencies.json');
+    const parsed = JSON.parse(fs.readFileSync(manifest, 'utf8'));
+    const ids = (parsed.externalSkills || []).map((entry) => entry.id).filter(Boolean);
+    if (ids.length) return new Set(ids);
+  } catch {
+    // Fall through to the known-external fallback below.
+  }
+  return new Set(['ws-memo', 'ws-session-tracking']);
+}
+
+function packageRoots(dir, repoRoot) {
   if (!fs.existsSync(dir)) return [];
+  const external = externalSkillIds(repoRoot);
   return fs.readdirSync(dir, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && (entry.name === 'ws-shared' || entry.name.startsWith('ws-')))
+    .filter((entry) => entry.isDirectory() && (entry.name === 'ws-shared' || (entry.name.startsWith('ws-') && !external.has(entry.name))))
     .map((entry) => path.join(dir, entry.name));
 }
 
@@ -178,7 +192,7 @@ function main() {
       : path.resolve(repoRoot, '.agents/skills'));
   const skillsRootRel = path.relative(repoRoot, skillsAbs).replace(/\\/g, '/') || '.';
 
-  const files = packageRoots(skillsAbs).flatMap((dir) => walk(dir));
+  const files = packageRoots(skillsAbs, repoRoot).flatMap((dir) => walk(dir));
   const findings = [];
   for (let i = 0; i < files.length; i += 1) {
     const more = scanFile(files[i], repoRoot);

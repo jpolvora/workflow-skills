@@ -105,6 +105,7 @@ function testGlobalOnlyDoesNotThrow() {
 function testUnrelatedSkillNotScanned() {
   console.log('\n--- testUnrelatedSkillNotScanned ---');
   const fixture = mkTmp('ws-dup-unrelated-');
+  const emptyGlobal = mkTmp('ws-dup-emptyglobal-');
   fs.writeFileSync(path.join(fixture, 'AGENTS.md'), '# hub\n', 'utf8');
   for (const id of ['custom-skill-a', 'custom-skill-b']) {
     const dir = path.join(fixture, '.agents', 'skills', id);
@@ -115,6 +116,7 @@ function testUnrelatedSkillNotScanned() {
   const result = cp.spawnSync(process.execPath, [CHECKER, '--json', '--repo-root', fixture], {
     cwd: fixture,
     encoding: 'utf8',
+    env: { ...process.env, WORKFLOW_SKILLS_GLOBAL_DIR: emptyGlobal },
   });
   let report = null;
   try {

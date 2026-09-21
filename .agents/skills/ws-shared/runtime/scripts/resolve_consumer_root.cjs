@@ -277,12 +277,50 @@ function resolveSkillMdPath(context, skillId) {
   );
 }
 
+// Package presence: a skills directory counts as this package's install only
+// when it holds ws-shared or a non-external ws-* skill. An otherwise empty
+// local .agents/skills (or one holding only unrelated/custom skills or
+// explicitly external companions like ws-memo) must not shadow a global
+// workflow-skills install.
+function loadExternalSkillIdsForPresence(repoRoot) {
+  try {
+    const manifest = path.join(path.resolve(repoRoot || process.cwd()), 'bin', 'skill-dependencies.json');
+    const parsed = JSON.parse(fs.readFileSync(manifest, 'utf8'));
+    const ids = (parsed.externalSkills || []).map((entry) => entry.id).filter(Boolean);
+    if (ids.length) return new Set(ids);
+  } catch {
+    // Fall through to the known-external fallback below.
+  }
+  return new Set(['ws-memo', 'ws-session-tracking']);
+}
+
+function hasPackageSkills(dir, repoRoot) {
+  try {
+    if (!fs.existsSync(dir)) return false;
+    if (fs.existsSync(path.join(dir, 'ws-shared'))) return true;
+    const external = loadExternalSkillIdsForPresence(repoRoot);
+    return fs.readdirSync(dir, { withFileTypes: true })
+      .some((entry) => entry.isDirectory() && entry.name.startsWith('ws-') && !external.has(entry.name));
+  } catch {
+    return false;
+  }
+}
+
 function resolveConsumerContext({ repoRoot, scriptFile, skillId, requireProjectHub = false } = {}) {
   const root = resolveRepoRoot(repoRoot, { scriptFile });
   const localSkillsRoot = path.join(root, '.agents', 'skills');
   const globalSkillsRoot = resolveExecutionGlobalSkillsRoot(scriptFile);
-  const localSkill = skillId ? path.join(localSkillsRoot, skillId) : localSkillsRoot;
-  const skillsRoot = fs.existsSync(localSkill) ? localSkillsRoot : globalSkillsRoot;
+  let skillsRoot;
+  if (skillId) {
+    const localSkill = path.join(localSkillsRoot, skillId);
+    skillsRoot = fs.existsSync(localSkill) ? localSkillsRoot : globalSkillsRoot;
+  } else {
+    const localHas = hasPackageSkills(localSkillsRoot, root);
+    const globalHas = hasPackageSkills(globalSkillsRoot, root);
+    if (localHas) skillsRoot = localSkillsRoot;
+    else if (globalHas) skillsRoot = globalSkillsRoot;
+    else skillsRoot = fs.existsSync(localSkillsRoot) ? localSkillsRoot : globalSkillsRoot;
+  }
   const hub = sharedDir(root);
   const localConfig = path.join(hub, 'config.json');
   const localExample = path.join(localSkillsRoot, 'ws-shared', 'templates', 'config.json.example');

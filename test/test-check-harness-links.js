@@ -98,13 +98,18 @@ function testResolvedHubCountsForRouting() {
 function testUnrelatedSkillNotAudited() {
   console.log('\n--- testUnrelatedSkillNotAudited ---');
   const fixture = mkTmp('ws-chk-links-unrelated-');
+  const emptyGlobal = mkTmp('ws-chk-links-emptyglobal-');
   fs.writeFileSync(path.join(fixture, 'AGENTS.md'), '# root hub\n', 'utf8');
   const unrelated = path.join(fixture, '.agents', 'skills', 'custom-skill');
   fs.mkdirSync(unrelated, { recursive: true });
   fs.writeFileSync(path.join(unrelated, 'SKILL.md'), '# custom\n\n[missing](nope.md)\n', 'utf8');
 
-  const { result } = check(fixture);
-  assert(result.status === 0, `unrelated non-ws skill is not package content (${result.stderr || ''})`);
+  const isolated = cp.spawnSync(process.execPath, [CHECKER, '--json', '--repo-root', fixture], {
+    cwd: fixture,
+    encoding: 'utf8',
+    env: { ...process.env, WORKFLOW_SKILLS_GLOBAL_DIR: emptyGlobal },
+  });
+  assert(isolated.status === 0, `unrelated non-ws skill is not package content (${isolated.stderr || ''})`);
 }
 
 function testGlobalOnlySkillsRootAudited() {

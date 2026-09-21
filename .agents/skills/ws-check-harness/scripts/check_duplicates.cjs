@@ -69,10 +69,25 @@ function parseArgs(argv) {
 // Package membership: only this package's own directories are audited. A
 // shared global skills root may also hold unrelated user skills; their
 // markdown is not shipped package content and must not be compared here.
-function packageRoots(dir) {
+// Explicitly external ws-* companions (bin/skill-dependencies.json
+// externalSkills, e.g. ws-memo) are also excluded.
+function externalSkillIds(repoRoot) {
+  try {
+    const manifest = path.join(path.resolve(repoRoot || process.cwd()), 'bin', 'skill-dependencies.json');
+    const parsed = JSON.parse(fs.readFileSync(manifest, 'utf8'));
+    const ids = (parsed.externalSkills || []).map((entry) => entry.id).filter(Boolean);
+    if (ids.length) return new Set(ids);
+  } catch {
+    // Fall through to the known-external fallback below.
+  }
+  return new Set(['ws-memo', 'ws-session-tracking']);
+}
+
+function packageRoots(dir, repoRoot) {
   if (!fs.existsSync(dir)) return [];
+  const external = externalSkillIds(repoRoot);
   return fs.readdirSync(dir, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && (entry.name === 'ws-shared' || entry.name.startsWith('ws-')))
+    .filter((entry) => entry.isDirectory() && (entry.name === 'ws-shared' || (entry.name.startsWith('ws-') && !external.has(entry.name))))
     .map((entry) => path.join(dir, entry.name));
 }
 
@@ -107,7 +122,7 @@ function shippedMarkdown(context) {
   const skillsBase = context.skillsRoot && path.isAbsolute(String(context.skillsRoot))
     ? String(context.skillsRoot)
     : path.join(context.repoRoot, '.agents', 'skills');
-  const stack = packageRoots(skillsBase);
+  const stack = packageRoots(skillsBase, context.repoRoot);
   if (!hubOutside && fs.existsSync(context.sharedDir)) stack.push(context.sharedDir);
   while (stack.length) {
     const current = stack.pop();

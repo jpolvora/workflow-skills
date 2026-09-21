@@ -61,10 +61,25 @@ function walk(dir, filter, out = []) {
 // Package membership: only this package's own directories are audited. A
 // shared global skills root may also hold unrelated user skills; their
 // markdown is not shipped package content and must not produce link findings.
-function packageRoots(dir) {
+// Explicitly external ws-* companions (bin/skill-dependencies.json
+// externalSkills, e.g. ws-memo) are also excluded.
+function externalSkillIds(repoRoot) {
+  try {
+    const manifest = path.join(path.resolve(repoRoot || process.cwd()), 'bin', 'skill-dependencies.json');
+    const parsed = JSON.parse(fs.readFileSync(manifest, 'utf8'));
+    const ids = (parsed.externalSkills || []).map((entry) => entry.id).filter(Boolean);
+    if (ids.length) return new Set(ids);
+  } catch {
+    // Fall through to the known-external fallback below.
+  }
+  return new Set(['ws-memo', 'ws-session-tracking']);
+}
+
+function packageRoots(dir, repoRoot) {
   if (!fs.existsSync(dir)) return [];
+  const external = externalSkillIds(repoRoot);
   return fs.readdirSync(dir, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && (entry.name === 'ws-shared' || entry.name.startsWith('ws-')))
+    .filter((entry) => entry.isDirectory() && (entry.name === 'ws-shared' || (entry.name.startsWith('ws-') && !external.has(entry.name))))
     .map((entry) => path.join(dir, entry.name));
 }
 
@@ -76,7 +91,7 @@ function collectFiles(repoRoot, skillsRoot) {
   }
   const localSkills = path.resolve(repoRoot, '.agents', 'skills');
   for (const skillDir of new Set([localSkills, skillsRoot].filter(Boolean))) {
-    for (const root of packageRoots(skillDir)) {
+    for (const root of packageRoots(skillDir, repoRoot)) {
       for (const full of walk(root, (p) => p.toLowerCase().endsWith('.md'))) {
         if (!EXCLUDED_MD.test(path.relative(repoRoot, full))) files.push(full);
       }
@@ -187,8 +202,9 @@ function analyze(repoRoot) {
   }
 
   const skillsDir = skillsRoot;
+  const externalForRouting = externalSkillIds(repoRoot);
   const diskSkills = (fs.existsSync(skillsDir) ? fs.readdirSync(skillsDir, { withFileTypes: true }) : [])
-    .filter((entry) => entry.isDirectory() && entry.name !== 'ws-shared' && /^ws-/.test(entry.name))
+    .filter((entry) => entry.isDirectory() && entry.name !== 'ws-shared' && /^ws-/.test(entry.name) && !externalForRouting.has(entry.name))
     .filter((entry) => fs.existsSync(path.join(skillsDir, entry.name, 'SKILL.md')))
     .map((entry) => entry.name)
     .sort();
