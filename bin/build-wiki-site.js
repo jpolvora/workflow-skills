@@ -10,6 +10,18 @@ import path from 'path';
 
 const SITE_BASE = 'https://jpolvora.github.io/workflow-skills';
 
+// GitHub branch used for blob/history/edit links. Deployed builds point at
+// 'main'; override per build via the wikiBranch option or WORKFLOW_SKILLS_WIKI_BRANCH.
+const DEFAULT_WIKI_BRANCH = 'main';
+
+export function resolveWikiBranch(options = {}) {
+  const fromOptions = typeof options.wikiBranch === 'string' ? options.wikiBranch.trim() : '';
+  const fromEnv = typeof process.env.WORKFLOW_SKILLS_WIKI_BRANCH === 'string'
+    ? process.env.WORKFLOW_SKILLS_WIKI_BRANCH.trim()
+    : '';
+  return fromOptions || fromEnv || DEFAULT_WIKI_BRANCH;
+}
+
 function normalizeLf(text) {
   return text.replace(/\r\n?/g, '\n');
 }
@@ -349,7 +361,7 @@ function buildIndexInfoboxHtml(allPages) {
 </aside>`;
 }
 
-function renderSidebarHtml(domains, currentPage, homeHref, wikiHomeHref) {
+function renderSidebarHtml(domains, currentPage, homeHref, wikiHomeHref, wikiBranch) {
   const domainOrder = ['harness', 'delivery', 'providers', 'specs', 'quality', 'memory', 'engineering', 'documentation'];
   const allDomainKeys = [...domains.keys()].sort((a, b) => {
     const idxA = domainOrder.indexOf(a);
@@ -380,8 +392,8 @@ function renderSidebarHtml(domains, currentPage, homeHref, wikiHomeHref) {
   const githubSourceRel = currentPage.relKey === 'index.wiki.md'
     ? '.agents/specs/wiki/index.wiki.md'
     : `.agents/specs/wiki/${currentPage.relKey}`;
-  const githubBlobUrl = `https://github.com/jpolvora/workflow-skills/blob/develop/${githubSourceRel}`;
-  const githubHistoryUrl = `https://github.com/jpolvora/workflow-skills/commits/develop/${githubSourceRel}`;
+  const githubBlobUrl = `https://github.com/jpolvora/workflow-skills/blob/${wikiBranch}/${githubSourceRel}`;
+  const githubHistoryUrl = `https://github.com/jpolvora/workflow-skills/commits/${wikiBranch}/${githubSourceRel}`;
 
   return `<aside class="wiki-sidebar" id="wiki-sidebar" aria-label="Wiki navigation">
   <div class="wiki-sidebar-inner">
@@ -497,11 +509,11 @@ function renderTopbarHtml(homeHref, wikiHomeHref) {
 </header>`;
 }
 
-function renderTabsHtml(githubBlobUrl, githubHistoryUrl, githubEditUrl) {
+function renderTabsHtml(githubBlobUrl, githubHistoryUrl, githubEditUrl, wikiBranch) {
   return `<div class="wiki-content-header-tabs">
   <div class="wiki-tabs-left">
     <span class="wiki-tab active">Article</span>
-    <a href="https://github.com/jpolvora/workflow-skills/tree/develop/specs" target="_blank" rel="noopener" class="wiki-tab">Specifications</a>
+    <a href="https://github.com/jpolvora/workflow-skills/tree/${wikiBranch}/specs" target="_blank" rel="noopener" class="wiki-tab">Specifications</a>
   </div>
   <div class="wiki-tabs-right">
     <span class="wiki-tab active">Read</span>
@@ -511,7 +523,7 @@ function renderTabsHtml(githubBlobUrl, githubHistoryUrl, githubEditUrl) {
 </div>`;
 }
 
-function renderMarkdown(markdown, sourceRelKey, wikiDir, page, allPages) {
+function renderMarkdown(markdown, sourceRelKey, wikiDir, page, allPages, wikiBranch) {
   const lines = normalizeLf(markdown).split('\n');
   const htmlParts = [];
   const headings = [];
@@ -529,7 +541,7 @@ function renderMarkdown(markdown, sourceRelKey, wikiDir, page, allPages) {
   const githubSourceRel = (sourceRelKey === 'index.wiki.md' || !sourceRelKey)
     ? '.agents/specs/wiki/index.wiki.md'
     : `.agents/specs/wiki/${sourceRelKey}`;
-  const editUrl = `https://github.com/jpolvora/workflow-skills/edit/develop/${githubSourceRel}`;
+  const editUrl = `https://github.com/jpolvora/workflow-skills/edit/${wikiBranch}/${githubSourceRel}`;
 
   while (i < lines.length) {
     const line = lines[i];
@@ -634,7 +646,7 @@ function extractTitle(markdown, fallback) {
   return match ? match[1].trim() : fallback;
 }
 
-function buildDocument({ title, bodyHtml, depth, page, domains, allPages }) {
+function buildDocument({ title, bodyHtml, depth, page, domains, allPages, wikiBranch }) {
   const cssHref = depth === 1 ? '../assets/css/style.css' : '../../assets/css/style.css';
   const homeHref = depth === 1 ? '../' : '../../';
   const wikiHomeHref = depth === 1 ? 'index.html' : '../index.html';
@@ -642,13 +654,13 @@ function buildDocument({ title, bodyHtml, depth, page, domains, allPages }) {
   const githubSourceRel = page.relKey === 'index.wiki.md'
     ? '.agents/specs/wiki/index.wiki.md'
     : `.agents/specs/wiki/${page.relKey}`;
-  const githubBlobUrl = `https://github.com/jpolvora/workflow-skills/blob/develop/${githubSourceRel}`;
-  const githubHistoryUrl = `https://github.com/jpolvora/workflow-skills/commits/develop/${githubSourceRel}`;
-  const githubEditUrl = `https://github.com/jpolvora/workflow-skills/edit/develop/${githubSourceRel}`;
+  const githubBlobUrl = `https://github.com/jpolvora/workflow-skills/blob/${wikiBranch}/${githubSourceRel}`;
+  const githubHistoryUrl = `https://github.com/jpolvora/workflow-skills/commits/${wikiBranch}/${githubSourceRel}`;
+  const githubEditUrl = `https://github.com/jpolvora/workflow-skills/edit/${wikiBranch}/${githubSourceRel}`;
 
-  const sidebarHtml = renderSidebarHtml(domains, page, homeHref, wikiHomeHref);
+  const sidebarHtml = renderSidebarHtml(domains, page, homeHref, wikiHomeHref, wikiBranch);
   const topbarHtml = renderTopbarHtml(homeHref, wikiHomeHref);
-  const tabsHtml = renderTabsHtml(githubBlobUrl, githubHistoryUrl, githubEditUrl);
+  const tabsHtml = renderTabsHtml(githubBlobUrl, githubHistoryUrl, githubEditUrl, wikiBranch);
 
   const pageDomain = page.depth === 2 ? page.relKey.split('/')[0] : '';
   const domainBreadcrumb = pageDomain ? ` · <span>${escapeHtml(pageDomain.toUpperCase())}</span>` : '';
@@ -780,7 +792,8 @@ function listHtmlFiles(dir) {
   return results.sort();
 }
 
-export function buildWikiSite({ repoRoot: _repoRoot, wikiDir, outDir, check = false }) {
+export function buildWikiSite({ repoRoot: _repoRoot, wikiDir, outDir, check = false, wikiBranch: wikiBranchOption } = {}) {
+  const wikiBranch = resolveWikiBranch({ wikiBranch: wikiBranchOption });
   const staleReasons = [];
   const indexPath = path.join(wikiDir, 'index.wiki.md');
 
@@ -800,8 +813,8 @@ export function buildWikiSite({ repoRoot: _repoRoot, wikiDir, outDir, check = fa
   for (const page of pages) {
     const markdown = fs.readFileSync(page.sourcePath, 'utf8');
     const title = extractTitle(markdown, path.basename(page.relKey, '.md'));
-    const bodyHtml = renderMarkdown(markdown, page.relKey, wikiDir, page, pages);
-    const html = buildDocument({ title, bodyHtml, depth: page.depth, page, domains, allPages: pages });
+    const bodyHtml = renderMarkdown(markdown, page.relKey, wikiDir, page, pages, wikiBranch);
+    const html = buildDocument({ title, bodyHtml, depth: page.depth, page, domains, allPages: pages, wikiBranch });
     generated.set(page.outRel, html);
 
     if (page.outRel !== 'index.html') {
