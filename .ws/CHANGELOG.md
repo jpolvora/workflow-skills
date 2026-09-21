@@ -1,4 +1,9 @@
 # Changelog
+### [2026-09-21 14:12] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: `/ws-spec-to-pr-lite` for the merged spec `patterns-generator-shared-hub-output` (issue #382 integration scope + hub-hosted generated body), later switched to `autoMode` + `fullMode` to auto-ship and run `ws-goal-fix-pr`.
+- **Done**: hub-hosted the generator body at `{sharedDir}/ws-project-patterns/SKILL.md` (seed script resolves `pathTokens.sharedDir`, keeps full-path realpath containment); `configure_autoload.cjs` renders/validates hub-path rows for generator-managed ids; `hub-layout.json` classifies it consumer-owned; batteries updated (hub paths, three link-refusal fixtures, custom sharedDir, hub-path row); integration analysis completed in the companion (overlap matrix, draft plan, code-reduction no-op with evidence, measured baselines); docs + site refreshed; version `0.4.50` + integrity regenerated.
+- **Result**: commits `beef67be` (implementation) and `d8665b74` (review fixes); review 2 rounds → 0 Critical/0 Warning; `npm run test` 103/103; harness clean 0 findings; invariant scan 0; secrets clean; AC ledger covers 16 ACs with NS links + 5 declared gaps.
+
 ### [2026-09-21 13:34] Agent: muse (muse-spark)
 - **Prompt**: track untracked specs and update state (completed vs pending) from latest PRs/commits/deliveries.
 - **Done**: swept 115 spec files; tracked 4 (us-378/us-380/us-381/us-382, rows 115-118) via track_index.cjs. E1: us-378 completed (delivery 78a02811, state completed/pr-open, PR #383 MERGED verified via gh) -> [x] + Done row + status completed; us-380/381/382 pending (import-only, no runs); us-369 stays pending (no workflow evidence; PR #379 merge outside E1 signal).
