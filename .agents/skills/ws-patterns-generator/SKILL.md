@@ -54,7 +54,7 @@ Recurring generator for the consumer project. It harvests findings and (re)write
 ## Rules
 
 - en-us; path tokens only; explicit `node` launchers; never `git add` or commit.
-- The generated body stays under `{sharedDir}` (the `.ws` project hub; consumer-owned, installer-excluded, tracked) and is never seeded into `{skillsRoot}`. Hub-root discovery reads `.ws/config.json` `pathTokens.sharedDir` and otherwise defaults to `.ws`, matching the harness-wide fixed-hub assumption.
+- The generated body stays under the `.ws` project hub (`{sharedDir}`; consumer-owned, installer-excluded, tracked) and is never seeded into `{skillsRoot}`. The hub root is fixed at `.ws`: `pathTokens.sharedDir` is not a relocation mechanism for hub-hosted content (installer, hub layout, migration, and generated links all assume `.ws`); a relocatable hub needs a harness-wide change.
 - Never write MEMORY.md or vault traps directly; never edit managed skill bodies.
 - Autoload row edits happen at seed/first-run only.
 

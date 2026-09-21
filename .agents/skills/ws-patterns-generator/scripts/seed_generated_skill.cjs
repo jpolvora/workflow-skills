@@ -91,21 +91,6 @@ function realpathLoose(candidate) {
   }
 }
 
-function resolveHubRel(root) {
-  let hubRel = '.ws';
-  try {
-    const configPath = path.join(root, '.ws', 'config.json');
-    if (fs.existsSync(configPath)) {
-      const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      const configured = config && config.pathTokens && config.pathTokens.sharedDir;
-      if (typeof configured === 'string' && configured.trim()) hubRel = configured.trim();
-    }
-  } catch {
-    hubRel = '.ws';
-  }
-  return hubRel;
-}
-
 function resolveTarget(repoRoot) {
   const root = path.resolve(repoRoot);
   let stat = null;
@@ -119,9 +104,11 @@ function resolveTarget(repoRoot) {
     process.exit(1);
   }
   // Generated pattern bodies are consumer-owned hub content: they live under
-  // the shared project hub ({sharedDir}, default .ws), never in the published
-  // skills tree, so the installer and integrity manifest stay untouched.
-  const hubRoot = path.resolve(root, resolveHubRel(root));
+  // the project hub (fixed at <repo>/.ws), never in the published skills tree.
+  // The hub root is not relocatable for hub-hosted content (the installer, hub
+  // layout, and autoload all assume .ws); a custom root needs a harness-wide
+  // change tracked separately as a spec.
+  const hubRoot = path.resolve(root, '.ws');
   const target = path.join(hubRoot, GENERATED_ID, 'SKILL.md');
   const contained = target.startsWith(hubRoot + path.sep) && target.startsWith(root + path.sep);
   if (!contained) {
