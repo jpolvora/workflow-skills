@@ -1,4 +1,9 @@
 # Changelog
+### [2026-09-21 13:11] Agent: muse (muse-spark)
+- **Prompt**: `/ws-spec-from-provider` — bulk-import open GitHub issues into local specs.
+- **Done**: Tracker github (active=local fallback to enabled github tracker); auth pass; list 4 open; skip 1 registered (#378); import 3 (#382, #381, #380) via snapshot, base convert, agentic reformulation, full register; authoring validate PASS before each register.
+- **Result**: Imported 3 / skipped 1 / failed 0. Paths: `.agents/specs/0111-us-382.spec.md` + `.context.md`, `.agents/specs/0112-us-381.spec.md`, `.agents/specs/0113-us-380.spec.md`; workflow copies under `.agents/plans/us-{382,381,380}/step-00-*.spec.md`.
+
 ### [2026-09-21 08:51] Agent: opencode (deepseek-v4.1-flash)
 - **Prompt**: Enable generic subagent dispatch for the Muse session (`hostAdapter` + capability re-probe), without specialized subagents.
 - **Done**: Added `defaults.hostAdapter.mode: "native-tool"` to `.ws/config.json` (GUI already binds `defaults.hostAdapter`; no GUI change needed). Re-probed `.ws/host-capabilities.json` for `muse::muse-spark-1.3-contributor` and `muse::muse-spark` with `--host-shape muse-spark-like --declare dispatchAgent=subagent_spawn --refresh`; both keys now bind `subagentTool: subagent_spawn` with `knownShape: true`. Corrected the declare token (`dispatchAgent`, not the `subagentTool` alias; alias names are silently ignored by `parseDeclared`).
