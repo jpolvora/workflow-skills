@@ -173,6 +173,40 @@ if (fs.existsSync(seedCjs)) {
       rmFixture(outside);
     }
   }
+  // Symlink containment, linked generated-skill dir (PR #383 thread 2): a link
+  // at the generated skill's own parent must be resolved before the gate, and
+  // the write refused when it points outside the repo.
+  {
+    const repo = makeFixture('ws-pg-childsym-');
+    const outside = makeFixture('ws-pg-childout-');
+    try {
+      fs.mkdirSync(path.join(repo, '.agents/skills'), { recursive: true });
+      const linkPath = path.join(repo, '.agents/skills/ws-project-patterns');
+      let linked = false;
+      try {
+        fs.symlinkSync(outside, linkPath, process.platform === 'win32' ? 'junction' : 'dir');
+        linked = true;
+      } catch (e) {
+        console.log(`NOTE linked-generated-dir test skipped: ${e.code || e.message}`);
+      }
+      if (linked) {
+        const r = runNode([seedCjs, '--repo-root', repo], { cwd: root });
+        assert(r.status !== 0, `seed refuses symlinked generated dir (got ${r.status})`);
+        assert(/outside the repo skills root/.test(r.stderr || ''), 'refusal message names containment');
+        assert(!fs.existsSync(path.join(outside, 'SKILL.md')), 'no write escapes through linked generated dir');
+        fs.rmSync(linkPath, { recursive: true, force: true });
+        const inner = path.join(repo, 'patterns-inside');
+        fs.mkdirSync(inner, { recursive: true });
+        fs.symlinkSync(inner, linkPath, process.platform === 'win32' ? 'junction' : 'dir');
+        const r2 = runNode([seedCjs, '--repo-root', repo], { cwd: root });
+        assert(r2.status === 0, `seed allows in-repo linked generated dir (got ${r2.status}: ${r2.stderr || ''})`);
+        assert(fs.existsSync(path.join(inner, 'SKILL.md')), 'in-repo child link seeds through');
+      }
+    } finally {
+      rmFixture(repo);
+      rmFixture(outside);
+    }
+  }
 } else {
   assert(false, 'seed_generated_skill.cjs exists');
 }

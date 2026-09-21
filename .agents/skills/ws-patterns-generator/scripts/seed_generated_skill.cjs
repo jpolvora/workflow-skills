@@ -67,15 +67,28 @@ function parseArgs(argv) {
 function realpathLoose(candidate) {
   // Resolve symlinks through the deepest existing ancestor so missing-leaf
   // paths still get symlink-resolved parents (realpathSync throws on ENOENT).
+  // lstat (not exists) so a link counts as existing even when its target does
+  // not; a link that cannot be resolved fails closed (null) instead of passing
+  // a lexical containment check.
   const rest = [];
   let existing = candidate;
-  while (!fs.existsSync(existing)) {
+  for (;;) {
+    try {
+      fs.lstatSync(existing);
+      break;
+    } catch {
+      // keep walking up past missing leaves
+    }
     rest.unshift(path.basename(existing));
     const parent = path.dirname(existing);
-    if (parent === existing) break;
+    if (parent === existing) return null;
     existing = parent;
   }
-  return path.join(fs.realpathSync(existing), ...rest);
+  try {
+    return path.join(fs.realpathSync(existing), ...rest);
+  } catch {
+    return null;
+  }
 }
 
 function resolveTarget(repoRoot) {
@@ -109,10 +122,15 @@ function resolveTarget(repoRoot) {
     process.exit(1);
   }
   // Symlink-aware gate: lexical prefix checks cannot see directory links, so
-  // re-verify containment on resolved real paths before any write lands.
+  // re-verify containment on resolved real paths before any write lands. The
+  // target's own parent is resolved too: a linked intermediate directory would
+  // otherwise stay lexically inside while writes follow the link out.
   const rootReal = fs.realpathSync(root);
-  const targetReal = path.join(realpathLoose(skillsRoot), GENERATED_ID, 'SKILL.md');
-  if (!targetReal.startsWith(rootReal + path.sep)) {
+  const targetParentReal = realpathLoose(path.dirname(target));
+  const targetReal = targetParentReal === null
+    ? null
+    : path.join(targetParentReal, path.basename(target));
+  if (!targetReal || !targetReal.startsWith(rootReal + path.sep)) {
     process.stderr.write('Refusing to write outside the repo skills root\n');
     process.exit(1);
   }

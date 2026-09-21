@@ -15,6 +15,15 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 - **DO NOT**: spawn a configured CLI bin with `shell: false` on win32 and assume npm shims resolve; nor "fix" it by appending `.cmd` while keeping `shell: false`; nor revert to `shell: true` with an argv array (re-splits spaced paths, the original AC3 defect).
 - **INSTEAD DO**: route configured-CLI spawns through `spawnCliSync` (`ws-shared/runtime/scripts/cli_spawn.cjs`): first attempt `shell: false` everywhere, and only on win32 ENOENT retry once through ComSpec with a pre-quoted command line (`quoteCmdArg` + `shell: true` with a caller-quoted string) so PATHEXT shims resolve while spaced args stay intact. Cover with `test/test-cli-spawn-shim.js` (native passthrough, spaced argv, quoting units, missing-bin surfacing, win32-only live `.cmd` fixture test).
 
+### [2026-09-21] Transcript error heuristics must correlate the attempt outcome, not just error shape
+- **Layer**: `Application`
+- **Module**: `ws-monitor`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs, test/test-ws-monitor.js`
+- **Scenario / Context**: `hasSubagentError` flagged a transcript whenever an exception marker (`fatal error`, `unhandled rejection`, `exception in subagent`) appeared together with trace shape (V8 `at` frames, Python traceback, Go goroutine). Issue #369 narrowed this to failure-shaped evidence, but the check never correlated the attempt outcome, so a run that failed and then succeeded on retry still produced a `subagent-error` finding. Review raised it twice: first at score 5 (declined as an ownership boundary), then at score 6 with a concrete recovery-suppression proposal; the second time it was fixed.
+- **DO NOT**: Decide an "unhandled error" finding from a marker plus trace shape alone, and do not suppress on recovery evidence that appears anywhere in the text: a recovery line before a later failure would hide a real trailing error.
+- **INSTEAD DO**: Locate the **last** failure evidence (iterate the trace regex with `lastIndex`), then search only the slice after it for recovery evidence (`retry` / `attempt N` within 200 chars of `succeeded|successful|completed`). Suppress only when the recovery follows the last failure. Cover both directions in tests with correlatable `--workflow-id` fixtures: recovered-after-failure stays silent; recovery-before-a-later-failure still reports.
+
 ### [2026-09-21] Resolver precedence and same-installation coherence
 - **Layer**: `Tests / Workflow harness`
 - **Module**: `ws-shared bootstrap (`bootstrap_runtime.cjs` + standalone fallback copies), `cli_spawn.cjs`
@@ -95,6 +104,15 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 - **Scenario / Context**: A new benign-transcript negative test passed `--transcript-root <green-dir>` with no filter and falsely failed: `resolveCandidateTranscriptRoots` appends explicit roots to auto-discovered workspace roots (`.cursor/transcripts`), so an earlier true-positive fixture in the same temp root leaked into the green run. Adding `--workflow-id wf-green` scoped the scan to the green file only.
 - **DO NOT**: Assume `--transcript-root` replaces discovery; run an unfiltered monitor assertion in a temp root that also holds positive fixtures.
 - **INSTEAD DO**: Pass `--workflow-id` (or `--slug`) matching only the target transcript in every monitor test that asserts absence of findings, and keep positive and negative fixtures correlatable to distinct workflow ids.
+
+### [2026-09-21] Containment gates must resolve the target's own parent, not only the configured root
+- **Layer**: `Infrastructure`
+- **Module**: `ws-patterns-generator seed script`
+- **Severity**: `Critical`
+- **PathPattern**: `.agents/skills/ws-patterns-generator/scripts/seed_generated_skill.cjs`
+- **Scenario / Context**: Round 1 resolved the configured skills root (`realpathLoose(skillsRoot)`) and still built the target from lexical leaves (`join(resolvedSkillsRoot, GENERATED_ID, 'SKILL.md')`). A `<skillsRoot>/ws-project-patterns` directory that is itself a symlink/junction to a path outside the repo therefore stayed lexically inside the root, passed the gate, and `writeFileSync` followed the link out of the repository. Review re-raised it as CRITICAL (score 9) on the next push: the first fix was partial.
+- **DO NOT**: Treat "resolve the root" as complete containment when the target path has intermediate directories that callers do not control. Do not probe existence with `fs.existsSync` in the walker: it follows links, so a link whose target is missing looks absent and the path silently degrades to a lexical comparison.
+- **INSTEAD DO**: Resolve the target's **own parent** (`realpathLoose(path.dirname(target))`) and rejoin the basename before the containment compare; probe with `fs.lstatSync` so a link counts as existing even when its target does not; fail closed (refuse the write) when real resolution is impossible. Test the linked child directory case, not only the linked root, plus an in-repo child link as the positive control.
 
 ### [2026-09-21] Config GUI rows must bind schema scalar types to matching controls
 - **Layer**: `Domain`

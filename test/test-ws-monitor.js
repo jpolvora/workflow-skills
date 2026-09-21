@@ -502,6 +502,39 @@ if (!subagentErrReport.findings.some((f) => f.code === 'subagent-error')) {
   throw new Error('monitor failed to detect subagent-error signal in transcript');
 }
 
+// PR #383 thread 2: a failed attempt that later succeeded on retry is not an
+// unhandled error; a recovery that precedes a later failure still counts.
+const recoveredTranscripts = path.join(root, 'transcripts-recovered');
+write(path.join(recoveredTranscripts, 'session.jsonl'), [
+  'wf-recovered fatal error in subagent dispatch',
+  '    at runStep (worker.js:10:5)',
+  'stream attempt 1 failed, retrying',
+  'stream attempt 2 succeeded.',
+].join('\n'));
+const recoveredResult = run(['--repo-root', root, '--workflow-id', 'wf-recovered', '--transcript-root', recoveredTranscripts, '--json'], root);
+if (recoveredResult.status !== 0) {
+  throw new Error(recoveredResult.stderr || recoveredResult.stdout);
+}
+const recoveredReport = JSON.parse(recoveredResult.stdout);
+if (recoveredReport.findings.some((f) => f.code === 'subagent-error')) {
+  throw new Error('monitor false-positive: recovered attempt reported as subagent-error');
+}
+
+const unrecoveredTranscripts = path.join(root, 'transcripts-unrecovered');
+write(path.join(unrecoveredTranscripts, 'session.jsonl'), [
+  'wf-unrecovered stream attempt 1 failed, retrying; attempt 2 succeeded.',
+  'unhandled rejection: subagent died',
+  '    at runStep (worker.js:22:9)',
+].join('\n'));
+const unrecoveredResult = run(['--repo-root', root, '--workflow-id', 'wf-unrecovered', '--transcript-root', unrecoveredTranscripts, '--json'], root);
+if (unrecoveredResult.status !== 0) {
+  throw new Error(unrecoveredResult.stderr || unrecoveredResult.stdout);
+}
+const unrecoveredReport = JSON.parse(unrecoveredResult.stdout);
+if (!unrecoveredReport.findings.some((f) => f.code === 'subagent-error')) {
+  throw new Error('monitor missed a failure that followed a recovered attempt');
+}
+
 // Issue #369: benign-only transcript stays silent for the three signals.
 const greenTranscripts = path.join(root, 'transcripts-green');
 write(path.join(greenTranscripts, 'session.jsonl'), [

@@ -883,9 +883,16 @@ function hasSubagentError(text) {
   // frames, Python tracebacks, Go goroutine dumps). Prose mentions and
   // retried-then-succeeded attempts have no trace.
   if (!/(fatal error|unhandled rejection|exception in subagent)/i.test(text)) return false;
-  return /^\s*at\s+\S+.*:\d+/im.test(text)
-    || /Traceback \(most recent call last\)/i.test(text)
-    || /^goroutine \d+ \[/im.test(text);
+  // Locate the last failure evidence, then correlate any recovery after it: an
+  // attempt that failed and later succeeded on retry is not an unhandled error.
+  // Recovery evidence before a later failure never suppresses that failure.
+  const trace = /(^\s*at\s+\S+.*:\d+|Traceback \(most recent call last\)|^goroutine \d+ \[)/gim;
+  let lastFailure = -1;
+  let match;
+  while ((match = trace.exec(text)) !== null) lastFailure = match.index + match[0].length;
+  if (lastFailure < 0) return false;
+  return !/(?:retry|attempt\s+\d+)[\s\S]{0,200}\b(?:succeeded|successful|completed)\b/i
+    .test(text.slice(lastFailure));
 }
 
 function scanTranscriptRoots(context, roots, filter = {}) {
