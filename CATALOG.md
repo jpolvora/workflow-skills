@@ -89,6 +89,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | `ws-spec-manager` | `.agents/skills/ws-spec-manager/SKILL.md` | Unified spec router & lifecycle manager |
 | `ws-wiki` | `.agents/skills/ws-wiki/SKILL.md` | Feature wiki & domain knowledge base manager (init, from-code genesis, sync, sweep, Phase 2 wiki-vs-code verify and Phase 3 plan/apply) |
 | `ws-task-lifecycle` | `.agents/skills/ws-task-lifecycle/SKILL.md` | Prompt-driven task tracking |
+| `ws-patterns-generator` | `.agents/skills/ws-patterns-generator/SKILL.md` | Consumer project-patterns skill generator |
 | `grill-with-docs` | `(global)` | Docs grill |
 | `find-skills` | via `using-superpowers` | Discover/install |
 
@@ -156,6 +157,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | Record ws-changelog | This file § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) (live `ws-changelog` only when authoring that skill) |
 | Fill / update `config.json` | `ws-configure-project` (wizard) · `npm run config:gui` / `Edit-Config.bat` (GUI editor) |
 | Discover/install skills | `find-skills` or `using-superpowers` |
+| Consumer project-patterns generator (harvest + refresh) | `ws-patterns-generator` |
 
 ---
 

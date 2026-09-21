@@ -1,6 +1,6 @@
 ---
 name: ws-spec-explain
-version: 0.4.48
+version: 0.4.49
 disable-model-invocation: true
 description: >-
   Read-only panorama of a spec or US/issue — status, what it does, what it

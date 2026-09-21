@@ -6,7 +6,7 @@ Path tokens: expand via [`tools.md`](tools.md) before tool calls.
 
 ## Skill catalog (layers)
 
-> **Scope note:** Full inventory for this install. Membership is [`skill-dependencies.json`](skill-dependencies.json) (`workflows` = 47, `extra` = 8). Extra rows are absent from Workflows-only installs. Ids in `externalSkills` (spec-memo companions) are not packaged here. Consumer routes: [`AGENTS.md`](AGENTS.md).
+> **Scope note:** Full inventory for this install. Membership is [`skill-dependencies.json`](skill-dependencies.json) (`workflows` = 48, `extra` = 8). Extra rows are absent from Workflows-only installs. Ids in `externalSkills` (spec-memo companions, generator-managed consumer skills) are not packaged here. Consumer routes: [`AGENTS.md`](AGENTS.md).
 >
 > **Do not load this catalog as a work list** — it is an index. Load skills per [`AGENTS.md`](AGENTS.md) § Skill loading.
 
@@ -92,6 +92,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-spec-manager` | `.agents/skills/ws-spec-manager/SKILL.md` | Unified spec router & lifecycle manager |
 | `ws-wiki` | `.agents/skills/ws-wiki/SKILL.md` | Living project feature wiki & domain knowledge base manager (init, from-code genesis, sync, sweep, Phase 2 wiki-vs-code verify and Phase 3 plan/apply) |
 | `ws-task-lifecycle` | `.agents/skills/ws-task-lifecycle/SKILL.md` | Prompt-driven task tracking |
+| `ws-patterns-generator` | `.agents/skills/ws-patterns-generator/SKILL.md` | Consumer project-patterns skill generator |
 | `grill-with-docs` | `(global)` | Docs grill |
 | `find-skills` | via `using-superpowers` | Discover/install |
 
@@ -158,6 +159,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Record ws-changelog | `ws-changelog` (append-only history at `rules.changelogFile`) |
 | Fill / update `config.json` | `ws-configure-project` |
 | Discover/install skills | `find-skills` or `using-superpowers` |
+| Consumer project-patterns generator (harvest + refresh) | `ws-patterns-generator` |
 
 ---
 

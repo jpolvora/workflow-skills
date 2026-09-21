@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.4.48",
+  "packageVersion": "0.4.49",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -18,6 +18,12 @@
       "sourcePackage": "spec-memo",
       "sourceUrl": "https://github.com/jpolvora/spec-memo",
       "note": "Prompt/session vault activity. Not hashed or installed by this package. Optional under {globalSkillsRoot} or {skillsRoot} via spec-memo install_skills. Skip hub Read when SKILL.md is absent."
+    },
+    {
+      "id": "ws-project-patterns",
+      "sourcePackage": "consumer",
+      "generatorManaged": true,
+      "note": "Generator-managed consumer skill (ws-patterns-generator runs). Never vendored upstream; installer and harness membership exclude it; autoload keeps its row while the tree exists."
     }
   ],
   "hub": {
@@ -82,7 +88,8 @@
         "ws-spec-memo",
         "ws-spec-organizer",
         "ws-spec-manager",
-        "ws-wiki"
+        "ws-wiki",
+        "ws-patterns-generator"
       ],
       "ensureHub": true,
       "shortcut": "w",
@@ -286,7 +293,13 @@
       "ws-spec-write"
     ],
     "ws-run-benchmark": [],
-    "ws-benchmarks": []
+    "ws-benchmarks": [],
+    "ws-patterns-generator": [
+      "ws-configure-project",
+      "ws-self-learning",
+      "ws-changelog",
+      "ws-secrets-leak-review"
+    ]
   },
   "autoloadOnly": [],
   "selectOffRule": "no-cascade-deselect"

@@ -230,10 +230,42 @@ function loadExternalSkillIds(repoRoot, { globalSkillsRoot = null, allowGlobalSo
   return new Set();
 }
 
+function loadGeneratorManagedIds(repoRoot, { globalSkillsRoot = null, allowGlobalSource = false } = {}) {
+  const candidates = [path.join(repoRoot, 'bin', 'skill-dependencies.json')];
+  const runtime = resolveRuntimeSource(repoRoot, globalSkillsRoot || resolveExecutionGlobalSkillsRoot(null), allowGlobalSource);
+  candidates.push(path.join(runtime, 'skill-dependencies.json'));
+  for (const candidate of candidates) {
+    if (!fs.existsSync(candidate)) continue;
+    let data;
+    try { data = JSON.parse(fs.readFileSync(candidate, 'utf8')); } catch { continue; }
+    const raw = data.externalSkills || [];
+    if (!Array.isArray(raw)) continue;
+    const ids = new Set();
+    for (const item of raw) {
+      if (item && typeof item === 'object' && item.generatorManaged === true) {
+        const sid = String(item.id || '').trim();
+        if (sid.startsWith('ws-')) ids.add(sid);
+      }
+    }
+    return ids;
+  }
+  return new Set();
+}
+
+function generatorManagedTreeExists(repoRoot, skillId, globalSkillsRoot = null) {
+  if (fs.existsSync(path.join(repoRoot, '.agents', 'skills', skillId, 'SKILL.md'))) return true;
+  const groot = globalSkillsRoot || resolveGlobalSkillsRoot(null);
+  return fs.existsSync(path.join(groot, skillId, 'SKILL.md'));
+}
+
 function dropExternalCompanionMembers(membership, repoRoot, { globalSkillsRoot = null, allowGlobalSource = false } = {}) {
   const external = loadExternalSkillIds(repoRoot, { globalSkillsRoot, allowGlobalSource });
   if (!external.size) return membership;
-  return membership.filter((row) => !external.has(row.skill));
+  const managed = loadGeneratorManagedIds(repoRoot, { globalSkillsRoot, allowGlobalSource });
+  return membership.filter((row) => {
+    if (!external.has(row.skill)) return true;
+    return managed.has(row.skill) && generatorManagedTreeExists(repoRoot, row.skill, globalSkillsRoot);
+  });
 }
 
 function renderConsumerAutoload(text, { repoRoot = null } = {}) {
@@ -498,8 +530,11 @@ function checkAutoload(repoRoot, { globalSkillsRoot = null, allowGlobalSource = 
   if (containsAbsolutePath(text)) {
     findings.push({ severity: 'critical', file: '.ws/autoload.md', message: 'Absolute filesystem path detected; use relative or declared tokens only', fix: 'Run ws-configure-project --section autoload / configure_autoload.cjs --write-autoload' });
   }
+  const externalCompanions = loadExternalSkillIds(repoRoot, { globalSkillsRoot, allowGlobalSource });
+  const generatorManaged = loadGeneratorManagedIds(repoRoot, { globalSkillsRoot, allowGlobalSource });
+  const managedPresent = (skill) => generatorManaged.has(skill) && generatorManagedTreeExists(repoRoot, skill, globalSkillsRoot);
   for (const row of parseAlwaysAppliedRows(text)) {
-    if (loadExternalSkillIds(repoRoot, { globalSkillsRoot, allowGlobalSource }).has(row.skill)) {
+    if (externalCompanions.has(row.skill) && !managedPresent(row.skill)) {
       findings.push({ severity: 'warning', file: '.ws/autoload.md', message: `Always-applied lists external companion \`${row.skill}\` (not packaged here); move to External companion skills and skip when absent`, fix: 'Remove the Always-applied row; keep the optional companion section' });
       continue;
     }
