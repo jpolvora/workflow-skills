@@ -2,12 +2,17 @@
 id: 369
 slug: us-369
 title: "ws-monitor transcript signals fire false positives on healthy runs (hybrid-path-resolution, model-fallback, subagent-error)"
-source: github
+source: local
+specDate: 2026-09-20
 issueState: open
 issueUrl: "https://github.com/jpolvora/workflow-skills/issues/369"
-specDate: 2026-09-20
+step: 0
+workflowId: us-369
+status: completed
+startedAt: "2026-09-21T04:25:02.147Z"
+endedAt: "2026-09-21T04:25:02.147Z"
+acRefs: []
 ---
-
 # Specification — ws-monitor transcript signals fire false positives on healthy runs (hybrid-path-resolution, model-fallback, subagent-error)
 
 ## Description
@@ -22,7 +27,7 @@ On a clean end-to-end standard-pipeline run (verify score above the gate, every 
 
 An independent evidence check against the same transcript found zero `ENOENT` occurrences, zero unavailable/unsupported model identifiers, and zero `unhandled` / `traceback` / `fatal` occurrences; the single non-success stream marker was one retried model-stream attempt that succeeded on retry.
 
-Probable match sources are substring patterns hitting benign text: script filenames in directory listings, documentation prose about fallback behavior, routine reconciler outcome records, and retried-then-succeeded stream attempts. Current patterns live in `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs` (transcript scan): `ENOENT|build_dispatch_context`, `unsupported|invalid … model|model … (reject|not available)`, and `fatal error|unhandled rejection|exception in subagent` — none of them require failure-shaped evidence or exclude benign contexts.
+Probable match sources are substring patterns hitting benign text: script filenames in directory listings, documentation prose about fallback behavior, routine reconciler outcome records, and retried-then-succeeded stream attempts. Current patterns live in `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs` (transcript scan): `ENOENT|build_dispatch_context`, `unsupported|invalid … model|model … (reject|not available)`, and `fatal error|unhandled rejection|exception in subagent` — none of them require failure-shaped evidence or exclude benign contexts. (Re-verified 2026-09-21 on 0.4.47: predicates byte-identical; a benign-only transcript reproduces all three findings.)
 
 ## Acceptance Criteria
 
@@ -43,9 +48,12 @@ ws-monitor transcript-pattern signals report CRITICAL/WARNING on a fully healthy
 
 ### Prior Work Sweep
 
-- Open-issue scan (`list_open_issues.cjs`) shows issue 369 is the only open tracker item — no duplicate or sibling issue covers these three signals.
-- `git log --all --grep="369"` returns only unrelated hits; `git log --all --grep="false positive"` returns harness-link and spec-scaffolding commits, no prior signal-predicate fix.
-- Two non-main commits (`82bb0744`, `6308cf36`, both on `develop` only) mention false positives but add spec/plan artifacts, not a predicate fix — the patterns on `main` are unchanged.
+- Refreshed 2026-09-21 against HEAD (0.4.47); reproduction confirms the issue still applies in full.
+- Open-issue scan shows #369 plus unrelated #378 (consumer skill generator) — no duplicate or sibling issue covers these three signals.
+- `git log --all --grep="369"` returns only the spec import (`eff3eaba`) and spec draft (`82bb0744`); no implementation commit exists.
+- `6308cf36` ("resolve false positives in ws-monitor transcript signals") touched only `.agents/specs/index.PRD` (tracking), not the predicates.
+- The #377 review-thread series touched monitor files but not the three predicates: blame dates the `hybrid-path-resolution` / `model-fallback` patterns to `5db6f9f75` (2026-09-09) and `subagent-error` to `d97f48a2d` (2026-09-11), both before the issue was filed (2026-09-19).
+- Reproduction on HEAD (0.4.47): a benign-only transcript (listing, docs prose, healthy reconciler note, retried-then-succeeded stream, green summary) fires all three signals — the issue applies in full.
 - Foundation is the merged us-356 series (transcript discovery and read-only snapshot contract in `ws-monitor`, e.g. `c0750bc0`, `ac55d68f`, `2d089427`), which this spec tightens at the predicate level without changing discovery.
 - Current predicates verified at `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs` transcript scan (bare-substring matches, no evidence guards).
 
@@ -74,7 +82,7 @@ ws-monitor transcript-pattern signals report CRITICAL/WARNING on a fully healthy
 | Assumption | Chosen default | Rationale | Confirmed |
 |------------|----------------|-----------|-----------|
 | Failure-shaped evidence is expressible per signal as regex plus proximity/content guard | Guarded substring + window, no semantic parsing | Keeps the scan cheap and bounded like today | y |
-| A green-run transcript (or derived fixture) is available as the AC4 gate input | Derive fixture from a recorded healthy run | AC4 needs a stable, rerunnable input | n |
+| A green-run transcript (or derived fixture) is available as the AC4 gate input | Synthetic benign transcript embedded in monitor tests (listing, prose, reconciler, retry-then-success lines) | Pinned by negative tests; rerunnable without a recorded run | y |
 | Exclusion lists (prose markers, reconciler outcomes, retry-then-success) cover the observed sources | The three observed sources plus obvious siblings | Matches the issue's probable-match-source list | y |
 | Input validation and idempotency dimensions | N/A: scan is a pure function over transcript text, no writes or new inputs | Predicate-only change | y |
 
@@ -103,3 +111,7 @@ ws-monitor transcript-pattern signals report CRITICAL/WARNING on a fully healthy
 - Transcript with one retried-then-succeeded stream attempt and prose about error handling: no `subagent-error` finding (fails today).
 - Transcript with a genuine `ENOENT` inside dispatch-context construction: `hybrid-path-resolution` still fires (no overcorrection to silence).
 - Malformed or empty transcript input: scan completes without throwing; findings empty, not an error.
+
+## Revision History
+
+### [2026-09-21] Revision: refreshed sweep against HEAD (0.4.47), confirmed issue still reproduces 3/3, pinned green-run fixture source (Prompt: "update the spec based on latest fixes/current project state")

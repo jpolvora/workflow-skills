@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-21 00:31] Agent: Muse Code (muse-spark)
+- **Prompt**: Update spec 0107-us-369 for issue #369, implement surgical fixes, bump, commit, push, ship PR.
+- **Done**: Tightened the three ws-monitor transcript signals to require failure-shaped evidence (`hybrid-path-resolution`: ENOENT-family within 200 chars of dispatch-context construction; `model-fallback`: dispatch + model + rejection on one dispatch record; `subagent-error`: exception marker plus stack-trace shape); updated ws-monitor SKILL.md predicate docs; refreshed spec 0107-us-369 sweep (HEAD 0.4.47, repro 3/3) and re-registered step-00; updated positive fixtures to failure-shaped evidence and added a benign-transcript negative test; version 0.4.48 + integrity regen + site rebuild.
+- **Result**: Benign transcript yields 0 findings (was 3); true positives preserved; `npm run tests` 102/102 green; `test-harness-clean.js` 0 findings; `verify-integrity` OK.
+
 ### [2026-09-20 19:15] Agent: Antigravity
 - **Prompt**: /ws-spec-to-pr .agents/specs/0108-code-review-findings-fixes.spec.md
 - **Done**: Implemented centralized runtime bootstrap helper in `bootstrap_runtime.cjs` (`resolveHubScriptsDir`), refactored skill scripts (`check_unique_runtime.cjs`, `observer.cjs`, `ac_ledger.cjs`), standardized cross-platform `os.homedir()` in `check_hub_separation.cjs`, added streaming multi-byte UTF-8 decoding with `StringDecoder` in `monitor_snapshot.cjs`, and enforced automated check against forbidden `.ws/runtime` directory in `check_unique_runtime.cjs`. Added regression test suite `test/test-bootstrap-runtime.js` and regenerated integrity manifest.

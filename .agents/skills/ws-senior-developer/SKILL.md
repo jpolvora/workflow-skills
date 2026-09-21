@@ -1,7 +1,7 @@
 ---
 name: ws-senior-developer
 description: Engineering delivery gate for scope control, anti-reinvention, ambiguity stops via user-gate, surgical diff hygiene, and pre-ship proof. Invoke via rules.seniorDeveloper, /senior-developer, or /karpathy-guidelines.
-version: 0.4.47
+version: 0.4.48
 invocation_names:
   - senior-developer
   - ws-senior-developer
