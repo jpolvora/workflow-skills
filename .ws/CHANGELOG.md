@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-09-21 06:00] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: Test-suite runner refactor — replace the giant `&&`-chained npm test scripts with a single wrapper.
+- **Done**: Added `test/run-tests.cjs` (sequential, fail-fast, Node launcher, modes `local`/`--remote`/`--harness-efficiency`, `--list`) backed by `test/test-suites.json` (ordered argv lists). `package.json` `tests` / `tests:remote` / `tests:harness-efficiency` are now one short command each. `test-spec-dor-tdd.js` and `test-repeated-file-list-flags.js` now assert suite registration against `test-suites.json`.
+- **Result**: `npm run test` green (102 entries, mode=local); `test-harness-clean.js` 0 findings; `verify-integrity` OK (v0.4.47).
+
+### [2026-09-21 05:40] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: `ws-goal-fix-pr 377` round 6 (inline fix loop) — 1 review thread on the global-install audit path.
+- **Done**: `check_duplicates.cjs` no longer calls `toRepoRelative` (which throws for paths outside the repo) on audit paths; a local non-throwing `displayPath()` keeps outside-repo occurrences resolvable (`..`/cross-drive) and is used for hub-relative checks and occurrence reporting. New `test/test-check-harness-duplicates.js` covers a global-only `WORKFLOW_SKILLS_GLOBAL_DIR` install (duplicate reported, no throw) and unrelated-skill exclusion.
+- **Result**: `npm run test` green; `test-harness-clean.js` 0 findings; `verify-integrity` OK (v0.4.47).
+
 ### [2026-09-21 05:15] Agent: opencode (deepseek-v4.1-flash)
 - **Prompt**: `ws-goal-fix-pr 377` round 5 (inline fix loop) — 1 review thread on the config GUI editor.
 - **Done**: `Edit-WorkflowSkillsConfig.ps1` gained a `number` control branch (`Add-ConfigFieldRow`, NumericUpDown with 2 decimal places, persists `[double]`) and `defaults.convergence.backoff` now binds `-Type 'number' -MinVal 1 -MaxVal 100 -DefaultVal 1.5`, matching `config.schema.json` (`number`, minimum 1). `test-powershell-config-editor.js` adds Test 9b scalar-type parity (schema `number`/`integer`/`boolean`/`string` vs row type) plus a numeric round-trip asserting `convergence.backoff` persists as a JSON number.

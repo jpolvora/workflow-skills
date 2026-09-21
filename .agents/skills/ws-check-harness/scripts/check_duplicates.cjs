@@ -39,7 +39,16 @@ const HUB_SCRIPTS_DIR = (() => {
   }
   return packaged;
 })();
-const { resolveConsumerContext, toRepoRelative } = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
+const { resolveConsumerContext } = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
+
+// Repo-relative display path that never throws for a path outside the repo.
+// Global-only installs audit files under {globalSkillsRoot}; those stay
+// resolvable from repoRoot (via `..` or an absolute cross-drive path) instead
+// of aborting the report. toRepoRelative() without allowOutside throws, and
+// with allowOutside collapses to a basename that would merge distinct files.
+function displayPath(repoRoot, value) {
+  return path.relative(path.resolve(repoRoot), path.resolve(value)).replace(/\\/g, '/') || '.';
+}
 
 function parseArgs(argv) {
   const options = { paths: [], minLines: 6, json: false };
@@ -87,7 +96,7 @@ function shippedMarkdown(context) {
   const roots = ['AGENTS.md', 'CATALOG.md', 'README.md', 'FEATURES.md']
     .map((item) => path.join(context.repoRoot, item))
     .filter((item) => fs.existsSync(item));
-  const hubRel = toRepoRelative(context.repoRoot, context.sharedDir).replace(/\\/g, '/');
+  const hubRel = displayPath(context.repoRoot, context.sharedDir);
   const hubOutside = hubRel === '..' || hubRel.startsWith('../');
   const hubPrefix = hubOutside ? null : `${hubRel}/`;
   const hubEsc = hubOutside ? null : hubRel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -104,7 +113,7 @@ function shippedMarkdown(context) {
     const current = stack.pop();
     for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
       const full = path.join(current, entry.name);
-      const relative = toRepoRelative(context.repoRoot, full);
+      const relative = displayPath(context.repoRoot, full);
       if (entry.isDirectory()) {
         if (!hubMemoryRe || !hubMemoryRe.test(relative)) stack.push(full);
       } else if (entry.name.endsWith('.md')) {
@@ -120,7 +129,7 @@ function shippedMarkdown(context) {
       }
     }
   }
-  return [...new Set(roots.map((item) => toRepoRelative(context.repoRoot, item)))].sort();
+  return [...new Set(roots.map((item) => displayPath(context.repoRoot, item)))].sort();
 }
 
 function normativeBlocks(text, minLines) {
@@ -158,7 +167,7 @@ function main() {
     if (!fs.existsSync(file) || !fs.statSync(file).isFile()) continue;
     for (const block of normativeBlocks(fs.readFileSync(file, 'utf8'), options.minLines)) {
       const digest = crypto.createHash('sha256').update(block.text).digest('hex');
-      const occurrence = { path: toRepoRelative(context.repoRoot, file), line: block.startLine };
+      const occurrence = { path: displayPath(context.repoRoot, file), line: block.startLine };
       const row = map.get(digest) || { digest, lines: block.lines.length, text: block.text, occurrences: [] };
       row.occurrences.push(occurrence);
       map.set(digest, row);

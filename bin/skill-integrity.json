@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "57fcaf6caf80a5b676dd26555df7e988b74a93fb1de008eed318851a495786cb",
+  "fullPackageDigest": "9efac468e39884a7b47f648e2c793bf65efe9af3e2829114309008cd11b0a897",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -96,7 +96,7 @@
         "REPORT-FORMAT.md": "a54e34f1545924f2a8c84b2d715ba1c537efcec4e51f04a5f81cfd03b4e5a23a",
         "SKILL.md": "6f7cfe5a33cd739348c47b2f4b3581bfc992bec4cade34ba06b2649a098330f1",
         "evals/evals.json": "35bcc6ef297fa47efe448093357610e39775a8ed751d0ae4cdc143bd0c803147",
-        "scripts/check_duplicates.cjs": "60ab5f7a7d4f60ea50158e95c7902c009484b313e79f5567e7371662dcf5a0e0",
+        "scripts/check_duplicates.cjs": "92fdc26e59a9b2a8f83be7636c2010e57cd38ce608a7db41a138d5a21f1ec077",
         "scripts/check_harness_links.cjs": "3a8d79202443298e6648a089d1b5af4dce5a7eb90b5ade8622e952d59114ad41",
         "scripts/check_hub_separation.cjs": "6a1d35156f8123f32f4e57a1d66337f2e9e8dbafed09463d79f4f54e6c8255ae",
         "scripts/check_pipeline_handoff.cjs": "7afa6126aabf74b7370ea34e663a711223cf611ea78944d1353cc13b0e5c84b0",
@@ -105,7 +105,7 @@
         "scripts/detect_install_mode.cjs": "5995a4b275917183c0d799e34696ddf62a005953940c9e817418638385579a05",
         "scripts/measure_harness.cjs": "8722d70ac030340f7287edf9217f34a68f4200f50c1fe739019df35e8fa18d2c"
       },
-      "skillDigest": "506328cde90ca039c271f1a584cca530aae81f147f31770a4fbc8f35f6fc52b5"
+      "skillDigest": "8eaf69aa109f21f57c3996d3523d9f4ec6b15bd850a83bbef5279d85da2e5d31"
     },
     "ws-check-workflows": {
       "files": {
