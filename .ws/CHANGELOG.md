@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-21 04:30] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: `ws-goal-fix-pr 377` round 4 (inline fix loop) — 2 new review threads on the autoload runtime-link renderer.
+- **Done**: `renderConsumerAutoload` (`configure_autoload.cjs`) and `renderConsumerAutoloadText` (`bin/cli.js`) now resolve the local-vs-global runtime prefix per file (`runtimePrefixFor(rel)` / `managedRuntimeLinkPrefixFor(rel)`) instead of from directory existence, so a partial-hybrid local runtime keeps `{globalSkillsRoot}` tokens for files that only exist globally. Rewrite regexes capture `rel`; the bare-file loop uses the per-file prefix. Fixtures updated: partial local runtime keeps existing file project-relative and missing sibling global; new global-only + partial assertions.
+- **Result**: `npm run test` green; `test-harness-clean.js` 0 findings; `verify-integrity` OK (v0.4.47).
+
 ### [2026-09-21 03:45] Agent: opencode (deepseek-v4.1-flash)
 - **Prompt**: `ws-goal-fix-pr 377` round 3 (inline fix loop) — resolve 3 active review threads on PR #377, plus the outstanding release version bump.
 - **Done**: Scoped `ws-check-harness` Phase 5a scans to package membership (`ws-shared` + `ws-*`) in `check_unique_runtime.cjs` / `check_duplicates.cjs` / `check_harness_links.cjs`, and fixed the same-class project-local pin in `check_shell_quoting.cjs` (`context.pathTokens` was never a real key). `check_harness_links.cjs` now resolves `context.skillsRoot` (local-first, global fallback), audits the resolved install, and maps `{skillsRoot}` token expansion to it. Regression fixtures added for both modes (unrelated `custom-skill/` stays clean; `WORKFLOW_SKILLS_GLOBAL_DIR` global-only tree is audited). Release bump 0.4.46 -> 0.4.47 via `npm run build-site:bump` (54 SKILL frontmatter, packageVersion x2, site + wiki), integrity regenerated.

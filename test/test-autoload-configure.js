@@ -143,9 +143,16 @@ function parseJsonOut(result) {
       autoText.includes('](../.agents/skills/ws-task-lifecycle/SKILL.md)'),
       'consumer autoload rewrites skill-relative links',
     );
+    // The fixture models a partial local runtime (only tools.md). Local-first is
+    // per file: the existing local file stays local, a missing sibling keeps the
+    // {globalSkillsRoot} fallback instead of a broken project-relative link.
     assert(
-      !autoText.includes('{globalSkillsRoot}/ws-shared/runtime/'),
-      'local autoload does not use global runtime tokens',
+      !autoText.includes('{globalSkillsRoot}/ws-shared/runtime/tools.md'),
+      'local autoload keeps an existing local runtime file project-relative',
+    );
+    assert(
+      autoText.includes('{globalSkillsRoot}/ws-shared/runtime/gates.md'),
+      'partial local runtime keeps the global token for a missing sibling',
     );
     assert(
       rootText.includes('autoload.md') && rootText.includes('.ws/AGENTS.md'),
@@ -258,6 +265,16 @@ function parseJsonOut(result) {
     assert(
       transitionText.includes('](../.agents/skills/ws-task-lifecycle/SKILL.md)'),
       'transition rewrites skill token link to the local path',
+    );
+    // Partial hybrid: only tools.md exists locally. A missing runtime sibling
+    // must keep the {globalSkillsRoot} fallback instead of a broken local link.
+    assert(
+      transitionText.includes('{globalSkillsRoot}/ws-shared/runtime/gates.md'),
+      'partial local runtime keeps the global token for a missing sibling',
+    );
+    assert(
+      !transitionText.includes('](../.agents/skills/ws-shared/runtime/gates.md)'),
+      'partial local runtime never rewrites a missing sibling to a local path',
     );
     assert(!path.isAbsolute(paths[0].replace(/\{[^}]+\}/g, 'x')), 'token paths are not absolute');
   }

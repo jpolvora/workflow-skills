@@ -172,9 +172,11 @@ This is the project-local entrypoint for the consumer hub (\`.ws/\`). Managed hu
 `;
 
 /** Hub-root autoload link prefixes (managed runtime lives in the skills install). */
-function managedRuntimeLinkPrefix() {
+function managedRuntimeLinkPrefixFor(rel) {
   if (isGlobalScope) return 'runtime/';
-  return fs.existsSync(path.join(targetSkillsDir, 'ws-shared', 'runtime'))
+  // Per-file local-first: a partial local runtime must keep the global token
+  // for a sibling file that only exists in the global install.
+  return rel && fs.existsSync(path.join(targetSkillsDir, 'ws-shared', 'runtime', rel))
     ? '../.agents/skills/ws-shared/runtime/'
     : '{globalSkillsRoot}/ws-shared/runtime/';
 }
@@ -185,17 +187,22 @@ function managedSkillLink(rel) {
     : `{globalSkillsRoot}/${rel}`;
 }
 function renderConsumerAutoloadText(text) {
-  const runtimePrefix = managedRuntimeLinkPrefix();
   // Normalize previously rendered prefixes so refreshes converge.
-  text = text.split('](../.agents/skills/ws-shared/runtime/').join(`](${runtimePrefix}`);
+  text = text.replace(
+    /\]\(\.\.\/\.agents\/skills\/ws-shared\/runtime\/([^)]+)\)/g,
+    (match, rel) => `](${managedRuntimeLinkPrefixFor(rel)}${rel})`,
+  );
   if (!isGlobalScope) {
     text = text.replace(/\]\(\.\.\/\.agents\/skills\/(ws-[^)]+)\)/g, (match, rel) => `](${managedSkillLink(rel)})`);
     // Legacy pre-0.4.46 rendered forms: `](runtime/<file>)` and `](../ws-<id>/...)`.
     // Global scope keeps these untouched (`runtime/` and `../ws-x` are valid there).
-    text = text.replace(/\]\(runtime\/([^)]+)\)/g, (match, rel) => `](${runtimePrefix}${rel})`);
+    text = text.replace(/\]\(runtime\/([^)]+)\)/g, (match, rel) => `](${managedRuntimeLinkPrefixFor(rel)}${rel})`);
     text = text.replace(/\]\(\.\.\/(ws-[^)]+)\)/g, (match, rel) => `](${managedSkillLink(rel)})`);
-    // Global-token links re-resolve once a local skills tree exists (local-first).
-    text = text.replace(/\]\(\{globalSkillsRoot\}\/ws-shared\/runtime\//g, `](${runtimePrefix}`);
+    // Global-token links re-resolve once a local runtime file exists (local-first).
+    text = text.replace(
+      /\]\(\{globalSkillsRoot\}\/ws-shared\/runtime\/([^)]+)\)/g,
+      (match, rel) => `](${managedRuntimeLinkPrefixFor(rel)}${rel})`,
+    );
     text = text.replace(/\]\(\{globalSkillsRoot\}\/(ws-[^)]+)\)/g, (match, rel) => `](${managedSkillLink(rel)})`);
   }
   for (const runtimeFile of [
@@ -208,7 +215,7 @@ function renderConsumerAutoloadText(text) {
     'setup.md',
     'tools.md',
   ]) {
-    text = text.split(`](${runtimeFile})`).join(`](${runtimePrefix}${runtimeFile})`);
+    text = text.split(`](${runtimeFile})`).join(`](${managedRuntimeLinkPrefixFor(runtimeFile)}${runtimeFile})`);
   }
   return text.replace(/\]\(\.\.\/\.\.\/(ws-[^)]+)\)/g, (match, rel) => `](${managedSkillLink(rel)})`);
 }
