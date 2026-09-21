@@ -24,6 +24,15 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 - **DO NOT**: Order resolver candidates packaged-first (ignores consumer-local overrides), nor packaged-last without checking same-installation coherence; do not apply reviewer-suggested reorderings without running the repo's own suite, which exercises foreign-cwd child spawns.
 - **INSTEAD DO**: Order explicit override, repo-local, packaged same-installation copy, global root last; sweep the whole class with a deterministic EOL-preserving codemod (abort on non-unique anchors) plus an order verifier; cover with a local-beats-packaged precedence test and re-run `npm run test`, `test-harness-clean.js`, and integrity regen before ship.
 
+### [2026-09-21] PowerShell redirection and CRLF edit mismatches on Windows
+- **Layer**: `devops`
+- **Module**: `provider-snapshot-recipes`
+- **Severity**: `Medium`
+- **PathPattern**: `*.issue.json`, `.ws/CHANGELOG.md`
+- **Scenario / Context**: Running provider fetch-to-spec snapshot recipes and changelog inserts from Windows PowerShell during a spec import. Three attempts failed before passing: gh output redirected with `>` landed as UTF-16LE which the Node JSON converter rejected, and two exact-match edits missed because the target markdown uses CRLF while the match text used LF.
+- **DO NOT**: Capture JSON for Node scripts with bare PowerShell `>` redirection; assume LF bytes when exact-matching edits inside CRLF files.
+- **INSTEAD DO**: Write snapshot JSON as UTF-8 explicitly ([System.IO.File]::WriteAllText with UTF8Encoding no-BOM); for CRLF files either match CRLF bytes exactly or edit through encoding-preserving PowerShell (ReadAllLines plus WriteAllText with BOM detection).
+
 ### [2026-09-21] Package membership excludes external ws-* companions; resolver requires package presence
 - **Layer**: `Tests / Workflow harness`
 - **Module**: `ws-check-harness Phase 5a gates + ws-shared resolver (`check_unique_runtime.cjs`, `check_harness_links.cjs`, `check_shell_quoting.cjs`, `check_duplicates.cjs`, `resolve_consumer_root.cjs`)`

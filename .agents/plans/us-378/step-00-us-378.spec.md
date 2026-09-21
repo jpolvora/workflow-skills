@@ -1,13 +1,18 @@
 ---
 id: 378
 slug: us-378
-title: "create a skill generator for the consumer project"
+title: create a skill generator for the consumer project
 source: github
 specDate: 2026-09-21
 issueState: open
 issueUrl: "https://github.com/jpolvora/workflow-skills/issues/378"
+step: 0
+workflowId: us-378
+status: completed
+startedAt: "2026-09-21T04:50:32.490Z"
+endedAt: "2026-09-21T04:50:32.490Z"
+acRefs: []
 ---
-
 # Specification — create a skill generator for the consumer project
 
 ## Description

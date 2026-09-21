@@ -1,5 +1,11 @@
 # Changelog
 
+### [2026-09-21 00:51] Agent: muse (muse-spark)
+- **Prompt**: `/ws-spec-from-provider` for https://github.com/jpolvora/workflow-skills/issues/378 - bulk-import open GitHub issues into local specs.
+- **Done**: Tracker resolved to github (active=local, enabled github tracker); `gh auth status` pass; list returned 1 open issue (#378, no skips). Snapshot rewritten as UTF-8 after PowerShell `>` produced UTF-16 the converter rejects; base convert, agentic reformulation to 13 ACs with closure tables, DoR, validation notes, prior-work sweep, greenfield design-intent note, plus fit-analysis companion; full register to `step-00-us-378.spec.md`.
+- **Result**: Imported 1 / skipped 0 / failed 0. `validate_spec.cjs --mode=authoring` PASS (13 ACs) before and after register. Paths: `.agents/specs/0110-us-378.spec.md`, `.agents/specs/0110-us-378.context.md`, `.agents/plans/us-378/step-00-us-378.spec.md`.
+
+
 ### [2026-09-21 00:47] Agent: opencode (deepseek-v4.1-flash)
 - **Prompt**: Set `defaults.autoload: true`, then make root `AGENTS.md` actually autoload the Always-applied live skills.
 - **Done**: `.ws/config.json` `defaults.autoload` true (set via `configure_autoload.cjs`; helper's unrelated formatting normalizations reverted to a one-line diff). Root `AGENTS.md` § Skill loading: session start now loads `ws-senior-developer`, `ws-self-learning`, `ws-tdah`, `ws-spec-memo`, `ws-task-lifecycle` from `{skillsRoot}` (local-first, global fallback; documented exception to Global vs local rule 1); new table row, progressive-disclosure Session start row, dual-hub precedence text, and Precedence note updated; all other live `ws-*` bodies stay banned for autoload.
