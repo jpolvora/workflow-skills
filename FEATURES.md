@@ -216,7 +216,7 @@ Diagnostics can be persisted under `plans.diagnosticsDir`. `workflow-skills tele
 | `ws-activity-report` | Timesheet entries for a delivery day. Start is the earliest bootstrap file in the plan folder; end is the later of the last PR thread comment or the last delivery commit. Splits human versus agent duration |
 | `ws-pre-daily` | Standup briefing covering the last 36 hours: delivered, made, ongoing, next |
 | `ws-megabrain` | Vibe-coding implementer (no spec required): what-next menu, specialists, consumes fable/senior/tdah |
-| `ws-patterns-generator` | Consumer project-patterns generator: harvests workflow runs, changelog, MEMORY, docs, and wiki into a seeded/refreshed autoloaded patterns skill |
+| `ws-patterns-generator` | Consumer project-patterns generator: harvests workflow runs, changelog, MEMORY, docs, and wiki into a seeded/refreshed autoloaded patterns skill body hosted under `{sharedDir}/ws-project-patterns` |
 | `ws-spec-explain` | Read-only panorama of a spec or US/issue: status, what it does, what it delivered, how to check in the project/UI, and how to test |
 | `ws-spec-archive` | Harvests `{plansDir}` state, artifacts, git/changelog/MEMORY (and optional SCM) into `{specsDir}/index.PRD` Archive, then proposes a commit that removes eligible shipped plan folders |
 | `ws-cleanup` | Lists disposable workflow leftovers (telemetry, `.runtime`, audit logs, shipped plan dirs, untracked orphans under partially tracked shipped plans), confirms via user-gate, deletes only approved untracked paths, and suggests missing `.gitignore` patterns |

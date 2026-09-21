@@ -45,6 +45,20 @@ try {
   assert(hubFiles['.gitignore'], 'integrity enumerates the aliased ignore file');
   assert(!hubFiles['templates/hub.gitignore'], 'integrity does not duplicate aliased source names');
 
+  assert(
+    (HUB_LAYOUT.categories.consumerOwned?.paths || []).includes('ws-project-patterns'),
+    'hub layout classifies the generator-managed patterns body as consumer-owned content',
+  );
+  const hubIgnore = fs.readFileSync(path.join(sourceShared, 'templates', 'hub.gitignore'), 'utf8');
+  assert(
+    !hubIgnore
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line && !line.startsWith('#'))
+      .some((rule) => /ws-project-patterns/.test(rule)),
+    'hub ignore template keeps the generated patterns body tracked',
+  );
+
   const globalRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-layout-global-'));
   const consumerRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-layout-consumer-'));
   const configureConsumerRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-layout-configure-consumer-'));

@@ -1,7 +1,7 @@
 ---
 name: ws-plan-write
 description: Implementation plan generator — transforms feature specifications into structured, technical step-01 implementation plans.
-version: 0.4.49
+version: 0.4.50
 disable-model-invocation: true
 invocation_names:
   - plan-write

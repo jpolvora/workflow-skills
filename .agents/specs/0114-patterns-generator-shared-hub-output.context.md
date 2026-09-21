@@ -32,24 +32,47 @@ It does not own: MEMORY or vault trap write paths outside `ws-self-learning` via
 - **Legacy:** no migration. An existing `{skillsRoot}/ws-project-patterns` copy is already ignored by the installer; consumers delete it manually.
 - **Containment:** the resolved-target rule from PR #383 stays: resolve the entire target path (root link, directory link, dangling leaf) and fail closed when resolution is impossible.
 
-## Overlap Matrix (to be completed by the analysis run)
+## Overlap Matrix (completed 2026-09-21)
 
 | Pair | Overlap | Recommendation |
 |------|---------|----------------|
-| `ws-self-learning` ↔ `ws-patterns-generator` | Shared harvest sources; memory versus steering contracts | Collaborate (Option A) |
-| generated `ws-project-patterns` ↔ `ws-self-learning` | Evidence pointers versus traps | Keep separate; no MEMORY writes from the generator |
-| `ws-self-learning` ↔ `ws-changelog` | Both record history; different granularity | Keep separate; protocol reuse |
-| `ws-self-learning` ↔ `ws-spec-memo` | Memory backends and vault bridge | Keep separate; bridge-only |
-| `ws-patterns-generator` ↔ `ws-configure-project` | Seeding and autoload row | Collaborate on row lifecycle |
-| patterns track ↔ `ws-secrets-leak-review` | Hygiene gate over generated prose | Keep separate; reuse the gate |
+| `ws-self-learning` ↔ `ws-patterns-generator` | Shared *sources* (plans/telemetry/logs, changelog, MEMORY, README/AGENTS, `rules.*`, wiki, stack file); different owners (memory writes vs steering prose) | **Collaborate** (Option A): keep skills separate, share sources by reference |
+| generated `ws-project-patterns` ↔ `ws-self-learning` | Evidence pointers versus traps; both describe project knowledge | **Keep separate**; the generator never writes MEMORY or vault traps |
+| `ws-self-learning` ↔ `ws-changelog` | Both record history; per-trap severity versus per-task summary | **Keep separate**; protocol reuse only |
+| `ws-self-learning` ↔ `ws-spec-memo` | Memory backends and vault bridge flags | **Keep separate**; bridge-only ownership stays in `ws-spec-memo` |
+| `ws-patterns-generator` ↔ `ws-configure-project` | Seeding plus the Always-applied row lifecycle | **Collaborate**: `configure_autoload.cjs` owns row rendering/existence, the generator owns first-seed |
+| patterns track ↔ `ws-secrets-leak-review` | Hygiene gate over generated prose | **Keep separate**; reuse the existing gate |
 
-## Performance Baselines (to be filled by the measured run)
+## Draft integration plan
+
+- **Mechanism:** protocol collaboration, no merge. Sources are read by reference; ownership stays split (`update-memory` for traps, generator for the hub body).
+- **Bounded file list (this change):** `ws-patterns-generator/scripts/seed_generated_skill.cjs` + `SKILL.md`; `ws-configure-project/scripts/configure_autoload.cjs`; `ws-shared/runtime/hub-layout.json`, `AGENTS.md`, `skill-dependencies.json` (+ `bin` mirror); `ws-shared/templates/` (no change needed — verified); batteries `test-ws-patterns-generator.js`, `test-ws-shared-layout.js`; docs `README.md`, `FEATURES.md`; site rebuild.
+- **Targets:** hub-hosted generated body (AC1–AC5), single existence-driven autoload row (AC4), zero integrity/installer drift (AC3, AC5), harness clean (AC14).
+- **Non-goals:** no merge of the two skills, no new shared helper without proven code duplication, no memory-write path for the generator, no harvest/bullet-format change, no legacy migration.
+- **Rollback / no-op path:** the change is additive in contract terms — reverting this commit restores the previous skills-root target. No consumer data is destroyed: serving the body from the hub never deletes a legacy `{skillsRoot}/ws-project-patterns` copy, and the autoload row is dropped automatically when the hub tree is absent.
+
+## Code-reduction decision (AC9) — documented no-op
+
+Script inventories after the change:
+
+| Skill | Scripts | LOC |
+|-------|---------|-----|
+| `ws-self-learning` | `self_learning.cjs`, `sanitize_memory.cjs` | 294 + 36 |
+| `ws-patterns-generator` | `seed_generated_skill.cjs` | 163 |
+
+A repo-wide grep for shared read shapes (`plansDir`, `telemetry.jsonl`, `MEMORY.md`) across both `scripts/` directories returns **no matches**: the generator's harvest is agent-driven prose in `SKILL.md`, while `ws-self-learning` operates on MEMORY/vault through its own scripts. There is therefore **no code-level duplication to extract**; extracting a "shared harvest reader" would create a new abstraction with a single consumer (forbidden by the surgical-diff gate). Recorded as the plan's approved no-op path.
+
+## Performance Baselines (measured 2026-09-21, this workflow)
 
 | Signal | Baseline | After | Delta |
 |--------|----------|-------|-------|
-| `npm run test` wall time | pending | pending | pending |
-| `seed_generated_skill.cjs` runtime | pending | pending | pending |
-| Generated body bytes | pending | pending | pending |
+| `npm run test` wall time | not sampled locally before the change | **176.6 s** (103/103 entries, count unchanged) | n/a — no local pre-change sample; suite entry count unchanged and no new test files added |
+| `seed_generated_skill.cjs` runtime (fresh fixture) | ~58 ms (node startup dominated) | **58.3 ms** | 0 (script grew by ~25 lines of hub-path resolution) |
+| Generated skeleton body | 483 B | **483 B** | 0 (skeleton untouched) |
+| `ws-patterns-generator/SKILL.md` | — | 4 615 B | +~250 B (hub path + rules) |
+| SoT consumer hub (`ws-shared/runtime/AGENTS.md`) | 13 953 B | **13 884 B** | **-69 B** (memory rows consolidated to stay under the 14 000 B context budget) |
+
+Byte/invariant gates: `test-context-budget.js` ok, `test-harness-clean.js` 0 findings, `scan_stack_invariants.cjs` 0 issues, secrets scanner no leaks.
 
 ## Deferred Ideas
 

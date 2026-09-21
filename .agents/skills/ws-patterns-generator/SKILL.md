@@ -1,7 +1,7 @@
 ---
 name: ws-patterns-generator
-description: Consumer project-patterns skill generator that harvests run artifacts and project knowledge to seed and refresh an autoloaded ws-project-patterns skill.
-version: 0.4.49
+description: Consumer project-patterns skill generator that harvests run artifacts and project knowledge to seed and refresh an autoloaded, hub-hosted ws-project-patterns skill.
+version: 0.4.50
 disable-model-invocation: true
 invocation_names:
   - ws-patterns-generator
@@ -14,7 +14,7 @@ invocation_names:
 
 **Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check. This skill is config-dependent: without project `{sharedDir}/config.json`, use `user-gate` to recommend `ws-configure-project`; cancel stops the run.
 
-Recurring generator for the consumer project. It harvests findings and (re)writes the consumer-owned skill `{skillsRoot}/ws-project-patterns/SKILL.md`: blank skeleton on first run, full rewrite when stale, appended bullets otherwise. Complements `ws-self-learning` (MEMORY traps) without writing MEMORY itself.
+Recurring generator for the consumer project. It harvests findings and (re)writes the consumer-owned skill `{sharedDir}/ws-project-patterns/SKILL.md`: blank skeleton on first run, full rewrite when stale, appended bullets otherwise. The body is hub-hosted and autoload-only: the installer never ships or overwrites it, and it is loaded through its Always-applied row in `{sharedDir}/autoload.md`, not through skills-root discovery. Complements `ws-self-learning` (MEMORY traps) without writing MEMORY itself.
 
 ## Invocation
 
@@ -30,10 +30,10 @@ Recurring generator for the consumer project. It harvests findings and (re)write
 
 ## Steps
 
-1. **Resolve paths** — Expand `{skillsRoot}` / `{sharedDir}` / `{plansDir}` / `{specsDir}` from project config. Generated body: project-local `{skillsRoot}/ws-project-patterns/SKILL.md`. Consumer autoload table: `{sharedDir}/autoload.md`.
+1. **Resolve paths** — Expand `{skillsRoot}` / `{sharedDir}` / `{plansDir}` / `{specsDir}` from project config. Generated body: `{sharedDir}/ws-project-patterns/SKILL.md` (hub root from `pathTokens.sharedDir`, default `.ws`). Consumer autoload table: `{sharedDir}/autoload.md`.
    - Done when: generated path and autoload path are resolved and config is verified.
 
-2. **Seed when missing** — Run `node {skillsRoot}/ws-patterns-generator/scripts/seed_generated_skill.cjs --repo-root .` (exit 0). When this run seeded the body (first run), append the Always-applied row for `ws-project-patterns` to the consumer autoload table when missing; never duplicate an existing row. Later runs never edit autoload. Opt out: `stop ws-project-patterns`.
+2. **Seed when missing** — Run `node {skillsRoot}/ws-patterns-generator/scripts/seed_generated_skill.cjs --repo-root .` (exit 0). The script resolves the hub root from `pathTokens.sharedDir`, writes only when the body is missing, and refuses any path that resolves outside the repository. When this run seeded the body (first run), append the Always-applied row for `ws-project-patterns` to the consumer autoload table when missing; never duplicate an existing row. Later runs never edit autoload. Opt out: `stop ws-project-patterns`.
    - Done when: the body exists; the autoload row is present at most once.
 
 3. **Harvest sources** — Read the minimum set: workflow state plus telemetry plus logs under `{plansDir}`, the effective changelog, the effective MEMORY, README plus AGENTS.md, `rules.*` files, wiki content, the stack file. A missing source is tolerated and named in the summary instead of aborting the run.
@@ -54,6 +54,7 @@ Recurring generator for the consumer project. It harvests findings and (re)write
 ## Rules
 
 - en-us; path tokens only; explicit `node` launchers; never `git add` or commit.
+- The generated body stays under `{sharedDir}` (consumer-owned, installer-excluded, tracked); never seed it into `{skillsRoot}`.
 - Never write MEMORY.md or vault traps directly; never edit managed skill bodies.
 - Autoload row edits happen at seed/first-run only.
 

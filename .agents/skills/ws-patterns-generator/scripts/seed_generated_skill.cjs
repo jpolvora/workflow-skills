@@ -91,6 +91,21 @@ function realpathLoose(candidate) {
   }
 }
 
+function resolveHubRel(root) {
+  let hubRel = '.ws';
+  try {
+    const configPath = path.join(root, '.ws', 'config.json');
+    if (fs.existsSync(configPath)) {
+      const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      const configured = config && config.pathTokens && config.pathTokens.sharedDir;
+      if (typeof configured === 'string' && configured.trim()) hubRel = configured.trim();
+    }
+  } catch {
+    hubRel = '.ws';
+  }
+  return hubRel;
+}
+
 function resolveTarget(repoRoot) {
   const root = path.resolve(repoRoot);
   let stat = null;
@@ -103,21 +118,13 @@ function resolveTarget(repoRoot) {
     process.stderr.write(`Not a directory: ${repoRoot}\n`);
     process.exit(1);
   }
-  let skillsRel = '.agents/skills';
-  try {
-    const configPath = path.join(root, '.ws', 'config.json');
-    if (fs.existsSync(configPath)) {
-      const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      const configured = config && config.pathTokens && config.pathTokens.skillsRoot;
-      if (typeof configured === 'string' && configured.trim()) skillsRel = configured.trim();
-    }
-  } catch {
-    skillsRel = '.agents/skills';
-  }
-  const skillsRoot = path.resolve(root, skillsRel);
-  const target = path.join(skillsRoot, GENERATED_ID, 'SKILL.md');
-  const contained = target === skillsRoot || target.startsWith(skillsRoot + path.sep);
-  if (!contained || !target.startsWith(root + path.sep)) {
+  // Generated pattern bodies are consumer-owned hub content: they live under
+  // the shared project hub ({sharedDir}, default .ws), never in the published
+  // skills tree, so the installer and integrity manifest stay untouched.
+  const hubRoot = path.resolve(root, resolveHubRel(root));
+  const target = path.join(hubRoot, GENERATED_ID, 'SKILL.md');
+  const contained = target.startsWith(hubRoot + path.sep) && target.startsWith(root + path.sep);
+  if (!contained) {
     process.stderr.write('Refusing to write outside the repo skills root\n');
     process.exit(1);
   }

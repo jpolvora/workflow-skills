@@ -107,8 +107,12 @@ if (fs.existsSync(seedCjs)) {
     fs.writeFileSync(path.join(fixture, 'README.md'), `# fixture\n${MARKER}\n`, 'utf8');
     const r1 = runNode([seedCjs, '--repo-root', fixture], { cwd: root });
     assert(r1.status === 0, `seed exit 0 (got ${r1.status}: ${r1.stderr || ''})`);
-    const genBody = path.join(fixture, '.agents/skills/ws-project-patterns/SKILL.md');
+    const genBody = path.join(fixture, '.ws/ws-project-patterns/SKILL.md');
     assert(fs.existsSync(genBody), 'seed writes generated body');
+    assert(
+      !fs.existsSync(path.join(fixture, '.agents/skills/ws-project-patterns')),
+      'seed never writes the generated body into a skills root',
+    );
     const body = fs.existsSync(genBody) ? fs.readFileSync(genBody, 'utf8') : '';
     assert((body.match(/^## /gm) || []).length >= 3, 'skeleton has headings');
     assert(body.includes('stop ws-project-patterns'), 'skeleton documents opt-out');
@@ -125,10 +129,32 @@ if (fs.existsSync(seedCjs)) {
     try {
       const r4 = runNode([seedCjs, '--repo-root', dry, '--dry-run'], { cwd: root });
       assert(r4.status === 0, 'seed --dry-run exit 0');
-      assert(!fs.existsSync(path.join(dry, '.agents/skills/ws-project-patterns/SKILL.md')), '--dry-run writes nothing');
+      assert(!fs.existsSync(path.join(dry, '.ws/ws-project-patterns/SKILL.md')), '--dry-run writes nothing');
       assert(/planned|would write|dry-run/i.test(r4.stdout), '--dry-run reports planned write');
     } finally {
       rmFixture(dry);
+    }
+    // AC1: a configured pathTokens.sharedDir relocates the hub root.
+    const customHub = makeFixture('ws-pg-customhub-');
+    try {
+      fs.mkdirSync(path.join(customHub, '.ws'), { recursive: true });
+      fs.writeFileSync(
+        path.join(customHub, '.ws/config.json'),
+        JSON.stringify({ pathTokens: { sharedDir: 'custom-hub' } }),
+        'utf8',
+      );
+      const r5 = runNode([seedCjs, '--repo-root', customHub], { cwd: root });
+      assert(r5.status === 0, `seed honors pathTokens.sharedDir (got ${r5.status}: ${r5.stderr || ''})`);
+      assert(
+        fs.existsSync(path.join(customHub, 'custom-hub/ws-project-patterns/SKILL.md')),
+        'seed writes under the configured sharedDir',
+      );
+      assert(
+        !fs.existsSync(path.join(customHub, '.ws/ws-project-patterns/SKILL.md')),
+        'seed does not fall back to .ws when sharedDir is configured',
+      );
+    } finally {
+      rmFixture(customHub);
     }
     const bad1 = runNode([seedCjs, '--repo-root', path.join(fixture, 'nope')], { cwd: root });
     assert(bad1.status !== 0, 'seed rejects missing --repo-root');
@@ -140,14 +166,14 @@ if (fs.existsSync(seedCjs)) {
   } finally {
     rmFixture(fixture);
   }
-  // Symlink containment (PR #383 thread 1): a skills root linked outside the
-  // repo must be refused; a link staying inside the repo still seeds.
+  // Symlink containment: a hub root linked outside the repo must be refused;
+  // a link staying inside the repo still seeds.
   {
     const repo = makeFixture('ws-pg-sym-');
     const outside = makeFixture('ws-pg-out-');
     try {
-      fs.mkdirSync(path.join(repo, '.agents'), { recursive: true });
-      const linkPath = path.join(repo, '.agents/skills');
+      fs.mkdirSync(path.join(repo, '.ws'), { recursive: true });
+      const linkPath = path.join(repo, '.ws');
       let linked = false;
       try {
         fs.symlinkSync(outside, linkPath, process.platform === 'win32' ? 'junction' : 'dir');
@@ -157,15 +183,15 @@ if (fs.existsSync(seedCjs)) {
       }
       if (linked) {
         const r = runNode([seedCjs, '--repo-root', repo], { cwd: root });
-        assert(r.status !== 0, `seed refuses symlinked skills root (got ${r.status})`);
+        assert(r.status !== 0, `seed refuses symlinked hub root (got ${r.status})`);
         assert(/outside the repo skills root/.test(r.stderr || ''), 'refusal message names containment');
         assert(!fs.existsSync(path.join(outside, 'ws-project-patterns/SKILL.md')), 'no write escapes through symlink');
         fs.rmSync(linkPath, { recursive: true, force: true });
-        const inner = path.join(repo, 'linked-skills');
+        const inner = path.join(repo, 'linked-hub');
         fs.mkdirSync(inner, { recursive: true });
         fs.symlinkSync(inner, linkPath, process.platform === 'win32' ? 'junction' : 'dir');
         const r2 = runNode([seedCjs, '--repo-root', repo], { cwd: root });
-        assert(r2.status === 0, `seed allows in-repo symlinked root (got ${r2.status}: ${r2.stderr || ''})`);
+        assert(r2.status === 0, `seed allows in-repo symlinked hub root (got ${r2.status}: ${r2.stderr || ''})`);
         assert(fs.existsSync(path.join(inner, 'ws-project-patterns/SKILL.md')), 'in-repo link seeds through');
       }
     } finally {
@@ -180,8 +206,8 @@ if (fs.existsSync(seedCjs)) {
     const repo = makeFixture('ws-pg-childsym-');
     const outside = makeFixture('ws-pg-childout-');
     try {
-      fs.mkdirSync(path.join(repo, '.agents/skills'), { recursive: true });
-      const linkPath = path.join(repo, '.agents/skills/ws-project-patterns');
+      fs.mkdirSync(path.join(repo, '.ws'), { recursive: true });
+      const linkPath = path.join(repo, '.ws/ws-project-patterns');
       let linked = false;
       try {
         fs.symlinkSync(outside, linkPath, process.platform === 'win32' ? 'junction' : 'dir');
@@ -213,7 +239,7 @@ if (fs.existsSync(seedCjs)) {
     const repo = makeFixture('ws-pg-leafsym-');
     const outside = makeFixture('ws-pg-leafout-');
     try {
-      const generatedDir = path.join(repo, '.agents/skills/ws-project-patterns');
+      const generatedDir = path.join(repo, '.ws/ws-project-patterns');
       fs.mkdirSync(generatedDir, { recursive: true });
       const linkPath = path.join(generatedDir, 'SKILL.md');
       const escaped = path.join(outside, 'escaped.md');
@@ -308,12 +334,12 @@ function autoloadRowIds(doc) {
 {
   const fx = makeFixture('ws-pg-autoload-');
   try {
-    fs.mkdirSync(path.join(fx, '.agents/skills/ws-project-patterns'), { recursive: true });
-    fs.writeFileSync(path.join(fx, '.agents/skills/ws-project-patterns/SKILL.md'), '# ws-project-patterns\n', 'utf8');
+    fs.mkdirSync(path.join(fx, '.ws/ws-project-patterns'), { recursive: true });
+    fs.writeFileSync(path.join(fx, '.ws/ws-project-patterns/SKILL.md'), '# ws-project-patterns\n', 'utf8');
     writeAutoloadFixture(fx, [
       '| `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Every prompt |',
       '| `ws-memo` | `{globalSkillsRoot}/ws-memo/SKILL.md` | Vault ops |',
-      '| `ws-project-patterns` | `.agents/skills/ws-project-patterns/SKILL.md` | Project patterns |',
+      '| `ws-project-patterns` | `.ws/ws-project-patterns/SKILL.md` | Project patterns |',
     ]);
     const w1 = runNode([configureCjs, '--write-autoload', '--repo-root', fx], { cwd: root });
     assert(w1.status === 0, `configure --write-autoload exit 0 (got ${w1.status}: ${w1.stderr || ''})`);
@@ -321,12 +347,16 @@ function autoloadRowIds(doc) {
     const ids = autoloadRowIds(after);
     assert(ids.includes('ws-project-patterns'), 'generated row preserved when tree exists');
     assert(ids.filter((i) => i === 'ws-project-patterns').length === 1, 'generated row never duplicated');
+    assert(
+      after.includes('`.ws/ws-project-patterns/SKILL.md`'),
+      'generated row points at the hub path',
+    );
     assert(!ids.includes('ws-memo'), 'ws-memo rows still dropped');
     const w2 = runNode([configureCjs, '--write-autoload', '--repo-root', fx], { cwd: root });
     assert(w2.status === 0, 'configure rerun exit 0');
     const twice = autoloadRowIds(fs.readFileSync(path.join(fx, '.ws/autoload.md'), 'utf8'));
     assert(twice.filter((i) => i === 'ws-project-patterns').length === 1, 'rerun keeps single row');
-    fs.rmSync(path.join(fx, '.agents/skills/ws-project-patterns'), { recursive: true, force: true });
+    fs.rmSync(path.join(fx, '.ws/ws-project-patterns'), { recursive: true, force: true });
     const w3 = runNode([configureCjs, '--write-autoload', '--repo-root', fx], { cwd: root });
     assert(w3.status === 0, 'configure after tree removal exit 0');
     assert(!autoloadRowIds(fs.readFileSync(path.join(fx, '.ws/autoload.md'), 'utf8')).includes('ws-project-patterns'), 'row dropped when tree absent');
@@ -335,11 +365,11 @@ function autoloadRowIds(doc) {
   }
   const fxc = makeFixture('ws-pg-check-');
   try {
-    fs.mkdirSync(path.join(fxc, '.agents/skills/ws-project-patterns'), { recursive: true });
-    fs.writeFileSync(path.join(fxc, '.agents/skills/ws-project-patterns/SKILL.md'), '# ws-project-patterns\n', 'utf8');
+    fs.mkdirSync(path.join(fxc, '.ws/ws-project-patterns'), { recursive: true });
+    fs.writeFileSync(path.join(fxc, '.ws/ws-project-patterns/SKILL.md'), '# ws-project-patterns\n', 'utf8');
     writeAutoloadFixture(fxc, [
       '| `ws-memo` | `{globalSkillsRoot}/ws-memo/SKILL.md` | Vault ops |',
-      '| `ws-project-patterns` | `.agents/skills/ws-project-patterns/SKILL.md` | Project patterns |',
+      '| `ws-project-patterns` | `.ws/ws-project-patterns/SKILL.md` | Project patterns |',
     ]);
     const chk = runNode([configureCjs, '--check', '--repo-root', fxc, '--json'], { cwd: root });
     assert(chk.status === 0, `configure --check exit 0 (got ${chk.status})`);

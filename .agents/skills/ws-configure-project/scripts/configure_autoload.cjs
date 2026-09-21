@@ -199,7 +199,33 @@ function resolveTemplateSource(repoRoot, globalSkillsRoot, allowGlobalSource = f
   return path.join(globalSkillsRoot, 'ws-shared', 'templates');
 }
 
+function hubRootFor(repoRoot) {
+  let hubRel = '.ws';
+  try {
+    const configPath = path.join(repoRoot, '.ws', 'config.json');
+    if (fs.existsSync(configPath)) {
+      const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      const configured = config && config.pathTokens && config.pathTokens.sharedDir;
+      if (typeof configured === 'string' && configured.trim()) hubRel = configured.trim();
+    }
+  } catch {
+    hubRel = '.ws';
+  }
+  return path.resolve(repoRoot, hubRel);
+}
+
+function isGeneratorManagedId(repoRoot, skillId, { globalSkillsRoot = null, allowGlobalSource = false } = {}) {
+  return loadGeneratorManagedIds(repoRoot, { globalSkillsRoot, allowGlobalSource }).has(skillId);
+}
+
 function emitSkillPath(repoRoot, skillId, { skillsRootRel = '.agents/skills', globalSkillsRoot = null } = {}) {
+  // Hub-hosted generated consumer skills are never installed: their row points
+  // at the shared-hub path (existence is checked by the membership filter).
+  if (isGeneratorManagedId(repoRoot, skillId)) {
+    const hubTarget = path.join(hubRootFor(repoRoot), skillId, 'SKILL.md');
+    const rel = path.relative(repoRoot, hubTarget).split(path.sep).join('/');
+    return [rel, !fs.existsSync(hubTarget)];
+  }
   const localSkill = path.join(repoRoot, skillsRootRel, skillId, 'SKILL.md');
   if (fs.existsSync(localSkill)) return [`.agents/skills/${skillId}/SKILL.md`, false];
   const groot = globalSkillsRoot || resolveGlobalSkillsRoot(null);
@@ -253,9 +279,9 @@ function loadGeneratorManagedIds(repoRoot, { globalSkillsRoot = null, allowGloba
 }
 
 function generatorManagedTreeExists(repoRoot, skillId, globalSkillsRoot = null) {
-  if (fs.existsSync(path.join(repoRoot, '.agents', 'skills', skillId, 'SKILL.md'))) return true;
-  const groot = globalSkillsRoot || resolveGlobalSkillsRoot(null);
-  return fs.existsSync(path.join(groot, skillId, 'SKILL.md'));
+  // Generated consumer skills are project-local hub content by definition, so
+  // there is no global-skills fallback for them.
+  return fs.existsSync(path.join(hubRootFor(repoRoot), skillId, 'SKILL.md'));
 }
 
 function dropExternalCompanionMembers(membership, repoRoot, { globalSkillsRoot = null, allowGlobalSource = false } = {}) {
@@ -534,6 +560,16 @@ function checkAutoload(repoRoot, { globalSkillsRoot = null, allowGlobalSource = 
   const generatorManaged = loadGeneratorManagedIds(repoRoot, { globalSkillsRoot, allowGlobalSource });
   const managedPresent = (skill) => generatorManaged.has(skill) && generatorManagedTreeExists(repoRoot, skill, globalSkillsRoot);
   for (const row of parseAlwaysAppliedRows(text)) {
+    if (generatorManaged.has(row.skill)) {
+      // Hub-hosted generated consumer skills: validate the hub path, not the
+      // installed-skills portability or skills-root existence rules.
+      if (!pathTargetsSkill(row.path, row.skill)) {
+        findings.push({ severity: 'warning', file: '.ws/autoload.md', message: `Always-applied path for \`${row.skill}\` points at a different skill: ${row.path}`, fix: `Point the path at \`${row.skill}/SKILL.md\` (or run configure_autoload.cjs --write-autoload)` });
+      } else if (!generatorManagedTreeExists(repoRoot, row.skill, globalSkillsRoot)) {
+        findings.push({ severity: 'warning', file: '.ws/autoload.md', message: `Always-applied generated skill \`${row.skill}\` missing under the shared hub`, fix: 'Run the generator (ws-patterns-generator) or remove the Always-applied row' });
+      }
+      continue;
+    }
     if (externalCompanions.has(row.skill) && !managedPresent(row.skill)) {
       findings.push({ severity: 'warning', file: '.ws/autoload.md', message: `Always-applied lists external companion \`${row.skill}\` (not packaged here); move to External companion skills and skip when absent`, fix: 'Remove the Always-applied row; keep the optional companion section' });
       continue;
