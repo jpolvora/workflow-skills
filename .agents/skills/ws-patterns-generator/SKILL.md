@@ -30,10 +30,10 @@ Recurring generator for the consumer project. It harvests findings and (re)write
 
 ## Steps
 
-1. **Resolve paths** — Expand `{skillsRoot}` / `{sharedDir}` / `{plansDir}` / `{specsDir}` from project config. Generated body: `{sharedDir}/ws-project-patterns/SKILL.md` (hub root from `pathTokens.sharedDir`, default `.ws`). Consumer autoload table: `{sharedDir}/autoload.md`.
+1. **Resolve paths** — Expand `{skillsRoot}` / `{sharedDir}` / `{plansDir}` / `{specsDir}` from project config. Generated body: `.ws/ws-project-patterns/SKILL.md` (the project hub root is fixed at `.ws`; the body is hub-relative to it). Consumer autoload table: `.ws/autoload.md`.
    - Done when: generated path and autoload path are resolved and config is verified.
 
-2. **Seed when missing** — Run `node {skillsRoot}/ws-patterns-generator/scripts/seed_generated_skill.cjs --repo-root .` (exit 0). The script resolves the hub root from `pathTokens.sharedDir`, writes only when the body is missing, and refuses any path that resolves outside the repository. When this run seeded the body (first run), append the Always-applied row for `ws-project-patterns` to the consumer autoload table when missing; never duplicate an existing row. Later runs never edit autoload. Opt out: `stop ws-project-patterns`.
+2. **Seed when missing** — Run `node {skillsRoot}/ws-patterns-generator/scripts/seed_generated_skill.cjs --repo-root .` (exit 0). The script writes to the fixed `.ws` hub, writes only when the body is missing, and refuses any path that resolves outside the repository. When this run seeded the body (first run), append the Always-applied row for `ws-project-patterns` to the consumer autoload table when missing; never duplicate an existing row. Later runs never edit autoload. Opt out: `stop ws-project-patterns`.
    - Done when: the body exists; the autoload row is present at most once.
 
 3. **Harvest sources** — Read the minimum set: workflow state plus telemetry plus logs under `{plansDir}`, the effective changelog, the effective MEMORY, README plus AGENTS.md, `rules.*` files, wiki content, the stack file. A missing source is tolerated and named in the summary instead of aborting the run.

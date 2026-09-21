@@ -217,7 +217,9 @@ function hubPointerPath(repoRoot) {
 }
 
 function expectedGeneratedRowPath(repoRoot, skillId) {
-  return path.relative(repoRoot, path.join(hubRootFor(repoRoot), skillId, 'SKILL.md')).split(path.sep).join('/');
+  // Hub-hosted rows are hub-relative: autoload.md lives in the hub, so a
+  // Markdown resolver must not see the hub prefix repeated.
+  return `${skillId}/SKILL.md`;
 }
 
 function isGeneratorManagedId(repoRoot, skillId, { globalSkillsRoot = null, allowGlobalSource = false } = {}) {
@@ -228,9 +230,8 @@ function emitSkillPath(repoRoot, skillId, { skillsRootRel = '.agents/skills', gl
   // Hub-hosted generated consumer skills are never installed: their row points
   // at the shared-hub path (existence is checked by the membership filter).
   if (isGeneratorManagedId(repoRoot, skillId, { globalSkillsRoot, allowGlobalSource })) {
-    const hubTarget = path.join(hubRootFor(repoRoot), skillId, 'SKILL.md');
-    const rel = path.relative(repoRoot, hubTarget).split(path.sep).join('/');
-    return [rel, !fs.existsSync(hubTarget)];
+    // Hub-relative (the row is rendered inside the hub's autoload.md).
+    return [expectedGeneratedRowPath(repoRoot, skillId), !generatorManagedTreeExists(repoRoot, skillId, globalSkillsRoot)];
   }
   const localSkill = path.join(repoRoot, skillsRootRel, skillId, 'SKILL.md');
   if (fs.existsSync(localSkill)) return [`.agents/skills/${skillId}/SKILL.md`, false];
@@ -379,7 +380,7 @@ function renderConsumerAutoload(text, { repoRoot = null } = {}) {
   for (const f of ['AGENTS.md', 'CROSS-PLATFORM.md', 'config-resolution.md', 'gates.md', 'host-dispatch.md', 'scm-provider-contract.md', 'setup.md', 'tools.md']) {
     text = text.split(`](${f})`).join(`](${runtimePrefixFor(f)}${f})`);
   }
-  return text.replace(/\]\((?:\.\.\/)+\/(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
+  return text.replace(/\]\((?:\.\.\/)+(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
 }
 
 function defaultAlwaysAppliedMembership() {

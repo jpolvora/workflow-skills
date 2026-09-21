@@ -348,7 +348,7 @@ function autoloadRowIds(doc) {
     assert(ids.includes('ws-project-patterns'), 'generated row preserved when tree exists');
     assert(ids.filter((i) => i === 'ws-project-patterns').length === 1, 'generated row never duplicated');
     assert(
-      after.includes('`.ws/ws-project-patterns/SKILL.md`'),
+      after.includes('`ws-project-patterns/SKILL.md`'),
       'generated row points at the hub path',
     );
     assert(!ids.includes('ws-memo'), 'ws-memo rows still dropped');
@@ -369,7 +369,7 @@ function autoloadRowIds(doc) {
     fs.writeFileSync(path.join(fxc, '.ws/ws-project-patterns/SKILL.md'), '# ws-project-patterns\n', 'utf8');
     writeAutoloadFixture(fxc, [
       '| `ws-memo` | `{globalSkillsRoot}/ws-memo/SKILL.md` | Vault ops |',
-      '| `ws-project-patterns` | `.ws/ws-project-patterns/SKILL.md` | Project patterns |',
+      '| `ws-project-patterns` | `ws-project-patterns/SKILL.md` | Project patterns |',
     ]);
     const chk = runNode([configureCjs, '--check', '--repo-root', fxc, '--json'], { cwd: root });
     assert(chk.status === 0, `configure --check exit 0 (got ${chk.status})`);
@@ -395,7 +395,7 @@ function autoloadRowIds(doc) {
     const wc = runNode([configureCjs, '--write-autoload', '--repo-root', fxh], { cwd: root });
     assert(wc.status === 0, `configure ignores a configured sharedDir (got ${wc.status}: ${wc.stderr || ''})`);
     const fixedRow = fs.readFileSync(path.join(fxh, '.ws/autoload.md'), 'utf8');
-    assert(fixedRow.includes('`.ws/ws-project-patterns/SKILL.md`'), 'row stays on the fixed .ws hub');
+    assert(fixedRow.includes('`ws-project-patterns/SKILL.md`'), 'row renders hub-relative on the fixed .ws hub');
     assert(!fs.existsSync(path.join(fxh, 'custom-hub/autoload.md')), 'no autoload is written to a configured sharedDir');
     const wr = runNode([configureCjs, '--write-root-agents', '--repo-root', fxh], { cwd: root });
     assert(wr.status === 0, `configure --write-root-agents exit 0 (got ${wr.status}: ${wr.stderr || ''})`);
@@ -421,7 +421,7 @@ function autoloadRowIds(doc) {
     const gr = runNode([configureCjs, '--write-autoload', '--repo-root', fxg, '--global-skills-root', groutex], { cwd: root });
     assert(gr.status === 0, `global-hybrid --write-autoload exit 0 (got ${gr.status}: ${gr.stderr || ''})`);
     const gtext = fs.readFileSync(path.join(fxg, '.ws/autoload.md'), 'utf8');
-    assert(gtext.includes('`.ws/ws-project-patterns/SKILL.md`'), 'global-hybrid run keeps the hub row');
+    assert(gtext.includes('`ws-project-patterns/SKILL.md`'), 'global-hybrid run keeps the hub-relative row');
     assert(
       !/\{skillsRoot\}\/ws-project-patterns/.test(gtext),
       'global-hybrid run never emits a skillsRoot token for the generated row',
@@ -436,7 +436,7 @@ function autoloadRowIds(doc) {
   try {
     const outsideTarget = path.join(outdir, 'body.md');
     fs.writeFileSync(outsideTarget, '# external\n', 'utf8');
-    writeAutoloadFixture(fxs, ['| `ws-project-patterns` | `.ws/ws-project-patterns/SKILL.md` | Project patterns |']);
+    writeAutoloadFixture(fxs, ['| `ws-project-patterns` | `ws-project-patterns/SKILL.md` | Project patterns |']);
     fs.mkdirSync(path.join(fxs, '.ws/ws-project-patterns'), { recursive: true });
     let linked = false;
     try {
