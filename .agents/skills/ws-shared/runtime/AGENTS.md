@@ -50,10 +50,9 @@
 |------|---------|
 | `config.json` | Project identity, stack, verification, providers (track when non-secret) |
 | `STACK.md` | Human-readable companion to `config.json` (track when maintained) |
-| `MEMORY.md` (legacy) | Compiled anti-regression index when it holds entries (default location is now `rules.memoryDir`) |
-| `memory/*.md` (legacy) | Individual memory entries (default location is now `rules.memoryDir`) |
-| `CHANGELOG.md` (legacy) | Append-only history when it holds entries (default location is now `rules.changelogFile`) |
+| `MEMORY.md`, `memory/*.md`, `CHANGELOG.md` (legacy) | Pre-migration memory index/entries and history; defaults now under `rules.memoryDir` / `rules.changelogFile` |
 | `installed-skills.json` | Managed skill list for `update` / `uninstall` (installer-written) |
+| `ws-project-patterns/SKILL.md` | Hub-hosted patterns body from `ws-patterns-generator` (autoload-only) |
 
 ---
 

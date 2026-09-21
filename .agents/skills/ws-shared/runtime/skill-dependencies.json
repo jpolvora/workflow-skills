@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.4.49",
+  "packageVersion": "0.4.50",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -23,7 +23,7 @@
       "id": "ws-project-patterns",
       "sourcePackage": "consumer",
       "generatorManaged": true,
-      "note": "Generator-managed consumer skill (ws-patterns-generator runs). Never vendored upstream; installer and harness membership exclude it; autoload keeps its row while the tree exists."
+      "note": "Generator-managed consumer skill body (ws-patterns-generator runs) hosted under {sharedDir} (default .ws/ws-project-patterns), never in a skills root. Never vendored upstream, never hashed or installed; installer and harness membership exclude it; its autoload row is kept while the hub tree exists."
     }
   ],
   "hub": {

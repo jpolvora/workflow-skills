@@ -1,0 +1,608 @@
+{
+  "schemaVersion": 1,
+  "revision": 17,
+  "workflowId": "patterns-generator-shared-hub-output-20260921T134516Z",
+  "slug": "patterns-generator-shared-hub-output",
+  "specPath": ".agents/plans/patterns-generator-shared-hub-output/step-00-patterns-generator-shared-hub-output.spec.md",
+  "planIndexPath": null,
+  "declaredGaps": [
+    "NS10 no local pre-change wall-time baseline was sampled before this change; measured post-change 176.6s with 103/103 entries (unchanged count) and byte sizes recorded in the companion",
+    "NS11 no new behavioral feature ships in this change, so no config gate/test/doc trio applies",
+    "NS12 memory-contract preservation is review evidence (self-learning scripts untouched; generator has no MEMORY write path)",
+    "NS7 integration-overlap analysis has no automated test: companion overlap matrix is reviewed artifact evidence, not a suite assertion",
+    "NS8 companion plan-field completeness is reviewed artifact evidence (no test surface)"
+  ],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "`node {skillsRoot}/ws-patterns-generator/scripts/seed_generated_skill.cjs --repo-root <dir>` writes `{sharedDir}/ws-project-patterns/SKILL.md` (hub root resolved from `pathTokens.sharedDir`, default `.ws`), exits 0, is byte-stable on rerun, never overwrites an existing body, and writes nothing under `--dry-run`.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC2",
+      "text": "Symlink containment holds at the new location: a linked hub root, a linked `ws-project-patterns` directory, and a dangling leaf `SKILL.md` are each refused with no file created outside the repository, and in-repo links still seed (positive control).",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC3",
+      "text": "Seeding leaves the skills tree untouched: no `{skillsRoot}/ws-project-patterns` is created and `node bin/generate-skill-integrity.js --check` still exits 0 with the manifest unchanged while the generated body exists.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC4",
+      "text": "The `ws-project-patterns` Always-applied row is added to `{sharedDir}/autoload.md` at most once on the first seed and points at the hub path; `configure_autoload.cjs --write-autoload` keeps the row only while `{sharedDir}/ws-project-patterns/SKILL.md` exists and drops it when the tree is absent.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC5",
+      "text": "The generated id remains outside installer management: `bin/cli.js` still excludes it via `excludeExternalSkillIds(...)`, `bin/skill-dependencies.json` keeps `externalSkills` `{ id: ws-project-patterns, sourcePackage: consumer, generatorManaged: true }`, and no `ws-project-patterns` entry appears in `.ws/installed-skills.json`.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC6",
+      "text": "`hub-layout.json` classifies the new hub path as consumer-owned/tracked content, the hub `.gitignore` template does not ignore it, and every doc that names the generated path is updated (root `AGENTS.md`, `.ws/AGENTS.md`, `README.md`, `CATALOG.md`, `FEATURES.md`, generated site).",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC7",
+      "text": "The integration analysis covers `ws-self-learning`, `ws-patterns-generator`, the generated `ws-project-patterns`, plus at least `ws-changelog`, `ws-spec-memo`, `ws-configure-project`, and `ws-secrets-leak-review`, with an overlap matrix and a merge / collaborate / keep-separate recommendation per pair recorded in `0114-patterns-generator-shared-hub-output.context.md`.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC8",
+      "text": "A draft integration plan exists in the same companion with bounded file list, integration mechanism (shared helper versus protocol versus merge), performance targets, feature deltas, explicit non-goals, and a rollback or no-op path.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC9",
+      "text": "Implemented code reduces duplication via shared helper extraction or removed duplicated blocks with before/after file pointers; every previously passing related test still passes.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC10",
+      "text": "Performance is measured and non-regressed (`npm run test` wall time plus touched script runtime plus skill body size); any claimed improvement cites numbers and no suite-time regression exceeds 10 percent without justification.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC11",
+      "text": "New collaborative features, if any, are explicit, config-gated where behavioral, covered by tests and docs, and introduce no unrequested scope.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC12",
+      "text": "Memory contracts hold: `read-memory`/`update-memory` backends, trap shape, sanitize plus compile, and vault bridge ownership are unchanged unless the plan approves; the generated skill still never writes MEMORY or vault traps directly.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC13",
+      "text": "New or changed Node scripts are `.cjs` with explicit `node` launcher, validate CLI and file inputs, contain filesystem reads and writes inside the repo root, await or handle every promise, and close all handles; `scan_stack_invariants.cjs --stack typescript-node` reports no new findings.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC14",
+      "text": "Harness and batteries are green: `node test/test-ws-patterns-generator.js`, `node test/test-autoload-configure.js`, `node test/test-ws-shared-layout.js`, `node test/test-external-companion-skills.js`, `npm run test`, `ws-check-harness`, and `npm run generate-integrity` plus `npm run verify-integrity` all exit 0.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC15",
+      "text": "The release PR carries exactly one `package.json` version bump strictly above the merge-base, aligned `packageVersion` in `bin/skill-dependencies.json` plus site footer, and regenerated integrity in the same commit.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC16",
+      "text": "No secrets, tokens, or personal data appear in analysis, plan, code, tests, or the generated body; pasted consumer traces are anonymized to the failure class and the configured secrets review is clean.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Seeding still writes under `{skillsRoot}/` or ignores `pathTokens.sharedDir` (must fail AC1).",
+      "tests": [
+        {
+          "name": "seed never writes the generated body into a skills root",
+          "sourceFile": "test/test-ws-patterns-generator.js",
+          "phase": "observed",
+          "alias": "battery",
+          "exitCode": 0,
+          "timestamp": "2026-09-21T14:05:24.795Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "A hub-root link, generated-dir link, or dangling leaf link escapes the repo (must fail AC2).",
+      "tests": [
+        {
+          "name": "seed refuses dangling leaf symlink",
+          "sourceFile": "test/test-ws-patterns-generator.js",
+          "phase": "observed",
+          "alias": "battery",
+          "exitCode": 0,
+          "timestamp": "2026-09-21T14:05:24.878Z"
+        },
+        {
+          "name": "seed refuses symlinked generated dir",
+          "sourceFile": "test/test-ws-patterns-generator.js",
+          "phase": "observed",
+          "alias": "battery",
+          "exitCode": 0,
+          "timestamp": "2026-09-21T14:05:24.871Z"
+        },
+        {
+          "name": "seed refuses symlinked hub root",
+          "sourceFile": "test/test-ws-patterns-generator.js",
+          "phase": "observed",
+          "alias": "battery",
+          "exitCode": 0,
+          "timestamp": "2026-09-21T14:05:24.870Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns2a"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "The generated body appears in the integrity manifest or changes the skill count (must fail AC3).",
+      "tests": [
+        {
+          "name": "integrity --check exit 0",
+          "sourceFile": "test/test-ws-patterns-generator.js",
+          "phase": "observed",
+          "alias": "battery",
+          "exitCode": 0,
+          "timestamp": "2026-09-21T14:05:24.936Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns3"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "The autoload row keeps pointing at `.agents/skills/ws-project-patterns/SKILL.md`, is duplicated, or survives with the tree removed (must fail AC4).",
+      "tests": [
+        {
+          "name": "generated row points at the hub path",
+          "sourceFile": "test/test-ws-patterns-generator.js",
+          "phase": "observed",
+          "alias": "battery",
+          "exitCode": 0,
+          "timestamp": "2026-09-21T14:05:24.986Z"
+        },
+        {
+          "name": "rerun keeps single row",
+          "sourceFile": "test/test-ws-patterns-generator.js",
+          "phase": "observed",
+          "alias": "battery",
+          "exitCode": 0,
+          "timestamp": "2026-09-21T14:05:24.994Z"
+        },
+        {
+          "name": "row dropped when tree absent",
+          "sourceFile": "test/test-ws-patterns-generator.js",
+          "phase": "observed",
+          "alias": "battery",
+          "exitCode": 0,
+          "timestamp": "2026-09-21T14:05:24.987Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns4"
+      ]
+    },
+    {
+      "id": "NS5",
+      "text": "`ws-project-patterns` lands in `installed-skills.json`, or an update/uninstall removes the hub body (must fail AC5).",
+      "tests": [
+        {
+          "name": "disk scan excludes external ids",
+          "sourceFile": "test/test-ws-patterns-generator.js",
+          "phase": "observed",
+          "alias": "battery",
+          "exitCode": 0,
+          "timestamp": "2026-09-21T14:05:25.055Z"
+        },
+        {
+          "name": "generated id stays out of manifest",
+          "sourceFile": "test/test-ws-patterns-generator.js",
+          "phase": "observed",
+          "alias": "battery",
+          "exitCode": 0,
+          "timestamp": "2026-09-21T14:05:25.063Z"
+        },
+        {
+          "name": "generated tree preserved byte-identical",
+          "sourceFile": "test/test-ws-patterns-generator.js",
+          "phase": "observed",
+          "alias": "battery",
+          "exitCode": 0,
+          "timestamp": "2026-09-21T14:05:25.056Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns5"
+      ]
+    },
+    {
+      "id": "NS6",
+      "text": "Hub layout still classifies the body as a managed skill root, the ignore template drops it from git, or a doc still names the old path (must fail AC6).",
+      "tests": [
+        {
+          "name": "hub ignore template keeps the generated patterns body tracked",
+          "sourceFile": "test/test-ws-shared-layout.js",
+          "phase": "observed",
+          "alias": "battery",
+          "exitCode": 0,
+          "timestamp": "2026-09-21T14:05:25.124Z"
+        },
+        {
+          "name": "hub layout classifies the generator-managed patterns body as consumer-owned content",
+          "sourceFile": "test/test-ws-shared-layout.js",
+          "phase": "observed",
+          "alias": "battery",
+          "exitCode": 0,
+          "timestamp": "2026-09-21T14:05:25.122Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns6"
+      ]
+    },
+    {
+      "id": "NS7",
+      "text": "Analysis omits self-learning or patterns-generator overlap, or skips the required other-skill candidates (must fail AC7).",
+      "tests": [],
+      "linkEventIds": []
+    },
+    {
+      "id": "NS8",
+      "text": "Companion plan lacks file list, mechanism, targets, or rollback path (must fail AC8).",
+      "tests": [],
+      "linkEventIds": []
+    },
+    {
+      "id": "NS9",
+      "text": "Code reduction breaks a previously passing related test (must fail AC9).",
+      "tests": [],
+      "linkEventIds": [
+        "ns9"
+      ]
+    },
+    {
+      "id": "NS10",
+      "text": "Suite time regresses over 10 percent without justification, or a claimed improvement lacks numbers (must fail AC10).",
+      "tests": [],
+      "linkEventIds": []
+    },
+    {
+      "id": "NS11",
+      "text": "New collaborative behavior ships without a config gate, test, or doc (must fail AC11).",
+      "tests": [],
+      "linkEventIds": []
+    },
+    {
+      "id": "NS12",
+      "text": "The generated skill writes MEMORY or vault traps directly, or a memory contract changes without plan approval (must fail AC12).",
+      "tests": [],
+      "linkEventIds": []
+    },
+    {
+      "id": "NS13",
+      "text": "A new script floats a promise, builds a path from unsanitized input, or leaks a handle (must fail AC13).",
+      "tests": [
+        {
+          "name": "invariant scan exit 0",
+          "sourceFile": "test/test-ws-patterns-generator.js",
+          "phase": "observed",
+          "alias": "battery",
+          "exitCode": 0,
+          "timestamp": "2026-09-21T14:05:33.456Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns13"
+      ]
+    },
+    {
+      "id": "NS14",
+      "text": "Any AC14 command exits non-zero (must fail AC14).",
+      "tests": [],
+      "linkEventIds": [
+        "ns14"
+      ]
+    },
+    {
+      "id": "NS15",
+      "text": "Version unbumped or integrity stale in the release commit (must fail AC15).",
+      "tests": [
+        {
+          "name": "packageVersion aligned (package.json == bin/skill-dependencies.json)",
+          "sourceFile": "test/test-harness-clean.js",
+          "phase": "observed",
+          "alias": "harness",
+          "exitCode": 0,
+          "timestamp": "2026-09-21T14:05:33.507Z"
+        },
+        {
+          "name": "Phase 3 integrity manifest",
+          "sourceFile": "test/test-harness-clean.js",
+          "phase": "observed",
+          "alias": "harness",
+          "exitCode": 0,
+          "timestamp": "2026-09-21T14:05:33.508Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns15"
+      ]
+    },
+    {
+      "id": "NS16",
+      "text": "A secret, token, or personal identifier appears in analysis, plan, code, tests, or the body (must fail AC16).",
+      "tests": [
+        {
+          "name": "secrets scan exit 0",
+          "sourceFile": "test/test-ws-patterns-generator.js",
+          "phase": "observed",
+          "alias": "battery",
+          "exitCode": 0,
+          "timestamp": "2026-09-21T14:05:42.531Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns16"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 0,
+    "earnedUnits": 0,
+    "totalUnits": 160,
+    "knownDefect": true,
+    "missingEvidence": true,
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-21T14:05:42.533Z"
+  }
+}

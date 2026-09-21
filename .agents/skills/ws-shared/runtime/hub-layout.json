@@ -54,9 +54,11 @@
         "config.json",
         "STACK.md",
         "backend.md",
-        "frontend.md"
+        "frontend.md",
+        "ws-project-patterns"
       ],
-      "sourceControl": "track-when-maintained"
+      "sourceControl": "track-when-maintained",
+      "note": "Consumer-owned hub content: config and stack companions plus the generator-managed ws-project-patterns skill body (autoload-only, never installed)."
     },
     "generatedLocal": {
       "paths": [

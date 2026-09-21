@@ -112,7 +112,7 @@ Load early with `toolsFile` (default `tools.md` § Path tokens).
 | `{reviewsDir}` | `reviews.dir` | `.agents/codereviews` |
 | `{memoryDir}` | `rules.memoryDir` | `.` (repo root) |
 
-Expand before tool calls. `{skillsRoot}` is **fixed install layout** (optional `pathTokens` in config for discoverability; not relocatable). `{sharedDir}` resolves to the project hub root (default `.ws`; explicit `pathTokens.sharedDir` wins when configured, with no fallback read of a previous hub location). `{plansDir}` / `{specsDir}` / `{wikiDir}` / `{reviewsDir}` / `{memoryDir}` remain consumer-configurable.
+Expand before tool calls. `{skillsRoot}` is **fixed install layout** (optional `pathTokens` in config for discoverability; not relocatable). `{sharedDir}` resolves to the project hub root (default `.ws`; explicit `pathTokens.sharedDir` wins when configured, with no fallback read of a previous hub location). Hub-hosted generated consumer content (e.g. `ws-project-patterns`) and the installer currently assume a fixed `.ws` hub: an explicit `pathTokens.sharedDir` is not yet a relocation mechanism for them (relocation needs a harness-wide change). `{plansDir}` / `{specsDir}` / `{wikiDir}` / `{reviewsDir}` / `{memoryDir}` remain consumer-configurable.
 
 ---
 

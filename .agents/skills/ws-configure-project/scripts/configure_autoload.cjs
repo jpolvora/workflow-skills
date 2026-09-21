@@ -199,7 +199,43 @@ function resolveTemplateSource(repoRoot, globalSkillsRoot, allowGlobalSource = f
   return path.join(globalSkillsRoot, 'ws-shared', 'templates');
 }
 
-function emitSkillPath(repoRoot, skillId, { skillsRootRel = '.agents/skills', globalSkillsRoot = null } = {}) {
+function hubRootFor(repoRoot) {
+  // The project hub is fixed at <repo>/.ws. pathTokens.sharedDir is not a
+  // relocation mechanism for hub-hosted content: the installer, hub layout,
+  // migration, and generated-link prefixes all assume .ws, so honoring a custom
+  // root here would split the consumer contract. Relocatable hubs need a
+  // harness-wide change (tracked separately as a spec).
+  return path.resolve(repoRoot, '.ws');
+}
+
+function sharedAutoloadPath(repoRoot) {
+  return path.join(hubRootFor(repoRoot), 'autoload.md');
+}
+
+function hubPointerPath(repoRoot) {
+  return path.join(hubRootFor(repoRoot), 'AGENTS.md');
+}
+
+function expectedGeneratedRowPath(repoRoot, skillId, { hubRelative = true } = {}) {
+  // The row is resolved relative to the file that carries it: hub-relative
+  // inside the hub's autoload.md, repo-relative in the repository-root AGENTS.md
+  // (which sits one level above the hub).
+  return hubRelative ? `${skillId}/SKILL.md` : `.ws/${skillId}/SKILL.md`;
+}
+
+function isGeneratorManagedId(repoRoot, skillId, { globalSkillsRoot = null, allowGlobalSource = false } = {}) {
+  return loadGeneratorManagedIds(repoRoot, { globalSkillsRoot, allowGlobalSource }).has(skillId);
+}
+
+function emitSkillPath(repoRoot, skillId, { skillsRootRel = '.agents/skills', globalSkillsRoot = null, allowGlobalSource = false, hubRelative = true } = {}) {
+  // Hub-hosted generated consumer skills are never installed: their row points
+  // at the shared-hub path (existence is checked by the membership filter).
+  if (isGeneratorManagedId(repoRoot, skillId, { globalSkillsRoot, allowGlobalSource })) {
+    return [
+      expectedGeneratedRowPath(repoRoot, skillId, { hubRelative }),
+      !generatorManagedTreeExists(repoRoot, skillId, globalSkillsRoot),
+    ];
+  }
   const localSkill = path.join(repoRoot, skillsRootRel, skillId, 'SKILL.md');
   if (fs.existsSync(localSkill)) return [`.agents/skills/${skillId}/SKILL.md`, false];
   const groot = globalSkillsRoot || resolveGlobalSkillsRoot(null);
@@ -253,9 +289,44 @@ function loadGeneratorManagedIds(repoRoot, { globalSkillsRoot = null, allowGloba
 }
 
 function generatorManagedTreeExists(repoRoot, skillId, globalSkillsRoot = null) {
-  if (fs.existsSync(path.join(repoRoot, '.agents', 'skills', skillId, 'SKILL.md'))) return true;
-  const groot = globalSkillsRoot || resolveGlobalSkillsRoot(null);
-  return fs.existsSync(path.join(groot, skillId, 'SKILL.md'));
+  // Generated consumer skills are project-local hub content by definition, so
+  // there is no global-skills fallback for them. Existence is resolved with the
+  // same symlink-aware containment rule as the seeder: a hub body linked outside
+  // the repository does not count as present.
+  const target = path.join(hubRootFor(repoRoot), skillId, 'SKILL.md');
+  if (!fs.existsSync(target)) return false;
+  let rootReal;
+  try {
+    rootReal = fs.realpathSync(path.resolve(repoRoot));
+  } catch {
+    return false;
+  }
+  const targetReal = realpathLoose(target);
+  return Boolean(targetReal && targetReal.startsWith(rootReal + path.sep));
+}
+
+function realpathLoose(candidate) {
+  // Resolve symlinks through the deepest existing ancestor; fail closed (null)
+  // for unresolvable or dangling links instead of trusting a lexical path.
+  const rest = [];
+  let existing = candidate;
+  for (;;) {
+    try {
+      fs.lstatSync(existing);
+      break;
+    } catch {
+      // keep walking up past missing leaves
+    }
+    rest.unshift(path.basename(existing));
+    const parent = path.dirname(existing);
+    if (parent === existing) return null;
+    existing = parent;
+  }
+  try {
+    return path.join(fs.realpathSync(existing), ...rest);
+  } catch {
+    return null;
+  }
 }
 
 function dropExternalCompanionMembers(membership, repoRoot, { globalSkillsRoot = null, allowGlobalSource = false } = {}) {
@@ -277,26 +348,32 @@ function renderConsumerAutoload(text, { repoRoot = null } = {}) {
   const localRuntimeDir = repoRoot
     ? path.join(repoRoot, '.agents', 'skills', 'ws-shared', 'runtime')
     : null;
+  // Generated links are relative to the hub that hosts autoload.md, not to the
+  // repository root: a nested configured hub (config/hub) needs its own prefix.
+  const hubRoot = repoRoot ? hubRootFor(repoRoot) : null;
+  const relFromHub = (target) => path.relative(hubRoot, target).split(path.sep).join('/');
   const runtimePrefixFor = (rel) => (
     localRuntimeDir && rel && fs.existsSync(path.join(localRuntimeDir, rel))
-      ? '../.agents/skills/ws-shared/runtime/'
+      ? `${relFromHub(localRuntimeDir)}/`
       : '{globalSkillsRoot}/ws-shared/runtime/'
   );
   const skillTarget = (rel) => (
     repoRoot && fs.existsSync(path.join(repoRoot, '.agents', 'skills', rel))
-      ? `../.agents/skills/${rel}`
+      ? relFromHub(path.join(repoRoot, '.agents', 'skills', rel))
       : `{globalSkillsRoot}/${rel}`
   );
   // Normalize previously rendered prefixes so refreshes converge (no-op when
-  // the local file exists and the prefix already matches).
+  // the local file exists and the prefix already matches). Anchor on the
+  // generated link shapes so the rewrite stays bounded, and accept any number
+  // of "../" segments so nested hubs converge too.
   text = text.replace(
-    /\]\(\.\.\/\.agents\/skills\/ws-shared\/runtime\/([^)]+)\)/g,
+    /\]\((?:\.\.\/)+\.agents\/skills\/ws-shared\/runtime\/([^)]+)\)/g,
     (match, rel) => `](${runtimePrefixFor(rel)}${rel})`,
   );
-  text = text.replace(/\]\(\.\.\/\.agents\/skills\/(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
+  text = text.replace(/\]\((?:\.\.\/)+\.agents\/skills\/(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
   // Legacy pre-0.4.46 rendered forms: `](runtime/<file>)` and `](../ws-<id>/...)`.
   text = text.replace(/\]\(runtime\/([^)]+)\)/g, (match, rel) => `](${runtimePrefixFor(rel)}${rel})`);
-  text = text.replace(/\]\(\.\.\/(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
+  text = text.replace(/\]\((?:\.\.\/)+(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
   // Global-token links re-resolve once a local runtime file exists (local-first).
   text = text.replace(
     /\]\(\{globalSkillsRoot\}\/ws-shared\/runtime\/([^)]+)\)/g,
@@ -306,7 +383,7 @@ function renderConsumerAutoload(text, { repoRoot = null } = {}) {
   for (const f of ['AGENTS.md', 'CROSS-PLATFORM.md', 'config-resolution.md', 'gates.md', 'host-dispatch.md', 'scm-provider-contract.md', 'setup.md', 'tools.md']) {
     text = text.split(`](${f})`).join(`](${runtimePrefixFor(f)}${f})`);
   }
-  return text.replace(/\]\(\.\.\/\.\.\/(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
+  return text.replace(/\]\((?:\.\.\/)+(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
 }
 
 function defaultAlwaysAppliedMembership() {
@@ -325,14 +402,14 @@ function membershipFromExistingRows(rows) {
   return out;
 }
 
-function buildAlwaysAppliedTable(repoRoot, { globalSkillsRoot = null, membership = null } = {}) {
+function buildAlwaysAppliedTable(repoRoot, { globalSkillsRoot = null, membership = null, allowGlobalSource = false, hubRelative = true } = {}) {
   const rows = ['| Skill | Path | Trigger|', '|-------|------|---------|'];
   // Note: header row below is normalized by the writer; keep exact canonical form:
   rows[0] = '| Skill | Path | Trigger |';
   const meta = [];
   const members = membership !== null ? membership : defaultAlwaysAppliedMembership();
   for (const member of members) {
-    const [pathForm, missing] = emitSkillPath(repoRoot, member.skill, { globalSkillsRoot });
+    const [pathForm, missing] = emitSkillPath(repoRoot, member.skill, { globalSkillsRoot, allowGlobalSource, hubRelative });
     rows.push(`| \`${member.skill}\` | \`${pathForm}\` | ${member.trigger} |`);
     meta.push({ skill: member.skill, path: pathForm, missing, trigger: member.trigger });
   }
@@ -340,7 +417,7 @@ function buildAlwaysAppliedTable(repoRoot, { globalSkillsRoot = null, membership
 }
 
 function ensureAutoloadMd(repoRoot, { globalSkillsRoot = null, allowGlobalSource = false, dryRun = false } = {}) {
-  const autoloadPath = path.join(repoRoot, SHARED_AUTOLOAD_REL);
+  const autoloadPath = sharedAutoloadPath(repoRoot);
   let source = null;
   if (!fs.existsSync(autoloadPath)) {
     const runtime = resolveRuntimeSource(repoRoot, globalSkillsRoot || resolveExecutionGlobalSkillsRoot(null), allowGlobalSource);
@@ -363,7 +440,7 @@ function ensureAutoloadMd(repoRoot, { globalSkillsRoot = null, allowGlobalSource
   let membership = preserved.length ? preserved : defaultAlwaysAppliedMembership();
   membership = dropExternalCompanionMembers(membership, repoRoot, { globalSkillsRoot, allowGlobalSource });
   membership = resolveAutoloadTaskLifecycle(repoRoot) ? ensureTaskLifecycleMember(membership) : dropTaskLifecycleMember(membership);
-  const [table, meta] = buildAlwaysAppliedTable(repoRoot, { globalSkillsRoot, membership });
+  const [table, meta] = buildAlwaysAppliedTable(repoRoot, { globalSkillsRoot, membership, allowGlobalSource });
   const pattern = /(## Always-applied skills\r?\n(?:.*\r?\n)*?)(\| Skill \| Path \| Trigger \|\r?\n\|[-| ]+\|\r?\n(?:\|[^\r\n]*\|\r?\n)+)/;
   const match = pattern.exec(text);
   if (!match) {
@@ -418,7 +495,7 @@ When the user mentions specs / plans / Spec-to-PR / \`index.PRD\` without naming
 `;
 
 function writeRootAgents(repoRoot, { globalSkillsRoot = null, allowGlobalSource = false, dryRun = false, force = false } = {}) {
-  const sharedAutoload = path.join(repoRoot, '.ws', 'autoload.md');
+  const sharedAutoload = sharedAutoloadPath(repoRoot);
   let membership = defaultAlwaysAppliedMembership();
   if (fs.existsSync(sharedAutoload)) {
     const preserved = membershipFromExistingRows(parseAlwaysAppliedRows(fs.readFileSync(sharedAutoload, 'utf8')));
@@ -428,11 +505,14 @@ function writeRootAgents(repoRoot, { globalSkillsRoot = null, allowGlobalSource 
   const tableLines = ['| Skill | Path |', '|-------|------|'];
   const meta = [];
   for (const member of membership) {
-    const [pathForm, missing] = emitSkillPath(repoRoot, member.skill, { globalSkillsRoot });
+    const [pathForm, missing] = emitSkillPath(repoRoot, member.skill, { globalSkillsRoot, allowGlobalSource, hubRelative: false });
     tableLines.push(`| \`${member.skill}\` | \`${pathForm}\` |`);
     meta.push({ skill: member.skill, path: pathForm, missing });
   }
-  const body = GENERATED_MARKER + '\n' + ROOT_AGENTS_TEMPLATE.replace('{table}', tableLines.join('\n'));
+  const body = GENERATED_MARKER + '\n' + ROOT_AGENTS_TEMPLATE
+    .split('.ws/AGENTS.md').join(path.relative(repoRoot, hubPointerPath(repoRoot)).split(path.sep).join('/'))
+    .split('.ws/autoload.md').join(path.relative(repoRoot, sharedAutoloadPath(repoRoot)).split(path.sep).join('/'))
+    .replace('{table}', tableLines.join('\n'));
   if (containsAbsolutePath(body)) {
     console.error('ERROR: refused to write root AGENTS.md with absolute paths');
     process.exit(1);
@@ -452,7 +532,7 @@ function writeRootAgents(repoRoot, { globalSkillsRoot = null, allowGlobalSource 
       }
     }
   }
-  const pointerPath = path.join(repoRoot, path.dirname(SHARED_AUTOLOAD_REL), 'AGENTS.md');
+  const pointerPath = hubPointerPath(repoRoot);
   let pointerWritten = false;
   if (!fs.existsSync(pointerPath)) {
     if (!dryRun) {
@@ -516,7 +596,7 @@ function appendEffectiveAutoloadRootFindings(findings, { effective, rootAgents, 
 
 function checkAutoload(repoRoot, { globalSkillsRoot = null, allowGlobalSource = false } = {}) {
   const findings = [];
-  const shared = path.join(repoRoot, '.ws');
+  const shared = hubRootFor(repoRoot);
   const autoloadPath = path.join(shared, 'autoload.md');
   const rootAgents = path.join(repoRoot, 'AGENTS.md');
   const effective = resolveEffectiveAutoload(repoRoot);
@@ -534,6 +614,18 @@ function checkAutoload(repoRoot, { globalSkillsRoot = null, allowGlobalSource = 
   const generatorManaged = loadGeneratorManagedIds(repoRoot, { globalSkillsRoot, allowGlobalSource });
   const managedPresent = (skill) => generatorManaged.has(skill) && generatorManagedTreeExists(repoRoot, skill, globalSkillsRoot);
   for (const row of parseAlwaysAppliedRows(text)) {
+    if (generatorManaged.has(row.skill)) {
+      // Hub-hosted generated consumer skills: validate the hub path, not the
+      // installed-skills portability or skills-root existence rules.
+      if (containsAbsolutePath(`\`${row.path}\``)) {
+        findings.push({ severity: 'warning', file: '.ws/autoload.md', message: `Always-applied path for \`${row.skill}\` is not portable: ${row.path}`, fix: 'Use the hub-relative path (or run configure_autoload.cjs --write-autoload)' });
+      } else if (row.path.replace(/\\/g, '/').replace(/\/+$/, '') !== expectedGeneratedRowPath(repoRoot, row.skill)) {
+        findings.push({ severity: 'warning', file: '.ws/autoload.md', message: `Always-applied path for \`${row.skill}\` must point at the configured shared hub: ${row.path}`, fix: 'Run configure_autoload.cjs --write-autoload' });
+      } else if (!generatorManagedTreeExists(repoRoot, row.skill, globalSkillsRoot)) {
+        findings.push({ severity: 'warning', file: '.ws/autoload.md', message: `Always-applied generated skill \`${row.skill}\` missing under the shared hub`, fix: 'Run the generator (ws-patterns-generator) or remove the Always-applied row' });
+      }
+      continue;
+    }
     if (externalCompanions.has(row.skill) && !managedPresent(row.skill)) {
       findings.push({ severity: 'warning', file: '.ws/autoload.md', message: `Always-applied lists external companion \`${row.skill}\` (not packaged here); move to External companion skills and skip when absent`, fix: 'Remove the Always-applied row; keep the optional companion section' });
       continue;

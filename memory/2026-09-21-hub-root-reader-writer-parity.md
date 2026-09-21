@@ -1,0 +1,9 @@
+### [2026-09-21] A configurable hub root must be honored by every reader and writer, not only the seeder
+
+- **Layer**: `Infrastructure`
+- **Module**: `ws-configure-project` (`configure_autoload.cjs`), `ws-patterns-generator`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-configure-project/scripts/configure_autoload.cjs, .agents/skills/ws-patterns-generator/scripts/seed_generated_skill.cjs`
+- **Scenario / Context**: PR #384 review found that `seed_generated_skill.cjs` honored `pathTokens.sharedDir` (writing to `custom-hub/ws-project-patterns/SKILL.md`) while `configure_autoload.cjs` kept `.ws/autoload.md`, the hub pointer, and the `--check` target hardcoded — so a configured hub split the contract: the body was seeded in one root and registered/validated in another. A second thread showed the same file accepted any non-absolute autoload row whose basename matched, so `../unrelated/ws-project-patterns/SKILL.md` passed `--check`. Both scored Warning (7 and 6) and were fixed in one round.
+- **DO NOT**: Resolve a configurable root in one code path and hardcode the default in the reader/validator of the same contract; validate a path by its basename or final directory when the contract names a specific root.
+- **INSTEAD DO**: Derive every hub path from a single resolver (`hubRootFor(repoRoot)` → `sharedAutoloadPath`, `hubPointerPath`, `expectedGeneratedRowPath`) and compare rows against the exact expected path (normalized separators, trailing slash trimmed). Cover the custom-root round-trip in tests: write under the configured root, assert the default root is untouched, and assert `--check` is clean; plus a same-name-row-outside-root rejection case. Keep bootstrap config discovery at the installer-created location (`.ws/config.json`) and say so in the resolver comment.

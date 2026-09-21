@@ -103,21 +103,15 @@ function resolveTarget(repoRoot) {
     process.stderr.write(`Not a directory: ${repoRoot}\n`);
     process.exit(1);
   }
-  let skillsRel = '.agents/skills';
-  try {
-    const configPath = path.join(root, '.ws', 'config.json');
-    if (fs.existsSync(configPath)) {
-      const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      const configured = config && config.pathTokens && config.pathTokens.skillsRoot;
-      if (typeof configured === 'string' && configured.trim()) skillsRel = configured.trim();
-    }
-  } catch {
-    skillsRel = '.agents/skills';
-  }
-  const skillsRoot = path.resolve(root, skillsRel);
-  const target = path.join(skillsRoot, GENERATED_ID, 'SKILL.md');
-  const contained = target === skillsRoot || target.startsWith(skillsRoot + path.sep);
-  if (!contained || !target.startsWith(root + path.sep)) {
+  // Generated pattern bodies are consumer-owned hub content: they live under
+  // the project hub (fixed at <repo>/.ws), never in the published skills tree.
+  // The hub root is not relocatable for hub-hosted content (the installer, hub
+  // layout, and autoload all assume .ws); a custom root needs a harness-wide
+  // change tracked separately as a spec.
+  const hubRoot = path.resolve(root, '.ws');
+  const target = path.join(hubRoot, GENERATED_ID, 'SKILL.md');
+  const contained = target.startsWith(hubRoot + path.sep) && target.startsWith(root + path.sep);
+  if (!contained) {
     process.stderr.write('Refusing to write outside the repo skills root\n');
     process.exit(1);
   }
