@@ -200,6 +200,9 @@ function resolveTemplateSource(repoRoot, globalSkillsRoot, allowGlobalSource = f
 }
 
 function hubRootFor(repoRoot) {
+  // Bootstrap discovery location for the hub root is always <repo>/.ws/config.json;
+  // a configured pathTokens.sharedDir then relocates hub content (autoload,
+  // pointer, generated consumer skills) to that root.
   let hubRel = '.ws';
   try {
     const configPath = path.join(repoRoot, '.ws', 'config.json');
@@ -212,6 +215,18 @@ function hubRootFor(repoRoot) {
     hubRel = '.ws';
   }
   return path.resolve(repoRoot, hubRel);
+}
+
+function sharedAutoloadPath(repoRoot) {
+  return path.join(hubRootFor(repoRoot), 'autoload.md');
+}
+
+function hubPointerPath(repoRoot) {
+  return path.join(hubRootFor(repoRoot), 'AGENTS.md');
+}
+
+function expectedGeneratedRowPath(repoRoot, skillId) {
+  return path.relative(repoRoot, path.join(hubRootFor(repoRoot), skillId, 'SKILL.md')).split(path.sep).join('/');
 }
 
 function isGeneratorManagedId(repoRoot, skillId, { globalSkillsRoot = null, allowGlobalSource = false } = {}) {
@@ -366,7 +381,7 @@ function buildAlwaysAppliedTable(repoRoot, { globalSkillsRoot = null, membership
 }
 
 function ensureAutoloadMd(repoRoot, { globalSkillsRoot = null, allowGlobalSource = false, dryRun = false } = {}) {
-  const autoloadPath = path.join(repoRoot, SHARED_AUTOLOAD_REL);
+  const autoloadPath = sharedAutoloadPath(repoRoot);
   let source = null;
   if (!fs.existsSync(autoloadPath)) {
     const runtime = resolveRuntimeSource(repoRoot, globalSkillsRoot || resolveExecutionGlobalSkillsRoot(null), allowGlobalSource);
@@ -444,7 +459,7 @@ When the user mentions specs / plans / Spec-to-PR / \`index.PRD\` without naming
 `;
 
 function writeRootAgents(repoRoot, { globalSkillsRoot = null, allowGlobalSource = false, dryRun = false, force = false } = {}) {
-  const sharedAutoload = path.join(repoRoot, '.ws', 'autoload.md');
+  const sharedAutoload = sharedAutoloadPath(repoRoot);
   let membership = defaultAlwaysAppliedMembership();
   if (fs.existsSync(sharedAutoload)) {
     const preserved = membershipFromExistingRows(parseAlwaysAppliedRows(fs.readFileSync(sharedAutoload, 'utf8')));
@@ -478,7 +493,7 @@ function writeRootAgents(repoRoot, { globalSkillsRoot = null, allowGlobalSource 
       }
     }
   }
-  const pointerPath = path.join(repoRoot, path.dirname(SHARED_AUTOLOAD_REL), 'AGENTS.md');
+  const pointerPath = hubPointerPath(repoRoot);
   let pointerWritten = false;
   if (!fs.existsSync(pointerPath)) {
     if (!dryRun) {
@@ -542,7 +557,7 @@ function appendEffectiveAutoloadRootFindings(findings, { effective, rootAgents, 
 
 function checkAutoload(repoRoot, { globalSkillsRoot = null, allowGlobalSource = false } = {}) {
   const findings = [];
-  const shared = path.join(repoRoot, '.ws');
+  const shared = hubRootFor(repoRoot);
   const autoloadPath = path.join(shared, 'autoload.md');
   const rootAgents = path.join(repoRoot, 'AGENTS.md');
   const effective = resolveEffectiveAutoload(repoRoot);
@@ -565,8 +580,8 @@ function checkAutoload(repoRoot, { globalSkillsRoot = null, allowGlobalSource = 
       // installed-skills portability or skills-root existence rules.
       if (containsAbsolutePath(`\`${row.path}\``)) {
         findings.push({ severity: 'warning', file: '.ws/autoload.md', message: `Always-applied path for \`${row.skill}\` is not portable: ${row.path}`, fix: 'Use the hub-relative path (or run configure_autoload.cjs --write-autoload)' });
-      } else if (!pathTargetsSkill(row.path, row.skill)) {
-        findings.push({ severity: 'warning', file: '.ws/autoload.md', message: `Always-applied path for \`${row.skill}\` points at a different skill: ${row.path}`, fix: `Point the path at \`${row.skill}/SKILL.md\` (or run configure_autoload.cjs --write-autoload)` });
+      } else if (row.path.replace(/\\/g, '/').replace(/\/+$/, '') !== expectedGeneratedRowPath(repoRoot, row.skill)) {
+        findings.push({ severity: 'warning', file: '.ws/autoload.md', message: `Always-applied path for \`${row.skill}\` must point at the configured shared hub: ${row.path}`, fix: 'Run configure_autoload.cjs --write-autoload' });
       } else if (!generatorManagedTreeExists(repoRoot, row.skill, globalSkillsRoot)) {
         findings.push({ severity: 'warning', file: '.ws/autoload.md', message: `Always-applied generated skill \`${row.skill}\` missing under the shared hub`, fix: 'Run the generator (ws-patterns-generator) or remove the Always-applied row' });
       }

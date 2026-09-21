@@ -380,6 +380,64 @@ function autoloadRowIds(doc) {
   } finally {
     rmFixture(fxc);
   }
+  // Custom pathTokens.sharedDir: the autoload row must live under the configured hub.
+  const fxh = makeFixture('ws-pg-customhub-autoload-');
+  try {
+    fs.mkdirSync(path.join(fxh, '.ws'), { recursive: true });
+    fs.writeFileSync(
+      path.join(fxh, '.ws/config.json'),
+      JSON.stringify({ pathTokens: { sharedDir: 'custom-hub' } }),
+      'utf8',
+    );
+    fs.mkdirSync(path.join(fxh, 'custom-hub/ws-project-patterns'), { recursive: true });
+    fs.writeFileSync(path.join(fxh, 'custom-hub/ws-project-patterns/SKILL.md'), '# ws-project-patterns\n', 'utf8');
+    fs.mkdirSync(path.join(fxh, 'bin'), { recursive: true });
+    fs.writeFileSync(
+      path.join(fxh, 'bin/skill-dependencies.json'),
+      JSON.stringify({
+        externalSkills: [
+          { id: 'ws-memo', sourcePackage: 'spec-memo' },
+          { id: 'ws-project-patterns', sourcePackage: 'consumer', generatorManaged: true },
+        ],
+      }),
+      'utf8',
+    );
+    fs.writeFileSync(
+      path.join(fxh, 'custom-hub/autoload.md'),
+      ['# Autoload (fixture)', '', '## Always-applied skills', '', '| Skill | Path | Trigger |', '|-------|------|---------|', '| `ws-project-patterns` | `custom-hub/ws-project-patterns/SKILL.md` | Project patterns |', '', '## Optional skills', ''].join('\n'),
+      'utf8',
+    );
+    const wc = runNode([configureCjs, '--write-autoload', '--repo-root', fxh], { cwd: root });
+    assert(wc.status === 0, `configure --write-autoload honors sharedDir (got ${wc.status}: ${wc.stderr || ''})`);
+    const hubRow = fs.readFileSync(path.join(fxh, 'custom-hub/autoload.md'), 'utf8');
+    assert(hubRow.includes('`custom-hub/ws-project-patterns/SKILL.md`'), 'row rewritten under the configured hub');
+    assert(!fs.existsSync(path.join(fxh, '.ws/autoload.md')), 'configure never writes .ws/autoload.md when sharedDir is configured');
+    const cchk = runNode([configureCjs, '--check', '--repo-root', fxh, '--json'], { cwd: root });
+    const cfinds = (JSON.parse(cchk.stdout).check || {}).findings || [];
+    assert(
+      !cfinds.some((f) => (f.message || '').includes('ws-project-patterns')),
+      'custom-hub row is not flagged by --check',
+    );
+  } finally {
+    rmFixture(fxh);
+  }
+  // A same-name row outside the configured hub must be rejected.
+  const fxw = makeFixture('ws-pg-wrongpath-');
+  try {
+    fs.mkdirSync(path.join(fxw, '.ws/ws-project-patterns'), { recursive: true });
+    fs.writeFileSync(path.join(fxw, '.ws/ws-project-patterns/SKILL.md'), '# ws-project-patterns\n', 'utf8');
+    writeAutoloadFixture(fxw, [
+      '| `ws-project-patterns` | `../unrelated/ws-project-patterns/SKILL.md` | Project patterns |',
+    ]);
+    const wchk = runNode([configureCjs, '--check', '--repo-root', fxw, '--json'], { cwd: root });
+    const wfinds = (JSON.parse(wchk.stdout).check || {}).findings || [];
+    assert(
+      wfinds.some((f) => /must point at the configured shared hub/.test(f.message || '')),
+      'check rejects a same-name row outside the hub',
+    );
+  } finally {
+    rmFixture(fxw);
+  }
   assert(skill.includes('stop ws-project-patterns'), 'generator documents opt-out');
   assert(/first run|seed/i.test(skill) && /append/i.test(skill), 'generator appends autoload row at seed');
 }
