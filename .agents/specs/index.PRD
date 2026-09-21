@@ -157,7 +157,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] (ws-monitor) Discover and check transcripts/sessions for known agent hosts (Cursor, OpenCode, Antigravity, Muse) (`spec: 0100-us-356.spec.md`)
 - [x] Add AGENTS.md rule: check the skill dependency graph when editing a skill so callers and callees stay in sync (`spec: 0099-us-358.spec.md`)
 - [x] .ws resolution vs ws-shared folders cleanup (`spec: 0106-ws-shared-resolution-cleanup.spec.md`) — PR #374 MERGED
-- [ ] ws-monitor transcript signals fire false positives on healthy runs (hybrid-path-resolution, model-fallback, subagent-error) (`spec: 0107-us-369.spec.md`)
+- [x] ws-monitor transcript signals fire false positives on healthy runs (hybrid-path-resolution, model-fallback, subagent-error) (`spec: 0107-us-369.spec.md`) — PR #379 MERGED
 - [x] Harness & Skills Hardening from Code Review of Recent PRs (`spec: 0108-code-review-findings-fixes.spec.md`)
 - [x] Harness Hardening Round 2 — Open Findings from the 20-Commit Read-Only Review (`spec: 0109-code-review-round-2-fixes.spec.md`)
 - [x] create a skill generator for the consumer project (`spec: 0110-us-378.spec.md`)
@@ -279,7 +279,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 68 | `us-250` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Remove retired ws-patterns references from hub templates/seeds (PR #251) |
 | 69 | `us-272` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Prune retired skill ids on update + hybrid harness fallback (PR #273) |
 
-All Next-specs closed except true todos: `us-369`, `us-380`, `us-381`.
+All Next-specs closed except true todos: `us-380`, `us-381`.
 
 | 70 | `ws-benchmarks-skill` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-benchmarks: benchmark commands and evolution report manager |
 | 71 | `ws-spec-manager-skill` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-manager: unified specification router and lifecycle manager |
@@ -349,7 +349,7 @@ All Next-specs closed except true todos: `us-369`, `us-380`, `us-381`.
 
 | 111 | `ws-shared-resolution-cleanup` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | .ws resolution vs ws-shared folders cleanup (PR #374) |
 
-| 112 | `us-369` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor transcript signals fire false positives on healthy runs (hybrid-path-resolution, model-fallback, subagent-error) |
+| 112 | `us-369` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor transcript signals fire false positives on healthy runs (hybrid-path-resolution, model-fallback, subagent-error) (PR #379) |
 
 | 113 | `code-review-findings-fixes` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Harness & Skills Hardening from Code Review of Recent PRs |
 
@@ -482,6 +482,7 @@ All Next-specs closed except true todos: `us-369`, `us-380`, `us-381`.
 | 2026-09-20 | `ws-shared-resolution-cleanup` | .ws resolution vs ws-shared folders cleanup | [PR #374](https://github.com/jpolvora/workflow-skills/pull/374) |
 | 2026-09-20 | `code-review-findings-fixes` | Harness & Skills Hardening from Code Review of Recent PRs | `3cbdd0b9` (develop) |
 | 2026-09-21 | `code-review-round-2-fixes` | Harness Hardening Round 2 — Open Findings from the 20-Commit Read-Only Review | `f78199d8` (develop) |
+| 2026-09-21 | `us-369` | ws-monitor transcript signals fire false positives on healthy runs | [PR #379](https://github.com/jpolvora/workflow-skills/pull/379) |
 | 2026-09-21 | `us-378` | create a skill generator for the consumer project (ws-patterns-generator) | [PR #383](https://github.com/jpolvora/workflow-skills/pull/383) |
 | 2026-09-21 | `patterns-generator-shared-hub-output` | Integrate ws-self-learning with the patterns track; host the generated ws-project-patterns body under the shared hub | `d8665b74` (develop) |
 
