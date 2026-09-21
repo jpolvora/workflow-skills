@@ -1,4 +1,8 @@
 # Changelog
+### [2026-09-21 08:51] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: Enable generic subagent dispatch for the Muse session (`hostAdapter` + capability re-probe), without specialized subagents.
+- **Done**: Added `defaults.hostAdapter.mode: "native-tool"` to `.ws/config.json` (GUI already binds `defaults.hostAdapter`; no GUI change needed). Re-probed `.ws/host-capabilities.json` for `muse::muse-spark-1.3-contributor` and `muse::muse-spark` with `--host-shape muse-spark-like --declare dispatchAgent=subagent_spawn --refresh`; both keys now bind `subagentTool: subagent_spawn` with `knownShape: true`. Corrected the declare token (`dispatchAgent`, not the `subagentTool` alias; alias names are silently ignored by `parseDeclared`).
+- **Result**: Config parses and validates against `config.schema.json` (exit 0); capabilities cache gitignored; `specializedSubagents.enabled` stays false. Recorded trap `memory/2026-09-21-host-capability-declare-token.md` (compile: 19 entries).
 
 ### [2026-09-21 00:51] Agent: muse (muse-spark)
 - **Prompt**: `/ws-spec-from-provider` for https://github.com/jpolvora/workflow-skills/issues/378 - bulk-import open GitHub issues into local specs.

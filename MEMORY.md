@@ -51,6 +51,24 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 - **DO NOT**: Call `toRepoRelative(repoRoot, path)` on a path that can be outside the repository (global skills root, `WORKFLOW_SKILLS_SHARED_DIR` override). Do not "fix" it with `allowOutside: true` alone: that overload collapses an outside path to its basename, which merges distinct files and breaks resolvability.
 - **INSTEAD DO**: Use a local non-throwing display helper `displayPath(repoRoot, value)` = `path.relative(resolve(repoRoot), resolve(value))` normalized to `/` (never throws; keeps `..`- or cross-drive absolute form). Resolve it back with `path.resolve(repoRoot, display)` in the reader, and keep occurrence paths resolvable. Cover with a fixture that installs two skills only under `WORKFLOW_SKILLS_GLOBAL_DIR` and asserts the duplicate is reported without throwing. Related: `2026-09-21-skills-root-package-membership.md`.
 
+### [2026-09-21] Lexical path containment must be re-verified on realpaths before writes
+- **Layer**: `Infrastructure`
+- **Module**: `ws-patterns-generator seed script`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-patterns-generator/scripts/seed_generated_skill.cjs`
+- **Scenario / Context**: The seed script gated writes with `path.resolve` + `startsWith` prefix checks only. A consumer `.agents/skills` directory that is a symlink (or junction) to a location outside the repository passes the lexical check while Node writes follow the link, so the generated skill body lands outside the repo. PR review flagged the escape; the fix resolves both roots before comparing.
+- **DO NOT**: Trust `path.resolve` + `startsWith` prefix checks as a write-containment guarantee when any path segment can be a symlink or junction; call `fs.realpathSync` directly on a path whose leaf may not exist yet (it throws on ENOENT).
+- **INSTEAD DO**: Re-verify containment on resolved real paths before writing: `fs.realpathSync` the verified-existing root, resolve the target root through its deepest existing ancestor (`realpathLoose`: walk up past missing leaves, realpath, rejoin), and require the resolved target to start with the resolved root + separator. Cover with a fixture test that links the skills root outside the repo (junction on win32, dir symlink elsewhere) and asserts refusal plus zero writes outside, and a positive control where an in-repo link still seeds.
+
+### [2026-09-21] Host capability `--declare` requires capability tokens, not binding aliases
+- **Layer**: `Domain`
+- **Module**: `host-dispatch`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/scripts/probe_host_capabilities.cjs, .ws/host-capabilities.json, .agents/skills/ws-shared/runtime/host-tool-map.json`
+- **Scenario / Context**: While enabling generic subagent dispatch for a Muse session, the planned command used `--declare subagentTool=subagent_spawn`. `parseDeclared` accepts only the seven capability tokens (`readFile`, `writeFile`, `editFile`, `shellExec`, `dispatchAgent`, `askQuestion`, `browserVerify`); the alias pair is silently dropped, so the binding falls back to the pre-map or minimal set. Separately, `--key muse::muse-spark-1.3-contributor` cannot infer a host shape because `muse` does not match `muse-spark-like` (neither equality, prefix, nor suffix), so an unknown-shape probe degrades `dispatchAgent` to `none` and the orchestrator silently executed every step as Tier 3 `inline:session` (0 subagents).
+- **DO NOT**: Pass binding aliases (`subagentTool`, `askQuestionTool`) to `--declare`; assume the host-id segment of `--key` infers a pre-map shape when it does not equal the shape base name (`muse-spark`).
+- **INSTEAD DO**: Declare capability tokens (`--declare dispatchAgent=subagent_spawn`) and pass `--host-shape muse-spark-like` explicitly when the host id does not match a shape name; then verify `.ws/host-capabilities.json` has `binding.subagentTool` set and `knownShape: true` for the session key.
+
 ### [2026-09-21] Harness gates must scope recursive scans to package membership
 - **Layer**: `Tests / Workflow harness`
 - **Module**: `ws-check-harness Phase 5a gates (`check_unique_runtime.cjs`, `check_duplicates.cjs`, `check_harness_links.cjs`, `check_shell_quoting.cjs`)`

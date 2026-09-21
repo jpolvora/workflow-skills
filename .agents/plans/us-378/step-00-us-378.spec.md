@@ -7,7 +7,7 @@ specDate: 2026-09-21
 issueState: open
 issueUrl: "https://github.com/jpolvora/workflow-skills/issues/378"
 step: 0
-workflowId: us-378
+workflowId: us-378-20260921T112549Z
 status: completed
 startedAt: "2026-09-21T04:50:32.490Z"
 endedAt: "2026-09-21T04:50:32.490Z"

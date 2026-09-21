@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 22,
-  "generatedAt": "2026-09-21T02:35:32Z",
+  "revision": 18,
+  "generatedAt": "2026-09-21T12:43:30Z",
   "workflows": [
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
@@ -629,6 +629,17 @@
       "currentStep": 6,
       "updatedAt": "2026-09-19T18:47:25.429Z",
       "runPath": ".agents/plans/us-353/us-353-20260919T043606Z.state.json"
+    },
+    {
+      "workflowId": "us-378-20260921T112549Z",
+      "slug": "us-378",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/us-378/us-378-20260921T112549Z.state.md",
+      "stateSha256": "85ec0b9ccc06ed777978c08d56a6f760dc1dbe9fab4651a0b70c380ba75861db",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-21T12:43:30Z",
+      "runPath": ".agents/plans/us-378/us-378-20260921T112549Z.state.json"
     },
     {
       "workflowId": "us-global-vs-project-skill-installation",

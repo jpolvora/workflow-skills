@@ -210,6 +210,9 @@
     "executionModel": "",
     "reviewerModel": "",
     "testingModel": "",
+    "hostAdapter": {
+      "mode": "native-tool"
+    },
     "specializedSubagents": {
       "enabled": false,
       "targetHost": "generic",
