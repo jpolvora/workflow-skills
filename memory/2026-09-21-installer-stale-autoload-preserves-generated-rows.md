@@ -1,0 +1,9 @@
+### [2026-09-21] Installer stale-autoload refresh must preserve generator-managed Always-applied rows
+
+- **Layer**: `Infrastructure`
+- **Module**: `installer` (`bin/cli.js`), `ws-configure-project` (`configure_autoload.cjs`), `ws-patterns-generator`
+- **Severity**: `High`
+- **PathPattern**: `bin/cli.js, .agents/skills/ws-configure-project/scripts/configure_autoload.cjs, .agents/skills/ws-patterns-generator/scripts/seed_generated_skill.cjs`
+- **Scenario / Context**: PR #384 review (score 7) found that when `.ws/autoload.md` contained any retired skill id, `bin/cli.js` replaced the entire file with the packaged `runtime/autoload.md` template, which carries no `ws-project-patterns` Always-applied row. `configure_autoload.cjs` keeps a generator-managed row only while `{sharedDir}/ws-project-patterns/SKILL.md` exists, but the installer never invoked it after replacement, and the generator appends the row only on its first seed ("Later runs never edit autoload"). Net effect: the hub body survived but the row was silently dropped, so generated project patterns stopped loading after an otherwise successful update.
+- **DO NOT**: Overwrite a consumer-generated autoload/hub file wholesale from the packaged template when the template omits consumer/generator-owned rows; assume "the generator will re-add it later" for a row the generator documents as first-seed-only.
+- **INSTEAD DO**: When the installer must refresh a stale autoload, re-attach generator-managed rows (`externalSkills[].generatorManaged`) present in the previous file whose hub body still exists, emitting the canonical hub-relative path, and keep the existence gate (row dropped only when the body is gone). Add an installer regression that poisons autoload with a retired id plus a generated row and asserts the row survives exactly once and stays idempotent on a second update.
