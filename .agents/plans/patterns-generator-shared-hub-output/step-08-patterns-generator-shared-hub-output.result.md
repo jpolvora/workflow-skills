@@ -1,3 +1,12 @@
+---
+step: 8
+slug: patterns-generator-shared-hub-output
+workflowId: patterns-generator-shared-hub-output-20260921T134516Z
+status: completed
+startedAt: "2026-09-21T13:45:16Z"
+endedAt: "2026-09-21T14:12:58.094Z"
+acRefs: []
+---
 # Delivery result — patterns-generator-shared-hub-output (lite)
 
 - Workflow: `patterns-generator-shared-hub-output-20260921T134516Z` (lite, autoMode + fullMode)
