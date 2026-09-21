@@ -1,0 +1,129 @@
+---
+id: 378
+slug: us-378
+title: create a skill generator for the consumer project
+source: github
+specDate: 2026-09-21
+issueState: open
+issueUrl: "https://github.com/jpolvora/workflow-skills/issues/378"
+step: 0
+workflowId: us-378
+status: completed
+startedAt: "2026-09-21T04:50:32.490Z"
+endedAt: "2026-09-21T04:50:32.490Z"
+acRefs: []
+---
+# Specification — create a skill generator for the consumer project
+
+## Description
+
+Ship a recurring, consumer-project-specific skill generator. Shipped skill `ws-patterns-generator` harvests project knowledge and (re)writes a consumer-owned, autoloaded skill `ws-project-patterns` that steers code generation: it reinforces project patterns and stops agents repeating the same mistakes. The generated body starts blank and improves over time; each update run rewrites the body when structure goes stale or appends bullets otherwise.
+
+Architecture touchpoints: generator protocol in `{skillsRoot}/ws-patterns-generator/` (portable, no host names); generated body at project-local `{skillsRoot}/ws-project-patterns/SKILL.md` (consumer-owned, seeded blank, never overwritten by installer update); harvest readers over run artifacts (`{plansDir}` state/telemetry/logs), the effective changelog, the effective MEMORY, README/AGENTS.md, `rules.*` files, wiki content, and the stack file; an Always-applied autoload row (configurable) with opt-out; `ws-configure-project` seeding; skill-dependencies plus catalog router registration; integrity plus `ws-check-harness`.
+
+Positioning: complementary to `ws-self-learning` (traps are anti-regression memory with DO NOT / INSTEAD DO) and to predecessor spec `0018-project-patterns-memory-skills` (its `ws-patterns-*` skills are absent from the current tree; reuse its consumer-owned storage plus autoload conventions in current-layout form). The generator never writes MEMORY.md or vault traps directly and never edits managed skill bodies.
+
+## Acceptance Criteria
+
+- AC1: `.agents/skills/ws-patterns-generator/SKILL.md` exists with YAML `name: ws-patterns-generator`, a `version:` stamp, and invocation names covering `ws-patterns-generator`; directly under the `# ws-patterns-generator` heading the body contains `> When this skill is loaded, output "ws-patterns-generator loaded."`; every numbered step has a checkable `Done when:` line.
+- AC2: The generator is registered in `bin/skill-dependencies.json` (package membership plus dependency links) and has task-router rows in root `CATALOG.md`; `npm run generate-integrity` plus `npm run verify-integrity` exit 0 after the change.
+- AC3: The generated body lives at project-local `{skillsRoot}/ws-project-patterns/SKILL.md`, is consumer-owned (installer update never overwrites it; covered by an installer exclusion test), and a first run seeds skeleton headings only with zero project-specific claims.
+- AC4: The generated skill has an Always-applied autoload row (configurable on/off) and a documented opt-out phrase; with autoload disabled the generator still runs on explicit invoke.
+- AC5: Explicit invoke applies the regenerated body; `--dry-run` prints the planned summary and diff without writing any file.
+- AC6: Each run harvests the minimum source set (workflow state plus telemetry plus logs, changelog, MEMORY, README/AGENTS.md, `rules.*` files, wiki content, stack file); a missing source is tolerated and named in the run summary instead of aborting.
+- AC7: Each run emits a summary labeled `added`, `rewrote`, or `unchanged`; rewrite mode is used when the run retires or relocates existing bullets, append mode otherwise; every generated bullet carries an evidence pointer to its source path.
+- AC8: A run with no new findings is idempotent: it exits 0, labels the summary `unchanged`, and leaves the generated body byte-identical.
+- AC9: The generated body contains no secrets, tokens, or personal data and passes the configured secrets review; pasted consumer traces are anonymized to the failure class.
+- AC10: Generator and generated bodies are en-us, name no host IDE/agent products, use portable path tokens, and reference `user-gate` only for gates.
+- AC11: Any new collector scripts are Node-only (`.cjs`, explicit `node` launcher), validate CLI/file inputs against a schema, contain all filesystem reads inside the repo root, await or handle every promise, and close all handles; `scan_stack_invariants.cjs --stack typescript-node` reports no new findings on them.
+- AC12: Every applied run appends one changelog entry through the effective changelog file recording the summary label plus added/retired bullet counts.
+- AC13: `ws-check-harness` exits 0 after the generator, registration, seeding, and autoload edits (no host names, no duplicated normative blocks, no Python helpers introduced).
+
+## Original Issue Context
+
+create a recurrying self improvement skill generator that is specific for the consumer project. this skill should be autoloaded, started in blank and improved from time to time, based on findings during ws-spec-to-pr* runnings (log, telemtry, state files, errors), changelogs, memory checks, readme, agents.md, skills/rules, wiki content, mcp's, frameworks, etc
+
+it should be complementary, should improve code generation, reinforce patterns on the project, avoid agents commiting the same mistakes.
+
+Each update run should rewrite the entire skill body if necessary or adding bullets
+
+draft
+
+to be improved
+
+analyze how this feature should be included / implemented, what is the best way to fit in project.
+
+### Prior Work Sweep
+
+Provider sweep on 2026-09-21 (`sweep_prior_work.cjs --issue 378 --keywords skill generator consumer autoload`): no exact open PR for #378 and no duplicate-risk open work. Five merged keyword PRs only: #271 (fetch-to-spec images), #191 (ws-doctor), #339 (preview gate), #184 (release 0.3.0), #219 (pattern consults plus ws-pre-daily). No `--files` commit sweep (greenfield, no touched files yet).
+
+Closest in-tree relatives: `ws-self-learning` (MEMORY traps), `ws-fable-domain` (recurring domain rules), `ws-changelog`, `ws-wiki`, `ws-configure-project` (seeding plus autoload), `ws-write-a-skill` (skill authoring rules). Vault search returned consumer-autoload, hybrid-config, and write-a-skill context with no existing generator. Spec `0018-project-patterns-memory-skills` is the design predecessor; its skills are absent from the current tree.
+
+### Design Intent
+
+Greenfield: no existing behavior is modified, so no `git log -S/-L` symbol trace applies. Predecessor 0018 intentionally scoped interactive per-correction capture; this generator adds cross-cutting harvest from run artifacts and stays complementary rather than replacing that model.
+
+## Notes
+
+- Installer exclusion for the generated skill dir (overwrite set plus integrity manifest) is decided at plan time; AC3 pins the behavior, not the mechanism.
+- Evidence pointers use repo-relative source paths so summaries stay auditable after moves.
+- MCPs enter only as configured server names and notes; deep MCP introspection is out of scope.
+- Skill authoring rules (`ws-write-a-skill`, `SKILL_AUTHORING.md`) govern both new bodies: lean, one directive per line, no duplicated normative blocks.
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Background daemon or cron scheduling | Host-owned; harness ships manual invoke plus dry-run only |
+| Writing MEMORY.md or vault traps directly | `ws-self-learning` owns memory writes via `update-memory` |
+| Interactive per-correction capture prompts | 0018 interaction model; generator harvests artifacts instead |
+| Cross-project pattern sharing | Consumer-local only; no sharing protocol in this spec |
+| Auto commit or push of regenerated body | User commits explicitly; generator never runs git writes |
+| Embeddings or ML similarity dedup | Agent-judged rewrite plus evidence pointers suffice |
+| Editing managed skill bodies | Generator touches only the consumer-owned generated skill |
+| Deep MCP introspection | Only configured names and notes are stable inputs |
+
+## Assumptions & Open Questions
+
+| Assumption | Chosen default | Rationale | Confirmed |
+|------------|----------------|-----------|-----------|
+| Generator skill id | `ws-patterns-generator` | Issue wording plus patterns lineage | y |
+| Generated skill id and home | `ws-project-patterns` at project-local `{skillsRoot}/ws-project-patterns/SKILL.md` | Loads as a skill, stays consumer-owned and installer-excluded | y |
+| Seed content | Skeleton headings only, zero project claims | Starts blank per issue; no invented facts | y |
+| Apply gate | Explicit invoke applies; `--dry-run` previews with no writes | Invoke is approval; preview stays safe | y |
+| Rewrite vs append | Rewrite when the run retires or relocates bullets, else append | Matches issue; summary labels the mode | y |
+| Recurrence trigger | Manual invoke; orch mentions it after close, never auto-runs | No daemon in harness; host scheduling out of scope | y |
+| Harvest minimum set | State plus telemetry plus logs, changelog, MEMORY, README/AGENTS.md, `rules.*`, wiki, stack file | Checkable set from the issue sources; missing tolerated and noted | y |
+| Auth, rate limits, concurrency, data expiry | N/A because runs are local-only, foreground, single-writer with no network API and no TTL data | Dimensions absent | y |
+
+## Definition of Ready (DoR)
+
+| Readiness Item | Requirement | Verification Method |
+|----------------|-------------|---------------------|
+| Bounded scope | Generator skill plus generated body plus seeding plus autoload plus registrations | Diff lists those paths only |
+| Atomic criteria | AC1–AC13 each pass or fail | Authoring validate plus command checks |
+| Failure modes | Missing sources tolerated and noted; dry-run writes nothing; no-change run is byte-identical | AC5, AC6, AC8; negative scenarios |
+| Observation telemetry | Loaded banner; labeled run summary; changelog entry per applied run | Skill text; validation notes |
+| Stack invariants | typescript-node Node-subset enforced on new scripts (awaited promises, validated inputs, contained paths, closed handles); strict-type checks N/A (JavaScript `.cjs`, no `tsc` gate) | `scan_stack_invariants.cjs`; negative scenarios |
+| Open blockers | None | Implementable from this spec plus companion |
+
+## Validation & Observation Notes
+
+### Telemetry & Observable Signals
+
+- Loaded banner: `ws-patterns-generator loaded.`
+- Run summary labels: `added`, `rewrote`, `unchanged`, each with evidence pointers and counts.
+- Commands: `node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs --mode=authoring .agents/specs/0110-us-378.spec.md` exits 0; generator `--dry-run` exits 0 with no writes; configured secrets review clean; `npm run generate-integrity` plus `npm run verify-integrity` exit 0; `ws-check-harness` exits 0.
+- Changelog: one entry per applied run with summary label plus bullet counts.
+
+### Negative & Failing Test Scenarios
+
+- First-run seed contains project-specific claims (must fail AC3).
+- Installer update overwrites the generated body (must fail AC3).
+- Run with no new findings changes one byte (must fail AC8).
+- Generated bullet without an evidence pointer (must fail AC7).
+- Generated body contains a secret, token, or personal identifier (must fail AC9).
+- Missing source aborts the run instead of a noted skip (must fail AC6).
+- Dry-run writes or modifies any file (must fail AC5).
+- Collector floats a promise, builds a path from unsanitized input, or leaks a handle (must fail AC11).
+- Autoload ships without a documented opt-out phrase (must fail AC4).
