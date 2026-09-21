@@ -151,12 +151,14 @@ function assertSurfaces({ finishEvent, state }, key, expected) {
   assert.deepStrictEqual(finishEvent.filesTouched.modified, ['scalar/probe.js'], 'file-list flag unaffected in the same call');
 }
 
-// T8 (AC8): suite wiring — this file is registered in tests:harness-efficiency
+// T8 (AC8): suite wiring — this file is registered in the harness-efficiency suite
 {
-  const pkg = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'));
+  const suites = JSON.parse(fs.readFileSync(path.join(repoRoot, 'test/test-suites.json'), 'utf8'));
   assert.ok(
-    String(pkg.scripts?.['tests:harness-efficiency'] || '').includes('test-repeated-file-list-flags.js'),
-    'tests:harness-efficiency registers test-repeated-file-list-flags.js',
+    (suites.harnessEfficiency || []).some((entry) =>
+      entry.join(' ').includes('test-repeated-file-list-flags.js'),
+    ),
+    'harness-efficiency suite registers test-repeated-file-list-flags.js',
   );
 }
 
