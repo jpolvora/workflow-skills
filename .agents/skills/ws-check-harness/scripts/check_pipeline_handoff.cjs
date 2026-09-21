@@ -12,7 +12,7 @@ const path = require('path');
 // changelog) and is not a managed-runtime source.
 const HUB_SCRIPTS_DIR = (() => {
   const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
-  const candidates = [packaged];
+  const candidates = [];
   const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
   if (explicitShared && String(explicitShared).trim()) {
     candidates.unshift(path.join(path.resolve(String(explicitShared).trim()), 'runtime', 'scripts'));
@@ -26,6 +26,7 @@ const HUB_SCRIPTS_DIR = (() => {
   const globalRoot = globalDir && String(globalDir).trim()
     ? path.resolve(String(globalDir).trim())
     : path.join(require('os').homedir(), '.agents', 'skills');
+  candidates.push(packaged);
   candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
   for (const candidate of [...new Set(candidates)]) {
     try {
@@ -68,12 +69,20 @@ function main() {
   const options = parseArgs(process.argv.slice(2));
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
   const missing = [];
+  // Report the expected location under the resolved skills root (local or
+  // global), not a hardcoded project-local path.
+  const skillsBase = context.skillsRoot && path.isAbsolute(String(context.skillsRoot))
+    ? String(context.skillsRoot)
+    : path.join(context.repoRoot, '.agents', 'skills');
   for (const id of PIPELINE) {
     let file;
     try {
       file = resolveSkillMdPath(context, id);
     } catch {
-      missing.push({ id, reason: 'missing SKILL.md', path: toRepoRelative(context.repoRoot, path.join(context.repoRoot, '.agents', 'skills', id, 'SKILL.md'), { allowOutside: true }) });
+      const expected = path.join(skillsBase, id, 'SKILL.md');
+      const rel = path.relative(context.repoRoot, expected);
+      const display = (rel.startsWith('..') || path.isAbsolute(rel) ? expected : rel).replace(/\\/g, '/');
+      missing.push({ id, reason: 'missing SKILL.md', path: display });
       continue;
     }
     const text = fs.readFileSync(file, 'utf8');

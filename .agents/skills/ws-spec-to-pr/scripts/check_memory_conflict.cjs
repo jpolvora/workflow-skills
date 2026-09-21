@@ -14,11 +14,12 @@
 //   Exit 2: traps found that overlap the plan scope
 
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 
 const HUB_SCRIPTS_DIR = (() => {
   const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
-  const candidates = [packaged];
+  const candidates = [];
   const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
   if (explicitShared && String(explicitShared).trim()) {
     candidates.unshift(path.join(path.resolve(String(explicitShared).trim()), 'runtime', 'scripts'));
@@ -32,6 +33,7 @@ const HUB_SCRIPTS_DIR = (() => {
   const globalRoot = globalDir && String(globalDir).trim()
     ? path.resolve(String(globalDir).trim())
     : path.join(require('os').homedir(), '.agents', 'skills');
+  candidates.push(packaged);
   candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
   for (const candidate of [...new Set(candidates)]) {
     try {
@@ -44,11 +46,27 @@ const HUB_SCRIPTS_DIR = (() => {
   return packaged;
 })();
 
+// Expand a leading ~ with the OS home directory (os.homedir works on
+// Windows via USERPROFILE; process.env.HOME is empty there). Fails closed
+// when no home can be resolved instead of resolving to a drive root.
+function expandHome(value) {
+  const str = String(value);
+  if (!/^~(?=$|[\\/])/.test(str)) return str;
+  let home = '';
+  try {
+    home = os.homedir();
+  } catch {
+    home = '';
+  }
+  if (!home) throw new Error('cannot expand ~: no home directory could be resolved');
+  return path.join(home, str.slice(1).replace(/^[\\/]+/, ''));
+}
+
 function resolveMemoryPath(explicitMemory, explicitSharedDir, repoRoot) {
-  if (explicitMemory) return path.resolve(String(explicitMemory).replace(/^~(?=$|[\\/])/, process.env.HOME || ''));
+  if (explicitMemory) return path.resolve(expandHome(String(explicitMemory)));
   const { resolveConsumerContext, resolveRepoRoot, sharedDir, resolveEffectiveMemoryPaths } = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
   const root = resolveRepoRoot(repoRoot, { scriptFile: __filename });
-  const hub = explicitSharedDir ? path.resolve(explicitSharedDir) : sharedDir(root);
+  const hub = explicitSharedDir ? path.resolve(expandHome(explicitSharedDir)) : sharedDir(root);
   let config = {};
   try { config = (resolveConsumerContext({ repoRoot: root, scriptFile: __filename }).config) || {}; } catch { config = {}; }
   return resolveEffectiveMemoryPaths(root, hub, config).index_file;
@@ -318,7 +336,7 @@ function parseArgs(argv) {
   const o = { planFile: null, json: false, softExit: false, memory: null, sharedDir: null, repoRoot: null };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
-    if (a === '--help' || a === '-h') { printHelp(); process.exit(0); }
+    if (a === '--help' || a === '-h') { printHelp(); process.exitCode = 0; return null; }
     else if (a === '--json') o.json = true;
     else if (a === '--soft-exit') o.softExit = true;
     else if (a === '--memory') o.memory = argv[++i];
@@ -327,22 +345,31 @@ function parseArgs(argv) {
     else if (a.startsWith('--shared-dir=')) o.sharedDir = a.slice(13);
     else if (a === '--repo-root') o.repoRoot = argv[++i];
     else if (a.startsWith('--repo-root=')) o.repoRoot = a.slice(12);
-    else if (a.startsWith('--')) { console.error(`unknown argument: ${a}`); process.exit(2); }
+    else if (a.startsWith('--')) { console.error(`unknown argument: ${a}`); process.exitCode = 2; return null; }
     else if (!o.planFile) o.planFile = a;
-    else { console.error(`unexpected argument: ${a}`); process.exit(2); }
+    else { console.error(`unexpected argument: ${a}`); process.exitCode = 2; return null; }
   }
-  if (!o.planFile) { console.error('argument plan_file is required'); process.exit(2); }
+  if (!o.planFile) { console.error('argument plan_file is required'); process.exitCode = 2; return null; }
   return o;
 }
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
+  if (!args) return;
   const planPath = path.resolve(args.planFile);
   if (!fs.existsSync(planPath)) {
     console.log(`Error: file not found: ${args.planFile}`);
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
-  const memoryPath = resolveMemoryPath(args.memory, args.sharedDir, args.repoRoot);
+  let memoryPath;
+  try {
+    memoryPath = resolveMemoryPath(args.memory, args.sharedDir, args.repoRoot);
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    process.exitCode = 1;
+    return;
+  }
   if (!fs.existsSync(memoryPath)) {
     if (args.json) {
       const plan = extractPlanKeywords(planPath);
@@ -350,14 +377,16 @@ function main() {
     } else {
       console.log(`Notice: MEMORY.md not found at ${memoryPath} (skipping memory conflict check)`);
     }
-    process.exit(0);
+    process.exitCode = 0;
+    return;
   }
   const memory = parseMemory(memoryPath);
   const planText = readUtf8(planPath);
   const plan = extractPlanKeywords(planPath);
   if (args.softExit && !args.json) {
     console.error('Error: --soft-exit requires --json so force_interview is machine-readable');
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
   const results = crossReference(memory, plan, planText);
   const hasTraps = results.traps.length > 0;
@@ -367,9 +396,9 @@ function main() {
   } else {
     console.log(formatReport(args.planFile, plan, results));
   }
-  if (hasTraps) process.exit(args.softExit ? 0 : 2);
-  process.exit(0);
+  // Drain stdout via exitCode (never process.exit before the flush).
+  process.exitCode = hasTraps ? (args.softExit ? 0 : 2) : 0;
 }
 
 if (require.main === module) main();
-module.exports = { crossReference, extractPlanKeywords, parseMemory };
+module.exports = { crossReference, extractPlanKeywords, parseMemory, expandHome };

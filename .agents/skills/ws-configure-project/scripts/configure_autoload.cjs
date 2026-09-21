@@ -237,31 +237,42 @@ function dropExternalCompanionMembers(membership, repoRoot, { globalSkillsRoot =
 }
 
 function renderConsumerAutoload(text, { repoRoot = null } = {}) {
-  // Managed runtime/skills resolve project-local when that tree exists; a
-  // global-only consumer must get {globalSkillsRoot} tokens instead of links
-  // into a project skills tree that does not exist.
-  const localRuntime = Boolean(repoRoot) &&
-    fs.existsSync(path.join(repoRoot, '.agents', 'skills', 'ws-shared', 'runtime'));
-  const runtimePrefix = localRuntime
-    ? '../.agents/skills/ws-shared/runtime/'
-    : '{globalSkillsRoot}/ws-shared/runtime/';
+  // Managed runtime/skills resolve project-local per file: a partial local
+  // runtime (directory present, sibling missing) must keep the
+  // {globalSkillsRoot} token for the missing file instead of pointing at a
+  // local path that does not exist. A global-only consumer gets tokens for
+  // every runtime link.
+  const localRuntimeDir = repoRoot
+    ? path.join(repoRoot, '.agents', 'skills', 'ws-shared', 'runtime')
+    : null;
+  const runtimePrefixFor = (rel) => (
+    localRuntimeDir && rel && fs.existsSync(path.join(localRuntimeDir, rel))
+      ? '../.agents/skills/ws-shared/runtime/'
+      : '{globalSkillsRoot}/ws-shared/runtime/'
+  );
   const skillTarget = (rel) => (
     repoRoot && fs.existsSync(path.join(repoRoot, '.agents', 'skills', rel))
       ? `../.agents/skills/${rel}`
       : `{globalSkillsRoot}/${rel}`
   );
   // Normalize previously rendered prefixes so refreshes converge (no-op when
-  // the local tree exists and the prefix already matches).
-  text = text.split('](../.agents/skills/ws-shared/runtime/').join(`](${runtimePrefix}`);
+  // the local file exists and the prefix already matches).
+  text = text.replace(
+    /\]\(\.\.\/\.agents\/skills\/ws-shared\/runtime\/([^)]+)\)/g,
+    (match, rel) => `](${runtimePrefixFor(rel)}${rel})`,
+  );
   text = text.replace(/\]\(\.\.\/\.agents\/skills\/(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
   // Legacy pre-0.4.46 rendered forms: `](runtime/<file>)` and `](../ws-<id>/...)`.
-  text = text.replace(/\]\(runtime\/([^)]+)\)/g, (match, rel) => `](${runtimePrefix}${rel})`);
+  text = text.replace(/\]\(runtime\/([^)]+)\)/g, (match, rel) => `](${runtimePrefixFor(rel)}${rel})`);
   text = text.replace(/\]\(\.\.\/(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
-  // Global-token links re-resolve once a local skills tree exists (local-first).
-  text = text.replace(/\]\(\{globalSkillsRoot\}\/ws-shared\/runtime\//g, `](${runtimePrefix}`);
+  // Global-token links re-resolve once a local runtime file exists (local-first).
+  text = text.replace(
+    /\]\(\{globalSkillsRoot\}\/ws-shared\/runtime\/([^)]+)\)/g,
+    (match, rel) => `](${runtimePrefixFor(rel)}${rel})`,
+  );
   text = text.replace(/\]\(\{globalSkillsRoot\}\/(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
   for (const f of ['AGENTS.md', 'CROSS-PLATFORM.md', 'config-resolution.md', 'gates.md', 'host-dispatch.md', 'scm-provider-contract.md', 'setup.md', 'tools.md']) {
-    text = text.split(`](${f})`).join(`](${runtimePrefix}${f})`);
+    text = text.split(`](${f})`).join(`](${runtimePrefixFor(f)}${f})`);
   }
   return text.replace(/\]\(\.\.\/\.\.\/(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
 }

@@ -57,9 +57,19 @@ function isProtectedBranch(name, repo) {
   return false;
 }
 
+// Control-flow exit that lets stdout drain: die records the exit code and
+// unwinds to main, which returns it via process.exitCode (never
+// process.exit before the flush).
+class CleanupExit extends Error {
+  constructor(code) {
+    super(`cleanup exit ${code}`);
+    this.code = code;
+  }
+}
+
 function die(msg, code = 1) {
   console.error(`ERROR: ${msg}`);
-  process.exit(code);
+  throw new CleanupExit(code);
 }
 
 function validateWorkflowId(workflowId) {
@@ -122,7 +132,8 @@ function parseWorktreePorcelain(text) {
 }
 
 function samePath(a, b) {
-  const norm = (p) => path.resolve(p).toLowerCase();
+  // Case-fold only on win32 (POSIX filesystems are case-sensitive).
+  const norm = (p) => (process.platform === 'win32' ? path.resolve(p).toLowerCase() : path.resolve(p));
   try { return norm(a) === norm(b); } catch { return a === b; }
 }
 
@@ -227,7 +238,7 @@ function parseArgs(argv) {
   const o = { workflowId: null, dryRun: false, repo: '.', dirtyPolicy: 'force' };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
-    if (a === '--help' || a === '-h') { printHelp(); process.exit(0); }
+    if (a === '--help' || a === '-h') { printHelp(); throw new CleanupExit(0); }
     else if (a === '--workflow-id') { o.workflowId = argv[++i]; }
     else if (a.startsWith('--workflow-id=')) o.workflowId = a.slice(14);
     else if (a === '--dry-run') o.dryRun = true;
@@ -235,14 +246,23 @@ function parseArgs(argv) {
     else if (a.startsWith('--repo=')) o.repo = a.slice(7);
     else if (a === '--dirty-policy') { o.dirtyPolicy = argv[++i]; }
     else if (a.startsWith('--dirty-policy=')) o.dirtyPolicy = a.slice(15);
-    else { console.error(`unknown argument: ${a}`); process.exit(2); }
+    else { console.error(`unknown argument: ${a}`); throw new CleanupExit(2); }
   }
-  if (!o.workflowId) { console.error('argument --workflow-id is required'); process.exit(2); }
-  if (!['force', 'stop'].includes(o.dirtyPolicy)) { console.error('argument --dirty-policy: must be force|stop'); process.exit(2); }
+  if (!o.workflowId) { console.error('argument --workflow-id is required'); throw new CleanupExit(2); }
+  if (!['force', 'stop'].includes(o.dirtyPolicy)) { console.error('argument --dirty-policy: must be force|stop'); throw new CleanupExit(2); }
   return o;
 }
 
 function main(argv) {
+  try {
+    return runCleanup(argv);
+  } catch (error) {
+    if (error instanceof CleanupExit) return error.code;
+    throw error;
+  }
+}
+
+function runCleanup(argv) {
   const args = parseArgs(argv ?? process.argv.slice(2));
   const workflowId = validateWorkflowId(args.workflowId);
   const repo = path.resolve(args.repo);
@@ -271,6 +291,6 @@ function main(argv) {
   return 0;
 }
 
-if (require.main === module) process.exit(main());
-module.exports = { main, isProtectedBranch };
+if (require.main === module) process.exitCode = main();
+module.exports = { main, isProtectedBranch, CleanupExit, samePath };
 void os;

@@ -10,40 +10,42 @@
 'use strict';
 
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 // Managed runtime loads from its skills installation: the project-local
 // skills tree ({skillsRoot}/ws-shared) or the global skills tree
 // ({globalSkillsRoot}/ws-shared, override via WORKFLOW_SKILLS_GLOBAL_DIR).
-// An explicit WORKFLOW_SKILLS_SHARED_DIR selects the shared hub root
-// (<hub>/runtime/scripts is used). The project consumer hub (<repo>/.ws)
-// holds only local config variable files (config.json, STACK.md, memory,
-// changelog) and is not a managed-runtime source.
 const HUB_SCRIPTS_DIR = (() => {
-  const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
-  const candidates = [packaged];
-  const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
-  if (explicitShared && String(explicitShared).trim()) {
-    candidates.unshift(path.join(path.resolve(String(explicitShared).trim()), 'runtime', 'scripts'));
-  }
   try {
-    candidates.push(path.resolve(process.cwd(), '.agents', 'skills', 'ws-shared', 'runtime', 'scripts'));
+    return require('../../ws-shared/runtime/scripts/bootstrap_runtime.cjs').resolveHubScriptsDir(__dirname);
   } catch {
-    // Ignore cwd resolution failures; remaining candidates still apply.
-  }
-  const globalDir = process.env.WORKFLOW_SKILLS_GLOBAL_DIR;
-  const globalRoot = globalDir && String(globalDir).trim()
-    ? path.resolve(String(globalDir).trim())
-    : path.join(require('os').homedir(), '.agents', 'skills');
-  candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
-  for (const candidate of [...new Set(candidates)]) {
-    try {
-      require.resolve(path.join(candidate, 'resolve_consumer_root.cjs'));
-      return candidate;
-    } catch {
-      // Try the next candidate.
+    const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
+    const candidates = [];
+    const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
+    if (explicitShared && String(explicitShared).trim()) {
+      candidates.unshift(path.join(path.resolve(String(explicitShared).trim()), 'runtime', 'scripts'));
     }
+    try {
+      candidates.push(path.resolve(process.cwd(), '.agents', 'skills', 'ws-shared', 'runtime', 'scripts'));
+    } catch {
+      // Ignore cwd resolution failures; remaining candidates still apply.
+    }
+    const globalDir = process.env.WORKFLOW_SKILLS_GLOBAL_DIR;
+    const globalRoot = globalDir && String(globalDir).trim()
+      ? path.resolve(String(globalDir).trim())
+      : path.join(os.homedir(), '.agents', 'skills');
+    candidates.push(packaged);
+    candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
+    for (const candidate of [...new Set(candidates)]) {
+      try {
+        require.resolve(path.join(candidate, 'resolve_consumer_root.cjs'));
+        return candidate;
+      } catch {
+        // Try the next candidate.
+      }
+    }
+    return packaged;
   }
-  return packaged;
 })();
 const { resolveConsumerContext } = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
 
@@ -78,6 +80,31 @@ function collectPyFiles(dir, out) {
   return out;
 }
 
+// Package membership: only this package's own directories are audited. A
+// shared global skills root may also hold unrelated user skills; their Python
+// helpers must never fail the workflow-skills Node-only gate. Explicitly
+// external ws-* companions (bin/skill-dependencies.json externalSkills,
+// e.g. ws-memo) are also excluded: they are not shipped by this package.
+function externalSkillIds(repoRoot) {
+  try {
+    const manifest = path.join(path.resolve(repoRoot || process.cwd()), 'bin', 'skill-dependencies.json');
+    const parsed = JSON.parse(fs.readFileSync(manifest, 'utf8'));
+    const ids = (parsed.externalSkills || []).map((entry) => entry.id).filter(Boolean);
+    if (ids.length) return new Set(ids);
+  } catch {
+    // Fall through to the known-external fallback below.
+  }
+  return new Set(['ws-memo', 'ws-session-tracking']);
+}
+
+function packageRoots(dir, repoRoot) {
+  if (!fs.existsSync(dir)) return [];
+  const external = externalSkillIds(repoRoot);
+  return fs.readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && (entry.name === 'ws-shared' || (entry.name.startsWith('ws-') && !external.has(entry.name))))
+    .map((entry) => path.join(dir, entry.name));
+}
+
 function main() {
   const options = argsOf(process.argv.slice(2));
   if (options.help) {
@@ -92,18 +119,32 @@ function main() {
     scriptFile: __filename,
   });
   const repoRoot = context.repoRoot;
-  const skillsRootRel =
-    options.skillsRoot ||
-    (context.pathTokens && context.pathTokens.skillsRoot) ||
-    '.agents/skills';
-  const skillsAbs = path.resolve(repoRoot, skillsRootRel);
+  // Resolve the scan root from the consumer context (local or global
+  // skills root), not a hardcoded project-local path, so global-only or
+  // relocated installs still report findings instead of passing clean.
+  const skillsAbs = options.skillsRoot
+    ? path.resolve(repoRoot, options.skillsRoot)
+    : (context.skillsRoot && path.isAbsolute(String(context.skillsRoot))
+      ? String(context.skillsRoot)
+      : path.resolve(repoRoot, '.agents/skills'));
+  const skillsRootRel = path.relative(repoRoot, skillsAbs).replace(/\\/g, '/') || '.';
   const binAbs = path.resolve(repoRoot, 'bin');
 
-  const hits = collectPyFiles(skillsAbs).concat(collectPyFiles(binAbs));
+  const hits = packageRoots(skillsAbs, repoRoot)
+    .reduce((acc, dir) => acc.concat(collectPyFiles(dir)), [])
+    .concat(collectPyFiles(binAbs));
   const findings = hits.map((abs) => ({
     file: path.relative(repoRoot, abs).replace(/\\/g, '/'),
     reason: 'python-helper-shipped',
   }));
+
+  const bannedRuntime = path.join(repoRoot, '.ws', 'runtime');
+  if (fs.existsSync(bannedRuntime)) {
+    findings.push({
+      file: ['.ws', 'runtime'].join('/'),
+      reason: 'banned-runtime-directory-present',
+    });
+  }
 
   const payload = {
     ok: findings.length === 0,

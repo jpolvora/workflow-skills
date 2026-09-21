@@ -23,7 +23,7 @@ const __doctorDir = path.dirname(fileURLToPath(import.meta.url));
 // changelog) and is not a managed-runtime source.
 function resolveHubScriptsDir() {
   const packaged = path.resolve(__doctorDir, '..', '..', 'ws-shared', 'runtime', 'scripts');
-  const candidates = [packaged];
+  const candidates = [];
   const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
   if (explicitShared && String(explicitShared).trim()) {
     candidates.unshift(path.join(path.resolve(String(explicitShared).trim()), 'runtime', 'scripts'));
@@ -37,6 +37,7 @@ function resolveHubScriptsDir() {
   const globalRoot = globalDir && String(globalDir).trim()
     ? path.resolve(String(globalDir).trim())
     : path.join(os.homedir(), '.agents', 'skills');
+  candidates.push(packaged);
   candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
   for (const candidate of [...new Set(candidates)]) {
     try {

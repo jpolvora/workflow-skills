@@ -31,8 +31,22 @@ function repoRoot() {
   return r.status === 0 && out ? out : '.';
 }
 
+function checkRgResult(r, context) {
+  // rg exit codes: 0 = match, 1 = no match (clean), 2 = error.
+  // Surface errors instead of reporting clean; callers fail closed.
+  if (r.error) throw new Error(`rg failed to run (${context}): ${r.error.message}`);
+  if (r.status !== 0 && r.status !== 1) {
+    const detail = String(r.stderr || '').trim().slice(0, 200);
+    throw new Error(`rg exited with status ${r.status} (${context})${detail ? `: ${detail}` : ''}`);
+  }
+  return r;
+}
+
 function runRg(args, input) {
-  const r = spawnSync('rg', args, { input, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+  const r = checkRgResult(
+    spawnSync('rg', args, { input, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }),
+    'staged-diff scan',
+  );
   return (r.stdout || '').split('\n').filter((l) => l !== '');
 }
 
@@ -69,7 +83,8 @@ function main() {
     let rows = [];
     if (STAGED_ONLY) {
       const diff = spawnSync('git', ['diff', '--cached', '-U0', '--diff-filter=ACM'], { encoding: 'utf8' });
-      const added = (diff.stdout || '').split('\n').filter((l) => /^\++[^+]/.test(l) || /^^\+[^+]/.test(l));
+      // Added lines only: a leading '+' that is not a '+++ b/<path>' diff header.
+      const added = (diff.stdout || '').split('\n').filter((l) => l.startsWith('+') && !l.startsWith('+++'));
       // Filter added lines only, then rg the pattern.
       const text = added.join('\n');
       rows = runRg(['-n', '--max-filesize', '512K', '-e', pattern], text)
@@ -77,7 +92,7 @@ function main() {
         .filter((l) => !/EXAMPLE|\[REDACTED\]|wJalrXUtnFEMI\/K7MDENG/i.test(l))
         .slice(0, MAX_HITS);
     } else {
-      const r = spawnSync('rg', ['-n', '--max-filesize', '512K',
+      const r = checkRgResult(spawnSync('rg', ['-n', '--max-filesize', '512K',
         '-g', '*.env', '-g', '*.env.*', '-g', '*.json', '-g', '*.yml', '-g', '*.yaml', '-g', '*.toml',
         '-g', '*.xml', '-g', '*.ini', '-g', '*.cfg', '-g', '*.conf', '-g', '*.properties',
         '-g', '*.sh', '-g', '*.bash', '-g', '*.ps1', '-g', '*.py', '-g', '*.js', '-g', '*.jsx',
@@ -85,7 +100,7 @@ function main() {
         '-g', '*.php', '-g', '*.tf', '-g', '*.md', '-g', '*.txt',
         '-g', '!**/node_modules/**', '-g', '!**/.git/**', '-g', '!**/dist/**',
         '-g', '!**/build/**', '-g', '!**/.next/**', '-g', '!**/vendor/**',
-        '-e', pattern, '.'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+        '-e', pattern, '.'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }), 'worktree scan');
       rows = (r.stdout || '').split('\n').filter(Boolean)
         .filter((l) => !/allowlist secret/i.test(l))
         .slice(0, MAX_HITS);
@@ -125,13 +140,18 @@ function main() {
   console.log(`Scanning ${path.basename(process.cwd())} for secrets & leaks (bounded)...`);
   console.log('');
 
-  scanPat('AKIA[0-9A-Z]{16}', 'AWS Access Key', 'high');
-  scanPat('gh[ps]_[a-zA-Z0-9]{36,}|github_pat_[a-zA-Z0-9]{36,}', 'GitHub Token', 'high');
-  scanPat('xox[bpras]-[0-9a-zA-Z-]{24,}', 'Slack Token', 'high');
-  scanPat('sk-[a-zA-Z0-9]{32,}', 'API Key (sk-...)', 'high');
-  scanPat('-----BEGIN (RSA |EC |DSA |OPENSSH |PGP )?PRIVATE KEY-----', 'Private Key', 'high');
-  scanPat('(postgresql|mysql|mongodb(\\+srv)?|redis|jdbc)://[^:]+:[^@]+@', 'DB Connection String', 'high');
-  scanPat('Bearer\\s+[A-Za-z0-9\\-. _~+/]{40,}', 'Bearer [REDACTED]', 'medium');
+  try {
+    scanPat('AKIA[0-9A-Z]{16}', 'AWS Access Key', 'high');
+    scanPat('gh[ps]_[a-zA-Z0-9]{36,}|github_pat_[a-zA-Z0-9]{36,}', 'GitHub Token', 'high');
+    scanPat('xox[bpras]-[0-9a-zA-Z-]{24,}', 'Slack Token', 'high');
+    scanPat('sk-[a-zA-Z0-9]{32,}', 'API Key (sk-...)', 'high');
+    scanPat('-----BEGIN (RSA |EC |DSA |OPENSSH |PGP )?PRIVATE KEY-----', 'Private Key', 'high');
+    scanPat('(postgresql|mysql|mongodb(\\+srv)?|redis|jdbc)://[^:]+:[^@]+@', 'DB Connection String', 'high');
+    scanPat('Bearer\\s+[A-Za-z0-9\\-. _~+/]{40,}', 'Bearer [REDACTED]', 'medium');
+  } catch (error) {
+    console.error(`Error: secrets scan failed: ${error.message}`);
+    process.exit(1);
+  }
 
   // Sensitive filenames via git inventory.
   const listR = spawnSync('git', STAGED_ONLY

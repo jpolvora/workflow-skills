@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 12,
-  "generatedAt": "2026-09-19T18:47:25.429Z",
+  "revision": 22,
+  "generatedAt": "2026-09-21T02:35:32Z",
   "workflows": [
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
@@ -57,6 +57,28 @@
       "currentStep": 6,
       "updatedAt": "2026-08-01T16:52:02Z",
       "runPath": ".agents/plans/clear-learning-memory-instructions/clear-learning-memory-instructions-20260730T122000Z.archive/clear-learning-memory-instructions-20260730T122000Z.state.json"
+    },
+    {
+      "workflowId": "code-review-findings-fixes",
+      "slug": "code-review-findings-fixes",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/code-review-findings-fixes/code-review-findings-fixes.state.md",
+      "stateSha256": "b69cf3474253d6bbd6dc54fe8db6fd2150648ca93ac86e1346dbb13f2133ab8e",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-20T23:15:31Z",
+      "runPath": ".agents/plans/code-review-findings-fixes/code-review-findings-fixes.state.json"
+    },
+    {
+      "workflowId": "code-review-round-2-fixes",
+      "slug": "code-review-round-2-fixes",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/code-review-round-2-fixes/code-review-round-2-fixes.state.md",
+      "stateSha256": "838e60f59c4ddd47731e3ac9e6923b4daa2196cd6b5ed116c6b2eaadc3ef1aff",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-21T02:35:32Z",
+      "runPath": ".agents/plans/code-review-round-2-fixes/code-review-round-2-fixes.state.json"
     },
     {
       "workflowId": "configurable-consumer-autoload-20260810T194555Z",

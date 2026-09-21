@@ -27,7 +27,7 @@ const { spawnSync } = require('child_process');
 // hub (<repo>/.ws). Mirrors resolveConsumerContext runtimeSource precedence.
 const HUB_SCRIPTS_DIR = (() => {
   const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
-  const candidates = [packaged];
+  const candidates = [];
   const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
   if (explicitShared && String(explicitShared).trim()) {
     candidates.unshift(path.join(path.resolve(String(explicitShared).trim()), 'runtime', 'scripts'));
@@ -41,6 +41,7 @@ const HUB_SCRIPTS_DIR = (() => {
   const globalRoot = globalDir && String(globalDir).trim()
     ? path.resolve(String(globalDir).trim())
     : path.join(require('os').homedir(), '.agents', 'skills');
+  candidates.push(packaged);
   candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
   for (const candidate of [...new Set(candidates)]) {
     try {
@@ -180,7 +181,9 @@ function resolveSpecsDir(repoRoot, override) {
 function resolveDefaultOutput(repoRoot, slug, specsDirOverride) {
   const organizer = path.resolve(__dirname, '..', '..', 'ws-spec-organizer', 'scripts', 'resolve_spec_path.cjs');
   if (fs.existsSync(organizer)) {
-    const proc = spawnSync('node', [organizer, '--slug', slug, '--repo-root', String(repoRoot)], {
+    const organizerArgs = [organizer, '--slug', slug, '--repo-root', String(repoRoot)];
+    if (String(specsDirOverride || '').trim()) organizerArgs.push('--specs-dir', String(specsDirOverride));
+    const proc = spawnSync('node', organizerArgs, {
       encoding: 'utf8',
     });
     if ((proc.status ?? 1) === 0) {

@@ -1,7 +1,7 @@
 ---
 name: ws-goal-fix-pr
 description: PR thread convergence loop — orchestrates iterative fix-pr rounds until all open PR review threads are resolved and checks pass.
-version: 0.4.46
+version: 0.4.47
 disable-model-invocation: true
 invocation_names:
   - goal-fix-pr
@@ -107,18 +107,26 @@ A bare workflow id fails with `state file not found`.
 8. **Final report**: always output: iterations executed and stop condition; threads handled per round (fixed / resolved / escalated); `Learning:` titles per round; links to round reports (`{reviewsDir}/PR-<N>-round-*.md`; `{reviewsDir}` ← `config.reviews.dir`); commit hashes and push confirmation; final `activeThreads` count with evidence from step 7; PR URL; and the merge handoff note (this skill never merges: the caller merges only after `activeThreads == 0` and required checks are green).
    - Done when: the report is presented to the user.
 
+## Exit branches
+
+Three exit branches, shared verbatim with [STEP-DISPATCH](../ws-spec-to-pr/STEP-DISPATCH.md) § Step 9 — Fix-PR. A batch iteration never sends outer-step completion (`finish --step 9`) or goal-level exit, only per-batch dispatch telemetry:
+
+1. **Converged** — `activeThreads == 0` with green required checks → step 7 pre-merge verification gate → merge handoff (the caller merges).
+2. **Stopped** — `max` iterations reached, escalation, or user abort → step 8 final report with remaining threads; the caller decides.
+3. **Clean-immediate** — fresh read already clean on entry → exit without arming a heartbeat (step 2).
+
 ## Round-batch dispatch
 
 The skill session is the orchestrator: it runs initialize, convergence check, heartbeat wait, re-check, pre-merge gate, and final report inline, and never authors plan gates or product fixes itself when dispatch is available.
 
-- **Fresh worker per round batch:** one fresh worker per round batch runs the ordered `fixPrPlan` → `fixPrExec` pair inside that worker; that worker is never reused for another round or substep instance. Dispatch through the portable `dispatch-agent` alias with discrete context pointers only (PR number, batch thread ids, gate path, round number) — never full transcripts. **Bounded handoff:** the worker writes its full output to the round artifact (`{reviewsDir}/PR-<N>-round-*.md`) and returns a summary plus artifact pointers only — never the full transcript — so an oversized delivered result cannot wedge the loop's follow-up turn.
+- **Fresh worker per round batch:** one fresh worker per round batch runs the ordered `fixPrPlan` → `fixPrExec` pair inside that worker; that worker is never reused for another round or substep instance. Dispatch through the portable `dispatch-agent` alias with discrete context pointers only (PR number, batch thread ids, gate path, round number) — never full transcripts. **Workspace spawn:** the batch worker spawns with cwd = the workflow workspace (the repo root owning the state file), never OS temp or another checkout. **Bounded handoff:** the worker writes its full output to the round artifact (`{reviewsDir}/PR-<N>-round-*.md`) and returns a summary plus artifact pointers only — never the full transcript — so an oversized delivered result cannot wedge the loop's follow-up turn.
 - **Lite / inline posture:** when the caller is `ws-spec-to-pr-lite` Step 5 (or any inline-only run), do not dispatch a batch worker and ignore both role model keys; run the ordered `fixPrPlan` → `fixPrExec` pair inline on the captured session model with identical gate/learning contracts and no internal role telemetry, matching [`ws-fix-pr`](../ws-fix-pr/SKILL.md) § Internal model roles and the lite inline contract.
 - **Ownership split:** on the standard dispatch path, the batch worker owns everything inside the `ws-fix-pr` batch scope (plan gate, fixes, proactive evidence, verify, round report, resolve, push). The session owns the goal-loop steps plus the final report, and never duplicates the worker's per-round `Learning:` write — it records the worker-reported `Learning:` titles in the round log. On the Lite / inline posture and the Tier 3 path (no batch worker) the session owns the batch scope itself under identical gate/learning contracts.
 - **Model routing:** capture the active session model once before the first round batch and resolve both role models from that stable fallback. The [ws-fix-pr](../ws-fix-pr/SKILL.md) "Internal model roles" table is the normative chain; [STEP-DISPATCH](../ws-spec-to-pr/STEP-DISPATCH.md) prose is an abbreviated pointer only:
   - `fixPrPlan`: `stepModels.fixPrPlan` → active preset `steps.fixPrPlan` → top-level `reviewerModel` → preset `reviewerModel` → captured session model.
   - `fixPrExec`: `stepModels.fixPrExec` → active preset `steps.fixPrExec` → top-level `executionModel` → preset `executionModel` → captured session model.
   Neither role consults numeric `"9"` (that value selects only the outer Step 9 skill). `"current"` resolves immediately to the captured session model; empty values fall through. If `dispatch-agent` rejects or cannot use a configured model, retry that role under the captured session model and record `configuredModel` vs actual without aborting the batch.
-- **Dispatch telemetry:** on the standard dispatch path, every batch emits ordered `fixPrPlan` → `fixPrExec` dispatch events to `telemetry.jsonl` carrying the actual model and the configured model per role. Lite/inline runs emit none (see Lite / inline posture). Internal roles emit telemetry only and never call `finish --step 9`; the outer caller owns the single outer finish.
+- **Dispatch telemetry:** on the standard dispatch path, every batch emits ordered `fixPrPlan` → `fixPrExec` dispatch events to `telemetry.jsonl` carrying the actual model and the configured model per role (recorded dispatch provenance). `telemetry.jsonl` is append-only: exit/finish/dispatch events are appended, never rewritten. Lite/inline runs emit none (see Lite / inline posture). Internal roles emit telemetry only and never call `finish --step 9`; the outer caller owns the single outer finish.
 - **Tier 3 fallback:** on hosts where `dispatch-agent` cannot dispatch (no bound subagent tool and no CLI/background runner — Tiers 1-2 unavailable per the [`host-dispatch.md`](../ws-shared/runtime/host-dispatch.md) ladder), run Tier 3 inline-isolated execution per [`host-dispatch.md`](../ws-shared/runtime/host-dispatch.md) (adopt the step persona, context pointers only, log `inline-isolated-step`) with identical gate/learning contracts, and still converge. The fallback is documented behavior, never a silent change.
 - **`dry-run`:** simulate without mutation under both the dispatch path and the Tier 3 path — zero commits, zero pushes, and zero `resolve-thread` calls.
 

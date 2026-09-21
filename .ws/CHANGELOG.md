@@ -1,5 +1,40 @@
 # Changelog
 
+### [2026-09-21 06:00] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: Test-suite runner refactor — replace the giant `&&`-chained npm test scripts with a single wrapper.
+- **Done**: Added `test/run-tests.cjs` (sequential, fail-fast, Node launcher, modes `local`/`--remote`/`--harness-efficiency`, `--list`) backed by `test/test-suites.json` (ordered argv lists). `package.json` `tests` / `tests:remote` / `tests:harness-efficiency` are now one short command each. `test-spec-dor-tdd.js` and `test-repeated-file-list-flags.js` now assert suite registration against `test-suites.json`.
+- **Result**: `npm run test` green (102 entries, mode=local); `test-harness-clean.js` 0 findings; `verify-integrity` OK (v0.4.47).
+
+### [2026-09-21 05:40] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: `ws-goal-fix-pr 377` round 6 (inline fix loop) — 1 review thread on the global-install audit path.
+- **Done**: `check_duplicates.cjs` no longer calls `toRepoRelative` (which throws for paths outside the repo) on audit paths; a local non-throwing `displayPath()` keeps outside-repo occurrences resolvable (`..`/cross-drive) and is used for hub-relative checks and occurrence reporting. New `test/test-check-harness-duplicates.js` covers a global-only `WORKFLOW_SKILLS_GLOBAL_DIR` install (duplicate reported, no throw) and unrelated-skill exclusion.
+- **Result**: `npm run test` green; `test-harness-clean.js` 0 findings; `verify-integrity` OK (v0.4.47).
+
+### [2026-09-21 05:15] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: `ws-goal-fix-pr 377` round 5 (inline fix loop) — 1 review thread on the config GUI editor.
+- **Done**: `Edit-WorkflowSkillsConfig.ps1` gained a `number` control branch (`Add-ConfigFieldRow`, NumericUpDown with 2 decimal places, persists `[double]`) and `defaults.convergence.backoff` now binds `-Type 'number' -MinVal 1 -MaxVal 100 -DefaultVal 1.5`, matching `config.schema.json` (`number`, minimum 1). `test-powershell-config-editor.js` adds Test 9b scalar-type parity (schema `number`/`integer`/`boolean`/`string` vs row type) plus a numeric round-trip asserting `convergence.backoff` persists as a JSON number.
+- **Result**: `test-powershell-config-editor.js` 10/10 PASS; `npm run test` green; `test-harness-clean.js` 0 findings; `verify-integrity` OK (v0.4.47).
+
+### [2026-09-21 04:30] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: `ws-goal-fix-pr 377` round 4 (inline fix loop) — 2 new review threads on the autoload runtime-link renderer.
+- **Done**: `renderConsumerAutoload` (`configure_autoload.cjs`) and `renderConsumerAutoloadText` (`bin/cli.js`) now resolve the local-vs-global runtime prefix per file (`runtimePrefixFor(rel)` / `managedRuntimeLinkPrefixFor(rel)`) instead of from directory existence, so a partial-hybrid local runtime keeps `{globalSkillsRoot}` tokens for files that only exist globally. Rewrite regexes capture `rel`; the bare-file loop uses the per-file prefix. Fixtures updated: partial local runtime keeps existing file project-relative and missing sibling global; new global-only + partial assertions.
+- **Result**: `npm run test` green; `test-harness-clean.js` 0 findings; `verify-integrity` OK (v0.4.47).
+
+### [2026-09-21 03:45] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: `ws-goal-fix-pr 377` round 3 (inline fix loop) — resolve 3 active review threads on PR #377, plus the outstanding release version bump.
+- **Done**: Scoped `ws-check-harness` Phase 5a scans to package membership (`ws-shared` + `ws-*`) in `check_unique_runtime.cjs` / `check_duplicates.cjs` / `check_harness_links.cjs`, and fixed the same-class project-local pin in `check_shell_quoting.cjs` (`context.pathTokens` was never a real key). `check_harness_links.cjs` now resolves `context.skillsRoot` (local-first, global fallback), audits the resolved install, and maps `{skillsRoot}` token expansion to it. Regression fixtures added for both modes (unrelated `custom-skill/` stays clean; `WORKFLOW_SKILLS_GLOBAL_DIR` global-only tree is audited). Release bump 0.4.46 -> 0.4.47 via `npm run build-site:bump` (54 SKILL frontmatter, packageVersion x2, site + wiki), integrity regenerated.
+- **Result**: `npm run test` green; `test-harness-clean.js` 0 findings; `verify-integrity` OK (v0.4.47).
+
+### [2026-09-20 21:55] Agent: Muse Code (muse-spark)
+- **Prompt**: `.agents/specs/0109-code-review-round-2-fixes.spec.md` full auto + ship (standard Spec-to-PR, autoMode, fullMode).
+- **Done**: Steps 0-7 complete on `develop` (stay): classify standard/complex, plan + interview + refined plan, sequential implement, verify 8 -> scoreAndRefine round 1 (AC14/AC15/NS coverage) -> re-verify 9/10 then ledger 10/10, fable-judge VERIFIED, review APPROVE 10/10, testing green. Product commits `ae3806d6` + `b6ca3eba`; delivery result written; memory trap + compile; plan checkmarks closed.
+- **Result**: AC1-AC15 implemented, `npm run test` green, harness clean, integrity regenerated; ready to close + ship PR `develop` -> `main`.
+
+### [2026-09-20 19:32] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: Read-only code review of `dcc3aa10..origin/main` (HEAD~20 vs main), check already-fixed findings, then author a fix spec via `/ws-spec-write`.
+- **Done**: Five parallel read-only review passes over `bin/`+CI, orchestrators, providers/utilities, `ws-shared` hub, and `test/`; every finding re-verified against the current tree (HEAD moved `3cbdd0b9` -> `2b9d5b89` mid-review when the prior workflow shipped step 8). Confirmed spec 0108's six topics fixed and excluded them. Spec `.agents/specs/0109-code-review-round-2-fixes.spec.md` written (15 ACs, F01-F27 traceability), `validate_spec.cjs --mode=authoring` PASS, tracked in `index.PRD` (row 114). Two memory traps recorded and compiled.
+- **Result**: 27 open findings (5 high / 16 medium / 6 low) captured with evidence and suggested fixes; no source files modified.
+
 ### [2026-09-20 12:31] Agent: opencode (deepseek-v4.1-flash)
 - **Prompt**: Enforce managed-runtime location: never allow `.ws/runtime`; runtime must resolve from `{projectRoot|globalSkillsRoot}/.agents/skills/ws-shared/runtime`.
 - **Done**: Installer now copies the managed `ws-shared` tree (runtime + templates) into the skills install and retires `.ws/runtime`/`.ws/templates` on install/update; `.ws` keeps consumer config, the generated `AGENTS.md` entrypoint, and `autoload.md`. Resolver, hub-separation gate, and link checker drop the `.ws` fallback; 59 skill bootstraps drop the deprecated `.ws` fallback; seed templates get refreshed. Consumer config `$schema`/`toolsFile` repoint to the managed runtime. Hub/root docs, README, FEATURES, CATALOG, SPEC-MANAGEMENT, install shim banner, and wiki pages retargeted to `{skillsRoot}|{globalSkillsRoot}/ws-shared`. Tests updated + new negative invariant (`.ws/runtime` never resolves or installs); version 0.4.46 + integrity regen + site/wiki rebuild.

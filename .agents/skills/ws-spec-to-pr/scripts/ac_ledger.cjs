@@ -12,31 +12,36 @@ const path = require('path');
 // holds only local config variable files (config.json, STACK.md, memory,
 // changelog) and is not a managed-runtime source.
 const HUB_SCRIPTS_DIR = (() => {
-  const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
-  const candidates = [packaged];
-  const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
-  if (explicitShared && String(explicitShared).trim()) {
-    candidates.unshift(path.join(path.resolve(String(explicitShared).trim()), 'runtime', 'scripts'));
-  }
   try {
-    candidates.push(path.resolve(process.cwd(), '.agents', 'skills', 'ws-shared', 'runtime', 'scripts'));
+    return require('../../ws-shared/runtime/scripts/bootstrap_runtime.cjs').resolveHubScriptsDir(__dirname);
   } catch {
-    // Ignore cwd resolution failures; remaining candidates still apply.
-  }
-  const globalDir = process.env.WORKFLOW_SKILLS_GLOBAL_DIR;
-  const globalRoot = globalDir && String(globalDir).trim()
-    ? path.resolve(String(globalDir).trim())
-    : path.join(require('os').homedir(), '.agents', 'skills');
-  candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
-  for (const candidate of [...new Set(candidates)]) {
-    try {
-      require.resolve(path.join(candidate, 'resolve_consumer_root.cjs'));
-      return candidate;
-    } catch {
-      // Try the next candidate.
+    const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
+    const candidates = [];
+    const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
+    if (explicitShared && String(explicitShared).trim()) {
+      candidates.unshift(path.join(path.resolve(String(explicitShared).trim()), 'runtime', 'scripts'));
     }
+    try {
+      candidates.push(path.resolve(process.cwd(), '.agents', 'skills', 'ws-shared', 'runtime', 'scripts'));
+    } catch {
+      // Ignore cwd resolution failures; remaining candidates still apply.
+    }
+    const globalDir = process.env.WORKFLOW_SKILLS_GLOBAL_DIR;
+    const globalRoot = globalDir && String(globalDir).trim()
+      ? path.resolve(String(globalDir).trim())
+      : path.join(require('os').homedir(), '.agents', 'skills');
+    candidates.push(packaged);
+    candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
+    for (const candidate of [...new Set(candidates)]) {
+      try {
+        require.resolve(path.join(candidate, 'resolve_consumer_root.cjs'));
+        return candidate;
+      } catch {
+        // Try the next candidate.
+      }
+    }
+    return packaged;
   }
-  return packaged;
 })();
 const { spawnSync } = require('child_process');
 const { resolveConsumerContext, toRepoRelative } = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));

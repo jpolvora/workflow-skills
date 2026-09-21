@@ -55,6 +55,7 @@ const RUNTIME_NAMES = [
   /^resolve-[A-Za-z0-9_-]+\.txt$/,
   /^plan\.index\.json$/,
   /^step(-\d+)?-output\.json$/,
+  /^verification-manifest\.json$/,
   /\.(cjs|patch|md)$/,
 ];
 

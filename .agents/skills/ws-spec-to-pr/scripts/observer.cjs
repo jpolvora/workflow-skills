@@ -18,40 +18,53 @@ const path = require('path');
 // skills tree ({skillsRoot}/ws-shared) or the global skills tree
 // ({globalSkillsRoot}/ws-shared, override via WORKFLOW_SKILLS_GLOBAL_DIR).
 const HUB_SCRIPTS_DIR = (() => {
-  const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
-  const candidates = [packaged];
-  const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
-  if (explicitShared && String(explicitShared).trim()) {
-    candidates.unshift(path.join(path.resolve(String(explicitShared).trim()), 'runtime', 'scripts'));
-  }
   try {
-    candidates.push(path.resolve(process.cwd(), '.agents', 'skills', 'ws-shared', 'runtime', 'scripts'));
+    return require('../../ws-shared/runtime/scripts/bootstrap_runtime.cjs').resolveHubScriptsDir(__dirname);
   } catch {
-    // Ignore cwd resolution failures; remaining candidates still apply.
-  }
-  const globalDir = process.env.WORKFLOW_SKILLS_GLOBAL_DIR;
-  const globalRoot = globalDir && String(globalDir).trim()
-    ? path.resolve(String(globalDir).trim())
-    : path.join(require('os').homedir(), '.agents', 'skills');
-  candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
-  for (const candidate of [...new Set(candidates)]) {
-    try {
-      require.resolve(path.join(candidate, 'resolve_consumer_root.cjs'));
-      return candidate;
-    } catch {
-      // Try the next candidate.
+    const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
+    const candidates = [];
+    const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
+    if (explicitShared && String(explicitShared).trim()) {
+      candidates.unshift(path.join(path.resolve(String(explicitShared).trim()), 'runtime', 'scripts'));
     }
+    try {
+      candidates.push(path.resolve(process.cwd(), '.agents', 'skills', 'ws-shared', 'runtime', 'scripts'));
+    } catch {
+      // Ignore cwd resolution failures; remaining candidates still apply.
+    }
+    const globalDir = process.env.WORKFLOW_SKILLS_GLOBAL_DIR;
+    const globalRoot = globalDir && String(globalDir).trim()
+      ? path.resolve(String(globalDir).trim())
+      : path.join(require('os').homedir(), '.agents', 'skills');
+    candidates.push(packaged);
+    candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
+    for (const candidate of [...new Set(candidates)]) {
+      try {
+        require.resolve(path.join(candidate, 'resolve_consumer_root.cjs'));
+        return candidate;
+      } catch {
+        // Try the next candidate.
+      }
+    }
+    return packaged;
   }
-  return packaged;
 })();
 const {
   resolveAutoStartObserver,
   resolveMinVerifyScore,
 } = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
 const {
+  resolveConsumerContext,
+} = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
+const {
+  withBatonLock,
+} = require(path.join(HUB_SCRIPTS_DIR, 'step_baton.cjs'));
+const {
   canonicalStateJson,
   jsonStatePath,
   parseFrontmatter,
+  plansIndexPath,
+  refreshPlansIndexForState,
   syncStateDualWrite,
 } = require(path.join(HUB_SCRIPTS_DIR, 'workflow_state.cjs'));
 
@@ -110,15 +123,60 @@ function assertValidMarker(marker) {
   }
 }
 
+// Resolve the repo root that owns a state file by walking up from the
+// state directory: nearest ancestor carrying .git or .ws wins, else the
+// nearest ancestor carrying .agents (tmpdir fixtures), else the state dir.
+function resolveObserverRepoRoot(usDir) {
+  let dir = path.resolve(String(usDir));
+  for (;;) {
+    try {
+      if (fs.existsSync(path.join(dir, '.git')) || fs.existsSync(path.join(dir, '.ws'))) return dir;
+      if (fs.existsSync(path.join(dir, '.agents'))) return dir;
+    } catch {
+      return path.resolve(String(usDir));
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) return path.resolve(String(usDir));
+    dir = parent;
+  }
+}
+
+function observerContext(usDir) {
+  const repoRoot = resolveObserverRepoRoot(usDir);
+  try {
+    return resolveConsumerContext({ repoRoot, scriptFile: __filename });
+  } catch {
+    return { repoRoot, config: {} };
+  }
+}
+
+// Canonical observer-side persist: read-modify-write under the baton lock
+// (same lock the coordinator uses for CAS), bump revision through the
+// canonical dual writer, and refresh the plans index so stateSha256 tracks
+// the new state. Mirrors the coordinator persist() path.
+function persistObserverMutation(stateFile, mutate) {
+  const jsonPath = jsonStatePath(stateFile);
+  if (!fs.existsSync(jsonPath)) throw new Error(`state file not found: ${stateFile}`);
+  const usDir = path.dirname(jsonPath);
+  return withBatonLock(usDir, () => {
+    const state = readJson(jsonPath);
+    mutate(state);
+    state.revision = Number(state.revision || 0) + 1;
+    syncStateDualWrite(stateFile, state);
+    const context = observerContext(usDir);
+    fs.mkdirSync(path.dirname(plansIndexPath(context)), { recursive: true });
+    refreshPlansIndexForState(context, state, { stateFile });
+    return state;
+  });
+}
+
 // Orchestrator-side annotation: record the transcript marker in the state
 // file (dual write). Not a watcher write.
 function recordAgentTranscripts(stateFile, marker) {
   assertValidMarker(marker);
-  const jsonPath = jsonStatePath(stateFile);
-  if (!fs.existsSync(jsonPath)) throw new Error(`state file not found: ${stateFile}`);
-  const state = readJson(jsonPath);
-  state.agentTranscripts = marker;
-  syncStateDualWrite(stateFile, state);
+  persistObserverMutation(stateFile, (state) => {
+    state.agentTranscripts = marker;
+  });
   return marker;
 }
 
@@ -157,9 +215,10 @@ function shouldDispatchObserver({ config, telemetryEvents, state } = {}) {
 }
 
 // Orchestrator-side accounting: note the single allowed watcher dispatch in
-// telemetry and state. Refuses when disabled or already dispatched.
+// telemetry and state. Refuses when disabled or already dispatched. The
+// dispatch check+append runs serialized under the baton lock so concurrent
+// callers yield exactly one observer-dispatch record.
 function noteObserverDispatch({ stateFile, telemetryFile, config, subagentId, dispatchedAt }) {
-  const events = readTelemetryEvents(telemetryFile);
   if (!resolveAutoStartObserver(config)) {
     throw new Error('observer dispatch refused: monitor.autoStartObserver is not explicit true');
   }
@@ -169,23 +228,29 @@ function noteObserverDispatch({ stateFile, telemetryFile, config, subagentId, di
   if (!fs.existsSync(jsonPath)) {
     throw new Error(`note-dispatch requires an existing state JSON file: ${stateFile}`);
   }
-  const priorState = readJson(jsonPath);
-  if (alreadyDispatched({ telemetryEvents: events, state: priorState })) {
-    throw new Error('observer dispatch refused: at most one watcher per run');
-  }
+  const usDir = path.dirname(jsonPath);
   const at = dispatchedAt || nowIso();
-  const record = { type: 'observer-dispatch', at, subagentId: subagentId || null };
-  fs.mkdirSync(path.dirname(telemetryFile), { recursive: true });
-  fs.appendFileSync(telemetryFile, `${JSON.stringify(record)}\n`, 'utf8');
-  if (fs.existsSync(jsonPath)) {
+  return withBatonLock(usDir, () => {
+    const events = readTelemetryEvents(telemetryFile);
+    const priorState = readJson(jsonPath);
+    if (alreadyDispatched({ telemetryEvents: events, state: priorState })) {
+      throw new Error('observer dispatch refused: at most one watcher per run');
+    }
+    const record = { type: 'observer-dispatch', at, subagentId: subagentId || null };
+    fs.mkdirSync(path.dirname(telemetryFile), { recursive: true });
+    fs.appendFileSync(telemetryFile, `${JSON.stringify(record)}\n`, 'utf8');
     const state = readJson(jsonPath);
     state.observer = state.observer && typeof state.observer === 'object' ? state.observer : {};
     state.observer.enabled = true;
     state.observer.dispatchCount = MAX_WATCHER_DISPATCHES;
     state.observer.dispatchedAt = at;
+    state.revision = Number(state.revision || 0) + 1;
     syncStateDualWrite(stateFile, state);
-  }
-  return record;
+    const context = observerContext(usDir);
+    fs.mkdirSync(path.dirname(plansIndexPath(context)), { recursive: true });
+    refreshPlansIndexForState(context, state, { stateFile });
+    return record;
+  });
 }
 
 function containedPath(root, candidate) {
@@ -210,13 +275,19 @@ function addFinding(findings, severity, code, message, evidence = [], proposal =
 // step artifacts, writes only the observer log/report pair.
 function watchRun({ stateFile, telemetryFile, usDir, config, at } = {}) {
   if (!usDir) throw new Error('watch needs --us-dir');
+  // Fail closed before any write: the watched state file must live directly
+  // under --us-dir so observer artifacts cannot escape the run directory
+  // (e.g. writing %TEMP%/observer for a --us-dir above the workflow dir).
+  const jsonPath = jsonStatePath(stateFile);
+  if (path.dirname(path.resolve(jsonPath)) !== path.resolve(usDir)) {
+    throw new Error(`watch refused: state file is outside --us-dir (${stateFile})`);
+  }
   const targets = observerPaths(usDir);
   for (const target of [targets.log, targets.report]) {
     if (!containedPath(targets.dir, target)) {
       throw new Error(`observer write refused outside ${OBSERVER_DIRNAME}/: ${target}`);
     }
   }
-  const jsonPath = jsonStatePath(stateFile);
   if (!fs.existsSync(jsonPath)) throw new Error(`state file not found: ${stateFile}`);
   const state = readJson(jsonPath);
   const events = readTelemetryEvents(telemetryFile);
@@ -452,6 +523,8 @@ module.exports = {
   resolveMinVerifyScore,
   buildAgentTranscripts,
   assertValidMarker,
+  resolveObserverRepoRoot,
+  persistObserverMutation,
   recordAgentTranscripts,
   readTelemetryEvents,
   countObserverDispatches,

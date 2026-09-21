@@ -37,6 +37,17 @@ const gate = path.join(
   );
 }
 
+// Package membership: unrelated skills sharing the resolved skills root do not
+// fail the package Node-only gate (a global root holds third-party skills too).
+{
+  const root = temp('ws-unique-runtime-global-');
+  write(path.join(root, '.agents/skills/custom-skill/scripts/helper.py'), 'print(1)\n');
+  write(path.join(root, '.agents/skills/ws-demo/SKILL.md'), '# demo\n');
+  const res = run(gate, ['--json', '--repo-root', root]);
+  assert.strictEqual(res.status, 0, 'unrelated non-ws .py under the skills root does not fail the gate');
+  assert.strictEqual(JSON.parse(res.stdout).findingCount, 0, 'no findings for unrelated skills');
+}
+
 // AC9: no tracked .py under the shipped skills tree or bin/.
 {
   const tracked = spawnSync('git', ['ls-files', '--', '.agents/skills/**/*.py', 'bin/**/*.py'], {
@@ -73,6 +84,7 @@ const gate = path.join(
     path.join(repoRoot, 'test'),
     path.join(repoRoot, '.agents/skills'),
     path.join(repoRoot, 'bin'),
+    path.join(repoRoot, 'scripts'),
   ];
   const stack = [...roots];
   while (stack.length) {

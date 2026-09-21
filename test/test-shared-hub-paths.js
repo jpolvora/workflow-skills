@@ -56,6 +56,7 @@ const ALLOW = [
   { file: 'test/test-local-first-precedence.js', substr: '.ws/runtime', reason: 'stale-copy fixture proving skills-tree precedence' },
   { file: 'test/test-ws-shared-layout.js', substr: '.ws/runtime', reason: 'migration fixture proves the hub pointer never links a retired copy' },
   { file: 'test/test-skills-runtime-resolution.js', substr: '.ws/runtime', reason: 'fail-closed fixtures for the removed fallback' },
+  { file: 'test/test-bootstrap-runtime.js', substr: '.ws/runtime', reason: 'banned-directory negative fixture proving fail-closed' },
   { file: 'test/test-shared-hub-paths.js', substr: '.ws/runtime', reason: "sweep's own patterns and allowlist literals" },
   { file: 'test/test-shared-hub-paths.js', substr: '.ws/templates', reason: "sweep's own patterns and allowlist literals" },
 ];

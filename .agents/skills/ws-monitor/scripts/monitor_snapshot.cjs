@@ -4,41 +4,44 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { StringDecoder } = require('string_decoder');
 // Managed runtime loads from its skills installation: the project-local
 // skills tree ({skillsRoot}/ws-shared) or the global skills tree
 // ({globalSkillsRoot}/ws-shared, override via WORKFLOW_SKILLS_GLOBAL_DIR).
-// An explicit WORKFLOW_SKILLS_SHARED_DIR selects the shared hub root
-// (<hub>/runtime/scripts is used). The project consumer hub (<repo>/.ws)
-// holds only local config variable files (config.json, STACK.md, memory,
-// changelog) and is not a managed-runtime source.
 const HUB_SCRIPTS_DIR = (() => {
-  const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
-  const candidates = [packaged];
-  const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
-  if (explicitShared && String(explicitShared).trim()) {
-    candidates.unshift(path.join(path.resolve(String(explicitShared).trim()), 'runtime', 'scripts'));
-  }
   try {
-    candidates.push(path.resolve(process.cwd(), '.agents', 'skills', 'ws-shared', 'runtime', 'scripts'));
+    return require('../../ws-shared/runtime/scripts/bootstrap_runtime.cjs').resolveHubScriptsDir(__dirname);
   } catch {
-    // Ignore cwd resolution failures; remaining candidates still apply.
-  }
-  const globalDir = process.env.WORKFLOW_SKILLS_GLOBAL_DIR;
-  const globalRoot = globalDir && String(globalDir).trim()
-    ? path.resolve(String(globalDir).trim())
-    : path.join(require('os').homedir(), '.agents', 'skills');
-  candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
-  for (const candidate of [...new Set(candidates)]) {
-    try {
-      require.resolve(path.join(candidate, 'resolve_consumer_root.cjs'));
-      return candidate;
-    } catch {
-      // Try the next candidate.
+    const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
+    const candidates = [];
+    const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
+    if (explicitShared && String(explicitShared).trim()) {
+      candidates.unshift(path.join(path.resolve(String(explicitShared).trim()), 'runtime', 'scripts'));
     }
+    try {
+      candidates.push(path.resolve(process.cwd(), '.agents', 'skills', 'ws-shared', 'runtime', 'scripts'));
+    } catch {
+      // Ignore cwd resolution failures; remaining candidates still apply.
+    }
+    const globalDir = process.env.WORKFLOW_SKILLS_GLOBAL_DIR;
+    const globalRoot = globalDir && String(globalDir).trim()
+      ? path.resolve(String(globalDir).trim())
+      : path.join(os.homedir(), '.agents', 'skills');
+    candidates.push(packaged);
+    candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
+    for (const candidate of [...new Set(candidates)]) {
+      try {
+        require.resolve(path.join(candidate, 'resolve_consumer_root.cjs'));
+        return candidate;
+      } catch {
+        // Try the next candidate.
+      }
+    }
+    return packaged;
   }
-  return packaged;
 })();
 const { spawnSync } = require('child_process');
+const { spawnCliSync } = require(path.join(HUB_SCRIPTS_DIR, 'cli_spawn.cjs'));
 const {
   resolveConsumerContext,
   resolveConfiguredPath,
@@ -234,8 +237,12 @@ function readBoundedTailText(file, maxBytes = TRANSCRIPT_LIMITS.maxBytesPerFile)
     : [file];
   const tailChunks = [];
   let totalBytes = 0;
+  let decodedText = '';
   try {
     for (const tailTarget of tailTargets) {
+      // Per-file decoder: each tail is a separate byte stream; a shared decoder
+      // would carry a trailing partial sequence into the next file.
+      const decoder = new StringDecoder('utf8');
       const handle = fs.openSync(tailTarget, 'r');
       try {
         const stat = fs.fstatSync(handle);
@@ -243,13 +250,14 @@ function readBoundedTailText(file, maxBytes = TRANSCRIPT_LIMITS.maxBytesPerFile)
         const start = Math.max(0, stat.size - length);
         const buffer = Buffer.alloc(length);
         fs.readSync(handle, buffer, 0, length, start);
-        tailChunks.push(buffer);
+        decodedText += decoder.write(buffer);
         totalBytes += length;
+        decodedText += decoder.end();
       } finally {
         fs.closeSync(handle);
       }
     }
-    return { text: Buffer.concat(tailChunks).toString('utf8'), bytesRead: totalBytes, reason: null };
+    return { text: decodedText, bytesRead: totalBytes, reason: null };
   } catch (error) {
     return { text: null, bytesRead: 0, reason: error.message };
   }
@@ -730,9 +738,10 @@ function queryMemoryVault(context, options = {}) {
     const bin = parts[0];
     const binArgs = parts.slice(1);
     try {
-      const probe = spawnSync(bin, [...binArgs, 'search', '--kinds', 'state', '--status', 'active', '--cwd', context.repoRoot, '--json'], {
+      // spawnCliSync keeps --cwd paths containing spaces intact and retries
+      // through ComSpec for win32 npm shims (memo.cmd).
+      const probe = spawnCliSync(bin, [...binArgs, 'search', '--kinds', 'state', '--status', 'active', '--cwd', context.repoRoot, '--json'], {
         encoding: 'utf8',
-        shell: process.platform === 'win32',
         timeout: 5000,
       });
       if (probe.status === 0 && probe.stdout) {
@@ -977,6 +986,16 @@ function resolveStateAgentTranscripts(state) {
   return null;
 }
 
+// Location classification: 'workspace' only when the target resolves
+// inside the repo root. Cross-drive targets (path.relative returns the
+// absolute target on win32) and any '..'-escaping relative classify 'user'.
+function classifyLocation(repoRootResolved, absolute) {
+  const rel = path.relative(path.resolve(repoRootResolved), path.resolve(absolute));
+  if (path.isAbsolute(rel)) return 'user';
+  if (rel.split(path.sep)[0] === '..') return 'user';
+  return 'workspace';
+}
+
 // us-365 fix-pr: state-recorded transcript paths drive the primary
 // transcript source before host-store discovery, so default-off discovery
 // runs stay consistent (no available/unavailable contradiction) and stall
@@ -997,7 +1016,7 @@ function resolveStateTranscriptSource(stateTx, repoRoot) {
     return {
       status: 'available',
       adapter: guessTranscriptAdapter(primary),
-      locationClass: path.relative(repoRootResolved, absolute).startsWith('..') ? 'user' : 'workspace',
+      locationClass: classifyLocation(repoRootResolved, absolute),
       sessionMtime,
       pathCount: stateTx.paths.length,
       source: 'state-recorded',
@@ -1036,7 +1055,7 @@ function resolveTranscriptSource(workflow, scannedFiles, discoveryEnabled, repoR
   return {
     status: 'available',
     adapter: guessTranscriptAdapter(best.file),
-    locationClass: path.resolve(best.file).startsWith(repoRootResolved) ? 'workspace' : 'user',
+    locationClass: classifyLocation(repoRootResolved, best.file),
     sessionMtime: best.mtimeMs ? new Date(best.mtimeMs).toISOString() : null,
   };
 }
@@ -1430,4 +1449,5 @@ module.exports = {
   expandMuseSessionDirs,
   collapseHomePaths,
   correlationMatches,
+  classifyLocation,
 };

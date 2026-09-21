@@ -73,6 +73,20 @@ if (shouldBump) {
     fs.writeFileSync(rel, JSON.stringify(deps, null, 2) + '\n');
     console.log(`Synced packageVersion in ${path.relative(root, rel)}`);
   }
+
+  // Keep the consumer-fixture tarball reference aligned with the release version.
+  const testPkgPath = path.join(root, 'test', 'package.json');
+  if (fs.existsSync(testPkgPath)) {
+    const testPkg = JSON.parse(fs.readFileSync(testPkgPath, 'utf-8'));
+    const depName = 'workflow-skills';
+    const current = testPkg.dependencies && testPkg.dependencies[depName];
+    const next = `file:../workflow-skills-${siteVersion}.tgz`;
+    if (typeof current === 'string' && current.startsWith('file:../workflow-skills-') && current !== next) {
+      testPkg.dependencies[depName] = next;
+      fs.writeFileSync(testPkgPath, JSON.stringify(testPkg, null, 2) + '\n');
+      console.log(`Synced tarball ref in test/package.json: ${current} -> ${next}`);
+    }
+  }
 } else {
   console.log(`Using package.json version: ${siteVersion} (pass --bump to patch-bump)`);
 }

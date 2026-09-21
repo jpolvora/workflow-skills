@@ -48,7 +48,7 @@ Always apply this layout and resolution order. **`.agents/skills/ws-*` is the ON
 | Layer | Path | Role |
 |-------|------|------|
 | **Upstream development SoT** | `.agents/skills/ws-*` | Author, test, and publish skill bodies here. Packaging, integrity, catalog, and harness audits treat **`.agents/skills/`** as the only skill-content SoT. |
-| **Project config hub** | `$PWD/.ws/` | Stable consumer root: track non-secret `config.json` and maintained `STACK.md`; generated memory/history and installer metadata are local. Managed runtime contracts live under `runtime/`; setup seeds live under `templates/`; the `runtime/hub-layout.json` manifest classifies the boundary. |
+| **Project config hub** | `$PWD/.ws/` | Stable consumer root: track non-secret `config.json` and maintained `STACK.md`; generated memory/history and installer metadata are local. Managed runtime contracts live under the skills install (`{skillsRoot}/ws-shared/runtime/`); setup seeds live under `{skillsRoot}/ws-shared/templates/`; `.ws/` never carries `runtime/` or `templates/` copies. |
 | **Project-local install** | `$PWD/.agents/skills/ws-*` | Optional: install skill packages into a consumer project. Skill bodies live beside the project hub. |
 | **Global install** | `$HOME/.agents/skills/ws-*` (override via `WORKFLOW_SKILLS_GLOBAL_DIR`) | Optional: install skill packages once per machine. Agents may load global `ws-*` while the open project keeps its own `ws-shared` config. |
 

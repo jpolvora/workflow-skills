@@ -12,7 +12,7 @@ const path = require('path');
 // changelog) and is not a managed-runtime source.
 const HUB_SCRIPTS_DIR = (() => {
   const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
-  const candidates = [packaged];
+  const candidates = [];
   const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
   if (explicitShared && String(explicitShared).trim()) {
     candidates.unshift(path.join(path.resolve(String(explicitShared).trim()), 'runtime', 'scripts'));
@@ -26,6 +26,7 @@ const HUB_SCRIPTS_DIR = (() => {
   const globalRoot = globalDir && String(globalDir).trim()
     ? path.resolve(String(globalDir).trim())
     : path.join(require('os').homedir(), '.agents', 'skills');
+  candidates.push(packaged);
   candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
   for (const candidate of [...new Set(candidates)]) {
     try {
@@ -47,6 +48,7 @@ function parseArgs(argv) {
   const options = {
     slug: null,
     repoRoot: null,
+    specsDir: null,
     context: false,
     json: false,
   };
@@ -54,13 +56,15 @@ function parseArgs(argv) {
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === '--help' || arg === '-h') {
-      console.log('Usage: resolve_spec_path.cjs --slug <slug> [--repo-root <dir>] [--context] [--json]');
+      console.log('Usage: resolve_spec_path.cjs --slug <slug> [--repo-root <dir>] [--specs-dir <dir>] [--context] [--json]');
       process.exit(0);
     }
     if (arg === '--slug') {
       options.slug = argv[++index];
     } else if (arg === '--repo-root') {
       options.repoRoot = argv[++index];
+    } else if (arg === '--specs-dir') {
+      options.specsDir = argv[++index];
     } else if (arg === '--context') {
       options.context = true;
     } else if (arg === '--json') {
@@ -69,6 +73,8 @@ function parseArgs(argv) {
       options.slug = arg.slice('--slug='.length);
     } else if (arg.startsWith('--repo-root=')) {
       options.repoRoot = arg.slice('--repo-root='.length);
+    } else if (arg.startsWith('--specs-dir=')) {
+      options.specsDir = arg.slice('--specs-dir='.length);
     } else {
       console.error(`unknown argument: ${arg}`);
       process.exit(2);
@@ -92,8 +98,8 @@ function resolveSpecPath(options) {
   const config = context.config || {};
   const plans = config.plans || {};
   const enforceSpecPrefixOrdering = plans.enforceSpecPrefixOrdering === true;
-  const specsRel = plans.specsDir || '.agents/specs';
-  const specsDir = path.resolve(context.repoRoot, specsRel);
+  const specsRel = String(options.specsDir || '').trim() || plans.specsDir || '.agents/specs';
+  const specsDir = path.isAbsolute(specsRel) ? path.resolve(specsRel) : path.resolve(context.repoRoot, specsRel);
 
   const cleanSlug = String(options.slug).replace(/^\d{4}-/, '');
   let prefixedHit = null;

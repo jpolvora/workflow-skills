@@ -16,3 +16,5 @@ host-capabilities.json
 config.json.bak
 *.bak
 memory/**
+.quarantine-*/
+ws-check-workflows-report.md

@@ -26,6 +26,7 @@ const {
   shouldDispatchObserver,
   noteObserverDispatch,
   watchRun,
+  canonicalStateJson,
 } = require(OBSERVER);
 const { resolveStateAgentTranscripts, resolveStateTranscriptSource } = require(MONITOR);
 const { loadJsonSchema, validateNode } = require(
@@ -146,6 +147,15 @@ for (const bad of [
   assert(absent.status === 'transcript-unavailable', 'AC1 record returns absent marker');
   assert(resolveStateAgentTranscripts(JSON.parse(fs.readFileSync(stateFile, 'utf8')))?.reason === 'discovery-disabled',
     'AC1 ws-monitor resolves the absent marker with reason');
+  // NS1: canonical writes bump revision and keep the plans index in sync.
+  const finalState = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
+  assert(finalState.revision === 2, 'AC1 record bumps revision through the canonical writer');
+  const plansIndex = JSON.parse(fs.readFileSync(path.join(root, '.agents', 'plans', 'index.json'), 'utf8'));
+  const indexRow = (plansIndex.workflows || []).find((item) => item.workflowId === 'wf-demo');
+  assert(
+    indexRow && indexRow.stateSha256 === crypto.createHash('sha256').update(canonicalStateJson(finalState)).digest('hex'),
+    'AC1 plans index stateSha256 matches the new state'
+  );
   fs.rmSync(root, { recursive: true, force: true });
 }
 
@@ -298,9 +308,16 @@ assert(shouldDispatchObserver({
   const report = fs.readFileSync(reportPath, 'utf8');
   assert(report.includes('## Fix proposals') && report.includes('Upstream fix'),
     'AC5 report carries upstream-scoped fix proposals');
-  // Watch refuses writes outside observer/.
+  // Watch refuses a --us-dir outside the watched state file with an exact
+  // refusal and leaves no %TEMP%/observer residue.
   const escape = runObserver(['watch', '--state', stateFile, '--us-dir', path.join(root, '..')]);
-  assert(escape.status === 0 || escape.status === 1, 'AC5 watch with odd us-dir does not crash the harness');
+  assert(escape.status !== 0, 'AC5 watch with escaping us-dir exits non-zero');
+  assert(/outside --us-dir/.test(`${escape.stdout || ''}${escape.stderr || ''}`), 'AC5 escape refusal names outside --us-dir');
+  const residue = path.join(root, '..', 'observer');
+  try {
+    fs.rmSync(residue, { recursive: true, force: true });
+  } catch {}
+  assert(!fs.existsSync(residue), 'AC5 no %TEMP%/observer residue after refused watch');
   fs.rmSync(root, { recursive: true, force: true });
 }
 

@@ -33,9 +33,16 @@ const verify = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-plan-verif
 assert.match(verify, /negative test/i);
 assert.match(verify, /negativeScenarios/);
 
-const pkg = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'));
-assert.match(pkg.scripts['tests:harness-efficiency'], /test-validate-spec\.js/);
-assert.match(pkg.scripts['tests:harness-efficiency'], /test-spec-dor-tdd\.js/);
+const suites = JSON.parse(fs.readFileSync(path.join(repoRoot, 'test/test-suites.json'), 'utf8'));
+const harnessEntries = (suites.harnessEfficiency || []).map((entry) => entry.join(' '));
+assert.ok(
+  harnessEntries.some((entry) => /test-validate-spec\.js/.test(entry)),
+  'harness-efficiency suite registers test-validate-spec.js',
+);
+assert.ok(
+  harnessEntries.some((entry) => /test-spec-dor-tdd\.js/.test(entry)),
+  'harness-efficiency suite registers test-spec-dor-tdd.js',
+);
 
 // V9 — thin ingest assert: inline AC backticks must not steal Notes section
 const stealSpec = [

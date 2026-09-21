@@ -99,7 +99,7 @@ function makeGlobalWithoutHub() {
   }
   check(error !== null, 'global-without-hub fails closed instead of proceeding');
   check(/ws-configure-project/.test(String(error && error.message)), 'fail-closed error points at ws-configure-project');
-  check(!/global.*config\.json/i.test(String(error && error.message)) || /refusing/i.test(String(error && error.message)), 'error never presents global config as usable');
+  check(/refusing to use global config as project config/.test(String(error && error.message)), 'error states the refusal phrase directly');
 }
 
 // 2. Negative proof: the same global invocation WITH a project hub passes

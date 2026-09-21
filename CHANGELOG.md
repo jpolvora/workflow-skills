@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-20 19:15] Agent: Antigravity
+- **Prompt**: /ws-spec-to-pr .agents/specs/0108-code-review-findings-fixes.spec.md
+- **Done**: Implemented centralized runtime bootstrap helper in `bootstrap_runtime.cjs` (`resolveHubScriptsDir`), refactored skill scripts (`check_unique_runtime.cjs`, `observer.cjs`, `ac_ledger.cjs`), standardized cross-platform `os.homedir()` in `check_hub_separation.cjs`, added streaming multi-byte UTF-8 decoding with `StringDecoder` in `monitor_snapshot.cjs`, and enforced automated check against forbidden `.ws/runtime` directory in `check_unique_runtime.cjs`. Added regression test suite `test/test-bootstrap-runtime.js` and regenerated integrity manifest.
+- **Result**: Verification score 10/10; all ACs/NSs verified; `npm run test` green; `test-harness-clean.js` 0 findings; `verify-integrity` OK.
+
 ### [2026-09-20 12:31] Agent: opencode (deepseek-v4.1-flash)
 - **Prompt**: Enforce managed-runtime location: never allow `.ws/runtime`; runtime must resolve from `{projectRoot|globalSkillsRoot}/.agents/skills/ws-shared/runtime`.
 - **Done**: Installer now copies the managed `ws-shared` tree (runtime + templates) into the skills install and retires `.ws/runtime`/`.ws/templates` on install/update; `.ws` keeps consumer config, the generated `AGENTS.md` entrypoint, and `autoload.md`. Resolver, hub-separation gate, and link checker drop the `.ws` fallback; 59 skill bootstraps drop the deprecated `.ws` fallback; seed templates get refreshed. Consumer config `$schema`/`toolsFile` repoint to the managed runtime. Hub/root docs, README, FEATURES, CATALOG, SPEC-MANAGEMENT, install shim banner, and wiki pages retargeted to `{skillsRoot}|{globalSkillsRoot}/ws-shared`. Tests updated + new negative invariant (`.ws/runtime` never resolves or installs); version 0.4.46 + integrity regen + site/wiki rebuild.

@@ -158,6 +158,10 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Add AGENTS.md rule: check the skill dependency graph when editing a skill so callers and callees stay in sync (`spec: 0099-us-358.spec.md`)
 - [x] .ws resolution vs ws-shared folders cleanup (`spec: 0106-ws-shared-resolution-cleanup.spec.md`) — PR #374 MERGED
 - [ ] ws-monitor transcript signals fire false positives on healthy runs (hybrid-path-resolution, model-fallback, subagent-error) (`spec: 0107-us-369.spec.md`)
+- [x] Harness & Skills Hardening from Code Review of Recent PRs (`spec: 0108-code-review-findings-fixes.spec.md`)
+- [ ] Harness Hardening Round 2 — Open Findings from the 20-Commit Read-Only Review (`spec: 0109-code-review-round-2-fixes.spec.md`)
+
+
 
 
 
@@ -338,6 +342,10 @@ All Next-specs closed except true todo: `us-369`.
 
 | 112 | `us-369` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor transcript signals fire false positives on healthy runs (hybrid-path-resolution, model-fallback, subagent-error) |
 
+| 113 | `code-review-findings-fixes` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Harness & Skills Hardening from Code Review of Recent PRs |
+
+| 114 | `code-review-round-2-fixes` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Harness Hardening Round 2 — Open Findings from the 20-Commit Read-Only Review |
+
 ## 9. Inbox
 
 - Advanced multi-repository orchestrator support
@@ -455,6 +463,7 @@ All Next-specs closed except true todo: `us-369`.
 | 2026-09-20 | `ws-wiki-spec-sweep` | ws-wiki first-time sequential spec sweep | [PR #372](https://github.com/jpolvora/workflow-skills/pull/372) |
 | 2026-09-20 | `us-365` | ws-spec-to-pr orchestrator could dispatch and observer/watcher for errors during execution | [PR #373](https://github.com/jpolvora/workflow-skills/pull/373) |
 | 2026-09-20 | `ws-shared-resolution-cleanup` | .ws resolution vs ws-shared folders cleanup | [PR #374](https://github.com/jpolvora/workflow-skills/pull/374) |
+| 2026-09-20 | `code-review-findings-fixes` | Harness & Skills Hardening from Code Review of Recent PRs | `3cbdd0b9` (develop) |
 
 ## 11. Maintenance checklist
 

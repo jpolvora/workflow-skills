@@ -26,7 +26,7 @@ const path = require('path');
 // hub (<repo>/.ws). Mirrors resolveConsumerContext runtimeSource precedence.
 const HUB_SCRIPTS_DIR = (() => {
   const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
-  const candidates = [packaged];
+  const candidates = [];
   const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
   if (explicitShared && String(explicitShared).trim()) {
     candidates.unshift(path.join(path.resolve(String(explicitShared).trim()), 'runtime', 'scripts'));
@@ -40,6 +40,7 @@ const HUB_SCRIPTS_DIR = (() => {
   const globalRoot = globalDir && String(globalDir).trim()
     ? path.resolve(String(globalDir).trim())
     : path.join(require('os').homedir(), '.agents', 'skills');
+  candidates.push(packaged);
   candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
   for (const candidate of [...new Set(candidates)]) {
     try {
@@ -135,7 +136,14 @@ function loadSpecToPrAdoConfig(repoRoot) {
   return ado;
 }
 
-function loadAzdoConfig(repoRoot) {
+const DEFAULT_API_BASE = 'https://dev.azure.com';
+
+function normalizeApiBase(value) {
+  const raw = String(value || '').trim().replace(/\/+$/, '');
+  return raw || DEFAULT_API_BASE;
+}
+
+function loadAzdoConfig(repoRoot, overrides = {}) {
   const { secretPath: legacySecretPath } = resolveAzdoLegacyPaths(repoRoot);
 
   const ado = loadSpecToPrAdoConfig(repoRoot);
@@ -148,7 +156,8 @@ function loadAzdoConfig(repoRoot) {
       console.error(`Missing PAT. Set env var ${patEnvVar} (or ADO_PAT / AZURE_DEVOPS_PAT).`);
       process.exit(1);
     }
-    return { organization, project, pat };
+    const apiBase = normalizeApiBase(overrides.apiBase || ado.apiBase);
+    return { organization, project, pat, apiBase };
   }
 
   // Legacy fallback only
@@ -169,7 +178,7 @@ function loadAzdoConfig(repoRoot) {
       + '.agents/skills/azure-devops/azure-devops.secret.');
     process.exit(1);
   }
-  return { organization, project, pat };
+  return { organization, project, pat, apiBase: normalizeApiBase(overrides.apiBase || config.apiBase) };
 }
 
 // urllib.parse.quote default (safe='/'): encode like Python.
@@ -179,8 +188,8 @@ function pyQuote(value) {
     .replace(/%2F/gi, '/');
 }
 
-function baseUrl(organization, project) {
-  return `https://dev.azure.com/${organization}/${pyQuote(project)}`;
+function baseUrl(organization, project, apiBase) {
+  return `${normalizeApiBase(apiBase)}/${organization}/${pyQuote(project)}`;
 }
 
 function prWebUrl(pr) {
@@ -192,8 +201,8 @@ function prWebUrl(pr) {
   return String(pr.url || '');
 }
 
-function gitUrl(organization, project, repository, suffix) {
-  return `${baseUrl(organization, project)}/_apis/git/repositories/${pyQuote(repository)}/${suffix}`;
+function gitUrl(organization, project, repository, suffix, apiBase) {
+  return `${baseUrl(organization, project, apiBase)}/_apis/git/repositories/${pyQuote(repository)}/${suffix}`;
 }
 
 function authHeaders(pat, contentType = 'application/json') {
@@ -233,8 +242,8 @@ async function azdoRequest(method, url, pat, body, contentType = 'application/js
   return JSON.parse(raw);
 }
 
-async function runAzureDevopsSmokeCheck(organization, project, pat) {
-  const url = `${baseUrl(organization, project)}/_apis/wit/fields/System.State?api-version=7.1`;
+async function runAzureDevopsSmokeCheck(organization, project, pat, apiBase) {
+  const url = `${baseUrl(organization, project, apiBase)}/_apis/wit/fields/System.State?api-version=7.1`;
   try {
     await azdoRequest('GET', url, pat);
     return {
@@ -354,23 +363,23 @@ function normalizeThread(thread, includeSystem) {
   };
 }
 
-async function getPrContext(repoRoot, prId, repository, includeSystem) {
-  const { organization, project, pat } = loadAzdoConfig(repoRoot);
-  const smoke = await runAzureDevopsSmokeCheck(organization, project, pat);
+async function getPrContext(repoRoot, prId, repository, includeSystem, options = {}) {
+  const { organization, project, pat, apiBase } = loadAzdoConfig(repoRoot, { apiBase: options.apiBase });
+  const smoke = await runAzureDevopsSmokeCheck(organization, project, pat, apiBase);
 
   const pr = await azdoRequest(
     'GET',
-    gitUrl(organization, project, repository, `pullRequests/${prId}?api-version=7.1`),
+    gitUrl(organization, project, repository, `pullRequests/${prId}?api-version=7.1`, apiBase),
     pat,
   );
   const threadsPayload = await azdoRequest(
     'GET',
-    gitUrl(organization, project, repository, `pullRequests/${prId}/threads?api-version=7.1`),
+    gitUrl(organization, project, repository, `pullRequests/${prId}/threads?api-version=7.1`, apiBase),
     pat,
   );
   const workItemsPayload = await azdoRequest(
     'GET',
-    gitUrl(organization, project, repository, `pullRequests/${prId}/workitems?api-version=7.1`),
+    gitUrl(organization, project, repository, `pullRequests/${prId}/workitems?api-version=7.1`, apiBase),
     pat,
   );
   const workItemRefs = (workItemsPayload && workItemsPayload.value) || [];
@@ -378,7 +387,7 @@ async function getPrContext(repoRoot, prId, repository, includeSystem) {
   const workItems = [];
   const ids = workItemRefs.map((item) => String(item.id));
   if (ids.length > 0) {
-    const itemsUrl = `${baseUrl(organization, project)}/_apis/wit/workitems`
+    const itemsUrl = `${baseUrl(organization, project, apiBase)}/_apis/wit/workitems`
       + `?ids=${ids.join(',')}&fields=${pyQuote(DEFAULT_WORK_ITEM_FIELDS)}&api-version=7.1`;
     const itemsPayload = await azdoRequest('GET', itemsUrl, pat);
     for (const item of (itemsPayload && itemsPayload.value) || []) {
@@ -390,7 +399,7 @@ async function getPrContext(repoRoot, prId, repository, includeSystem) {
         title: fields['System.Title'],
         description: cleanHtml(fields['System.Description']),
         acceptanceCriteria: cleanHtml(fields['Microsoft.VSTS.Common.AcceptanceCriteria']),
-        url: `${baseUrl(organization, project)}/_workitems/edit/${item.id}`,
+        url: `${baseUrl(organization, project, apiBase)}/_workitems/edit/${item.id}`,
       });
     }
   }
@@ -483,7 +492,7 @@ function formatResolutionComment(comment, model) {
   return `${body}\n\n---\n${MODEL_FOOTER_PREFIX} ${id}`;
 }
 
-async function resolveThread(repoRoot, prId, repository, threadId, comment, model, dryRun) {
+async function resolveThread(repoRoot, prId, repository, threadId, comment, model, dryRun, options = {}) {
   assertResolutionComment(comment);
   const formattedComment = formatResolutionComment(comment, model);
   if (dryRun) {
@@ -498,21 +507,21 @@ async function resolveThread(repoRoot, prId, repository, threadId, comment, mode
     };
   }
 
-  const { organization, project, pat } = loadAzdoConfig(repoRoot);
-  await runAzureDevopsSmokeCheck(organization, project, pat);
+  const { organization, project, pat, apiBase } = loadAzdoConfig(repoRoot, { apiBase: options.apiBase });
+  await runAzureDevopsSmokeCheck(organization, project, pat, apiBase);
 
   const commentsSuffix = `pullRequests/${prId}/threads/${threadId}/comments?api-version=7.1`;
   const patchSuffix = `pullRequests/${prId}/threads/${threadId}?api-version=7.1`;
 
   const posted = await azdoRequest(
     'POST',
-    gitUrl(organization, project, repository, commentsSuffix),
+    gitUrl(organization, project, repository, commentsSuffix, apiBase),
     pat,
     { content: formattedComment, commentType: 1 },
   );
   const patched = await azdoRequest(
     'PATCH',
-    gitUrl(organization, project, repository, patchSuffix),
+    gitUrl(organization, project, repository, patchSuffix, apiBase),
     pat,
     { status: 'fixed' },
   );
@@ -526,13 +535,14 @@ async function resolveThread(repoRoot, prId, repository, threadId, comment, mode
 }
 
 function printTopHelp() {
-  console.log(`Usage: node fix_pr_azure_context.cjs [--repo-root DIR] [--repository NAME] {collect|resolve-thread} ...
+  console.log(`Usage: node fix_pr_azure_context.cjs [--repo-root DIR] [--repository NAME] [--api-base URL] {collect|resolve-thread} ...
 
 Azure DevOps helper for fix-pr.
 
 Options:
   --repo-root DIR     Repository root. Default: autodetect.
   --repository NAME   Azure DevOps repository name. Default: autodetect.
+  --api-base URL      Azure DevOps base URL. Default: issueTrackers.azureDevOps.apiBase or https://dev.azure.com.
 
 Commands:
   collect             Collect PR, threads, comments, and work items.
@@ -549,7 +559,8 @@ Options:
   --include-system    Include system comments
   --output FILE       Output JSON file. Default: stdout.
   --repo-root DIR     Repository root. Default: autodetect.
-  --repository NAME   Azure DevOps repository name. Default: autodetect.`);
+  --repository NAME   Azure DevOps repository name. Default: autodetect.
+  --api-base URL      Azure DevOps base URL. Default: issueTrackers.azureDevOps.apiBase or https://dev.azure.com.`);
 }
 
 function printResolveHelp() {
@@ -564,7 +575,8 @@ Options:
   --model ID          Optional session model id for the resolution footer (host metadata, not a new intent).
   --dry-run           Simulate resolution locally without posting a comment or changing status in Azure DevOps.
   --repo-root DIR     Repository root. Default: autodetect.
-  --repository NAME   Azure DevOps repository name. Default: autodetect.`);
+  --repository NAME   Azure DevOps repository name. Default: autodetect.
+  --api-base URL      Azure DevOps base URL. Default: issueTrackers.azureDevOps.apiBase or https://dev.azure.com.`);
 }
 
 function parseIntOption(name, raw) {
@@ -579,6 +591,7 @@ function parseIntOption(name, raw) {
 function parseArgs(argv) {
   let repoRoot = '';
   let repository = '';
+  let apiBase = '';
   const rest = [];
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -604,10 +617,19 @@ function parseArgs(argv) {
         process.exit(2);
       }
       repository = value;
+    } else if (arg === '--api-base') {
+      const value = argv[++i];
+      if (value === undefined) {
+        console.error('argument --api-base: expected one argument');
+        process.exit(2);
+      }
+      apiBase = value;
     } else if (arg.startsWith('--repo-root=')) {
       repoRoot = arg.slice('--repo-root='.length);
     } else if (arg.startsWith('--repository=')) {
       repository = arg.slice('--repository='.length);
+    } else if (arg.startsWith('--api-base=')) {
+      apiBase = arg.slice('--api-base='.length);
     } else {
       rest.push(arg);
     }
@@ -622,7 +644,7 @@ function parseArgs(argv) {
   const tail = rest.slice(1);
 
   if (action === 'collect') {
-    const options = { action, repoRoot, repository, prId: null, includeSystem: false, output: '' };
+    const options = { action, repoRoot, repository, apiBase, prId: null, includeSystem: false, output: '' };
     for (let i = 0; i < tail.length; i += 1) {
       const arg = tail[i];
       if (arg === '--help' || arg === '-h') {
@@ -643,6 +665,10 @@ function parseArgs(argv) {
         options.repoRoot = tail[++i] ?? '';
       } else if (arg === '--repository') {
         options.repository = tail[++i] ?? '';
+      } else if (arg === '--api-base') {
+        options.apiBase = tail[++i] ?? '';
+      } else if (arg.startsWith('--api-base=')) {
+        options.apiBase = arg.slice('--api-base='.length);
       } else if (arg.startsWith('--pr-id=')) {
         options.prId = parseIntOption('--pr-id', arg.slice('--pr-id='.length));
       } else if (arg.startsWith('--output=')) {
@@ -692,6 +718,10 @@ function parseArgs(argv) {
         options.repoRoot = tail[++i] ?? '';
       } else if (arg === '--repository') {
         options.repository = tail[++i] ?? '';
+      } else if (arg === '--api-base') {
+        options.apiBase = tail[++i] ?? '';
+      } else if (arg.startsWith('--api-base=')) {
+        options.apiBase = arg.slice('--api-base='.length);
       } else if (arg.startsWith('--pr-id=')) {
         options.prId = parseIntOption('--pr-id', arg.slice('--pr-id='.length));
       } else if (arg.startsWith('--thread-id=')) {
@@ -759,7 +789,7 @@ async function main(argv) {
   }
 
   if (args.action === 'collect') {
-    const payload = await getPrContext(repoRoot, args.prId, repository, args.includeSystem);
+    const payload = await getPrContext(repoRoot, args.prId, repository, args.includeSystem, { apiBase: args.apiBase });
     const text = JSON.stringify(payload, null, 2);
     if (args.output) {
       const outputPath = path.resolve(args.output);
@@ -781,6 +811,7 @@ async function main(argv) {
       args.comment,
       args.model,
       args.dryRun,
+      { apiBase: args.apiBase },
     );
     console.log(JSON.stringify(payload, null, 2));
     return 0;
@@ -802,7 +833,7 @@ if (require.main === module) {
 
 module.exports = {
   parseArgs, resolvePat, resolveAzdoLegacyPaths, loadSpecToPrAdoConfig,
-  loadAzdoConfig, baseUrl, prWebUrl, gitUrl, authHeaders, cleanHtml,
+  loadAzdoConfig, baseUrl, normalizeApiBase, DEFAULT_API_BASE, prWebUrl, gitUrl, authHeaders, cleanHtml,
   detectRepository, normalizeThread, resolutionCommentSubstance,
   hasLexicalWord, formatResolutionComment,
 };

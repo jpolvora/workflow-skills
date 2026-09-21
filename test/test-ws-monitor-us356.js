@@ -355,6 +355,16 @@ fs.utimesSync(sessionFile, new Date(Date.now() - 3600_000), new Date(Date.now() 
   if (!merged.text.includes('wal-only-marker-line')) {
     throw new Error('us-356 AC4: WAL-only content invisible to tail read');
   }
+  // Cross-file decoder isolation (PR #377 round 1): a trailing partial UTF-8
+  // sequence in one tail must not complete against the next file's bytes.
+  const splitDb = path.join(museSessionsDir, `${slug}-split`, 'split-store.vscdb');
+  fs.mkdirSync(path.dirname(splitDb), { recursive: true });
+  fs.writeFileSync(splitDb, Buffer.concat([Buffer.from('split-head ', 'utf8'), Buffer.from([0xE2, 0x82])]));
+  fs.writeFileSync(`${splitDb}-wal`, Buffer.concat([Buffer.from([0xAC]), Buffer.from(' wal-tail', 'utf8')]));
+  const splitRead = readBoundedTailText(splitDb, 4096);
+  if (splitRead.text === null || splitRead.reason) throw new Error(`cross-file decoder read failed: ${splitRead.reason}`);
+  if (splitRead.text.includes('€')) throw new Error('decoder state leaked across files: partial sequence completed from the next tail');
+  if (!splitRead.text.includes('split-head') || !splitRead.text.includes('wal-tail')) throw new Error('cross-file tails lost content');
   // Bounded SQLite handling: tail reads never copy the store, however large.
   const fsMod = require('fs');
   const origCopy = fsMod.copyFileSync;

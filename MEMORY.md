@@ -6,6 +6,78 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 
 ---
 
+### [2026-09-21] Win32 npm shims need a ComSpec retry, not shell:false or a .cmd suffix
+- **Layer**: `Infrastructure`
+- **Module**: `cli-spawn-shim`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/scripts/cli_spawn.cjs, .agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs, .agents/skills/ws-monitor/scripts/monitor_snapshot.cjs, .agents/skills/ws-spec-memo/scripts/*.cjs`
+- **Scenario / Context**: AC3 switched spec-memo CLI probes from `shell: process.platform === 'win32'` to `shell: false` to keep spaced `--cwd` paths intact. Review threads (PR #377, score 7/10) correctly flagged the regression: on Windows, configured launchers like `memo` / `npx -y ...` resolve to `*.cmd` shims that `shell: false` cannot execute (bare name -> ENOENT). The suggested fix (append `.cmd`, keep `shell: false`) was empirically refuted on Node 22 win32: `spawnSync('x.cmd', { shell: false })` -> EINVAL, because batch files cannot execute without a shell at all.
+- **DO NOT**: spawn a configured CLI bin with `shell: false` on win32 and assume npm shims resolve; nor "fix" it by appending `.cmd` while keeping `shell: false`; nor revert to `shell: true` with an argv array (re-splits spaced paths, the original AC3 defect).
+- **INSTEAD DO**: route configured-CLI spawns through `spawnCliSync` (`ws-shared/runtime/scripts/cli_spawn.cjs`): first attempt `shell: false` everywhere, and only on win32 ENOENT retry once through ComSpec with a pre-quoted command line (`quoteCmdArg` + `shell: true` with a caller-quoted string) so PATHEXT shims resolve while spaced args stay intact. Cover with `test/test-cli-spawn-shim.js` (native passthrough, spaced argv, quoting units, missing-bin surfacing, win32-only live `.cmd` fixture test).
+
+### [2026-09-21] Resolver precedence and same-installation coherence
+- **Layer**: `Tests / Workflow harness`
+- **Module**: `ws-shared bootstrap (`bootstrap_runtime.cjs` + standalone fallback copies), `cli_spawn.cjs`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/**/scripts/*.cjs`, `.agents/skills/**/scripts/*.js`
+- **Scenario / Context**: Review threads flagged the runtime resolver checking the packaged copy before consumer-local/global roots, contradicting the documented local-first contract. Applying the suggestion literally (packaged strictly last) broke the repo's own spawned children: with a runtime-less cwd they resolved a stale machine-global runtime missing new modules (`test-ws-monitor-us356.js` child crash). The same class existed in 60 standalone fallback copies.
+- **DO NOT**: Order resolver candidates packaged-first (ignores consumer-local overrides), nor packaged-last without checking same-installation coherence; do not apply reviewer-suggested reorderings without running the repo's own suite, which exercises foreign-cwd child spawns.
+- **INSTEAD DO**: Order explicit override, repo-local, packaged same-installation copy, global root last; sweep the whole class with a deterministic EOL-preserving codemod (abort on non-unique anchors) plus an order verifier; cover with a local-beats-packaged precedence test and re-run `npm run test`, `test-harness-clean.js`, and integrity regen before ship.
+
+### [2026-09-21] Package membership excludes external ws-* companions; resolver requires package presence
+- **Layer**: `Tests / Workflow harness`
+- **Module**: `ws-check-harness Phase 5a gates + ws-shared resolver (`check_unique_runtime.cjs`, `check_harness_links.cjs`, `check_shell_quoting.cjs`, `check_duplicates.cjs`, `resolve_consumer_root.cjs`)`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-check-harness/scripts/*.cjs, .agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs`
+- **Scenario / Context**: PR #377 review threads (scores 7/7/7/7/8/8/8/8/8) flagged two refinements of the round-3 package-membership fix. (a) `packageRoots()` filtered by `ws-shared` or `ws-*`, which includes explicitly external companions `ws-memo` + `ws-session-tracking` (spec-memo package, `bin/skill-dependencies.json` `externalSkills`), so a shared global root holding `ws-memo/scripts/helper.py` would fail the Node-only gate on foreign content. (b) `resolveConsumerContext()` without `skillId` picked local merely because `.agents/skills` exists, so a hybrid consumer with an otherwise empty local dir + global-only workflow-skills install scanned the empty local tree and missed global defects (false-clean). Existing global-only tests seed no local dir and do not cover partial-hybrid; existing `ws-demo` fixtures are indistinguishable from package-owned folders under a manifest-only predicate.
+- **DO NOT**: Filter package membership by bare `startsWith('ws-')` without excluding `externalSkills` ids; select the local skills root merely because the directory exists when no `skillId` was requested; switch to manifest-only `packageIds.has()` without preserving `ws-demo`-style fixture behavior; leave unrelated-skill fixtures without `WORKFLOW_SKILLS_GLOBAL_DIR` isolation once the resolver falls back to global.
+- **INSTEAD DO**: Exclude known externals in every `packageRoots()` via `externalSkillIds(repoRoot)` (manifest `externalSkills` when readable, else fallback `ws-memo`/`ws-session-tracking`); keep `ws-shared` + non-external `ws-*` so `ws-demo` fixtures still encode package behavior; in `resolveConsumerContext()` with no `skillId`, select local only when it holds package content (`ws-shared` or non-external `ws-*`), else global when global holds package, else legacy existence fallback; isolate `WORKFLOW_SKILLS_GLOBAL_DIR` to an empty temp dir in unrelated-skill tests; verify with `test-unique-runtime`, `test-check-harness-links`, `test-check-harness-duplicates`, `test-code-review-round-2 NS4`, full `npm run test`, `test-harness-clean.js`, and integrity regen.
+
+### [2026-09-21] Never call toRepoRelative without allowOutside on audit paths
+- **Layer**: `Tests / Workflow harness`
+- **Module**: `ws-check-harness Phase 5a gate `check_duplicates.cjs`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-check-harness/scripts/check_duplicates.cjs`
+- **Scenario / Context**: After the round-3 change made `check_duplicates.cjs` audit the resolved skills root, a global-only consumer (no project-local `.agents/skills`) has `context.skillsRoot` outside the repository. `shippedMarkdown` converted every traversed path with `toRepoRelative(context.repoRoot, full)` (no `allowOutside`), and `toRepoRelative` throws `Path is outside repository` for outside paths, so the gate aborted before producing any report — the advertised global-install audit was broken (PR #377 review thread, score 8).
+- **DO NOT**: Call `toRepoRelative(repoRoot, path)` on a path that can be outside the repository (global skills root, `WORKFLOW_SKILLS_SHARED_DIR` override). Do not "fix" it with `allowOutside: true` alone: that overload collapses an outside path to its basename, which merges distinct files and breaks resolvability.
+- **INSTEAD DO**: Use a local non-throwing display helper `displayPath(repoRoot, value)` = `path.relative(resolve(repoRoot), resolve(value))` normalized to `/` (never throws; keeps `..`- or cross-drive absolute form). Resolve it back with `path.resolve(repoRoot, display)` in the reader, and keep occurrence paths resolvable. Cover with a fixture that installs two skills only under `WORKFLOW_SKILLS_GLOBAL_DIR` and asserts the duplicate is reported without throwing. Related: `2026-09-21-skills-root-package-membership.md`.
+
+### [2026-09-21] Harness gates must scope recursive scans to package membership
+- **Layer**: `Tests / Workflow harness`
+- **Module**: `ws-check-harness Phase 5a gates (`check_unique_runtime.cjs`, `check_duplicates.cjs`, `check_harness_links.cjs`, `check_shell_quoting.cjs`)`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-check-harness/scripts/*.cjs`
+- **Scenario / Context**: Review threads flagged two opposite failure modes of the same defect class. (a) `check_unique_runtime.cjs` / `check_duplicates.cjs` recurse the whole resolved skills root — for a global-only/hybrid consumer that directory is `~/.agents/skills`, which also holds unrelated third-party skills (`atividades`, `evidencias`, `my-activities` with `.py` helpers), so the workflow-skills Node-only gate failed on foreign content. (b) `check_harness_links.cjs` (and `check_shell_quoting.cjs`, which read a non-existent `context.pathTokens.skillsRoot`) hardcoded project-local `.agents/skills`, so a global install was never audited and reported clean while broken links/nested-quote recipes went undetected (PR #377 review threads, scores 7/7/8).
+- **DO NOT**: Recurse the entire resolved skills root without a package-membership filter; hardcode `<repoRoot>/.agents/skills` as the audit root or read `context.pathTokens` (that key does not exist on the resolved context).
+- **INSTEAD DO**: Resolve the audit root from `resolveConsumerContext().skillsRoot` (absolute, local-first else global), then recurse only package dirs (`ws-shared` + `ws-*`) via a shared `packageRoots(dir)` helper; keep `bin/` fully scanned; point `{skillsRoot}` token expansion and resolved-hub reads at the same resolved root. Cover both modes with fixtures: an unrelated `custom-skill/` beside a clean `ws-demo` (must stay clean) and a `WORKFLOW_SKILLS_GLOBAL_DIR` fixture with no local tree (must be audited). Re-run `npm run test`, `test-harness-clean.js`, and integrity regen.
+
+### [2026-09-21] G2-Code Completeness and Ledger scoreState Boundary
+- **Layer**: `Tests / Workflow harness`
+- **Module**: `ws-spec-to-pr (commit_g2_code, update_state, ac_ledger)`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/plans/*/`, `.agents/skills/ws-spec-to-pr/scripts/*`
+- **Scenario / Context**: Standard run where a scoreAndRefine worker edited product files without calling `update_state finish` (the re-verify step does the finish). The Step 5 G2 commit then staged only manifest-recorded files, silently leaving the refine round's files uncommitted, and pre-advance 6 failed on the leftover dirt. Separately, an orch `ac_ledger link` without `--boundary` persisted scoreState at `pre-step6`, which failed pre-advance 7 (`step5` boundary expected), and `verify --persist-score` is not wired so it silently did not persist.
+- **DO NOT**: assume a G2-code commit captured the whole worktree, or assume any ledger mutation leaves scoreState valid for the next gate.
+- **INSTEAD DO**: after every G2-code commit, diff `git status` against the state manifest `files_touched`; merge leftovers via `update_state finish --step N --created/--modified` and commit the remainder before advancing. After any `ac_ledger link`, persist scoreState at the exact boundary the next pre-advance expects (`link --boundary step5 --plan-index …` when the next gate is Step 7; default `pre-step6` only fits Step 6). Verify with `validate_state --pre-advance N` before dispatching.
+
+### [2026-09-21] Config GUI rows must bind schema scalar types to matching controls
+- **Layer**: `Domain`
+- **Module**: `config-editor`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1, test/test-powershell-config-editor.js`
+- **Scenario / Context**: PR #377 review thread (score 6) flagged `defaults.convergence.backoff` bound as `-Type 'string' -DefaultVal '1.5'` while `config.schema.json` declares it `number, minimum 1, default 1.5`. Saving through the GUI persisted `"1.5"` (a quoted string) and produced a schema-invalid config; runtime `Number()` coercion does not repair the persisted violation. The editor had no decimal control type, so the reviewer's `-Type 'number'` suggestion could not be applied as-is.
+- **DO NOT**: Bind a numeric/boolean schema scalar to a `string` text row; apply a schema-type change without extending the editor's control vocabulary; rely on the runtime coercing a persisted string.
+- **INSTEAD DO**: Add a `number` branch to `Add-ConfigFieldRow` (NumericUpDown with `DecimalPlaces`, persists `[double]`) alongside `int`/`bool`, bind `number`-typed schema keys to it, and enforce the invariant in `test-powershell-config-editor.js` (scalar-type parity map + numeric round-trip asserting `typeof === 'number'`). Keep GUI rows in lockstep with `config.schema.json` per the root AGENTS GUI-sync obligation.
+
+### [2026-09-21] Autoload runtime links resolve local-first per file, not per directory
+- **Layer**: `Domain`
+- **Module**: `managed-hub-links`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-configure-project/scripts/configure_autoload.cjs, bin/cli.js`
+- **Scenario / Context**: PR #377 review threads (scores 6/6) flagged that the consumer autoload renderer picked the project-local runtime prefix from *directory* existence (`fs.existsSync(<repo>/.agents/skills/ws-shared/runtime)`) and applied it to every managed runtime link. A partial-hybrid install (local runtime dir present, sibling file missing) then rewrote a valid `{globalSkillsRoot}/ws-shared/runtime/<file>` link to `../.agents/skills/ws-shared/runtime/<file>`, which does not exist, so autoload consumers failed after refresh. `resolve_consumer_root.cjs` resolves each runtime file local-first with a global fallback, so directory presence is not equivalent to per-file availability.
+- **DO NOT**: Choose a local-vs-global link prefix from directory existence; apply one prefix to a whole file list; trust a fixture that seeds a partial local runtime while asserting "no global tokens" (that expectation encodes the bug).
+- **INSTEAD DO**: Resolve each link per file (`runtimePrefixFor(rel)` → local only when `<runtimeDir>/<rel>` exists, else `{globalSkillsRoot}` token) in both `configure_autoload.cjs` and `bin/cli.js`, capturing `rel` in every rewrite regex plus the bare-file loop. Update fixtures to model a partial local runtime explicitly: existing file stays project-relative, missing sibling keeps the global token. Keep the previous global-only trap (`2026-09-20-global-only-autoload-links.md`) as the no-local-tree case of the same rule.
+
 ### [2026-09-20] Wiki sweep follow-through traps
 - **Layer**: `Tests`
 - **Module**: `wiki-sweep`
@@ -14,6 +86,24 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 - **Scenario / Context**: A bounded ws-wiki sweep added slug-form spec ids (`0097-us-354`) to page provenance and wrote a relocation sentence naming the retired consumer-hub path. Both broke post-sweep gates: the site builder infobox regex accepted digits only and truncated slugs, and `test-shared-hub-paths.js` failed on the retired-path literal.
 - **DO NOT**: assume site-builder extraction regexes accept the same id shapes that specs and wiki prose now use, nor write wiki sentences that name retired paths even as historical contrast.
 - **INSTEAD DO**: after any sweep, run `test-site-wiki.js` + `test-doc-sync.js` + `test-shared-hub-paths.js` before ship; keep builder regexes slug-open (`([^\n.]+)`-style); phrase relocation history with tokens (`{sharedDir}` / `{skillsRoot}`), never retired literals.
+
+### [2026-09-20] Spec validator matches `- AC<n>:` bullets document-wide
+- **Layer**: `Tests`
+- **Module**: `spec-format`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-format/scripts/validate_spec.cjs, .agents/specs/*.spec.md`
+- **Scenario / Context**: Authoring spec 0109, the `## Validation & Observation Notes` bullets were written as `- AC1: ...` to reference acceptance criteria. `validate_spec.cjs` collects AC rows with `/^- (AC([1-9][0-9]*)):\s*(.+)$/gm` over the whole document, so those bullets entered the AC sequence and produced `ac-sequence` errors (`Expected AC16, found AC1`) even though the `## Acceptance Criteria` list was sequential.
+- **DO NOT**: start any non-AC bullet in a `*.spec.md` with `- AC<n>:` (for example in Validation, Notes, or Negative scenarios).
+- **INSTEAD DO**: prefix the reference with context, e.g. `- State-write test (AC1) must fail if ...`, keeping the strict `- AC<n>:` shape exclusive to the `## Acceptance Criteria` section.
+
+### [2026-09-20] Re-verify review findings when HEAD can move mid-session
+- **Layer**: `DevOps`
+- **Module**: `code-review`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/plans/**, .agents/specs/**`
+- **Scenario / Context**: A read-only review of `dcc3aa10..origin/main` ran while a previously dispatched workflow (`code-review-findings-fixes`) finished its step 8 in another process. HEAD advanced from `3cbdd0b9` to `257de1e5` and then `2b9d5b89` mid-review; subagent findings captured against the earlier tree risked reporting issues that the concurrent commits had already fixed.
+- **DO NOT**: trust review findings gathered at session start when the working tree or HEAD can change during the session, and do not report a finding without re-checking it against the current tree.
+- **INSTEAD DO**: record the HEAD SHA at review start, re-verify every finding against the current working tree (grep/read the exact file:line) before consolidating, and state the verified SHA in the report and spec.
 
 ### [2026-09-20] Migrate legacy rendered autoload forms on update; exclude fix-pr scratch from link gates
 - **Layer**: `Domain`
@@ -41,6 +131,15 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 - **Scenario / Context**: The hub-root autoload renderer hardcoded `../.agents/skills/ws-shared/runtime/` and `../.agents/skills/` prefixes while the same command supports global-only execution (`resolveRuntimeSource` + `emitSkillPath` already emit `{globalSkillsRoot}/...` rows for skills). A global-only project got `.ws/autoload.md` full of links into a project skills tree that does not exist, so agents could not load the runtime contract or referenced skills (PR #376 review thread, score 8/10).
 - **DO NOT**: assume a project-local skills tree exists when rendering managed-hub links; use one scope flag for both runtime and per-skill links; ship a renderer without asserting the global-only output.
 - **INSTEAD DO**: derive each link from on-disk existence (`{repoRoot}/.agents/skills/ws-shared/runtime` for the runtime prefix; `{repoRoot}/.agents/skills/<id>` per skill), fall back to `{globalSkillsRoot}/...` tokens, normalize previously rendered prefixes so refreshes converge, and assert both modes in tests (local fixture seeds the managed runtime; global-only fixture asserts tokens and absence of project-relative links). The same scope rule applies to seeded configs: scope-normalize a freshly seeded `config.json` before writing (`./runtime/...` in the global hub; project-relative in the consumer hub), and normalize every managed `toolsFile` form so a global install never points at `../.agents/skills/...`.
+
+### [2026-09-20] Dynamic construction for retired hub path checks; explicit line ranges in AC ledger file evidence
+- **Layer**: `Tests`
+- **Module**: `harness-audits`
+- **Severity**: `Medium`
+- **PathPattern**: `test/test-shared-hub-paths.js, .agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs, .agents/skills/ws-check-harness/scripts/check_unique_runtime.cjs`
+- **Scenario / Context**: When adding an automated check in `check_unique_runtime.cjs` to detect forbidden `.ws/runtime` directories, using the literal string `'.ws/runtime'` tripped `test/test-shared-hub-paths.js` which statically scans the codebase for occurrences of that retired path. Separately, linking implementation file evidence into `ac-ledger.json` requires explicit line ranges (`file.cjs:Lstart-Lend`), rejecting bare paths.
+- **DO NOT**: hardcode the literal string `'.ws/runtime'` in source code or harness tests, even when implementing an audit that checks for its existence; nor pass bare file paths to `ac_ledger.cjs link --file`.
+- **INSTEAD DO**: construct banned path checks dynamically using `path.join(repoRoot, '.ws', 'runtime')` or `['.ws', 'runtime'].join('/')` to keep static path-invariant scanners clean; and format all file evidence for `ac_ledger.cjs link` with precise line ranges (e.g. `--file path/to/file.cjs:L1-L50`).
 
 ### [2026-09-20] CRLF files defeat exact-match edits; shared helpers need export checks
 - **Layer**: `Infrastructure`

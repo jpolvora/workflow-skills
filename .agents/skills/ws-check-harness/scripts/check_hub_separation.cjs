@@ -8,6 +8,7 @@
 // without requiring root AGENTS.md.
 
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 
 const SOT_HUB = ['.agents', 'skills', 'ws-shared', 'runtime', 'AGENTS.md'].join(path.sep);
@@ -44,9 +45,20 @@ function stripFences(text) {
   return out;
 }
 
+function skillsDirFor(repoRoot) {
+  try {
+    const { resolveConsumerContext } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
+    const context = resolveConsumerContext({ repoRoot, scriptFile: __filename });
+    if (context && context.skillsRoot) return String(context.skillsRoot);
+  } catch {
+    // Fall through to the project-local default below.
+  }
+  return path.join(repoRoot, '.agents', 'skills');
+}
+
 function detectMode(repoRoot) {
   const markers = [path.join(repoRoot, 'bin', 'skill-dependencies.json'), path.join(repoRoot, 'bin', 'cli.js')];
-  const skillsDir = path.join(repoRoot, '.agents', 'skills');
+  const skillsDir = skillsDirFor(repoRoot);
   const hasSoT =
     fs.existsSync(skillsDir) &&
     fs.readdirSync(skillsDir, { withFileTypes: true }).some(
@@ -60,7 +72,7 @@ function resolveConsumerHub(repoRoot, mode) {
   if (mode === 'upstream') return path.join(repoRoot, SOT_HUB);
   const globalRoot =
     process.env.WORKFLOW_SKILLS_GLOBAL_DIR ||
-    path.join(process.env.HOME || process.env.USERPROFILE || '', '.agents', 'skills');
+    path.join(os.homedir(), '.agents', 'skills');
   // Managed hub content lives only in the skills install (project-local, then
   // global). The consumer hub (.ws) never carries runtime copies.
   const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;

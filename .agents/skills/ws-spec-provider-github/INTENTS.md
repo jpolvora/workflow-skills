@@ -43,7 +43,7 @@ node .agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs \
 | Agentic Reformulation | `ws-spec-write` reformulates and enhances raw issue descriptions into unambiguous, testable ACs while preserving human text in `## Original Issue Context` |
 | Re-fetch over an existing run | The converter (Step 2) refuses first when the spec of record differs (`--force` on the converter), and Step 3 refuses when `step-00` differs (`--force` on register); re-run with `--force` after confirming |
 | Explicit paths | `--output` (converter) / `--specs-dir` / `--plans-dir` (register) override the config-resolved defaults |
-| Promotion owner | `register_local_spec.cjs` from [ws-spec-provider-local](../ws-spec-provider-local/SKILL.md) is the invoked promotion primitive for every provider; Python equivalent remains supported |
+| Promotion owner | `register_local_spec.cjs` from [ws-spec-provider-local](../ws-spec-provider-local/SKILL.md) is the invoked promotion primitive for every provider |
 
 
 ## `sweep-prior-work`

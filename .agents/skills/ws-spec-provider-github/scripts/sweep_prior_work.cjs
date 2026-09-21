@@ -18,7 +18,7 @@ const { spawnSync } = require('child_process');
 // hub (<repo>/.ws). Mirrors resolveConsumerContext runtimeSource precedence.
 const HUB_SCRIPTS_DIR = (() => {
   const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
-  const candidates = [packaged];
+  const candidates = [];
   const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
   if (explicitShared && String(explicitShared).trim()) {
     candidates.unshift(path.join(path.resolve(String(explicitShared).trim()), 'runtime', 'scripts'));
@@ -32,6 +32,7 @@ const HUB_SCRIPTS_DIR = (() => {
   const globalRoot = globalDir && String(globalDir).trim()
     ? path.resolve(String(globalDir).trim())
     : path.join(require('os').homedir(), '.agents', 'skills');
+  candidates.push(packaged);
   candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
   for (const candidate of [...new Set(candidates)]) {
     try {
@@ -159,17 +160,27 @@ function searchPrs(repoRoot, query, dryRun, authOk) {
   if (!Array.isArray(rows)) {
     return [];
   }
-  return rows.map((row) => ({
+  // Canonical PR-row shape (shared with the Azure DevOps sweep): state and
+  // status carry the same provider-normalized value; both search field
+  // aliases are present so consumers read either name.
+  return rows.map((row) => ghPrRow(row, query));
+}
+
+// Canonical PR-row builder (shared shape with the Azure DevOps sweep).
+function ghPrRow(row, query) {
+  return {
     number: row.number,
     pullRequestId: row.number,
     title: row.title,
     state: row.state,
     status: row.state,
+    nativeStatus: row.state,
     url: row.url,
     headRefName: row.headRefName,
     sourceRefName: row.headRefName,
     searchQuery: query,
-  }));
+    searchText: query,
+  };
 }
 
 function gitLog(repoRoot, files) {
@@ -275,4 +286,4 @@ if (require.main === module) {
   process.exit(main());
 }
 
-module.exports = { parseArgs, validateAuth, searchPrs, gitLog };
+module.exports = { parseArgs, validateAuth, searchPrs, gitLog, ghPrRow };

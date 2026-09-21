@@ -15,7 +15,7 @@ const path = require('path');
 // changelog) and is not a managed-runtime source.
 const HUB_SCRIPTS_DIR = (() => {
   const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
-  const candidates = [packaged];
+  const candidates = [];
   const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
   if (explicitShared && String(explicitShared).trim()) {
     candidates.unshift(path.join(path.resolve(String(explicitShared).trim()), 'runtime', 'scripts'));
@@ -29,6 +29,7 @@ const HUB_SCRIPTS_DIR = (() => {
   const globalRoot = globalDir && String(globalDir).trim()
     ? path.resolve(String(globalDir).trim())
     : path.join(require('os').homedir(), '.agents', 'skills');
+  candidates.push(packaged);
   candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
   for (const candidate of [...new Set(candidates)]) {
     try {
@@ -41,6 +42,7 @@ const HUB_SCRIPTS_DIR = (() => {
   return packaged;
 })();
 const { spawnSync } = require('child_process');
+const { spawnCliSync } = require(path.join(HUB_SCRIPTS_DIR, 'cli_spawn.cjs'));
 const {
   resolveConsumerContext,
   resolveConfiguredPath,
@@ -107,9 +109,8 @@ function detectCli(cliSetting) {
   const parts = raw.split(/\s+/);
   const bin = parts[0];
   const binArgs = parts.slice(1);
-  const probe = spawnSync(bin, [...binArgs, '--help'], {
+  const probe = spawnCliSync(bin, [...binArgs, '--help'], {
     encoding: 'utf8',
-    shell: process.platform === 'win32',
   });
   return {
     command: raw,
@@ -151,10 +152,9 @@ function runDoctor(cliCommand, repoRoot) {
   const parts = cliCommand.trim().split(/\s+/);
   const bin = parts[0];
   const binArgs = parts.slice(1);
-  const run = spawnSync(bin, [...binArgs, 'doctor', '--json'], {
+  const run = spawnCliSync(bin, [...binArgs, 'doctor', '--json'], {
     encoding: 'utf8',
     cwd: repoRoot,
-    shell: process.platform === 'win32',
   });
   if (run.status !== 0) {
     return { ok: false, error: (run.stderr || run.stdout || '').trim().slice(0, 500) };

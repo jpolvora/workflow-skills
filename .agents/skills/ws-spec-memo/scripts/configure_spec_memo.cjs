@@ -16,7 +16,7 @@ const path = require('path');
 // changelog) and is not a managed-runtime source.
 const HUB_SCRIPTS_DIR = (() => {
   const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
-  const candidates = [packaged];
+  const candidates = [];
   const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
   if (explicitShared && String(explicitShared).trim()) {
     candidates.unshift(path.join(path.resolve(String(explicitShared).trim()), 'runtime', 'scripts'));
@@ -30,6 +30,7 @@ const HUB_SCRIPTS_DIR = (() => {
   const globalRoot = globalDir && String(globalDir).trim()
     ? path.resolve(String(globalDir).trim())
     : path.join(require('os').homedir(), '.agents', 'skills');
+  candidates.push(packaged);
   candidates.push(path.join(globalRoot, 'ws-shared', 'runtime', 'scripts'));
   for (const candidate of [...new Set(candidates)]) {
     try {
@@ -42,6 +43,7 @@ const HUB_SCRIPTS_DIR = (() => {
   return packaged;
 })();
 const { spawnSync } = require('child_process');
+const { spawnCliSync } = require(path.join(HUB_SCRIPTS_DIR, 'cli_spawn.cjs'));
 const {
   resolveConsumerContext,
   toRepoRelative,
@@ -107,19 +109,17 @@ function runCmd(command, cmdArgs, cwd) {
   const parts = command.trim().split(/\s+/);
   const bin = parts[0];
   const prefix = parts.slice(1);
-  const run = spawnSync(bin, [...prefix, ...cmdArgs], {
+  const run = spawnCliSync(bin, [...prefix, ...cmdArgs], {
     encoding: 'utf8',
     cwd,
-    shell: process.platform === 'win32',
   });
   return { status: run.status, stdout: run.stdout || '', stderr: run.stderr || '' };
 }
 
 function cliAvailable(cliSetting) {
   const parts = (cliSetting || 'memo').trim().split(/\s+/);
-  const probe = spawnSync(parts[0], [...parts.slice(1), '--help'], {
+  const probe = spawnCliSync(parts[0], [...parts.slice(1), '--help'], {
     encoding: 'utf8',
-    shell: process.platform === 'win32',
   });
   return probe.status === 0 || (probe.stdout || '').includes('memo');
 }
