@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "55eddf7055c61cb715ba8311ed48eb269eb021cd17d1796d36110c4116c0b9cd",
+  "fullPackageDigest": "b476968396bd63a367ba54755480e9ee7278a5778dd5a1a1b673b0f979fe9f26",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -32,7 +32,7 @@
       "runtime/scripts/Edit-WorkflowSkillsConfig.ps1": "66d7edd30a718fcb14cabddeab92132af5b380c3322b33e7cb783d3524920707",
       "runtime/scripts/ac_counts.cjs": "60f38cfd14d7ce914d292027eac808cd0d98ab2ef686b8892e8a125a14d92e63",
       "runtime/scripts/bootstrap_runtime.cjs": "4e9586a70ae11563e2129313b752c9d0ba9ad47193df1ee232f15dd63d4a0e2d",
-      "runtime/scripts/cli_spawn.cjs": "99ae7a65e5ddeea6c8b0dbaf02c9064c1ad58ae33c882340e0ef9a7d2f270ccd",
+      "runtime/scripts/cli_spawn.cjs": "cbe6b5985dfeaf262f1deea124380a841d1781ba2542a63e1c73bf597816953f",
       "runtime/scripts/compile_host_subagents.cjs": "0dda22723abe39d55c85147b6c09da603e4f0b368a5032f180f8548488803abc",
       "runtime/scripts/extract_frontmatter_field.cjs": "41513cc12a7b7a1af7313b4111b86ca318c6d522351650945295e29c3e1b6a63",
       "runtime/scripts/http_retry.cjs": "5a78b6bc9137a081fc4b5293c1ac60d447d13c29faa8c2a1a3aa779340af7600",
@@ -60,7 +60,7 @@
       "templates/STACK.md.example": "829b7d3fce62b8167905fc1d921ee744db1d7e8ef895b0e7eb969f089973bebd",
       "templates/config.json.example": "80dd268703fbb14d963dfc8678541d53138efaa98202a744558160a7b8d68ff6"
     },
-    "skillDigest": "b41f2495c2a9f366d4271252ac91571c3358e185ce66068b546979fcd4dc280b"
+    "skillDigest": "3c75edfef15629d4bb4d7ca1d67a6d4c291b128a23dfefe435b96d993e300c8e"
   },
   "packageVersion": "0.4.46",
   "skills": {

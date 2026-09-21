@@ -82,6 +82,15 @@ function testWin32CmdShim() {
       );
       assert.strictEqual(run.status, 0, 'shim executes, got ' + JSON.stringify(run.error || run.stderr || run.status));
       assert.ok((run.stdout || '').includes('spaced dir'), 'spaced --cwd survives the shim round-trip: ' + JSON.stringify(run.stdout));
+      // Explicit `.cmd` launcher (specMemo.cli as `memo.cmd`): the first
+      // shell-free attempt fails with EINVAL, so the same retry must fire.
+      const explicit = spawnCliSync(
+        'ws-shim-fixture-xyz.cmd',
+        ['search', '--cwd', 'C:\\spaced dir\\repo'],
+        { encoding: 'utf8', timeout: 30000 }
+      );
+      assert.strictEqual(explicit.status, 0, 'explicit .cmd launcher executes, got ' + JSON.stringify(explicit.error || explicit.stderr || explicit.status));
+      assert.ok((explicit.stdout || '').includes('spaced dir'), 'spaced --cwd survives the explicit .cmd round-trip: ' + JSON.stringify(explicit.stdout));
     } finally {
       process.env.PATH = oldPath;
     }

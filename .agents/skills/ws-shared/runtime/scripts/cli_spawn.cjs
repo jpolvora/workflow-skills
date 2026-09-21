@@ -33,8 +33,8 @@ function spawnCliSync(bin, args, options = {}) {
   const argv = Array.isArray(args) ? args : [];
   const first = spawnSync(bin, argv, { ...options, shell: false });
   if (process.platform !== 'win32') return first;
-  if (!first.error || first.error.code !== 'ENOENT') return first;
-  // Windows command-shim fallback (npm `*.cmd` launchers): re-run through
+  if (!first.error || !['ENOENT', 'EINVAL'].includes(first.error.code)) return first;
+  // Windows command-shim fallback (npm `*.cmd` launchers; bare names -> ENOENT, explicit `*.cmd` -> EINVAL): re-run through
   // ComSpec with a caller-quoted command string. `shell: true` receives the
   // already-quoted line, so cmd.exe resolves PATHEXT shims while spaced
   // arguments stay intact (verified: spaced `--cwd` arrives as one arg).
