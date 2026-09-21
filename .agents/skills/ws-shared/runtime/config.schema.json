@@ -6,7 +6,7 @@
   "additionalProperties": true,
   "required": ["project", "verification", "plans"],
   "properties": {
-    "toolsFile": { "type": "string", "default": "runtime/tools.md" },
+    "toolsFile": { "type": "string", "default": "../.agents/skills/ws-shared/runtime/tools.md" },
     "enableMemoryFiles": {
       "type": "boolean",
       "default": true,

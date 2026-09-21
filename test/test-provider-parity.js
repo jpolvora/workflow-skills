@@ -393,7 +393,7 @@ for (const id of delegated) {
 const sweepFlags = ['--issue', '--keywords', '--files', '--dry-run', '--repo-root'];
 const commentFlags = ['--id', '--body-file', '--body', '--dry-run', '--repo-root'];
 const sweepKeys = ['status', 'provider', 'issue', 'keywords', 'pullRequests', 'commits', 'repoRoot'];
-const rowAliases = ['number', 'pullRequestId', 'title', 'state', 'status', 'url', 'headRefName', 'sourceRefName'];
+const rowAliases = ['number', 'pullRequestId', 'title', 'state', 'status', 'nativeStatus', 'url', 'headRefName', 'sourceRefName', 'searchQuery', 'searchText'];
 
 for (const skillId of ['ws-spec-provider-github', 'ws-spec-provider-azure-devops']) {
   const sweepSrc = read(path.join(SKILLS, skillId, 'scripts/sweep_prior_work.cjs'));
@@ -418,12 +418,9 @@ for (const skillId of ['ws-spec-provider-github', 'ws-spec-provider-azure-devops
   for (const key of sweepKeys) {
     assert(envelope && Object.hasOwn(envelope, key), `${skillId} sweep JSON envelope has ${key}`);
   }
-  for (const row of (envelope && envelope.pullRequests) || []) {
-    for (const key of rowAliases) {
-      assert(Object.hasOwn(row, key), `${skillId} sweep PR row has alias ${key}`);
-    }
-    break;
-  }
+  // Live envelopes may be empty without auth; row aliases are asserted on
+  // synthesized rows below (AC10), never silently skipped (NS7).
+  assert(envelope && Array.isArray(envelope.pullRequests), `${skillId} sweep envelope pullRequests is an array`);
   for (const flag of commentFlags) {
     assert(commentSrc.includes(flag), `${skillId} comment_issue.cjs has ${flag}`);
   }
@@ -477,9 +474,45 @@ const prRow = adoSweep.prRow(
 assert(!String(prRow.url || '').includes('/_apis/'), 'ADO sweep url must be web UI, not REST');
 assert(prRow.url === 'https://dev.azure.com/o/p/_git/r/pullrequest/9', 'ADO sweep url uses _links.web.href');
 assert(prRow.state === 'OPEN', 'ADO state uses GitHub OPEN vocabulary');
-assert(prRow.status === 'active', 'ADO status keeps native value');
+assert(prRow.status === 'OPEN', 'ADO status matches normalized state (GitHub parity)');
+assert(prRow.nativeStatus === 'active', 'ADO nativeStatus preserves the provider value');
+assert(prRow.searchQuery === 'q' && prRow.searchText === 'q', 'ADO search aliases match');
 assert(prRow.headRefName === 'feat/x', 'ADO headRefName is a bare branch');
 assert(prRow.sourceRefName === 'feat/x', 'ADO sourceRefName is a bare branch');
+
+// AC10: PR-row aliases asserted on synthesized rows (no network/auth
+// dependency). An empty envelope fails instead of skipping assertions (NS7).
+const ghSweep = requireSweep(path.join(SKILLS, 'ws-spec-provider-github/scripts/sweep_prior_work.cjs'));
+function requirePullRequests(env) {
+  if (!env || !Array.isArray(env.pullRequests) || env.pullRequests.length === 0) {
+    throw new Error('empty pullRequests envelope: row assertions require synthesized rows');
+  }
+  return env.pullRequests;
+}
+let threwEmpty = false;
+try {
+  requirePullRequests({ pullRequests: [] });
+} catch {
+  threwEmpty = true;
+}
+assert(threwEmpty, 'empty pullRequests envelope fails instead of skipping row assertions (NS7)');
+const synthRows = requirePullRequests({
+  pullRequests: [
+    ghSweep.ghPrRow({ number: 7, title: 'synth', state: 'OPEN', url: 'https://github.com/o/r/pull/7', headRefName: 'feat/y' }, 'synth q'),
+    adoSweep.prRow({ pullRequestId: 9, title: 'synth', status: 'active', sourceRefName: 'refs/heads/feat/y', url: '', _links: { web: { href: 'https://dev.azure.com/o/p/_git/r/pullrequest/9' } } }, 'synth q'),
+  ],
+});
+for (const row of synthRows) {
+  for (const key of rowAliases) {
+    assert(Object.hasOwn(row, key), `synthesized PR row has alias ${key}`);
+  }
+  assert(row.status === row.state, 'synthesized PR row status matches state');
+  assert(row.searchQuery === row.searchText, 'synthesized PR row search aliases match');
+}
+assert(
+  JSON.stringify(Object.keys(synthRows[0]).sort()) === JSON.stringify(Object.keys(synthRows[1]).sort()),
+  'GitHub and ADO sweep PR rows share identical field names'
+);
 
 for (const skillId of ['ws-spec-provider-github', 'ws-spec-provider-azure-devops']) {
   const skip = spawnSync(

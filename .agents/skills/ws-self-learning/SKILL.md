@@ -48,7 +48,7 @@ Resolve routing via `resolveMemoryRouting` / [`tools.md`](../ws-shared/runtime/t
    - **`enableMemoryFiles: true`:** Keyword grep in `{memoryDir}/MEMORY.md` or `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --query <keyword>`; path match with `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --match-paths <touched_files...>`.
    - **Both true (dual):** vault first, then supplement with local files. **Both false:** no hits; continue without inventing traps from empty consult.
 3. If a hit is Severity Medium+, fold its **DO NOT** / **INSTEAD DO** directives into the plan or first edit. Do not re-discover the same failure mode.
-4. For scripts/skills specifically, also apply the preflight in memory entry **Script/skill authoring preflight** (launchers, LF, Windows Python `\r\n`, no shell bridges) when that entry appears in either backend.
+4. For scripts/skills specifically, also apply the preflight in memory entry **Script/skill authoring preflight** (launchers, LF, Windows CRLF, no shell bridges) when that entry appears in either backend.
 
 ## Failure Reflection Hook (Kill the "Learning: N/A" Escape Hatch)
 
@@ -85,7 +85,7 @@ Follow [`tools.md`](../ws-shared/runtime/tools.md) **`update-memory`**: skip ste
    ```bash
    node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile
    ```
-   Compile fails closed (exit 1, no `MEMORY.md` rewrite) when any `memory/*.md` lacks `### [YYYY-MM-DD]` or both **DO NOT** (or Trap Avoided) and **INSTEAD DO** (or Solution). The Python path is a thin exec of this Node SoT.
+   Compile fails closed (exit 1, no `MEMORY.md` rewrite) when any `memory/*.md` lacks `### [YYYY-MM-DD]` or both **DO NOT** (or Trap Avoided) and **INSTEAD DO** (or Solution).
 5. **Vault upsert** (`enableSpecMemoIntegration` only) — **`/ws-memo`** `upsert --kind trap` after the sanitizer. Protocol (enums, required `body`) lives in that skill. Dual: do this in addition to steps 3–4. Vault-only: skip 3–4.
 6. **Proof + chat** — Set `**Learning:** [entry title]` or `N/A` (only when valid per rules above) in the final proof; one-line summary in the reply.
 

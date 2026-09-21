@@ -1029,7 +1029,7 @@ function migrateLegacyFlatHub(destShared) {
       .flatMap((category) => category.paths || [])
       .filter((entry) => !entry.includes('/')),
   ]);
-  const unknown = fs.readdirSync(destShared).filter((name) => !allowedRootNames.has(name));
+  const unknown = fs.readdirSync(destShared).filter((name) => !allowedRootNames.has(name) && !name.startsWith('.quarantine-'));
   if (unknown.length > 0) {
     console.log(`    Preserved custom ws-shared entries: ${unknown.join(', ')}`);
   }
@@ -1165,7 +1165,10 @@ function ensureSharedHubInstalled(mode = 'install') {
   // pointers are refreshed so upgrades stop citing retired `.ws/runtime` paths;
   // consumer-authored files are left untouched. Never writes repo-root files.
   const hubPointerPath = path.join(destShared, 'AGENTS.md');
-  if (!fs.existsSync(hubPointerPath)) {
+  if (isGlobalScope) {
+    // Global hub keeps its managed AGENTS.md from the package copy; the
+    // project-worded local pointer is never seeded here.
+  } else if (!fs.existsSync(hubPointerPath)) {
     fs.writeFileSync(hubPointerPath, LOCAL_HUB_POINTER_MD);
     console.log(`    Seeded thin local ${hubDisplay()}AGENTS.md pointer to the managed hub`);
   } else if (isGeneratedHubEntrypoint(hubPointerPath)) {
@@ -1192,27 +1195,40 @@ function ensureSharedHubInstalled(mode = 'install') {
 }
 
 /**
+ * Relocate (never delete) a stale managed path under the consumer hub into a
+ * timestamped quarantine directory, so upgrades cannot destroy data that was
+ * never meant to be trusted as managed content.
+ */
+function quarantineStaleHubPath(stale) {
+  const hub = path.dirname(stale);
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const dir = path.join(hub, `.quarantine-${stamp}`);
+  fs.mkdirSync(dir, { recursive: true });
+  const target = path.join(dir, path.basename(stale));
+  fs.renameSync(stale, target);
+  return path.relative(hub, target).replace(/\\/g, '/');
+}
+
+/**
  * Retire managed hub copies from the project consumer hub (`.ws/runtime`,
  * `.ws/templates`, and flat legacy managed docs). Managed content lives only
  * in the skills install (`{skillsRoot}|{globalSkillsRoot}/ws-shared/`).
+ * Stale paths are quarantined (moved aside), never deleted outright.
  */
 function retireProjectHubManagedContent(destShared) {
   if (isGlobalScope) return;
+  const retire = (stale, label) => {
+    if (!fs.existsSync(stale)) return;
+    const kept = quarantineStaleHubPath(stale);
+    console.log(`    Quarantined obsolete ${hubDisplay()}${label} -> ${hubDisplay()}${kept} (managed content lives in ${managedDisplay()})`);
+  };
   for (const name of ['runtime', 'templates']) {
-    const stale = path.join(destShared, name);
-    if (fs.existsSync(stale)) {
-      fs.rmSync(stale, { recursive: true, force: true });
-      console.log(`    Removed obsolete ${hubDisplay()}${name}/ (managed content lives in ${managedDisplay()})`);
-    }
+    retire(path.join(destShared, name), `${name}/`);
   }
   for (const legacyName of Object.keys(HUB_LAYOUT.legacyPaths || {})) {
     if (legacyName === 'AGENTS.md' || legacyName === 'autoload.md') continue;
     if (LEGACY_CONSUMER_HUB_NAMES.includes(legacyName)) continue;
-    const stale = path.join(destShared, legacyName);
-    if (fs.existsSync(stale)) {
-      fs.rmSync(stale, { recursive: true, force: true });
-      console.log(`    Removed obsolete ${hubDisplay()}${legacyName} (managed content lives in ${managedDisplay()})`);
-    }
+    retire(path.join(destShared, legacyName), legacyName);
   }
 }
 
@@ -2157,6 +2173,16 @@ async function main() {
         updateOpts.symlink = true;
       } else if (a === '--yes' || a === '-y') {
         updateOpts.yes = true;
+      } else if (a === '--include-new' || a === '--force-integrity') {
+        // Consumed via args.includes above; accepted here so the strict
+        // unknown-flag gate below does not reject them.
+      } else if (a === '--global' || a === '-g' || a === '--project' || a === '-p') {
+        // Consumed by the scope ifs above; accepted here so the strict
+        // unknown-flag gate below does not reject them.
+      } else if (a.startsWith('-')) {
+        console.error(`Error: Unknown update argument: ${a}`);
+        console.error('Use: update [--global|--project] [--targets <csv>] [--yes] [--symlink|--no-symlink] [--include-new] [--force-integrity]');
+        process.exit(1);
       }
     }
     assertNotSelfOverwrite();

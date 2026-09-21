@@ -93,11 +93,15 @@ function main() {
     scriptFile: __filename,
   });
   const repoRoot = context.repoRoot;
-  const skillsRootRel =
-    options.skillsRoot ||
-    (context.pathTokens && context.pathTokens.skillsRoot) ||
-    '.agents/skills';
-  const skillsAbs = path.resolve(repoRoot, skillsRootRel);
+  // Resolve the scan root from the consumer context (local or global
+  // skills root), not a hardcoded project-local path, so global-only or
+  // relocated installs still report findings instead of passing clean.
+  const skillsAbs = options.skillsRoot
+    ? path.resolve(repoRoot, options.skillsRoot)
+    : (context.skillsRoot && path.isAbsolute(String(context.skillsRoot))
+      ? String(context.skillsRoot)
+      : path.resolve(repoRoot, '.agents/skills'));
+  const skillsRootRel = path.relative(repoRoot, skillsAbs).replace(/\\/g, '/') || '.';
   const binAbs = path.resolve(repoRoot, 'bin');
 
   const hits = collectPyFiles(skillsAbs).concat(collectPyFiles(binAbs));

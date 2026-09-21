@@ -68,12 +68,20 @@ function main() {
   const options = parseArgs(process.argv.slice(2));
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
   const missing = [];
+  // Report the expected location under the resolved skills root (local or
+  // global), not a hardcoded project-local path.
+  const skillsBase = context.skillsRoot && path.isAbsolute(String(context.skillsRoot))
+    ? String(context.skillsRoot)
+    : path.join(context.repoRoot, '.agents', 'skills');
   for (const id of PIPELINE) {
     let file;
     try {
       file = resolveSkillMdPath(context, id);
     } catch {
-      missing.push({ id, reason: 'missing SKILL.md', path: toRepoRelative(context.repoRoot, path.join(context.repoRoot, '.agents', 'skills', id, 'SKILL.md'), { allowOutside: true }) });
+      const expected = path.join(skillsBase, id, 'SKILL.md');
+      const rel = path.relative(context.repoRoot, expected);
+      const display = (rel.startsWith('..') || path.isAbsolute(rel) ? expected : rel).replace(/\\/g, '/');
+      missing.push({ id, reason: 'missing SKILL.md', path: display });
       continue;
     }
     const text = fs.readFileSync(file, 'utf8');

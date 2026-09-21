@@ -30,7 +30,7 @@ function resolvePaths(options = {}) {
   const validateSpecScript = path.join(repoRoot, '.agents/skills/ws-spec-format/scripts/validate_spec.cjs');
   const validateSchemaScript = path.join(repoRoot, '.agents/skills/ws-shared/runtime/scripts/validate_json_schema.cjs');
   const acLedgerScript = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs');
-  const runSabotageScript = path.join(repoRoot, '.agents/skills/ws-testing/scripts/run_sabotage.py');
+  const runSabotageScript = path.join(repoRoot, '.agents/skills/ws-testing/scripts/run_sabotage.cjs');
   const cliScript = path.join(repoRoot, 'scripts/harness-benchmark/cli.cjs');
   const templateRoot = path.join(fixturesRoot, '_template', 'mini-app');
 

@@ -393,7 +393,7 @@ function collectVisualUrls(workItem, comments) {
   return urls;
 }
 
-function buildSpecMd(workItem, org, project) {
+function buildSpecMd(workItem, org, project, apiBase) {
   const fields = workItem.fields || {};
   const number = workItem.id || fields['System.Id'];
   const slug = workItemSlug(workItem);
@@ -436,7 +436,8 @@ function buildSpecMd(workItem, org, project) {
 
   let url = '';
   if (org && project && number) {
-    url = `https://dev.azure.com/${pyQuote(org)}/${pyQuote(project)}/_workitems/edit/${number}`;
+    const base = String(apiBase || 'https://dev.azure.com').replace(/\/+$/, '');
+    url = `${base}/${pyQuote(org)}/${pyQuote(project)}/_workitems/edit/${number}`;
   } else {
     url = workItem.url || (((workItem._links || {}).html || {}).href) || '';
   }
@@ -537,7 +538,9 @@ function resolveSpecsDir(repoRoot, override) {
 function resolveDefaultOutput(repoRoot, slug, specsDirOverride) {
   const organizer = path.resolve(__dirname, '..', '..', 'ws-spec-organizer', 'scripts', 'resolve_spec_path.cjs');
   if (fs.existsSync(organizer)) {
-    const proc = spawnSync('node', [organizer, '--slug', slug, '--repo-root', String(repoRoot)], {
+    const organizerArgs = [organizer, '--slug', slug, '--repo-root', String(repoRoot)];
+    if (String(specsDirOverride || '').trim()) organizerArgs.push('--specs-dir', String(specsDirOverride));
+    const proc = spawnSync('node', organizerArgs, {
       encoding: 'utf8',
     });
     if ((proc.status ?? 1) === 0) {
@@ -630,7 +633,7 @@ async function main() {
   }
 
   const visualUrls = collectVisualUrls(workItem, comments);
-  const specMd = buildSpecMd(workItem, args.org || null, args.project || null);
+  const specMd = buildSpecMd(workItem, args.org || null, args.project || null, args.apiBase);
 
   let repoRoot;
   try {

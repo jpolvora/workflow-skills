@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.4.38** · 54 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.4.46** · 54 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 ### ws-shared hybrid configuration boundary
 
@@ -100,7 +100,7 @@ The suite's central claim is that nothing ships on an agent's word alone. Every 
 | **Score & refine** | When a score is already ≥ `minVerifyScore` and `defaults.scoreAndRefine` is on, the user is offered a second polish pass: task-by-task score analysis plus a wide-context overengineering sweep (simplify ACs; remove unused workflow-introduced files/tests/methods/classes). | `ws-plan-verify` |
 | **Fix → re-review** | Critical or Warning findings trigger fix rounds (max 3). Residual findings Pause the run instead of advancing. | `ws-code-review` |
 | **Commit before review** | Product files must be committed before a review is dispatched, so the review always diffs a real `{base}...HEAD`. Uncommitted product files STOP the step. | `gates.md` (G2-code) |
-| **Regression sabotage** | When mutation testing is unset, Step 7 deliberately breaks assertions to confirm the suite actually catches regressions. | `ws-testing` (`run_sabotage.py`) |
+| **Regression sabotage** | When mutation testing is unset, Step 7 deliberately breaks assertions to confirm the suite actually catches regressions. | `ws-testing` (`run_sabotage.cjs`) |
 | **Mutation threshold** | Optional. When `verification.mutationTest` is set and `skipMutationTesting` is false, a score below `mutationThreshold` (default 80) fails Step 7. | `ws-testing` |
 | **Pre-advance validation** | Machine validation of the workflow state file before every step transition; a bad state halts the FSM. Both orchestrators invoke the Node `validate_state.cjs` surface. | `validate_state.cjs` |
 | **Secrets and PII scan** | Leak audit before ship, with an optional pre-commit hook (user-requested only). | `ws-secrets-leak-review` |

@@ -1,9 +1,9 @@
 {
-  "$schema": "./runtime/config.schema.json",
+  "$schema": "../.agents/skills/ws-shared/runtime/config.schema.json",
   "_comment": "Fresh install seeds this file as config.json. Track it only when it contains project settings and environment-variable references. Fill via ws-configure-project. toolsFile points to the tool vocabulary all agents use.",
-  "toolsFile": "runtime/tools.md",
+  "toolsFile": "../.agents/skills/ws-shared/runtime/tools.md",
   "pathTokens": {
-    "_comment": "Fixed install layout (not relocatable). Expand brace tokens before Read/Grep/Shell. Full contract: runtime/tools.md § Path tokens. plansDir/reviewsDir still resolve from plans.dir / reviews.dir.",
+    "_comment": "Fixed install layout (not relocatable). Expand brace tokens before Read/Grep/Shell. Full contract: {skillsRoot}/ws-shared/runtime/tools.md § Path tokens. plansDir/reviewsDir still resolve from plans.dir / reviews.dir.",
     "skillsRoot": ".agents/skills",
     "sharedDir": ".ws"
   },
@@ -54,7 +54,9 @@
       "i18n": {
         "framework": "none",
         "localesDir": "",
-        "locales": []
+        "locales": [
+          
+        ]
       }
     },
     "database": {
@@ -144,7 +146,7 @@
       "includeTestingReport": false
     },
     "_comment_models": "Resolve order when --model is blank: stepModels[role|N] → active preset steps[role|N] → top-level phase key → preset phase key → session. Token \"current\" uses session currentModel (no fallthrough). Empty string falls through. Unknown modelsPreset → preset \"default\" if present, else legacy four keys. Fix-PR roles bypass numeric Step 9: fixPrPlan → reviewerModel; fixPrExec → executionModel. Lite ignores testingModel and all role keys, including fixPrPlan/fixPrExec, while preserving inline plan-before-edit order. Presets are lean phase-key bundles without a steps map; put per-step or per-role overrides in top-level stepModels. The default preset is all current (session-only safe fallback). Switch modelsPreset to a named bundle (cursor, deepseek, opencode, cheap, muse-spark) for host-specific models.",
-    "modelsPreset": "default",
+    "modelsPreset": "muse-spark",
     "modelPresets": {
       "muse-spark": {
         "plannerModel": "muse-spark-1.3-contributor",
@@ -209,12 +211,12 @@
     "reviewerModel": "",
     "testingModel": "",
     "specializedSubagents": {
-      "enabled": true,
-      "targetHost": "cursor",
+      "enabled": false,
+      "targetHost": "generic",
       "agentPrefix": "ws",
       "directory": "userLevel"
     },
-    "_comment_specializedSubagents": "Opt-in host projections. enabled true compiles .cursor/agents/ws-step-*.md. directory can be 'userLevel' ($HOME/.cursor/agents, etc) or 'projectLevel' (dynamically loaded from project relative). Step 5 is product-tree readonly in the prompt; never host Ask-mode readonly."
+    "_comment_specializedSubagents": "Opt-in host projections. enabled true compiles .cursor/agents/ws-step-*.md. directory can be \u0027userLevel\u0027 ($HOME/.cursor/agents, etc) or \u0027projectLevel\u0027 (dynamically loaded from project relative). Step 5 is product-tree readonly in the prompt; never host Ask-mode readonly."
   },
   "plans": {
     "dir": ".agents/plans",
@@ -261,7 +263,9 @@
   "tracking": {
     "_comment": "Upstream package keeps FEATURES.md inventory. Set featuresMdEnabled false in consumer hubs that do not use FEATURES.md.",
     "featuresMdEnabled": true,
-    "canonicalFiles": []
+    "canonicalFiles": [
+      
+    ]
   },
   "specMemo": {
     "enabled": true,

@@ -198,15 +198,20 @@ function prRow(pr, searchText) {
   const nativeStatus = pr.status;
   const normalizedState = ADO_STATE_TO_GH[String(nativeStatus || '').toLowerCase()] ?? (nativeStatus || '');
   const src = normalizeHeadRef(pr.sourceRefName);
+  // Canonical PR-row shape (shared with the GitHub sweep): state and status
+  // carry the same provider-normalized value; the native Azure DevOps
+  // status is preserved as nativeStatus; both search field aliases present.
   return {
     number: pid,
     pullRequestId: pid,
     title: pr.title || '',
     state: normalizedState,
-    status: nativeStatus,
+    status: normalizedState,
+    nativeStatus: nativeStatus || '',
     url: prWebUrl(pr),
     headRefName: src,
     sourceRefName: src,
+    searchQuery: searchText,
     searchText,
   };
 }

@@ -159,17 +159,27 @@ function searchPrs(repoRoot, query, dryRun, authOk) {
   if (!Array.isArray(rows)) {
     return [];
   }
-  return rows.map((row) => ({
+  // Canonical PR-row shape (shared with the Azure DevOps sweep): state and
+  // status carry the same provider-normalized value; both search field
+  // aliases are present so consumers read either name.
+  return rows.map((row) => ghPrRow(row, query));
+}
+
+// Canonical PR-row builder (shared shape with the Azure DevOps sweep).
+function ghPrRow(row, query) {
+  return {
     number: row.number,
     pullRequestId: row.number,
     title: row.title,
     state: row.state,
     status: row.state,
+    nativeStatus: row.state,
     url: row.url,
     headRefName: row.headRefName,
     sourceRefName: row.headRefName,
     searchQuery: query,
-  }));
+    searchText: query,
+  };
 }
 
 function gitLog(repoRoot, files) {
@@ -275,4 +285,4 @@ if (require.main === module) {
   process.exit(main());
 }
 
-module.exports = { parseArgs, validateAuth, searchPrs, gitLog };
+module.exports = { parseArgs, validateAuth, searchPrs, gitLog, ghPrRow };

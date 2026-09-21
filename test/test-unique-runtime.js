@@ -73,6 +73,7 @@ const gate = path.join(
     path.join(repoRoot, 'test'),
     path.join(repoRoot, '.agents/skills'),
     path.join(repoRoot, 'bin'),
+    path.join(repoRoot, 'scripts'),
   ];
   const stack = [...roots];
   while (stack.length) {

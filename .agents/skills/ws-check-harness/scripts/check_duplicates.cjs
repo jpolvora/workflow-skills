@@ -82,7 +82,12 @@ function shippedMarkdown(context) {
   const hubEsc = hubOutside ? null : hubRel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const hubFileRe = hubOutside ? null : new RegExp(`^${hubEsc}/(?:MEMORY|CHANGELOG|STACK|backend|frontend)\\.md$`);
   const hubMemoryRe = hubOutside ? null : new RegExp(`^${hubEsc}/memory(?:/|$)`);
-  const skills = path.join(context.repoRoot, '.agents', 'skills');
+  // Scan the resolved skills root (local or global install), not a hardcoded
+  // project-local path, so global-only installs are audited, not skipped.
+  const skillsBase = context.skillsRoot && path.isAbsolute(String(context.skillsRoot))
+    ? String(context.skillsRoot)
+    : path.join(context.repoRoot, '.agents', 'skills');
+  const skills = skillsBase;
   const stack = fs.existsSync(skills) ? [skills] : [];
   if (!hubOutside && fs.existsSync(context.sharedDir)) stack.push(context.sharedDir);
   while (stack.length) {

@@ -445,5 +445,79 @@ assert.match(
 );
 console.log('  PASS: No structured schema node is bound as a plain string row; baton rows use json.');
 
-console.log('\nALL 9 POWERSHELL CONFIG EDITOR TESTS PASSED.');
+console.log('Test 10: Verifying AC8 GUI round-trip and schema parity (owner, tri-state false, karpathy default)...');
+const guiKeys10 = new Set();
+const keyRegex = /-Section\s+['"]([^'"]*)['"]\s+-Key\s+['"]([^'"]+)['"]/g;
+let keyMatch;
+while ((keyMatch = keyRegex.exec(guiScript)) !== null) {
+  guiKeys10.add(keyMatch[1] ? `${keyMatch[1]}.${keyMatch[2]}` : keyMatch[2]);
+}
+assert(guiKeys10.has('issueTrackers.github.owner'), 'GUI must bind issueTrackers.github.owner');
+assert(!guiKeys10.has('issueTrackers.github.org'), 'GUI must not persist the retired issueTrackers.github.org key');
+assert(guiKeys10.has('issueTrackers.azureDevOps.apiBase'), 'GUI must bind issueTrackers.azureDevOps.apiBase');
+assert(guiKeys10.has('fable.auditVerdictsBlockShip'), 'GUI must bind fable.auditVerdictsBlockShip');
+assert(guiKeys10.has('rules.karpathyGuidelines'), 'GUI must bind rules.karpathyGuidelines');
+assert.match(
+  guiScript,
+  /-Section\s+['"]rules['"]\s+-Key\s+['"]karpathyGuidelines['"][\s\S]*?-DefaultVal\s+['"]\.agents\/skills\/ws-senior-developer\/SKILL\.md['"]/,
+  'rules.karpathyGuidelines default must be the packaged ws-senior-developer alias'
+);
+assert(
+  !/-Section\s+['"]issueTrackers\.github['"]\s+-Key\s+['"]org['"]/.test(guiScript),
+  'retired issueTrackers.github org row must be gone'
+);
+// Schema parity for the AC8 keys: fable tri-state enum carries boolean false.
+const fableNode = schema.properties?.fable?.properties?.auditVerdictsBlockShip || {};
+const fableEnum = Array.isArray(fableNode.enum) ? fableNode.enum : [];
+assert(fableEnum.includes(false), 'schema fable.auditVerdictsBlockShip enum must include boolean false');
+assert(!fableEnum.includes('false'), 'schema fable.auditVerdictsBlockShip enum must not include string "false"');
+
+// Round-trip: selecting 'false' (enum display string) persists boolean false.
+const tmpDir10 = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-cfg-ac8-'));
+try {
+  const tmpConfig10 = path.join(tmpDir10, 'config.json');
+  fs.copyFileSync(EXAMPLE_PATH, tmpConfig10);
+  const roundTrip = `
+    . '${SCRIPT_PATH.replace(/\\/g, '\\\\')}' -ConfigPath '${tmpConfig10.replace(/\\/g, '\\\\')}' -RepoRoot '${REPO_ROOT.replace(/\\/g, '\\\\')}' -FunctionsOnly
+    Set-ConfigValue -Path 'fable.auditVerdictsBlockShip' -Value 'false'
+    Set-ConfigValue -Path 'issueTrackers.github.owner' -Value 'acme'
+    Save-ConfigurationFile
+  `;
+  const roundRun = runPowerShell(roundTrip);
+  assert.strictEqual(
+    roundRun.status,
+    0,
+    `AC8 round-trip save failed:\n${roundRun.stderr || roundRun.stdout}`
+  );
+  const roundJson = JSON.parse(fs.readFileSync(tmpConfig10, 'utf8'));
+  assert.strictEqual(
+    roundJson.fable.auditVerdictsBlockShip, false,
+    'selecting false must persist boolean false, not string "false"'
+  );
+  assert.strictEqual(typeof roundJson.fable.auditVerdictsBlockShip, 'boolean', 'persisted false must be boolean');
+  assert.strictEqual(roundJson.issueTrackers.github.owner, 'acme', 'owner binding must persist');
+  assert(!('org' in (roundJson.issueTrackers.github || {})), 'org key must not be written');
+
+  // Loading a config containing string "false" is rejected by the schema loader.
+  const validatorPath = path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/scripts/validate_json_schema.cjs');
+  const probeScript = `const { validateNode } = require(${JSON.stringify(validatorPath)});`
+    + ` const schema = require(${JSON.stringify(SCHEMA_PATH)});`
+    + ' const node = schema.properties.fable.properties.auditVerdictsBlockShip;'
+    + ' const bad = validateNode("false", node, "fable.auditVerdictsBlockShip");'
+    + ' const good = validateNode(false, node, "fable.auditVerdictsBlockShip");'
+    + ' console.log(JSON.stringify({ bad: bad.length, good: good.length }));';
+  const loaderProbe = cp.spawnSync(process.execPath, ['-e', probeScript], { encoding: 'utf8' });
+  const probeResult = JSON.parse(loaderProbe.stdout.trim());
+  assert(
+    probeResult.bad > 0 && probeResult.good === 0,
+    `string "false" must be rejected and boolean false accepted (got: ${loaderProbe.stdout.trim()})`
+  );
+  console.log('  PASS: AC8 round-trip and schema parity validated.');
+} finally {
+  try {
+    fs.rmSync(tmpDir10, { recursive: true, force: true });
+  } catch {}
+}
+
+console.log('\nALL 10 POWERSHELL CONFIG EDITOR TESTS PASSED.');
 

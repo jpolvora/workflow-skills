@@ -172,3 +172,10 @@ After Step 8 when `shipAction: create-pr` and PR exists:
 When shipping reaches a **terminal** `shipStatus` after Step 9 convergence (or skip-ship/skip-PR after close), run **Phase A** git cleanup once before claiming the run fully ended — see [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md). Do **not** set `status: completed` again in Step 9 (`status` was set at close). Update `shipStatus` to `merged` or `stopped`. Do not run Phase A at both Step 8 close and Step 9.
 
 Stop: max exhausted · escalate · merge blocked · cancelled · PR closed · checks red after convergence attempts.
+
+**Exit branches** (three; shared verbatim with `ws-goal-fix-pr` § Exit branches — a batch iteration never sends outer-step completion or goal-level exit, only per-batch dispatch telemetry):
+1. **Converged** — `activeThreads == 0` with green required checks → pre-merge verification gate → merge handoff (the caller merges).
+2. **Stopped** — `max` iterations reached, escalation, or user abort → final report with remaining threads; the caller decides.
+3. **Clean-immediate** — fresh read already clean on entry → exit without arming a heartbeat.
+
+Batch workers spawn with cwd = the workflow workspace (repo root owning the state file); dispatch events record configured-vs-actual model provenance. `--jsonl-out` is append-only: exit/finish/dispatch events are appended to the single `telemetry.jsonl` stream, never rewritten. `shipStatus` vocabulary (never blank; defaults `pending`): `pending` · `pushed` · `pr-open` · `merged` · `stopped` · `skipped` (terminal: `merged` / `stopped` / `skipped`).

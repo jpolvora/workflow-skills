@@ -45,9 +45,20 @@ function stripFences(text) {
   return out;
 }
 
+function skillsDirFor(repoRoot) {
+  try {
+    const { resolveConsumerContext } = require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
+    const context = resolveConsumerContext({ repoRoot, scriptFile: __filename });
+    if (context && context.skillsRoot) return String(context.skillsRoot);
+  } catch {
+    // Fall through to the project-local default below.
+  }
+  return path.join(repoRoot, '.agents', 'skills');
+}
+
 function detectMode(repoRoot) {
   const markers = [path.join(repoRoot, 'bin', 'skill-dependencies.json'), path.join(repoRoot, 'bin', 'cli.js')];
-  const skillsDir = path.join(repoRoot, '.agents', 'skills');
+  const skillsDir = skillsDirFor(repoRoot);
   const hasSoT =
     fs.existsSync(skillsDir) &&
     fs.readdirSync(skillsDir, { withFileTypes: true }).some(

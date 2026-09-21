@@ -70,11 +70,23 @@ export function stableStringify(value, space = 2) {
   return `${JSON.stringify(sortKeysDeep(value), null, space)}\n`;
 }
 
+/**
+ * Codepoint (locale-independent) string comparison for integrity ordering:
+ * digests, skill ids, and relative paths sort identically on every machine.
+ */
+export function compareCodepoint(a, b) {
+  const x = String(a);
+  const y = String(b);
+  if (x < y) return -1;
+  if (x > y) return 1;
+  return 0;
+}
+
 function sortKeysDeep(value) {
   if (Array.isArray(value)) return value.map(sortKeysDeep);
   if (value && typeof value === 'object' && !(value instanceof Buffer)) {
     const out = {};
-    for (const key of Object.keys(value).sort((a, b) => a.localeCompare(b))) {
+    for (const key of Object.keys(value).sort(compareCodepoint)) {
       out[key] = sortKeysDeep(value[key]);
     }
     return out;
@@ -96,7 +108,7 @@ export function writeJsonStable(filePath, obj) {
  */
 export function digestFromFilesMap(filesMap) {
   const lines = Object.keys(filesMap)
-    .sort((a, b) => a.localeCompare(b))
+    .sort(compareCodepoint)
     .map((rel) => `${rel}\0${filesMap[rel]}\n`)
     .join('');
   return sha256Hex(Buffer.from(lines, 'utf8'));
@@ -108,17 +120,17 @@ export function digestFromFilesMap(filesMap) {
  */
 export function aggregateDigest(skillIds, skillsMap, hub) {
   const parts = [];
-  const ids = [...skillIds].sort((a, b) => a.localeCompare(b));
+  const ids = [...skillIds].sort(compareCodepoint);
   for (const id of ids) {
     const entry = skillsMap[id];
     if (!entry?.files) continue;
     const files = entry.files;
-    for (const rel of Object.keys(files).sort((a, b) => a.localeCompare(b))) {
+    for (const rel of Object.keys(files).sort(compareCodepoint)) {
       parts.push(`${id}/${rel}\0${files[rel]}\n`);
     }
   }
   if (hub?.files) {
-    for (const rel of Object.keys(hub.files).sort((a, b) => a.localeCompare(b))) {
+    for (const rel of Object.keys(hub.files).sort(compareCodepoint)) {
       parts.push(`hub/${rel}\0${hub.files[rel]}\n`);
     }
   }
@@ -138,7 +150,7 @@ export function listInstallableSkills(skillsDir) {
         fs.existsSync(path.join(p, 'SKILL.md'))
       );
     })
-    .sort((a, b) => a.localeCompare(b));
+    .sort(compareCodepoint);
 }
 
 /**

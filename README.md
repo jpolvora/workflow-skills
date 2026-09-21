@@ -82,7 +82,7 @@ Pipeline and dependency skills are owned **here**. Consumer installs are managed
 1. Change this repo → PR to `develop`
 2. After merge, in the consumer: `npx --yes github:jpolvora/workflow-skills update`
 
-**Always preserved** under `.ws/`: `config.json`, `STACK.md`, `installed-skills.json`, plus legacy `MEMORY.md`, `memory/*`, `CHANGELOG.md` when present. Managed package content is split into `runtime/` and `templates/`, classified by `runtime/hub-layout.json`. The consumer agent contract is [`.ws/AGENTS.md`](.ws/AGENTS.md), with the full runtime contract in [`ws-shared/runtime/AGENTS.md`](.agents/skills/ws-shared/runtime/AGENTS.md). The installer ships no separate packaged index and never writes repo-root files. Do not treat in-place skill edits in a consumer as permanent.
+**Always preserved** under `.ws/`: `config.json`, `STACK.md`, `installed-skills.json`, plus legacy `MEMORY.md`, `memory/*`, `CHANGELOG.md` when present. Managed package content lives in the skills install, split into `{skillsRoot}/ws-shared/runtime/` and `{skillsRoot}/ws-shared/templates/` (global fallback `{globalSkillsRoot}/ws-shared/`), classified by the `hub-layout.json` manifest; `.ws/` never holds `runtime/` or `templates/` copies. The consumer agent contract is [`.ws/AGENTS.md`](.ws/AGENTS.md), with the full runtime contract in [`ws-shared/runtime/AGENTS.md`](.agents/skills/ws-shared/runtime/AGENTS.md). The installer ships no separate packaged index and never writes repo-root files. Do not treat in-place skill edits in a consumer as permanent.
 
 ---
 
@@ -138,7 +138,7 @@ When skills live under `$HOME/.agents/skills` (global) or a mix of global + proj
 - **Skill scripts:** recipes expand `{skillsRoot}/ws-<id>/scripts/...` when that path exists in the project, then fall back to `{globalSkillsRoot}` (see [`tools.md`](.agents/skills/ws-shared/runtime/tools.md) rule 10).
 - **Project-local scripts** (installed under the consumer `.agents/skills/`, not under the global root) resolve the consumer via `parents[4]` from the script path when cwd has no hub.
 
-`ws-configure-project` keeps the scope boundary explicit. A project-local invocation reads the local `runtime/` and `templates/` and updates only the project consumer root. A global invocation reads the executing global hub and writes only project `config.json` plus accepted consumer-owned companions or pointer/autoload files; it does not copy runtime/templates, package manifests, integrity files, or global memory/history. Running from a global skills root without `--repo-root` stops with an actionable error.
+`ws-configure-project` keeps the scope boundary explicit. A project-local invocation reads the project-local skills install `runtime/` and `templates/` and updates only the project consumer root. A global invocation reads the executing global hub and writes only project `config.json` plus accepted consumer-owned companions or pointer/autoload files; it does not copy runtime/templates, package manifests, integrity files, or global memory/history. Running from a global skills root without `--repo-root` stops with an actionable error.
 
 #### Global secondary host targets (Claude / Codex / Antigravity / Gemini)
 

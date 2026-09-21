@@ -58,6 +58,27 @@ $script:RowPanels = @()
 $script:MainForm = $null
 $script:ThemeMode = 'auto' # auto, light, dark
 
+# Config paths whose enum display value 'false' persists as boolean $false
+# (schema enum [false, 'refuted', 'caveats']). The string 'false' fails
+# config load (normalizeFable), so save/load coerce through these helpers.
+$script:BooleanEnumPaths = @('fable.auditVerdictsBlockShip')
+
+function ConvertTo-EnumDisplayValue {
+    param([string]$Path, $Value)
+    if (($script:BooleanEnumPaths -contains $Path) -and ($Value -is [bool])) {
+        if ($Value) { return 'true' } else { return 'false' }
+    }
+    return [string]$Value
+}
+
+function ConvertFrom-EnumDisplayValue {
+    param([string]$Path, $Value)
+    if (($script:BooleanEnumPaths -contains $Path) -and ($Value -is [string]) -and ($Value.Trim().ToLowerInvariant() -eq 'false')) {
+        return $false
+    }
+    return $Value
+}
+
 # ---------------------------------------------------------------------------
 # Headless / Non-Windows Environment Guard
 # ---------------------------------------------------------------------------
@@ -432,6 +453,10 @@ function Set-ConfigValue {
     if ([string]::IsNullOrWhiteSpace($Path)) {
         return
     }
+
+    # Coerce tri-state enum display values to their schema types (boolean
+    # $false, never the string 'false').
+    $Value = ConvertFrom-EnumDisplayValue -Path $Path -Value $Value
 
     if (-not $script:LoadedConfig) {
         $script:LoadedConfig = New-Object -TypeName PSObject
@@ -875,7 +900,7 @@ function Add-ConfigFieldRow {
                 [void]$cmb.Items.Add($opt)
             }
 
-            $strVal = [string]$currentVal
+            $strVal = ConvertTo-EnumDisplayValue -Path $configPath -Value $currentVal
             $idx = $cmb.Items.IndexOf($strVal)
             if ($idx -ge 0) {
                 $cmb.SelectedIndex = $idx
@@ -1114,18 +1139,24 @@ function Populate-Sections {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'project' -Key 'baseBranch' -LabelText 'Base PR Target Branch' -Type 'string' -DefaultVal 'main' -Placeholder 'main or master'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'project' -Key 'workingBranch' -LabelText 'Working Delivery Branch' -Type 'string' -DefaultVal 'develop' -Placeholder 'develop'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'project' -Key 'repoUrl' -LabelText 'Repository Remote URL' -Type 'string' -Placeholder 'https://github.com/org/repo'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'project' -Key 'org' -LabelText 'Project Organization' -Type 'string'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'project' -Key 'gitRemote' -LabelText 'Git Remote Name' -Type 'string' -DefaultVal 'origin'
 
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'providers' -Key 'active' -LabelText 'Active Spec Provider' -Type 'enum' -Options @('local', 'github', 'azure-devops') -DefaultVal 'local'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'providers' -Key 'scm' -LabelText 'Active SCM / PR Host' -Type 'enum' -Options @('github', 'azure-devops') -DefaultVal 'github'
 
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'issueTrackers.github' -Key 'enabled' -LabelText 'Enable GitHub Issue Tracker' -Type 'bool' -DefaultVal $false
-                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'issueTrackers.github' -Key 'org' -LabelText 'GitHub Org / Owner' -Type 'string'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'issueTrackers.github' -Key 'owner' -LabelText 'GitHub Org / Owner' -Type 'string'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'issueTrackers.github' -Key 'repo' -LabelText 'GitHub Repository' -Type 'string'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'issueTrackers.github' -Key 'cli' -LabelText 'GitHub CLI Launcher' -Type 'string' -DefaultVal 'gh'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'issueTrackers.github' -Key 'issueToSpecScript' -LabelText 'GitHub Issue To Spec Script' -Type 'string' -DefaultVal '.agents/skills/ws-spec-provider-github/scripts/github-issue-to-spec.cjs'
 
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'issueTrackers.azureDevOps' -Key 'enabled' -LabelText 'Enable Azure DevOps Tracker' -Type 'bool' -DefaultVal $false
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'issueTrackers.azureDevOps' -Key 'org' -LabelText 'Azure DevOps Organization' -Type 'string'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'issueTrackers.azureDevOps' -Key 'project' -LabelText 'Azure DevOps Project' -Type 'string'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'issueTrackers.azureDevOps' -Key 'patEnvVar' -LabelText 'Azure DevOps PAT Env Var' -Type 'string' -DefaultVal 'ADO_PAT'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'issueTrackers.azureDevOps' -Key 'apiBase' -LabelText 'Azure DevOps API Base URL' -Type 'string' -DefaultVal 'https://dev.azure.com'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'issueTrackers.azureDevOps' -Key 'workItemToSpecScript' -LabelText 'ADO Work Item To Spec Script' -Type 'string' -DefaultVal '.agents/skills/ws-spec-provider-azure-devops/scripts/ado-workitem-to-spec.cjs'
             }
             'verification' {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'verification' -Key 'backendBuild' -LabelText 'Backend Build Command' -Type 'string' -Placeholder 'npm run build | dotnet build'
@@ -1137,6 +1168,8 @@ function Populate-Sections {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'verification' -Key 'mutationTest' -LabelText 'Mutation Testing Command' -Type 'string' -Placeholder 'stryker run | npx stryker run'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'verification' -Key 'mutationThreshold' -LabelText 'Mutation Score Threshold (%)' -Type 'int' -MinVal 0 -MaxVal 100 -DefaultVal 80
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'verification' -Key 'testGlobs' -LabelText 'Test Surface Probe Patterns' -Type 'array' -DefaultVal @('test/**/*.js', 'tests/**/*', '**/*.test.*', '**/*.spec.*')
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'verification' -Key 'migrationsAdd' -LabelText 'Migrations Add Command' -Type 'string'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'verification' -Key 'migrationsApply' -LabelText 'Migrations Apply Command' -Type 'string'
 
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'dagThresholds' -Key 'maxImplementationSteps' -LabelText 'DAG Max Implementation Steps' -Type 'int' -MinVal 1 -MaxVal 50 -DefaultVal 5
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'dagThresholds' -Key 'maxExpectedFiles' -LabelText 'DAG Max Expected Files' -Type 'int' -MinVal 1 -MaxVal 50 -DefaultVal 10
@@ -1162,6 +1195,17 @@ function Populate-Sections {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.contextHygiene' -Key 'pruneAfterStep' -LabelText 'Prune Prior Step Context' -Type 'bool' -DefaultVal $true
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.providerCompat' -Key 'stabilizeStaticPrefix' -LabelText 'Stabilize Static Dispatch Prefix' -Type 'bool' -DefaultVal $true
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.providerCompat' -Key 'thinkingToolCompat' -LabelText 'Preserve Thinking Text in Tool Turns' -Type 'bool' -DefaultVal $false
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'dryRun' -LabelText 'Dry Run (no remote writes)' -Type 'bool' -DefaultVal $false
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'fullMode' -LabelText 'Full Mode (delivery + ship prompts)' -Type 'bool' -DefaultVal $false
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'skipTests' -LabelText 'Skip Tests (defaults.skipTests)' -Type 'bool' -DefaultVal $false
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.contextHygiene' -Key 'backgroundVerboseSteps' -LabelText 'Background Verbose Steps 6-7' -Type 'bool' -DefaultVal $false
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.convergence' -Key 'initialDelaySec' -LabelText 'Fix-PR Initial Delay (s)' -Type 'int' -MinVal 0 -MaxVal 3600 -DefaultVal 0
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.convergence' -Key 'minPollSec' -LabelText 'Fix-PR Min Poll (s)' -Type 'int' -MinVal 0 -MaxVal 3600 -DefaultVal 30
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.convergence' -Key 'maxPollSec' -LabelText 'Fix-PR Max Poll (s)' -Type 'int' -MinVal 0 -MaxVal 3600 -DefaultVal 300
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.convergence' -Key 'backoff' -LabelText 'Fix-PR Backoff Factor' -Type 'string' -DefaultVal '1.5'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.convergence' -Key 'maxIterations' -LabelText 'Fix-PR Max Iterations' -Type 'int' -MinVal 1 -MaxVal 100 -DefaultVal 20
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.hostAdapter' -Key 'browserTool' -LabelText 'Host Adapter Browser Tool' -Type 'string'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.hostAdapter' -Key 'stepOverrides' -LabelText 'Host Adapter Step Overrides (JSON)' -Type 'json' -Placeholder '{"<step>":{"mode":"cli-command"}}'
             }
             'models' {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'modelsPreset' -LabelText 'Active Models Preset Bundle' -Type 'enum' -Options @('default', 'cursor', 'deepseek', 'opencode', 'cheap', 'muse-spark', 'custom') -DefaultVal 'default'
@@ -1176,9 +1220,12 @@ function Populate-Sections {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.specializedSubagents' -Key 'targetHost' -LabelText 'Specialized Subagents Target Host' -Type 'enum' -Options @('auto', 'cursor', 'claude', 'generic') -DefaultVal 'auto'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.specializedSubagents' -Key 'agentPrefix' -LabelText 'Specialized Subagents Agent Prefix' -Type 'string' -DefaultVal 'ws'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.specializedSubagents' -Key 'directory' -LabelText 'Specialized Subagents Output Location' -Type 'string' -DefaultVal 'projectLevel'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.specializedSubagents' -Key 'scope' -LabelText 'Specialized Subagents Scope Alias' -Type 'enum' -Options @('projectLevel', 'userLevel', 'project', 'user') -DefaultVal 'projectLevel'
 
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.hostAdapter' -Key 'mode' -LabelText 'Host Dispatch Adapter Mode' -Type 'enum' -Options @('auto', 'native-tool', 'cli-command', 'inline-isolated', 'cursor', 'claude', 'opencode', 'antigravity') -DefaultVal 'auto'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults.hostAdapter' -Key 'cliTemplate' -LabelText 'Host Adapter CLI Template' -Type 'string'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'stepModels' -LabelText 'Per-Step Model Overrides (JSON)' -Type 'json' -Placeholder '{"4":"executionModel"}'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'modelPresets' -LabelText 'Model Preset Bundles (JSON)' -Type 'json' -Placeholder '{"custom":{"plannerModel":"..."}}'
             }
             'plans' {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'plans' -Key 'dir' -LabelText 'Plans Directory ({plansDir})' -Type 'path-folder' -DefaultVal '.agents/plans'
@@ -1205,10 +1252,12 @@ function Populate-Sections {
             'rules' {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'harness' -LabelText 'Harness Rule Path' -Type 'path-file' -DefaultVal '.ws/AGENTS.md'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'seniorDeveloper' -LabelText 'Senior Developer Gate Rule Path' -Type 'path-file' -DefaultVal '.agents/skills/ws-senior-developer/SKILL.md'
-                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'karpathyGuidelines' -LabelText 'Karpathy Diff Hygiene Rule Path' -Type 'path-file' -DefaultVal '.agents/skills/ws-karpathy-guidelines/SKILL.md'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'karpathyGuidelines' -LabelText 'Karpathy Diff Hygiene Rule Path' -Type 'path-file' -DefaultVal '.agents/skills/ws-senior-developer/SKILL.md'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'stackFile' -LabelText 'Project Stack File' -Type 'path-file' -DefaultVal '.ws/STACK.md'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'changelogFile' -LabelText 'Project Changelog File' -Type 'path-file' -DefaultVal 'CHANGELOG.md'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'memoryDir' -LabelText 'Memory Files Directory ({memoryDir})' -Type 'path-folder' -DefaultVal '.'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'viewPatterns' -LabelText 'View Patterns Rule Path' -Type 'string'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'rules' -Key 'efMigrations' -LabelText 'EF Migrations Rule Path' -Type 'string'
 
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'invariants' -Key 'skipQualityGates' -LabelText 'Skip Soft Quality Gates (CLI --skip-gates)' -Type 'bool' -DefaultVal $false
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'invariants' -Key 'commitPlanFilesOnlyAtStep8' -LabelText 'Stage Plan Files Only at Step 8 Close' -Type 'bool' -DefaultVal $true
@@ -1223,6 +1272,17 @@ function Populate-Sections {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'specMemo' -Key 'cli' -LabelText 'spec-memo CLI Launcher' -Type 'string' -DefaultVal 'memo'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'specMemo' -Key 'mcpServerName' -LabelText 'spec-memo MCP Namespace' -Type 'string' -DefaultVal 'spec-memo'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'specMemo' -Key 'bootstrapOnSession' -LabelText 'Bootstrap spec-memo on Session Start' -Type 'bool' -DefaultVal $true
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'specMemo' -Key 'enableMemoryFiles' -LabelText 'spec-memo: Write Local Memory Files' -Type 'bool' -DefaultVal $true
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'specMemo' -Key 'enableSpecMemoIntegration' -LabelText 'spec-memo: Enable Vault Integration' -Type 'bool' -DefaultVal $false
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'specMemo' -Key 'vaultRoot' -LabelText 'spec-memo Vault Root Override' -Type 'string' -Placeholder 'empty = ~/.spec-memo'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'specMemo' -Key 'writeBlockHook' -LabelText 'spec-memo: Write-Block Hook Installed' -Type 'bool' -DefaultVal $false
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'specMemo' -Key 'importOnEnable' -LabelText 'spec-memo: Import On Enable' -Type 'bool' -DefaultVal $true
+
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section '' -Key 'toolsFile' -LabelText 'Capability Vocabulary File (toolsFile)' -Type 'string' -DefaultVal '../.agents/skills/ws-shared/runtime/tools.md'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section '' -Key 'enableMemoryFiles' -LabelText 'Write Local Memory Files' -Type 'bool' -DefaultVal $true
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section '' -Key 'enableSpecMemoIntegration' -LabelText 'Enable spec-memo Vault Integration' -Type 'bool' -DefaultVal $false
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'pathTokens' -Key 'skillsRoot' -LabelText 'Skills Root Token ({skillsRoot})' -Type 'string' -DefaultVal '.agents/skills'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'pathTokens' -Key 'sharedDir' -LabelText 'Shared Hub Token ({sharedDir})' -Type 'string' -DefaultVal '.ws'
 
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'fable' -Key 'enabled' -LabelText 'Enable Fable Evidence Engine' -Type 'bool' -DefaultVal $false
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'fable' -Key 'autoAudit' -LabelText 'Automatic Fable Adversarial Audit' -Type 'bool' -DefaultVal $false

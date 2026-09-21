@@ -110,7 +110,7 @@ function runCmd(command, cmdArgs, cwd) {
   const run = spawnSync(bin, [...prefix, ...cmdArgs], {
     encoding: 'utf8',
     cwd,
-    shell: process.platform === 'win32',
+    shell: false,
   });
   return { status: run.status, stdout: run.stdout || '', stderr: run.stderr || '' };
 }
@@ -119,7 +119,7 @@ function cliAvailable(cliSetting) {
   const parts = (cliSetting || 'memo').trim().split(/\s+/);
   const probe = spawnSync(parts[0], [...parts.slice(1), '--help'], {
     encoding: 'utf8',
-    shell: process.platform === 'win32',
+    shell: false,
   });
   return probe.status === 0 || (probe.stdout || '').includes('memo');
 }

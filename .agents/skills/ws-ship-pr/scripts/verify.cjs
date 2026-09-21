@@ -23,6 +23,9 @@ function gitTopLevel() {
   return (r.stdout || '').trim();
 }
 
+// Fail-closed base detection: SHIP_PR_BASE wins when set; otherwise the
+// detection script, then a master/main probe. Returns null when no base
+// exists so the caller refuses instead of diffing a guessed base.
 function detectBase(scriptDir) {
   const det = path.join(scriptDir, 'detect-base-branch.cjs');
   if (process.env.SHIP_PR_BASE) return process.env.SHIP_PR_BASE;
@@ -36,12 +39,14 @@ function detectBase(scriptDir) {
     const r = spawnSync('git', ['show-ref', '--verify', '--quiet', `refs/heads/${c}`], { encoding: 'utf8' });
     if (r.status === 0) return c;
   }
-  return 'main';
+  return null;
 }
 
 function frontendTouched(baseBranch) {
   const parts = [];
-  for (const args of [['diff', '--name-only'], ['diff', '--cached', '--name-only'], ['diff', '--name-only', `${baseBranch}...HEAD`]]) {
+  const argSets = [['diff', '--name-only'], ['diff', '--cached', '--name-only']];
+  if (baseBranch) argSets.push(['diff', '--name-only', `${baseBranch}...HEAD`]);
+  for (const args of argSets) {
     const r = spawnSync('git', args, { encoding: 'utf8' });
     if (r.status === 0 && r.stdout) parts.push(r.stdout);
   }
@@ -73,6 +78,10 @@ function main() {
   const scriptDir = __dirname;
   const configFile = path.join(repoRoot, '.ws', 'config.json');
   const baseBranch = detectBase(scriptDir);
+  if (!baseBranch) {
+    console.error('verify: refusing — no base branch detected and neither master nor main exists (set SHIP_PR_BASE to override)');
+    process.exit(1);
+  }
 
   console.log(`==> verify (base: ${baseBranch})`);
   let backendBuild, backendTest, frontendBuild, frontendTest, frontendDir;

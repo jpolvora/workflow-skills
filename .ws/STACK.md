@@ -7,7 +7,7 @@ stackFingerprintVersion: 1
 
 Human-readable companion to `config.json`. Agents read `config.json` for machine-readable values; this doc explains structure and conventions.
 
-> **Source of truth:** `.ws/config.json` — project identity, stack, verification, invariants. `tools.md` — tool aliases. This `STACK.md` is the human-readable guide.
+> **Source of truth:** `.ws/config.json` — project identity, stack, verification, invariants. `{skillsRoot}/ws-shared/runtime/tools.md` — tool aliases. This `STACK.md` is the human-readable guide.
 
 ## Project Stack (from config.json)
 
@@ -42,7 +42,7 @@ Human-readable companion to `config.json`. Agents read `config.json` for machine
 
 Related upstream authoring (not in verification keys): `npm run generate-integrity`, `npm run verify-integrity`, `npm run build-site:bump`.
 
-> **Script launchers:** managed skill scripts use explicit `node` / `bash` (see [`runtime/tools.md`](runtime/tools.md) § Script launchers).
+> **Script launchers:** managed skill scripts use explicit `node` / `bash` (see [`../.agents/skills/ws-shared/runtime/tools.md`](../.agents/skills/ws-shared/runtime/tools.md) § Script launchers).
 
 ## Project Rules & Skills (from config.json)
 

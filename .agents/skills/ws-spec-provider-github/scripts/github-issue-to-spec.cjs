@@ -180,7 +180,9 @@ function resolveSpecsDir(repoRoot, override) {
 function resolveDefaultOutput(repoRoot, slug, specsDirOverride) {
   const organizer = path.resolve(__dirname, '..', '..', 'ws-spec-organizer', 'scripts', 'resolve_spec_path.cjs');
   if (fs.existsSync(organizer)) {
-    const proc = spawnSync('node', [organizer, '--slug', slug, '--repo-root', String(repoRoot)], {
+    const organizerArgs = [organizer, '--slug', slug, '--repo-root', String(repoRoot)];
+    if (String(specsDirOverride || '').trim()) organizerArgs.push('--specs-dir', String(specsDirOverride));
+    const proc = spawnSync('node', organizerArgs, {
       encoding: 'utf8',
     });
     if ((proc.status ?? 1) === 0) {

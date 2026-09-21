@@ -218,6 +218,13 @@ function formatGatePrompt(title, pageOptions, pageIndex = 0, pageCount = 1) {
   return `${lines.join('\n')}\n`;
 }
 
+// Explicit cancel/intent vocabulary: resolves to EXIT_BLOCKED, never index 0.
+const GATE_CANCEL_RE = /^(cancel|cancelled|canceled|stop|abort|quit|exit|no|blocked|block)$/;
+
+// Fail-closed gate resolution: unmatched or cancel input resolves to
+// EXIT_BLOCKED (index -1, never index 0). autoMode and non-TTY defaults are
+// unchanged (index 0 without prompting). Empty TTY input (bare Enter)
+// keeps the documented recommended default (index 0).
 function resolveGateChoice({ autoMode, isTTY, options, input } = {}) {
   const list = [...(options || [])];
   if (!list.length) throw createError('STEPBATON_EMPTY_MAP', 'gate requires at least one option');
@@ -225,13 +232,16 @@ function resolveGateChoice({ autoMode, isTTY, options, input } = {}) {
   if (isTTY === false) return { index: 0, choice: list[0], auto: false, nonTTY: true };
   const raw = String(input ?? '').trim().toLowerCase();
   if (!raw) return { index: 0, choice: list[0], auto: false, nonTTY: false };
+  if (GATE_CANCEL_RE.test(raw)) {
+    return { index: -1, choice: null, auto: false, nonTTY: false, blocked: true, cancelled: true };
+  }
   const asNumber = Number.parseInt(raw, 10);
   if (Number.isInteger(asNumber) && asNumber >= 1 && asNumber <= list.length) {
     return { index: asNumber - 1, choice: list[asNumber - 1], auto: false, nonTTY: false };
   }
   const found = list.findIndex((option) => String(option).toLowerCase().startsWith(raw));
   if (found >= 0) return { index: found, choice: list[found], auto: false, nonTTY: false };
-  return { index: 0, choice: list[0], auto: false, nonTTY: false };
+  return { index: -1, choice: null, auto: false, nonTTY: false, blocked: true, cancelled: false };
 }
 
 function promptInteractive(question) {
@@ -445,14 +455,18 @@ function mirrorSpecMemo({ config, repoRoot, handoff, envelope }) {
     nextSteps: handoff?.nextAction ? [String(handoff.nextAction)] : [],
     holder: envelope?.holder || null,
   };
+  // shell:false keeps --cwd paths containing spaces intact on win32 (with
+  // shell:true the argv array is joined into a string, splitting them).
   const result = spawnSync(bin, [...binArgs, 'append', '--cwd', String(repoRoot)], {
     input: JSON.stringify(payload),
     encoding: 'utf8',
-    shell: process.platform === 'win32',
+    shell: false,
     timeout: 15000,
   });
   if (result.status !== 0) {
-    return { mirrored: false, reason: `cli-exit-${result.status ?? 'signal'}` };
+    const stderr = String((result.stderr && result.stderr.trim()) || (result.error && result.error.message) || '');
+    const detail = stderr ? `: ${stderr.slice(0, 500)}` : '';
+    return { mirrored: false, reason: `cli-exit-${result.status ?? 'signal'}${detail}` };
   }
   return { mirrored: true, reason: 'appended' };
 }
@@ -554,15 +568,24 @@ async function runCoordinator(argv) {
     }
 
     // Gate at coordinator (pause-and-prompt, or index 0 in autoMode).
-    const gateOptions = ['Next', 'More options...'];
+    // Single-option gate: no 'More options...' until a second page exists.
+    const gateOptions = ['Next'];
     const pages = chunkGateOptions(gateOptions, 3);
     if (autoMode) {
       process.stdout.write(`auto-gate-apply | coordinator-step-${currentStep} | Next | ${nowIso()}\n`);
     } else if (!process.stdin.isTTY) {
       process.stdout.write(`coordinator: non-TTY gate default Next for step ${currentStep}\n`);
     } else {
-      const answer = await promptInteractive(formatGatePrompt(`Coordinator gate — step ${currentStep} (runner ${runnerId})`, pages[0], 0, pages.length));
-      const picked = resolveGateChoice({ autoMode: false, isTTY: true, options: pages[0], input: answer });
+      const gateTitle = `Coordinator gate — step ${currentStep} (runner ${runnerId})`;
+      const askGate = async () => {
+        const answer = await promptInteractive(formatGatePrompt(gateTitle, pages[0], 0, pages.length));
+        return resolveGateChoice({ autoMode: false, isTTY: true, options: pages[0], input: answer });
+      };
+      let picked = await askGate();
+      if (picked.blocked === true && picked.cancelled !== true) {
+        process.stdout.write('coordinator: unmatched gate input; re-prompting once\n');
+        picked = await askGate();
+      }
       process.stdout.write(`user-gate-modal | coordinator-step-${currentStep} | ${picked.choice} | ${nowIso()}\n`);
       if (picked.index !== 0) {
         process.stdout.write('coordinator: gate choice is not Next; stopping (HS-1)\n');

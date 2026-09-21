@@ -117,8 +117,39 @@ function testBannedRuntimeDirectoryDetection() {
   }
 }
 
+function testTempGlobalHermetic() {
+  // Hermetic positive: with WORKFLOW_SKILLS_GLOBAL_DIR pointed at a temp
+  // global install, resolution must use the temp dir even when a real
+  // machine-global install exists (never resolve the machine install).
+  const work = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-hermetic-'));
+  const tempGlobalScripts = path.join(work, 'global', 'ws-shared', 'runtime', 'scripts');
+  fs.mkdirSync(tempGlobalScripts, { recursive: true });
+  fs.writeFileSync(path.join(tempGlobalScripts, 'resolve_consumer_root.cjs'), '// temp-global mock\n', 'utf8');
+  try {
+    const childJs = `console.log(require(${JSON.stringify(bootstrapHelperPath)}).resolveHubScriptsDir(${JSON.stringify(path.join(work, 'nowhere'))}))`;
+    const res = cp.spawnSync(process.execPath, ['-e', childJs], {
+      cwd: work,
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        WORKFLOW_SKILLS_GLOBAL_DIR: path.join(work, 'global'),
+        WORKFLOW_SKILLS_SHARED_DIR: '',
+      },
+    });
+    assert.strictEqual(res.status, 0, 'temp global install resolves without error');
+    assert.strictEqual(
+      path.resolve(String(res.stdout || '').trim()),
+      path.resolve(tempGlobalScripts),
+      'resolution uses the temp global dir, not the machine global install',
+    );
+  } finally {
+    fs.rmSync(work, { recursive: true, force: true });
+  }
+}
+
 testResolveHubScriptsDir();
 testSeveredUtf8ChunkDecoding();
 testBannedRuntimeDirectoryDetection();
+testTempGlobalHermetic();
 
 console.log('test-bootstrap-runtime: ok');

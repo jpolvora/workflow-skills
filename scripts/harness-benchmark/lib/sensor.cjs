@@ -165,7 +165,7 @@ function runSensor(sandboxRoot, oracle, paths) {
 
     if (oracle.sabotage === true && paths.runSabotageScript && fs.existsSync(paths.runSabotageScript)) {
       for (const relPath of targetPaths) {
-        const result = spawnSync('python', [
+        const result = spawnSync(process.execPath, [
           paths.runSabotageScript,
           '--test', oracle.sensorTestCommand || 'exit 1',
           '--paths', relPath,

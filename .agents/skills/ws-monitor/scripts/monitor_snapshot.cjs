@@ -734,9 +734,10 @@ function queryMemoryVault(context, options = {}) {
     const bin = parts[0];
     const binArgs = parts.slice(1);
     try {
+      // shell:false keeps --cwd paths containing spaces intact on win32.
       const probe = spawnSync(bin, [...binArgs, 'search', '--kinds', 'state', '--status', 'active', '--cwd', context.repoRoot, '--json'], {
         encoding: 'utf8',
-        shell: process.platform === 'win32',
+        shell: false,
         timeout: 5000,
       });
       if (probe.status === 0 && probe.stdout) {
@@ -981,6 +982,16 @@ function resolveStateAgentTranscripts(state) {
   return null;
 }
 
+// Location classification: 'workspace' only when the target resolves
+// inside the repo root. Cross-drive targets (path.relative returns the
+// absolute target on win32) and any '..'-escaping relative classify 'user'.
+function classifyLocation(repoRootResolved, absolute) {
+  const rel = path.relative(path.resolve(repoRootResolved), path.resolve(absolute));
+  if (path.isAbsolute(rel)) return 'user';
+  if (rel.split(path.sep)[0] === '..') return 'user';
+  return 'workspace';
+}
+
 // us-365 fix-pr: state-recorded transcript paths drive the primary
 // transcript source before host-store discovery, so default-off discovery
 // runs stay consistent (no available/unavailable contradiction) and stall
@@ -1001,7 +1012,7 @@ function resolveStateTranscriptSource(stateTx, repoRoot) {
     return {
       status: 'available',
       adapter: guessTranscriptAdapter(primary),
-      locationClass: path.relative(repoRootResolved, absolute).startsWith('..') ? 'user' : 'workspace',
+      locationClass: classifyLocation(repoRootResolved, absolute),
       sessionMtime,
       pathCount: stateTx.paths.length,
       source: 'state-recorded',
@@ -1040,7 +1051,7 @@ function resolveTranscriptSource(workflow, scannedFiles, discoveryEnabled, repoR
   return {
     status: 'available',
     adapter: guessTranscriptAdapter(best.file),
-    locationClass: path.resolve(best.file).startsWith(repoRootResolved) ? 'workspace' : 'user',
+    locationClass: classifyLocation(repoRootResolved, best.file),
     sessionMtime: best.mtimeMs ? new Date(best.mtimeMs).toISOString() : null,
   };
 }
@@ -1434,4 +1445,5 @@ module.exports = {
   expandMuseSessionDirs,
   collapseHomePaths,
   correlationMatches,
+  classifyLocation,
 };

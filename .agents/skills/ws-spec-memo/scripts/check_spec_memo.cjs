@@ -109,7 +109,7 @@ function detectCli(cliSetting) {
   const binArgs = parts.slice(1);
   const probe = spawnSync(bin, [...binArgs, '--help'], {
     encoding: 'utf8',
-    shell: process.platform === 'win32',
+    shell: false,
   });
   return {
     command: raw,
@@ -154,7 +154,7 @@ function runDoctor(cliCommand, repoRoot) {
   const run = spawnSync(bin, [...binArgs, 'doctor', '--json'], {
     encoding: 'utf8',
     cwd: repoRoot,
-    shell: process.platform === 'win32',
+    shell: false,
   });
   if (run.status !== 0) {
     return { ok: false, error: (run.stderr || run.stdout || '').trim().slice(0, 500) };

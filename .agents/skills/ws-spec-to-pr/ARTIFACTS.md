@@ -138,11 +138,24 @@ Do **not** use these as canonical paths (legacy FAQ drift):
 | Path | Purpose |
 |------|---------|
 | `{us-dir}/.runtime/` | Sentinels, PIDs, temp wake signals (not `/tmp`) |
-| `{us-dir}/telemetry.jsonl` | Single append-only JSONL telemetry stream for all steps; append on each `update_state` dispatch/finish (legacy `telemetry/step-{NN}.jsonl` tree not written) |
+| `{us-dir}/telemetry.jsonl` | Single append-only JSONL telemetry stream for all steps; append on each `update_state` dispatch/finish (legacy `telemetry/step-{NN}.jsonl` tree not written). Exit/finish/dispatch events are appended, never rewritten |
 | `{plansDir}/telemetry/` | Project-wide aggregate output (`aggregate.json`; not per-workflow) |
 | `{worktrees-dir}/step-{N}/` | Step isolation (code steps preferred) |
 | `{us-dir}/{workflow-id}.archive/` | Archived stale workflows |
 | `{us-dir}/{workflow-id}.baseline/` | Baseline snapshots |
+
+## Telemetry event keys
+
+One JSON object per line in `{us-dir}/telemetry.jsonl` (append-only):
+
+| Key prefix | Emitted by | Carries |
+|------------|------------|---------|
+| `dispatch --step N` | `update_state dispatch` (every step, incl. Fix-PR batches) | step, model, agent-type/subagent-id provenance |
+| `finish --step N` | `update_state finish` (every step) | step, status, revision, files_touched |
+| `fixPrPlan` → `fixPrExec` | Fix-PR batch iteration (standard dispatch path) | round, batch thread ids, actual model + configured model per role (recorded dispatch provenance); telemetry only, never outer `finish --step 9` |
+| Exit branches | Fix-PR loop exit (Converged / Stopped / Clean-immediate) | stop condition + final `activeThreads` evidence (see `ws-goal-fix-pr` § Exit branches) |
+
+`shipStatus` vocabulary (never blank; defaults `pending`): `pending` · `pushed` · `pr-open` · `merged` · `stopped` · `skipped` (terminal: `merged` / `stopped` / `skipped`).
 
 ## Skill → step ownership (standard FSM)
 
