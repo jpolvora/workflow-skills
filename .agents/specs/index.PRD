@@ -164,6 +164,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] draft integration ws-self-learning skill with ws-project-patterns (`spec: 0111-us-382.spec.md`)
 - [ ] enhance ps1 config gui (`spec: 0112-us-381.spec.md`)
 - [ ] increase test coverage to near 100% (`spec: 0113-us-380.spec.md`)
+- [ ] Store the generated ws-project-patterns body under the shared project hub (`spec: 0114-patterns-generator-shared-hub-output.spec.md`)
+
 
 
 
@@ -361,6 +363,8 @@ All Next-specs closed except true todos: `us-369`, `us-380`, `us-381`, `us-382`.
 | 117 | `us-381` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | enhance ps1 config gui |
 
 | 118 | `us-380` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | increase test coverage to near 100% |
+
+| 119 | `patterns-generator-shared-hub-output` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Store the generated ws-project-patterns body under the shared project hub |
 
 ## 9. Inbox
 
