@@ -95,9 +95,51 @@ function testResolvedHubCountsForRouting() {
   assert(report && (report.findings.unrouted || []).length === 0, 'skill routed only via the consumer hub is not unrouted');
 }
 
+function testUnrelatedSkillNotAudited() {
+  console.log('\n--- testUnrelatedSkillNotAudited ---');
+  const fixture = mkTmp('ws-chk-links-unrelated-');
+  fs.writeFileSync(path.join(fixture, 'AGENTS.md'), '# root hub\n', 'utf8');
+  const unrelated = path.join(fixture, '.agents', 'skills', 'custom-skill');
+  fs.mkdirSync(unrelated, { recursive: true });
+  fs.writeFileSync(path.join(unrelated, 'SKILL.md'), '# custom\n\n[missing](nope.md)\n', 'utf8');
+
+  const { result } = check(fixture);
+  assert(result.status === 0, `unrelated non-ws skill is not package content (${result.stderr || ''})`);
+}
+
+function testGlobalOnlySkillsRootAudited() {
+  console.log('\n--- testGlobalOnlySkillsRootAudited ---');
+  const fixture = mkTmp('ws-chk-links-global-');
+  const globalRoot = mkTmp('ws-chk-links-globalroot-');
+  fs.writeFileSync(path.join(fixture, 'AGENTS.md'), '# root hub\n', 'utf8');
+  const skillDir = path.join(globalRoot, 'ws-demo');
+  fs.mkdirSync(skillDir, { recursive: true });
+  fs.writeFileSync(path.join(skillDir, 'SKILL.md'), '# ws-demo\n\n[missing](does-not-exist.md)\n', 'utf8');
+
+  const result = cp.spawnSync(process.execPath, [CHECKER, '--json', '--repo-root', fixture], {
+    cwd: fixture,
+    encoding: 'utf8',
+    env: { ...process.env, WORKFLOW_SKILLS_GLOBAL_DIR: globalRoot },
+  });
+  let report = null;
+  try {
+    report = JSON.parse(result.stdout);
+  } catch {
+    report = null;
+  }
+  assert(result.status === 1, `global-only install broken link exits 1 (${result.stderr || ''})`);
+  assert(
+    report &&
+      (report.findings.brokenLinks || []).some((row) => /ws-demo[\\/]SKILL\.md$/.test(row.file)),
+    'resolved global ws-demo SKILL.md is audited',
+  );
+}
+
 function main() {
   testPercentTargetReportsInsteadOfCrashing();
   testResolvedHubCountsForRouting();
+  testUnrelatedSkillNotAudited();
+  testGlobalOnlySkillsRootAudited();
   cleanup();
   if (failures > 0) {
     console.error(`\n${failures} failure(s)`);

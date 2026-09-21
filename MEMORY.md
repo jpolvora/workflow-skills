@@ -24,6 +24,15 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 - **DO NOT**: Order resolver candidates packaged-first (ignores consumer-local overrides), nor packaged-last without checking same-installation coherence; do not apply reviewer-suggested reorderings without running the repo's own suite, which exercises foreign-cwd child spawns.
 - **INSTEAD DO**: Order explicit override, repo-local, packaged same-installation copy, global root last; sweep the whole class with a deterministic EOL-preserving codemod (abort on non-unique anchors) plus an order verifier; cover with a local-beats-packaged precedence test and re-run `npm run test`, `test-harness-clean.js`, and integrity regen before ship.
 
+### [2026-09-21] Harness gates must scope recursive scans to package membership
+- **Layer**: `Tests / Workflow harness`
+- **Module**: `ws-check-harness Phase 5a gates (`check_unique_runtime.cjs`, `check_duplicates.cjs`, `check_harness_links.cjs`, `check_shell_quoting.cjs`)`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-check-harness/scripts/*.cjs`
+- **Scenario / Context**: Review threads flagged two opposite failure modes of the same defect class. (a) `check_unique_runtime.cjs` / `check_duplicates.cjs` recurse the whole resolved skills root — for a global-only/hybrid consumer that directory is `~/.agents/skills`, which also holds unrelated third-party skills (`atividades`, `evidencias`, `my-activities` with `.py` helpers), so the workflow-skills Node-only gate failed on foreign content. (b) `check_harness_links.cjs` (and `check_shell_quoting.cjs`, which read a non-existent `context.pathTokens.skillsRoot`) hardcoded project-local `.agents/skills`, so a global install was never audited and reported clean while broken links/nested-quote recipes went undetected (PR #377 review threads, scores 7/7/8).
+- **DO NOT**: Recurse the entire resolved skills root without a package-membership filter; hardcode `<repoRoot>/.agents/skills` as the audit root or read `context.pathTokens` (that key does not exist on the resolved context).
+- **INSTEAD DO**: Resolve the audit root from `resolveConsumerContext().skillsRoot` (absolute, local-first else global), then recurse only package dirs (`ws-shared` + `ws-*`) via a shared `packageRoots(dir)` helper; keep `bin/` fully scanned; point `{skillsRoot}` token expansion and resolved-hub reads at the same resolved root. Cover both modes with fixtures: an unrelated `custom-skill/` beside a clean `ws-demo` (must stay clean) and a `WORKFLOW_SKILLS_GLOBAL_DIR` fixture with no local tree (must be audited). Re-run `npm run test`, `test-harness-clean.js`, and integrity regen.
+
 ### [2026-09-21] G2-Code Completeness and Ledger scoreState Boundary
 - **Layer**: `Tests / Workflow harness`
 - **Module**: `ws-spec-to-pr (commit_g2_code, update_state, ac_ledger)`

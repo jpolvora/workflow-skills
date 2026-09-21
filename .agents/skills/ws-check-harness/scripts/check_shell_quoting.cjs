@@ -89,6 +89,16 @@ function walk(dir, out) {
   return out;
 }
 
+// Package membership: only this package's own directories are audited. A
+// shared global skills root may also hold unrelated user skills whose scripts
+// are not shipped package content.
+function packageRoots(dir) {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && (entry.name === 'ws-shared' || entry.name.startsWith('ws-')))
+    .map((entry) => path.join(dir, entry.name));
+}
+
 /**
  * Detect fragile nested-quote -c/-e recipes.
  * Outer shell quotes are stripped from the payload (trailing matching closer only),
@@ -161,13 +171,14 @@ function main() {
     scriptFile: __filename,
   });
   const repoRoot = context.repoRoot;
-  const skillsRootRel =
-    options.skillsRoot ||
-    (context.pathTokens && context.pathTokens.skillsRoot) ||
-    '.agents/skills';
-  const skillsAbs = path.resolve(repoRoot, skillsRootRel);
+  const skillsAbs = options.skillsRoot
+    ? path.resolve(repoRoot, options.skillsRoot)
+    : (context.skillsRoot && path.isAbsolute(String(context.skillsRoot))
+      ? String(context.skillsRoot)
+      : path.resolve(repoRoot, '.agents/skills'));
+  const skillsRootRel = path.relative(repoRoot, skillsAbs).replace(/\\/g, '/') || '.';
 
-  const files = walk(skillsAbs);
+  const files = packageRoots(skillsAbs).flatMap((dir) => walk(dir));
   const findings = [];
   for (let i = 0; i < files.length; i += 1) {
     const more = scanFile(files[i], repoRoot);

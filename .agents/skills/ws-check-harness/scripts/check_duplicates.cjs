@@ -57,6 +57,16 @@ function parseArgs(argv) {
   return options;
 }
 
+// Package membership: only this package's own directories are audited. A
+// shared global skills root may also hold unrelated user skills; their
+// markdown is not shipped package content and must not be compared here.
+function packageRoots(dir) {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && (entry.name === 'ws-shared' || entry.name.startsWith('ws-')))
+    .map((entry) => path.join(dir, entry.name));
+}
+
 function shippedMarkdown(context) {
   const generatedHubMarkdown = new Set();
   try {
@@ -88,8 +98,7 @@ function shippedMarkdown(context) {
   const skillsBase = context.skillsRoot && path.isAbsolute(String(context.skillsRoot))
     ? String(context.skillsRoot)
     : path.join(context.repoRoot, '.agents', 'skills');
-  const skills = skillsBase;
-  const stack = fs.existsSync(skills) ? [skills] : [];
+  const stack = packageRoots(skillsBase);
   if (!hubOutside && fs.existsSync(context.sharedDir)) stack.push(context.sharedDir);
   while (stack.length) {
     const current = stack.pop();

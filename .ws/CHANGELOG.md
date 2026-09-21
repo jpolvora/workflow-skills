@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-21 03:45] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: `ws-goal-fix-pr 377` round 3 (inline fix loop) — resolve 3 active review threads on PR #377, plus the outstanding release version bump.
+- **Done**: Scoped `ws-check-harness` Phase 5a scans to package membership (`ws-shared` + `ws-*`) in `check_unique_runtime.cjs` / `check_duplicates.cjs` / `check_harness_links.cjs`, and fixed the same-class project-local pin in `check_shell_quoting.cjs` (`context.pathTokens` was never a real key). `check_harness_links.cjs` now resolves `context.skillsRoot` (local-first, global fallback), audits the resolved install, and maps `{skillsRoot}` token expansion to it. Regression fixtures added for both modes (unrelated `custom-skill/` stays clean; `WORKFLOW_SKILLS_GLOBAL_DIR` global-only tree is audited). Release bump 0.4.46 -> 0.4.47 via `npm run build-site:bump` (54 SKILL frontmatter, packageVersion x2, site + wiki), integrity regenerated.
+- **Result**: `npm run test` green; `test-harness-clean.js` 0 findings; `verify-integrity` OK (v0.4.47).
+
 ### [2026-09-20 21:55] Agent: Muse Code (muse-spark)
 - **Prompt**: `.agents/specs/0109-code-review-round-2-fixes.spec.md` full auto + ship (standard Spec-to-PR, autoMode, fullMode).
 - **Done**: Steps 0-7 complete on `develop` (stay): classify standard/complex, plan + interview + refined plan, sequential implement, verify 8 -> scoreAndRefine round 1 (AC14/AC15/NS coverage) -> re-verify 9/10 then ledger 10/10, fable-judge VERIFIED, review APPROVE 10/10, testing green. Product commits `ae3806d6` + `b6ca3eba`; delivery result written; memory trap + compile; plan checkmarks closed.

@@ -80,6 +80,16 @@ function collectPyFiles(dir, out) {
   return out;
 }
 
+// Package membership: only this package's own directories are audited. A
+// shared global skills root may also hold unrelated user skills; their Python
+// helpers must never fail the workflow-skills Node-only gate.
+function packageRoots(dir) {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && (entry.name === 'ws-shared' || entry.name.startsWith('ws-')))
+    .map((entry) => path.join(dir, entry.name));
+}
+
 function main() {
   const options = argsOf(process.argv.slice(2));
   if (options.help) {
@@ -105,7 +115,9 @@ function main() {
   const skillsRootRel = path.relative(repoRoot, skillsAbs).replace(/\\/g, '/') || '.';
   const binAbs = path.resolve(repoRoot, 'bin');
 
-  const hits = collectPyFiles(skillsAbs).concat(collectPyFiles(binAbs));
+  const hits = packageRoots(skillsAbs)
+    .reduce((acc, dir) => acc.concat(collectPyFiles(dir)), [])
+    .concat(collectPyFiles(binAbs));
   const findings = hits.map((abs) => ({
     file: path.relative(repoRoot, abs).replace(/\\/g, '/'),
     reason: 'python-helper-shipped',
