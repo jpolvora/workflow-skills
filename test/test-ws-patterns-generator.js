@@ -140,6 +140,39 @@ if (fs.existsSync(seedCjs)) {
   } finally {
     rmFixture(fixture);
   }
+  // Symlink containment (PR #383 thread 1): a skills root linked outside the
+  // repo must be refused; a link staying inside the repo still seeds.
+  {
+    const repo = makeFixture('ws-pg-sym-');
+    const outside = makeFixture('ws-pg-out-');
+    try {
+      fs.mkdirSync(path.join(repo, '.agents'), { recursive: true });
+      const linkPath = path.join(repo, '.agents/skills');
+      let linked = false;
+      try {
+        fs.symlinkSync(outside, linkPath, process.platform === 'win32' ? 'junction' : 'dir');
+        linked = true;
+      } catch (e) {
+        console.log(`NOTE symlink-containment test skipped: ${e.code || e.message}`);
+      }
+      if (linked) {
+        const r = runNode([seedCjs, '--repo-root', repo], { cwd: root });
+        assert(r.status !== 0, `seed refuses symlinked skills root (got ${r.status})`);
+        assert(/outside the repo skills root/.test(r.stderr || ''), 'refusal message names containment');
+        assert(!fs.existsSync(path.join(outside, 'ws-project-patterns/SKILL.md')), 'no write escapes through symlink');
+        fs.rmSync(linkPath, { recursive: true, force: true });
+        const inner = path.join(repo, 'linked-skills');
+        fs.mkdirSync(inner, { recursive: true });
+        fs.symlinkSync(inner, linkPath, process.platform === 'win32' ? 'junction' : 'dir');
+        const r2 = runNode([seedCjs, '--repo-root', repo], { cwd: root });
+        assert(r2.status === 0, `seed allows in-repo symlinked root (got ${r2.status}: ${r2.stderr || ''})`);
+        assert(fs.existsSync(path.join(inner, 'ws-project-patterns/SKILL.md')), 'in-repo link seeds through');
+      }
+    } finally {
+      rmFixture(repo);
+      rmFixture(outside);
+    }
+  }
 } else {
   assert(false, 'seed_generated_skill.cjs exists');
 }

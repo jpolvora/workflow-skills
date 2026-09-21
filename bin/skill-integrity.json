@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "23a3aff3ee826985b01ad8b449046b0207fc311255cd51ae7c42a658d6fb5580",
+  "fullPackageDigest": "91b40ed1d54476fc9f3b9ee0f904fa1b6773d42f47465356fe0c53d8dea730da",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -261,9 +261,9 @@
     "ws-patterns-generator": {
       "files": {
         "SKILL.md": "0d09e013270356c2485968708e4a884d18bad66ada95c0b6fe6c1b4fce277f38",
-        "scripts/seed_generated_skill.cjs": "2d2a0793acb11e3dae77ef907a709814ce2bc983a707aeb64d27e79138b16441"
+        "scripts/seed_generated_skill.cjs": "d2d65876681a114aec2cd3c7e6e045512febc95b5e8c10cadc9305380b597b83"
       },
-      "skillDigest": "9ee6f02a3af196eb4694f85805bbf63c44e667fa63c916a8189974971e0decf9"
+      "skillDigest": "7eeeb2fd187a1dffd223d0f3f66497b03e300d7d2813f0b79f6aac40348f01cf"
     },
     "ws-plan-interview": {
       "files": {

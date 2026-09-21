@@ -64,6 +64,20 @@ function parseArgs(argv) {
   return options;
 }
 
+function realpathLoose(candidate) {
+  // Resolve symlinks through the deepest existing ancestor so missing-leaf
+  // paths still get symlink-resolved parents (realpathSync throws on ENOENT).
+  const rest = [];
+  let existing = candidate;
+  while (!fs.existsSync(existing)) {
+    rest.unshift(path.basename(existing));
+    const parent = path.dirname(existing);
+    if (parent === existing) break;
+    existing = parent;
+  }
+  return path.join(fs.realpathSync(existing), ...rest);
+}
+
 function resolveTarget(repoRoot) {
   const root = path.resolve(repoRoot);
   let stat = null;
@@ -91,6 +105,14 @@ function resolveTarget(repoRoot) {
   const target = path.join(skillsRoot, GENERATED_ID, 'SKILL.md');
   const contained = target === skillsRoot || target.startsWith(skillsRoot + path.sep);
   if (!contained || !target.startsWith(root + path.sep)) {
+    process.stderr.write('Refusing to write outside the repo skills root\n');
+    process.exit(1);
+  }
+  // Symlink-aware gate: lexical prefix checks cannot see directory links, so
+  // re-verify containment on resolved real paths before any write lands.
+  const rootReal = fs.realpathSync(root);
+  const targetReal = path.join(realpathLoose(skillsRoot), GENERATED_ID, 'SKILL.md');
+  if (!targetReal.startsWith(rootReal + path.sep)) {
     process.stderr.write('Refusing to write outside the repo skills root\n');
     process.exit(1);
   }
