@@ -418,8 +418,66 @@ function autoloadRowIds(doc) {
       !cfinds.some((f) => (f.message || '').includes('ws-project-patterns')),
       'custom-hub row is not flagged by --check',
     );
+    const wr = runNode([configureCjs, '--write-root-agents', '--repo-root', fxh], { cwd: root });
+    assert(wr.status === 0, `configure --write-root-agents honors sharedDir (got ${wr.status}: ${wr.stderr || ''})`);
+    const rootAg = fs.readFileSync(path.join(fxh, 'AGENTS.md'), 'utf8');
+    assert(rootAg.includes('custom-hub/autoload.md'), 'root AGENTS.md points at the configured hub autoload');
+    assert(!rootAg.includes('(.ws/autoload.md)'), 'root AGENTS.md never links the default hub when sharedDir is configured');
   } finally {
     rmFixture(fxh);
+  }
+  // Global-hybrid: an explicit --global-skills-root must still resolve the
+  // generator-managed id from the global dependency graph.
+  const fxg = makeFixture('ws-pg-globalhub-');
+  const groutex = makeFixture('ws-pg-globalroot-');
+  try {
+    fs.mkdirSync(path.join(groutex, 'ws-shared/runtime'), { recursive: true });
+    fs.copyFileSync(sharedGraphPath, path.join(groutex, 'ws-shared/runtime/skill-dependencies.json'));
+    fs.mkdirSync(path.join(fxg, '.ws/ws-project-patterns'), { recursive: true });
+    fs.writeFileSync(path.join(fxg, '.ws/ws-project-patterns/SKILL.md'), '# ws-project-patterns\n', 'utf8');
+    fs.writeFileSync(
+      path.join(fxg, '.ws/autoload.md'),
+      ['# Autoload (fixture)', '', '## Always-applied skills', '', '| Skill | Path | Trigger |', '|-------|------|---------|', '| `ws-project-patterns` | `.ws/ws-project-patterns/SKILL.md` | Project patterns |', '', '## Optional skills', ''].join('\n'),
+      'utf8',
+    );
+    const gr = runNode([configureCjs, '--write-autoload', '--repo-root', fxg, '--global-skills-root', groutex], { cwd: root });
+    assert(gr.status === 0, `global-hybrid --write-autoload exit 0 (got ${gr.status}: ${gr.stderr || ''})`);
+    const gtext = fs.readFileSync(path.join(fxg, '.ws/autoload.md'), 'utf8');
+    assert(gtext.includes('`.ws/ws-project-patterns/SKILL.md`'), 'global-hybrid run keeps the hub row');
+    assert(
+      !/\{skillsRoot\}\/ws-project-patterns/.test(gtext),
+      'global-hybrid run never emits a skillsRoot token for the generated row',
+    );
+  } finally {
+    rmFixture(fxg);
+    rmFixture(groutex);
+  }
+  // A hub body linked outside the repository is not "present" for the validator.
+  const fxs = makeFixture('ws-pg-linkedbody-');
+  const outdir = makeFixture('ws-pg-linkedbody-out-');
+  try {
+    const outsideTarget = path.join(outdir, 'body.md');
+    fs.writeFileSync(outsideTarget, '# external\n', 'utf8');
+    writeAutoloadFixture(fxs, ['| `ws-project-patterns` | `.ws/ws-project-patterns/SKILL.md` | Project patterns |']);
+    fs.mkdirSync(path.join(fxs, '.ws/ws-project-patterns'), { recursive: true });
+    let linked = false;
+    try {
+      fs.symlinkSync(outsideTarget, path.join(fxs, '.ws/ws-project-patterns/SKILL.md'), 'file');
+      linked = true;
+    } catch (e) {
+      console.log(`NOTE linked hub body test skipped: ${e.code || e.message}`);
+    }
+    if (linked) {
+      const schk = runNode([configureCjs, '--check', '--repo-root', fxs, '--json'], { cwd: root });
+      const sfinds = (JSON.parse(schk.stdout).check || {}).findings || [];
+      assert(
+        sfinds.some((f) => (f.message || '').includes('ws-project-patterns')),
+        'check flags a hub body linked outside the repo',
+      );
+    }
+  } finally {
+    rmFixture(fxs);
+    rmFixture(outdir);
   }
   // A same-name row outside the configured hub must be rejected.
   const fxw = makeFixture('ws-pg-wrongpath-');
