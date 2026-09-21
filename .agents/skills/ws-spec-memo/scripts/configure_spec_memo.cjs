@@ -42,6 +42,7 @@ const HUB_SCRIPTS_DIR = (() => {
   return packaged;
 })();
 const { spawnSync } = require('child_process');
+const { spawnCliSync } = require(path.join(HUB_SCRIPTS_DIR, 'cli_spawn.cjs'));
 const {
   resolveConsumerContext,
   toRepoRelative,
@@ -107,19 +108,17 @@ function runCmd(command, cmdArgs, cwd) {
   const parts = command.trim().split(/\s+/);
   const bin = parts[0];
   const prefix = parts.slice(1);
-  const run = spawnSync(bin, [...prefix, ...cmdArgs], {
+  const run = spawnCliSync(bin, [...prefix, ...cmdArgs], {
     encoding: 'utf8',
     cwd,
-    shell: false,
   });
   return { status: run.status, stdout: run.stdout || '', stderr: run.stderr || '' };
 }
 
 function cliAvailable(cliSetting) {
   const parts = (cliSetting || 'memo').trim().split(/\s+/);
-  const probe = spawnSync(parts[0], [...parts.slice(1), '--help'], {
+  const probe = spawnCliSync(parts[0], [...parts.slice(1), '--help'], {
     encoding: 'utf8',
-    shell: false,
   });
   return probe.status === 0 || (probe.stdout || '').includes('memo');
 }

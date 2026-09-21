@@ -38,6 +38,7 @@ const HUB_SCRIPTS_DIR = (() => {
   return packaged;
 })();
 const { spawn, spawnSync } = require('child_process');
+const { spawnCliSync } = require(path.join(HUB_SCRIPTS_DIR, 'cli_spawn.cjs'));
 const {
   resolveConsumerContext,
 } = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
@@ -455,12 +456,11 @@ function mirrorSpecMemo({ config, repoRoot, handoff, envelope }) {
     nextSteps: handoff?.nextAction ? [String(handoff.nextAction)] : [],
     holder: envelope?.holder || null,
   };
-  // shell:false keeps --cwd paths containing spaces intact on win32 (with
-  // shell:true the argv array is joined into a string, splitting them).
-  const result = spawnSync(bin, [...binArgs, 'append', '--cwd', String(repoRoot)], {
+  // spawnCliSync keeps --cwd paths containing spaces intact (shell:false
+  // first attempt) and retries through ComSpec for win32 npm shims.
+  const result = spawnCliSync(bin, [...binArgs, 'append', '--cwd', String(repoRoot)], {
     input: JSON.stringify(payload),
     encoding: 'utf8',
-    shell: false,
     timeout: 15000,
   });
   if (result.status !== 0) {

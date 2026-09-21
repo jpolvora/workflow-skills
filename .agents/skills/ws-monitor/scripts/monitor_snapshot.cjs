@@ -40,6 +40,7 @@ const HUB_SCRIPTS_DIR = (() => {
   }
 })();
 const { spawnSync } = require('child_process');
+const { spawnCliSync } = require(path.join(HUB_SCRIPTS_DIR, 'cli_spawn.cjs'));
 const {
   resolveConsumerContext,
   resolveConfiguredPath,
@@ -734,10 +735,10 @@ function queryMemoryVault(context, options = {}) {
     const bin = parts[0];
     const binArgs = parts.slice(1);
     try {
-      // shell:false keeps --cwd paths containing spaces intact on win32.
-      const probe = spawnSync(bin, [...binArgs, 'search', '--kinds', 'state', '--status', 'active', '--cwd', context.repoRoot, '--json'], {
+      // spawnCliSync keeps --cwd paths containing spaces intact and retries
+      // through ComSpec for win32 npm shims (memo.cmd).
+      const probe = spawnCliSync(bin, [...binArgs, 'search', '--kinds', 'state', '--status', 'active', '--cwd', context.repoRoot, '--json'], {
         encoding: 'utf8',
-        shell: false,
         timeout: 5000,
       });
       if (probe.status === 0 && probe.stdout) {

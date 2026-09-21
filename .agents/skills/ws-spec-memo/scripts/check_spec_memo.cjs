@@ -41,6 +41,7 @@ const HUB_SCRIPTS_DIR = (() => {
   return packaged;
 })();
 const { spawnSync } = require('child_process');
+const { spawnCliSync } = require(path.join(HUB_SCRIPTS_DIR, 'cli_spawn.cjs'));
 const {
   resolveConsumerContext,
   resolveConfiguredPath,
@@ -107,9 +108,8 @@ function detectCli(cliSetting) {
   const parts = raw.split(/\s+/);
   const bin = parts[0];
   const binArgs = parts.slice(1);
-  const probe = spawnSync(bin, [...binArgs, '--help'], {
+  const probe = spawnCliSync(bin, [...binArgs, '--help'], {
     encoding: 'utf8',
-    shell: false,
   });
   return {
     command: raw,
@@ -151,10 +151,9 @@ function runDoctor(cliCommand, repoRoot) {
   const parts = cliCommand.trim().split(/\s+/);
   const bin = parts[0];
   const binArgs = parts.slice(1);
-  const run = spawnSync(bin, [...binArgs, 'doctor', '--json'], {
+  const run = spawnCliSync(bin, [...binArgs, 'doctor', '--json'], {
     encoding: 'utf8',
     cwd: repoRoot,
-    shell: false,
   });
   if (run.status !== 0) {
     return { ok: false, error: (run.stderr || run.stdout || '').trim().slice(0, 500) };
