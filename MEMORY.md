@@ -168,6 +168,15 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 - **DO NOT**: Start behavior changes before capturing the measurement baseline an AC will demand; present cross-scope housekeeping as if it were in-scope work; treat a caveated verdict as a silent pass without a memory entry.
 - **INSTEAD DO**: When an AC names a measurement, capture the baseline **before** the first product edit (one command, recorded in the companion/plan); keep unrelated housekeeping in its own commit with an explicit rationale; on a CAVEATS/REFUTED verdict write the mandatory memory entry (High/Critical), compile, and keep the verdict visible on the ship board.
 
+### [2026-09-21] A deferred behavior change must not leave the changed skill and canonical docs advertising the old contract
+- **Layer**: `Domain`
+- **Module**: `ws-patterns-generator` (SKILL.md), `ws-shared/runtime` (`tools.md`, `config-resolution.md`)`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-patterns-generator/SKILL.md, .agents/skills/ws-shared/runtime/tools.md, .agents/skills/ws-shared/runtime/config-resolution.md`
+- **Scenario / Context**: PR #384 review (score 6) found the generator skill told agents to "Expand `{skillsRoot}` / `{sharedDir}` / ... from project config" while its Rules pinned the generated body to the fixed `.ws` hub — a contradiction inside the changed file after review round 7 deferred hub relocation to a follow-up spec. `tools.md` and `config-resolution.md` still presented an explicit `pathTokens.sharedDir` as generally effective for hub content, so a consumer configuring it would split configured project data from the generated skill.
+- **DO NOT**: Fix one code path to a fixed value (or new contract) and leave the skill's own instructions and the canonical path-token docs still describing the old configurable behavior; defer behavior to a later spec without making the interim contract explicit where the token is defined.
+- **INSTEAD DO**: When a change narrows or defers a contract, update the changed skill's instruction step, the shared runtime docs that define the token, and add a regression asserting the docs/instruction no longer advertise the deferred behavior (e.g. the resolve step must not list the overridable token). Keep the caveat portable (no spec-file paths) and regenerate integrity when hashed runtime docs change.
+
 ### [2026-09-21] A configurable hub root must be honored by every reader and writer, not only the seeder
 - **Layer**: `Infrastructure`
 - **Module**: `ws-configure-project` (`configure_autoload.cjs`), `ws-patterns-generator`
