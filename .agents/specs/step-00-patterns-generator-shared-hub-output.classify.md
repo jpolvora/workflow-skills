@@ -4,11 +4,11 @@ recommendedPipeline: standard
 thresholdPipeline: standard
 complexityClass: complex
 runInterview: true
-classifiedAt: 2026-09-21T13:38:24.744Z
+classifiedAt: 2026-09-21T13:42:31.461Z
 scoreAndRefine: false
 ---
 
-# Pipeline Classification — Store the generated ws-project-patterns body under the shared project hub
+# Pipeline Classification — Integrate ws-self-learning with the patterns track and store the generated ws-project-patterns body under the shared hub
 
 ## Recommendation
 
@@ -36,11 +36,11 @@ scoreAndRefine: false
 
 | Metric | Count | Threshold | Within |
 |--------|-------|-----------|--------|
-| Implementation steps (ACs) | 8 | 3 | no |
-| Estimated files (path refs) | 41 | 6 | no |
+| Implementation steps (ACs) | 16 | 3 | no |
+| Estimated files (path refs) | 50 | 6 | no |
 | Layers (spec-touched) | 3 | 2 | no |
 | Spec Layer headings | 0 | — | — |
-| Sections | 7 | — | — |
+| Sections | 8 | — | — |
 
 ## Threshold comparison
 

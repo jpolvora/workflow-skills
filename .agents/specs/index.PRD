@@ -161,10 +161,9 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Harness & Skills Hardening from Code Review of Recent PRs (`spec: 0108-code-review-findings-fixes.spec.md`)
 - [x] Harness Hardening Round 2 — Open Findings from the 20-Commit Read-Only Review (`spec: 0109-code-review-round-2-fixes.spec.md`)
 - [x] create a skill generator for the consumer project (`spec: 0110-us-378.spec.md`)
-- [ ] draft integration ws-self-learning skill with ws-project-patterns (`spec: 0111-us-382.spec.md`)
 - [ ] enhance ps1 config gui (`spec: 0112-us-381.spec.md`)
 - [ ] increase test coverage to near 100% (`spec: 0113-us-380.spec.md`)
-- [ ] Store the generated ws-project-patterns body under the shared project hub (`spec: 0114-patterns-generator-shared-hub-output.spec.md`)
+- [ ] Integrate ws-self-learning with the patterns track and store the generated ws-project-patterns body under the shared hub (`spec: 0114-patterns-generator-shared-hub-output.spec.md`)
 
 
 
@@ -280,7 +279,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 68 | `us-250` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Remove retired ws-patterns references from hub templates/seeds (PR #251) |
 | 69 | `us-272` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Prune retired skill ids on update + hybrid harness fallback (PR #273) |
 
-All Next-specs closed except true todos: `us-369`, `us-380`, `us-381`, `us-382`.
+All Next-specs closed except true todos: `us-369`, `us-380`, `us-381`.
 
 | 70 | `ws-benchmarks-skill` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-benchmarks: benchmark commands and evolution report manager |
 | 71 | `ws-spec-manager-skill` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-manager: unified specification router and lifecycle manager |
@@ -358,13 +357,11 @@ All Next-specs closed except true todos: `us-369`, `us-380`, `us-381`, `us-382`.
 
 | 115 | `us-378` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | create a skill generator for the consumer project |
 
-| 116 | `us-382` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | draft integration ws-self-learning skill with ws-project-patterns |
+| 116 | `us-381` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | enhance ps1 config gui |
 
-| 117 | `us-381` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | enhance ps1 config gui |
+| 117 | `us-380` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | increase test coverage to near 100% |
 
-| 118 | `us-380` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | increase test coverage to near 100% |
-
-| 119 | `patterns-generator-shared-hub-output` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Store the generated ws-project-patterns body under the shared project hub |
+| 118 | `patterns-generator-shared-hub-output` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Integrate ws-self-learning with the patterns track and store the generated ws-project-patterns body under the shared hub |
 
 ## 9. Inbox
 
