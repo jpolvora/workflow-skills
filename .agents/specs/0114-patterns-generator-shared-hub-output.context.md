@@ -31,6 +31,7 @@ It does not own: MEMORY or vault trap write paths outside `ws-self-learning` via
 - **Existence check:** `generatorManagedTreeExists` becomes hub-relative for generated ids; the global-skills fallback is dropped because the body is project-local by definition.
 - **Legacy:** no migration. An existing `{skillsRoot}/ws-project-patterns` copy is already ignored by the installer; consumers delete it manually.
 - **Containment:** the resolved-target rule from PR #383 stays: resolve the entire target path (root link, directory link, dangling leaf) and fail closed when resolution is impossible.
+- **Fixed hub root (review CR-001):** hub-root discovery reads `.ws/config.json` `pathTokens.sharedDir` and otherwise defaults to `.ws`. The hub location is a harness-wide fixed assumption (`configure_autoload.cjs` hardcodes `.ws/autoload.md`, the installer materializes `.ws`); `pathTokens.sharedDir` declares it for discoverability but is not a relocation mechanism for generated hub content. Documented in the generator `SKILL.md` rules.
 
 ## Overlap Matrix (completed 2026-09-21)
 

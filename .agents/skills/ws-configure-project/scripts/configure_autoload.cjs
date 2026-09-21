@@ -563,7 +563,9 @@ function checkAutoload(repoRoot, { globalSkillsRoot = null, allowGlobalSource = 
     if (generatorManaged.has(row.skill)) {
       // Hub-hosted generated consumer skills: validate the hub path, not the
       // installed-skills portability or skills-root existence rules.
-      if (!pathTargetsSkill(row.path, row.skill)) {
+      if (containsAbsolutePath(`\`${row.path}\``)) {
+        findings.push({ severity: 'warning', file: '.ws/autoload.md', message: `Always-applied path for \`${row.skill}\` is not portable: ${row.path}`, fix: 'Use the hub-relative path (or run configure_autoload.cjs --write-autoload)' });
+      } else if (!pathTargetsSkill(row.path, row.skill)) {
         findings.push({ severity: 'warning', file: '.ws/autoload.md', message: `Always-applied path for \`${row.skill}\` points at a different skill: ${row.path}`, fix: `Point the path at \`${row.skill}/SKILL.md\` (or run configure_autoload.cjs --write-autoload)` });
       } else if (!generatorManagedTreeExists(repoRoot, row.skill, globalSkillsRoot)) {
         findings.push({ severity: 'warning', file: '.ws/autoload.md', message: `Always-applied generated skill \`${row.skill}\` missing under the shared hub`, fix: 'Run the generator (ws-patterns-generator) or remove the Always-applied row' });
