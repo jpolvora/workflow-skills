@@ -207,6 +207,41 @@ if (fs.existsSync(seedCjs)) {
       rmFixture(outside);
     }
   }
+  // Dangling leaf symlink (PR #383 thread 3): SKILL.md linked to a non-existent
+  // external path must be refused and must never be created outside the repo.
+  {
+    const repo = makeFixture('ws-pg-leafsym-');
+    const outside = makeFixture('ws-pg-leafout-');
+    try {
+      const generatedDir = path.join(repo, '.agents/skills/ws-project-patterns');
+      fs.mkdirSync(generatedDir, { recursive: true });
+      const linkPath = path.join(generatedDir, 'SKILL.md');
+      const escaped = path.join(outside, 'escaped.md');
+      let linked = false;
+      try {
+        fs.symlinkSync(escaped, linkPath, 'file');
+        linked = true;
+      } catch (e) {
+        console.log(`NOTE dangling-leaf test skipped: ${e.code || e.message}`);
+      }
+      if (linked) {
+        const r = runNode([seedCjs, '--repo-root', repo], { cwd: root });
+        assert(r.status !== 0, `seed refuses dangling leaf symlink (got ${r.status})`);
+        assert(/outside the repo skills root/.test(r.stderr || ''), 'refusal message names containment');
+        assert(!fs.existsSync(escaped), 'no file created outside through dangling leaf');
+        fs.rmSync(linkPath, { force: true });
+        const inner = path.join(repo, 'leaf-inside.md');
+        fs.writeFileSync(inner, 'keep\n', 'utf8');
+        fs.symlinkSync(inner, linkPath, 'file');
+        const r2 = runNode([seedCjs, '--repo-root', repo], { cwd: root });
+        assert(r2.status === 0, `seed allows in-repo leaf symlink (got ${r2.status}: ${r2.stderr || ''})`);
+        assert(fs.readFileSync(inner, 'utf8') === 'keep\n', 'in-repo leaf target untouched');
+      }
+    } finally {
+      rmFixture(repo);
+      rmFixture(outside);
+    }
+  }
 } else {
   assert(false, 'seed_generated_skill.cjs exists');
 }

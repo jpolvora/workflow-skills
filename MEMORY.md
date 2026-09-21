@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 
 ---
 
+### [2026-09-21] Write containment must resolve the full target path, and fail closed on a dangling leaf
+- **Layer**: `Infrastructure`
+- **Module**: `ws-patterns-generator seed script`
+- **Severity**: `Critical`
+- **PathPattern**: `.agents/skills/ws-patterns-generator/scripts/seed_generated_skill.cjs`
+- **Scenario / Context**: The seed script's containment gate was hardened in three review rounds, each time closing one variant of the same escape. Round 1 resolved nothing: lexical `path.resolve` + `startsWith` only, so a symlinked/junctioned skills root wrote outside. Round 2 resolved the configured root but rebuilt the target from lexical leaves (`join(resolvedRoot, GENERATED_ID, 'SKILL.md')`), so a linked `ws-project-patterns` directory outside the repo still passed. Round 3 resolved the target's parent but rebuilt the leaf, so a **dangling `SKILL.md` symlink** to an external path passed the gate (`existsSync` follows the link and reports false) and `writeFileSync` created the file outside the repository. Each round scored 9/10 CRITICAL with a concrete reproduction.
+- **DO NOT**: Validate containment on a path that is partly resolved and partly reconstructed lexically. Do not resolve only the configured root, only the target parent, or trust a leaf that could itself be a link. Do not treat the containment gate as satisfied when resolution cannot be performed.
+- **INSTEAD DO**: Resolve the **entire target path** (`realpathLoose(target)` — deepest existing ancestor realpath plus rejoined missing leaves) and require the resolved target to start with the resolved root + separator. Fail closed (refuse the write) when resolution returns `null`, which is what a dangling symlink produces. Probe existence with `fs.lstatSync`, never `fs.existsSync`, inside the resolver. Cover all three variants in fixtures: linked skills root, linked generated-skill directory, and dangling `SKILL.md` leaf, each with an in-repo positive control.
+
 ### [2026-09-21] Win32 npm shims need a ComSpec retry, not shell:false or a .cmd suffix
 - **Layer**: `Infrastructure`
 - **Module**: `cli-spawn-shim`
@@ -104,15 +113,6 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 - **Scenario / Context**: A new benign-transcript negative test passed `--transcript-root <green-dir>` with no filter and falsely failed: `resolveCandidateTranscriptRoots` appends explicit roots to auto-discovered workspace roots (`.cursor/transcripts`), so an earlier true-positive fixture in the same temp root leaked into the green run. Adding `--workflow-id wf-green` scoped the scan to the green file only.
 - **DO NOT**: Assume `--transcript-root` replaces discovery; run an unfiltered monitor assertion in a temp root that also holds positive fixtures.
 - **INSTEAD DO**: Pass `--workflow-id` (or `--slug`) matching only the target transcript in every monitor test that asserts absence of findings, and keep positive and negative fixtures correlatable to distinct workflow ids.
-
-### [2026-09-21] Containment gates must resolve the target's own parent, not only the configured root
-- **Layer**: `Infrastructure`
-- **Module**: `ws-patterns-generator seed script`
-- **Severity**: `Critical`
-- **PathPattern**: `.agents/skills/ws-patterns-generator/scripts/seed_generated_skill.cjs`
-- **Scenario / Context**: Round 1 resolved the configured skills root (`realpathLoose(skillsRoot)`) and still built the target from lexical leaves (`join(resolvedSkillsRoot, GENERATED_ID, 'SKILL.md')`). A `<skillsRoot>/ws-project-patterns` directory that is itself a symlink/junction to a path outside the repo therefore stayed lexically inside the root, passed the gate, and `writeFileSync` followed the link out of the repository. Review re-raised it as CRITICAL (score 9) on the next push: the first fix was partial.
-- **DO NOT**: Treat "resolve the root" as complete containment when the target path has intermediate directories that callers do not control. Do not probe existence with `fs.existsSync` in the walker: it follows links, so a link whose target is missing looks absent and the path silently degrades to a lexical comparison.
-- **INSTEAD DO**: Resolve the target's **own parent** (`realpathLoose(path.dirname(target))`) and rejoin the basename before the containment compare; probe with `fs.lstatSync` so a link counts as existing even when its target does not; fail closed (refuse the write) when real resolution is impossible. Test the linked child directory case, not only the linked root, plus an in-repo child link as the positive control.
 
 ### [2026-09-21] Config GUI rows must bind schema scalar types to matching controls
 - **Layer**: `Domain`

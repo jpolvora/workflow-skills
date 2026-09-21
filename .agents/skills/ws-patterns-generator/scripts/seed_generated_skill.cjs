@@ -123,13 +123,12 @@ function resolveTarget(repoRoot) {
   }
   // Symlink-aware gate: lexical prefix checks cannot see directory links, so
   // re-verify containment on resolved real paths before any write lands. The
-  // target's own parent is resolved too: a linked intermediate directory would
-  // otherwise stay lexically inside while writes follow the link out.
+  // full target path is resolved (not rebuilt from a lexical leaf): a linked
+  // parent directory or a dangling SKILL.md symlink would otherwise stay
+  // lexically inside while writes follow the link out. Unresolvable paths fail
+  // closed.
   const rootReal = fs.realpathSync(root);
-  const targetParentReal = realpathLoose(path.dirname(target));
-  const targetReal = targetParentReal === null
-    ? null
-    : path.join(targetParentReal, path.basename(target));
+  const targetReal = realpathLoose(target);
   if (!targetReal || !targetReal.startsWith(rootReal + path.sep)) {
     process.stderr.write('Refusing to write outside the repo skills root\n');
     process.exit(1);
