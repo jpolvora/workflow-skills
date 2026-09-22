@@ -102,6 +102,20 @@ function setupRoot() {
   }
 }
 
+// AC5: shipped with a still-active child state fails closed (completed required).
+{
+  const root = setupRoot();
+  const plans = path.join(root, '.agents', 'plans');
+  const runFile = path.join(plans, 'ws-spec-multi', 'ms-us388.state.md');
+  const original = runState('ms-us388', ['| 1 | demo | .agents/specs/demo.spec.md | standard | in_progress | | | | 2026-09-22T08:07:09Z |']);
+  write(runFile, original);
+  write(path.join(plans, 'demo', 'demo-20260922T080709Z.state.json'), JSON.stringify({ ...validChildState('demo'), status: 'active' }));
+  write(path.join(plans, 'demo', 'step-01-demo.plan.md'), '# plan\n');
+  const result = run(['--run', runFile, '--slug', 'demo', '--status', 'shipped', '--json'], root);
+  if (result.status === 0) throw new Error('us-388 AC5: shipped with an active child state must fail closed');
+  if (fs.readFileSync(runFile, 'utf8') !== original) throw new Error('us-388 AC5: a refused shipped transition must not modify the run state');
+}
+
 // AC8/AC5: skipped does not require child artifacts and still transitions in place.
 {
   const root = setupRoot();

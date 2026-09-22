@@ -108,9 +108,10 @@ Every created PR MUST complete full code-review convergence, merge, and post-mer
 - **Fail-closed child-exit guard (executable):** record terminal rows through
   `node {skillsRoot}/ws-spec-multi/scripts/record_child_outcome.cjs --run {plansDir}/ws-spec-multi/{runId}.state.md --slug {slug} --status shipped|failed|skipped [--plans-dir {plansDir}] [--pr-number N] [--pr-url U] [--reason TEXT]`.
   This helper is the executable queue-transition path: on `--status shipped` it
-  invokes `verify_child_artifacts.cjs` and, when child state / `step-01` is absent,
-  exits non-zero **without writing** — so a `shipped` row without child state cannot
-  be recorded (mirroring the monitor `missing-artifact` class). It also enforces the
+  invokes `verify_child_artifacts.cjs --expect-status completed` and, when child
+  state / `step-01` is absent or the child is not `completed`, exits non-zero
+  **without writing** — so a `shipped` row without a completed child cannot be
+  recorded (mirroring the monitor `missing-artifact` class). It also enforces the
   keyed in-place row update, the fail-closed duplicate guard, and the advancing
   `updatedAt`. Do not hand-edit a `shipped` row around this guard.
 - Update the **existing** row for `{specPath}` (fallback `{slug}`) in place — never append a second row for the same spec. Run the fail-closed duplicate guard before writing; set the row `updatedAt` and the run frontmatter `updatedAt` to now. Reported totals use the frozen `totalItems`.

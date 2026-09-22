@@ -169,7 +169,7 @@ function main() {
   // AC5: the executable fail-closed child-exit guard, invoked only for `shipped`.
   if (status === 'shipped' && currentStatus !== 'shipped') {
     const guard = path.join(__dirname, 'verify_child_artifacts.cjs');
-    const result = spawnSync(process.execPath, [guard, '--slug', options.slug, '--plans-dir', plansDir, '--json'], { encoding: 'utf8' });
+    const result = spawnSync(process.execPath, [guard, '--slug', options.slug, '--plans-dir', plansDir, '--expect-status', 'completed', '--json'], { encoding: 'utf8' });
     if (result.status !== 0) {
       let detail = (result.stdout || result.stderr || '').trim();
       try { detail = JSON.parse(result.stdout).missing.join(', ') || detail; } catch { /* keep raw */ }

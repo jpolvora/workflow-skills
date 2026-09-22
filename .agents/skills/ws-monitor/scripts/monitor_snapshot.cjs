@@ -504,7 +504,10 @@ function expectedArtifacts(state, workflowDir, minVerifyScore, repoRoot = workfl
 // Presence requires a non-empty, parseable JSON state that carries the workflow
 // identity fields — a truncated or unrelated `.json`, or the `.state.md` render
 // alone, is not a resumable/observable child state.
-const REQUIRED_CHILD_STATE_FIELDS = ['stateVersion', 'workflowId', 'slug', 'workflowType', 'status', 'currentStep'];
+// us-388 AC1/AC6: a child workflow's machine SoT is `{workflow-id}.state.json`.
+// Presence requires a parseable JSON state with a real workflow identity — a
+// truncated/unrelated `.json`, empty identity, invalid step, or the `.state.md`
+// render alone is not a resumable/observable child state.
 function isValidChildStateFile(file, expectedSlug) {
   let parsed;
   try {
@@ -513,7 +516,9 @@ function isValidChildStateFile(file, expectedSlug) {
     return false;
   }
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return false;
-  if (!REQUIRED_CHILD_STATE_FIELDS.every((key) => parsed[key] !== undefined && parsed[key] !== null)) return false;
+  if (!Number.isInteger(parsed.stateVersion) || parsed.stateVersion < 1) return false;
+  if (!['workflowId', 'slug', 'workflowType', 'status'].every((key) => typeof parsed[key] === 'string' && parsed[key].trim())) return false;
+  if (!Number.isInteger(parsed.currentStep) || parsed.currentStep < 0) return false;
   // The state must belong to the queue item whose directory is inspected; a stale
   // or foreign state file under the wrong directory is not this item's child state.
   return expectedSlug === undefined || parsed.slug === expectedSlug;

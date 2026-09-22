@@ -118,6 +118,31 @@ const validChildState = {
   if (result.status === 0) throw new Error('us-388 AC5: a state whose slug differs from the active item must not satisfy the guard');
 }
 
+// AC5: empty identity / invalid step are rejected, and shipped requires completed.
+{
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'verify-child-us388-identity-'));
+  tempRoots.push(root);
+  const plans = plansDir(root);
+  write(path.join(plans, 'demo', 'demo.state.json'), JSON.stringify({ ...validChildState, workflowId: '   ' }));
+  write(path.join(plans, 'demo', 'step-01-demo.plan.md'), '# plan\n');
+  if (run(['--slug', 'demo', '--plans-dir', plans], root).status === 0) {
+    throw new Error('us-388 AC5: an empty workflowId must not count as valid state');
+  }
+  fs.rmSync(path.join(plans, 'demo', 'demo.state.json'));
+  write(path.join(plans, 'demo', 'demo.state.json'), JSON.stringify({ ...validChildState, currentStep: -1 }));
+  if (run(['--slug', 'demo', '--plans-dir', plans], root).status === 0) {
+    throw new Error('us-388 AC5: a negative currentStep must not count as valid state');
+  }
+  fs.rmSync(path.join(plans, 'demo', 'demo.state.json'));
+  write(path.join(plans, 'demo', 'demo.state.json'), JSON.stringify({ ...validChildState, status: 'active' }));
+  if (run(['--slug', 'demo', '--plans-dir', plans], root).status !== 0) {
+    throw new Error('us-388 AC5: an active (non-completed) state is valid for observation');
+  }
+  if (run(['--slug', 'demo', '--plans-dir', plans, '--expect-status', 'completed'], root).status === 0) {
+    throw new Error('us-388 AC5: --expect-status completed must reject an active child state');
+  }
+}
+
 // AC1/AC5: the `.state.md` render alone is not the machine SoT.
 {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'verify-child-us388-render-'));
