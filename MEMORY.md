@@ -15,6 +15,24 @@ To add new learnings, create a separate markdown file under `memory/` and run:
 - **DO NOT**: Pipe to `head -N`, `tail -N`, or `grep` in `muse.powershell` commands on Windows hosts; retry the same check behind another wrapper.
 - **INSTEAD DO**: Use `Select-Object -First N` / `Select-Object -Last N` instead of head/tail, and `Select-String` (or `muse.search`) instead of grep. Prefer `muse.search` over shell scans for repo content.
 
+### [2026-09-22] Post-Step-5 product edits invalidate integrity and the ledger score boundary
+- **Layer**: `Infrastructure`
+- **Module**: `harness-release`
+- **Severity**: `Medium`
+- **PathPattern**: `bin/skill-integrity.json, .agents/plans/**/ac-ledger.json, .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs`
+- **Scenario / Context**: During us-395, a Step 6 review-fix commit edited a hashed skill script after `npm run generate-integrity` and after the full `npm run test` alias had passed. The next `npm run test` failed at `test/test-install.js` with `skill-integrity.json is stale vs current tree`, and `validate_state.cjs --pre-advance 7` failed with `ledger scoreState must match derived step5 score` after re-linking file evidence.
+- **DO NOT**: run the full suite or pre-advance validation after a post-Step-5 product edit without first regenerating integrity and refreshing the ledger score boundary; nor assume a previously recorded alias result still holds once `files_touched` changed.
+- **INSTEAD DO**: after any review-fix commit that touches hashed skill content, re-run `npm run generate-integrity` + `npm run verify-integrity`, re-link the changed file evidence (`ac_ledger.cjs link --event-id <ac>-fix1 --file path:Lx-Ly`), refresh `ac_ledger.cjs score --boundary step5`, then re-run the full alias (`npm run test`) so the observed result is current before advancing.
+
+### [2026-09-22] AC-ledger scoreState boundary must match the next pre-advance; regenerate integrity after skill edits
+- **Layer**: `Infrastructure`
+- **Module**: `ws-spec-to-pr / ws-shared runtime`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs, bin/skill-integrity.json`
+- **Scenario / Context**: During the us-389 standard run, `validate_state.cjs --pre-advance 7` failed with "ledger scoreState must match derived step5 score" because `commit_g2_code.cjs` had stamped `scoreState.boundary = pre-step6` (needed for advance to 6), while advance to 7/8 re-derives at boundary `step5` and advance to 9 at `ship`. Separately, the first `npm test` after editing `Edit-WorkflowSkillsConfig.ps1` failed Phase 0b with a stale `bin/skill-integrity.json`.
+- **DO NOT**: assume one `ac-ledger` `scoreState` fits every advance, and do not run the suite after touching hashed skill content without regenerating integrity first.
+- **INSTEAD DO**: after linking commits, re-link with an explicit `--score-boundary` matching the next advance (`pre-step6` for 6, `step5` for 7/8, `ship` for 9) so `scoreState.boundary` matches; and run `npm run generate-integrity` immediately after any edit under `.agents/skills/**` before `npm run test` / `verify-integrity`.
+
 ### [2026-09-21] Write containment must resolve the full target path, and fail closed on a dangling leaf
 - **Layer**: `Infrastructure`
 - **Module**: `ws-patterns-generator seed script`
