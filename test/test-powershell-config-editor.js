@@ -14,11 +14,30 @@ import os from 'os';
 import path from 'path';
 import cp from 'child_process';
 import assert from 'assert';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
+
+// The repository's own consumer hub config: no test in this file may target it.
+const HUB_CONFIG_PATH = path.join(REPO_ROOT, '.ws', 'config.json');
+const HUB_BACKUP_PATH = `${HUB_CONFIG_PATH}.bak`;
+
+function fileSha256(file) {
+  return fs.existsSync(file)
+    ? crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')
+    : null;
+}
+
+// Isolated invocation fixture: an editor call never reaches the live hub config.
+function createTempConfig() {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-cfg-invoke-'));
+  const configPath = path.join(dir, 'config.json');
+  fs.copyFileSync(EXAMPLE_PATH, configPath);
+  return { dir, configPath };
+}
 
 const SCRIPT_PATH = path.join(
   REPO_ROOT,
@@ -131,11 +150,30 @@ assert.strictEqual(
 );
 console.log('  PASS: Script is 100% ASCII-safe.');
 
+// Regression baseline (AC6): the repository's own hub config must be byte-identical
+// before and after every editor invocation in this suite.
+const hubConfigShaBefore = fileSha256(HUB_CONFIG_PATH);
+const hubBackupExistedBefore = fs.existsSync(HUB_BACKUP_PATH);
+
+function assertHubConfigUnchanged(stage) {
+  assert.strictEqual(
+    fileSha256(HUB_CONFIG_PATH),
+    hubConfigShaBefore,
+    `AC6: repository hub config must be byte-identical ${stage}`
+  );
+  assert.strictEqual(
+    fs.existsSync(HUB_BACKUP_PATH),
+    hubBackupExistedBefore,
+    `AC6: repository hub config backup presence must be unchanged ${stage}`
+  );
+}
+
 // Check PowerShell availability before executing dynamic tests
 const psAvailable = isPowerShellAvailable();
 if (!psAvailable) {
   console.log('\nNOTICE: Neither powershell nor pwsh is available on this system.');
   console.log('Skipping dynamic PowerShell execution tests (Tests 3-7).');
+  assertHubConfigUnchanged('after static-only editor tests');
   console.log('Static tests passed cleanly.');
   process.exit(0);
 }
@@ -159,18 +197,40 @@ assert.strictEqual(
 );
 console.log('  PASS: Script syntax is valid.');
 
-// Test 4: Execution in -CheckOnly mode
+// Test 4: Execution in -CheckOnly mode (AC1: explicit -ConfigPath; AC2: no-ConfigPath no-write)
 console.log('Test 4: Executing Edit-WorkflowSkillsConfig.ps1 in -CheckOnly diagnostic mode...');
-const checkRun = runPowerShellFile(['-CheckOnly']);
-assert.strictEqual(
-  checkRun.status,
-  0,
-  `CheckOnly execution failed with code ${checkRun.status}:\n${checkRun.stderr || checkRun.stdout}`
-);
-assert(checkRun.stdout.includes('Workflow Skills Config Editor Diagnostic'), 'Diagnostic header missing');
-assert(checkRun.stdout.includes('Validation PASSED'), 'Validation PASSED marker missing');
-assert(checkRun.stdout.includes('descriptions loaded') || checkRun.stdout.includes('entries indexed'), 'Description count missing');
-console.log('  PASS: Diagnostic execution passed cleanly.');
+const t4 = createTempConfig();
+try {
+  const checkRun = runPowerShellFile(['-CheckOnly', '-ConfigPath', t4.configPath]);
+  assert.strictEqual(
+    checkRun.status,
+    0,
+    `CheckOnly execution failed with code ${checkRun.status}:\n${checkRun.stderr || checkRun.stdout}`
+  );
+  assert(checkRun.stdout.includes('Workflow Skills Config Editor Diagnostic'), 'Diagnostic header missing');
+  assert(checkRun.stdout.includes('Validation PASSED'), 'Validation PASSED marker missing');
+  assert(checkRun.stdout.includes('descriptions loaded') || checkRun.stdout.includes('entries indexed'), 'Description count missing');
+
+  // AC2 negative probe: -CheckOnly with NO -ConfigPath must not write to the live hub.
+  const noPathRun = runPowerShellFile(['-CheckOnly']);
+  assert.strictEqual(
+    noPathRun.status,
+    0,
+    `CheckOnly (no -ConfigPath) failed with code ${noPathRun.status}:\n${noPathRun.stderr || noPathRun.stdout}`
+  );
+  assert.strictEqual(
+    fileSha256(HUB_CONFIG_PATH),
+    hubConfigShaBefore,
+    'AC2: -CheckOnly without -ConfigPath must not mutate the repository hub config'
+  );
+  assert(
+    !fs.existsSync(HUB_BACKUP_PATH) || hubBackupExistedBefore,
+    'AC2: -CheckOnly without -ConfigPath must not create .ws/config.json.bak'
+  );
+  console.log('  PASS: Diagnostic execution is read-only, with and without -ConfigPath.');
+} finally {
+  fs.rmSync(t4.dir, { recursive: true, force: true });
+}
 
 // Test 5: Sandbox test for comment preservation and persistence
 console.log('Test 5: Testing save persistence and comment preservation in sandbox...');
@@ -235,6 +295,10 @@ try {
   }
   console.log(`  PASS: Persistence created backup, updated values, and preserved all ${originalCommentKeys.length} comment keys.`);
 } finally {
+  // AC4: any backup a test creates is removed before exit, on pass and failure.
+  try {
+    fs.rmSync(path.join(tmpDir, 'config.json.bak'), { force: true });
+  } catch {}
   try {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   } catch {}
@@ -247,15 +311,25 @@ assert(batContent.includes('Edit-WorkflowSkillsConfig.ps1'), 'Batch file does no
 assert(batContent.includes('-ExecutionPolicy Bypass'), 'Batch file does not specify execution policy bypass');
 
 if (process.platform === 'win32') {
-  const batRun = cp.spawnSync('cmd.exe', ['/c', LAUNCHER_PATH, '-CheckOnly'], {
-    cwd: REPO_ROOT,
-    encoding: 'utf8',
-  });
-  assert.strictEqual(
-    batRun.status,
-    0,
-    `Edit-Config.bat -CheckOnly failed:\n${batRun.stderr || batRun.stdout}`
-  );
+  const t6 = createTempConfig();
+  try {
+    const batRun = cp.spawnSync('cmd.exe', ['/c', LAUNCHER_PATH, '-CheckOnly', '-ConfigPath', t6.configPath], {
+      cwd: REPO_ROOT,
+      encoding: 'utf8',
+    });
+    assert.strictEqual(
+      batRun.status,
+      0,
+      `Edit-Config.bat -CheckOnly failed:\n${batRun.stderr || batRun.stdout}`
+    );
+    assert.strictEqual(
+      fileSha256(HUB_CONFIG_PATH),
+      hubConfigShaBefore,
+      'AC1: bat launcher invocation must target the explicit -ConfigPath, not the hub config'
+    );
+  } finally {
+    fs.rmSync(t6.dir, { recursive: true, force: true });
+  }
 } else {
   console.log('  SKIP: Edit-Config.bat execution test skipped on non-Windows platform.');
 }
@@ -288,9 +362,11 @@ const winFormsSection = winFormsAvailable
   Write-Host '  SKIP: WinForms control event simulation skipped (System.Windows.Forms not available on this platform/CI).'
 `;
 
+// AC1: the functions-only snippet loads an isolated temp config, never the hub config.
+const t7 = createTempConfig();
 const eventTestScript = `
   $ErrorActionPreference = 'Stop'
-  . '${SCRIPT_PATH.replace(/\\/g, '\\\\')}' -FunctionsOnly
+  . '${SCRIPT_PATH.replace(/\\/g, '\\\\')}' -ConfigPath '${t7.configPath.replace(/\\/g, '\\\\')}' -RepoRoot '${REPO_ROOT.replace(/\\/g, '\\\\')}' -FunctionsOnly
 
   # 1. Defensively handle null/empty/whitespace paths
   Set-ConfigValue -Path '' -Value $true
@@ -341,6 +417,7 @@ if (winFormsAvailable) {
   console.log('  SKIP: WinForms control events skipped (System.Windows.Forms not available in this environment).');
   console.log('  PASS: Defensive path routing and configuration isolation validated.');
 }
+fs.rmSync(t7.dir, { recursive: true, force: true });
 
 console.log('Test 8: Verifying Schema-to-GUI key parity for configured sections...');
 const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, 'utf8'));
@@ -567,6 +644,10 @@ try {
   );
   console.log('  PASS: AC8 round-trip and schema parity validated.');
 } finally {
+  // AC4: any backup a test creates is removed before exit, on pass and failure.
+  try {
+    fs.rmSync(path.join(tmpDir10, 'config.json.bak'), { force: true });
+  } catch {}
   try {
     fs.rmSync(tmpDir10, { recursive: true, force: true });
   } catch {}
@@ -627,5 +708,13 @@ assert(
 );
 console.log('  PASS: Section headers (' + headerCalls.length + ' groups), tab order, dirty cue, and theme recolor validated.');
 
-console.log('\nALL 11 POWERSHELL CONFIG EDITOR TESTS PASSED.');
+console.log('Test 12: Verifying repository hub config byte-identity (AC3/AC6 regression)...');
+assertHubConfigUnchanged('after all editor invocations');
+assert(
+  !fs.existsSync(path.join(REPO_ROOT, '.ws', 'config.json.bak')) || hubBackupExistedBefore,
+  'AC3: no leftover .ws/config.json.bak may be produced by the editor tests'
+);
+console.log('  PASS: Repository hub config is byte-identical; no leftover backup.');
+
+console.log('\nALL 12 POWERSHELL CONFIG EDITOR TESTS PASSED.');
 

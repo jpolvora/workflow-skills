@@ -17,10 +17,42 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { spawnSync } = require('child_process');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 const SUITES_FILE = path.join(__dirname, 'test-suites.json');
+
+// AC3/AC6 regression: the suite is side-effect free for the repository's own
+// consumer hub config. Snapshot before the suite and assert byte-identity after.
+const HUB_CONFIG_FILES = ['.ws/config.json', 'test/.ws/config.json'];
+const HUB_BACKUP_FILES = ['.ws/config.json.bak', 'test/.ws/config.json.bak'];
+
+function hashFileIfPresent(file) {
+  return fs.existsSync(file)
+    ? crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')
+    : null;
+}
+
+function snapshotHubState() {
+  return {
+    hashes: HUB_CONFIG_FILES.map((rel) => [rel, hashFileIfPresent(path.join(REPO_ROOT, rel))]),
+    backups: HUB_BACKUP_FILES.map((rel) => [rel, fs.existsSync(path.join(REPO_ROOT, rel))]),
+  };
+}
+
+function hubStateProblems(before) {
+  const problems = [];
+  for (const [rel, hash] of before.hashes) {
+    const now = hashFileIfPresent(path.join(REPO_ROOT, rel));
+    if (now !== hash) problems.push(`${rel} changed (before=${hash} after=${now})`);
+  }
+  for (const [rel, existed] of before.backups) {
+    const now = fs.existsSync(path.join(REPO_ROOT, rel));
+    if (now !== existed) problems.push(`${rel} presence changed (before=${existed} after=${now})`);
+  }
+  return problems;
+}
 
 function loadSuites() {
   const data = JSON.parse(fs.readFileSync(SUITES_FILE, 'utf8'));
@@ -60,6 +92,8 @@ function main() {
     `run-tests: mode=${mode} entries=${entries.length} (Node ${process.version})\n`,
   );
 
+  const hubStateBefore = snapshotHubState();
+
   for (let index = 0; index < entries.length; index += 1) {
     const entry = entries[index];
     const label = `${index + 1}/${entries.length} ${entry.join(' ')}`;
@@ -77,7 +111,16 @@ function main() {
     }
   }
 
+  const hubProblems = hubStateProblems(hubStateBefore);
+  if (hubProblems.length) {
+    process.stderr.write(
+      `\nrun-tests: hub config mutation detected (AC3/AC6): ${hubProblems.join('; ')}\n`,
+    );
+    process.exit(1);
+  }
+
   process.stdout.write(`\nrun-tests: all ${entries.length} entries passed (mode=${mode})\n`);
+  process.stdout.write('run-tests: hub config byte-identity verified (no mutation, no leftover backup)\n');
 }
 
 main();
