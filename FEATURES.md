@@ -68,7 +68,7 @@ The same delivery guarantees with the planning ceremony removed: spec → plan �
 
 ### 1.3 Batch delivery — `ws-spec-multi`
 
-Runs a queue of specs one at a time. A blank `/ws-spec-multi` scan lists only pending/unfinished specs (index `[ ]` / `[~]` and untracked files; `[x]`, Done-log, and already-merged items stay off the gate). For each selected spec it calls `ws-classify-complexity` and dispatches lite or standard automatically, syncs the base branch before starting the next item, and blocks queue advancement until the current spec reaches a terminal state. The dispatch contract requires each child to persist its own state, `step-01-{slug}.plan.md`, telemetry, and `step-08-*.result.md` under `{plansDir}/{slug}/`; before recording `shipped` the orchestrator fails closed via `verify_child_artifacts.cjs` when that child state is absent.
+Runs a queue of specs one at a time. A blank `/ws-spec-multi` scan lists only pending/unfinished specs (index `[ ]` / `[~]` and untracked files; `[x]`, Done-log, and already-merged items stay off the gate). For each selected spec it calls `ws-classify-complexity` and dispatches lite or standard automatically, syncs the base branch before starting the next item, and blocks queue advancement until the current spec reaches a terminal state. The dispatch contract requires each child to persist its own state, `step-01-{slug}.plan.md`, telemetry, and `step-08-*.result.md` under `{plansDir}/{slug}/`; terminal rows are recorded through the executable `record_child_outcome.cjs`, which fails closed via `verify_child_artifacts.cjs` when child state is absent.
 
 ### 1.4 Direct problem solving — `ws-fable-method`
 

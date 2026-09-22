@@ -105,12 +105,14 @@ Every created PR MUST complete full code-review convergence, merge, and post-mer
 7. **Parent-child handoff:** when the child worker for `{slug}` reaches a terminal state (parsed `step-output`, or the child state reports a terminal `status` with `endedAt`), transition the parent queue row in place and advance the run frontmatter `updatedAt` immediately — a parent row left `in_progress` (or a frozen parent `updatedAt`) beside a terminal child is a defect.
 
 ### Phase 5: Record Outcome
-- **Fail-closed child-exit guard:** before recording `shipped`, verify the child
-  artifact set for the active item — `node {skillsRoot}/ws-spec-multi/scripts/verify_child_artifacts.cjs --slug {slug} --plans-dir {plansDir}`.
-  A non-zero exit names the absent artifact(s) (mirroring the monitor `missing-artifact`
-  class) and the item MUST NOT be recorded `shipped`: surface the reason and
-  transition the row to `failed` (or the Phase 5 failure menu) instead. A child
-  that merges without leaving state / `step-01` is the defect this guard blocks.
+- **Fail-closed child-exit guard (executable):** record terminal rows through
+  `node {skillsRoot}/ws-spec-multi/scripts/record_child_outcome.cjs --run {plansDir}/ws-spec-multi/{runId}.state.md --slug {slug} --status shipped|failed|skipped [--plans-dir {plansDir}] [--pr-number N] [--pr-url U] [--reason TEXT]`.
+  This helper is the executable queue-transition path: on `--status shipped` it
+  invokes `verify_child_artifacts.cjs` and, when child state / `step-01` is absent,
+  exits non-zero **without writing** — so a `shipped` row without child state cannot
+  be recorded (mirroring the monitor `missing-artifact` class). It also enforces the
+  keyed in-place row update, the fail-closed duplicate guard, and the advancing
+  `updatedAt`. Do not hand-edit a `shipped` row around this guard.
 - Update the **existing** row for `{specPath}` (fallback `{slug}`) in place — never append a second row for the same spec. Run the fail-closed duplicate guard before writing; set the row `updatedAt` and the run frontmatter `updatedAt` to now. Reported totals use the frozen `totalItems`.
 - Row transitions:
   - On full merge convergence & post-merge sync: set `status: shipped`, `merged: true`, `activeThreads: 0`, `prNumber`, `prUrl`, `updatedAt`.

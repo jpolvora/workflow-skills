@@ -92,11 +92,13 @@ workflow id `{child-workflow-id}`:
 | Telemetry | `{plansDir}/{slug}/telemetry.jsonl` |
 | Delivery evidence (completed child) | `{plansDir}/{slug}/step-08-*.result.md` |
 
-The batch orchestrator fails closed at child exit before recording `shipped`:
-`node {skillsRoot}/ws-spec-multi/scripts/verify_child_artifacts.cjs --slug {slug} --plans-dir {plansDir}`
-must exit 0 (state + `step-01`). A non-zero exit mirrors the monitor `missing-artifact`
-class and blocks the `shipped` row. `ws-monitor` surfaces the same blind spot as the
-`missing-child-state` finding when a multi-spec item advances without child state.
+The batch orchestrator records terminal rows through the executable guard
+`node {skillsRoot}/ws-spec-multi/scripts/record_child_outcome.cjs --run {plansDir}/ws-spec-multi/{runId}.state.md --slug {slug} --status shipped|failed|skipped`.
+On `--status shipped` it invokes `verify_child_artifacts.cjs` and refuses (non-zero,
+no write) when the child state (machine SoT) or `step-01-{slug}.plan.md` is absent,
+mirroring the monitor `missing-artifact` class. `ws-monitor` surfaces the same blind
+spot as the `missing-child-state` finding when a multi-spec item advances without
+child state.
 
 ## Already-Implemented Probe
 

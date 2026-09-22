@@ -52,7 +52,7 @@
       "expected_output": "Agent fails closed before recording shipped via verify_child_artifacts.cjs, and never claims delivery evidence for the item.",
       "assertions": [
         "The dispatch contract states the required child artifact set and the {child-workflow-id} state path under {plansDir}/{slug}/",
-        "Before recording shipped, the orchestrator runs verify_child_artifacts.cjs and a non-zero exit blocks the shipped row (mirroring missing-artifact)",
+        "Before recording shipped, the orchestrator runs the executable record_child_outcome.cjs (which invokes verify_child_artifacts.cjs) and a non-zero exit blocks the shipped row (mirroring missing-artifact)",
         "The child step-01 artifact uses its contract name step-01-{slug}.plan.md, never an ad-hoc plan.md",
         "The Phase 6 report claims delivery evidence only for items whose child state (and step-08-*.result.md for completed children) exists"
       ]

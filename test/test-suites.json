@@ -388,6 +388,9 @@
       "test/test-verify-child-artifacts-us388.js"
     ],
     [
+      "test/test-record-child-outcome-us388.js"
+    ],
+    [
       "test/test-terminal-close-us395.js"
     ],
     [
