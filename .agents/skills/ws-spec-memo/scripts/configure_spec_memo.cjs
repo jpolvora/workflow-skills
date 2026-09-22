@@ -128,7 +128,7 @@ function main() {
   const args = parseArgs(process.argv);
   const ctx = resolveConsumerContext({ repoRoot: args.repoRoot, scriptFile: SCRIPT_FILE });
   const repoRoot = ctx.repoRoot;
-  const configPath = path.join(ctx.sharedDir, 'config.json');
+  const configPath = ctx.localConfig; // bootstrap config home for writers (spec 0115)
   const examplePath = path.join(ctx.templateSource, 'config.json.example');
 
   if (!fs.existsSync(configPath)) {

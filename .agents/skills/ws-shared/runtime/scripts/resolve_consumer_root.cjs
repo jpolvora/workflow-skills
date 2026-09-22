@@ -69,9 +69,26 @@ function resolveRepoRoot(override, { scriptFile } = {}) {
   return cwd;
 }
 
+function loadHubResolver() {
+  // Single-sourced hub root (spec 0115, AC1): same module the installer,
+  // the configurator, and the generator resolve through. A missing sibling
+  // (partial-tree fixture or corrupt install, already flagged by integrity
+  // --check) degrades to the default hub instead of crashing; a present
+  // resolver still refuses hostile values fail-closed.
+  try {
+    return require('./resolve_hub_root.cjs');
+  } catch {
+    return null;
+  }
+}
+
 function sharedDir(repoRoot) {
   const explicit = process.env.WORKFLOW_SKILLS_SHARED_DIR;
-  return path.resolve(explicit || path.join(resolveRepoRoot(repoRoot), HUB_REL));
+  if (explicit && String(explicit).trim()) return path.resolve(String(explicit).trim());
+  const root = resolveRepoRoot(repoRoot);
+  const resolver = loadHubResolver();
+  if (!resolver) return path.join(root, HUB_REL);
+  return resolver.resolveHubRoot(root).hubRoot;
 }
 
 function resolveHubSource(context, relative) {
@@ -111,7 +128,7 @@ function readConfigStrict(file) {
 // A global fallback is used only when the local candidate is absent, and the
 // selected source must stay observable via configSource / resolved context.
 const PRECEDENCE_MATRIX = [
-  { rank: 1, dimension: 'config', local: '{sharedDir}/config.json', global: '{globalSkillsRoot}/ws-shared/config.json' },
+  { rank: 1, dimension: 'config', local: '.ws/config.json (bootstrap, fixed)', global: '{globalSkillsRoot}/ws-shared/config.json' },
   { rank: 2, dimension: 'skill-bodies', local: '{skillsRoot}/ws-<id>/SKILL.md', global: '{globalSkillsRoot}/ws-<id>/SKILL.md' },
   { rank: 3, dimension: 'shared-runtime', local: '{skillsRoot}/ws-shared/runtime/*', global: '{globalSkillsRoot}/ws-shared/runtime/*' },
   { rank: 4, dimension: 'harness', local: '{sharedDir}/AGENTS.md', global: '{globalSkillsRoot}/ws-shared/AGENTS.md' },
@@ -322,7 +339,10 @@ function resolveConsumerContext({ repoRoot, scriptFile, skillId, requireProjectH
     else skillsRoot = fs.existsSync(localSkillsRoot) ? localSkillsRoot : globalSkillsRoot;
   }
   const hub = sharedDir(root);
-  const localConfig = path.join(hub, 'config.json');
+  const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
+  const localConfig = (explicitShared && String(explicitShared).trim())
+    ? path.join(hub, 'config.json')
+    : path.join(root, HUB_REL, 'config.json');
   const localExample = path.join(localSkillsRoot, 'ws-shared', 'templates', 'config.json.example');
   const globalConfig = path.join(globalSkillsRoot, 'ws-shared', 'config.json');
   const globalExample = path.join(
@@ -378,6 +398,12 @@ function resolveConsumerContext({ repoRoot, scriptFile, skillId, requireProjectH
     sharedDir: hub,
     globalSkillsRoot,
     configPath,
+    // Local config home for writers (spec 0115): the fixed bootstrap
+    // .ws/config.json, or the explicit-env hub config when
+    // WORKFLOW_SKILLS_SHARED_DIR is set. Unlike configPath (a read path
+    // that may fall back to the shipped example), this is always the
+    // file writers must create or update.
+    localConfig,
     configSource: inside(configPath, root) ? 'project' : 'global',
     executionScope,
     runtimeSource,
@@ -400,18 +426,22 @@ function resolveConfiguredPath(repoRoot, value, fallback) {
 // Fail-closed project-config gate for config-dependent skills (AC5/NS3).
 // A globally invoked skill without a project hub must NOT silently read
 // global config as project config: throw with a ws-configure-project
-// pointer instead. Usable = the concrete {sharedDir}/config.json file on disk
-// with no read/validation error (the seeded templates example never counts). Returns the context unchanged on success.
+// pointer instead. Usable = the bootstrap .ws/config.json file on disk (or
+// the explicit-env hub config when WORKFLOW_SKILLS_SHARED_DIR is set) with
+// no read/validation error (the seeded templates example never counts). Returns the context unchanged on success.
 function requireProjectConfig(context) {
   const root = path.resolve((context && context.repoRoot) || process.cwd());
-  const projectConfigPath = path.join(path.resolve((context && context.sharedDir) || path.join(root, HUB_REL)), 'config.json');
+  const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
+  const projectConfigPath = (explicitShared && String(explicitShared).trim() && context && context.sharedDir)
+    ? path.join(path.resolve(context.sharedDir), 'config.json')
+    : path.join(root, HUB_REL, 'config.json');
   const usable =
     !!context &&
     !context.configError &&
     fs.existsSync(projectConfigPath);
   if (!usable) {
     throw new Error(
-      `Project hub config missing (expected ${projectConfigPath}); run ws-configure-project to seed {sharedDir}/config.json — ` +
+      `Project hub config missing (expected ${projectConfigPath}); run ws-configure-project to seed the bootstrap .ws/config.json — ` +
       `refusing to use global config as project config (configSource: ${(context && context.configSource) || 'unknown'}).`,
     );
   }

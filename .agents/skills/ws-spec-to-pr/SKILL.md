@@ -21,7 +21,7 @@ Before Step 0, on-demand load [`setup.md`](../ws-shared/runtime/setup.md) for bo
 
 ## Native Tool Contract
 
-Aliases: [`tools.md`](../ws-shared/runtime/tools.md). Params: `{sharedDir}/config.json`. Entry check: [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check. Never narrate undone work. Host mode: resolve the host-tool binding (abstract aliases → concrete session tools) per [`host-dispatch.md`](../ws-shared/runtime/host-dispatch.md) at bootstrap; honor Tier 1 → Tier 2 → Tier 3. Orch never edits code except Inline Isolated Execution (Tier 3) where the session model temporarily adopts the step persona to edit via native file tools; otherwise use `dispatch-agent` only. Interactive cadence: in normal mode, enforce One Step Per Turn per [`gates.md`](../ws-shared/runtime/gates.md) — markdown fallback never starts Step N+1 in the same turn as the gate; native modal `user-gate` returning any recommended advance option continues in the same turn (rule 7: **Next**, **Accept recommendation**, Commit-then-advance, Reach-10 advance, close, or ship intent); in `autoMode`, auto-select index 0 and proceed automatically without halting.
+Aliases: [`tools.md`](../ws-shared/runtime/tools.md). Params: `.ws/config.json` (bootstrap, fixed). Entry check: [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check. Never narrate undone work. Host mode: resolve the host-tool binding (abstract aliases → concrete session tools) per [`host-dispatch.md`](../ws-shared/runtime/host-dispatch.md) at bootstrap; honor Tier 1 → Tier 2 → Tier 3. Orch never edits code except Inline Isolated Execution (Tier 3) where the session model temporarily adopts the step persona to edit via native file tools; otherwise use `dispatch-agent` only. Interactive cadence: in normal mode, enforce One Step Per Turn per [`gates.md`](../ws-shared/runtime/gates.md) — markdown fallback never starts Step N+1 in the same turn as the gate; native modal `user-gate` returning any recommended advance option continues in the same turn (rule 7: **Next**, **Accept recommendation**, Commit-then-advance, Reach-10 advance, close, or ship intent); in `autoMode`, auto-select index 0 and proceed automatically without halting.
 
 | Intent | Alias | Rule |
 |--------|-------|------|
@@ -69,10 +69,10 @@ both sides reference that file; never duplicate its contract here.
   read-only watcher subagent per run. Gate (must pass `--state` for durable
   AC3 accounting):
   `node {skillsRoot}/ws-spec-to-pr/scripts/observer.cjs should-dispatch
-  --config {sharedDir}/config.json --telemetry {us-dir}/telemetry.jsonl --state {state}`.
+  --config .ws/config.json --telemetry {us-dir}/telemetry.jsonl --state {state}`.
   On allow, first reserve the slot (fail-closed when already taken)
   `node {skillsRoot}/ws-spec-to-pr/scripts/observer.cjs note-dispatch
-  --state {state} --telemetry {us-dir}/telemetry.jsonl --config {sharedDir}/config.json`,
+  --state {state} --telemetry {us-dir}/telemetry.jsonl --config .ws/config.json`,
   then dispatch the watcher; a second reservation is refused.
   Full dispatch protocol: [`STEP-DISPATCH.md`](STEP-DISPATCH.md) § Execution observer dispatch.
 - The watcher reports state/execution and skill-instruction errors and never

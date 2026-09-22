@@ -64,7 +64,7 @@ Do **not** merge these skills. Do **not** vendor spec-memo `SURFACE.md` or re-li
 
 ## Entry check
 
-Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check. Missing `{sharedDir}/config.json` → `user-gate` recommending `ws-configure-project` before setup (check/bootstrap may still run with defaults).
+Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check. Missing `.ws/config.json` (bootstrap, fixed) → `user-gate` recommending `ws-configure-project` before setup (check/bootstrap may still run with defaults).
 
 Expand path tokens from [`tools.md`](../ws-shared/runtime/tools.md) before shell. Use `{specMemo.cli}` (never hardcode `memo`).
 
@@ -95,7 +95,7 @@ Expand path tokens from [`tools.md`](../ws-shared/runtime/tools.md) before shell
    ```bash
    node {skillsRoot}/ws-spec-memo/scripts/configure_spec_memo.cjs --repo-root {repoRoot} --apply --json --stdin-json < choices.json
    ```
-   Write `{choices.json}` as a short uncommitted temp with flags from step 3; delete after. Script merges `specMemo` into `{sharedDir}/config.json` only (never commit).
+   Write `{choices.json}` as a short uncommitted temp with flags from step 3; delete after. Script merges `specMemo` into `.ws/config.json` (bootstrap, fixed) only (never commit).
    - Done when: script exit 0; config summary printed.
 
 5. **MCP host + runtime skills** — When enabled: print [`references/MCP-TEMPLATE.json`](references/MCP-TEMPLATE.json); remind the host to register server `spec-memo` (stdio: `{specMemo.cli} serve`). Vault identity binds via git remote; no in-repo pointer files. If preflight shows `wsMemo` or `wsSessionTracking` missing, tell the user the next action is **`/ws-memo`** `install_skills` (installs both by default) — do not paste the vault tool encyclopedia here.
@@ -116,7 +116,7 @@ Expand path tokens from [`tools.md`](../ws-shared/runtime/tools.md) before shell
 
 If MCP `user-spec-memo` / `spec-memo` is already registered, load **`/ws-memo`** `bootstrap` and skip this subcommand.
 
-1. Read `{sharedDir}/config.json` routing (`enableSpecMemoIntegration` / `enableMemoryFiles` / `specMemo.mode`). When vault is not enabled, consult in-repo MEMORY via `ws-self-learning` (`Grep`/`Read` `{memoryDir}/MEMORY.md`).
+1. Read `.ws/config.json` (bootstrap, fixed) routing (`enableSpecMemoIntegration` / `enableMemoryFiles` / `specMemo.mode`). When vault is not enabled, consult in-repo MEMORY via `ws-self-learning` (`Grep`/`Read` `{memoryDir}/MEMORY.md`).
 2. When vault is enabled and MCP is down: run `{specMemo.cli} bootstrap` with optional `--slug` / `--path` from invocation (CLI only; protocol details stay in `/ws-memo`).
 3. On CLI failure and hybrid mode: warn once and consult in-repo MEMORY. On vault-only failure: report actionable fix (install CLI, register MCP, run setup) and STOP.
    - Done when: brief (<8 KB) printed, MEMORY consult completed, or `/ws-memo` took over.
@@ -159,7 +159,7 @@ Dual: vault first on read; persist to both. Vault write succeeded → do not als
 
 ## Rules
 
-- Never commit `{sharedDir}/config.json`.
+- Never commit `.ws/config.json` (bootstrap, fixed).
 - Never write `specMemo.*` from `/ws-memo`; never run vault tool encyclopedia from this skill.
 - Never vendor spec-memo `SURFACE.md` or count/list MCP tool parameters here (drift trap).
 - Never write `{plansDir}`, local memory files (`{memoryDir}/memory/*`), or agent changelogs when vault-only mode is active.

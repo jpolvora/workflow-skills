@@ -38,7 +38,7 @@ A **batch** is all active threads fetched and scored in one standalone invocatio
 ## Prerequisites
 
 - Local branch checked out matches the PR source branch.
-- `{sharedDir}/config.json` with resolvable `providers.scm` (`github` \| `azure-devops`, never `local`): see [config-resolution.md](../ws-shared/runtime/config-resolution.md).
+- `.ws/config.json` (bootstrap, fixed) with resolvable `providers.scm` (`github` \| `azure-devops`, never `local`): see [config-resolution.md](../ws-shared/runtime/config-resolution.md).
 - Provider skill's `validate-auth` passes before mutating remote threads.
 
 ## SCM provider resolution
@@ -98,7 +98,7 @@ When an orchestrator owns the run and `dispatch-agent` is available, append orde
 ## Fix-loop execution mode (shared key)
 
 Standalone batches consult the same single key that gates the whole fix path:
-`ws-goal-fix-pr.useSubAgents` in `{sharedDir}/config.json` (machine helper:
+`ws-goal-fix-pr.useSubAgents` in `.ws/config.json` (bootstrap, fixed) (machine helper:
 `resolveFixPrDispatchMode` in `{skillsRoot}/ws-shared/runtime/scripts/workflow_state.cjs`).
 Absent or `false` (default) runs the ordered `fixPrPlan` → `fixPrExec` pair
 inline on the captured session model with identical gate/learning contracts and

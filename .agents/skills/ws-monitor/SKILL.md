@@ -45,7 +45,7 @@ The command observes all workflow folders under the configured `plans.dir` by de
 
 ## Steps
 
-1. **Resolve** — Load project `{sharedDir}/config.json`, resolve `{plansDir}`, memory routing (`resolveMemoryRouting`), and transcript candidate roots. Apply project-local-over-global hub precedence.
+1. **Resolve** — Load project `.ws/config.json` (bootstrap, fixed), resolve `{plansDir}`, memory routing (`resolveMemoryRouting`), and transcript candidate roots. Apply project-local-over-global hub precedence.
    - Done when: the active plans directory, memory backend status, and transcript roots are known, plus `resolvedContext` names the selected local/global source.
 2. **Collect** — Run the snapshot script against state files (single-spec and `ws-spec-multi`), telemetry, expected artifacts, memory vault records, and host transcripts.
    - Done when: each selected workflow has a state summary, telemetry summary, artifact status, and classified signals.

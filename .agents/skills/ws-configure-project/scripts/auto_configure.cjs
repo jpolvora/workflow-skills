@@ -833,7 +833,9 @@ function main() {
   const ctx = resolveConsumerContext({ repoRoot: args.repoRoot || undefined, scriptFile: SCRIPT_FILE });
   const repoRoot = ctx.repoRoot;
   const sharedDir = ctx.sharedDir;
-  const configPath = path.join(sharedDir, 'config.json');
+  // Bootstrap config is fixed (spec 0115): never rebuilt from the
+  // (possibly relocated) effective hub.
+  const configPath = ctx.localConfig;
   const examplePath = path.join(ctx.templateSource, 'config.json.example');
   const schemaPath = path.join(ctx.runtimeSource, 'config.schema.json');
   const layout = readHubLayout(ctx.runtimeSource);

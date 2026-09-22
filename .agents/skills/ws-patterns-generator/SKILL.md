@@ -12,7 +12,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-patterns-generator loaded."
 
-**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check. This skill is config-dependent: without project `{sharedDir}/config.json`, use `user-gate` to recommend `ws-configure-project`; cancel stops the run.
+**Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check. This skill is config-dependent: without project `.ws/config.json` (bootstrap, fixed), use `user-gate` to recommend `ws-configure-project`; cancel stops the run.
 
 Recurring generator for the consumer project. It harvests findings and (re)writes the consumer-owned skill `{sharedDir}/ws-project-patterns/SKILL.md`: blank skeleton on first run, full rewrite when stale, appended bullets otherwise. The body is hub-hosted and autoload-only: the installer never ships or overwrites it, and it is loaded through its Always-applied row in `{sharedDir}/autoload.md`, not through skills-root discovery. Complements `ws-self-learning` (MEMORY traps) without writing MEMORY itself.
 

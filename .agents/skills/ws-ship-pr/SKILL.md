@@ -46,7 +46,7 @@ Workflow: `ws-spec-to-pr` Step 8 or `ws-spec-to-pr-lite` Step 4. Dispatched with
 | `stopBeforeFixPr` | `false` | Skip Step 6; orchestrator owns fix-PR at Step 9 |
 | `skipQualityGates` | `false` | Orchestrator-set from `--skip-gates` or `config.json` → `invariants.skipQualityGates` |
 
-Before executing, restate commit title, resolved PR head (`shipHead`), base, SCM provider (read from `config.json`), mode, `skipQualityGates`, `stopBeforeFixPr`, max, and `shipAction`. When `skipQualityGates` is active, prefix banners with **`[GATES BYPASSED]`**. Resolve base branch and provider from `{sharedDir}/config.json`; resolve `shipHead` per § PR head resolution.
+Before executing, restate commit title, resolved PR head (`shipHead`), base, SCM provider (read from `config.json`), mode, `skipQualityGates`, `stopBeforeFixPr`, max, and `shipAction`. When `skipQualityGates` is active, prefix banners with **`[GATES BYPASSED]`**. Resolve base branch and provider from `.ws/config.json` (bootstrap, fixed); resolve `shipHead` per § PR head resolution.
 
 ### Preflight resolution order
 
@@ -80,7 +80,7 @@ See [`gates.md`](../ws-shared/runtime/gates.md) § Quality gate bypass. Ship/PRE
    - Done when: review clean, Pause after 3-iteration cap with residual documented, or skipped with evidence.
 
 4. **Commit & push**: only after Step 2 is green. **Workflow mode (`workflowMode: true`):** skip delivery commit — orch already ran G2-delivery at close (or skipped). Push ship-scope product changes and `git push -u {gitRemote} {shipHead}`. **Standalone `/ship-pr`:** when performing a **delivery commit** of plan-dir artifacts, stage **only** paths resolved from `defaults.deliveryCommitArtifacts` per [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8:
-   - Read `{sharedDir}/config.json` → `defaults.deliveryCommitArtifacts`; missing object/keys merge to AC1 defaults (`includeRefinedPlan: true`, `includeDeliveryResult: false`, all opt-ins `false`).
+   - Read `.ws/config.json` (bootstrap, fixed) → `defaults.deliveryCommitArtifacts`; missing object/keys merge to AC1 defaults (`includeRefinedPlan: true`, `includeDeliveryResult: false`, all opt-ins `false`).
    - When `includeRefinedPlan` is true: stage `step-02-{slug}.plan.refined.md` if present, else `step-01-{slug}.plan.md`; if **neither** exists → **STOP** with a clear error.
    - When `includeDeliveryResult` is false: do **not** `git add` `step-08-{slug}.result.md` (file may still exist / be written earlier for orch evidence).
    - Opt-in toggles (`includeSpec`, `includeCheckReport`, `includeCodeReview`, `includeTestingReport`): stage only when toggle is true **and** the file exists; otherwise skip and note on the prepare board / result prose.

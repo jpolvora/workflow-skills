@@ -15,6 +15,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..');
 const require = createRequire(import.meta.url);
 const { resolveHubRoot } = require('../.agents/skills/ws-shared/runtime/scripts/resolve_hub_root.cjs');
+const {
+  resolveConsumerContext,
+  requireProjectConfig,
+} = require('../.agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs');
 
 const CONFIGURE = path.join(REPO_ROOT, '.agents/skills/ws-configure-project/scripts/configure_autoload.cjs');
 const SEED = path.join(REPO_ROOT, '.agents/skills/ws-patterns-generator/scripts/seed_generated_skill.cjs');
@@ -128,6 +132,29 @@ function plantPatternsRow(autoload) {
   } finally {
     rmFixture(root);
     rmFixture(outside);
+  }
+}
+
+// --- AC1/AC5: runtime resolver reports the effective hub, bootstrap config --
+{
+  const root = makeFixture('ws-hub-ctx-');
+  try {
+    writeBootstrapConfig(root, 'config/hub');
+    fs.mkdirSync(path.join(root, 'config', 'hub'), { recursive: true });
+    const ctx = resolveConsumerContext({ repoRoot: root });
+    assert(ctx.sharedDir === path.join(root, 'config', 'hub'), 'context: sharedDir is the effective hub');
+    assert(ctx.configPath === path.join(root, '.ws', 'config.json'), 'context: configPath is the bootstrap config');
+    assert(ctx.configSource === 'project', 'context: configSource is project');
+    assert(ctx.config && ctx.config.pathTokens && ctx.config.pathTokens.sharedDir === 'config/hub', 'context: config loads from bootstrap');
+    requireProjectConfig(ctx);
+    assert(true, 'requireProjectConfig passes on the bootstrap config');
+
+    writeBootstrapConfig(root, '../escape');
+    let code = null;
+    try { resolveConsumerContext({ repoRoot: root }); } catch (err) { code = err.code; }
+    assert(code === 'HUB_TRAVERSAL', `context: traversal config throws fail-closed (${code})`);
+  } finally {
+    rmFixture(root);
   }
 }
 

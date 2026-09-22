@@ -54,13 +54,13 @@ node {skillsRoot}/ws-classify-complexity/scripts/classify.cjs <spec-path> [--out
 
 ## Steps
 
-1. **Resolve paths** — Expand `{skillsRoot}`, `{sharedDir}`, `{plansDir}` from project `{sharedDir}/config.json` (Entry check above; use `config.json.example` only as last-resort template with an explicit log). Input spec must exist; script exits non-zero if missing.
+1. **Resolve paths** — Expand `{skillsRoot}`, `{sharedDir}`, `{plansDir}` from project `.ws/config.json` (bootstrap, fixed) (Entry check above; use `config.json.example` only as last-resort template with an explicit log). Input spec must exist; script exits non-zero if missing.
    - Done when: spec path and slug are known.
 
 2. **Run classifier** — Invoke `classify.cjs`. It:
    - Parses spec frontmatter (manual mini-parser; no npm YAML deps)
    - Counts sections (`##`), acceptance criteria (`AC\d+` / Acceptance Criteria bullets), unique backtick path refs, and layer signals (spec `### Layer:` headings + configured `stack.backend.layers`)
-   - Loads `dagThresholds` from `{sharedDir}/config.json`, falling back to `config.json.example`
+   - Loads `dagThresholds` from `.ws/config.json` (bootstrap, fixed), falling back to `config.json.example`
    - Optionally reads `--score-analysis` when Pass 1 scores exist (`scoreAndRefine`)
    - Writes `step-00-{slug}.classify.md` with recommendation, metrics table, threshold comparison, and reasoning
    - Done when: classify artifact exists on disk.

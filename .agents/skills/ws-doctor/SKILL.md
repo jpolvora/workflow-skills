@@ -46,8 +46,8 @@ Also: `@ws-doctor`, “diagnose skills”, “doctor the harness”.
 ## Hybrid & config
 
 1. Expand `{skillsRoot}` **independently** from `{sharedDir}` (and related tokens) per [`tools.md`](../ws-shared/runtime/tools.md) § Path tokens · [`config-resolution.md`](../ws-shared/runtime/config-resolution.md).
-2. Project `{sharedDir}/config.json` **always wins** over any global hub config. Never read project config from the global hub when a project hub exists.
-3. Missing `{sharedDir}/config.json`: still run path / script / reference checks against the resolved skills root; report Configuration as **unavailable**; `user-gate` recommending [`ws-configure-project`](../ws-configure-project/SKILL.md) (native structured choice when available; markdown fallback). Do **not** invent config values.
+2. Project `.ws/config.json` (bootstrap, fixed) **always wins** over any global hub config. Never read project config from the global hub when a project hub exists.
+3. Missing `.ws/config.json` (bootstrap, fixed): still run path / script / reference checks against the resolved skills root; report Configuration as **unavailable**; `user-gate` recommending [`ws-configure-project`](../ws-configure-project/SKILL.md) (native structured choice when available; markdown fallback). Do **not** invent config values.
 
 ## Steps
 
@@ -83,7 +83,7 @@ Or `none`.
 
 ### Configuration
 
-When `{sharedDir}/config.json` is present: path tokens, `providers`, `verification.*`, `defaults.*` switches (including `deliveryCommitArtifacts.*`), `invariants.*`, `fable.*`, `rules.*` paths. Mark missing file, schema-invalid fields, and empty required identity fields when detectable.
+When `.ws/config.json` (bootstrap, fixed) is present: path tokens, `providers`, `verification.*`, `defaults.*` switches (including `deliveryCommitArtifacts.*`), `invariants.*`, `fable.*`, `rules.*` paths. Mark missing file, schema-invalid fields, and empty required identity fields when detectable.
 
 When absent: **unavailable** + recommend `ws-configure-project` via `user-gate` (do not invent values).
 

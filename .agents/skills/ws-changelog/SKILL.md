@@ -23,7 +23,7 @@ Run at the end of every implementation task to maintain a historical record of w
 
 ## Path resolution
 
-Resolve the target file from `{sharedDir}/config.json` (`resolveChangelogPath` in `resolve_consumer_root.cjs` is the SoT):
+Resolve the target file from `.ws/config.json` (bootstrap, fixed) (`resolveChangelogPath` in `resolve_consumer_root.cjs` is the SoT):
 
 | Source | Path |
 |--------|------|

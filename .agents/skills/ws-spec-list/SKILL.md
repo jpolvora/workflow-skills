@@ -47,7 +47,7 @@ Canonical `step-00-*.spec.md` under `{plansDir}` is a **plan artifact**, not a S
 
 ## Steps
 
-1. **Resolve** — Read `{sharedDir}/config.json`. Expand `{plansDir}` ← `plans.dir`, `{specsDir}` ← `plans.specsDir`. Load [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md) Path tokens + [`../ws-shared/runtime/gates.md`](../ws-shared/runtime/gates.md) for `user-gate`.
+1. **Resolve** — Read `.ws/config.json` (bootstrap, fixed). Expand `{plansDir}` ← `plans.dir`, `{specsDir}` ← `plans.specsDir`. Load [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md) Path tokens + [`../ws-shared/runtime/gates.md`](../ws-shared/runtime/gates.md) for `user-gate`.
    - Done when: both roots resolved (missing config → stop and point to `ws-configure-project`).
 
 2. **Discover (keep sets separate)** — Agent scan (no helper script):

@@ -39,7 +39,7 @@ archive plans
 
 ## Steps
 
-1. **Resolve** — Read `{sharedDir}/config.json`. Expand `{plansDir}` / `{specsDir}` / `{sharedDir}` / `{skillsRoot}` / `{memoryDir}` from [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md). Changelog path ← `rules.changelogFile` (default repo-root `CHANGELOG.md`, legacy `{sharedDir}/CHANGELOG.md` fallback when only it holds entries).
+1. **Resolve** — Read `.ws/config.json` (bootstrap, fixed). Expand `{plansDir}` / `{specsDir}` / `{sharedDir}` / `{skillsRoot}` / `{memoryDir}` from [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md). Changelog path ← `rules.changelogFile` (default repo-root `CHANGELOG.md`, legacy `{sharedDir}/CHANGELOG.md` fallback when only it holds entries).
    - Done when: roots are fixed (missing config → defaults `.agents/plans`, `.agents/specs`).
 
 2. **Scan** — Run:

@@ -34,7 +34,7 @@ Bulk-import remote work items into the local specs pipeline: agentic `{specsDir}
 
 ## Provider resolution
 
-1. Read `{sharedDir}/config.json`. Expand `{skillsRoot}` / `{sharedDir}` / `{plansDir}` / `{specsDir}`.
+1. Read `.ws/config.json` (bootstrap, fixed). Expand `{skillsRoot}` / `{sharedDir}` / `{plansDir}` / `{specsDir}`.
 2. Resolve tracker (first match):
    - `providers.active` ∈ `github` \| `azure-devops`
    - else enabled `issueTrackers.github` (prefer) or `issueTrackers.azureDevOps`
