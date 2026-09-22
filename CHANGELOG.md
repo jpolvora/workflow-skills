@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-22 04:45] Agent: Muse Code (muse-spark)
+- **Prompt**: ws-spec-multi worker item 3/5: run the full standard pipeline for spec 0115-configurable-hub-root end-to-end until the PR is merged with 0 open threads.
+- **Done**: Single resolver resolve_hub_root.cjs (bootstrap .ws/config.json, then pathTokens.sharedDir, else .ws) adopted by installer, configure_autoload.cjs, seed_generated_skill.cjs, and resolve_consumer_root.cjs (new context.localConfig writer home); hub-scoped rules.harness/rules.stackFile defaults on seed/upgrade; containment fail-closed with --check criticals; docs cohere (config-resolution, tools, hub-layout, README, CATALOG, 24 skill bodies); batteries in test-configurable-hub-root.js; version 0.4.52.
+- **Result**: PR #391 merged (77963df8) with 0 open threads; npm run test green; ws-check-harness Phases 0-5c green; verify-integrity OK. Learning: memory/2026-09-22-config-writer-home-vs-read-path.md.
+
 ### [2026-09-21 00:31] Agent: Muse Code (muse-spark)
 - **Prompt**: Update spec 0107-us-369 for issue #369, implement surgical fixes, bump, commit, push, ship PR.
 - **Done**: Tightened the three ws-monitor transcript signals to require failure-shaped evidence (`hybrid-path-resolution`: ENOENT-family within 200 chars of dispatch-context construction; `model-fallback`: dispatch + model + rejection on one dispatch record; `subagent-error`: exception marker plus stack-trace shape); updated ws-monitor SKILL.md predicate docs; refreshed spec 0107-us-369 sweep (HEAD 0.4.47, repro 3/3) and re-registered step-00; updated positive fixtures to failure-shaped evidence and added a benign-transcript negative test; version 0.4.48 + integrity regen + site rebuild.
