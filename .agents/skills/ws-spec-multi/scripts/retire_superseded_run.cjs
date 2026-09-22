@@ -12,7 +12,9 @@
  * when the named run cannot be resolved, so a superseding run cannot silently
  * leave two active runners on one lineage.
  *
- * Idempotent: a prior run already terminal is a no-op success.
+ * The ws-spec-multi run state is Markdown-canonical (`{runId}.state.md`), so a
+ * retirement is a single atomic file write (temp file + rename); no JSON mirror
+ * is maintained. Idempotent: a prior run already terminal is a no-op success.
  *
  * Usage:
  *   node retire_superseded_run.cjs --run <superseding.state.md> [--plans-dir DIR] [--status cancelled|superseded] [--timestamp ISO] [--json]
@@ -123,47 +125,30 @@ function main() {
   }
 
   let targetMd;
-  let targetJson;
   try {
     targetMd = containedPath(runDir, `${supersededRunId}.state.md`);
-    targetJson = containedPath(runDir, `${supersededRunId}.state.json`);
   } catch (error) {
     fail(error.message, options);
     return;
   }
-  const hasMd = fs.existsSync(targetMd);
-  const hasJson = fs.existsSync(targetJson);
-  if (!hasMd && !hasJson) {
+  if (!fs.existsSync(targetMd)) {
     fail(`superseded run state not found under ${runDir}: ${supersededRunId}`, options);
     return;
   }
 
   const result = { ok: true, supersededRunId, status, timestamp, updated: [], noop: false };
-  // Write the JSON mirror first and the Markdown (canonical) state last, both
-  // atomically, so an interrupted retirement leaves the canonical .md either
-  // untouched or fully written; a re-run is idempotent either way.
-  if (hasJson) {
-    const json = JSON.parse(fs.readFileSync(targetJson, 'utf8'));
-    if (TERMINAL.has(String(json.status))) {
-      result.noop = true;
-    } else {
-      json.status = status;
-      json.updatedAt = timestamp;
-      atomicWrite(targetJson, `${JSON.stringify(json, null, 2)}\n`);
-      result.updated.push(path.relative(process.cwd(), targetJson).split(path.sep).join('/'));
-    }
-  }
-  if (hasMd && !result.noop) {
-    const text = fs.readFileSync(targetMd, 'utf8');
-    const current = readField(text, 'status');
-    if (TERMINAL.has(String(current))) {
-      result.noop = true;
-    } else {
-      let next = setField(text, 'status', status);
-      next = setField(next, 'updatedAt', `"${timestamp}"`);
-      atomicWrite(targetMd, next);
-      result.updated.push(path.relative(process.cwd(), targetMd).split(path.sep).join('/'));
-    }
+  // The ws-spec-multi run state is Markdown-canonical (`{runId}.state.md`); a
+  // retirement is therefore a single atomic file write (temp file + rename),
+  // so there is no cross-file window. A re-run is idempotent.
+  const text = fs.readFileSync(targetMd, 'utf8');
+  const current = readField(text, 'status');
+  if (TERMINAL.has(String(current))) {
+    result.noop = true;
+  } else {
+    let next = setField(text, 'status', status);
+    next = setField(next, 'updatedAt', `"${timestamp}"`);
+    atomicWrite(targetMd, next);
+    result.updated.push(path.relative(process.cwd(), targetMd).split(path.sep).join('/'));
   }
   result.source = sourceFile ? path.relative(process.cwd(), sourceFile).split(path.sep).join('/') : null;
 

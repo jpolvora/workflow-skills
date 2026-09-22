@@ -110,19 +110,20 @@ function field(text, name) {
   }
 }
 
-// A JSON mirror is updated atomically alongside the canonical Markdown.
+// Retirement is a single canonical Markdown write: no JSON mirror is created.
 {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-retire-us395-json-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-retire-us395-single-'));
   tempRoots.push(root);
   const dir = path.join(root, '.agents', 'plans', 'ws-spec-multi');
-  write(path.join(dir, 'ms-json.state.md'), stateBody({ runId: 'ms-json', status: 'active', createdAt: '2026-09-19T23:16:39Z' }));
-  write(path.join(dir, 'ms-json.state.json'), JSON.stringify({ runId: 'ms-json', status: 'active', updatedAt: '2026-09-19T23:16:39Z' }));
-  write(path.join(dir, 'ms-newer.state.md'), stateBody({ runId: 'ms-newer', status: 'active', createdAt: '2026-09-19T23:25:56Z', supersedesRunId: 'ms-json' }));
-  const result = run(['--run', path.join(dir, 'ms-newer.state.md'), '--plans-dir', path.join(root, '.agents', 'plans'), '--timestamp', '2026-09-22T16:10:00Z', '--json'], root);
+  write(path.join(dir, 'ms-single.state.md'), stateBody({ runId: 'ms-single', status: 'active', createdAt: '2026-09-19T23:16:39Z' }));
+  write(path.join(dir, 'ms-newer2.state.md'), stateBody({ runId: 'ms-newer2', status: 'active', createdAt: '2026-09-19T23:25:56Z', supersedesRunId: 'ms-single' }));
+  const result = run(['--run', path.join(dir, 'ms-newer2.state.md'), '--plans-dir', path.join(root, '.agents', 'plans'), '--timestamp', '2026-09-22T16:10:00Z', '--json'], root);
   if (result.status !== 0) throw new Error(result.stderr || result.stdout);
-  const json = JSON.parse(fs.readFileSync(path.join(dir, 'ms-json.state.json'), 'utf8'));
-  if (json.status !== 'cancelled' || json.updatedAt !== '2026-09-22T16:10:00Z') {
-    throw new Error('us-395 AC3: JSON mirror was not retired in step');
+  if (fs.existsSync(path.join(dir, 'ms-single.state.json'))) {
+    throw new Error('us-395 AC3: helper must not create a JSON mirror (Markdown is canonical)');
+  }
+  if (field(fs.readFileSync(path.join(dir, 'ms-single.state.md'), 'utf8'), 'status') !== 'cancelled') {
+    throw new Error('us-395 AC3: canonical Markdown was not retired');
   }
 }
 
