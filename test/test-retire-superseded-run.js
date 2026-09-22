@@ -95,5 +95,36 @@ function field(text, name) {
   if (result.status === 0) throw new Error('us-395 AC3: a run without supersedesRunId must fail closed');
 }
 
+// Path traversal in supersedesRunId is rejected before any write.
+{
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-retire-us395-trav-'));
+  tempRoots.push(root);
+  const dir = path.join(root, '.agents', 'plans', 'ws-spec-multi');
+  write(path.join(dir, 'ms-safe.state.md'), stateBody({ runId: 'ms-safe', status: 'active', createdAt: '2026-09-19T23:16:39Z' }));
+  const escapeTarget = path.join(root, '.agents', 'plans', 'escape.state.md');
+  write(escapeTarget, stateBody({ runId: 'escape', status: 'active', createdAt: '2026-09-19T23:16:39Z' }));
+  const result = run(['--supersedes', '../../escape', '--plans-dir', path.join(root, '.agents', 'plans'), '--json'], root);
+  if (result.status === 0) throw new Error('us-395 AC3: path traversal must be rejected');
+  if (field(fs.readFileSync(escapeTarget, 'utf8'), 'status') !== 'active') {
+    throw new Error('us-395 AC3: traversal target must not be modified');
+  }
+}
+
+// A JSON mirror is updated atomically alongside the canonical Markdown.
+{
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-retire-us395-json-'));
+  tempRoots.push(root);
+  const dir = path.join(root, '.agents', 'plans', 'ws-spec-multi');
+  write(path.join(dir, 'ms-json.state.md'), stateBody({ runId: 'ms-json', status: 'active', createdAt: '2026-09-19T23:16:39Z' }));
+  write(path.join(dir, 'ms-json.state.json'), JSON.stringify({ runId: 'ms-json', status: 'active', updatedAt: '2026-09-19T23:16:39Z' }));
+  write(path.join(dir, 'ms-newer.state.md'), stateBody({ runId: 'ms-newer', status: 'active', createdAt: '2026-09-19T23:25:56Z', supersedesRunId: 'ms-json' }));
+  const result = run(['--run', path.join(dir, 'ms-newer.state.md'), '--plans-dir', path.join(root, '.agents', 'plans'), '--timestamp', '2026-09-22T16:10:00Z', '--json'], root);
+  if (result.status !== 0) throw new Error(result.stderr || result.stdout);
+  const json = JSON.parse(fs.readFileSync(path.join(dir, 'ms-json.state.json'), 'utf8'));
+  if (json.status !== 'cancelled' || json.updatedAt !== '2026-09-22T16:10:00Z') {
+    throw new Error('us-395 AC3: JSON mirror was not retired in step');
+  }
+}
+
 for (const root of tempRoots) fs.rmSync(root, { recursive: true, force: true });
 console.log('us-395 supersede retirement ok');

@@ -23,6 +23,27 @@ const fs = require('fs');
 const path = require('path');
 
 const TERMINAL = new Set(['completed', 'cancelled', 'superseded', 'stopped', 'failed']);
+const RUN_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_-]*$/;
+
+// A run id is interpolated into a filename; reject anything that could escape
+// the ws-spec-multi directory (path separators, drive letters, traversal).
+function isSafeRunId(value) {
+  return typeof value === 'string' && RUN_ID_PATTERN.test(value) && !value.includes('..');
+}
+
+function atomicWrite(file, content) {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  const temporary = `${file}.tmp-${process.pid}-${Date.now().toString(36)}`;
+  fs.writeFileSync(temporary, content, 'utf8');
+  fs.renameSync(temporary, file);
+}
+
+function containedPath(runDir, name) {
+  const target = path.resolve(runDir, name);
+  const base = path.resolve(runDir) + path.sep;
+  if (!target.startsWith(base)) throw new Error(`refusing to write outside the ws-spec-multi directory: ${name}`);
+  return target;
+}
 
 function parseArgs(argv) {
   const options = {};
@@ -96,9 +117,20 @@ function main() {
     fail('no supersedesRunId found on the superseding run and --supersedes was not provided', options);
     return;
   }
+  if (!isSafeRunId(supersededRunId)) {
+    fail(`invalid supersedesRunId (expected a run id like ms-YYYYMMDDTHHMMSSZ): ${supersededRunId}`, options);
+    return;
+  }
 
-  const targetMd = path.join(runDir, `${supersededRunId}.state.md`);
-  const targetJson = path.join(runDir, `${supersededRunId}.state.json`);
+  let targetMd;
+  let targetJson;
+  try {
+    targetMd = containedPath(runDir, `${supersededRunId}.state.md`);
+    targetJson = containedPath(runDir, `${supersededRunId}.state.json`);
+  } catch (error) {
+    fail(error.message, options);
+    return;
+  }
   const hasMd = fs.existsSync(targetMd);
   const hasJson = fs.existsSync(targetJson);
   if (!hasMd && !hasJson) {
@@ -107,7 +139,21 @@ function main() {
   }
 
   const result = { ok: true, supersededRunId, status, timestamp, updated: [], noop: false };
-  if (hasMd) {
+  // Write the JSON mirror first and the Markdown (canonical) state last, both
+  // atomically, so an interrupted retirement leaves the canonical .md either
+  // untouched or fully written; a re-run is idempotent either way.
+  if (hasJson) {
+    const json = JSON.parse(fs.readFileSync(targetJson, 'utf8'));
+    if (TERMINAL.has(String(json.status))) {
+      result.noop = true;
+    } else {
+      json.status = status;
+      json.updatedAt = timestamp;
+      atomicWrite(targetJson, `${JSON.stringify(json, null, 2)}\n`);
+      result.updated.push(path.relative(process.cwd(), targetJson).split(path.sep).join('/'));
+    }
+  }
+  if (hasMd && !result.noop) {
     const text = fs.readFileSync(targetMd, 'utf8');
     const current = readField(text, 'status');
     if (TERMINAL.has(String(current))) {
@@ -115,19 +161,8 @@ function main() {
     } else {
       let next = setField(text, 'status', status);
       next = setField(next, 'updatedAt', `"${timestamp}"`);
-      fs.writeFileSync(targetMd, next, 'utf8');
+      atomicWrite(targetMd, next);
       result.updated.push(path.relative(process.cwd(), targetMd).split(path.sep).join('/'));
-    }
-  }
-  if (hasJson && !result.noop) {
-    const json = JSON.parse(fs.readFileSync(targetJson, 'utf8'));
-    if (TERMINAL.has(String(json.status))) {
-      result.noop = true;
-    } else {
-      json.status = status;
-      json.updatedAt = timestamp;
-      fs.writeFileSync(targetJson, `${JSON.stringify(json, null, 2)}\n`, 'utf8');
-      result.updated.push(path.relative(process.cwd(), targetJson).split(path.sep).join('/'));
     }
   }
   result.source = sourceFile ? path.relative(process.cwd(), sourceFile).split(path.sep).join('/') : null;
