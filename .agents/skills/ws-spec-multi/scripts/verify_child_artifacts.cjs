@@ -57,6 +57,8 @@ function isNonEmptyFile(file) {
   }
 }
 
+// The child contract requires the machine SoT `{workflow-id}.state.json` (with
+// resumable handoffs); the `.state.md` render alone is NOT a substitute.
 function hasChildState(childDir) {
   let entries;
   try {
@@ -64,10 +66,9 @@ function hasChildState(childDir) {
   } catch {
     return false;
   }
-  const matches = (suffix) => entries
-    .filter((entry) => entry.isFile() && entry.name.endsWith(suffix))
+  return entries
+    .filter((entry) => entry.isFile() && entry.name.endsWith('.state.json'))
     .some((entry) => isNonEmptyFile(path.join(childDir, entry.name)));
-  return matches('.state.json') || matches('.state.md');
 }
 
 function fail(message, options) {

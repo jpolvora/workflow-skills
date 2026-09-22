@@ -85,20 +85,37 @@ ${[header, sep, ...rows].join('\n')}
   }
 }
 
-// AC6: presence is a directory scan of *.state.json (workflow id is not the slug).
+// AC6: presence is a directory scan of the machine SoT `*.state.json`
+// (workflow id is not the slug); the `.state.md` render alone is not sufficient.
 {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-monitor-us388-present-'));
   tempRoots.push(dir);
   const plans = path.join(dir, '.agents/plans');
   write(path.join(plans, 'live-two', 'live-two-20260922T080709Z.state.json'), JSON.stringify({ workflowType: 'standard' }));
-  write(path.join(plans, 'shipped-one', 'anything.state.md'), '# state render\n');
+  write(path.join(plans, 'render-only', 'render-only.state.md'), '# state render only\n');
   const expected = expectedChildArtifacts(
-    [{ slug: 'live-two', status: 'in_progress' }, { slug: 'shipped-one', status: 'shipped' }],
+    [{ slug: 'live-two', status: 'in_progress' }, { slug: 'render-only', status: 'shipped' }],
     plans,
     dir,
   );
-  if (!expected.every((item) => item.present)) {
-    throw new Error('us-388 AC6: child state must be detected by directory scan (json or md)');
+  const bySlug = Object.fromEntries(expected.map((item) => [item.slug, item]));
+  if (!bySlug['live-two'].present) {
+    throw new Error('us-388 AC6: child state must be detected by directory scan of *.state.json');
+  }
+  if (bySlug['render-only'].present) {
+    throw new Error('us-388 AC6: a .state.md render alone must NOT count as child state (machine SoT is required)');
+  }
+}
+
+// AC6: the reserved batch directory alias must not mask a missing child state.
+{
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-monitor-us388-reserved-'));
+  tempRoots.push(dir);
+  const plans = path.join(dir, '.agents/plans');
+  write(path.join(plans, 'ws-spec-multi', 'ms-20260922T080709Z.state.json'), JSON.stringify({ workflowType: 'ws-spec-multi' }));
+  const expected = expectedChildArtifacts([{ slug: 'ws-spec-multi', status: 'shipped' }], plans, dir);
+  if (expected.length !== 0) {
+    throw new Error('us-388 AC6: the reserved ws-spec-multi slug must not be treated as a child plan dir');
   }
 }
 

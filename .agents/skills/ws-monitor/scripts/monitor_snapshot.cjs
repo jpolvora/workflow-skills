@@ -500,15 +500,14 @@ function expectedArtifacts(state, workflowDir, minVerifyScore, repoRoot = workfl
   return expected;
 }
 
-// us-388 AC6: a child workflow writes its machine SoT as `{workflow-id}.state.json`
-// (or legacy `.state.md`) under `{plansDir}/{slug}/`. The workflow id is not
-// derivable from the slug alone, so presence is a directory scan, not a fixed
-// filename.
+// us-388 AC1/AC6: a child workflow's machine SoT is `{workflow-id}.state.json`.
+// The `.state.md` render alone is not the resumable source of truth, so presence
+// requires the non-empty JSON SoT — never the human-readable render.
 function listChildStateFiles(dir) {
   if (!dir || !fs.existsSync(dir)) return [];
   try {
     return fs.readdirSync(dir, { withFileTypes: true })
-      .filter((entry) => entry.isFile() && (entry.name.endsWith('.state.json') || entry.name.endsWith('.state.md')))
+      .filter((entry) => entry.isFile() && entry.name.endsWith('.state.json'))
       .map((entry) => entry.name)
       .filter((name) => isNonEmptyFile(path.join(dir, name)));
   } catch {
@@ -525,12 +524,17 @@ function listChildStateFiles(dir) {
 // is surfaced as `missing-child-state`, complementing (not duplicating)
 // `stale-parent-row`, which requires a child that already closed.
 const CHILD_ADVANCED_STATUSES = new Set(['in_progress', 'shipped', 'failed']);
+// `{plansDir}/ws-spec-multi/` is the reserved batch directory holding the parent
+// run state, not any child's plan dir. A queue item that aliases that slug would
+// otherwise scan the parent batch state and mask a genuinely missing child state.
+const RESERVED_PLAN_DIRS = new Set(['ws-spec-multi']);
 function isSafePlanSlug(slug) {
   return typeof slug === 'string'
     && slug.length > 0
     && !slug.includes('..')
     && !slug.includes('/')
-    && !slug.includes('\\');
+    && !slug.includes('\\')
+    && !RESERVED_PLAN_DIRS.has(slug);
 }
 function expectedChildArtifacts(items, plansDir, repoRoot) {
   const expected = [];

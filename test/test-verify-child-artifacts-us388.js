@@ -80,6 +80,17 @@ function plansDir(root) {
   if (result.status === 0) throw new Error('us-388 AC5: an empty state file must not count as present');
 }
 
+// AC1/AC5: the `.state.md` render alone is not the machine SoT.
+{
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'verify-child-us388-render-'));
+  tempRoots.push(root);
+  const plans = plansDir(root);
+  write(path.join(plans, 'demo', 'demo.state.md'), '# render only\n');
+  write(path.join(plans, 'demo', 'step-01-demo.plan.md'), '# plan\n');
+  const result = run(['--slug', 'demo', '--plans-dir', plans], root);
+  if (result.status === 0) throw new Error('us-388 AC5: a .state.md render alone must not satisfy the machine state requirement');
+}
+
 // Unsafe slug and unknown --require fail closed without writing.
 {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'verify-child-us388-bad-'));

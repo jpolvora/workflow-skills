@@ -80,7 +80,7 @@ When watching a live running workflow in the background or during paired session
   - `multi-spec-idle`: run status is `active` but no item is `pending` or `in_progress`.
   - `multi-spec-failed-item`: an item failed; inspect `reason` to diagnose child worker failure.
   - `multi-spec-concurrency`: multiple items marked `in_progress` simultaneously (batch execution is strictly sequential).
-  - `missing-child-state`: a queue item that advanced (`in_progress` / `shipped` / `failed`) has no child workflow state under `{plansDir}/{slug}/`. Complements `stale-parent-row` (which requires a child that already closed); this one is the silent blind spot where the child left no state at all. Derived from the multi-spec `expectedArtifacts` model instead of a parallel detector.
+  - `missing-child-state`: a queue item that advanced (`in_progress` / `shipped` / `failed`) has no child machine state (`*.state.json`) under `{plansDir}/{slug}/`. Complements `stale-parent-row` (which requires a child that already closed); this one is the silent blind spot where the child left no state at all. Derived from the multi-spec `expectedArtifacts` model instead of a parallel detector.
   - `stale-parent-row`: a queue row is non-terminal while its child worker (same slug) is terminal, the run itself is terminal, or a newer active run claims the same `in_progress` slug (supersede never retired). The parent row did not propagate the child close.
   - `terminal-run-active`: a run whose steps through the close step are all terminal still reports an active status with no `endedAt`. The observer derives a terminal reported status (never counted live) and flags the stale state file.
 
@@ -143,7 +143,7 @@ Transcripts provide secondary evidence to diagnose why a subagent or orchestrato
 | Multi-spec queue item failed (`multi-spec-failed-item`) | Warning | A spec within the batch run encountered a terminal failure |
 | Multi-spec queue active with no progress (`multi-spec-idle`) | Info | Batch run is active but all queue items are processed or none pending |
 | Multi-spec queue row stale vs child/lineage (`stale-parent-row`) | Warning | A non-terminal row never transitioned: the child worker closed, the run is terminal, or a superseding run claims the same slug |
-| Multi-spec item advanced without child state (`missing-child-state`) | Warning | An `in_progress`/`shipped`/`failed` queue row has no child workflow state under `{plansDir}/{slug}/`; the child run is unobservable/resumable, or the state writer was skipped |
+| Multi-spec item advanced without child state (`missing-child-state`) | Warning | An `in_progress`/`shipped`/`failed` queue row has no child machine state (`*.state.json`) under `{plansDir}/{slug}/`; the child run is unobservable/resumable, or the state writer was skipped |
 | Terminal-shaped run still active (`terminal-run-active`) | Warning | All steps through the close step are terminal but the state file still reports active with no `endedAt`; reported status is derived terminal |
 | Memory vault records active workflow missing on disk (`vault-unreconciled-workflow`) | Info | Memory vault lists an active workflow that does not exist in local plans |
 | Transcript contains an unhandled error with a stack trace (`subagent-error`) | Warning | Subagent or worker crashed or threw an unhandled exception |
