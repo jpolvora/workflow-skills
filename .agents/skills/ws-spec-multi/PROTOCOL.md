@@ -34,7 +34,7 @@ flowchart TD
 - Parse raw arguments:
   - Existing state file (`{plansDir}/ws-spec-multi/*.state.md`) → load state and `baseBranch`, skip scan, continue at first non-terminal item (unmerged PR rows re-enter Phase 4b convergence gate).
   - **Queue integrity on load:** run the fail-closed duplicate guard (duplicate `#` or duplicate `slug`/`specPath` → stop and surface). A `completed` run whose table still holds any `pending`/`in_progress` row is corrupt (phantom row); surface it and re-dispatch nothing (see [`STATE.md`](STATE.md) § Resume Policy).
-  - **Supersede retirement:** if the loaded run's notes name a prior run it supersedes and that prior run is still `active`, transition the prior run to `cancelled` / `superseded` (frontmatter `status` + advancing `updatedAt`) before dispatching; never leave two `active` runners on one lineage.
+  - **Supersede retirement:** when the loaded run's frontmatter sets `supersedesRunId` and that prior run is still `active`, run `node {skillsRoot}/ws-spec-multi/scripts/retire_superseded_run.cjs --run {plansDir}/ws-spec-multi/{runId}.state.md` (resolves the exact id; fails closed when unresolved) before dispatching; never leave two `active` runners on one lineage.
   - Explicit spec list (`*.spec.md` paths) → construct new run queue with items marked `pending` and recorded `baseBranch`.
   - No arguments → proceed to Phase 2 (Blank-list scan).
 
@@ -44,7 +44,7 @@ flowchart TD
 - Present `user-gate` multi-select **only** with sorted `pending[]` paths (index `[ ]` / `[~]`, plus untracked specs of record). Do **not** list `[x]` / Done-log / already-merged items, or `step-00-*.spec.md` copies.
 - If `pending[]` is empty: report no unfinished specs and stop (no state file).
 - Generate `runId` (`ms-{YYYYMMDDTHHMMSSZ}`).
-- **Supersede retirement:** when this new run supersedes an existing run (named in the run notes), write the superseded run's terminal `status` (`cancelled` / `superseded`) with an advancing `updatedAt` before dispatching the first worker, so at most one `active` runner exists per lineage.
+- **Supersede retirement:** when this new run supersedes an existing run, record its id in the run's `supersedesRunId` frontmatter, then run `node {skillsRoot}/ws-spec-multi/scripts/retire_superseded_run.cjs --run {plansDir}/ws-spec-multi/{runId}.state.md` before dispatching the first worker; the helper writes the superseded run's terminal `status` (`cancelled` / `superseded`) with an advancing `updatedAt` and fails closed when the named run cannot be resolved, so at most one `active` runner exists per lineage.
 - Write initial run state file at `{plansDir}/ws-spec-multi/{runId}.state.md` containing `baseBranch: {baseBranch}` in YAML frontmatter, plus `totalItems: {n}` where `{n}` is the frozen selection length. Assign each row a stable `#` (1..n) once; the `#` index is display-only and is never re-allocated. Row identity is `specPath` (fallback `slug`). One row per selected spec.
 
 ### Phase 3: Select Next Spec & Flow Auto-Detection

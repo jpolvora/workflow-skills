@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "1b124e0ae0e154d7ca1765a9b6a80e584a0383cf17915754253064ff2683d22e",
+  "fullPackageDigest": "4b659836e661cdf8f6c66db1e5d5057d2f57ad3f053184acf6487c2aced29289",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -451,13 +451,14 @@
     "ws-spec-multi": {
       "files": {
         "EXAMPLES.md": "05beee619341579c2868b339ca44b14150f1e18a4e56334d20acdf47cddb6062",
-        "PROTOCOL.md": "612b4d271885d44fba4fa7b03e4e8e2d9fb390ea728d2c1d69451f7ea6757780",
-        "SKILL.md": "9714a938dba9288b2e071a45d57ce4ae3f8aa4aa8eb657d2169585e39d3d88d4",
-        "STATE.md": "25890b18daffc1215bfb393a4e8145c64fbdfaba7532eda519674b291a83a1a8",
+        "PROTOCOL.md": "caecd918f6363cac22148e8392bc8457108087a252356bf0b99b93e114224eb6",
+        "SKILL.md": "00919aa89ff247a16bc996e11e2247fee5c5cd7422f212db1750a6be3093a0d9",
+        "STATE.md": "b520a5dee4f7d457bc480a0cb76295a7c779ff68b5b536f6fdc2659c107521d0",
         "evals/evals.json": "816591cd9cea5b0d5ec8e1ba8cf8edc2e978da55264c0fc8588439c09059435c",
-        "scripts/list_pending_specs.cjs": "cee46e3114f38502fcd2ca0e441c8bd3384e638283c33b4fdd35c84113119341"
+        "scripts/list_pending_specs.cjs": "cee46e3114f38502fcd2ca0e441c8bd3384e638283c33b4fdd35c84113119341",
+        "scripts/retire_superseded_run.cjs": "04901c3fdb91c68e850dbfbcba6c2bdc2a3150e4645d3a3a348d8a55d1701001"
       },
-      "skillDigest": "dac6293652ebd05107d0ba5d956972a7f493254213740afcb52c7549a3662845"
+      "skillDigest": "1d82b900f43746576b923c0b9a7cff9d928667f462094330f56ce28d842602fa"
     },
     "ws-spec-organizer": {
       "files": {

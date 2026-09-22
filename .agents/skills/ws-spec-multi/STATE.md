@@ -20,6 +20,7 @@ createdAt: "2026-07-25T22:00:00Z"
 updatedAt: "2026-07-25T22:00:00Z"
 specsDir: .agents/specs
 totalItems: 2
+supersedesRunId: null
 ---
 
 # Multi-spec Runner — ms-20260725T220000Z
@@ -37,6 +38,7 @@ totalItems: 2
 | Run `status` | `active` · `paused` · `completed` |
 | `baseBranch` | Base branch recorded at run start (e.g. `develop` or `main`), used for worker sync and PR targets |
 | `totalItems` | **Frozen** queue length written once at Phase 2 from the selection; the only source of the reported `shipped/total` denominator. Never recomputed from the mutable table |
+| `supersedesRunId` | Optional machine-readable id of the prior run this run supersedes (e.g. `ms-20260919T231639Z`). When set, the superseding run retires that run before its first worker dispatch via `scripts/retire_superseded_run.cjs`; absent → no supersede relationship |
 | Item `status` | `pending` · `in_progress` · `shipped` · `skipped` · `failed` |
 | `flowMode` | `lite` (dispatches `ws-spec-to-pr-lite`) · `standard` (dispatches full `ws-spec-to-pr`) |
 | `slug` | Basename of spec without `.spec.md` (stable id) |
@@ -51,7 +53,7 @@ totalItems: 2
 - **Frozen item count.** `totalItems` is written once at queue init and never recomputed from the table; the reported `shipped/total` uses `totalItems`.
 - **Fail-closed duplicate guard.** Before writing the state file, verify the table has no duplicate `#` and no duplicate `slug` / `specPath`. If either is found, do **not** write the file; surface the conflict (HS-5 style stop) naming the duplicated key. Silent dedupe is forbidden.
 - **`updatedAt` advances.** Every write sets the transitioned row's `updatedAt` and the run frontmatter `updatedAt` to the current UTC timestamp. A row whose `updatedAt` still equals `createdAt` after a transition is a defect.
-- **Supersede retirement.** When a new run supersedes a prior run it names, the superseding run writes the retired run's terminal `status` (`cancelled` or `superseded`) with an advancing `updatedAt`, so at most one `active` runner exists per lineage and at most one item is `in_progress` per slug. Leaving the retired run `active` is a defect.
+- **Supersede retirement.** A superseding run records the prior run it supersedes in its `supersedesRunId` frontmatter and retires it before its first worker dispatch: `node {skillsRoot}/ws-spec-multi/scripts/retire_superseded_run.cjs --run {plansDir}/ws-spec-multi/{runId}.state.md` resolves that exact id, verifies the prior run is active, and writes its terminal `status` (`cancelled` or `superseded`) with an advancing `updatedAt`; it fails closed when the named run cannot be resolved. Result: at most one `active` runner exists per lineage and at most one item is `in_progress` per slug. Leaving the retired run `active` is a defect.
 - **Parent-child handoff.** When a dispatched child worker reaches a terminal state, the parent run transitions that item's row (`in_progress` → `shipped` / `failed` / `skipped`) and advances the run frontmatter `updatedAt`. A frozen parent `updatedAt` beside a terminal child, or a child closed while its parent row stays `in_progress`, is a defect.
 - **Idempotent transitions.** Re-applying a close or ship transition never adds rows and never regresses a terminal item status.
 
@@ -110,4 +112,4 @@ When loading an existing `{plansDir}/ws-spec-multi/*.state.md`:
 7. Resume execution at the first `pending`, `in_progress` (reset to `pending`), or `failed` item.
 8. Before re-dispatching worker for a spec, sync feature branch with `baseBranch` (`git merge {baseBranch}` or `git rebase {baseBranch}`) to ensure all prior merged changes and base features are incorporated.
 9. Immediately after any PR merge success (`state: MERGED`), pull the latest `baseBranch` before creating a new feature branch for the next spec.
-10. **Supersede retirement on load:** when this run's notes name a prior run it supersedes and that prior run is still `active`, retire it (`cancelled` / `superseded`) with an advancing `updatedAt` before dispatching — never leave two `active` runners claiming the same item.
+10. **Supersede retirement on load:** when this run's frontmatter sets `supersedesRunId` and that prior run is still `active`, run `node {skillsRoot}/ws-spec-multi/scripts/retire_superseded_run.cjs --run {plansDir}/ws-spec-multi/{runId}.state.md` (idempotent; fails closed when the named run cannot be resolved) before dispatching — never leave two `active` runners claiming the same item.
