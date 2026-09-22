@@ -150,7 +150,7 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
 
    **Dirty tree on create-from-base:** when `git status --porcelain` is non-empty and checkout from base would not be a no-op → STOP and `user-gate`:
    - **Leave foreign paths in place and create from current HEAD instead** — record every dirty path in `preExistingDirty`; never stage, stash, revert, or clean a path this session did not edit. Ownership contract: [`git-ownership.md`](git-ownership.md).
-   - **Proceed on the new branch with `preExistingDirty` recorded** — only when every dirty path is this session's own edit; foreign dirty paths still stay untouched. Whole-tree `git stash` / `stash pop` is forbidden here (as is `git reset --hard`)
+   - **Proceed on the new branch with `preExistingDirty` recorded** — only when every dirty path is this session's own edit; foreign dirty paths still stay untouched. Whole-tree `git stash` / `stash pop` is forbidden here (as is `git reset --hard`).
    Dismiss → Cancel (HS-1).
 
    **State write (mandatory before step 6):** persist in `{us-dir}/{workflow-id}.state.md` frontmatter:
