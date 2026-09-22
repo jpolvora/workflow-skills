@@ -68,6 +68,8 @@ gh pr create --head {head} --base {base} --title "{title}" --body-file {plansDir
 
 On Windows / PowerShell prefer `--body-file` (or single-quoted body) to avoid backtick escape mangling. Reuse an existing open PR for the same head→base when present. Capture PR number and URL for the caller (`ws-ship-pr`).
 
+- **Auto-close:** when a tracker `id` is present, the PR body must carry `Closes #{id}` so merging the PR closes the source issue. `ws-ship-pr` ensures this via `ensure_pr_closer.cjs --body-file {plansDir}/pr-body.md --id {id}` before calling this intent; skip for `id: null` / `source: local`.
+
 ## `list-threads`
 
 ```bash

@@ -463,6 +463,9 @@
       "test/test-ship-verify-line-endings.js"
     ],
     [
+      "test/test-pr-closer.js"
+    ],
+    [
       "test/test-code-review-round-2.js"
     ]
   ]

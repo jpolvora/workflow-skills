@@ -48,7 +48,7 @@ A finite state machine that carries one feature from an idea to a merged pull re
 | 5 | Spec-compliance scoring 0–10 (`ws-plan-verify`); **advances only at ≥ `defaults.minVerifyScore`** (default 9); below-bar refinement is a telemetry-backed `scoreAndRefine` substep | `step-05-{slug}.plan.report.md` |
 | 6 | Local code review of `{base}...HEAD` (`ws-code-review`) with a fix → re-review loop | `step-06-{slug}.review.md` (+ `.fix.report.md`) |
 | 7 | Test battery (`ws-testing`): unit, integration, E2E, coverage, optional mutation, regression sabotage | `step-07-{slug}.testing.*` |
-| 8 | Close implementation (result, G2-delivery, MEMORY, changelog, `status: completed`), then quiet-preflight ship gate, non-blocking preview dry-run, push/PR (`ws-ship-pr`), tracker comment | `step-08-{slug}.result.md` |
+| 8 | Close implementation (result, G2-delivery, MEMORY, changelog, `status: completed`), then quiet-preflight ship gate, non-blocking preview dry-run, push/PR (`ws-ship-pr`) with PR-body `Closes #{id}` auto-close, tracker comment | `step-08-{slug}.result.md` |
 | 9 | PR thread convergence (`ws-goal-fix-pr` orchestrator): session owns the loop inline, each Act-round/standalone batch runs in a fresh worker with one gate-only `fixPrPlan` then `fixPrExec`, then merge | plan gate + resolved threads / merge |
 
 Canonical dispatch table: [`STEP-DISPATCH.md`](.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md).
@@ -63,7 +63,7 @@ The same delivery guarantees with the planning ceremony removed: spec → plan �
 | 1 | Planning (design-intent git log) | `ws-plan-write` |
 | 2 | Implementation (defect-class repo sweep) | `ws-implement-tasks` |
 | 3 | Review (+ fix loop, sibling modules) | `ws-code-review` |
-| 4 | Close implementation, then ship (CI triage + tracker comment) | orch close + `ws-ship-pr` |
+| 4 | Close implementation, then ship (CI triage + PR-body auto-close + tracker comment) | orch close + `ws-ship-pr` |
 | 5 | Fix-PR (plan-before-edit inline on current model) | `ws-goal-fix-pr` / `ws-fix-pr` |
 
 ### 1.3 Batch delivery — `ws-spec-multi`
@@ -133,7 +133,7 @@ Nine required intents, enforced by `node test/test-provider-parity.js` in `npm r
 |--------|-----------|
 | `validate-auth` | STOP on failure; no silent provider fallback |
 | `fetch-to-spec` | Writes the `{specsDir}` spec of record first (downloads allowlisted visual attachments into `{specStem}.assets/` and `## Visual References` when present), then the `step-00` workflow copy and `{us-dir}/attachments/` at register |
-| `create-pr` | Reuses an existing open PR for the same head→base |
+| `create-pr` | Reuses an existing open PR for the same head→base; the caller keeps `Closes #{id}` in the PR body so GitHub auto-closes the source issue on merge |
 | `list-threads` | Structured threads with an active count |
 | `sweep-prior-work` | Prior PR hits and recent commits, run before plan or code |
 | `check-pr-status` | CI triage that classifies each failure as `diff-regression`, `baseline`, or `infra-flake`, with at most one flake rerun |
@@ -291,6 +291,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-09-19).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.4.58** | Sep 22 | **Close the source issue on ship (GitHub):** `ws-ship-pr` Step 5 keeps `Closes #{id}` in the PR body via `ensure_pr_closer.cjs` (idempotent; no-op for null ids and non-GitHub providers) so merging the PR closes the source issue; wired through the provider contract, GitHub `create-pr` procedure, and standard/lite Step 8/4 dispatch |
 | **0.4.55** | Sep 22 | **Side-effect-free test suite for the hub config (`us-389`):** every test invocation of `Edit-WorkflowSkillsConfig.ps1` passes an explicit `-ConfigPath` to an isolated temp copy; `-CheckOnly` / `-NonInteractive` are strictly read-only (no rewrite, no `.bak`) even when `-ConfigPath` is omitted; the suite runner byte-compares `.ws/config.json` before/after and fails on mutation |
 | **0.4.38** | Sep 19 | **Step-level baton handoffs for multi-CLI runs:** `stepRunners`/`runners`/`stepBaton` run config with fail-fast validation; state-file baton with revision-serialized claim/release/expiry; deterministic `step_coordinator.cjs` run loop with advancement checks; one-shot workers with sparse pointers + baton envelope; `baton_*`/`runner_*` telemetry, read-only monitor baton fields, optional spec-memo handoff mirror |
 | **0.4.37** | Sep 18 | **ws-goal-fix-pr orchestrator dispatch:** session owns the wait/fetch convergence loop inline; every Act round batch runs in a fresh worker via `dispatch-agent` with one ordered `fixPrPlan` → `fixPrExec` pair; per-substep model chains (`reviewerModel` / `executionModel`, never numeric `"9"`); Tier 3 inline fallback on no-dispatch hosts; ordered dispatch telemetry |

@@ -1,7 +1,7 @@
 ---
 name: ws-spec-provider-github
 description: GitHub issue→spec and PR ops. Same required intents as Azure DevOps (scm-provider-contract). Trigger when providers.scm is github.
-version: 0.4.57
+version: 0.4.58
 disable-model-invocation: true
 invocation_names:
   - spec-provider-github
@@ -53,7 +53,7 @@ Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/runtime/scm
 | `fetch-to-spec` | Issue id / URL | **1.** `{specsDir}/{specStem}.spec.md` + optional `{specStem}.assets/` sidecar and `## Visual References` (agentic spec of record via `ws-spec-write`) → **2.** `{us-dir}/step-00-us-{n}.spec.md` (workflow copy, `source: github`) + `{us-dir}/attachments/` when sidecar exists + optional `*.issue.json` snapshot | provider fetch → shared ingest helper → `ws-spec-write` (reformulate/enhance) → `register_local_spec.cjs` |
 | `sweep-prior-work` | issue id (optional), keywords, files (optional) | JSON: PR search hits + `git log` | `sweep_prior_work.cjs` |
 | `validate-auth` | none | Pass/fail + fixes | `gh auth status` + thread token note |
-| `create-pr` | head, base, title/body | PR URL + id | `gh pr create` (reuse open head→base) |
+| `create-pr` | head, base, title/body | PR URL + id | `gh pr create` (reuse open head→base); body carries `Closes #{id}` when tracker id present (auto-close on merge; caller ensures it) |
 | `list-threads` | PR id | Thread list | `fetch_threads.cjs` |
 | `check-pr-status` | PR id | CI status + per-failed-check triage | `gh pr checks`; on fail `gh run view --log-failed`; classify diff/baseline/flake; one flake rerun |
 | `resolve-thread` | thread id (+ comment; optional `--model`) | Resolved (`isResolved: true` via `resolveReviewThread` GraphQL mutation); comment describes the correction (not hash-only); footer `LLM model: {id}` when `--model` set | `resolve_thread.cjs` |
