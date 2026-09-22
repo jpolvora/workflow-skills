@@ -122,7 +122,7 @@
     "maxLayers": 2
   },
   "defaults": {
-    "autoMode": true,
+    "autoMode": false,
     "dryRun": false,
     "skipTesting": false,
     "skipMutationTesting": true,
@@ -282,6 +282,10 @@
     "writeBlockHook": false,
     "importOnEnable": true,
     "mcpServerName": "spec-memo"
+  },
+  "monitor": {
+    "autoStartObserver": true,
+    "discoverHostTranscripts": true
   },
   "fable": {
     "_comment": "Opt-in integration for fable-* skills within ws-spec-to-pr / ws-spec-to-pr-lite workflows. Master toggle must be true to enable automatic calls.",

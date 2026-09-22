@@ -46,6 +46,23 @@ function sectionsOf(text) {
   return found;
 }
 
+function citedAcsFromSteps(companion) {
+  const cited = new Set();
+  let current = null;
+  for (const line of companion.split(/\r?\n/)) {
+    const h = line.match(/^###\s+(.+?)\s*$/);
+    if (h) {
+      const key = HEADINGS.get(h[1].trim().toLowerCase());
+      current = (key === 'implementation' || key === 'ui-test') ? key : null;
+      continue;
+    }
+    if (!current) continue;
+    if (!/^(\d+)\.\s+\S/.test(line)) continue;
+    for (const m of line.matchAll(/AC(\d+)/g)) cited.add(m[1]);
+  }
+  return cited;
+}
+
 function numberingOf(text) {
   // Map section key -> observed step numbers in order.
   const map = new Map();
@@ -131,8 +148,7 @@ function main() {
 
   const specAcs = new Set();
   for (const m of spec.matchAll(/^-\s+(?:\*\*)?AC(\d+)(?:\*\*)?:/gm)) specAcs.add(m[1]);
-  const citedAcs = new Set();
-  for (const m of companion.matchAll(/AC(\d+)/g)) citedAcs.add(m[1]);
+  const citedAcs = citedAcsFromSteps(companion);
   for (const ac of [...specAcs].sort((a, b) => Number(a) - Number(b))) {
     if (!citedAcs.has(ac)) findings.push(`source AC${ac} has no corresponding companion step`);
   }

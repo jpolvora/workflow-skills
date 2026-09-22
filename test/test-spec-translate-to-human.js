@@ -123,6 +123,14 @@ expectFail(
   /source AC2 has no corresponding companion step/,
 );
 expectFail(
+  'ac-only-in-out-of-scope.spec-translated.md',
+  goodCompanion
+    .replace('2. Publish the saved timestamp for the banner. (AC1, AC2)\n', '')
+    .replace(/\(AC2\)/g, '(AC1)')
+    .replace('### Out of scope\n- Offline editing.', '### Out of scope\n- Offline editing. (AC2)'),
+  /source AC2 has no corresponding companion step/,
+);
+expectFail(
   'empty-flag.spec-translated.md',
   goodCompanion.replace('[unresolved: sync status icon]', '[unresolved: ]'),
   /empty \[unresolved:\] flag/,
