@@ -238,7 +238,7 @@ npm run config:gui
 - **Adaptive Theming:** Auto-detects Windows system dark/light theme (`AppsUseLightTheme`) with an on-screen theme switcher.
 - **Live Search & Filter:** Instantly filter options across all sections by key, label, or description.
 - **Safe Persistence:** Preserves all `_comment_*` keys and JSON formatting on save, with automatic `.bak` backup generation.
-- **Headless Validation:** Supports `-CheckOnly` mode for automated CI/diagnostic verification without launching a window.
+- **Headless Validation:** Supports `-CheckOnly` / `-NonInteractive` modes for automated CI/diagnostic verification without launching a window. These diagnostic modes are strictly read-only: they never rewrite the config and never create a `.bak`. Interactive use may omit `-ConfigPath` (the editor resolves the project hub config); automated callers must pass an explicit `-ConfigPath` to an isolated copy so they never target the repository's own hub config.
 
 ### Optional root / host configuration
 
