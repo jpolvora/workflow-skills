@@ -175,6 +175,50 @@ function resolveHubRoot(repoRoot, { config = undefined } = {}) {
   };
 }
 
+// Hub-hosted consumer path defaults (spec 0115, review round 2): template
+// defaults that live under the hub must be scoped to the configured hub when
+// writers seed or upgrade them. Only missing/empty values or exact stale
+// `.ws/...` defaults are rewritten; explicit consumer values are never
+// touched. Global installs never scope (different hub layout).
+const HUB_HOSTED_DEFAULTS = {
+  'rules.harness': '.ws/AGENTS.md',
+  'rules.stackFile': '.ws/STACK.md',
+};
+
+function getDottedPath(obj, dotted) {
+  let cur = obj;
+  for (const key of dotted.split('.')) {
+    if (!cur || typeof cur !== 'object') return undefined;
+    cur = cur[key];
+  }
+  return cur;
+}
+
+function setDottedPath(obj, dotted, value) {
+  const keys = dotted.split('.');
+  let cur = obj;
+  for (let i = 0; i < keys.length - 1; i += 1) {
+    if (!cur[keys[i]] || typeof cur[keys[i]] !== 'object') cur[keys[i]] = {};
+    cur = cur[keys[i]];
+  }
+  cur[keys[keys.length - 1]] = value;
+}
+
+function normalizeHubPathDefaults(config, hubRelPosix) {
+  if (!config || typeof config !== 'object') return { changed: false, keys: [] };
+  const hub = String(hubRelPosix || '.ws').replace(/\\/g, '/');
+  if (!hub || hub === '.ws') return { changed: false, keys: [] };
+  const keys = [];
+  for (const [dotted, def] of Object.entries(HUB_HOSTED_DEFAULTS)) {
+    const cur = getDottedPath(config, dotted);
+    const norm = typeof cur === 'string' ? cur.trim().replace(/\\/g, '/') : '';
+    if (norm === '' || norm === def) {
+      setDottedPath(config, dotted, `${hub}/${def.split('/').pop()}`);
+      keys.push(dotted);
+    }
+  }
+  return { changed: keys.length > 0, keys };
+}
 function parseArgs(argv) {
   const options = { repoRoot: null, json: false };
   for (let i = 0; i < argv.length; i += 1) {
@@ -224,6 +268,8 @@ function main() {
 if (require.main === module) main();
 
 module.exports = {
+  normalizeHubPathDefaults,
+  HUB_HOSTED_DEFAULTS,
   resolveHubRoot,
   bootstrapConfigPath,
   readBootstrapConfig,

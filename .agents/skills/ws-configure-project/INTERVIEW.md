@@ -32,7 +32,7 @@ Scan consumer **repo root** (not this skill package alone):
 | No app stack detected + `.agents/skills/` present | Suggest `verification.backendTest: "node .agents/skills/ws-check-workflows/scripts/check_workflows.cjs"` for harness validation |
 | `prisma/` / `drizzle` / `Migrations/` / compose DB services | `stack.database.*` hints |
 | Top-level `src/`, `web/`, `tests/` | `stack.backend.srcDir` / frontend `sourceDir` / test paths |
-| `.ws/STACK.md` (preferred) | `rules.stackFile` → that path |
+| `{sharedDir}/STACK.md` (default `.ws/STACK.md`, preferred; scoped to the configured hub on seed/upgrade) | `rules.stackFile` → that path |
 | Root `STACK.md` / `stack.md` (legacy optional) | Keep only if user already uses it; do not create or require |
 | Repo-root `CHANGELOG.md` (preferred default) | `rules.changelogFile` → `CHANGELOG.md` |
 | `.ws/CHANGELOG.md` with entries | Keep as legacy fallback; offer move to the configured path |

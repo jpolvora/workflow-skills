@@ -986,6 +986,26 @@ function ensureSharedConsumerArtifacts(mode = 'install') {
       ensurePathTokensInConfig(configPath);
     }
   }
+  // Scope hub-hosted path defaults to the configured hub (spec 0115, review
+  // round 2): a relocated hub must not keep pointing rules.harness /
+  // rules.stackFile at the default `.ws/` files the installer no longer
+  // writes. Only missing or stale `.ws/...` defaults move; explicit consumer
+  // values are never touched. Global installs never scope.
+  if (!isGlobalScope && consumerHubRelPosix() !== PROJECT_HUB_DIR) {
+    const hubLib = loadPackagedHubResolver();
+    if (hubLib && typeof hubLib.normalizeHubPathDefaults === 'function') {
+      try {
+        const diskCfg = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+        const scoped = hubLib.normalizeHubPathDefaults(diskCfg, consumerHubRelPosix());
+        if (scoped.changed) {
+          fs.writeFileSync(configPath, `${JSON.stringify(diskCfg, null, 2)}\n`);
+          console.log(`    Scoped hub defaults to ${hubDisplay()} (${scoped.keys.join(', ')})`);
+        }
+      } catch {
+        /* preserve existing config on any error */
+      }
+    }
+  }
 
   const memMd = path.join(destShared, 'MEMORY.md');
   if (fs.existsSync(memMd) || fs.existsSync(memoryDir)) {

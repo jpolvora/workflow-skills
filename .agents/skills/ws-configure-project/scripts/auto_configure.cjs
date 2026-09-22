@@ -894,6 +894,20 @@ function main() {
   // exit code (section-scoped) instead of overloading `ok`.
   const ok = gaps.length === 0;
 
+  // Scope hub-hosted path defaults to the configured hub (spec 0115, review
+  // round 2): gap-fills from the template carry stale `.ws/...` defaults that
+  // a relocated hub no longer writes. Only missing or stale defaults move;
+  // explicit consumer values are never touched.
+  try {
+    const hubLib = require(path.join(HUB_SCRIPTS_DIR, 'resolve_hub_root.cjs'));
+    const hubRel = path.relative(repoRoot, path.resolve(repoRoot, ctx.sharedDir)).split(path.sep).join('/');
+    if (hubLib && typeof hubLib.normalizeHubPathDefaults === 'function' && hubRel && hubRel !== '.ws') {
+      hubLib.normalizeHubPathDefaults(config, hubRel);
+    }
+  } catch {
+    // Missing sibling (partial tree) or unreadable hub: keep filled values.
+  }
+
   let written = false;
   if (!args.dryRun) {
     fs.writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`, 'utf8');

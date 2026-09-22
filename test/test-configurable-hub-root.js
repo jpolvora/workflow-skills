@@ -248,6 +248,11 @@ function plantPatternsRow(autoload) {
   const root = makeFixture('ws-hub-install-');
   try {
     writeBootstrapConfig(root, 'config/hub');
+    // Explicit consumer value must survive scoping untouched.
+    const prePath = path.join(root, '.ws', 'config.json');
+    const pre = JSON.parse(fs.readFileSync(prePath, 'utf8'));
+    pre.rules = { harness: 'docs/keep.md' };
+    fs.writeFileSync(prePath, JSON.stringify(pre, null, 2), 'utf8');
     let run = runNode([CLI, 'install', '--skills', 'ws-tdah', '--yes'], { cwd: root, timeout: 300000 });
     assert(run.status === 0, `install exits 0 (got ${run.status}: ${(run.stderr || '').slice(-500)})`);
     const hub = path.join(root, 'config', 'hub');
@@ -256,6 +261,8 @@ function plantPatternsRow(autoload) {
     }
     const bootstrap = JSON.parse(fs.readFileSync(path.join(root, '.ws', 'config.json'), 'utf8'));
     assert(bootstrap.pathTokens && bootstrap.pathTokens.sharedDir === 'config/hub', 'install: bootstrap config keeps sharedDir');
+    assert(bootstrap.rules && bootstrap.rules.stackFile === 'config/hub/STACK.md', 'install: stale rules.stackFile scoped to the configured hub');
+    assert(bootstrap.rules.harness === 'docs/keep.md', 'install: explicit rules.harness untouched');
     assert(!fs.existsSync(path.join(root, '.ws', 'autoload.md')), 'install: no autoload at the bootstrap root');
     assert(!fs.existsSync(path.join(root, '.ws', 'installed-skills.json')), 'install: no manifest at the bootstrap root');
     const manifest = JSON.parse(fs.readFileSync(path.join(hub, 'installed-skills.json'), 'utf8'));
@@ -286,6 +293,39 @@ function plantPatternsRow(autoload) {
     assert(run.status === 0, `uninstall exits 0 (got ${run.status}: ${(run.stderr || '').slice(-500)})`);
     assert(fs.existsSync(path.join(hub, 'installed-skills.json')), 'uninstall: manifest stays under the configured hub');
     assert(fs.existsSync(path.join(root, '.ws', 'config.json')), 'uninstall: bootstrap config preserved');
+  } finally {
+    rmFixture(root);
+  }
+}
+
+// --- AC2b: auto_configure gap-fill scopes hub defaults to the hub -----------
+{
+  const root = makeFixture('ws-hub-auto-');
+  try {
+    writeBootstrapConfig(root, 'config/hub');
+    const managed = path.join(root, '.agents', 'skills', 'ws-shared');
+    fs.mkdirSync(path.join(managed, 'templates'), { recursive: true });
+    fs.mkdirSync(path.join(managed, 'runtime'), { recursive: true });
+    fs.copyFileSync(
+      path.join(REPO_ROOT, '.agents/skills/ws-shared/templates/config.json.example'),
+      path.join(managed, 'templates', 'config.json.example'),
+    );
+    fs.copyFileSync(
+      path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/config.schema.json'),
+      path.join(managed, 'runtime', 'config.schema.json'),
+    );
+    fs.copyFileSync(
+      path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/hub-layout.json'),
+      path.join(managed, 'runtime', 'hub-layout.json'),
+    );
+    const run = runNode(
+      [path.join(REPO_ROOT, '.agents/skills/ws-configure-project/scripts/auto_configure.cjs'), '--repo-root', root, '--json'],
+      { timeout: 300000 },
+    );
+    assert(run.status === 0, `auto_configure exits 0 (got ${run.status}: ${run.stderr || ''})`);
+    const cfg = JSON.parse(fs.readFileSync(path.join(root, '.ws', 'config.json'), 'utf8'));
+    assert(cfg.rules && cfg.rules.harness === 'config/hub/AGENTS.md', 'auto: rules.harness gap scoped to the configured hub');
+    assert(cfg.rules && cfg.rules.stackFile === 'config/hub/STACK.md', 'auto: rules.stackFile gap scoped to the configured hub');
   } finally {
     rmFixture(root);
   }
