@@ -1,0 +1,129 @@
+---
+id: 389
+slug: us-389
+title: Test suite run mutates the repository's own hub config and leaves a backup file
+source: github
+specDate: 2026-09-22
+issueState: open
+issueUrl: "https://github.com/jpolvora/workflow-skills/issues/389"
+step: 0
+workflowId: us-389
+status: completed
+startedAt: "2026-09-22T07:53:08.416Z"
+endedAt: "2026-09-22T07:53:08.416Z"
+acRefs: []
+---
+# Specification — Test suite run mutates the repository's own hub config and leaves a backup file
+
+## Description
+
+Running the full local suite mutates the repository's own consumer hub config and leaves a backup artifact in the working tree. After a green run, `git status` reports a modified `.ws/config.json` (delivery-artifact include flags flipped from `false` to `true`) plus an untracked `.ws/config.json.bak`.
+
+The suite is supposed to be side-effect free with respect to the repository it runs in: tests operate on temp fixtures, and any backup a test writes must be removed before the test exits, pass or fail. Instead, a diagnostic invocation reaches the live hub config and persists normalized defaults into it.
+
+Confirmed mechanism in-tree:
+
+- `test/test-powershell-config-editor.js:164` invokes the editor as `runPowerShellFile(['-CheckOnly'])` with `cwd: REPO_ROOT` and no `-ConfigPath`.
+- `Edit-WorkflowSkillsConfig.ps1:190` falls back to `Join-Path $root '.ws/config.json'` when `-ConfigPath` is absent, so the live hub config is the target.
+- `Edit-WorkflowSkillsConfig.ps1:608` writes `"$ActiveConfigPath.bak"` before rewriting the config, producing the leftover backup.
+
+The same test file already demonstrates the correct pattern elsewhere: the sandbox test (`:177`) creates `fs.mkdtempSync(...)`, copies `config.json.example` into it, and passes `-ConfigPath` explicitly.
+
+Architecture touchpoints: `test/test-powershell-config-editor.js` (invocation hygiene for every editor call) and `Edit-WorkflowSkillsConfig.ps1` (diagnostic-mode and no-`-ConfigPath` persistence behavior). No skill body, config schema, or provider surface is involved.
+
+## Acceptance Criteria
+
+- AC1: Every invocation of `Edit-WorkflowSkillsConfig.ps1` from the test suite passes an explicit `-ConfigPath` pointing at an isolated temp copy; no test call resolves the repository's own `.ws/config.json`.
+- AC2: `-CheckOnly` performs no write: no config mutation and no `.bak` creation, including when `-ConfigPath` is omitted.
+- AC3: After `npm run test` completes, `git status --short` shows no modification to `.ws/config.json` and no untracked `.ws/config.json.bak`.
+- AC4: Any backup file a test creates is removed before the test exits, on both the pass and the failure path.
+- AC5: Omitting `-ConfigPath` outside a test context remains a supported user flow (the editor still resolves the project hub config for interactive use) and that behavior is documented.
+- AC6: A regression test asserts the repository hub config is byte-identical before and after the suite runs.
+- AC7: `npm run test`, `ws-check-harness`, and `node test/test-harness-clean.js` exit clean after the change.
+
+## Original Issue Context
+
+Running the full local suite (`npm run test` / `node test/run-tests.cjs`) mutates the repository's own consumer hub config (`.ws/config.json`) and leaves a `.ws/config.json.bak` file behind in the working tree.
+
+After a green full-suite run, `git status` shows:
+
+- `M .ws/config.json` — delivery artifact include flags flipped from `false` to `true` (`includeDeliveryResult`, `includeSpec`, `includeCheckReport`, `includeCodeReview`, `includeTestingReport`)
+- `?? .ws/config.json.bak` — leftover backup file
+
+Restoring via `git checkout -- .ws/config.json` and deleting the `.bak` returns the tree to clean, confirming the mutation comes from the test run, not from user edits.
+
+Expected: tests use temp fixtures and never write to the repository's own hub config; any backup written during a test is removed before the test exits (pass or fail).
+
+Notes from the reporter: found during coverage-gate work that runs the suite repeatedly; the mutation is deterministic, not a flake. Likely owner: the delivery-commit-artifacts test fixture using the live hub path instead of an isolated temp root.
+
+Source: https://github.com/jpolvora/workflow-skills/issues/389 (state open, labels none, assignees none, comments none).
+
+### Prior Work Sweep
+
+Provider sweep on 2026-09-22 (`sweep_prior_work.cjs --issue 389 --keywords "test suite mutates hub config backup" --files test/run-tests.cjs .ws/config.json`): status ok, zero exact open PR for #389, no duplicate-risk open work. Both PR hits (`#184` release, `#191` ws-doctor) merely match the `#389` search token and are unrelated. Commit history on the touched files is prior feature work; none addresses test isolation for the hub config.
+
+### Design Intent
+
+Modification, not greenfield. Two independent hardening points, both small:
+
+1. Invocation hygiene — pass `-ConfigPath` explicitly in the test suite (the pattern already exists at `:177`), so no test can reach the live hub.
+2. Editor safety — make the diagnostic path non-persistent and make the no-`-ConfigPath` fallback safe, so a future test call that forgets the flag cannot mutate the repository.
+
+The reporter's hypothesis pointed at `test-delivery-commit-artifacts.js`; that file is read-only (it reads `config.json.example`, `config.schema.json`, and `ARTIFACTS.md`) and is therefore not the mutator. The confirmed path is the editor invocation in `test-powershell-config-editor.js`. Keep the fix at the confirmed path; do not restructure the test harness.
+
+## Notes
+
+- The `false` → `true` flip indicates a defaults-normalization write, not a user edit: the flags are `false` in `config.json.example` and the editor's normalization persisted its resolved defaults.
+- `bin/install-rules.js:189` already special-cases `config.json.bak` as a non-managed name, so the backup is expected in some flows; the defect is that a *test* creates one in the repository.
+- `test/test-install.js:818` asserts a `.bak` is created during install — that flow operates on a temp install root and is not the mutator.
+- Reproduce with: run `npm run test`, then `git status --short` and diff `.ws/config.json` against `HEAD`.
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Removing the `.bak`-on-save behavior for interactive use | The backup is a deliberate user-facing safety feature; only test-time persistence is defective |
+| Replacing the PowerShell editor or porting it to Node | The defect is call-site hygiene plus diagnostic-mode persistence |
+| Restructuring the suite runner (`test/run-tests.cjs`) or its suite list | No runner behavior change is required |
+| Sanitizing `.ws/config.json` in git hooks or CI as a mitigation | Masks the defect instead of fixing the write path |
+| Adding `.ws/config.json.bak` to `.gitignore` as the primary fix | Hides the artifact; AC3 requires the file not be produced at all |
+
+## Assumptions & Open Questions
+
+| Assumption | Chosen default | Rationale | Confirmed |
+|------------|----------------|-----------|-----------|
+| Primary fix location | Test call sites plus `-CheckOnly` no-write guarantee | Both are needed: hygiene prevents recurrence, the guard protects the repo | y |
+| Interactive no-`-ConfigPath` fallback | Kept, but documented and never reachable from tests | Preserves the documented UX while removing the test hazard | y |
+| Temp-root pattern | Reuse the existing `mkdtempSync` + `config.json.example` copy | Already proven in the same file; no new helper needed | y |
+| Backup cleanup ownership | The test that creates it, in a `finally` block | Covers the failure path as AC4 requires | y |
+| Regression assertion | Byte-compare the hub config before and after the suite | Directly encodes AC3 without depending on git state | y |
+| Cross-platform behavior | Non-Windows runs must skip cleanly, not fail | Editor execution is Windows-gated today | n |
+
+## Definition of Ready (DoR)
+
+| Readiness Item | Requirement | Verification Method |
+|----------------|-------------|---------------------|
+| Bounded scope | Test call sites plus one editor guard plus a regression assertion | Diff touches the editor test and `Edit-WorkflowSkillsConfig.ps1` only |
+| Atomic criteria | AC1–AC7 each pass or fail | Authoring validate plus the commands in AC7 |
+| Failure modes | Suite leaves the hub config untouched; backup cleaned on failure path; diagnostic mode never writes | AC2, AC3, AC4 plus negative scenarios |
+| Observation telemetry | Pre/post hash of `.ws/config.json` recorded by the regression test | AC6 |
+| Stack invariants | No `.py` additions; PowerShell editor stays pure ASCII and schema-synced | `node test/test-powershell-config-editor.js` plus `scan_stack_invariants.cjs --stack typescript-node` |
+| Open blockers | None | Cross-platform skip is an assumption, not a blocker |
+
+## Validation & Observation Notes
+
+### Telemetry & Observable Signals
+
+- Commands: `node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs --mode=authoring .agents/specs/0119-us-389.spec.md` exits 0; `node test/test-powershell-config-editor.js` exits 0; `npm run test` exits 0; `git status --short` after the suite shows no `.ws/config.json` change and no `.ws/config.json.bak`; `ws-check-harness` exits 0.
+- Artifacts: none new; the observable is the absence of `.ws/config.json.bak` and of a diff on `.ws/config.json`.
+- Signals: pre/post SHA-256 of `.ws/config.json` identical across a suite run; `-CheckOnly` with no `-ConfigPath` leaves no file mtime change and creates no `.bak`.
+
+### Negative & Failing Test Scenarios
+
+- A test call invokes the editor without `-ConfigPath` and the live hub config is rewritten (must fail AC1).
+- `-CheckOnly` with no `-ConfigPath` creates `.ws/config.json.bak` or mutates the config (must fail AC2).
+- `git status --short` after `npm run test` shows `M .ws/config.json` or `?? .ws/config.json.bak` (must fail AC3).
+- A failing test leaves its backup file behind (must fail AC4).
+- Interactive `-ConfigPath`-less invocation stops resolving the project hub config (must fail AC5).
+- The regression assertion passes while the hub config actually changed (must fail AC6).
+- `npm run test`, `ws-check-harness`, or `test-harness-clean.js` fails after the change (must fail AC7).

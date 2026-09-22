@@ -167,6 +167,12 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Relocatable shared hub root across the harness (installer, configurator, generator, layout) (`spec: 0115-configurable-hub-root.spec.md`) — PR #391 MERGED
 - [x] ws-monitor reports critical missing-artifact false positives on ws-spec-to-pr-lite runs (`spec: 0116-us-385.spec.md`) — PR #392 MERGED
 - [x] create an optional step proof-of-work (`spec: 0117-us-386.spec.md`) — PR #394 MERGED
+- [ ] ws-spec-multi appends a duplicate queue row for an item, causing double processing (`spec: 0118-us-393.spec.md`)
+- [ ] Test suite run mutates the repository's own hub config and leaves a backup file (`spec: 0119-us-389.spec.md`)
+- [ ] ws-spec-multi standard workers do not persist {plansDir}/{slug} state, step artifacts, or telemetry (`spec: 0120-us-388.spec.md`)
+
+
+
 
 
 
@@ -374,6 +380,12 @@ All Next-specs closed.
 | 120 | `us-385` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor reports critical missing-artifact false positives on ws-spec-to-pr-lite runs |
 
 | 121 | `us-386` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | create an optional step proof-of-work |
+
+| 122 | `us-393` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-multi appends a duplicate queue row for an item, causing double processing |
+
+| 123 | `us-389` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Test suite run mutates the repository's own hub config and leaves a backup file |
+
+| 124 | `us-388` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-multi standard workers do not persist {plansDir}/{slug} state, step artifacts, or telemetry |
 
 ## 9. Inbox
 

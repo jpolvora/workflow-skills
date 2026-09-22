@@ -4,6 +4,7 @@ slug: configurable-hub-root
 title: "Relocatable shared hub root across the harness (installer, configurator, generator, layout)"
 source: local
 specDate: 2026-09-21
+status: completed
 ---
 
 # Specification — Relocatable shared hub root across the harness
