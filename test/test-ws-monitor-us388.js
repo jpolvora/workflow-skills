@@ -85,25 +85,36 @@ ${[header, sep, ...rows].join('\n')}
   }
 }
 
-// AC6: presence is a directory scan of the machine SoT `*.state.json`
-// (workflow id is not the slug); the `.state.md` render alone is not sufficient.
+// AC6: presence is a directory scan of a valid machine SoT `*.state.json`
+// (workflow id is not the slug); a `.state.md` render or an invalid JSON is not enough.
 {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-monitor-us388-present-'));
   tempRoots.push(dir);
   const plans = path.join(dir, '.agents/plans');
-  write(path.join(plans, 'live-two', 'live-two-20260922T080709Z.state.json'), JSON.stringify({ workflowType: 'standard' }));
+  const validState = { stateVersion: 3, workflowId: 'live-two-20260922T080709Z', slug: 'live-two', workflowType: 'standard', status: 'active', currentStep: 4 };
+  write(path.join(plans, 'live-two', 'live-two-20260922T080709Z.state.json'), JSON.stringify(validState));
   write(path.join(plans, 'render-only', 'render-only.state.md'), '# state render only\n');
+  write(path.join(plans, 'broken-json', 'broken-json.state.json'), '{ not valid json');
+  write(path.join(plans, 'wrong-shape', 'wrong-shape.state.json'), JSON.stringify({ hello: 'world' }));
   const expected = expectedChildArtifacts(
-    [{ slug: 'live-two', status: 'in_progress' }, { slug: 'render-only', status: 'shipped' }],
+    [
+      { slug: 'live-two', status: 'in_progress' },
+      { slug: 'render-only', status: 'shipped' },
+      { slug: 'broken-json', status: 'shipped' },
+      { slug: 'wrong-shape', status: 'shipped' },
+    ],
     plans,
     dir,
   );
   const bySlug = Object.fromEntries(expected.map((item) => [item.slug, item]));
   if (!bySlug['live-two'].present) {
-    throw new Error('us-388 AC6: child state must be detected by directory scan of *.state.json');
+    throw new Error('us-388 AC6: a valid child state must be detected by directory scan of *.state.json');
   }
   if (bySlug['render-only'].present) {
     throw new Error('us-388 AC6: a .state.md render alone must NOT count as child state (machine SoT is required)');
+  }
+  if (bySlug['broken-json'].present || bySlug['wrong-shape'].present) {
+    throw new Error('us-388 AC6: an unparseable or identity-less .state.json must NOT count as child state');
   }
 }
 

@@ -58,7 +58,20 @@ function isNonEmptyFile(file) {
 }
 
 // The child contract requires the machine SoT `{workflow-id}.state.json` (with
-// resumable handoffs); the `.state.md` render alone is NOT a substitute.
+// resumable handoffs); the `.state.md` render alone is NOT a substitute, and a
+// truncated or unrelated `.json` is not valid state either.
+const REQUIRED_CHILD_STATE_FIELDS = ['stateVersion', 'workflowId', 'slug', 'workflowType', 'status', 'currentStep'];
+function isValidChildStateFile(file) {
+  let parsed;
+  try {
+    parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+  } catch {
+    return false;
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return false;
+  return REQUIRED_CHILD_STATE_FIELDS.every((key) => parsed[key] !== undefined && parsed[key] !== null);
+}
+
 function hasChildState(childDir) {
   let entries;
   try {
@@ -68,7 +81,7 @@ function hasChildState(childDir) {
   }
   return entries
     .filter((entry) => entry.isFile() && entry.name.endsWith('.state.json'))
-    .some((entry) => isNonEmptyFile(path.join(childDir, entry.name)));
+    .some((entry) => isValidChildStateFile(path.join(childDir, entry.name)));
 }
 
 function fail(message, options) {

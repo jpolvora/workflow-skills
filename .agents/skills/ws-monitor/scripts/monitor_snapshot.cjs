@@ -501,15 +501,28 @@ function expectedArtifacts(state, workflowDir, minVerifyScore, repoRoot = workfl
 }
 
 // us-388 AC1/AC6: a child workflow's machine SoT is `{workflow-id}.state.json`.
-// The `.state.md` render alone is not the resumable source of truth, so presence
-// requires the non-empty JSON SoT — never the human-readable render.
+// Presence requires a non-empty, parseable JSON state that carries the workflow
+// identity fields — a truncated or unrelated `.json`, or the `.state.md` render
+// alone, is not a resumable/observable child state.
+const REQUIRED_CHILD_STATE_FIELDS = ['stateVersion', 'workflowId', 'slug', 'workflowType', 'status', 'currentStep'];
+function isValidChildStateFile(file) {
+  let parsed;
+  try {
+    parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+  } catch {
+    return false;
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return false;
+  return REQUIRED_CHILD_STATE_FIELDS.every((key) => parsed[key] !== undefined && parsed[key] !== null);
+}
+
 function listChildStateFiles(dir) {
   if (!dir || !fs.existsSync(dir)) return [];
   try {
     return fs.readdirSync(dir, { withFileTypes: true })
       .filter((entry) => entry.isFile() && entry.name.endsWith('.state.json'))
       .map((entry) => entry.name)
-      .filter((name) => isNonEmptyFile(path.join(dir, name)));
+      .filter((name) => isValidChildStateFile(path.join(dir, name)));
   } catch {
     return [];
   }

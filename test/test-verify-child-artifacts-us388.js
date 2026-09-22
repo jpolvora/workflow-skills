@@ -26,12 +26,21 @@ function plansDir(root) {
   return path.join(root, '.agents', 'plans');
 }
 
+const validChildState = {
+  stateVersion: 3,
+  workflowId: 'demo-20260922T080709Z',
+  slug: 'demo',
+  workflowType: 'standard',
+  status: 'completed',
+  currentStep: 9,
+};
+
 // AC5: state + step-01 present -> exits 0.
 {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'verify-child-us388-ok-'));
   tempRoots.push(root);
   const plans = plansDir(root);
-  write(path.join(plans, 'demo', 'demo-20260922T080709Z.state.json'), JSON.stringify({ workflowId: 'demo-20260922T080709Z' }));
+  write(path.join(plans, 'demo', 'demo-20260922T080709Z.state.json'), JSON.stringify(validChildState));
   write(path.join(plans, 'demo', 'step-01-demo.plan.md'), '# plan\n');
   const result = run(['--slug', 'demo', '--plans-dir', plans, '--json'], root);
   if (result.status !== 0) throw new Error(`us-388 AC5: expected exit 0, got ${result.status}: ${result.stderr}`);
@@ -78,6 +87,24 @@ function plansDir(root) {
   write(path.join(plans, 'demo', 'step-01-demo.plan.md'), '# plan\n');
   const result = run(['--slug', 'demo', '--plans-dir', plans], root);
   if (result.status === 0) throw new Error('us-388 AC5: an empty state file must not count as present');
+}
+
+// AC5: an unparseable or identity-less state JSON is not valid machine state.
+{
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'verify-child-us388-badstate-'));
+  tempRoots.push(root);
+  const plans = plansDir(root);
+  write(path.join(plans, 'demo', 'demo.state.json'), '{ not valid json');
+  write(path.join(plans, 'demo', 'step-01-demo.plan.md'), '# plan\n');
+  const result = run(['--slug', 'demo', '--plans-dir', plans], root);
+  if (result.status === 0) throw new Error('us-388 AC5: malformed state JSON must not satisfy the machine state requirement');
+  const missingFields = fs.mkdtempSync(path.join(os.tmpdir(), 'verify-child-us388-fields-'));
+  tempRoots.push(missingFields);
+  const plans2 = plansDir(missingFields);
+  write(path.join(plans2, 'demo', 'demo.state.json'), JSON.stringify({ workflowId: 'demo', status: 'completed' }));
+  write(path.join(plans2, 'demo', 'step-01-demo.plan.md'), '# plan\n');
+  const result2 = run(['--slug', 'demo', '--plans-dir', plans2], missingFields);
+  if (result2.status === 0) throw new Error('us-388 AC5: a state JSON missing required identity fields must not count');
 }
 
 // AC1/AC5: the `.state.md` render alone is not the machine SoT.

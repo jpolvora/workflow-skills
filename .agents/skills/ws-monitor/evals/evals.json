@@ -50,7 +50,7 @@
       "expected_output": "Agent reports missing-child-state, and the multi-spec expectedArtifacts list is populated from the queue rows instead of empty.",
       "assertions": [
         "Emits missing-child-state for an in_progress/shipped/failed item with no child workflow state under {plansDir}/{slug}/",
-        "Requires the machine SoT *.state.json (a .state.md render alone does not count) and ignores the reserved ws-spec-multi batch directory alias",
+        "Requires a parseable machine SoT *.state.json with the workflow-identity fields (a .state.md render or invalid JSON does not count) and ignores the reserved ws-spec-multi batch directory alias",
         "Populates the ws-spec-multi expectedArtifacts list from the batch queue rows (never an empty list)",
         "Stays silent for a pending/skipped item and for an advanced item whose child state exists",
         "Does not duplicate stale-parent-row, which requires a child that already closed"
