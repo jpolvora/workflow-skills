@@ -1,6 +1,6 @@
 ---
 name: ws-activity-report
-version: 0.4.60
+version: 0.4.61
 description: >-
   Timesheet entries (date, start, end, description) for ws-spec-to-pr /
   ws-spec-to-pr-lite deliveries. Start = earliest bootstrap file creation in
