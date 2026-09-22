@@ -88,6 +88,11 @@ function normalizeList(value) {
   return [...new Set(value.map((item) => String(item).trim().replace(/\\/g, '/')).filter(Boolean))];
 }
 
+function shortRef(remote, baseRef) {
+  const rem = String(remote || 'origin');
+  return baseRef.startsWith(`${rem}/`) ? baseRef.slice(rem.length + 1) : baseRef;
+}
+
 function ownPaths(state) {
   const manifest = state.workflowManifest || {};
   const touched = [
@@ -117,10 +122,9 @@ function main() {
   const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
   const baseRef = String(options.baseRef);
 
+  const remote = String(options.remote || 'origin');
   if (options.fetch) {
-    const remote = String(options.remote || 'origin');
-    const short = baseRef.startsWith(`${remote}/`) ? baseRef.slice(remote.length + 1) : baseRef;
-    const fetch = runGit(repoRoot, ['fetch', remote, short]);
+    const fetch = runGit(repoRoot, ['fetch', remote, shortRef(remote, baseRef)]);
     if (fetch.status !== 0) throw new Error(`git fetch failed: ${(fetch.stderr || '').trim()}`);
   }
   const tipCp = runGit(repoRoot, ['rev-parse', '--verify', baseRef]);
@@ -132,6 +136,13 @@ function main() {
 
   if (previous === tip) {
     return { code: 0, payload: { ok: true, unchanged: true, baselineCommit: tip } };
+  }
+
+  if (previous) {
+    const ancestry = runGit(repoRoot, ['merge-base', '--is-ancestor', previous, tip]);
+    if (ancestry.status !== 0) {
+      throw new Error(`base ref did not advance from baseline ${previous} to ${tip}`);
+    }
   }
 
   let changed = [];
@@ -162,7 +173,7 @@ function main() {
     code: 0,
     payload: {
       ok: true, unchanged: false, previous, baselineCommit: tip, baselineSourceRef: baseRef,
-      reintegrate: `git fetch ${String(options.remote || 'origin')} ${baseRef} && git rebase ${tip}`,
+      reintegrate: `git fetch ${remote} ${shortRef(remote, baseRef)} && git rebase ${tip}`,
     },
   };
 }

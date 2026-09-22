@@ -170,4 +170,45 @@ assert.strictEqual(stopped.status, 2, `foreign overlap STOPs: ${stopped.stderr}$
 assert.ok(JSON.parse(stopped.stdout).overlapping.includes('foreign.txt'), 'overlap names foreign.txt');
 assert.strictEqual(fs.readFileSync(path.join(work, stateRel), 'utf8'), before, 'STOP leaves state untouched');
 
+// Remote-qualified base ref → reintegrate uses short branch name, not origin/origin/base.
+git(['update-ref', 'refs/remotes/origin/base', git(['rev-parse', 'base'], work)]);
+write(path.join(work, stateRel), JSON.stringify({
+  stateVersion: 3,
+  revision: 0,
+  workflowId: 'wf',
+  slug: 'demo',
+  workflowType: 'standard',
+  status: 'active',
+  currentStep: 4,
+  completedSteps: [0, 1, 2, 3],
+  skippedSteps: [],
+  baselineCommit: baseline,
+  baselineSourceRef: 'origin/base',
+  preExistingDirty: [],
+  workflowManifest: { created: [], modified: ['own.txt'], deleted: [] },
+}));
+const remoteTip = git(['rev-parse', 'origin/base'], work);
+const remoteRefresh = run(refresh, ['--state', stateRel, '--base-ref', 'origin/base', '--no-fetch', '--repo', work]);
+assert.strictEqual(remoteRefresh.status, 0, `remote-qualified refresh: ${remoteRefresh.stderr}`);
+const remotePayload = JSON.parse(remoteRefresh.stdout);
+assert.strictEqual(
+  remotePayload.reintegrate,
+  `git fetch origin base && git rebase ${remoteTip}`,
+  'reintegrate strips remote prefix from base ref',
+);
+
+// Rewritten base (non-ancestor tip) → hard failure, state untouched.
+git(['checkout', '-q', 'base']);
+git(['checkout', '--orphan', 'rewritten', '-q']);
+write(path.join(work, 'orphan.txt'), 'orphan\n');
+git(['add', '--', 'orphan.txt']);
+git(['commit', '-qm', 'orphan root']);
+const rewrittenTip = git(['rev-parse', 'HEAD'], work);
+git(['update-ref', 'refs/remotes/origin/rewritten', rewrittenTip]);
+const beforeRewrite = fs.readFileSync(path.join(work, stateRel), 'utf8');
+const regressed = run(refresh, ['--state', stateRel, '--base-ref', 'origin/rewritten', '--no-fetch', '--repo', work]);
+assert.strictEqual(regressed.status, 1, `non-ancestor base fails: ${regressed.stderr}`);
+assert.match(regressed.stderr, /did not advance from baseline/, 'reports non-forward base movement');
+assert.strictEqual(fs.readFileSync(path.join(work, stateRel), 'utf8'), beforeRewrite, 'non-ancestor failure leaves state untouched');
+
 console.log('git-ownership contract OK');
