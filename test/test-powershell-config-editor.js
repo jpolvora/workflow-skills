@@ -593,6 +593,10 @@ assert(
   'Sequential TabIndex wiring is missing from Add-ConfigFieldRow'
 );
 assert(
+  guiScript.includes('$rowPanel.TabIndex = $script:NextRowIndex'),
+  'Row-container TabIndex ordering is missing from Add-ConfigFieldRow'
+);
+assert(
   guiScript.includes('Unsaved changes - review, then Save or Apply.'),
   'Status-bar dirty indicator text is missing from Update-WindowTitle'
 );

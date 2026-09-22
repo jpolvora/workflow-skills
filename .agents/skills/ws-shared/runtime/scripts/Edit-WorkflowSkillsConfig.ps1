@@ -45,6 +45,7 @@ $ErrorActionPreference = 'Stop'
 $script:AppName = 'Workflow Skills Config Editor'
 $script:AppVersion = '1.1.0'
 $script:NextTabIndex = 0
+$script:NextRowIndex = 0
 $script:IsDirty = $false
 $script:ActiveConfigPath = $null
 $script:BackupConfigPath = $null
@@ -1104,7 +1105,12 @@ function Add-ConfigFieldRow {
     $sep.Anchor = [System.Windows.Forms.AnchorStyles]::Bottom -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right
     $rowPanel.Controls.Add($sep)
 
-    # Sequential keyboard tab order (AC2): focusable controls top-down.
+    # Sequential keyboard tab order (AC2): row containers carry page-level
+    # order so cross-row Tab follows the visual top-to-bottom sequence;
+    # child controls stay ordered within their row.
+    $rowPanel.TabIndex = $script:NextRowIndex
+    $script:NextRowIndex++
+
     $focusables = @($rowPanel.Controls | Where-Object {
         $_ -is [System.Windows.Forms.CheckBox] -or $_ -is [System.Windows.Forms.TextBox] -or
         $_ -is [System.Windows.Forms.ComboBox] -or $_ -is [System.Windows.Forms.NumericUpDown] -or
@@ -1177,6 +1183,7 @@ function Populate-Sections {
     $script:RowPanels = @()
     $script:FieldControls = @()
     $script:NextTabIndex = 0
+    $script:NextRowIndex = 0
 
     $palette = Get-CurrentPalette
 

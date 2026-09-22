@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "0ba692d333851309640158c42cf50013b858ed3e35b1d77408fd09ab6da4167b",
+  "fullPackageDigest": "03d27aa368de9a2107b96677268282feb36efd07f38b87644231d4248caba6fa",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -29,7 +29,7 @@
       "runtime/schemas/handoff.schema.json": "aca6b743470cf856d037b7dd661d8ff2a87ef78a43da61c952ef3fce4484334d",
       "runtime/scm-provider-contract.md": "85f2b0eea4e17efd0e25c390593fa4bda36a030fa4125501080515d03fc8c767",
       "runtime/scripts/Edit-Config.bat": "ab204e94f425d9cdc279d19ae046c19f65ab7f52212e99852094ea1d479b42a6",
-      "runtime/scripts/Edit-WorkflowSkillsConfig.ps1": "86737635b8501fbc6dc72b7127718cd5d5196a032ef27ffbfc87da66cdad2c9e",
+      "runtime/scripts/Edit-WorkflowSkillsConfig.ps1": "1ac68f6ba5884e3b9a25643a11f81f02e4a70601dba35e0e78f4d96b7283cc33",
       "runtime/scripts/ac_counts.cjs": "60f38cfd14d7ce914d292027eac808cd0d98ab2ef686b8892e8a125a14d92e63",
       "runtime/scripts/bootstrap_runtime.cjs": "f09759b68dbd8d70b978d5ea4990a30d69f86114507682fdcb842a3463054819",
       "runtime/scripts/cli_spawn.cjs": "64038af34cadb7588664015d5ca1a8319ab25436a786585be452ddf502f4943f",
@@ -60,7 +60,7 @@
       "templates/STACK.md.example": "829b7d3fce62b8167905fc1d921ee744db1d7e8ef895b0e7eb969f089973bebd",
       "templates/config.json.example": "80dd268703fbb14d963dfc8678541d53138efaa98202a744558160a7b8d68ff6"
     },
-    "skillDigest": "c58e6dc951699d58d5faffbc9c11859f9fe177dc6bed298b1dbb43c723c734a7"
+    "skillDigest": "9e5865e2e97874de03686f611d481b1f462c477302961be38197f9e373ff4681"
   },
   "packageVersion": "0.4.50",
   "skills": {
