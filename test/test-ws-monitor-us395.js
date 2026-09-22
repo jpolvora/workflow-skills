@@ -145,12 +145,18 @@ ${multiTable(rows)}
     workflowId: 'ms-parent',
     status: 'active',
     statePath: '.agents/plans/ws-spec-multi/ms-parent.state.md',
-    multiSpec: { createdAt: '2026-09-22T08:00:00Z', items: [{ slug: 'child-done', status: 'in_progress' }] },
+    multiSpec: { createdAt: '2026-09-22T08:00:00Z', items: [{ slug: 'child-done', status: 'in_progress', updatedAt: '2026-09-22T08:05:00Z' }] },
   };
-  const all = [workflow, { workflowId: 'child-done-1', slug: 'child-done', status: 'completed', multiSpec: null }];
+  const all = [workflow, { workflowId: 'child-done-1', slug: 'child-done', status: 'completed', multiSpec: null, endedAt: '2026-09-22T09:00:00Z' }];
   const findings = detectStaleParentRows(workflow, all);
   if (!findings.some((f) => f.code === 'stale-parent-row' && f.message.includes('child-done'))) {
     throw new Error('us-395 AC5: stale-parent-row not emitted for a completed child / in_progress parent row');
+  }
+  // A historical terminal run of the same slug (closed before the row went
+  // in_progress) must not flag a healthy current row.
+  const historical = [workflow, { workflowId: 'child-done-old', slug: 'child-done', status: 'completed', multiSpec: null, endedAt: '2026-08-01T00:00:00Z' }];
+  if (detectStaleParentRows(workflow, historical).some((f) => f.code === 'stale-parent-row')) {
+    throw new Error('us-395 AC5: historical child falsely flagged as the current row child');
   }
 }
 

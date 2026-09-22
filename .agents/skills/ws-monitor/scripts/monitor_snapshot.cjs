@@ -691,17 +691,25 @@ function detectStaleParentRows(workflow, allWorkflows) {
   const items = workflow.multiSpec?.items || [];
   const inProgress = items.filter((item) => item.status === 'in_progress' && item.slug);
   if (inProgress.length === 0) return findings;
-  const terminalSlugs = new Set(
-    allWorkflows
-      .filter((other) => !other.multiSpec && TERMINAL_RUN_STATUSES.has(String(other.status)))
-      .map((other) => other.slug)
-      .filter(Boolean),
-  );
+  const terminalChildren = allWorkflows
+    .filter((other) => !other.multiSpec && TERMINAL_RUN_STATUSES.has(String(other.status)));
+  const runCreatedAt = Date.parse(workflow.multiSpec?.createdAt || '');
   const activeMulti = allWorkflows.filter((other) => other.multiSpec
     && other !== workflow
     && ACTIVE_RUN_STATUSES.has(String(other.status)));
   for (const item of inProgress) {
-    if (terminalSlugs.has(item.slug)) {
+    const rowUpdatedAt = Date.parse(item.updatedAt || '');
+    const reference = Number.isFinite(rowUpdatedAt) ? rowUpdatedAt : runCreatedAt;
+    // A terminal workflow for the same slug only counts as this row's child
+    // when it closed at/after the row was set in_progress; otherwise it is a
+    // historical run of the same spec and must not flag a healthy current row.
+    const child = terminalChildren.find((other) => {
+      if (!other.slug || other.slug !== item.slug) return false;
+      const childEndedAt = Date.parse(other.endedAt || '');
+      if (!Number.isFinite(childEndedAt) || !Number.isFinite(reference)) return false;
+      return childEndedAt >= reference;
+    });
+    if (child) {
       addFinding(
         findings,
         'warning',
@@ -1332,6 +1340,7 @@ function snapshot(options) {
       status: derivedTerminal ? derivedTerminal.status : (state.status || 'unknown'),
       reportedStatus: derivedTerminal ? derivedTerminal.reportedStatus : undefined,
       statusSource: derivedTerminal ? derivedTerminal.statusSource : undefined,
+      endedAt: state.endedAt || null,
       currentStep: Number(state.currentStep),
       completedSteps: state.completedSteps || [],
       stepStatus: state.stepStatus || {},

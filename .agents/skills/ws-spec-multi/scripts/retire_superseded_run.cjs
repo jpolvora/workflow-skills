@@ -103,7 +103,7 @@ function main() {
     fail(`--status must be cancelled or superseded (received: ${status})`, options);
     return;
   }
-  const timestamp = options.timestamp || new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
+  const timestamp = options.timestamp || new Date().toISOString();
 
   let supersededRunId = options.supersedes || null;
   let sourceFile = null;
