@@ -81,6 +81,9 @@
       "test/test-verbose-mode.js"
     ],
     [
+      "test/test-proof-of-work.js"
+    ],
+    [
       "test/test-min-verify-score.js"
     ],
     [

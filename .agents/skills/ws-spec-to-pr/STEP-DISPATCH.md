@@ -171,6 +171,8 @@ After Step 8 when `shipAction: create-pr` and PR exists:
 
 When shipping reaches a **terminal** `shipStatus` after Step 9 convergence (or skip-ship/skip-PR after close), run **Phase A** git cleanup once before claiming the run fully ended — see [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md). Do **not** set `status: completed` again in Step 9 (`status` was set at close). Update `shipStatus` to `merged` or `stopped`. Do not run Phase A at both Step 8 close and Step 9.
 
+**Post-completion proof-of-work (optional, orch-owned):** after shipping reaches a terminal `shipStatus` (or skip-ship/skip-PR after close with no Step 9), the orchestrator applies [`gates.md`](../ws-shared/runtime/gates.md) § Optional post-completion proof-of-work step — one `user-gate` only when `defaults.enableOptionalProofOfWork` is explicit `true` (auto-start only when `defaults.enableAutomaticEvidenceCollectForProofOfWork` is also explicit `true`; `autoMode` never blocks). Omitted/`false` → nothing happens here. Never inside `ws-ship-pr`; never re-ask close or ship.
+
 Stop: max exhausted · escalate · merge blocked · cancelled · PR closed · checks red after convergence attempts.
 
 **Exit branches** (three; shared verbatim with `ws-goal-fix-pr` § Exit branches — a batch iteration never sends outer-step completion or goal-level exit, only per-batch dispatch telemetry):

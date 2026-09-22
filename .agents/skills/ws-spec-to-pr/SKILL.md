@@ -1,7 +1,7 @@
 ---
 name: ws-spec-to-pr
 description: End-to-end Spec-to-PR (steps 0–9). Verify score ≥ `defaults.minVerifyScore` (default 9) before review. Trigger for full/standard delivery.
-version: 0.4.52
+version: 0.4.53
 disable-model-invocation: true
 invocation_names:
   - spec-to-pr
@@ -119,4 +119,4 @@ One run may execute different steps in different CLI processes via the determini
 
 ## Exit & Handoff
 
-Complete when Step 8 **close** sets `status: completed` (implementation done). Shipping (push/PR) and Step 9 fix-pr may continue in the same run; `shipStatus` tracks shipping separately.
+Complete when Step 8 **close** sets `status: completed` (implementation done). Shipping (push/PR) and Step 9 fix-pr may continue in the same run; `shipStatus` tracks shipping separately. After the run reaches its finished state, the optional post-completion proof-of-work step applies per [`gates.md`](../ws-shared/runtime/gates.md) § Optional post-completion proof-of-work step (explicit `defaults.enableOptionalProofOfWork: true` only; omitted/`false` changes nothing).
