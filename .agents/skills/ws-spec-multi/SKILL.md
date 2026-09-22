@@ -1,6 +1,6 @@
 ---
 name: ws-spec-multi
-version: 0.4.53
+version: 0.4.54
 description: Batch specs one by one. Classifies each spec and runs standard or lite. Trigger for multi-spec queues.
 disable-model-invocation: true
 invocation_names:
@@ -45,6 +45,7 @@ Aliases: [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md). Param
 4. **End-to-End Closure per Spec:** Every PR must undergo `ws-goal-fix-pr` convergence (`activeThreads == 0`) and explicit SCM merge (`state: MERGED`) before dispatching next spec.
 5. **Isolation & State:** Fresh worker context per spec; update `{plansDir}/ws-spec-multi/{runId}.state.md`.
 6. **Pause on Failure:** No silent continue on worker error; prompt user gate (Resume, Skip, Abort).
+7. **Keyed, Idempotent Queue Writes:** Every state transition updates the single existing row for that spec (`specPath`, fallback `slug`) in place — the queue never gains a second row for the same spec. The reported item count is frozen at the Phase 2 selection length (`totalItems`), and a write that would duplicate a row index or a `slug` fails closed (surface the conflict, do not write). Invariant detail: [`STATE.md`](STATE.md) § Queue invariants.
 
 ## Triggers
 

@@ -33,6 +33,7 @@ flowchart TD
 - Detect base branch `baseBranch`: query active branch via SCM/git (`git rev-parse --abbrev-ref HEAD`) or read `config.json` `project.baseBranch` (default `develop` or `main`).
 - Parse raw arguments:
   - Existing state file (`{plansDir}/ws-spec-multi/*.state.md`) → load state and `baseBranch`, skip scan, continue at first non-terminal item (unmerged PR rows re-enter Phase 4b convergence gate).
+  - **Queue integrity on load:** run the fail-closed duplicate guard (duplicate `#` or duplicate `slug`/`specPath` → stop and surface). A `completed` run whose table still holds any `pending`/`in_progress` row is corrupt (phantom row); surface it and re-dispatch nothing (see [`STATE.md`](STATE.md) § Resume Policy).
   - Explicit spec list (`*.spec.md` paths) → construct new run queue with items marked `pending` and recorded `baseBranch`.
   - No arguments → proceed to Phase 2 (Blank-list scan).
 
@@ -42,7 +43,7 @@ flowchart TD
 - Present `user-gate` multi-select **only** with sorted `pending[]` paths (index `[ ]` / `[~]`, plus untracked specs of record). Do **not** list `[x]` / Done-log / already-merged items, or `step-00-*.spec.md` copies.
 - If `pending[]` is empty: report no unfinished specs and stop (no state file).
 - Generate `runId` (`ms-{YYYYMMDDTHHMMSSZ}`).
-- Write initial run state file at `{plansDir}/ws-spec-multi/{runId}.state.md` containing `baseBranch: {baseBranch}` in YAML frontmatter.
+- Write initial run state file at `{plansDir}/ws-spec-multi/{runId}.state.md` containing `baseBranch: {baseBranch}` in YAML frontmatter, plus `totalItems: {n}` where `{n}` is the frozen selection length. Assign each row a stable `#` (1..n) once; the `#` index is display-only and is never re-allocated. Row identity is `specPath` (fallback `slug`). One row per selected spec.
 
 ### Phase 3: Select Next Spec & Flow Auto-Detection
 - Find the next item with `status: pending` or `status: in_progress`.
@@ -63,7 +64,7 @@ Evaluate the target `*.spec.md` file:
   - Create or sync the spec feature branch (`git checkout -b feature/{slug}` or `git checkout feature/{slug} && git merge {baseBranch}`) from the updated `baseBranch`.
   - This guarantees every feature branch starts from an up-to-date base containing all PRs merged by previous specs in the batch or external commits.
   - On merge/rebase conflict: pause with Phase 5 `user-gate` (Resume after resolving, Skip, Abort).
-- Mark state item `status: in_progress`, `flowMode: {lite|standard}`. Update state file `updatedAt`.
+- Transition the **existing** row for `{specPath}` (fallback `{slug}`) to `status: in_progress`, `flowMode: {lite|standard}` — a keyed in-place update, never a new appended row. Before writing, run the fail-closed duplicate guard (no duplicate `#`, no duplicate `slug`/`specPath`); on conflict, do not write and surface it. Set the row `updatedAt` and run frontmatter `updatedAt` to the current UTC timestamp. The item count stays at `totalItems`.
 - Dispatch subagent via `dispatch-agent`:
   - `description: "ws-spec-multi worker [{flowMode}] — {slug}"`
   - Command: if `flowMode == lite`: `/ws-spec-to-pr-lite full auto {specPath}` else: `/ws-spec-to-pr full auto {specPath}` (pass `dryRun` if set and `baseBranch: {baseBranch}`).
@@ -90,7 +91,8 @@ Every created PR MUST complete full code-review convergence, merge, and post-mer
 6. If convergence fails (max iterations, checks red, escalation): mark item `status: failed` and present Phase 5 `user-gate` failure menu.
 
 ### Phase 5: Record Outcome
-- Update state item:
+- Update the **existing** row for `{specPath}` (fallback `{slug}`) in place — never append a second row for the same spec. Run the fail-closed duplicate guard before writing; set the row `updatedAt` and the run frontmatter `updatedAt` to now. Reported totals use the frozen `totalItems`.
+- Row transitions:
   - On full merge convergence & post-merge sync: set `status: shipped`, `merged: true`, `activeThreads: 0`, `prNumber`, `prUrl`, `updatedAt`.
   - On failure or unresolvable PR state: mark item `status: failed`, present `user-gate` failure menu:
     - **Resume (Recommended):** Re-sync feature branch with `baseBranch` and re-dispatch worker or convergence gate for same spec.
@@ -99,7 +101,7 @@ Every created PR MUST complete full code-review convergence, merge, and post-mer
 - **Child git cleanup (Phase A):** Successful child workers run mandatory Phase A via their own orch (`ws-spec-to-pr` / lite) when child **shipping is terminal** — shared script `node {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.cjs --workflow-id {child-workflow-id}` ([`../ws-spec-to-pr/protocols/artifact-cleanup.md`](../ws-spec-to-pr/protocols/artifact-cleanup.md)). Skipped / failed / aborted children do **not** auto-clean. The batch `runId` is **not** a `uswf/{workflow-id}` cleanup target.
 
 ### Phase 6: Final Report
-- Summarize run metrics (total items, shipped & merged, skipped, failed, flow mode breakdown, `baseBranch`).
+- Summarize run metrics from the frozen queue: total items (`totalItems`), shipped & merged, skipped, failed, flow mode breakdown, `baseBranch`. Before reporting, assert exactly one row per selected spec and every row terminal (`shipped` / `skipped` / `failed`); any surviving `pending`/`in_progress` row is a phantom — surface it, do not silently recount.
 - Set overall run state `status: completed` (or `status: paused` if aborted).
 - Present summary report to the user.
 - Batch-level `completed` does not invoke Phase A for `runId`; per-child cleanup already ran (or was skipped) in Phase 5.
