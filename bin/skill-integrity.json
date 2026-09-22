@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "531abbdea9904f2cd40fc582e5ed3586f33f8f1dff0cec1ae21c4f5b673725a6",
+  "fullPackageDigest": "4a9e86d919a77998aa5645848ecebd3fb212a4142ab01fe033b18010f7cf4506",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -17,7 +17,7 @@
       "runtime/config-resolution.md": "7b490b1e691be4c9bee64774f89e9552fe796f89b8f0edeb5e8c0ef9feb6870d",
       "runtime/config.schema.json": "d7a28d9615e250f59147b5964074b14a22d84d7bdf9ccedd07bc87a3da9327cf",
       "runtime/evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
-      "runtime/gates.md": "e73367651a693904f00d4c864061bcbf6f60c35f44c647c74b637a9004296ac7",
+      "runtime/gates.md": "46c820e53a7761bfa3ad87536a06704f5b4ca71e0574e11a9024248ec158157d",
       "runtime/host-capability-tokens.md": "66ccef0e08d5518954982bf36b74bc39f727ed07d4c2040090fc4a4e7085395f",
       "runtime/host-dispatch.md": "de8446ce1b19db0371105fc364b43a2c2b5c3404e39646b05bedb2b0cb43ca70",
       "runtime/host-tool-map.json": "3d9ba399da3b049f29ca927ae3179a1618a222ab84dd25497da066c02e3bdbe0",
@@ -41,6 +41,7 @@
       "runtime/scripts/probe_host_capabilities.cjs": "bd1a035ad16e329b4dd6c4840ecddc82a6567c9a4bbef066f6f43bd78e67795c",
       "runtime/scripts/resolve_consumer_root.cjs": "fc76a2b57a1b435a6a91c6bd496da07b9fda94208e8b095301531c825c04e580",
       "runtime/scripts/resolve_hub_root.cjs": "b77afe730911aaa8543e4ccc1ba9e502a31f4d37378cb6d32e0d17608870c8ff",
+      "runtime/scripts/resolve_proof_of_work.cjs": "a63e45debd591aedc80683b056af3851b3a274a87c81eeb04097d777e5117d32",
       "runtime/scripts/retired_artifacts.cjs": "075a658a19314bd039a406f4651a0e1f9eedd01a4e253b7aca7d02bd686633de",
       "runtime/scripts/scan_stack_invariants.cjs": "f186e197040142066fa7e78b563b11a171c8dc5a62c8026a135457fa82faf5e7",
       "runtime/scripts/step_baton.cjs": "d18f4bd9cf4720c6bf5d3322c8a143a64c94593cce480f4577341f294645d071",
@@ -61,7 +62,7 @@
       "templates/STACK.md.example": "829b7d3fce62b8167905fc1d921ee744db1d7e8ef895b0e7eb969f089973bebd",
       "templates/config.json.example": "d45e4bbf1464a3352df73a5c1b0d97bf36e2245791888d37054a73f143bef47b"
     },
-    "skillDigest": "bfdcdba52da4ddc0eaa2bba0e457bd4b870d33b8406cce2f39d9cc262e584603"
+    "skillDigest": "784e1c8e29958c2c0cb6bc2fcb12211d39d0a12c817afda31a036c743bcaca0b"
   },
   "packageVersion": "0.4.53",
   "skills": {

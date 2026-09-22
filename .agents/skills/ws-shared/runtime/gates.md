@@ -263,7 +263,7 @@ On Start: resolve the output folder from `defaults.projectRootFolderToSave` (`{p
 
 **`autoMode`:** zero prompts of any kind — auto-start only when `enableAutomaticEvidenceCollectForProofOfWork` is explicit `true`, otherwise silent skip (`proof-of-work | skipped:auto-skip`). The post-completion step never blocks.
 
-**Invariants:** the evidence folder is never committed and the step never mutates product files. Skip reasons: `disabled` · `gate-declined` · `auto-skip` · `collector-missing` · `no-browser-capability`. Absent host browser capability is reported as `skipped:no-browser-capability` instead of synthesized evidence.
+**Invariants:** the evidence folder is never committed and the step never mutates product files. Executable contract: `node {skillsRoot}/ws-shared/runtime/scripts/resolve_proof_of_work.cjs --config {sharedDir}/config.json --slug {slug} --project-root {projectRoot} [--auto-mode] [--collector-installed] [--browser-capable] [--gate-decision start|skip]` prints the start/skip decision as JSON (pure: reads one config file, writes nothing). Skip reasons: `disabled` · `gate-declined` · `auto-skip` · `collector-missing` · `no-browser-capability`. Absent host browser capability is reported as `skipped:no-browser-capability` instead of synthesized evidence.
 
 ---
 
