@@ -68,7 +68,7 @@ gh pr create --head {head} --base {base} --title "{title}" --body-file {plansDir
 
 On Windows / PowerShell prefer `--body-file` (or single-quoted body) to avoid backtick escape mangling. Reuse an existing open PR for the same head→base when present. Capture PR number and URL for the caller (`ws-ship-pr`).
 
-- **Auto-close:** when a tracker `id` is present, the PR body must carry `Closes #{id}` so merging the PR closes the source issue. `ws-ship-pr` ensures this via `ensure_pr_closer.cjs --body-file {plansDir}/pr-body.md --id {id}` before calling this intent; skip for `id: null` / `source: local`.
+- **Auto-close (default branch only):** when a tracker `id` is present, the PR body must carry `Closes #{id}` so GitHub auto-closes the issue on merge when the PR base is the repository default branch. `ws-ship-pr` ensures this via `ensure_pr_closer.cjs --body-file {plansDir}/pr-body.md --id {id}` before calling this intent; skip for `id: null` / `source: local`. After merge on any base, callers dispatch `close-issue` for an explicit transition.
 
 ## `list-threads`
 
@@ -101,10 +101,25 @@ node .agents/skills/ws-spec-provider-github/scripts/comment_issue.cjs \
   [--dry-run]
 ```
 
+- **Comment-only** — does not change issue state (use `close-issue` after merge).
 - Body: PR URL + one-paragraph summary. No secrets, no absolute machine paths.
 - Skip when tracker `id` is null (`--id null` → exit 0 `skipped`).
 - `--dry-run`: print body JSON, no POST.
 - `validate-auth` before mutating.
+
+## `close-issue`
+
+```bash
+node .agents/skills/ws-spec-provider-github/scripts/close_issue.cjs \
+  --id {n} \
+  [--dry-run]
+```
+
+- Explicitly closes the linked GitHub issue (`gh issue close`). Idempotent when already closed.
+- Skip when tracker `id` is null (`--id null` → exit 0 `skipped`).
+- `--dry-run`: print planned close JSON, no `gh` mutation.
+- `validate-auth` before mutating. Auth failure → STOP with `validate-auth` remediation; no silent provider fallback.
+- Call after successful merge when `activeThreads == 0`; complements PR-body `Closes #{id}` (default-branch auto-close only).
 
 ## `resolve-thread`
 

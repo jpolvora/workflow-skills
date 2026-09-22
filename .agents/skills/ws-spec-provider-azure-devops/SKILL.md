@@ -1,7 +1,7 @@
 ---
 name: ws-spec-provider-azure-devops
 description: Azure DevOps work-item→spec and PR ops. Same required intents as GitHub (scm-provider-contract). Trigger when providers.scm is azure-devops.
-version: 0.4.61
+version: 0.4.62
 disable-model-invocation: true
 invocation_names:
   - spec-provider-azure-devops
@@ -58,7 +58,8 @@ Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/runtime/scm
 | `list-threads` | PR id | Thread list | `fix_pr_azure_context.cjs collect` |
 | `check-pr-status` | PR id | CI status + per-failed-check triage | `az repos pr policy list`; build log via REST or `az pipelines runs show`; classify diff/baseline/flake |
 | `resolve-thread` | thread id (+ PR id, comment; optional `--model`) | Resolved (or dry-run); comment describes the correction (not hash-only); footer `LLM model: {id}` when `--model` set | `fix_pr_azure_context.cjs resolve-thread` |
-| `comment-issue` | work item id, body | WIT comment (alias `close-loop`) | `comment_issue.cjs` → WIT Comments `api-version=7.1-preview.4` |
+| `comment-issue` | work item id, body | WIT comment (alias `close-loop`; comment-only) | `comment_issue.cjs` → WIT Comments `api-version=7.1-preview.4` |
+| `close-issue` | work item id | Work item closed / skipped / dry-run | `close_issue.cjs` → WIT `System.State` PATCH (`Closed`, fallback `Done`) |
 | `merge-pr` | PR id | Merged | Wait policies then `az repos pr update --status completed` |
 
 **Spec path rule:** `fetch-to-spec` **always** writes the agentic-enhanced spec of record first (via `ws-spec-write` / `resolve_spec_path.cjs`), then promotes it to `{us-dir}/step-00-{slug}.spec.md` via [ws-spec-provider-local](../ws-spec-provider-local/SKILL.md) `register_local_spec.cjs --source azure-devops`. Never write `step-00` straight from the converter, and never skip the `{specsDir}` copy.
@@ -78,6 +79,7 @@ Prefer these paths (legacy orch/fix-pr shims may forward here):
 | Thread ops | `{skillsRoot}/ws-spec-provider-azure-devops/scripts/fix_pr_azure_context.cjs` |
 | Prior-work sweep | `{skillsRoot}/ws-spec-provider-azure-devops/scripts/sweep_prior_work.cjs` |
 | Comment on work item | `{skillsRoot}/ws-spec-provider-azure-devops/scripts/comment_issue.cjs` |
+| Close work item | `{skillsRoot}/ws-spec-provider-azure-devops/scripts/close_issue.cjs` |
 
 ## Config keys
 

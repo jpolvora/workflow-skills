@@ -76,7 +76,8 @@ Path tokens: [Path tokens (load first)](#path-tokens-load-first). Artifact names
 | `create-pr` | Create PR via SCM provider | Resolve `providers.scm` → [`ws-spec-provider-github`](../../ws-spec-provider-github/SKILL.md) or [`ws-spec-provider-azure-devops`](../../ws-spec-provider-azure-devops/SKILL.md) `create-pr` (not raw `gh`/`az` alone) |
 | `sweep-prior-work` | Search PRs + recent commits before plan/code | Same SCM provider as `create-pr` |
 | `check-pr-status` | CI/policy status + failed-log triage | Same SCM provider (`diff-regression` / `baseline` / `infra-flake`; one flake rerun) |
-| `comment-issue` | Post tracker comment (alias `close-loop`) | Same SCM provider; skip when tracker `id` is null |
+| `comment-issue` | Post tracker comment (alias `close-loop`; **comment-only**, no state change) | Same SCM provider; skip when tracker `id` is null |
+| `close-issue` | Transition tracker to closed state after merge | Same SCM provider; skip when tracker `id` is null; `dry-run` prints only |
 | `list-threads` / `resolve-thread` / `merge-pr` | PR review + merge intents | Same SCM provider skill as `create-pr` |
 | `create-checkpoint` | Tag before step N | `Shell` `git tag uswf/{id}/before-step-{N}` |
 | `revert-to-checkpoint` | Revert to tag M | `Shell` `git reset --mixed {tag}` + per-path restore |

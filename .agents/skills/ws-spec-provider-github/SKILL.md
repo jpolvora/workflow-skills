@@ -1,7 +1,7 @@
 ---
 name: ws-spec-provider-github
 description: GitHub issue→spec and PR ops. Same required intents as Azure DevOps (scm-provider-contract). Trigger when providers.scm is github.
-version: 0.4.61
+version: 0.4.62
 disable-model-invocation: true
 invocation_names:
   - spec-provider-github
@@ -53,11 +53,12 @@ Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/runtime/scm
 | `fetch-to-spec` | Issue id / URL | **1.** `{specsDir}/{specStem}.spec.md` + optional `{specStem}.assets/` sidecar and `## Visual References` (agentic spec of record via `ws-spec-write`) → **2.** `{us-dir}/step-00-us-{n}.spec.md` (workflow copy, `source: github`) + `{us-dir}/attachments/` when sidecar exists + optional `*.issue.json` snapshot | provider fetch → shared ingest helper → `ws-spec-write` (reformulate/enhance) → `register_local_spec.cjs` |
 | `sweep-prior-work` | issue id (optional), keywords, files (optional) | JSON: PR search hits + `git log` | `sweep_prior_work.cjs` |
 | `validate-auth` | none | Pass/fail + fixes | `gh auth status` + thread token note |
-| `create-pr` | head, base, title/body | PR URL + id | `gh pr create` (reuse open head→base); body carries `Closes #{id}` when tracker id present (auto-close on merge; caller ensures it) |
+| `create-pr` | head, base, title/body | PR URL + id | `gh pr create` (reuse open head→base); body carries `Closes #{id}` when tracker id present (default-branch auto-close on merge; caller ensures it; use `close-issue` after merge on any base) |
 | `list-threads` | PR id | Thread list | `fetch_threads.cjs` |
 | `check-pr-status` | PR id | CI status + per-failed-check triage | `gh pr checks`; on fail `gh run view --log-failed`; classify diff/baseline/flake; one flake rerun |
 | `resolve-thread` | thread id (+ comment; optional `--model`) | Resolved (`isResolved: true` via `resolveReviewThread` GraphQL mutation); comment describes the correction (not hash-only); footer `LLM model: {id}` when `--model` set | `resolve_thread.cjs` |
-| `comment-issue` | issue id, body | Public issue comment (alias `close-loop`) | `comment_issue.cjs` → `gh issue comment` |
+| `comment-issue` | issue id, body | Public issue comment (alias `close-loop`; comment-only) | `comment_issue.cjs` → `gh issue comment` |
+| `close-issue` | issue id | Issue closed / skipped / dry-run | `close_issue.cjs` → `gh issue close` |
 | `merge-pr` | PR id | Merged | `gh pr checks --watch` then `gh pr merge --merge` |
 
 **Spec path rule:** `fetch-to-spec` **always** writes the agentic-enhanced spec of record first (via `ws-spec-write` / `resolve_spec_path.cjs`), then promotes it to `{us-dir}/step-00-{slug}.spec.md` via [ws-spec-provider-local](../ws-spec-provider-local/SKILL.md) `register_local_spec.cjs --source github`. Never write `step-00` straight from the converter, and never skip the `{specsDir}` copy.
@@ -78,6 +79,7 @@ Prefer these paths (legacy orch/fix-pr shims may forward here):
 | Resolve thread | `{skillsRoot}/ws-spec-provider-github/scripts/resolve_thread.cjs` |
 | Prior-work sweep | `{skillsRoot}/ws-spec-provider-github/scripts/sweep_prior_work.cjs` |
 | Comment on issue | `{skillsRoot}/ws-spec-provider-github/scripts/comment_issue.cjs` |
+| Close issue | `{skillsRoot}/ws-spec-provider-github/scripts/close_issue.cjs` |
 
 Optional: `issueTrackers.github.issueToSpecScript` must still resolve to the converter.
 

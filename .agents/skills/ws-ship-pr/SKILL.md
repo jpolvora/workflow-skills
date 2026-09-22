@@ -1,7 +1,7 @@
 ---
 name: ws-ship-pr
 description: End-to-end PR shipping manager — drives prepare-to-PR checklists, pushes code, creates PRs, waits for CI, and manages convergence.
-version: 0.4.61
+version: 0.4.62
 disable-model-invocation: true
 invocation_names:
   - ship-pr
@@ -99,8 +99,8 @@ See [`gates.md`](../ws-shared/runtime/gates.md) § Quality gate bypass. Ship/PRE
 6. **Monitor reviews & converge**: skip if `stopBeforeFixPr` (orch Step 9 owns [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md)). Pre-ship convergence inherits the fix-loop execution mode from the single shared key `ws-goal-fix-pr.useSubAgents` (absent/`false` default = inline loop, `true` = per-round dispatch; no separate ship key). Otherwise, after pushing and creating PR, wait **30 seconds** (wait for code-review action / CI workflows to start on SCM infrastructure), then start [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md) (default **300 seconds** heartbeat/settle loop, [GOAL-OVERRIDES.md](GOAL-OVERRIDES.md)), poll required checks via provider **`check-pr-status`** (classify diff-regression vs baseline vs infra-flake; one flake rerun; baseline does not block merge only when reproduced on default branch and recorded) and `list-threads` via the configured SCM provider, and dispatch `ws-goal-fix-pr` until `activeThreads == 0` or `max`. Never merge while threads remain, checks are red, or on escalate-stop. Prepare the handoff prompt/state for `ws-goal-fix-pr` even when stopping early so Step 9 can resume cleanly.
    - Done when: `activeThreads == 0` and required checks green, or run stopped with PR URL reported.
 
-7. **Merge**: only when Step 6 converged and checks green. Configured SCM provider intent `merge-pr`; skip when `no-merge` or `stopBeforeFixPr`. When merge runs in-session and tracker `id` is present, dispatch **`comment-issue`** again (merged follow-up). Never delete the resolved PR head (`shipHead`: workflow `state.branch`; standalone `workingBranch` or explicit `head=`).
-   - Done when: merged via configured SCM provider or explicitly skipped; `shipHead` intact.
+7. **Merge**: only when Step 6 converged and checks green. Configured SCM provider intent `merge-pr`; skip when `no-merge` or `stopBeforeFixPr`. When merge runs in-session and tracker `id` is present, dispatch **`comment-issue`** again (merged follow-up; comment-only), then dispatch **`close-issue`** (`--dry-run` when parent is dry-run) so the linked tracker reaches CLOSED regardless of PR base branch. Retain Step 5 / `ensure_pr_closer.cjs` `Closes #N` in the PR body for GitHub default-branch auto-close. Never delete the resolved PR head (`shipHead`: workflow `state.branch`; standalone `workingBranch` or explicit `head=`).
+   - Done when: merged via configured SCM provider or explicitly skipped; `close-issue` dispatched or skipped with reason; `shipHead` intact.
 
 8. **Telemetry aggregate** (post-delivery, non-blocking): after successful ship completion — PR created (`stopBeforeFixPr` / workflow ship phase handoff), merge done (standalone or full convergence), or `shipAction: skip` with `shipStatus` terminal — run `node bin/generate-telemetry-aggregate.cjs` (writes `{plansDir}/telemetry/aggregate.json`). When `stopBeforeFixPr`, orchestrator Step 9 also runs this after `ws-goal-fix-pr` convergence (idempotent). On failure: **warn and continue** — do not block ship, merge, or PR handoff.
    - Done when: aggregate script ran or failure warned; delivery outcome already reported.
@@ -116,7 +116,8 @@ In `dry-run`, `push-only`, `skip`, or early `stopBeforeFixPr` stop, state the ou
 ## Dependencies
 
 - Prepare board: [PREPARE-CHECKLIST.md](PREPARE-CHECKLIST.md) · Verify helper: `node {skillsRoot}/ws-ship-pr/scripts/verify.cjs`
-- PR-body auto-close helper: `node {skillsRoot}/ws-ship-pr/scripts/ensure_pr_closer.cjs` (GitHub `Closes #{id}` in the PR body; no-op for null ids and non-GitHub providers)
+- PR-body auto-close helper: `node {skillsRoot}/ws-ship-pr/scripts/ensure_pr_closer.cjs` (GitHub `Closes #{id}` in the PR body for default-branch auto-close; no-op for null ids and non-GitHub providers)
+- Post-merge tracker close: provider intent `close-issue` (explicit state transition; complements `Closes #N`)
 - SCM Providers (configured via `config.json` `providers.scm`): [ws-spec-provider-github](../ws-spec-provider-github/SKILL.md) · [ws-spec-provider-azure-devops](../ws-spec-provider-azure-devops/SKILL.md) · [ws-spec-provider-local](../ws-spec-provider-local/SKILL.md)
 - Security: [ws-secrets-leak-review](../ws-secrets-leak-review/SKILL.md)
 - Review: [ws-code-review](../ws-code-review/SKILL.md) · Convergence: [ws-goal-fix-pr](../ws-goal-fix-pr/SKILL.md) · Fixer: [ws-fix-pr](../ws-fix-pr/SKILL.md)

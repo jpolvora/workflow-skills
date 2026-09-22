@@ -1,6 +1,6 @@
 ---
 name: ws-spec-to-pr-lite
-version: 0.4.61
+version: 0.4.62
 description: Fast Spec-to-PR (steps 0–5). Plan, implement, commit, review, ship. Trigger for lite/fast delivery.
 disable-model-invocation: true
 invocation_names:
@@ -45,7 +45,7 @@ Aliases: [`tools.md`](../ws-shared/runtime/tools.md). Host mode: resolve the hos
 | 2 | Implementation | `ws-implement-tasks` (**defect-class repo-wide sweep**; link spec Negative & Failing Test Scenarios into `ac-ledger.json`) | Code modified + build/tests pass (`config.json.verification`) + negative-scenario tests linked; then required G2-code (skip if empty) |
 | 3 | Review | `ws-code-review` (+ fix; sibling modules beyond diff) | Committed `{base}...HEAD`; `step-06-{slug}.review.md` clean (0 Critical/Warning remaining; max 3 loops); then G2-code of review fixes if any |
 | 4 | Ship | orch: **close** (result, G2-delivery, MEMORY, changelog, `status: completed`, `shipStatus: pending`, post-close doc sync `ws-spec-index` / `ws-wiki sync`) then **ship** gate → `ws-ship-pr` (`check-pr-status` CI triage + PR-body `Closes #{id}` auto-close + **`comment-issue`** on create); after the finished state the optional post-completion proof-of-work step applies per [`gates.md`](../ws-shared/runtime/gates.md) § Optional post-completion proof-of-work step (explicit `defaults.enableOptionalProofOfWork: true` only) | `step-08-{slug}.result.md` + PR created/skipped per ship gate |
-| 5 | Fix-PR | `ws-goal-fix-pr` / `ws-fix-pr`: for each batch, write and validate the gate-only plan before any product edit, then execute inline (`check-pr-status` baseline vs diff); ignore role model switches | Complete plan + execute/proactive evidence; PR merged or zero active threads (`activeThreads == 0`); then run the post-completion proof-of-work runbook (helper → gate → collector invoke → telemetry) per [`gates.md`](../ws-shared/runtime/gates.md) § Optional post-completion proof-of-work step |
+| 5 | Fix-PR | `ws-goal-fix-pr` / `ws-fix-pr`: for each batch, write and validate the gate-only plan before any product edit, then execute inline (`check-pr-status` baseline vs diff); ignore role model switches; on in-session merge with tracker `id`, dispatch **`comment-issue`** then **`close-issue`** (same as standard Step 9) | Complete plan + execute/proactive evidence; PR merged or zero active threads (`activeThreads == 0`); then run the post-completion proof-of-work runbook (helper → gate → collector invoke → telemetry) per [`gates.md`](../ws-shared/runtime/gates.md) § Optional post-completion proof-of-work step |
 
 **No Step 5/7 verify or testing:** lite does not dispatch `ws-plan-verify` or `ws-testing`. **Regression sabotage** and **mutation testing** are **standard-orch Steps 5 and 7 only** — out of scope for lite.
 

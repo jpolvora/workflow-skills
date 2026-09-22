@@ -89,7 +89,7 @@ const contractMd = read(CONTRACT);
 assert(fs.existsSync(CONTRACT), 'scm-provider-contract.md exists');
 
 const required = firstColumnBacktickIds(sectionAfterHeading(contractMd, 'Required intents'));
-assert(required.length >= 9, `required intents count >= 9 (got ${required.length})`);
+assert(required.length >= 10, `required intents count >= 10 (got ${required.length})`);
 assert(
   /hash-only/i.test(contractMd),
   'scm-provider-contract resolve-thread rejects hash-only comments',
@@ -108,6 +108,7 @@ for (const id of [
   'merge-pr',
   'sweep-prior-work',
   'comment-issue',
+  'close-issue',
 ]) {
   assert(required.includes(id), `required includes ${id}`);
 }
@@ -392,12 +393,14 @@ for (const id of delegated) {
 
 const sweepFlags = ['--issue', '--keywords', '--files', '--dry-run', '--repo-root'];
 const commentFlags = ['--id', '--body-file', '--body', '--dry-run', '--repo-root'];
+const closeFlags = ['--id', '--dry-run', '--repo-root'];
 const sweepKeys = ['status', 'provider', 'issue', 'keywords', 'pullRequests', 'commits', 'repoRoot'];
 const rowAliases = ['number', 'pullRequestId', 'title', 'state', 'status', 'nativeStatus', 'url', 'headRefName', 'sourceRefName', 'searchQuery', 'searchText'];
 
 for (const skillId of ['ws-spec-provider-github', 'ws-spec-provider-azure-devops']) {
   const sweepSrc = read(path.join(SKILLS, skillId, 'scripts/sweep_prior_work.cjs'));
   const commentSrc = read(path.join(SKILLS, skillId, 'scripts/comment_issue.cjs'));
+  const closeSrc = read(path.join(SKILLS, skillId, 'scripts/close_issue.cjs'));
   const intentsMd = read(path.join(SKILLS, skillId, 'INTENTS.md'));
   for (const flag of sweepFlags) {
     assert(sweepSrc.includes(flag), `${skillId} sweep_prior_work.cjs has ${flag}`);
@@ -425,6 +428,19 @@ for (const skillId of ['ws-spec-provider-github', 'ws-spec-provider-azure-devops
     assert(commentSrc.includes(flag), `${skillId} comment_issue.cjs has ${flag}`);
   }
   assert(commentSrc.includes('skipped'), `${skillId} comment_issue.cjs skips null tracker id`);
+  assert(!/issue',\s*'close'/.test(commentSrc) && !/issue close/.test(commentSrc),
+    `${skillId} comment_issue.cjs is comment-only (no issue close)`);
+  assert(!commentSrc.includes('System.State'), `${skillId} comment_issue.cjs does not PATCH work-item state`);
+  assert(fs.existsSync(path.join(SKILLS, skillId, 'scripts/close_issue.cjs')), `${skillId} close_issue.cjs exists`);
+  for (const flag of closeFlags) {
+    assert(closeSrc.includes(flag), `${skillId} close_issue.cjs has ${flag}`);
+  }
+  assert(closeSrc.includes('skipped'), `${skillId} close_issue.cjs skips null tracker id`);
+  assert(closeSrc.includes('--dry-run'), `${skillId} close_issue.cjs supports dry-run`);
+  if (skillId === 'ws-spec-provider-github') {
+    assert(/issue',\s*'close'/.test(closeSrc) || /issue close/.test(closeSrc),
+      'GitHub close_issue.cjs uses gh issue close');
+  }
   if (skillId === 'ws-spec-provider-azure-devops') {
     assert(
       commentSrc.includes('7.1-preview.4'),
@@ -440,6 +456,10 @@ for (const skillId of ['ws-spec-provider-github', 'ws-spec-provider-azure-devops
     );
     for (const flag of ['--org', '--project', '--api-base', '--pat-env']) {
       assert(commentSrc.includes(flag), `ADO comment_issue.cjs has ${flag}`);
+    }
+    assert(closeSrc.includes('System.State'), 'ADO close_issue.cjs PATCHes System.State');
+    for (const flag of ['--org', '--project', '--api-base', '--pat-env']) {
+      assert(closeSrc.includes(flag), `ADO close_issue.cjs has ${flag}`);
     }
   }
   for (const term of ['diff-regression', 'baseline', 'infra-flake']) {
@@ -522,6 +542,22 @@ for (const skillId of ['ws-spec-provider-github', 'ws-spec-provider-azure-devops
   );
   assert(skip.status === 0, `${skillId} comment_issue.cjs --id null exits 0`);
   assert(/skipped/.test(skip.stdout || ''), `${skillId} comment_issue.cjs --id null prints skipped`);
+
+  const closeSkip = spawnSync(
+    process.execPath,
+    [path.join(SKILLS, skillId, 'scripts/close_issue.cjs'), '--id', 'null'],
+    { encoding: 'utf8', cwd: REPO },
+  );
+  assert(closeSkip.status === 0, `${skillId} close_issue.cjs --id null exits 0`);
+  assert(/skipped/.test(closeSkip.stdout || ''), `${skillId} close_issue.cjs --id null prints skipped`);
+
+  const closeDry = spawnSync(
+    process.execPath,
+    [path.join(SKILLS, skillId, 'scripts/close_issue.cjs'), '--id', '1', '--dry-run'],
+    { encoding: 'utf8', cwd: REPO },
+  );
+  assert(closeDry.status === 0, `${skillId} close_issue.cjs --dry-run exits 0`);
+  assert(/dry-run/.test(closeDry.stdout || ''), `${skillId} close_issue.cjs --dry-run prints dry-run`);
 }
 
 const adoOverride = spawnSync(

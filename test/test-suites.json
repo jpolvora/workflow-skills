@@ -15,6 +15,9 @@
       "test/test-provider-parity.js"
     ],
     [
+      "test/test-close-issue.js"
+    ],
+    [
       "test/test-visual-attachment-ingest.js"
     ],
     [
@@ -156,6 +159,9 @@
     ],
     [
       "test/test-provider-parity.js"
+    ],
+    [
+      "test/test-close-issue.js"
     ],
     [
       "test/test-hermes-spec-to-pr-enhancements.js"
