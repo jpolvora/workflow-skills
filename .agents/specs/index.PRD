@@ -161,12 +161,12 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Harness & Skills Hardening from Code Review of Recent PRs (`spec: 0108-code-review-findings-fixes.spec.md`)
 - [x] Harness Hardening Round 2 — Open Findings from the 20-Commit Read-Only Review (`spec: 0109-code-review-round-2-fixes.spec.md`)
 - [x] create a skill generator for the consumer project (`spec: 0110-us-378.spec.md`)
-- [ ] enhance ps1 config gui (`spec: 0112-us-381.spec.md`)
-- [ ] increase test coverage to near 100% (`spec: 0113-us-380.spec.md`)
+- [x] enhance ps1 config gui (`spec: 0112-us-381.spec.md`) — PR #387 MERGED
+- [x] increase test coverage to near 100% (`spec: 0113-us-380.spec.md`) — PR #390 MERGED
 - [x] Integrate ws-self-learning with the patterns track and store the generated ws-project-patterns body under the shared hub (`spec: 0114-patterns-generator-shared-hub-output.spec.md`)
-- [ ] Relocatable shared hub root across the harness (installer, configurator, generator, layout) (`spec: 0115-configurable-hub-root.spec.md`)
-- [ ] ws-monitor reports critical missing-artifact false positives on ws-spec-to-pr-lite runs (`spec: 0116-us-385.spec.md`)
-- [ ] create an optional step proof-of-work (`spec: 0117-us-386.spec.md`)
+- [x] Relocatable shared hub root across the harness (installer, configurator, generator, layout) (`spec: 0115-configurable-hub-root.spec.md`) — PR #391 MERGED
+- [x] ws-monitor reports critical missing-artifact false positives on ws-spec-to-pr-lite runs (`spec: 0116-us-385.spec.md`) — PR #392 MERGED
+- [x] create an optional step proof-of-work (`spec: 0117-us-386.spec.md`) — PR #394 MERGED
 
 
 
@@ -285,7 +285,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 | 68 | `us-250` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Remove retired ws-patterns references from hub templates/seeds (PR #251) |
 | 69 | `us-272` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Prune retired skill ids on update + hybrid harness fallback (PR #273) |
 
-All Next-specs closed except true todos: `us-380`, `us-381`.
+All Next-specs closed.
 
 | 70 | `ws-benchmarks-skill` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-benchmarks: benchmark commands and evolution report manager |
 | 71 | `ws-spec-manager-skill` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-manager: unified specification router and lifecycle manager |
@@ -363,17 +363,17 @@ All Next-specs closed except true todos: `us-380`, `us-381`.
 
 | 115 | `us-378` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | create a skill generator for the consumer project |
 
-| 116 | `us-381` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | enhance ps1 config gui |
+| 116 | `us-381` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | enhance ps1 config gui |
 
-| 117 | `us-380` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | increase test coverage to near 100% |
+| 117 | `us-380` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | increase test coverage to near 100% |
 
 | 118 | `patterns-generator-shared-hub-output` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Integrate ws-self-learning with the patterns track and store the generated ws-project-patterns body under the shared hub |
 
-| 119 | `configurable-hub-root` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Relocatable shared hub root across the harness (installer, configurator, generator, layout) |
+| 119 | `configurable-hub-root` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Relocatable shared hub root across the harness (installer, configurator, generator, layout) |
 
-| 120 | `us-385` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor reports critical missing-artifact false positives on ws-spec-to-pr-lite runs |
+| 120 | `us-385` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor reports critical missing-artifact false positives on ws-spec-to-pr-lite runs |
 
-| 121 | `us-386` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | create an optional step proof-of-work |
+| 121 | `us-386` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | create an optional step proof-of-work |
 
 ## 9. Inbox
 
@@ -497,6 +497,11 @@ All Next-specs closed except true todos: `us-380`, `us-381`.
 | 2026-09-21 | `us-369` | ws-monitor transcript signals fire false positives on healthy runs | [PR #379](https://github.com/jpolvora/workflow-skills/pull/379) |
 | 2026-09-21 | `us-378` | create a skill generator for the consumer project (ws-patterns-generator) | [PR #383](https://github.com/jpolvora/workflow-skills/pull/383) |
 | 2026-09-21 | `patterns-generator-shared-hub-output` | Integrate ws-self-learning with the patterns track; host the generated ws-project-patterns body under the shared hub | `d8665b74` (develop) |
+| 2026-09-22 | `us-381` | enhance ps1 config gui | [PR #387](https://github.com/jpolvora/workflow-skills/pull/387) |
+| 2026-09-22 | `us-380` | increase test coverage to near 100% | [PR #390](https://github.com/jpolvora/workflow-skills/pull/390) |
+| 2026-09-22 | `configurable-hub-root` | Relocatable shared hub root across the harness (installer, configurator, generator, layout) | [PR #391](https://github.com/jpolvora/workflow-skills/pull/391) |
+| 2026-09-22 | `us-385` | ws-monitor reports critical missing-artifact false positives on ws-spec-to-pr-lite runs | [PR #392](https://github.com/jpolvora/workflow-skills/pull/392) |
+| 2026-09-22 | `us-386` | create an optional step proof-of-work | [PR #394](https://github.com/jpolvora/workflow-skills/pull/394) |
 
 ## 11. Maintenance checklist
 
