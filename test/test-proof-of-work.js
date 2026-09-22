@@ -308,6 +308,69 @@ assert(
   'matrix: custom folder resolves tokens',
 );
 
+// Round-3: gate cancel → HS-1 path (never a completed skip); strict decision + slug validation
+function decideRaw(configObj, extraArgs = [], slug = 'us-386') {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'pow-'));
+  const configPath = path.join(dir, 'config.json');
+  fs.writeFileSync(configPath, JSON.stringify(configObj));
+  const args = [HELPER, '--config', configPath, '--slug', slug, '--project-root', dir, ...extraArgs];
+  const res = spawnSync(process.execPath, args, { encoding: 'utf8' });
+  fs.rmSync(dir, { recursive: true, force: true });
+  return res;
+}
+
+const cancelled = decideRaw(
+  { defaults: { enableOptionalProofOfWork: true } },
+  [...FULL_ARGS(), '--gate-decision', 'cancel'],
+);
+function FULL_ARGS() {
+  return ['--collector-installed', '--browser-capable'];
+}
+assert(cancelled.status === 0, 'matrix: cancel exits 0 with a cancel action');
+assert(
+  JSON.parse(cancelled.stdout).action === 'cancel',
+  'matrix: gate cancel returns cancel (caller applies HS-1, no completed skip)',
+);
+assert(
+  JSON.parse(cancelled.stdout).reason === 'gate-cancelled',
+  'matrix: gate cancel reason is gate-cancelled',
+);
+const badDecision = decideRaw(
+  { defaults: { enableOptionalProofOfWork: true } },
+  [...FULL_ARGS(), '--gate-decision', 'maybe'],
+);
+assert(badDecision.status === 2, 'matrix: invalid gate decision exits 2');
+const traversal = decideRaw(
+  { defaults: { enableOptionalProofOfWork: true } },
+  [...FULL_ARGS(), '--gate-decision', 'start'],
+  '../../outside',
+);
+assert(traversal.status === 0, 'matrix: traversal slug still decides');
+assert(
+  JSON.parse(traversal.stdout).folder.split(path.sep).join('/').endsWith('/outside'),
+  'matrix: traversal slug is sanitized to a leaf inside the subtree',
+);
+assert(
+  !JSON.parse(traversal.stdout).folder.includes('..'),
+  'matrix: sanitized folder cannot escape the subtree',
+);
+const nested = decideRaw(
+  { defaults: { enableOptionalProofOfWork: true } },
+  [...FULL_ARGS(), '--gate-decision', 'start'],
+  'a/b',
+);
+assert(nested.status === 0, 'matrix: nested slug still decides');
+assert(
+  JSON.parse(nested.stdout).folder.split(path.sep).join('/').endsWith('/b'),
+  'matrix: nested slug is sanitized to its leaf',
+);
+const dotdot = decideRaw(
+  { defaults: { enableOptionalProofOfWork: true } },
+  [...FULL_ARGS(), '--gate-decision', 'start'],
+  '..',
+);
+assert(dotdot.status === 2, 'matrix: bare traversal slug exits 2');
+
 // Round-2: terminal transitions wire the executable runbook (helper → gate → collector → telemetry)
 assert(
   /resolve_proof_of_work\.cjs --config \{sharedDir\}\/config\.json --slug \{slug\} --project-root \{projectRoot\}/.test(stepDispatch),
@@ -332,6 +395,18 @@ assert(
 assert(
   /helper → gate → collector invoke → telemetry/.test(liteSkill),
   'ws-spec-to-pr-lite Step 5 wires the same runbook after convergence',
+);
+assert(
+  stepDispatch.includes('--gate-decision start|skip|cancel'),
+  'STEP-DISPATCH.md runbook forwards cancel to the helper',
+);
+assert(
+  /On `{"action":"cancel"}`: apply HS-1/.test(stepDispatch),
+  'STEP-DISPATCH.md runbook HS-1 stops on cancel without a completed skip',
+);
+assert(
+  gates.includes('record no completed skip'),
+  'gates.md cancel records no completed skip',
 );
 
 if (failures > 0) {

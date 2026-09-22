@@ -257,13 +257,13 @@ Effective only when `defaults.enableOptionalProofOfWork` is explicit `true` (omi
 1. **Start evidence collection** (Recommended)
 2. **Skip**
 
-On Start: resolve the output folder from `defaults.projectRootFolderToSave` (`{projectRoot}` and `{slug}` tokens, default `{projectRoot}/.proofOfWork/{slug}`), invoke the `proof-of-work` collector, and log `proof-of-work | started:{folder}`. On Skip (or cancel → HS-1): log `proof-of-work | skipped:gate-declined`.
+On Start: resolve the output folder from `defaults.projectRootFolderToSave` (`{projectRoot}` and `{slug}` tokens, default `{projectRoot}/.proofOfWork/{slug}`), invoke the `proof-of-work` collector, and log `proof-of-work | started:{folder}`. On Skip: log `proof-of-work | skipped:gate-declined`. On Cancel (dismissed gate): apply HS-1 — STOP, re-present the gate, never infer — and record no completed skip.
 
 **Both switches explicit `true`** (`enableAutomaticEvidenceCollectForProofOfWork` also `true`): start without any gate and log `proof-of-work | started:{folder}`.
 
 **`autoMode`:** zero prompts of any kind — auto-start only when `enableAutomaticEvidenceCollectForProofOfWork` is explicit `true`, otherwise silent skip (`proof-of-work | skipped:auto-skip`). The post-completion step never blocks.
 
-**Invariants:** the evidence folder is never committed and the step never mutates product files. Executable contract: `node {skillsRoot}/ws-shared/runtime/scripts/resolve_proof_of_work.cjs --config {sharedDir}/config.json --slug {slug} --project-root {projectRoot} [--auto-mode] [--collector-installed] [--browser-capable] [--gate-decision start|skip]` prints the start/skip decision as JSON (pure: reads one config file, writes nothing). Skip reasons: `disabled` · `gate-declined` · `auto-skip` · `collector-missing` · `no-browser-capability`. Absent host browser capability is reported as `skipped:no-browser-capability` instead of synthesized evidence.
+**Invariants:** the evidence folder is never committed and the step never mutates product files. Executable contract: `node {skillsRoot}/ws-shared/runtime/scripts/resolve_proof_of_work.cjs --config {sharedDir}/config.json --slug {slug} --project-root {projectRoot} [--auto-mode] [--collector-installed] [--browser-capable] [--gate-decision start|skip|cancel]` prints the start/skip/cancel decision as JSON (pure: reads one config file, writes nothing). Skip reasons: `disabled` · `gate-declined` · `auto-skip` · `collector-missing` · `no-browser-capability`. Absent host browser capability is reported as `skipped:no-browser-capability` instead of synthesized evidence.
 
 ---
 

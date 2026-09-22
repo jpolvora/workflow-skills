@@ -26,9 +26,12 @@
  * CLI:
  *   node resolve_proof_of_work.cjs --config <path> --slug <slug>
  *     --project-root <dir> [--auto-mode] [--collector-installed]
- *     [--browser-capable] [--gate-decision start|skip]
- * Prints `{action:"start",folder}` or `{action:"skip",reason}`; exits 0 on a
- * decision, 2 on usage error (missing config/slug flags or unreadable config).
+ *     [--browser-capable] [--gate-decision start|skip|cancel]
+ * Prints `{action:"start",folder}`, `{action:"skip",reason}`, or
+ * `{action:"cancel",reason:"gate-cancelled"}` (gate dismissed → caller applies
+ * HS-1 STOP and records no completed skip); exits 0 on a decision, 2 on usage
+ * error (missing config/slug flags, unreadable config, invalid gate decision,
+ * or non-leaf slug).
  */
 
 const fs = require('fs');
@@ -69,9 +72,17 @@ function readConfig(configPath) {
   return data;
 }
 
+function sanitizeSlug(slug) {
+  const base = String(slug).split(/[\\/]/).pop();
+  if (!base || base === '.' || base === '..') {
+    throw new Error('slug must be a plain path leaf (no separators, empty, or traversal)');
+  }
+  return base;
+}
+
 function resolveFolder(template, projectRoot, slug) {
   const base = typeof template === 'string' && template.length > 0 ? template : DEFAULT_FOLDER;
-  return base.split('{projectRoot}').join(projectRoot).split('{slug}').join(slug);
+  return base.split('{projectRoot}').join(projectRoot).split('{slug}').join(sanitizeSlug(slug));
 }
 
 function decide(options, config) {
@@ -97,6 +108,7 @@ function decide(options, config) {
   }
   if (automatic) return startChecks();
   if (options.gateDecision === 'start') return startChecks();
+  if (options.gateDecision === 'cancel') return { action: 'cancel', reason: 'gate-cancelled' };
   return { action: 'skip', reason: 'gate-declined' };
 }
 
@@ -114,6 +126,18 @@ function main() {
     process.exitCode = 2;
     return;
   }
+  if (options.gateDecision !== null && !['start', 'skip', 'cancel'].includes(options.gateDecision)) {
+    process.stderr.write('resolve_proof_of_work: --gate-decision must be start, skip, or cancel\n');
+    process.exitCode = 2;
+    return;
+  }
+  try {
+    sanitizeSlug(options.slug);
+  } catch (err) {
+    process.stderr.write(`resolve_proof_of_work: invalid --slug: ${err.message}\n`);
+    process.exitCode = 2;
+    return;
+  }
   let config;
   try {
     config = readConfig(path.resolve(options.config));
@@ -122,9 +146,17 @@ function main() {
     process.exitCode = 2;
     return;
   }
-  process.stdout.write(`${JSON.stringify(decide(options, config))}\n`);
+  let decision;
+  try {
+    decision = decide(options, config);
+  } catch (err) {
+    process.stderr.write(`resolve_proof_of_work: cannot decide: ${err.message}\n`);
+    process.exitCode = 2;
+    return;
+  }
+  process.stdout.write(`${JSON.stringify(decision)}\n`);
 }
 
 if (require.main === module) main();
 
-module.exports = { decide, resolveFolder, DEFAULT_FOLDER };
+module.exports = { decide, resolveFolder, sanitizeSlug, DEFAULT_FOLDER };

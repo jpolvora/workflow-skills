@@ -174,9 +174,10 @@ When shipping reaches a **terminal** `shipStatus` after Step 9 convergence (or s
 **Post-completion proof-of-work (optional, orch-owned runbook):** after shipping reaches a terminal `shipStatus` (or skip-ship/skip-PR after close with no Step 9), execute in order:
 
 1. Normal mode with `defaults.enableOptionalProofOfWork` explicit `true` and `defaults.enableAutomaticEvidenceCollectForProofOfWork` not explicit `true`: present the [`gates.md`](../ws-shared/runtime/gates.md) § Optional post-completion proof-of-work step gate (**Start evidence collection** / **Skip**) and keep the decision for step 2. Every other switch/`autoMode` combination skips this prompt.
-2. Run `node {skillsRoot}/ws-shared/runtime/scripts/resolve_proof_of_work.cjs --config {sharedDir}/config.json --slug {slug} --project-root {projectRoot}` plus `--auto-mode` when in `autoMode`, `--collector-installed` when the consumer-installed `proof-of-work` skill resolves, `--browser-capable` when the host exposes browser capability, and `--gate-decision start|skip` from step 1 when a gate was presented.
+2. Run `node {skillsRoot}/ws-shared/runtime/scripts/resolve_proof_of_work.cjs --config {sharedDir}/config.json --slug {slug} --project-root {projectRoot}` plus `--auto-mode` when in `autoMode`, `--collector-installed` when the consumer-installed `proof-of-work` skill resolves, `--browser-capable` when the host exposes browser capability, and `--gate-decision start|skip|cancel` from step 1 when a gate was presented (dismissal forwards `cancel`).
 3. On `{"action":"start","folder"}`: invoke the `proof-of-work` collector with the resolved folder and log `proof-of-work | started:{folder}`.
 4. On `{"action":"skip","reason"}`: log `proof-of-work | skipped:{reason}` and end (reasons: `disabled` · `gate-declined` · `auto-skip` · `collector-missing` · `no-browser-capability`).
+5. On `{"action":"cancel"}`: apply HS-1 — STOP, re-present the gate, never infer; record no completed skip.
 
 Omitted/`false` switch short-circuits at step 2 with `skip:disabled` — nothing else runs. Never inside `ws-ship-pr`; never re-ask close or ship; never commit the evidence folder; never mutate product files.
 

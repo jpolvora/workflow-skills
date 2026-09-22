@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "2274fa88a398263020f0524c278e0041ab0e42afd1a1bb0c4b55b85cc24f0f8f",
+  "fullPackageDigest": "3c09160fceccf7d442be7c712b5b745ec428f0b52e5ee96df8edc4a76d3c503a",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -17,7 +17,7 @@
       "runtime/config-resolution.md": "7b490b1e691be4c9bee64774f89e9552fe796f89b8f0edeb5e8c0ef9feb6870d",
       "runtime/config.schema.json": "d7a28d9615e250f59147b5964074b14a22d84d7bdf9ccedd07bc87a3da9327cf",
       "runtime/evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
-      "runtime/gates.md": "46c820e53a7761bfa3ad87536a06704f5b4ca71e0574e11a9024248ec158157d",
+      "runtime/gates.md": "1d2de397b503c8849d3f9f41d40b42c2774a74d38cea2307979d6c384fefd428",
       "runtime/host-capability-tokens.md": "66ccef0e08d5518954982bf36b74bc39f727ed07d4c2040090fc4a4e7085395f",
       "runtime/host-dispatch.md": "de8446ce1b19db0371105fc364b43a2c2b5c3404e39646b05bedb2b0cb43ca70",
       "runtime/host-tool-map.json": "3d9ba399da3b049f29ca927ae3179a1618a222ab84dd25497da066c02e3bdbe0",
@@ -41,7 +41,7 @@
       "runtime/scripts/probe_host_capabilities.cjs": "bd1a035ad16e329b4dd6c4840ecddc82a6567c9a4bbef066f6f43bd78e67795c",
       "runtime/scripts/resolve_consumer_root.cjs": "fc76a2b57a1b435a6a91c6bd496da07b9fda94208e8b095301531c825c04e580",
       "runtime/scripts/resolve_hub_root.cjs": "b77afe730911aaa8543e4ccc1ba9e502a31f4d37378cb6d32e0d17608870c8ff",
-      "runtime/scripts/resolve_proof_of_work.cjs": "a63e45debd591aedc80683b056af3851b3a274a87c81eeb04097d777e5117d32",
+      "runtime/scripts/resolve_proof_of_work.cjs": "ff2f3441d987885154447eeb196619cca7e099054f9ccba36ca340ea2fd3f939",
       "runtime/scripts/retired_artifacts.cjs": "075a658a19314bd039a406f4651a0e1f9eedd01a4e253b7aca7d02bd686633de",
       "runtime/scripts/scan_stack_invariants.cjs": "f186e197040142066fa7e78b563b11a171c8dc5a62c8026a135457fa82faf5e7",
       "runtime/scripts/step_baton.cjs": "d18f4bd9cf4720c6bf5d3322c8a143a64c94593cce480f4577341f294645d071",
@@ -62,7 +62,7 @@
       "templates/STACK.md.example": "829b7d3fce62b8167905fc1d921ee744db1d7e8ef895b0e7eb969f089973bebd",
       "templates/config.json.example": "d45e4bbf1464a3352df73a5c1b0d97bf36e2245791888d37054a73f143bef47b"
     },
-    "skillDigest": "784e1c8e29958c2c0cb6bc2fcb12211d39d0a12c817afda31a036c743bcaca0b"
+    "skillDigest": "d8fd1ab8b1f618270331078a3bdf9f8e339687624524369974de58156b009bac"
   },
   "packageVersion": "0.4.53",
   "skills": {
@@ -509,7 +509,7 @@
         "PROTOCOLS.md": "3ce203e8a1128a2e5270e49e70da18b7e428f8633027dc00ef2d3c8074d97643",
         "README.md": "5440b572d91cd0f0e6e6f5d9e005f85b66e9eb7fd20f046242c52f608e7c705a",
         "SKILL.md": "0f6b2f0bd8af29abe41b2ec24921c0c6eaa5e03d95044f2ac1f3e2caf06fec45",
-        "STEP-DISPATCH.md": "a61ac080539b82c5e5462a1e0f0a5edbdbaa4b1929d2c6bf9cf12c95056b1a64",
+        "STEP-DISPATCH.md": "03ac47b384d19940bc2ed7810f36839d3a11304549d8578e84a26bacd81a5cb8",
         "WORKER-TURN-RULES.md": "bcd9848443d17da5b390d98e27c42083bfc22c3167c8ea9ea448784928844ea3",
         "docs/faq.md": "9100af8db6f817e82aff726b95c86e7a3447b91cbac48a206ce9e539eea7ae38",
         "evals/evals.json": "e696da923c1994e6aa9a380d0bc76b4fb9560ca5eacf1c4a278712ef710dbbde",
@@ -538,7 +538,7 @@
         "scripts/write_verification_manifest.cjs": "d2c2420752e063b604e438ce5a4b4398fb456ba4e5be71f45b00e20523b7c89d",
         "ws-spec-to-pr-run-test.md": "417b103bc5ea94cd83dbaaa71aa973cbf23e29f73d7ca567667b2870be914560"
       },
-      "skillDigest": "c9a5c2f594e64713c8f1e6c9728d07cb541efcbadd341e798f1437fcd0acae11"
+      "skillDigest": "dde2e171768fe2c1f9e763edffe7cb759d2e5b28c5223b1273f4fc8188541179"
     },
     "ws-spec-to-pr-lite": {
       "files": {
