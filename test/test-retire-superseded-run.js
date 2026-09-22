@@ -127,5 +127,33 @@ function field(text, name) {
   }
 }
 
+// A non-active (paused) run is not retired silently.
+{
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-retire-us395-paused-'));
+  tempRoots.push(root);
+  const dir = path.join(root, '.agents', 'plans', 'ws-spec-multi');
+  write(path.join(dir, 'ms-paused.state.md'), stateBody({ runId: 'ms-paused', status: 'paused', createdAt: '2026-09-19T23:16:39Z' }));
+  write(path.join(dir, 'ms-super.state.md'), stateBody({ runId: 'ms-super', status: 'active', createdAt: '2026-09-19T23:25:56Z', supersedesRunId: 'ms-paused' }));
+  const result = run(['--run', path.join(dir, 'ms-super.state.md'), '--plans-dir', path.join(root, '.agents', 'plans'), '--timestamp', '2026-09-22T16:20:00Z', '--json'], root);
+  if (result.status === 0) throw new Error('us-395 AC3: a paused run must not be silently retired');
+  if (field(fs.readFileSync(path.join(dir, 'ms-paused.state.md'), 'utf8'), 'status') !== 'paused') {
+    throw new Error('us-395 AC3: paused run status must be unchanged');
+  }
+}
+
+// A non-advancing timestamp fails closed (never moves updatedAt backwards).
+{
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-retire-us395-ts-'));
+  tempRoots.push(root);
+  const dir = path.join(root, '.agents', 'plans', 'ws-spec-multi');
+  write(path.join(dir, 'ms-ts.state.md'), stateBody({ runId: 'ms-ts', status: 'active', createdAt: '2026-09-19T23:16:39Z' }));
+  write(path.join(dir, 'ms-ts-new.state.md'), stateBody({ runId: 'ms-ts-new', status: 'active', createdAt: '2026-09-19T23:25:56Z', supersedesRunId: 'ms-ts' }));
+  const result = run(['--run', path.join(dir, 'ms-ts-new.state.md'), '--plans-dir', path.join(root, '.agents', 'plans'), '--timestamp', '2026-01-01T00:00:00Z', '--json'], root);
+  if (result.status === 0) throw new Error('us-395 AC3: a backwards timestamp must fail closed');
+  if (field(fs.readFileSync(path.join(dir, 'ms-ts.state.md'), 'utf8'), 'status') !== 'active') {
+    throw new Error('us-395 AC3: run must be unchanged on a rejected timestamp');
+  }
+}
+
 for (const root of tempRoots) fs.rmSync(root, { recursive: true, force: true });
 console.log('us-395 supersede retirement ok');

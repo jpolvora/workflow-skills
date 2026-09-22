@@ -144,7 +144,16 @@ function main() {
   const current = readField(text, 'status');
   if (TERMINAL.has(String(current))) {
     result.noop = true;
+  } else if (String(current) !== 'active') {
+    fail(`superseded run must be active (received: ${current || 'missing'})`, options);
+    return;
   } else {
+    const previousUpdatedAt = Date.parse(readField(text, 'updatedAt') || '');
+    const nextUpdatedAt = Date.parse(timestamp);
+    if (!Number.isFinite(nextUpdatedAt) || (Number.isFinite(previousUpdatedAt) && nextUpdatedAt <= previousUpdatedAt)) {
+      fail('retirement timestamp must be later than the existing updatedAt', options);
+      return;
+    }
     let next = setField(text, 'status', status);
     next = setField(next, 'updatedAt', `"${timestamp}"`);
     atomicWrite(targetMd, next);
