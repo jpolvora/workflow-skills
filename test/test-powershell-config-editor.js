@@ -617,7 +617,15 @@ assert.strictEqual(
   0,
   'No continuation line may start with a bare -Section argument: ' + danglingSections.slice(0, 2).join(' | ')
 );
-console.log('  PASS: Section headers (' + headerCalls.length + ' groups), tab order, and dirty cue validated.');
+assert(
+  guiScript.includes('$script:HeaderControls'),
+  'HeaderControls tracking collection is missing (theme recolor contract)'
+);
+assert(
+  guiScript.includes("Role = 'title'") && guiScript.includes("Role = 'rule'"),
+  'Header title/rule role tags are missing for Apply-ThemeToUi recolor'
+);
+console.log('  PASS: Section headers (' + headerCalls.length + ' groups), tab order, dirty cue, and theme recolor validated.');
 
 console.log('\nALL 11 POWERSHELL CONFIG EDITOR TESTS PASSED.');
 

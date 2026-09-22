@@ -46,6 +46,7 @@ $script:AppName = 'Workflow Skills Config Editor'
 $script:AppVersion = '1.1.0'
 $script:NextTabIndex = 0
 $script:NextRowIndex = 0
+$script:HeaderControls = @()
 $script:IsDirty = $false
 $script:ActiveConfigPath = $null
 $script:BackupConfigPath = $null
@@ -691,6 +692,7 @@ function Add-SectionHeader {
     $hdr.Location = New-Object System.Drawing.Point(10, $YOffset.Value)
     $hdr.AutoSize = $true
     $ParentPanel.Controls.Add($hdr)
+    $script:HeaderControls += @{ Control = $hdr; Role = 'title' }
     $YOffset.Value += 24
 
     if (-not [string]::IsNullOrWhiteSpace($Subtitle)) {
@@ -704,6 +706,7 @@ function Add-SectionHeader {
         $sub.AutoSize = $false
         $sub.Height = 18
         $ParentPanel.Controls.Add($sub)
+        $script:HeaderControls += @{ Control = $sub; Role = 'subtitle' }
         $YOffset.Value += 22
     }
 
@@ -714,6 +717,7 @@ function Add-SectionHeader {
     $rule.BackColor = $palette.Accent
     $rule.Anchor = ([System.Windows.Forms.AnchorStyles]::Top -bor [System.Windows.Forms.AnchorStyles]::Left -bor [System.Windows.Forms.AnchorStyles]::Right)
     $ParentPanel.Controls.Add($rule)
+    $script:HeaderControls += @{ Control = $rule; Role = 'rule' }
     $YOffset.Value += 10
 }
 
@@ -1184,6 +1188,7 @@ function Populate-Sections {
     $script:FieldControls = @()
     $script:NextTabIndex = 0
     $script:NextRowIndex = 0
+    $script:HeaderControls = @()
 
     $palette = Get-CurrentPalette
 
@@ -1528,6 +1533,20 @@ function Apply-ThemeToUi {
     # Update section panels
     foreach ($pnl in $script:SectionPanels) {
         $pnl.BackColor = $palette.BackColor
+    }
+
+    # Update section headers (titles, subtitles, divider rules)
+    foreach ($hc in $script:HeaderControls) {
+        if (-not $hc.Control -or $hc.Control.IsDisposed) { continue }
+        if ($hc.Role -eq 'title') {
+            $hc.Control.ForeColor = $palette.Accent
+        }
+        elseif ($hc.Role -eq 'subtitle') {
+            $hc.Control.ForeColor = $palette.TextMuted
+        }
+        elseif ($hc.Role -eq 'rule') {
+            $hc.Control.BackColor = $palette.Accent
+        }
     }
 
     # Update row panels
