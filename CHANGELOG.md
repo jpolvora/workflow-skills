@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-22 01:30] Agent: Muse Code (muse-spark)
+- **Prompt**: Implement us-386 optional post-completion proof-of-work step (spec 0117-us-386), full standard pipeline to merged PR.
+- **Done**: Added `defaults.enableOptionalProofOfWork` / `defaults.enableAutomaticEvidenceCollectForProofOfWork` (bool, false) + `defaults.projectRootFolderToSave` (string token default) across schema, example, PS1 GUI, auto-configure, and interview; documented resolution + gate contracts (config-wire collector id `proof-of-work`, fail-closed skips, autoMode never blocks) and orch hooks (standard exit/dispatch, lite close); new `test/test-proof-of-work.js` + suite entry; README row; version 0.4.53 + integrity regen + site rebuild.
+- **Result**: `test-proof-of-work.js` 32/32; config-editor 11/11; `npm run test` 115/115; `test-harness-clean.js` 0 findings; invariant scan 0 issues; verify score 10/10; review 0 Critical/Warning.
+
 ### [2026-09-21 00:31] Agent: Muse Code (muse-spark)
 - **Prompt**: Update spec 0107-us-369 for issue #369, implement surgical fixes, bump, commit, push, ship PR.
 - **Done**: Tightened the three ws-monitor transcript signals to require failure-shaped evidence (`hybrid-path-resolution`: ENOENT-family within 200 chars of dispatch-context construction; `model-fallback`: dispatch + model + rejection on one dispatch record; `subagent-error`: exception marker plus stack-trace shape); updated ws-monitor SKILL.md predicate docs; refreshed spec 0107-us-369 sweep (HEAD 0.4.47, repro 3/3) and re-registered step-00; updated positive fixtures to failure-shaped evidence and added a benign-transcript negative test; version 0.4.48 + integrity regen + site rebuild.

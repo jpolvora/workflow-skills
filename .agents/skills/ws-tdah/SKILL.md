@@ -1,6 +1,6 @@
 ---
 name: ws-tdah
-version: 0.4.52
+version: 0.4.53
 description: Action-first reply shape, anti-slop clarity, and operational judgment. Trigger via /ws-tdah, /tdah, /wait-what, or start ws-tdah (autoload in upstream dogfood hubs).
 invocation_names:
   - tdah

@@ -82,7 +82,7 @@ The configure result includes `executionScope`, `runtimeSource`, `templateSource
 4b. `preview` — optional `preview.dryRunCommand` (or standalone `--section preview`); see § Preview below
 5. `stack` summary (id, description, key paths) — or defer to STACK.md generation
 6. `fable` (Enable/disable Fable skills integration; autoAudit, autoDetectDomain, auditVerdictsBlockShip)
-7. `defaults` — optional (autoMode, dryRun, skipTesting, **skipMutationTesting**, scoreAndRefine, `contextBudget`, `parallelVerifyReview`, `gateGranularity`, **verboseMode**, **minVerifyScore**, `convergence`, **`providerCompat`**, **`contextHygiene`**, **`reviewJury`**) + **Delivery commit artifacts** (`defaults.deliveryCommitArtifacts`) + portable subagent model preferences:
+7. `defaults` — optional (autoMode, dryRun, skipTesting, **skipMutationTesting**, scoreAndRefine, `contextBudget`, `parallelVerifyReview`, `gateGranularity`, **verboseMode**, **minVerifyScore**, `enableOptionalProofOfWork`, `enableAutomaticEvidenceCollectForProofOfWork`, `projectRootFolderToSave`, `convergence`, **`providerCompat`**, **`contextHygiene`**, **`reviewJury`**) + **Delivery commit artifacts** (`defaults.deliveryCommitArtifacts`) + portable subagent model preferences:
    - **Models preset** (`modelsPreset`): pick from shipped sample keys in `config.json.example` (`modelPresets` map) or **Custom…** / **Keep current** / **Skip**. Shipped seed uses lean phase-key bundles (no per-step map; `default` is all `current`); put per-step or per-role overrides in `stepModels`; unknown names fall back to preset `default` when present.
    - **Per-step overrides** (`stepModels`): optional numeric `"0"`–`"9"` and roles `dag`, `scoreAndRefine`, `reviewFix`, `fixPrPlan`, `fixPrExec` (skippable; empty strings). Token `"current"` uses the active session model. Offer Fix-PR plan and execute independently: `fixPrPlan` defaults through `reviewerModel`, `fixPrExec` through `executionModel`; neither inherits numeric `"9"` (outer Step 9 only). Lite ignores both role model switches but still plans before editing inline.
    - **Advanced phase keys** (legacy overrides of the active preset; empty = fall through):
@@ -103,6 +103,14 @@ The configure result includes `executionScope`, `runtimeSource`, `templateSource
    | Gate | Writes | Options (Recommended first) |
    |------|--------|-----------------------------|
    | Minimum Step 5 Advance / scoreAndRefine bar (1–10)? | `minVerifyScore` | **9 (Recommended)** / 10 / custom integer 1–10 / Keep current / Skip |
+
+   **Proof of work** (subsection of `defaults` / `--section defaults`; writes `defaults.enableOptionalProofOfWork`, `defaults.enableAutomaticEvidenceCollectForProofOfWork`, `defaults.projectRootFolderToSave`). Seed from schema/`config.json.example` is `false` / `false` / `{projectRoot}/.proofOfWork/{slug}`. Runtime: the post-completion step applies only when `enableOptionalProofOfWork` is explicit `true`; `autoMode` never blocks — auto-start only when the automatic switch is also explicit `true`.
+
+   | Gate | Writes | Options (Recommended first) |
+   |------|--------|-----------------------------|
+   | Offer UI-evidence collection after the workflow finishes? | `enableOptionalProofOfWork` | **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip |
+   | Start the evidence collector without asking? | `enableAutomaticEvidenceCollectForProofOfWork` | **No (`false`, Recommended)** / Yes (`true`) / Keep current / Skip |
+   | Evidence output folder (`{projectRoot}` + `{slug}` tokens)? | `projectRootFolderToSave` | **Accept default (Recommended)** / custom path / Keep current / Skip |
 
    **Delivery commit artifacts** (subsection of `defaults` / `--section defaults`; writes `defaults.deliveryCommitArtifacts`). Staging SoT: [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md) § Step 8. `autoMode`: accept Recommended on all three gates without prompting.
 

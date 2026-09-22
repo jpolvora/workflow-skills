@@ -568,7 +568,8 @@ function buildWanted(repoRoot, example, schema) {
   // -- defaults (schema defaults first, then example concretes) --
   for (const k of ['autoMode', 'dryRun', 'skipTesting', 'skipMutationTesting', 'skipTests', 'fullMode',
     'scoreAndRefine', 'minVerifyScore', 'autoload', 'autoloadTaskLifecycle', 'enableDag',
-    'verboseMode', 'contextBudget', 'parallelVerifyReview', 'gateGranularity',
+    'verboseMode', 'enableOptionalProofOfWork', 'enableAutomaticEvidenceCollectForProofOfWork',
+    'projectRootFolderToSave', 'contextBudget', 'parallelVerifyReview', 'gateGranularity',
     'plannerModel', 'executionModel', 'reviewerModel', 'testingModel']) {
     wantFallback(`defaults.${k}`);
   }

@@ -196,6 +196,26 @@ Optional setting in `defaults.verboseMode` for `ws-spec-to-pr` / `ws-spec-to-pr-
 
 ---
 
+## Optional post-completion proof-of-work (`defaults.enableOptionalProofOfWork`)
+
+Optional opt-in post-completion step for `ws-spec-to-pr` / `ws-spec-to-pr-lite`.
+The step runs strictly after the workflow reaches its finished state and never gates close or shipping.
+
+**Write-time defaults:** schema `default` is `false` for both switches; `config.json.example` and `ws-configure-project` persist `false` when they write the keys. `projectRootFolderToSave` seeds `{projectRoot}/.proofOfWork/{slug}`.
+
+**Runtime:** effective only when the JSON value is explicit `true` (omitted / missing / `false` → disabled path).
+
+| Condition | Effective switch | Behavior |
+|-----------|------------------|----------|
+| `enableOptionalProofOfWork` omitted / missing / `false` | `false` | No post-completion gate. Steps, gates, commits, telemetry events, and artifacts match current behavior exactly. |
+| `enableOptionalProofOfWork` explicit `true` | `true` | One `user-gate` after the finished state asks whether to start the evidence-collector workflow (consumer-installed skill id `proof-of-work`; absent skill or host without browser capability → skip with a reason, never synthesized evidence). |
+| Both `enableOptionalProofOfWork` and `enableAutomaticEvidenceCollectForProofOfWork` explicit `true` | auto-start | The collector starts without any gate. |
+| `autoMode` (either switch state) | per automatic switch | Zero prompts of any kind: auto-start only when `enableAutomaticEvidenceCollectForProofOfWork` is explicit `true`, otherwise silent skip. The step never blocks. |
+
+`projectRootFolderToSave` resolves `{projectRoot}` and `{slug}` tokens at post-completion time (default `{projectRoot}/.proofOfWork/{slug}`). The evidence folder is never committed and the step never mutates product files.
+
+---
+
 ## Host environment detection & subagent dispatch resolution (`defaults.hostAdapter`)
 
 Optional setting in `defaults.hostAdapter` for host-agnostic subagent execution. See [`host-dispatch.md`](host-dispatch.md).

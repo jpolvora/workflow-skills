@@ -246,6 +246,27 @@ Stop: max exhausted · merge blocked · cancelled · PR closed.
 
 ---
 
+## Optional post-completion proof-of-work step
+
+Orchestrator-owned, opt-in, post-completion. Runs strictly after the workflow reaches its finished state — standard after Step 8 close+ship when no fix-pr runs, otherwise after Step 9 convergence; lite after Step 4 close+ship when no fix-pr, otherwise after Step 5 convergence. Never inside `ws-ship-pr`, never gating close or shipping, never re-asking delivery commit or workflow close.
+
+Effective only when `defaults.enableOptionalProofOfWork` is explicit `true` (omitted / missing / `false` → no gate; steps, gates, commits, telemetry events, and artifacts match current behavior exactly). The collector is the consumer-installed skill id `proof-of-work`; when it is absent or the host lacks browser capability, record a skip with a reason — never synthesize evidence.
+
+**Normal mode (`enableOptionalProofOfWork: true`):** one `user-gate`:
+
+1. **Start evidence collection** (Recommended)
+2. **Skip**
+
+On Start: resolve the output folder from `defaults.projectRootFolderToSave` (`{projectRoot}` and `{slug}` tokens, default `{projectRoot}/.proofOfWork/{slug}`), invoke the `proof-of-work` collector, and log `proof-of-work | started:{folder}`. On Skip: log `proof-of-work | skipped:gate-declined`. On Cancel (dismissed gate): apply HS-1 — STOP, re-present the gate, never infer — and record no completed skip.
+
+**Both switches explicit `true`** (`enableAutomaticEvidenceCollectForProofOfWork` also `true`): start without any gate and log `proof-of-work | started:{folder}`.
+
+**`autoMode`:** zero prompts of any kind — auto-start only when `enableAutomaticEvidenceCollectForProofOfWork` is explicit `true`, otherwise silent skip (`proof-of-work | skipped:auto-skip`). The post-completion step never blocks.
+
+**Invariants:** the evidence folder is never committed and the step never mutates product files. Executable contract: `node {skillsRoot}/ws-shared/runtime/scripts/resolve_proof_of_work.cjs --config {sharedDir}/config.json --slug {slug} --project-root {projectRoot} [--auto-mode] [--collector-installed] [--browser-capable] [--gate-decision start|skip|cancel]` prints the start/skip/cancel decision as JSON (pure: reads one config file, writes nothing). Skip reasons: `disabled` · `gate-declined` · `auto-skip` · `collector-missing` · `no-browser-capability`. Absent host browser capability is reported as `skipped:no-browser-capability` instead of synthesized evidence.
+
+---
+
 ## Score & Refine gate (`scoreAndRefine`)
 
 Step 5 overall score **must be ≥ `defaults.minVerifyScore` (default 9)** to Advance. A score below `defaults.minVerifyScore` **always** runs this loop, even when `defaults.scoreAndRefine` is false.
@@ -305,6 +326,7 @@ When the loop is active (score below `defaults.minVerifyScore`, or `scoreAndRefi
 | Testing plan (full Step 7) | Approve without browser (or skip if `skipTesting`); mutation runs only when configured and not `skipMutationTesting` |
 | Post-verify G2-code (standard after Step 5 / lite after Step 2) | Commit when stage set non-empty; skip when empty |
 | Post-review-fix G2-code | Commit when stage set non-empty; skip when empty |
+| Post-completion proof-of-work | Start evidence collection when `enableAutomaticEvidenceCollectForProofOfWork` is explicit `true`, else silent skip (never block) |
 
 ---
 
