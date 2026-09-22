@@ -1,7 +1,7 @@
 ---
 name: ws-fix-pr
 description: Single-pass PR thread fixer — resolves active GitHub or ADO PR review threads, applying targeted code fixes and posting progress reports.
-version: 0.4.57
+version: 0.4.62
 disable-model-invocation: true
 invocation_names:
   - fix-pr
@@ -60,7 +60,7 @@ When an orchestrator owns the run and `dispatch-agent` is available, append orde
 
 ## Steps
 
-1. **Outer preflight**: before `fixPrPlan`, snapshot `preExistingDirty` from `git status --porcelain` (tracked modifications, staged leftovers, and untracked paths — including uncommitted local harness / workflow helpers that improve this session). Run `git fetch origin <sourceRefName>`, then compute `git diff --name-only HEAD..FETCH_HEAD` and intersect that normalized repository-relative path set with `preExistingDirty`; run `git pull origin <sourceRefName>` only when the intersection is empty. If the intersection is non-empty, STOP and report the overlapping paths — do not risk a conflicted pull or stash-all. Resolve the SCM provider and require its `validate-auth` to pass. **Do not** refuse a dirty worktree or require clean porcelain before `fixPrPlan`. **Forbidden:** `git stash` / `git stash push` / `git stash pop` of the whole worktree (or save-all-then-restore) before or after the batch; `preExistingDirty` paths must stay on disk and loadable through `fixPrPlan` and `fixPrExec`. Repository synchronization is not part of the plan role.
+1. **Outer preflight**: before `fixPrPlan`, snapshot `preExistingDirty` from `git status --porcelain` (tracked modifications, staged leftovers, and untracked paths — including uncommitted local harness / workflow helpers that improve this session). Run `git fetch origin <sourceRefName>`, then compute `git diff --name-only HEAD..FETCH_HEAD` and intersect that normalized repository-relative path set with `preExistingDirty`; run `git pull origin <sourceRefName>` only when the intersection is empty. If the intersection is non-empty, STOP and report the overlapping paths — do not risk a conflicted pull or stash-all. Resolve the SCM provider and require its `validate-auth` to pass. **Do not** refuse a dirty worktree or require clean porcelain before `fixPrPlan`. **Forbidden:** `git stash` / `git stash push` / `git stash pop` of the whole worktree (or save-all-then-restore) before or after the batch; `preExistingDirty` paths must stay on disk and loadable through `fixPrPlan` and `fixPrExec`. Repository synchronization is not part of the plan role. Ownership-scoped git contract (forbidden verbs, path-scoped staging, baseline advancement): [`git-ownership.md`](../ws-shared/runtime/git-ownership.md).
    - Done when: `preExistingDirty` is recorded, auth passes, the branch is current with the remote when pull succeeded, and role dispatch may proceed with unrelated local WIP still present.
 
 2. **`fixPrPlan` — fetch, score, and write the gate**: create one `batchId`; call provider `list-threads` and read `check-pr-status` for `<PR-ID>`. Parse every active thread's `threadId`, `filePath`, `lineNumber`, and comments. Use `activeThreads` directly; do not re-filter raw statuses. Open collect output as UTF-8 explicitly. Rate each thread 0–10 and name its `proposedAction`:

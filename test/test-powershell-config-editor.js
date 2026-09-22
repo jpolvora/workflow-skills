@@ -599,6 +599,8 @@ assert(!guiKeys10.has('issueTrackers.github.org'), 'GUI must not persist the ret
 assert(guiKeys10.has('issueTrackers.azureDevOps.apiBase'), 'GUI must bind issueTrackers.azureDevOps.apiBase');
 assert(guiKeys10.has('fable.auditVerdictsBlockShip'), 'GUI must bind fable.auditVerdictsBlockShip');
 assert(guiKeys10.has('rules.karpathyGuidelines'), 'GUI must bind rules.karpathyGuidelines');
+assert(guiKeys10.has('ws-spec-translate-to-human.enabled'), 'GUI must bind ws-spec-translate-to-human.enabled');
+assert(guiKeys10.has('ws-spec-translate-to-human.outputLanguage'), 'GUI must bind ws-spec-translate-to-human.outputLanguage');
 assert.match(
   guiScript,
   /-Section\s+['"]rules['"]\s+-Key\s+['"]karpathyGuidelines['"][\s\S]*?-DefaultVal\s+['"]\.agents\/skills\/ws-senior-developer\/SKILL\.md['"]/,

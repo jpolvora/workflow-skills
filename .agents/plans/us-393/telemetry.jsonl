@@ -1,0 +1,16 @@
+{"type":"dispatch","step":0,"slug":"us-393","workflowId":"us-393-20260922T080709Z","model":"opencode-go/deepseek-v4.1-flash","agentType":"inline:session","dispatchedAt":"2026-09-22T08:07:09Z"}
+{"type":"finish","step":0,"slug":"us-393","status":"completed","dispatchedAt":"2026-09-22T08:07:09Z","finishedAt":"2026-09-22T08:07:09Z","filesTouched":[]}
+{"type":"dispatch","step":1,"slug":"us-393","model":"opencode-go/deepseek-v4-pro","agentType":"inline:session","dispatchedAt":"2026-09-22T08:07:10Z"}
+{"type":"finish","step":1,"slug":"us-393","status":"completed","finishedAt":"2026-09-22T08:12:00Z","filesTouched":[".agents/plans/us-393/step-01-us-393.plan.md"]}
+{"type":"dispatch","step":2,"slug":"us-393","model":"opencode-go/deepseek-v4-pro","agentType":"inline:session","dispatchedAt":"2026-09-22T08:12:00Z"}
+{"type":"finish","step":2,"slug":"us-393","status":"completed","finishedAt":"2026-09-22T08:18:00Z","filesTouched":[".agents/plans/us-393/step-02-us-393.plan-interview.md",".agents/plans/us-393/step-02-us-393.plan.refined.md"]}
+{"type":"finish","step":3,"slug":"us-393","status":"skipped","reason":"dag-disabled","finishedAt":"2026-09-22T08:18:01Z"}
+{"type":"dispatch","step":4,"slug":"us-393","model":"opencode-go/deepseek-v4-flash","agentType":"inline:session","dispatchedAt":"2026-09-22T08:18:02Z"}
+{"type":"finish","step":4,"slug":"us-393","status":"completed","finishedAt":"2026-09-22T08:32:00Z","filesTouched":[".agents/skills/ws-spec-multi/STATE.md",".agents/skills/ws-spec-multi/SKILL.md",".agents/skills/ws-spec-multi/PROTOCOL.md",".agents/skills/ws-spec-multi/evals/evals.json"]}
+{"type":"dispatch","step":5,"slug":"us-393","model":"opencode-go/deepseek-v4-pro","agentType":"inline:session","dispatchedAt":"2026-09-22T08:32:01Z"}
+{"type":"finish","step":5,"slug":"us-393","status":"completed","verificationScore":10,"finishedAt":"2026-09-22T08:45:00Z"}
+{"type":"dispatch","step":6,"slug":"us-393","model":"opencode-go/deepseek-v4-pro","agentType":"inline:session","dispatchedAt":"2026-09-22T08:45:01Z"}
+{"type":"finish","step":6,"slug":"us-393","status":"completed","finishedAt":"2026-09-22T08:55:00Z"}
+{"type":"dispatch","step":7,"slug":"us-393","model":"opencode-go/deepseek-v4-flash","agentType":"inline:session","dispatchedAt":"2026-09-22T08:55:01Z"}
+{"type":"finish","step":7,"slug":"us-393","status":"completed","finishedAt":"2026-09-22T09:05:00Z"}
+{"type":"dispatch","step":8,"slug":"us-393","model":"opencode-go/deepseek-v4.1-flash","agentType":"inline:session","dispatchedAt":"2026-09-22T09:05:01Z"}

@@ -158,7 +158,7 @@ node .agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs --inp
 
 **Path:** `.agents/skills/ws-spec-from-provider/SKILL.md`
 
-**What:** Batch tracker → local specs. Lists open GitHub issues (all assignees) or open ADO User Stories (`@Me`), skips already-imported ids, confirms via user-gate, then per id: provider snapshot → `ws-spec-write` reformulation → full register.
+**What:** Batch tracker → local specs. Lists open GitHub issues (all assignees) or open ADO User Stories (`@Me`), skips already-imported ids, confirms via user-gate, then per id: provider snapshot → `ws-spec-write` reformulation → full register → auto-track in `index.PRD`.
 
 **Use when:**
 
@@ -178,7 +178,8 @@ Importing backlog for `/ws-spec-list` or `/ws-spec-multi`.
 1. Provider `fetch-to-spec` phases 1–2 (snapshot + base converter)
 2. `ws-spec-write` agentic reformulation (`source: github|azure-devops`)
 3. `register_local_spec.cjs --input "{specsDir}/us-{id}.spec.md" --source {github|azure-devops}`
-4. Report: imported / skipped / failed
+4. `track_index.cjs --specs-dir {specsDir} --slug us-{id}` (advisory; missing/already-tracked index never fails the import)
+5. Report: imported / skipped / failed + track outcome per imported id
 </details>
 
 ---

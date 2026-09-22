@@ -1,0 +1,211 @@
+{
+  "schemaVersion": 1,
+  "revision": 1,
+  "workflowId": "us-393-20260922T080709Z",
+  "slug": "us-393",
+  "specPath": ".agents/plans/us-393/step-00-us-393.spec.md",
+  "planIndexPath": null,
+  "declaredGaps": [],
+  "aliasResults": [],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "Queue mutations are keyed by spec identity (`specPath` or `slug`); transitioning an item to `in_progress` / `shipped` / `skipped` / `failed` updates that row in place and never appends a second row for the same spec.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC2",
+      "text": "A state write that would emit a duplicate row index or duplicate `slug` fails closed and surfaces the conflict instead of writing the file.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC3",
+      "text": "The reported item count equals the length of the Phase 2 selection and stays constant while items ship.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC4",
+      "text": "After a completed standard batch, the state table holds exactly one row per selected spec, and every row is terminal (`shipped`, `skipped`, or `failed`).",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC5",
+      "text": "Resuming a `completed` state file re-dispatches zero already-`shipped` items (no phantom `pending` rows survive close).",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC6",
+      "text": "The per-row `updatedAt` advances on each transition, and the run frontmatter `updatedAt` advances on every state write.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC7",
+      "text": "`STATE.md` documents the one-row-per-spec invariant and the fail-closed duplicate guard in the queue schema and Resume Policy.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC8",
+      "text": "`ws-spec-multi/evals/evals.json` covers the duplicate-row scenario, and `npm run test` plus `ws-check-harness` exit clean after the change.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "A standard batch ships an item and the state table gains a second row for that slug (must fail AC1/AC4).",
+      "tests": [],
+      "linkEventIds": []
+    },
+    {
+      "id": "NS2",
+      "text": "A write that would emit a duplicate index or slug succeeds silently (must fail AC2).",
+      "tests": [],
+      "linkEventIds": []
+    },
+    {
+      "id": "NS3",
+      "text": "Reported `shipped/total` changes after the Phase 2 selection is frozen (must fail AC3).",
+      "tests": [],
+      "linkEventIds": []
+    },
+    {
+      "id": "NS4",
+      "text": "A `completed` state file is resumed and re-dispatches an already-shipped spec (must fail AC5).",
+      "tests": [],
+      "linkEventIds": []
+    },
+    {
+      "id": "NS5",
+      "text": "Frontmatter `updatedAt` still equals `createdAt` at close (must fail AC6).",
+      "tests": [],
+      "linkEventIds": []
+    },
+    {
+      "id": "NS6",
+      "text": "`STATE.md` omits the one-row-per-spec invariant or the duplicate guard (must fail AC7).",
+      "tests": [],
+      "linkEventIds": []
+    },
+    {
+      "id": "NS7",
+      "text": "`npm run test` or `ws-check-harness` fails after the change (must fail AC8).",
+      "tests": [],
+      "linkEventIds": []
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": null
+}

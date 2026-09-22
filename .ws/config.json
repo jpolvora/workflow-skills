@@ -146,7 +146,7 @@
       "includeTestingReport": false
     },
     "_comment_models": "Resolve order when --model is blank: stepModels[role|N] → active preset steps[role|N] → top-level phase key → preset phase key → session. Token \"current\" uses session currentModel (no fallthrough). Empty string falls through. Unknown modelsPreset → preset \"default\" if present, else legacy four keys. Fix-PR roles bypass numeric Step 9: fixPrPlan → reviewerModel; fixPrExec → executionModel. Lite ignores testingModel and all role keys, including fixPrPlan/fixPrExec, while preserving inline plan-before-edit order. Presets are lean phase-key bundles without a steps map; put per-step or per-role overrides in top-level stepModels. The default preset is all current (session-only safe fallback). Switch modelsPreset to a named bundle (cursor, deepseek, opencode, cheap, muse-spark) for host-specific models.",
-    "modelsPreset": "muse-spark",
+    "modelsPreset": "cursor",
     "modelPresets": {
       "muse-spark": {
         "plannerModel": "muse-spark-1.3-contributor",
@@ -161,10 +161,10 @@
         "reviewerModel": "current"
       },
       "cursor": {
-        "plannerModel": "cursor-grok-4.6-high",
+        "plannerModel": "cursor-grok-4.7-high",
         "executionModel": "composer-2.5",
         "testingModel": "composer-2.5",
-        "reviewerModel": "cursor-grok-4.6-medium"
+        "reviewerModel": "cursor-grok-4.7-medium"
       },
       "deepseek": {
         "plannerModel": "opencode-go/deepseek-v4-pro",
@@ -252,7 +252,8 @@
     "viewPatterns": "",
     "efMigrations": "",
     "stackFile": ".ws/STACK.md",
-    "changelogFile": ".ws/CHANGELOG.md"
+    "changelogFile": ".ws/CHANGELOG.md",
+    "memoryDir": ".ws"
   },
   "invariants": {
     "entitiesAreClassNotRecord": false,
@@ -281,6 +282,10 @@
     "writeBlockHook": false,
     "importOnEnable": true,
     "mcpServerName": "spec-memo"
+  },
+  "monitor": {
+    "autoStartObserver": true,
+    "discoverHostTranscripts": true
   },
   "fable": {
     "_comment": "Opt-in integration for fable-* skills within ws-spec-to-pr / ws-spec-to-pr-lite workflows. Master toggle must be true to enable automatic calls.",

@@ -171,7 +171,7 @@ Choosing Reach 10 runs one `scoreAndRefine` polish round (role `scoreAndRefine`)
 
 ## Required G2-code save points (both orch)
 
-Orchestrator owns `git commit` via `commit-code` ([`tools.md`](tools.md)). [`ws-code-review`](../../ws-code-review/SKILL.md) does **not** commit. `skipQualityGates` does **not** skip these save points or the dirty-tree STOP.
+Orchestrator owns `git commit` via `commit-code` ([`tools.md`](tools.md)). [`ws-code-review`](../../ws-code-review/SKILL.md) does **not** commit. `skipQualityGates` does **not** skip these save points or the dirty-tree STOP. Ownership-scoped git contract (forbidden verbs, path-scoped staging, baseline advancement, dirty-tree tolerance): [`git-ownership.md`](git-ownership.md); executable baseline refresh: `node {skillsRoot}/ws-spec-to-pr/scripts/refresh_baseline.cjs --state {us-dir}/{workflow-id}.state.json --base-ref origin/{baseBranch}`.
 
 **Staging:** follow [`tools.md`](tools.md) `commit-code` for the path-scoped staging and hunk-separation recipe (workflow `files_touched` only; drop `{plansDir}/**`, secrets, gitignored, and `preExistingDirty`; never `git add -A`, `git add .`, bare `git add -u`, or directory-wide adds; separate staged WIP from fix hunks; if anchor hunks cannot be separated without staging unrelated WIP, do not resolve that 6–10 thread as fixed — leave it open or escalate with `path + reason`; empty staged set → skip commit and resolve comment-only only for 0–5 threads).
 

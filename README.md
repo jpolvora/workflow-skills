@@ -40,7 +40,7 @@
 | **Dry-run before Create PR** | `ws-ship-pr` runs `preview.dryRunCommand` after push and before PR creation (default on via `preview.previewBeforeShip`), reports on the Prepare-to-PR board, and never blocks shipping on findings or failure. |
 | **Quiet ship preflight** | Ship resolves head, base, remote, provider, and commit title from state → git → config → auto-detect, asking only on genuine ambiguity. |
 | **GitHub and Azure, same ops** | Both providers implement the same intents ([`scm-provider-contract.md`](.agents/skills/ws-shared/runtime/scm-provider-contract.md)). Extra intent on one side fails `npm run test`. |
-| **Hermes delivery disciplines** | Prior-work sweep before plan/code; design-intent git history; repo-wide defect-class fixes; regression sabotage when mutation is unset; CI triage via extended `check-pr-status`; tracker close-loop via `comment-issue`. |
+| **Hermes delivery disciplines** | Prior-work sweep before plan/code; design-intent git history; repo-wide defect-class fixes; regression sabotage when mutation is unset; CI triage via extended `check-pr-status`; GitHub PR-body `Closes #{id}` auto-close on ship; tracker close-loop via `comment-issue`. |
 | **Safe shell recipes** | Phase 5a blocks nested-quote `python -c` / `node -e` one-liners. Use `extract_frontmatter_field.cjs` for YAML fields. |
 | **Commit, then review** | Product files commit after verify (standard) or after implement (lite). Review diffs `{base}...HEAD`. Review fixes get a second commit. Plan files wait until Step 8 / lite 4 **close**. Workflow `status: completed` means implementation is done, before push/PR. |
 | **Definition of Ready and TDD** | Authoring requires Definition of Ready, Validation & Observation Notes, and Negative & Failing Test Scenarios (`validate_spec.cjs --mode=authoring` fails closed). Interview audits failing tests. Implement is red-then-green. Uncovered negative scenarios cap verify at 8. |
@@ -337,6 +337,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | [`ws-megabrain`](.agents/skills/ws-megabrain/SKILL.md) | Vibe-coding implementer without a spec; specialists; consumes fable |
 | [`ws-patterns-generator`](.agents/skills/ws-patterns-generator/SKILL.md) | Consumer project-patterns skill generator: harvests run artifacts and project knowledge to seed and refresh an autoloaded patterns skill body hosted under `{sharedDir}/ws-project-patterns` (never installed, never hashed) |
 | [`ws-spec-explain`](.agents/skills/ws-spec-explain/SKILL.md) | Spec/US status panorama — what it does, what it delivered, how to check & test |
+| [`ws-spec-translate-to-human`](.agents/skills/ws-spec-translate-to-human/SKILL.md) | Human runbook companion beside an agent spec (numbered Implementation / UI Test / Out of scope) |
 | [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) | Archive `{plansDir}` delivery facts into `index.PRD`, then propose cleanup of shipped plan folders |
 | [`ws-cleanup`](.agents/skills/ws-cleanup/SKILL.md) | Confirm-gated cleanup of workflow leftovers (telemetry, `.runtime`, shipped plans) + `.gitignore` suggestions |
 

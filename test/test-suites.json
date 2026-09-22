@@ -15,6 +15,9 @@
       "test/test-provider-parity.js"
     ],
     [
+      "test/test-close-issue.js"
+    ],
+    [
       "test/test-visual-attachment-ingest.js"
     ],
     [
@@ -126,6 +129,9 @@
       "test/test-workflow-state-contract.js"
     ],
     [
+      "test/test-git-ownership-contract.js"
+    ],
+    [
       "test/test-bootstrap-start.js"
     ],
     [
@@ -153,6 +159,9 @@
     ],
     [
       "test/test-provider-parity.js"
+    ],
+    [
+      "test/test-close-issue.js"
     ],
     [
       "test/test-hermes-spec-to-pr-enhancements.js"
@@ -448,6 +457,9 @@
       "test/test-wiki.js"
     ],
     [
+      "test/test-spec-translate-to-human.js"
+    ],
+    [
       "test/test-host-capabilities.js"
     ],
     [
@@ -461,6 +473,9 @@
     ],
     [
       "test/test-ship-verify-line-endings.js"
+    ],
+    [
+      "test/test-pr-closer.js"
     ],
     [
       "test/test-code-review-round-2.js"

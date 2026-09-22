@@ -1,0 +1,1305 @@
+{
+  "acImplemented": 9,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "59fe3e3cada4a88a64283e3cca6be32edb8634e1",
+            "step": 5
+          },
+          {
+            "sha": "3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L1",
+          "test/test-terminal-close-us395.js:L1-L1"
+        ],
+        "files": [
+          {
+            "lineEnd": 1,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "5d765c348d869ce6fbc1c851333bafdbfe6810f566fda10aec84bda9fb74db40"
+          },
+          {
+            "lineEnd": 1,
+            "lineStart": 1,
+            "path": "test/test-terminal-close-us395.js",
+            "sha256": "586bd0a88e450a88e48e925e62757318c1fe02a93cdf213650b1249a415d8c41"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "ac-AC1",
+          "g2-commit-3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+          "g2-commit-59fe3e3cada4a88a64283e3cca6be32edb8634e1"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-395 AC1",
+            "phase": "observed",
+            "sourceFile": "test/test-terminal-close-us395.js",
+            "timestamp": "2026-09-22T13:19:16.370Z"
+          }
+        ],
+        "text": "Completing the terminal step writes a terminal `status` and sets `endedAt`, regardless of whether a telemetry file exists on disk.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "59fe3e3cada4a88a64283e3cca6be32edb8634e1",
+            "step": 5
+          },
+          {
+            "sha": "3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1-L1",
+          "test/test-ws-monitor-us395.js:L1-L1"
+        ],
+        "files": [
+          {
+            "lineEnd": 1,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            "sha256": "ffee53b10a2feea167029ec7ed00e4ae885e0b37d41f274a1a9e13b1e6b4be23"
+          },
+          {
+            "lineEnd": 1,
+            "lineStart": 1,
+            "path": "test/test-ws-monitor-us395.js",
+            "sha256": "708e075a91fe461826dd9ff45cd2159544d647ec9a948237b85c2ecf75286935"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "ac-AC2",
+          "ac-AC2-fix1",
+          "g2-commit-3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+          "g2-commit-59fe3e3cada4a88a64283e3cca6be32edb8634e1"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-395 AC2",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us395.js",
+            "timestamp": "2026-09-22T13:19:16.428Z"
+          }
+        ],
+        "text": "A standard run whose `completedSteps` cover every step and whose `stepStatus` values are all terminal is never reported as `active`; a consumer polling `status == active` sees it close.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "59fe3e3cada4a88a64283e3cca6be32edb8634e1",
+            "step": 5
+          },
+          {
+            "sha": "3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-multi/PROTOCOL.md:L1-L1",
+          "test/test-ws-monitor-us395.js:L1-L1"
+        ],
+        "files": [
+          {
+            "lineEnd": 1,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/PROTOCOL.md",
+            "sha256": "5db1b03de0dfc2ed0acff9b8ec722f307ffb183108db0fe6e05fb7b7319c3f12"
+          },
+          {
+            "lineEnd": 1,
+            "lineStart": 1,
+            "path": "test/test-ws-monitor-us395.js",
+            "sha256": "708e075a91fe461826dd9ff45cd2159544d647ec9a948237b85c2ecf75286935"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "ac-AC3",
+          "g2-commit-3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+          "g2-commit-59fe3e3cada4a88a64283e3cca6be32edb8634e1"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-395 AC3",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us395.js",
+            "timestamp": "2026-09-22T13:19:16.486Z"
+          }
+        ],
+        "text": "A superseding batch run retires the run it supersedes (`cancelled` / `superseded`), so at most one `active` runner exists per queue lineage and at most one item is `in_progress` per slug.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "59fe3e3cada4a88a64283e3cca6be32edb8634e1",
+            "step": 5
+          },
+          {
+            "sha": "3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-multi/STATE.md:L1-L1",
+          "test/test-ws-monitor-us395.js:L1-L1"
+        ],
+        "files": [
+          {
+            "lineEnd": 1,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/STATE.md",
+            "sha256": "d34e2d77f27b0dec5175358c9e0f8003330d28ab731e537b22d0aac99924e108"
+          },
+          {
+            "lineEnd": 1,
+            "lineStart": 1,
+            "path": "test/test-ws-monitor-us395.js",
+            "sha256": "708e075a91fe461826dd9ff45cd2159544d647ec9a948237b85c2ecf75286935"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "ac-AC4",
+          "g2-commit-3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+          "g2-commit-59fe3e3cada4a88a64283e3cca6be32edb8634e1"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-395 AC4",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us395.js",
+            "timestamp": "2026-09-22T13:19:16.542Z"
+          }
+        ],
+        "text": "Batch ship updates transition the existing item row in place; a finished queue table has exactly one row per item, with no stale `pending` rows carrying the run-creation timestamp.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "59fe3e3cada4a88a64283e3cca6be32edb8634e1",
+            "step": 5
+          },
+          {
+            "sha": "3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-multi/PROTOCOL.md:L1-L1",
+          "test/test-ws-monitor-us395.js:L1-L1"
+        ],
+        "files": [
+          {
+            "lineEnd": 1,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/PROTOCOL.md",
+            "sha256": "5db1b03de0dfc2ed0acff9b8ec722f307ffb183108db0fe6e05fb7b7319c3f12"
+          },
+          {
+            "lineEnd": 1,
+            "lineStart": 1,
+            "path": "test/test-ws-monitor-us395.js",
+            "sha256": "708e075a91fe461826dd9ff45cd2159544d647ec9a948237b85c2ecf75286935"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "ac-AC5",
+          "g2-commit-3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+          "g2-commit-59fe3e3cada4a88a64283e3cca6be32edb8634e1"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-395 AC5",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us395.js",
+            "timestamp": "2026-09-22T13:19:16.600Z"
+          }
+        ],
+        "text": "When a batch child worker reaches a terminal state, the parent queue row transitions and the parent state `updatedAt` advances — the parent-child handoff propagates instead of freezing.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "59fe3e3cada4a88a64283e3cca6be32edb8634e1",
+            "step": 5
+          },
+          {
+            "sha": "3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1-L1",
+          "test/test-ws-monitor-us395.js:L1-L1"
+        ],
+        "files": [
+          {
+            "lineEnd": 1,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            "sha256": "ffee53b10a2feea167029ec7ed00e4ae885e0b37d41f274a1a9e13b1e6b4be23"
+          },
+          {
+            "lineEnd": 1,
+            "lineStart": 1,
+            "path": "test/test-ws-monitor-us395.js",
+            "sha256": "708e075a91fe461826dd9ff45cd2159544d647ec9a948237b85c2ecf75286935"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "ac-AC6",
+          "ac-AC6-fix1",
+          "g2-commit-3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+          "g2-commit-59fe3e3cada4a88a64283e3cca6be32edb8634e1"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-395 AC6",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us395.js",
+            "timestamp": "2026-09-22T13:19:16.660Z"
+          }
+        ],
+        "text": "`ws-monitor` emits a finding for the completed-child / stale-parent-row shape, so this class is surfaced rather than staying green.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "59fe3e3cada4a88a64283e3cca6be32edb8634e1",
+            "step": 5
+          },
+          {
+            "sha": "3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1-L1",
+          "test/test-ws-monitor-us395.js:L1-L1"
+        ],
+        "files": [
+          {
+            "lineEnd": 1,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            "sha256": "ffee53b10a2feea167029ec7ed00e4ae885e0b37d41f274a1a9e13b1e6b4be23"
+          },
+          {
+            "lineEnd": 1,
+            "lineStart": 1,
+            "path": "test/test-ws-monitor-us395.js",
+            "sha256": "708e075a91fe461826dd9ff45cd2159544d647ec9a948237b85c2ecf75286935"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [
+          "ac-AC7",
+          "ac-AC7-fix1",
+          "g2-commit-3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+          "g2-commit-59fe3e3cada4a88a64283e3cca6be32edb8634e1"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-395 AC7",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us395.js",
+            "timestamp": "2026-09-22T13:19:16.723Z"
+          }
+        ],
+        "text": "`ws-monitor` emits a finding for a terminal-shaped run still reporting `status: active` (all steps terminal, `endedAt` null).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "59fe3e3cada4a88a64283e3cca6be32edb8634e1",
+            "step": 5
+          },
+          {
+            "sha": "3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L1",
+          "test/test-terminal-close-us395.js:L1-L1"
+        ],
+        "files": [
+          {
+            "lineEnd": 1,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "5d765c348d869ce6fbc1c851333bafdbfe6810f566fda10aec84bda9fb74db40"
+          },
+          {
+            "lineEnd": 1,
+            "lineStart": 1,
+            "path": "test/test-terminal-close-us395.js",
+            "sha256": "586bd0a88e450a88e48e925e62757318c1fe02a93cdf213650b1249a415d8c41"
+          }
+        ],
+        "findings": [],
+        "id": "AC8",
+        "linkEventIds": [
+          "ac-AC8",
+          "g2-commit-3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+          "g2-commit-59fe3e3cada4a88a64283e3cca6be32edb8634e1"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-395 AC8",
+            "phase": "observed",
+            "sourceFile": "test/test-terminal-close-us395.js",
+            "timestamp": "2026-09-22T13:19:16.784Z"
+          }
+        ],
+        "text": "State writes are idempotent: re-applying a close or ship transition does not add rows and does not regress a terminal status.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "59fe3e3cada4a88a64283e3cca6be32edb8634e1",
+            "step": 5
+          },
+          {
+            "sha": "3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          "test/test-suites.json:L1-L1",
+          "test/test-terminal-close-us395.js:L1-L1"
+        ],
+        "files": [
+          {
+            "lineEnd": 1,
+            "lineStart": 1,
+            "path": "test/test-suites.json",
+            "sha256": "822894d5aebce2bd332f1a1401c1517b3a71dd59660dcd648f564f67b5dc98ce"
+          },
+          {
+            "lineEnd": 1,
+            "lineStart": 1,
+            "path": "test/test-terminal-close-us395.js",
+            "sha256": "586bd0a88e450a88e48e925e62757318c1fe02a93cdf213650b1249a415d8c41"
+          }
+        ],
+        "findings": [],
+        "id": "AC9",
+        "linkEventIds": [
+          "ac-AC9",
+          "g2-commit-3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+          "g2-commit-59fe3e3cada4a88a64283e3cca6be32edb8634e1"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-395 AC9",
+            "phase": "observed",
+            "sourceFile": "test/test-terminal-close-us395.js",
+            "timestamp": "2026-09-22T13:19:16.847Z"
+          }
+        ],
+        "text": "`npm run test`, `ws-check-harness`, and `node test/test-harness-clean.js` exit clean, and the monitor fixture covers the new finding codes.",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      }
+    ],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "ns-NS1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-395 AC1",
+            "phase": "observed",
+            "sourceFile": "test/test-terminal-close-us395.js",
+            "timestamp": "2026-09-22T13:19:16.899Z"
+          }
+        ],
+        "text": "A run with every step terminal still reports `status: active` with `endedAt: null` (must fail AC1/AC2)."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "ns-NS2"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-395 AC1",
+            "phase": "observed",
+            "sourceFile": "test/test-terminal-close-us395.js",
+            "timestamp": "2026-09-22T13:19:16.951Z"
+          }
+        ],
+        "text": "Close is skipped because the telemetry file is absent (must fail AC1)."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "ns-NS3"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-395 AC3",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us395.js",
+            "timestamp": "2026-09-22T13:19:17.006Z"
+          }
+        ],
+        "text": "Two batch runs remain `active` on the same item after one supersedes the other (must fail AC3)."
+      },
+      {
+        "id": "NS4",
+        "linkEventIds": [
+          "ns-NS4"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-395 AC4",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us395.js",
+            "timestamp": "2026-09-22T13:19:17.063Z"
+          }
+        ],
+        "text": "A finished queue table has more rows than items, or a stale `pending` row carrying the run-creation timestamp (must fail AC4)."
+      },
+      {
+        "id": "NS5",
+        "linkEventIds": [
+          "ns-NS5"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-395 AC5",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us395.js",
+            "timestamp": "2026-09-22T13:19:17.117Z"
+          }
+        ],
+        "text": "A child worker closes while its parent row stays `in_progress` and the parent `updatedAt` stays frozen (must fail AC5)."
+      },
+      {
+        "id": "NS6",
+        "linkEventIds": [
+          "ns-NS6"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-395 AC6",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us395.js",
+            "timestamp": "2026-09-22T13:19:17.166Z"
+          }
+        ],
+        "text": "The monitor reports no finding for a completed-child / stale-parent-row shape (must fail AC6)."
+      },
+      {
+        "id": "NS7",
+        "linkEventIds": [
+          "ns-NS7"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-395 AC7",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us395.js",
+            "timestamp": "2026-09-22T13:19:17.218Z"
+          }
+        ],
+        "text": "The monitor reports no finding for a terminal-shaped run still `active` (must fail AC7)."
+      },
+      {
+        "id": "NS8",
+        "linkEventIds": [
+          "ns-NS8"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-395 AC8",
+            "phase": "observed",
+            "sourceFile": "test/test-terminal-close-us395.js",
+            "timestamp": "2026-09-22T13:19:17.271Z"
+          }
+        ],
+        "text": "Re-applying close or ship adds rows or regresses a terminal status (must fail AC8)."
+      },
+      {
+        "id": "NS9",
+        "linkEventIds": [
+          "ns-NS9"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-395 AC9",
+            "phase": "observed",
+            "sourceFile": "test/test-terminal-close-us395.js",
+            "timestamp": "2026-09-22T13:19:17.320Z"
+          }
+        ],
+        "text": "`npm run test`, `ws-check-harness`, or `test-harness-clean.js` fails after the change (must fail AC9)."
+      }
+    ],
+    "planIndexPath": ".agents/plans/us-395/.runtime/plan.index.json",
+    "revision": 27,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "step5",
+      "computedAt": "2026-09-22T13:22:04.441Z",
+      "earnedUnits": 90,
+      "errors": [],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "missingEvidence": false,
+      "score": 10,
+      "totalUnits": 90
+    },
+    "slug": "us-395",
+    "specPath": ".agents/plans/us-395/step-00-us-395.spec.md",
+    "testingSkip": null,
+    "workflowId": "us-395-20260922T080709Z"
+  },
+  "acTotal": 9,
+  "baseBranch": "main",
+  "baselineCommit": "61d87f5f",
+  "batchRunId": "ms-20260922T080709Z",
+  "branch": "develop",
+  "branchStrategy": "stay",
+  "commits": [
+    {
+      "sha": "59fe3e3cada4a88a64283e3cca6be32edb8634e1",
+      "step": 5
+    },
+    {
+      "sha": "3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+      "step": 6
+    },
+    {
+      "sha": "1246a8a1",
+      "step": 8
+    },
+    {
+      "sha": "57449348",
+      "step": 9
+    }
+  ],
+  "completedSteps": [
+    0,
+    1,
+    2,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "complexityClass": "complex",
+  "createdAt": "2026-09-22T13:00:00Z",
+  "currentModel": "opencode-go/deepseek-v4.1-flash",
+  "currentStep": 9,
+  "endedAt": "2026-09-22T15:40:00.000Z",
+  "execMode": "sequential",
+  "flowMode": "standard",
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-395/step-00-us-395.spec.md",
+        ".agents/plans/us-395/ac-ledger.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "us-395",
+      "status": "completed",
+      "step": 0,
+      "summary": "Finished step 0",
+      "workflowId": "us-395-20260922T080709Z",
+      "workflowType": "standard"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-395/step-01-us-395.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "us-395",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "us-395-20260922T080709Z",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-395/step-02-us-395.plan-interview.md",
+        ".agents/plans/us-395/step-02-us-395.plan.refined.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "us-395",
+      "status": "completed",
+      "step": 2,
+      "summary": "Finished step 2",
+      "workflowId": "us-395-20260922T080709Z",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "us-395",
+      "status": "skipped",
+      "step": 3,
+      "summary": "Finished step 3",
+      "workflowId": "us-395-20260922T080709Z",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [
+        "test/test-ws-monitor-us395.js",
+        "test/test-terminal-close-us395.js",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+        ".agents/skills/ws-monitor/SKILL.md",
+        ".agents/skills/ws-monitor/evals/evals.json",
+        ".agents/skills/ws-spec-multi/STATE.md",
+        ".agents/skills/ws-spec-multi/SKILL.md",
+        ".agents/skills/ws-spec-multi/PROTOCOL.md",
+        ".agents/skills/ws-spec-multi/evals/evals.json",
+        "test/test-suites.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "us-395",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "us-395-20260922T080709Z",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-395/step-05-us-395.plan.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "us-395",
+      "status": "completed",
+      "step": 5,
+      "summary": "Finished step 5",
+      "workflowId": "us-395-20260922T080709Z",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-395/step-06-us-395.review.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "us-395",
+      "status": "completed",
+      "step": 6,
+      "summary": "Finished step 6",
+      "workflowId": "us-395-20260922T080709Z",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-395/step-07-us-395.testing.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "us-395",
+      "status": "completed",
+      "step": 7,
+      "summary": "Finished step 7",
+      "workflowId": "us-395-20260922T080709Z",
+      "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-395/step-08-us-395.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-395",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "us-395-20260922T080709Z",
+      "workflowType": "standard"
+    },
+    "9": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-395",
+      "status": "completed",
+      "step": 9,
+      "summary": "Finished step 9",
+      "workflowId": "us-395-20260922T080709Z",
+      "workflowType": "standard"
+    }
+  },
+  "integrationBranch": "develop",
+  "modelsPreset": "muse-spark",
+  "nextAction": "Run step 9",
+  "preExistingDirty": [
+    ".agents/plans/index.json",
+    ".agents/plans/us-389/step-00-us-389.spec.md",
+    ".ws/CHANGELOG.md",
+    ".ws/config.json",
+    "MEMORY.md",
+    "test/.ws/config.json"
+  ],
+  "revision": 17,
+  "runInterview": true,
+  "shipStatus": "merged",
+  "skippedSteps": [
+    {
+      "evidence": "defaults.enableDag=false; sequential mode writes no step-03 stubs",
+      "reason": "dag-disabled",
+      "step": 3
+    }
+  ],
+  "slug": "us-395",
+  "statePath": ".agents/plans/us-395/us-395-20260922T080709Z.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-22T13:10:00.000Z",
+      "model": "muse-spark-1.3-contributor",
+      "step": 1
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-22T13:20:00.000Z",
+      "model": "muse-spark-1.3-contributor",
+      "step": 2
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-22T13:30:00.000Z",
+      "model": "muse-spark-1.2-contributor",
+      "step": 4
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-22T13:50:00.000Z",
+      "model": "muse-spark-1.3-contributor",
+      "step": 5
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-22T14:15:00.000Z",
+      "model": "muse-spark-1.3-contributor",
+      "step": 6
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-22T14:40:00.000Z",
+      "model": "muse-spark-1.2-contributor",
+      "step": 7
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-22T16:00:00.000Z",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "step": 9
+    }
+  ],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "skipped",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed",
+    "9": "completed"
+  },
+  "telemetry": {
+    "steps": [
+      {
+        "N": 0,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-395/step-00-us-395.spec.md",
+            ".agents/plans/us-395/ac-ledger.json"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-22T13:05:00.000Z",
+        "label": "Spec",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 1,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-22T13:10:00.000Z",
+        "elapsedSec": 240,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/plans/us-395/step-01-us-395.plan.md"
+          ]
+        },
+        "finishedAt": "2026-09-22T13:14:00.000Z",
+        "label": "Planning",
+        "model": "muse-spark-1.3-contributor",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-22T13:20:00.000Z",
+        "elapsedSec": 240,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/plans/us-395/step-02-us-395.plan-interview.md",
+            ".agents/plans/us-395/step-02-us-395.plan.refined.md"
+          ]
+        },
+        "finishedAt": "2026-09-22T13:24:00.000Z",
+        "label": "Interview",
+        "model": "muse-spark-1.3-contributor",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-22T13:25:00.000Z",
+        "label": "Plan to tasks",
+        "model": "muse-spark-1.3-contributor",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-22T13:30:00.000Z",
+        "elapsedSec": 900,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            "test/test-ws-monitor-us395.js",
+            "test/test-terminal-close-us395.js"
+          ],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            ".agents/skills/ws-monitor/SKILL.md",
+            ".agents/skills/ws-monitor/evals/evals.json",
+            ".agents/skills/ws-spec-multi/STATE.md",
+            ".agents/skills/ws-spec-multi/SKILL.md",
+            ".agents/skills/ws-spec-multi/PROTOCOL.md",
+            ".agents/skills/ws-spec-multi/evals/evals.json",
+            "test/test-suites.json"
+          ]
+        },
+        "finishedAt": "2026-09-22T13:45:00.000Z",
+        "label": "Implement",
+        "model": "muse-spark-1.2-contributor",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-22T13:50:00.000Z",
+        "elapsedSec": 1200,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/plans/us-395/step-05-us-395.plan.report.md"
+          ]
+        },
+        "finishedAt": "2026-09-22T14:10:00.000Z",
+        "label": "Verify",
+        "model": "muse-spark-1.3-contributor",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 6,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-22T14:15:00.000Z",
+        "elapsedSec": 1200,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/plans/us-395/step-06-us-395.review.md"
+          ]
+        },
+        "finishedAt": "2026-09-22T14:35:00.000Z",
+        "label": "Code review",
+        "model": "muse-spark-1.3-contributor",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 7,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-22T14:40:00.000Z",
+        "elapsedSec": 2400,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/plans/us-395/step-07-us-395.testing.report.md"
+          ]
+        },
+        "finishedAt": "2026-09-22T15:20:00.000Z",
+        "label": "Testing",
+        "model": "muse-spark-1.2-contributor",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-395/step-08-us-395.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-22T15:40:00.000Z",
+        "label": "Ship",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 9,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-22T16:00:00.000Z",
+        "elapsedSec": 300,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-22T16:05:00.000Z",
+        "label": "Fix PR",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 6480,
+    "totalTokens": 0
+  },
+  "updatedAt": "2026-09-22T13:00:00Z",
+  "us": 395,
+  "verificationScore": 10,
+  "workflowId": "us-395-20260922T080709Z",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/us-395/ac-ledger.json",
+      ".agents/plans/us-395/step-00-us-395.spec.md",
+      ".agents/plans/us-395/step-08-us-395.result.md",
+      "test/test-terminal-close-us395.js",
+      "test/test-ws-monitor-us395.js"
+    ],
+    "deleted": [],
+    "modified": [
+      ".agents/plans/us-395/step-01-us-395.plan.md",
+      ".agents/plans/us-395/step-02-us-395.plan-interview.md",
+      ".agents/plans/us-395/step-02-us-395.plan.refined.md",
+      ".agents/plans/us-395/step-05-us-395.plan.report.md",
+      ".agents/plans/us-395/step-06-us-395.review.md",
+      ".agents/plans/us-395/step-07-us-395.testing.report.md",
+      ".agents/skills/ws-monitor/SKILL.md",
+      ".agents/skills/ws-monitor/evals/evals.json",
+      ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+      ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+      ".agents/skills/ws-spec-multi/PROTOCOL.md",
+      ".agents/skills/ws-spec-multi/SKILL.md",
+      ".agents/skills/ws-spec-multi/STATE.md",
+      ".agents/skills/ws-spec-multi/evals/evals.json",
+      "test/test-suites.json"
+    ]
+  },
+  "workflowMode": "auto",
+  "workflowType": "standard"
+}

@@ -6,7 +6,7 @@ Path tokens: expand via [`tools.md`](tools.md) before tool calls.
 
 ## Skill catalog (layers)
 
-> **Scope note:** Full inventory for this install. Membership is [`skill-dependencies.json`](skill-dependencies.json) (`workflows` = 48, `extra` = 8). Extra rows are absent from Workflows-only installs. Ids in `externalSkills` (spec-memo companions, generator-managed consumer skills) are not packaged here. Consumer routes: [`AGENTS.md`](AGENTS.md).
+> **Scope note:** Full inventory for this install. Membership is [`skill-dependencies.json`](skill-dependencies.json) (`workflows` = 49, `extra` = 8). Extra rows are absent from Workflows-only installs. Ids in `externalSkills` (spec-memo companions, generator-managed consumer skills) are not packaged here. Consumer routes: [`AGENTS.md`](AGENTS.md).
 >
 > **Do not load this catalog as a work list** — it is an index. Load skills per [`AGENTS.md`](AGENTS.md) § Skill loading.
 
@@ -84,6 +84,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-pre-daily` | `.agents/skills/ws-pre-daily/SKILL.md` | 36-hour standup briefing |
 | `ws-megabrain` | `.agents/skills/ws-megabrain/SKILL.md` | Vibe-coding implementer + specialists |
 | `ws-spec-explain` | `.agents/skills/ws-spec-explain/SKILL.md` | Status and delivery panorama |
+| `ws-spec-translate-to-human` | `.agents/skills/ws-spec-translate-to-human/SKILL.md` | Human runbook beside an agent spec |
 | `ws-spec-archive` | `.agents/skills/ws-spec-archive/SKILL.md` | Harvest plan history into index.PRD |
 | `ws-cleanup` | `.agents/skills/ws-cleanup/SKILL.md` | Workflow leftover cleanup |
 | `ws-spec-update` | `.agents/skills/ws-spec-update/SKILL.md` | Auto-update specs after code changes |
@@ -117,6 +118,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Standup briefing (last 36 hours) | `ws-pre-daily` |
 | What next / vibe-coding implement / megabrain | `ws-megabrain` |
 | Explain spec / US status & delivery panorama | `ws-spec-explain` |
+| Human runbook for a spec (Implementation / UI Test / Out of scope) | `ws-spec-translate-to-human` |
 | Archive plan history into `index.PRD` / clean shipped plan dirs | `ws-spec-archive` |
 | Clean workflow leftovers / shipped plan dirs | `ws-cleanup` |
 | Testing pre-PR | `ws-testing` |

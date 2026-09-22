@@ -1,7 +1,7 @@
 ---
 name: ws-plan-write
 description: Implementation plan generator — transforms feature specifications into structured, technical step-01 implementation plans.
-version: 0.4.57
+version: 0.4.62
 disable-model-invocation: true
 invocation_names:
   - plan-write
@@ -52,6 +52,9 @@ Workflow (ws-spec-to-pr Step 1): orchestrator passes `specInput` (path to `step-
 
 3. **Handoff** — Return the plan path for [ws-plan-interview](../ws-plan-interview/SKILL.md) (or [ws-plan-to-tasks](../ws-plan-to-tasks/SKILL.md) when interview is skipped).
    - Done when: caller has the `step-01-` path.
+
+4. **Human companion (optional, non-blocking)** — When `ws-spec-translate-to-human.enabled !== false` in config, offer the companion through [`ws-spec-translate-to-human`](../ws-spec-translate-to-human/SKILL.md) (`lang` ← `ws-spec-translate-to-human.outputLanguage`, default `en-us`): it writes `{us-dir}/step-00-{slug}.spec-translated.md` beside the agent spec. Record `translate-companion | written|skipped|failed` for the caller; a skill or validator failure never fails planning.
+   - Done when: companion written, skipped as disabled, or the failure recorded.
 
 ## Guardrails
 

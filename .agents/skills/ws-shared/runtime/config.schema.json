@@ -650,6 +650,23 @@
         }
       }
     },
+    "ws-spec-translate-to-human": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Per-skill section for the human-companion generator (ws-spec-translate-to-human). enabled false skips refinement companion generation; outputLanguage selects the companion language (en-us default, pt-BR supported; other values fall back to en-us).",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "When false, ws-plan-write skips the non-blocking companion step. Defaults to true when omitted."
+        },
+        "outputLanguage": {
+          "type": "string",
+          "default": "en-us",
+          "description": "Companion output language: en-us (default) or pt-BR. Unsupported values fall back to en-us."
+        }
+      }
+    },
     "ws-goal-fix-pr": {
       "type": "object",
       "additionalProperties": true,

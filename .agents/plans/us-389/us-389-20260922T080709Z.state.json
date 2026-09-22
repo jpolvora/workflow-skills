@@ -1,0 +1,1549 @@
+{
+  "acImplemented": 7,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "3382da8a217ba2b8af6950ebb48c206c72f22695",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "test/test-powershell-config-editor.js:L35-L42"
+        ],
+        "files": [
+          {
+            "lineEnd": 42,
+            "lineStart": 35,
+            "path": "test/test-powershell-config-editor.js",
+            "sha256": "b4ff50f020f67f4afd094a9a45c5225a3a059484479c6122a831e8f7db1357b5"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "g2-commit-3382da8a217ba2b8af6950ebb48c206c72f22695",
+          "step5-AC1"
+        ],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-005"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Test 12: Verifying repository hub config byte-identity",
+            "phase": "observed",
+            "sourceFile": "test/test-powershell-config-editor.js",
+            "timestamp": "2026-09-22T08:43:03.072Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "Every invocation of `Edit-WorkflowSkillsConfig.ps1` from the test suite passes an explicit `-ConfigPath` pointing at an isolated temp copy; no test call resolves the repository's own `.ws/config.json`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "3382da8a217ba2b8af6950ebb48c206c72f22695",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1:L607-L613",
+          "test/test-powershell-config-editor.js:L214-L229"
+        ],
+        "files": [
+          {
+            "lineEnd": 613,
+            "lineStart": 607,
+            "path": ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
+            "sha256": "cd9f8c0a3359476112447fad402fbe5685195db0eb109b47a52035f560a6526f"
+          },
+          {
+            "lineEnd": 229,
+            "lineStart": 214,
+            "path": "test/test-powershell-config-editor.js",
+            "sha256": "b4ff50f020f67f4afd094a9a45c5225a3a059484479c6122a831e8f7db1357b5"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "g2-commit-3382da8a217ba2b8af6950ebb48c206c72f22695",
+          "step5-AC2"
+        ],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-005"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Test 12: Verifying repository hub config byte-identity",
+            "phase": "observed",
+            "sourceFile": "test/test-powershell-config-editor.js",
+            "timestamp": "2026-09-22T08:43:03.135Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "`-CheckOnly` performs no write: no config mutation and no `.bak` creation, including when `-ConfigPath` is omitted.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "3382da8a217ba2b8af6950ebb48c206c72f22695",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "test/run-tests.cjs:L28-L52"
+        ],
+        "files": [
+          {
+            "lineEnd": 52,
+            "lineStart": 28,
+            "path": "test/run-tests.cjs",
+            "sha256": "241f3019743100ea7a70db598bc1289e7c1b3760b3d907a6c3d264df4f7c0bea"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "g2-commit-3382da8a217ba2b8af6950ebb48c206c72f22695",
+          "step5-AC3"
+        ],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-005"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "run-tests: hub config byte-identity verified",
+            "phase": "observed",
+            "sourceFile": "test/run-tests.cjs",
+            "timestamp": "2026-09-22T08:43:03.191Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "After `npm run test` completes, `git status --short` shows no modification to `.ws/config.json` and no untracked `.ws/config.json.bak`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "3382da8a217ba2b8af6950ebb48c206c72f22695",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "test/test-powershell-config-editor.js:L296-L303"
+        ],
+        "files": [
+          {
+            "lineEnd": 303,
+            "lineStart": 296,
+            "path": "test/test-powershell-config-editor.js",
+            "sha256": "b4ff50f020f67f4afd094a9a45c5225a3a059484479c6122a831e8f7db1357b5"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "g2-commit-3382da8a217ba2b8af6950ebb48c206c72f22695",
+          "step5-AC4"
+        ],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-005"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Test 12: Verifying repository hub config byte-identity",
+            "phase": "observed",
+            "sourceFile": "test/test-powershell-config-editor.js",
+            "timestamp": "2026-09-22T08:43:03.249Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "Any backup file a test creates is removed before the test exits, on both the pass and the failure path.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "3382da8a217ba2b8af6950ebb48c206c72f22695",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1:L13-L17"
+        ],
+        "files": [
+          {
+            "lineEnd": 17,
+            "lineStart": 13,
+            "path": ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
+            "sha256": "cd9f8c0a3359476112447fad402fbe5685195db0eb109b47a52035f560a6526f"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "g2-commit-3382da8a217ba2b8af6950ebb48c206c72f22695",
+          "step5-AC5"
+        ],
+        "planSections": [
+          "section-003",
+          "section-004"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Test 12: Verifying repository hub config byte-identity",
+            "phase": "observed",
+            "sourceFile": "test/test-powershell-config-editor.js",
+            "timestamp": "2026-09-22T08:43:03.311Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "Omitting `-ConfigPath` outside a test context remains a supported user flow (the editor still resolves the project hub config for interactive use) and that behavior is documented.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "3382da8a217ba2b8af6950ebb48c206c72f22695",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "test/test-powershell-config-editor.js:L155-L166",
+          "test/test-powershell-config-editor.js:L711-L716"
+        ],
+        "files": [
+          {
+            "lineEnd": 166,
+            "lineStart": 155,
+            "path": "test/test-powershell-config-editor.js",
+            "sha256": "b4ff50f020f67f4afd094a9a45c5225a3a059484479c6122a831e8f7db1357b5"
+          },
+          {
+            "lineEnd": 716,
+            "lineStart": 711,
+            "path": "test/test-powershell-config-editor.js",
+            "sha256": "b4ff50f020f67f4afd094a9a45c5225a3a059484479c6122a831e8f7db1357b5"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "g2-commit-3382da8a217ba2b8af6950ebb48c206c72f22695",
+          "step5-AC6"
+        ],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-005"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Test 12: Verifying repository hub config byte-identity",
+            "phase": "observed",
+            "sourceFile": "test/test-powershell-config-editor.js",
+            "timestamp": "2026-09-22T08:43:03.376Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "A regression test asserts the repository hub config is byte-identical before and after the suite runs.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "3382da8a217ba2b8af6950ebb48c206c72f22695",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "test/run-tests.cjs:L114-L123"
+        ],
+        "files": [
+          {
+            "lineEnd": 123,
+            "lineStart": 114,
+            "path": "test/run-tests.cjs",
+            "sha256": "241f3019743100ea7a70db598bc1289e7c1b3760b3d907a6c3d264df4f7c0bea"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [
+          "g2-commit-3382da8a217ba2b8af6950ebb48c206c72f22695",
+          "step5-AC7"
+        ],
+        "planSections": [
+          "section-004",
+          "section-005"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "run-tests: hub config byte-identity verified",
+            "phase": "observed",
+            "sourceFile": "test/run-tests.cjs",
+            "timestamp": "2026-09-22T08:43:03.429Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "`npm run test`, `ws-check-harness`, and `node test/test-harness-clean.js` exit clean after the change.",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      }
+    ],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "step5-NS1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "run-tests: hub config byte-identity verified",
+            "phase": "observed",
+            "sourceFile": "test/run-tests.cjs",
+            "timestamp": "2026-09-22T08:43:03.489Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Test 12: Verifying repository hub config byte-identity",
+            "phase": "observed",
+            "sourceFile": "test/test-powershell-config-editor.js",
+            "timestamp": "2026-09-22T08:43:03.488Z"
+          }
+        ],
+        "text": "A test call invokes the editor without `-ConfigPath` and the live hub config is rewritten (must fail AC1)."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "step5-NS2"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "run-tests: hub config byte-identity verified",
+            "phase": "observed",
+            "sourceFile": "test/run-tests.cjs",
+            "timestamp": "2026-09-22T08:43:03.545Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Test 12: Verifying repository hub config byte-identity",
+            "phase": "observed",
+            "sourceFile": "test/test-powershell-config-editor.js",
+            "timestamp": "2026-09-22T08:43:03.545Z"
+          }
+        ],
+        "text": "`-CheckOnly` with no `-ConfigPath` creates `.ws/config.json.bak` or mutates the config (must fail AC2)."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "step5-NS3"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "run-tests: hub config byte-identity verified",
+            "phase": "observed",
+            "sourceFile": "test/run-tests.cjs",
+            "timestamp": "2026-09-22T08:43:03.613Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Test 12: Verifying repository hub config byte-identity",
+            "phase": "observed",
+            "sourceFile": "test/test-powershell-config-editor.js",
+            "timestamp": "2026-09-22T08:43:03.612Z"
+          }
+        ],
+        "text": "`git status --short` after `npm run test` shows `M .ws/config.json` or `?? .ws/config.json.bak` (must fail AC3)."
+      },
+      {
+        "id": "NS4",
+        "linkEventIds": [
+          "step5-NS4"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "run-tests: hub config byte-identity verified",
+            "phase": "observed",
+            "sourceFile": "test/run-tests.cjs",
+            "timestamp": "2026-09-22T08:43:03.672Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Test 12: Verifying repository hub config byte-identity",
+            "phase": "observed",
+            "sourceFile": "test/test-powershell-config-editor.js",
+            "timestamp": "2026-09-22T08:43:03.671Z"
+          }
+        ],
+        "text": "A failing test leaves its backup file behind (must fail AC4)."
+      },
+      {
+        "id": "NS5",
+        "linkEventIds": [
+          "step5-NS5"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "run-tests: hub config byte-identity verified",
+            "phase": "observed",
+            "sourceFile": "test/run-tests.cjs",
+            "timestamp": "2026-09-22T08:43:03.728Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Test 12: Verifying repository hub config byte-identity",
+            "phase": "observed",
+            "sourceFile": "test/test-powershell-config-editor.js",
+            "timestamp": "2026-09-22T08:43:03.727Z"
+          }
+        ],
+        "text": "Interactive `-ConfigPath`-less invocation stops resolving the project hub config (must fail AC5)."
+      },
+      {
+        "id": "NS6",
+        "linkEventIds": [
+          "step5-NS6"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "run-tests: hub config byte-identity verified",
+            "phase": "observed",
+            "sourceFile": "test/run-tests.cjs",
+            "timestamp": "2026-09-22T08:43:03.787Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Test 12: Verifying repository hub config byte-identity",
+            "phase": "observed",
+            "sourceFile": "test/test-powershell-config-editor.js",
+            "timestamp": "2026-09-22T08:43:03.786Z"
+          }
+        ],
+        "text": "The regression assertion passes while the hub config actually changed (must fail AC6)."
+      },
+      {
+        "id": "NS7",
+        "linkEventIds": [
+          "step5-NS7"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "run-tests: hub config byte-identity verified",
+            "phase": "observed",
+            "sourceFile": "test/run-tests.cjs",
+            "timestamp": "2026-09-22T08:43:03.841Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Test 12: Verifying repository hub config byte-identity",
+            "phase": "observed",
+            "sourceFile": "test/test-powershell-config-editor.js",
+            "timestamp": "2026-09-22T08:43:03.840Z"
+          }
+        ],
+        "text": "`npm run test`, `ws-check-harness`, or `test-harness-clean.js` fails after the change (must fail AC7)."
+      }
+    ],
+    "planIndexPath": ".agents/plans/us-389/.runtime/plan.index.json",
+    "revision": 21,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "ship",
+      "computedAt": "2026-09-22T08:45:34.927Z",
+      "earnedUnits": 70,
+      "errors": [],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "missingEvidence": false,
+      "score": 10,
+      "totalUnits": 70
+    },
+    "slug": "us-389",
+    "specPath": ".agents/plans/us-389/step-00-us-389.spec.md",
+    "testingSkip": null,
+    "workflowId": "us-389-20260922T080709Z"
+  },
+  "acTotal": 7,
+  "activeThreads": 0,
+  "baseBranch": "main",
+  "batchRunId": "ms-20260922T080709Z",
+  "branch": "develop",
+  "branchStrategy": "stay",
+  "checksStatus": "green",
+  "commits": [
+    {
+      "sha": "3382da8a217ba2b8af6950ebb48c206c72f22695",
+      "step": 5
+    },
+    {
+      "sha": "ea46c379",
+      "step": 8
+    },
+    {
+      "sha": "082e86d8",
+      "step": 9
+    }
+  ],
+  "completedSteps": [
+    0,
+    1,
+    2,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "complexityClass": "complex",
+  "createdAt": "2026-09-22T08:07:09Z",
+  "currentModel": "opencode-go/deepseek-v4.1-flash",
+  "currentStep": 9,
+  "endedAt": "2026-09-22T08:48:44Z",
+  "execMode": "sequential",
+  "filesTouched": [],
+  "flowMode": "standard",
+  "gateHistory": [],
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-389/step-00-us-389.spec.md",
+        ".agents/plans/us-389/ac-ledger.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "us-389",
+      "status": "completed",
+      "step": 0,
+      "summary": "Finished step 0",
+      "workflowId": "us-389-20260922T080709Z",
+      "workflowType": "standard"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-389/step-01-us-389.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "us-389",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "us-389-20260922T080709Z",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-389/step-02-us-389.plan-interview.md",
+        ".agents/plans/us-389/step-02-us-389.plan.refined.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "us-389",
+      "status": "completed",
+      "step": 2,
+      "summary": "Finished step 2",
+      "workflowId": "us-389-20260922T080709Z",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "us-389",
+      "status": "skipped",
+      "step": 3,
+      "summary": "Finished step 3",
+      "workflowId": "us-389-20260922T080709Z",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
+        "test/test-powershell-config-editor.js",
+        "test/run-tests.cjs",
+        "bin/skill-integrity.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "us-389",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "us-389-20260922T080709Z",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-389/step-05-us-389.plan.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "us-389",
+      "status": "completed",
+      "step": 5,
+      "summary": "Finished step 5",
+      "workflowId": "us-389-20260922T080709Z",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-389/step-06-us-389.review.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "us-389",
+      "status": "completed",
+      "step": 6,
+      "summary": "Finished step 6",
+      "workflowId": "us-389-20260922T080709Z",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-389/step-07-us-389.testing.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "us-389",
+      "status": "completed",
+      "step": 7,
+      "summary": "Finished step 7",
+      "workflowId": "us-389-20260922T080709Z",
+      "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-389/step-08-us-389.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-389",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "us-389-20260922T080709Z",
+      "workflowType": "standard"
+    },
+    "9": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-389",
+      "status": "completed",
+      "step": 9,
+      "summary": "Finished step 9",
+      "workflowId": "us-389-20260922T080709Z",
+      "workflowType": "standard"
+    }
+  },
+  "integrationBranch": "develop",
+  "mergeCommit": "082e86d8fce8481e3cce8936b7ca0d06d5a10035",
+  "mergedAt": "2026-09-22T09:14:00Z",
+  "modelsPreset": "muse-spark",
+  "nextAction": "Run step 9",
+  "prNumber": 397,
+  "prUrl": "https://github.com/jpolvora/workflow-skills/pull/397",
+  "releaseMergeCommit": "61d87f5f86948cfb57244f88e80ef24946b2076c",
+  "releasePrNumber": 398,
+  "releasePrUrl": "https://github.com/jpolvora/workflow-skills/pull/398",
+  "revision": 17,
+  "runInterview": true,
+  "shipStatus": "merged",
+  "skippedSteps": [
+    {
+      "evidence": "defaults.enableDag=false; sequential mode writes no step-03 stubs",
+      "reason": "dag-disabled",
+      "step": 3
+    }
+  ],
+  "slug": "us-389",
+  "statePath": ".agents/plans/us-389/us-389-20260922T080709Z.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-22T08:32:58Z",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "step": 0
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-22T08:33:29Z",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "step": 1
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-22T08:34:03Z",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "step": 2
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-22T08:34:24Z",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "step": 4
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-22T08:42:28Z",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "step": 5
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-22T08:44:36Z",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "step": 6
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-22T08:45:14Z",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "step": 7
+    }
+  ],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "skipped",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed",
+    "9": "completed"
+  },
+  "telemetry": {
+    "steps": [
+      {
+        "N": 0,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-22T08:32:58Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-389/step-00-us-389.spec.md",
+            ".agents/plans/us-389/ac-ledger.json"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-22T08:32:58Z",
+        "label": "Spec",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 1,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-22T08:33:29Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-389/step-01-us-389.plan.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-22T08:33:29Z",
+        "label": "Planning",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-22T08:34:03Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-389/step-02-us-389.plan-interview.md",
+            ".agents/plans/us-389/step-02-us-389.plan.refined.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-22T08:34:03Z",
+        "label": "Interview",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-22T08:34:03Z",
+        "label": "Plan to tasks",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-22T08:34:24Z",
+        "elapsedSec": 382,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
+            "test/test-powershell-config-editor.js",
+            "test/run-tests.cjs",
+            "bin/skill-integrity.json"
+          ]
+        },
+        "finishedAt": "2026-09-22T08:40:46Z",
+        "label": "Implement",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-22T08:42:28Z",
+        "elapsedSec": 70,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-389/step-05-us-389.plan.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-22T08:43:38Z",
+        "label": "Verify",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 6,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-22T08:44:36Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-389/step-06-us-389.review.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-22T08:44:36Z",
+        "label": "Code review",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 7,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-22T08:45:14Z",
+        "elapsedSec": 21,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-389/step-07-us-389.testing.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-22T08:45:35Z",
+        "label": "Testing",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-389/step-08-us-389.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-22T08:48:44Z",
+        "label": "Ship",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 9,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-22T09:17:04Z",
+        "label": "Fix PR",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 473,
+    "totalTokens": 0
+  },
+  "updatedAt": "2026-09-22T08:07:09Z",
+  "us": 389,
+  "verificationScore": 10,
+  "workflowId": "us-389-20260922T080709Z",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/us-389/ac-ledger.json",
+      ".agents/plans/us-389/step-00-us-389.spec.md",
+      ".agents/plans/us-389/step-01-us-389.plan.md",
+      ".agents/plans/us-389/step-02-us-389.plan-interview.md",
+      ".agents/plans/us-389/step-02-us-389.plan.refined.md",
+      ".agents/plans/us-389/step-05-us-389.plan.report.md",
+      ".agents/plans/us-389/step-06-us-389.review.md",
+      ".agents/plans/us-389/step-07-us-389.testing.report.md",
+      ".agents/plans/us-389/step-08-us-389.result.md"
+    ],
+    "deleted": [],
+    "modified": [
+      ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
+      "bin/skill-integrity.json",
+      "test/run-tests.cjs",
+      "test/test-powershell-config-editor.js"
+    ]
+  },
+  "workflowMode": "auto",
+  "workflowType": "standard"
+}

@@ -206,7 +206,7 @@
       </tr>
       <tr>
         <th>Provenance</th>
-        <td>Specs 0009, 0040, 0045, 0051, 0053, 0065, 0084</td>
+        <td>Specs 0009, 0040, 0045, 0051, 0053, 0065, 0084, 0108-code-review-findings-fixes through 0121-us-395</td>
       </tr>
       <tr>
         <th>Framework</th>
@@ -219,7 +219,7 @@
     </tbody>
   </table>
 </aside>
-<p>&gt; Provenance: <code>.agents/skills/ws-spec-write/SKILL.md</code>, <code>.agents/skills/ws-spec-format/scripts/validate_spec.cjs</code>, <code>.agents/skills/ws-spec-organizer/scripts/resolve_spec_path.cjs</code>, <code>.agents/skills/ws-spec-index/SKILL.md</code>, living synthesis of specs 0009, 0040, 0045, 0051, 0053, 0065, 0084.</p>
+<p>&gt; Provenance: <code>.agents/skills/ws-spec-write/SKILL.md</code>, <code>.agents/skills/ws-spec-format/scripts/validate_spec.cjs</code>, <code>.agents/skills/ws-spec-organizer/scripts/resolve_spec_path.cjs</code>, <code>.agents/skills/ws-spec-index/SKILL.md</code>, living synthesis of specs 0009, 0040, 0045, 0051, 0053, 0065, 0084, 0108-code-review-findings-fixes through 0121-us-395.</p>
 <div class="wiki-toc-box" id="toc" role="navigation" aria-label="Table of contents">
   <div class="wiki-toc-header">
     <span class="wiki-toc-title">Contents</span>
@@ -236,7 +236,7 @@
 <h2 id="how-it-works">How it works <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/main/.agents/specs/wiki/specs/spec-lifecycle.md" target="_blank" rel="noopener" title="Edit section: How it works">[edit]</a></span></h2>
 <p>Authoring mode requires sections for Out of Scope, Assumptions, Definition of Ready, Validation and Observation Notes, and Negative and Failing Test Scenarios. Every stated requirement maps to at least one acceptance criterion or an explicit out-of-scope row. <code>ws-spec-write</code> never blind-copies a tracker issue or pasted description: it reformulates the requirement into explicit, testable acceptance criteria, keeps public-issue context verbatim, and strips private consumer names, paths, hostnames, and customer data per the hub&#39;s Source anonymization rule. <code>validate_spec.cjs --mode=authoring</code> must exit zero before registration proceeds. Gray areas with two or more product options get a <code>{slug}.context.md</code> companion that is never empty.</p>
 <p>Plans are interrogated against DoR during the plan interview step. Implementation follows failing-tests-first discipline with positive and negative scenario verification. <code>ws-spec-update</code> (delta spec drift) and <code>ws-spec-index sync</code> (phase status) serve different purposes and must not be interchanged. Prefix ordering is opt-in via <code>plans.enforceSpecPrefixOrdering</code>; when true, specs-of-record use <code>NNNN-{slug}.spec.md</code> ordered by <code>specDate</code>, git first-add, or mtime, while frontmatter <code>slug</code> and <code>{plansDir}/{slug}/step-00</code> paths stay unprefixed. Reorder runs only through explicit <code>organize_specs.cjs --apply</code> with <code>git mv</code>; install never auto-renames existing files.</p>
-<p>The dispatcher never reimplements specialist scripts. Slice specs for task-lifecycle work never create <code>{plansDir}</code> trees.</p>
+<p>The dispatcher never reimplements specialist scripts. Slice specs for task-lifecycle work never create <code>{plansDir}</code> trees. Recent boards keep the same discipline at higher volume: review-fix rounds, coverage pushes, monitor and queue hardening, hub relocation, and generator work all land as prefixed specs-of-record with context companions where the gray area needs two or more product options, and shipped items archive with their plan trees harvested rather than left behind.</p>
 <h2 id="backend">Backend <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/main/.agents/specs/wiki/specs/spec-lifecycle.md" target="_blank" rel="noopener" title="Edit section: Backend">[edit]</a></span></h2>
 <p>Path authority lives in <code>resolve_spec_path.cjs</code>, which reads <code>plans.specsDir</code> (default <code>.agents/specs</code>) and the prefix flag. <code>organize_specs.cjs</code> supports <code>--dry-run</code> and <code>--apply</code> with index backtick updates after moves. Tracking order for index operations walks <code>FEATURES.md</code> → <code>PLAN.md</code> → <code>PRODUCT.PRD</code> → <code>index.PRD</code>, skipping missing files with a note.</p>
 <p>Validation tooling includes <code>validate_spec.cjs --mode=authoring|compat</code>, covered by <code>test/test-spec-dor-tdd.js</code> and <code>test/test-ws-spec-manager.js</code>. Local registration copies specs into <code>{plansDir}/{slug}/step-00-*.spec.md</code> through <code>register_local_spec.cjs</code> after the specs-of-record file exists under <code>{specsDir}</code>.</p>

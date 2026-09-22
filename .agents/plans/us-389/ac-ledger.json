@@ -1,0 +1,999 @@
+{
+  "schemaVersion": 1,
+  "revision": 21,
+  "workflowId": "us-389-20260922T080709Z",
+  "slug": "us-389",
+  "specPath": ".agents/plans/us-389/step-00-us-389.spec.md",
+  "planIndexPath": ".agents/plans/us-389/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "Every invocation of `Edit-WorkflowSkillsConfig.ps1` from the test suite passes an explicit `-ConfigPath` pointing at an isolated temp copy; no test call resolves the repository's own `.ws/config.json`.",
+      "status": "Implemented",
+      "evidence": [
+        "test/test-powershell-config-editor.js:L35-L42"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06"
+      ],
+      "planSections": [
+        "section-003",
+        "section-004",
+        "section-005"
+      ],
+      "files": [
+        {
+          "path": "test/test-powershell-config-editor.js",
+          "lineStart": 35,
+          "lineEnd": 42,
+          "sha256": "b4ff50f020f67f4afd094a9a45c5225a3a059484479c6122a831e8f7db1357b5"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3382da8a217ba2b8af6950ebb48c206c72f22695",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "Test 12: Verifying repository hub config byte-identity",
+          "sourceFile": "test/test-powershell-config-editor.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T08:43:03.072Z"
+        },
+        {
+          "name": "V1",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V2",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V3",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V4",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V5",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V6",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V7",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-3382da8a217ba2b8af6950ebb48c206c72f22695",
+        "step5-AC1"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "`-CheckOnly` performs no write: no config mutation and no `.bak` creation, including when `-ConfigPath` is omitted.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1:L607-L613",
+        "test/test-powershell-config-editor.js:L214-L229"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06"
+      ],
+      "planSections": [
+        "section-003",
+        "section-004",
+        "section-005"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
+          "lineStart": 607,
+          "lineEnd": 613,
+          "sha256": "cd9f8c0a3359476112447fad402fbe5685195db0eb109b47a52035f560a6526f"
+        },
+        {
+          "path": "test/test-powershell-config-editor.js",
+          "lineStart": 214,
+          "lineEnd": 229,
+          "sha256": "b4ff50f020f67f4afd094a9a45c5225a3a059484479c6122a831e8f7db1357b5"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3382da8a217ba2b8af6950ebb48c206c72f22695",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "Test 12: Verifying repository hub config byte-identity",
+          "sourceFile": "test/test-powershell-config-editor.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T08:43:03.135Z"
+        },
+        {
+          "name": "V1",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V2",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V3",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V4",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V5",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V6",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V7",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-3382da8a217ba2b8af6950ebb48c206c72f22695",
+        "step5-AC2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "After `npm run test` completes, `git status --short` shows no modification to `.ws/config.json` and no untracked `.ws/config.json.bak`.",
+      "status": "Implemented",
+      "evidence": [
+        "test/run-tests.cjs:L28-L52"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06"
+      ],
+      "planSections": [
+        "section-003",
+        "section-004",
+        "section-005"
+      ],
+      "files": [
+        {
+          "path": "test/run-tests.cjs",
+          "lineStart": 28,
+          "lineEnd": 52,
+          "sha256": "241f3019743100ea7a70db598bc1289e7c1b3760b3d907a6c3d264df4f7c0bea"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3382da8a217ba2b8af6950ebb48c206c72f22695",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "run-tests: hub config byte-identity verified",
+          "sourceFile": "test/run-tests.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T08:43:03.191Z"
+        },
+        {
+          "name": "V1",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V2",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V3",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V4",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V5",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V6",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V7",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-3382da8a217ba2b8af6950ebb48c206c72f22695",
+        "step5-AC3"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "Any backup file a test creates is removed before the test exits, on both the pass and the failure path.",
+      "status": "Implemented",
+      "evidence": [
+        "test/test-powershell-config-editor.js:L296-L303"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06"
+      ],
+      "planSections": [
+        "section-003",
+        "section-004",
+        "section-005"
+      ],
+      "files": [
+        {
+          "path": "test/test-powershell-config-editor.js",
+          "lineStart": 296,
+          "lineEnd": 303,
+          "sha256": "b4ff50f020f67f4afd094a9a45c5225a3a059484479c6122a831e8f7db1357b5"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3382da8a217ba2b8af6950ebb48c206c72f22695",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "Test 12: Verifying repository hub config byte-identity",
+          "sourceFile": "test/test-powershell-config-editor.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T08:43:03.249Z"
+        },
+        {
+          "name": "V1",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V2",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V3",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V4",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V5",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V6",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V7",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-3382da8a217ba2b8af6950ebb48c206c72f22695",
+        "step5-AC4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "Omitting `-ConfigPath` outside a test context remains a supported user flow (the editor still resolves the project hub config for interactive use) and that behavior is documented.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1:L13-L17"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06"
+      ],
+      "planSections": [
+        "section-003",
+        "section-004"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
+          "lineStart": 13,
+          "lineEnd": 17,
+          "sha256": "cd9f8c0a3359476112447fad402fbe5685195db0eb109b47a52035f560a6526f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3382da8a217ba2b8af6950ebb48c206c72f22695",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "Test 12: Verifying repository hub config byte-identity",
+          "sourceFile": "test/test-powershell-config-editor.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T08:43:03.311Z"
+        },
+        {
+          "name": "V1",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V2",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V3",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V4",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V5",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V6",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V7",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-3382da8a217ba2b8af6950ebb48c206c72f22695",
+        "step5-AC5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "A regression test asserts the repository hub config is byte-identical before and after the suite runs.",
+      "status": "Implemented",
+      "evidence": [
+        "test/test-powershell-config-editor.js:L155-L166",
+        "test/test-powershell-config-editor.js:L711-L716"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06"
+      ],
+      "planSections": [
+        "section-003",
+        "section-004",
+        "section-005"
+      ],
+      "files": [
+        {
+          "path": "test/test-powershell-config-editor.js",
+          "lineStart": 155,
+          "lineEnd": 166,
+          "sha256": "b4ff50f020f67f4afd094a9a45c5225a3a059484479c6122a831e8f7db1357b5"
+        },
+        {
+          "path": "test/test-powershell-config-editor.js",
+          "lineStart": 711,
+          "lineEnd": 716,
+          "sha256": "b4ff50f020f67f4afd094a9a45c5225a3a059484479c6122a831e8f7db1357b5"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3382da8a217ba2b8af6950ebb48c206c72f22695",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "Test 12: Verifying repository hub config byte-identity",
+          "sourceFile": "test/test-powershell-config-editor.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T08:43:03.376Z"
+        },
+        {
+          "name": "V1",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V2",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V3",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V4",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V5",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V6",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V7",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-3382da8a217ba2b8af6950ebb48c206c72f22695",
+        "step5-AC6"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "`npm run test`, `ws-check-harness`, and `node test/test-harness-clean.js` exit clean after the change.",
+      "status": "Implemented",
+      "evidence": [
+        "test/run-tests.cjs:L114-L123"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-005"
+      ],
+      "files": [
+        {
+          "path": "test/run-tests.cjs",
+          "lineStart": 114,
+          "lineEnd": 123,
+          "sha256": "241f3019743100ea7a70db598bc1289e7c1b3760b3d907a6c3d264df4f7c0bea"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3382da8a217ba2b8af6950ebb48c206c72f22695",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "run-tests: hub config byte-identity verified",
+          "sourceFile": "test/run-tests.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T08:43:03.429Z"
+        },
+        {
+          "name": "V1",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V2",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V3",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V4",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V5",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V6",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        },
+        {
+          "name": "V7",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-3382da8a217ba2b8af6950ebb48c206c72f22695",
+        "step5-AC7"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "A test call invokes the editor without `-ConfigPath` and the live hub config is rewritten (must fail AC1).",
+      "tests": [
+        {
+          "name": "run-tests: hub config byte-identity verified",
+          "sourceFile": "test/run-tests.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T08:43:03.489Z"
+        },
+        {
+          "name": "Test 12: Verifying repository hub config byte-identity",
+          "sourceFile": "test/test-powershell-config-editor.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T08:43:03.488Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-NS1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "`-CheckOnly` with no `-ConfigPath` creates `.ws/config.json.bak` or mutates the config (must fail AC2).",
+      "tests": [
+        {
+          "name": "run-tests: hub config byte-identity verified",
+          "sourceFile": "test/run-tests.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T08:43:03.545Z"
+        },
+        {
+          "name": "Test 12: Verifying repository hub config byte-identity",
+          "sourceFile": "test/test-powershell-config-editor.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T08:43:03.545Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-NS2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "`git status --short` after `npm run test` shows `M .ws/config.json` or `?? .ws/config.json.bak` (must fail AC3).",
+      "tests": [
+        {
+          "name": "run-tests: hub config byte-identity verified",
+          "sourceFile": "test/run-tests.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T08:43:03.613Z"
+        },
+        {
+          "name": "Test 12: Verifying repository hub config byte-identity",
+          "sourceFile": "test/test-powershell-config-editor.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T08:43:03.612Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-NS3"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "A failing test leaves its backup file behind (must fail AC4).",
+      "tests": [
+        {
+          "name": "run-tests: hub config byte-identity verified",
+          "sourceFile": "test/run-tests.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T08:43:03.672Z"
+        },
+        {
+          "name": "Test 12: Verifying repository hub config byte-identity",
+          "sourceFile": "test/test-powershell-config-editor.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T08:43:03.671Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-NS4"
+      ]
+    },
+    {
+      "id": "NS5",
+      "text": "Interactive `-ConfigPath`-less invocation stops resolving the project hub config (must fail AC5).",
+      "tests": [
+        {
+          "name": "run-tests: hub config byte-identity verified",
+          "sourceFile": "test/run-tests.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T08:43:03.728Z"
+        },
+        {
+          "name": "Test 12: Verifying repository hub config byte-identity",
+          "sourceFile": "test/test-powershell-config-editor.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T08:43:03.727Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-NS5"
+      ]
+    },
+    {
+      "id": "NS6",
+      "text": "The regression assertion passes while the hub config actually changed (must fail AC6).",
+      "tests": [
+        {
+          "name": "run-tests: hub config byte-identity verified",
+          "sourceFile": "test/run-tests.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T08:43:03.787Z"
+        },
+        {
+          "name": "Test 12: Verifying repository hub config byte-identity",
+          "sourceFile": "test/test-powershell-config-editor.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T08:43:03.786Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-NS6"
+      ]
+    },
+    {
+      "id": "NS7",
+      "text": "`npm run test`, `ws-check-harness`, or `test-harness-clean.js` fails after the change (must fail AC7).",
+      "tests": [
+        {
+          "name": "run-tests: hub config byte-identity verified",
+          "sourceFile": "test/run-tests.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T08:43:03.841Z"
+        },
+        {
+          "name": "Test 12: Verifying repository hub config byte-identity",
+          "sourceFile": "test/test-powershell-config-editor.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T08:43:03.840Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-NS7"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "ship",
+    "score": 10,
+    "earnedUnits": 70,
+    "totalUnits": 70,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-22T08:45:34.927Z"
+  }
+}

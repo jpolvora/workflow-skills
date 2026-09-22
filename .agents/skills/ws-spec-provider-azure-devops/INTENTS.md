@@ -113,10 +113,26 @@ node .agents/skills/ws-spec-provider-azure-devops/scripts/comment_issue.cjs \
   [--dry-run]
 ```
 
+- **Comment-only** — does not change work-item state (use `close-issue` after merge).
 - POST `{apiBase}/{org}/{project}/_apis/wit/workItems/{id}/comments?api-version=7.1-preview.4` (WIT comment, not PR thread). The comments resource is still preview; `api-version=7.1` returns `VssInvalidPreviewVersionException`.
 - `{org}` / `{project}` / `{apiBase}` / `{patEnvVar}` default from `issueTrackers.azureDevOps` in `{sharedDir}/config.json`. Optional CLI flags override (hybrid/global script runs).
 - Skip when tracker `id` is null. `--dry-run` prints body, no POST.
 - `validate-auth` before mutating.
+
+## `close-issue`
+
+```bash
+node .agents/skills/ws-spec-provider-azure-devops/scripts/close_issue.cjs \
+  --id {id} \
+  [--org {org} --project {project} --api-base {apiBase} --pat-env {patEnvVar}] \
+  [--dry-run]
+```
+
+- PATCH WIT `System.State` to `Closed`; when the process template rejects `Closed`, retry with `Done`.
+- Skip when tracker `id` is null (`--id null` → exit 0 `skipped`).
+- `--dry-run`: print planned close JSON, no REST mutation.
+- `validate-auth` before mutating. Auth failure → STOP; no silent provider fallback.
+- Call after successful merge when `activeThreads == 0`.
 
 ## `resolve-thread`
 

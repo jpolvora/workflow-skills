@@ -1,6 +1,6 @@
 # Spec Lifecycle (`specs`)
 
-> Provenance: `.agents/skills/ws-spec-write/SKILL.md`, `.agents/skills/ws-spec-format/scripts/validate_spec.cjs`, `.agents/skills/ws-spec-organizer/scripts/resolve_spec_path.cjs`, `.agents/skills/ws-spec-index/SKILL.md`, living synthesis of specs 0009, 0040, 0045, 0051, 0053, 0065, 0084.
+> Provenance: `.agents/skills/ws-spec-write/SKILL.md`, `.agents/skills/ws-spec-format/scripts/validate_spec.cjs`, `.agents/skills/ws-spec-organizer/scripts/resolve_spec_path.cjs`, `.agents/skills/ws-spec-index/SKILL.md`, living synthesis of specs 0009, 0040, 0045, 0051, 0053, 0065, 0084, 0108-code-review-findings-fixes through 0121-us-395.
 
 ## Feature
 
@@ -12,7 +12,7 @@ Authoring mode requires sections for Out of Scope, Assumptions, Definition of Re
 
 Plans are interrogated against DoR during the plan interview step. Implementation follows failing-tests-first discipline with positive and negative scenario verification. `ws-spec-update` (delta spec drift) and `ws-spec-index sync` (phase status) serve different purposes and must not be interchanged. Prefix ordering is opt-in via `plans.enforceSpecPrefixOrdering`; when true, specs-of-record use `NNNN-{slug}.spec.md` ordered by `specDate`, git first-add, or mtime, while frontmatter `slug` and `{plansDir}/{slug}/step-00` paths stay unprefixed. Reorder runs only through explicit `organize_specs.cjs --apply` with `git mv`; install never auto-renames existing files.
 
-The dispatcher never reimplements specialist scripts. Slice specs for task-lifecycle work never create `{plansDir}` trees.
+The dispatcher never reimplements specialist scripts. Slice specs for task-lifecycle work never create `{plansDir}` trees. Recent boards keep the same discipline at higher volume: review-fix rounds, coverage pushes, monitor and queue hardening, hub relocation, and generator work all land as prefixed specs-of-record with context companions where the gray area needs two or more product options, and shipped items archive with their plan trees harvested rather than left behind.
 
 ## Backend
 

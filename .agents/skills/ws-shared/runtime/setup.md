@@ -149,8 +149,8 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
    | Check out existing `feat/{slug}` | If `git branch --list {name}` is empty but `git ls-remote --heads {gitRemote} {name}` shows the ref: `git fetch {gitRemote} {name}` then `git checkout {name}` (creates the local branch from the fetched tip). Local branch → `git checkout {name}` only. Never `reset`, never `-D`. | `checkout-existing` |
 
    **Dirty tree on create-from-base:** when `git status --porcelain` is non-empty and checkout from base would not be a no-op → STOP and `user-gate`:
-   - **Stash then continue** — `git stash push -m "ws-spec-to-pr feature-branch-gate"`, run create-from-base, then `git stash pop` onto the new branch. Never `git reset --hard`.
-   - **Switch to create-from-current instead**
+   - **Leave foreign paths in place and create from current HEAD instead** — record every dirty path in `preExistingDirty`; never stage, stash, revert, or clean a path this session did not edit. Ownership contract: [`git-ownership.md`](git-ownership.md).
+   - **Proceed on the new branch with `preExistingDirty` recorded** — only when every dirty path is this session's own edit; foreign dirty paths still stay untouched. Whole-tree `git stash` / `stash pop` is forbidden here (as is `git reset --hard`).
    Dismiss → Cancel (HS-1).
 
    **State write (mandatory before step 6):** persist in `{us-dir}/{workflow-id}.state.md` frontmatter:
@@ -160,7 +160,7 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
 
    **Banner sync:** after 5b completes, re-print the init banner `branch` / `baseBranch` rows (step 3 table) or a short **Feature branch gate result** table so displayed values match state.
 
-6. **Baseline**: `git status --porcelain` → `preExistingDirty[]`; `git rev-parse HEAD` → `baselineCommit`.
+6. **Baseline**: `git status --porcelain` → `preExistingDirty[]`; `git rev-parse HEAD` → `baselineCommit` plus the source ref it came from (`baselineSourceRef`, e.g. `origin/{baseBranch}` after fetch, else the local `{baseBranch}` tip). Refresh mid-run only forward via [`git-ownership.md`](git-ownership.md) § 3 — never reset back to this value.
 7. **LOC baseline**: `Shell` capture → `telemetry.loc.baseline`. Store ISO → `telemetry.workflowStartedAt`.
 8. **Checkpoint**: tag `uswf/{workflow-id}/before-step-0`.
 9. **Progress Board** render.

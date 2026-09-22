@@ -6,6 +6,321 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-09-22] ws-monitor multi-spec expectation blindness and PowerShell node -e quoting
+- **Layer**: `application`
+- **Module**: `ws-monitor-multi-spec-expectations`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs, .agents/skills/ws-spec-multi/PROTOCOL.md, .agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs`
+- **Scenario / Context**: us-388. The `workflowType: ws-spec-multi` branch of `monitor_snapshot.cjs` returned `expectedArtifacts: []` while the single-workflow path computed a real list, so an advanced queue item with no child state produced no finding — a structurally silent blind spot. Separately, on a Windows PowerShell host, `node -e "<script with embedded double quotes>"` was mangled by the shell and failed with `SyntaxError: Invalid regular expression flags` / `Expression expected`.
+- **DO NOT**: leave the multi-spec branch returning an empty expectation list, and do not add a parallel detector when `expectedArtifacts()` already models the expectation; do not pass inline `node -e` scripts that contain double-quoted string literals through PowerShell.
+- **INSTEAD DO**: derive multi-spec expectations from the batch queue rows (`expectedChildArtifacts`) and surface absence as `missing-child-state` (distinct from `stale-parent-row`, which needs a child that already closed); for non-trivial inline Node, write a temp `.cjs` under the temp dir and run `node <file>` instead of `node -e`.
+
+### [2026-09-22] Windows PowerShell has no head/tail/grep — use Select-Object/Select-String
+- **Layer**: `devops`
+- **Module**: `powershell-cli-vocabulary`
+- **Severity**: `Medium`
+- **PathPattern**: `*`
+- **Scenario / Context**: During us-386 implementation on a Windows PowerShell host, piped `head`, `tail`, and `grep` failed repeatedly (`CommandNotFoundException`) because those are not PowerShell cmdlets; each failure burned a full tool round-trip before the equivalent ran.
+- **DO NOT**: Pipe to `head -N`, `tail -N`, or `grep` in `muse.powershell` commands on Windows hosts; retry the same check behind another wrapper.
+- **INSTEAD DO**: Use `Select-Object -First N` / `Select-Object -Last N` instead of head/tail, and `Select-String` (or `muse.search`) instead of grep. Prefer `muse.search` over shell scans for repo content.
+
+### [2026-09-22] Skill-ship verify ordering: ledger evidence, integrity, budget, pack
+- **Layer**: `Tests`
+- **Module**: `ship-verify-order`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs, bin/generate-skill-integrity.js, CATALOG.md, test/run-tests.cjs`
+- **Scenario / Context**: During us-402, `ac_ledger.cjs link --file` pinned blob hashes that later content edits (catalog prose trim) invalidated; `generate-integrity` went stale for the same reason; two CATALOG.md index rows overshot the 24500 B context-budget gate by 17 B; and running `node test/run-tests.cjs` directly skipped the `npm pack` pretest so the install test failed on a missing tarball.
+- **DO NOT**: link ledger file evidence before the final product edit; regenerate integrity before index rows are final; raise the CATALOG byte budget to fit new rows; invoke `test/run-tests.cjs` directly.
+- **INSTEAD DO**: finalize content with rows tightened to fit the standing budget, then `generate-integrity` + full `npm run test` (packs first), then link ledger evidence and score; re-verify integrity and re-link/re-score after any later product touch (review fixes included).
+
+### [2026-09-22] Post-Step-5 product edits invalidate integrity and the ledger score boundary
+- **Layer**: `Infrastructure`
+- **Module**: `harness-release`
+- **Severity**: `Medium`
+- **PathPattern**: `bin/skill-integrity.json, .agents/plans/**/ac-ledger.json, .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs`
+- **Scenario / Context**: During us-395, a Step 6 review-fix commit edited a hashed skill script after `npm run generate-integrity` and after the full `npm run test` alias had passed. The next `npm run test` failed at `test/test-install.js` with `skill-integrity.json is stale vs current tree`, and `validate_state.cjs --pre-advance 7` failed with `ledger scoreState must match derived step5 score` after re-linking file evidence.
+- **DO NOT**: run the full suite or pre-advance validation after a post-Step-5 product edit without first regenerating integrity and refreshing the ledger score boundary; nor assume a previously recorded alias result still holds once `files_touched` changed.
+- **INSTEAD DO**: after any review-fix commit that touches hashed skill content, re-run `npm run generate-integrity` + `npm run verify-integrity`, re-link the changed file evidence (`ac_ledger.cjs link --event-id <ac>-fix1 --file path:Lx-Ly`), refresh `ac_ledger.cjs score --boundary step5`, then re-run the full alias (`npm run test`) so the observed result is current before advancing.
+
+### [2026-09-22] Ownership-contract test traps: self-reference, scenario order, CRLF anchors
+- **Layer**: `Tests`
+- **Module**: `test-git-ownership-contract`
+- **Severity**: `Medium`
+- **PathPattern**: `test/test-*.js`
+- **Scenario / Context**: During us-401, a contract test asserting cross-doc references failed on the canonical doc itself; ordered temp-repo git scenarios put the mutating STOP case first so its upstream commit poisoned the later success-case diff; multi-line exact-match edits failed on CRLF skill files.
+- **DO NOT**: assert every doc in a surface list references the canonical contract file without exempting the canonical file itself; order temp-repo scenarios with a mutating STOP case before a success case that assumes the earlier baseline; use multi-line exact-match finds on CRLF files.
+- **INSTEAD DO**: exempt the canonical doc and assert its content directly; run success/idempotency scenarios first and the foreign-overlap STOP last; anchor edits on single-line strings when the file has CRLF endings.
+
+### [2026-09-22] index.PRD auto-track lifecycle (us-405 import session)
+- **Layer**: `specs`
+- **Module**: `ws-spec-from-provider, ws-spec-index, AGENTS.md`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-from-provider/SKILL.md`
+- **Scenario / Context**: Bulk-importing tracker backlog left specs registered but untracked, and workflow start/end had no stated index.PRD rule, so Feature map rows drifted behind delivery reality.
+- **DO NOT**: Leave a newly imported or workflow-opened spec untracked, or hand-edit `index.PRD` checkboxes to fake status.
+- **INSTEAD DO**: Auto-track every successful import via `track_index.cjs --specs-dir {specsDir} --slug us-{id}` (missing/already-tracked index is advisory, never a failure); at workflow start ensure pending `- [ ]` via the same track call; at close/ship run `ws-spec-index sync {slug}` for `[x]` + Done log on delivery evidence. AGENTS.md §6 states the lifecycle; `ws-spec-index/REFERENCE.md` § Orchestrator Call Contract owns the call sites.
+
+### [2026-09-22] AC-ledger scoreState boundary must match the next pre-advance; regenerate integrity after skill edits
+- **Layer**: `Infrastructure`
+- **Module**: `ws-spec-to-pr / ws-shared runtime`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs, bin/skill-integrity.json`
+- **Scenario / Context**: During the us-389 standard run, `validate_state.cjs --pre-advance 7` failed with "ledger scoreState must match derived step5 score" because `commit_g2_code.cjs` had stamped `scoreState.boundary = pre-step6` (needed for advance to 6), while advance to 7/8 re-derives at boundary `step5` and advance to 9 at `ship`. Separately, the first `npm test` after editing `Edit-WorkflowSkillsConfig.ps1` failed Phase 0b with a stale `bin/skill-integrity.json`.
+- **DO NOT**: assume one `ac-ledger` `scoreState` fits every advance, and do not run the suite after touching hashed skill content without regenerating integrity first.
+- **INSTEAD DO**: after linking commits, re-link with an explicit `--score-boundary` matching the next advance (`pre-step6` for 6, `step5` for 7/8, `ship` for 9) so `scoreState.boundary` matches; and run `npm run generate-integrity` immediately after any edit under `.agents/skills/**` before `npm run test` / `verify-integrity`.
+
+### [2026-09-21] Write containment must resolve the full target path, and fail closed on a dangling leaf
+- **Layer**: `Infrastructure`
+- **Module**: `ws-patterns-generator seed script`
+- **Severity**: `Critical`
+- **PathPattern**: `.agents/skills/ws-patterns-generator/scripts/seed_generated_skill.cjs`
+- **Scenario / Context**: The seed script's containment gate was hardened in three review rounds, each time closing one variant of the same escape. Round 1 resolved nothing: lexical `path.resolve` + `startsWith` only, so a symlinked/junctioned skills root wrote outside. Round 2 resolved the configured root but rebuilt the target from lexical leaves (`join(resolvedRoot, GENERATED_ID, 'SKILL.md')`), so a linked `ws-project-patterns` directory outside the repo still passed. Round 3 resolved the target's parent but rebuilt the leaf, so a **dangling `SKILL.md` symlink** to an external path passed the gate (`existsSync` follows the link and reports false) and `writeFileSync` created the file outside the repository. Each round scored 9/10 CRITICAL with a concrete reproduction.
+- **DO NOT**: Validate containment on a path that is partly resolved and partly reconstructed lexically. Do not resolve only the configured root, only the target parent, or trust a leaf that could itself be a link. Do not treat the containment gate as satisfied when resolution cannot be performed.
+- **INSTEAD DO**: Resolve the **entire target path** (`realpathLoose(target)` — deepest existing ancestor realpath plus rejoined missing leaves) and require the resolved target to start with the resolved root + separator. Fail closed (refuse the write) when resolution returns `null`, which is what a dangling symlink produces. Probe existence with `fs.lstatSync`, never `fs.existsSync`, inside the resolver. Cover all three variants in fixtures: linked skills root, linked generated-skill directory, and dangling `SKILL.md` leaf, each with an in-repo positive control.
+
+### [2026-09-21] Win32 npm shims need a ComSpec retry, not shell:false or a .cmd suffix
+- **Layer**: `Infrastructure`
+- **Module**: `cli-spawn-shim`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/scripts/cli_spawn.cjs, .agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs, .agents/skills/ws-monitor/scripts/monitor_snapshot.cjs, .agents/skills/ws-spec-memo/scripts/*.cjs`
+- **Scenario / Context**: AC3 switched spec-memo CLI probes from `shell: process.platform === 'win32'` to `shell: false` to keep spaced `--cwd` paths intact. Review threads (PR #377, score 7/10) correctly flagged the regression: on Windows, configured launchers like `memo` / `npx -y ...` resolve to `*.cmd` shims that `shell: false` cannot execute (bare name -> ENOENT). The suggested fix (append `.cmd`, keep `shell: false`) was empirically refuted on Node 22 win32: `spawnSync('x.cmd', { shell: false })` -> EINVAL, because batch files cannot execute without a shell at all.
+- **DO NOT**: spawn a configured CLI bin with `shell: false` on win32 and assume npm shims resolve; nor "fix" it by appending `.cmd` while keeping `shell: false`; nor revert to `shell: true` with an argv array (re-splits spaced paths, the original AC3 defect).
+- **INSTEAD DO**: route configured-CLI spawns through `spawnCliSync` (`ws-shared/runtime/scripts/cli_spawn.cjs`): first attempt `shell: false` everywhere, and only on win32 ENOENT retry once through ComSpec with a pre-quoted command line (`quoteCmdArg` + `shell: true` with a caller-quoted string) so PATHEXT shims resolve while spaced args stay intact. Cover with `test/test-cli-spawn-shim.js` (native passthrough, spaced argv, quoting units, missing-bin surfacing, win32-only live `.cmd` fixture test).
+
+### [2026-09-21] Transcript error heuristics must correlate the attempt outcome, not just error shape
+- **Layer**: `Application`
+- **Module**: `ws-monitor`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs, test/test-ws-monitor.js`
+- **Scenario / Context**: `hasSubagentError` flagged a transcript whenever an exception marker (`fatal error`, `unhandled rejection`, `exception in subagent`) appeared together with trace shape (V8 `at` frames, Python traceback, Go goroutine). Issue #369 narrowed this to failure-shaped evidence, but the check never correlated the attempt outcome, so a run that failed and then succeeded on retry still produced a `subagent-error` finding. Review raised it twice: first at score 5 (declined as an ownership boundary), then at score 6 with a concrete recovery-suppression proposal; the second time it was fixed.
+- **DO NOT**: Decide an "unhandled error" finding from a marker plus trace shape alone, and do not suppress on recovery evidence that appears anywhere in the text: a recovery line before a later failure would hide a real trailing error.
+- **INSTEAD DO**: Locate the **last** failure evidence (iterate the trace regex with `lastIndex`), then search only the slice after it for recovery evidence (`retry` / `attempt N` within 200 chars of `succeeded|successful|completed`). Suppress only when the recovery follows the last failure. Cover both directions in tests with correlatable `--workflow-id` fixtures: recovered-after-failure stays silent; recovery-before-a-later-failure still reports.
+
+### [2026-09-21] Resolver precedence and same-installation coherence
+- **Layer**: `Tests / Workflow harness`
+- **Module**: `ws-shared bootstrap (`bootstrap_runtime.cjs` + standalone fallback copies), `cli_spawn.cjs`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/**/scripts/*.cjs`, `.agents/skills/**/scripts/*.js`
+- **Scenario / Context**: Review threads flagged the runtime resolver checking the packaged copy before consumer-local/global roots, contradicting the documented local-first contract. Applying the suggestion literally (packaged strictly last) broke the repo's own spawned children: with a runtime-less cwd they resolved a stale machine-global runtime missing new modules (`test-ws-monitor-us356.js` child crash). The same class existed in 60 standalone fallback copies.
+- **DO NOT**: Order resolver candidates packaged-first (ignores consumer-local overrides), nor packaged-last without checking same-installation coherence; do not apply reviewer-suggested reorderings without running the repo's own suite, which exercises foreign-cwd child spawns.
+- **INSTEAD DO**: Order explicit override, repo-local, packaged same-installation copy, global root last; sweep the whole class with a deterministic EOL-preserving codemod (abort on non-unique anchors) plus an order verifier; cover with a local-beats-packaged precedence test and re-run `npm run test`, `test-harness-clean.js`, and integrity regen before ship.
+
+### [2026-09-21] PowerShell redirection and CRLF edit mismatches on Windows
+- **Layer**: `devops`
+- **Module**: `provider-snapshot-recipes`
+- **Severity**: `Medium`
+- **PathPattern**: `*.issue.json`, `.ws/CHANGELOG.md`
+- **Scenario / Context**: Running provider fetch-to-spec snapshot recipes and changelog inserts from Windows PowerShell during a spec import. Three attempts failed before passing: gh output redirected with `>` landed as UTF-16LE which the Node JSON converter rejected, and two exact-match edits missed because the target markdown uses CRLF while the match text used LF.
+- **DO NOT**: Capture JSON for Node scripts with bare PowerShell `>` redirection; assume LF bytes when exact-matching edits inside CRLF files.
+- **INSTEAD DO**: Write snapshot JSON as UTF-8 explicitly ([System.IO.File]::WriteAllText with UTF8Encoding no-BOM); for CRLF files either match CRLF bytes exactly or edit through encoding-preserving PowerShell (ReadAllLines plus WriteAllText with BOM detection).
+
+### [2026-09-21] PowerShell one-liner quoting breaks with nested double quotes and backticks
+- **Layer**: `Infrastructure`
+- **Module**: `agent-shell`
+- **Severity**: `Low`
+- **PathPattern**: `N/A (session shell usage)`
+- **Scenario / Context**: While sweeping spec tracking state, two one-liners failed before passing: backtick-quoted slug construction inside a double-quoted command mangled `$slug` interpolation (parser error), and JSON-escaped `\"` paths reached PowerShell as literal backslash-quotes so plan-dir lookups silently returned empty.
+- **DO NOT**: Nest double quotes or raw backticks inside PowerShell one-liners; trust empty results from a quoted path without re-checking unquoted.
+- **INSTEAD DO**: Build one-liners from single-quoted strings, `[char]96` for backticks, and `Join-Path` for paths; re-run with plain quoting when a lookup returns suspiciously empty.
+
+### [2026-09-21] Package membership excludes external ws-* companions; resolver requires package presence
+- **Layer**: `Tests / Workflow harness`
+- **Module**: `ws-check-harness Phase 5a gates + ws-shared resolver (`check_unique_runtime.cjs`, `check_harness_links.cjs`, `check_shell_quoting.cjs`, `check_duplicates.cjs`, `resolve_consumer_root.cjs`)`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-check-harness/scripts/*.cjs, .agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs`
+- **Scenario / Context**: PR #377 review threads (scores 7/7/7/7/8/8/8/8/8) flagged two refinements of the round-3 package-membership fix. (a) `packageRoots()` filtered by `ws-shared` or `ws-*`, which includes explicitly external companions `ws-memo` + `ws-session-tracking` (spec-memo package, `bin/skill-dependencies.json` `externalSkills`), so a shared global root holding `ws-memo/scripts/helper.py` would fail the Node-only gate on foreign content. (b) `resolveConsumerContext()` without `skillId` picked local merely because `.agents/skills` exists, so a hybrid consumer with an otherwise empty local dir + global-only workflow-skills install scanned the empty local tree and missed global defects (false-clean). Existing global-only tests seed no local dir and do not cover partial-hybrid; existing `ws-demo` fixtures are indistinguishable from package-owned folders under a manifest-only predicate.
+- **DO NOT**: Filter package membership by bare `startsWith('ws-')` without excluding `externalSkills` ids; select the local skills root merely because the directory exists when no `skillId` was requested; switch to manifest-only `packageIds.has()` without preserving `ws-demo`-style fixture behavior; leave unrelated-skill fixtures without `WORKFLOW_SKILLS_GLOBAL_DIR` isolation once the resolver falls back to global.
+- **INSTEAD DO**: Exclude known externals in every `packageRoots()` via `externalSkillIds(repoRoot)` (manifest `externalSkills` when readable, else fallback `ws-memo`/`ws-session-tracking`); keep `ws-shared` + non-external `ws-*` so `ws-demo` fixtures still encode package behavior; in `resolveConsumerContext()` with no `skillId`, select local only when it holds package content (`ws-shared` or non-external `ws-*`), else global when global holds package, else legacy existence fallback; isolate `WORKFLOW_SKILLS_GLOBAL_DIR` to an empty temp dir in unrelated-skill tests; verify with `test-unique-runtime`, `test-check-harness-links`, `test-check-harness-duplicates`, `test-code-review-round-2 NS4`, full `npm run test`, `test-harness-clean.js`, and integrity regen.
+
+### [2026-09-21] Never call toRepoRelative without allowOutside on audit paths
+- **Layer**: `Tests / Workflow harness`
+- **Module**: `ws-check-harness Phase 5a gate `check_duplicates.cjs`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-check-harness/scripts/check_duplicates.cjs`
+- **Scenario / Context**: After the round-3 change made `check_duplicates.cjs` audit the resolved skills root, a global-only consumer (no project-local `.agents/skills`) has `context.skillsRoot` outside the repository. `shippedMarkdown` converted every traversed path with `toRepoRelative(context.repoRoot, full)` (no `allowOutside`), and `toRepoRelative` throws `Path is outside repository` for outside paths, so the gate aborted before producing any report — the advertised global-install audit was broken (PR #377 review thread, score 8).
+- **DO NOT**: Call `toRepoRelative(repoRoot, path)` on a path that can be outside the repository (global skills root, `WORKFLOW_SKILLS_SHARED_DIR` override). Do not "fix" it with `allowOutside: true` alone: that overload collapses an outside path to its basename, which merges distinct files and breaks resolvability.
+- **INSTEAD DO**: Use a local non-throwing display helper `displayPath(repoRoot, value)` = `path.relative(resolve(repoRoot), resolve(value))` normalized to `/` (never throws; keeps `..`- or cross-drive absolute form). Resolve it back with `path.resolve(repoRoot, display)` in the reader, and keep occurrence paths resolvable. Cover with a fixture that installs two skills only under `WORKFLOW_SKILLS_GLOBAL_DIR` and asserts the duplicate is reported without throwing. Related: `2026-09-21-skills-root-package-membership.md`.
+
+### [2026-09-21] Lexical path containment must be re-verified on realpaths before writes
+- **Layer**: `Infrastructure`
+- **Module**: `ws-patterns-generator seed script`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-patterns-generator/scripts/seed_generated_skill.cjs`
+- **Scenario / Context**: The seed script gated writes with `path.resolve` + `startsWith` prefix checks only. A consumer `.agents/skills` directory that is a symlink (or junction) to a location outside the repository passes the lexical check while Node writes follow the link, so the generated skill body lands outside the repo. PR review flagged the escape; the fix resolves both roots before comparing.
+- **DO NOT**: Trust `path.resolve` + `startsWith` prefix checks as a write-containment guarantee when any path segment can be a symlink or junction; call `fs.realpathSync` directly on a path whose leaf may not exist yet (it throws on ENOENT).
+- **INSTEAD DO**: Re-verify containment on resolved real paths before writing: `fs.realpathSync` the verified-existing root, resolve the target root through its deepest existing ancestor (`realpathLoose`: walk up past missing leaves, realpath, rejoin), and require the resolved target to start with the resolved root + separator. Cover with a fixture test that links the skills root outside the repo (junction on win32, dir symlink elsewhere) and asserts refusal plus zero writes outside, and a positive control where an in-repo link still seeds.
+
+### [2026-09-21] Installer stale-autoload refresh must preserve generator-managed Always-applied rows
+- **Layer**: `Infrastructure`
+- **Module**: `installer` (`bin/cli.js`), `ws-configure-project` (`configure_autoload.cjs`), `ws-patterns-generator`
+- **Severity**: `High`
+- **PathPattern**: `bin/cli.js, .agents/skills/ws-configure-project/scripts/configure_autoload.cjs, .agents/skills/ws-patterns-generator/scripts/seed_generated_skill.cjs`
+- **Scenario / Context**: PR #384 review (score 7) found that when `.ws/autoload.md` contained any retired skill id, `bin/cli.js` replaced the entire file with the packaged `runtime/autoload.md` template, which carries no `ws-project-patterns` Always-applied row. `configure_autoload.cjs` keeps a generator-managed row only while `{sharedDir}/ws-project-patterns/SKILL.md` exists, but the installer never invoked it after replacement, and the generator appends the row only on its first seed ("Later runs never edit autoload"). Net effect: the hub body survived but the row was silently dropped, so generated project patterns stopped loading after an otherwise successful update.
+- **DO NOT**: Overwrite a consumer-generated autoload/hub file wholesale from the packaged template when the template omits consumer/generator-owned rows; assume "the generator will re-add it later" for a row the generator documents as first-seed-only.
+- **INSTEAD DO**: When the installer must refresh a stale autoload, re-attach generator-managed rows (`externalSkills[].generatorManaged`) present in the previous file whose hub body still exists, emitting the canonical hub-relative path, and keep the existence gate (row dropped only when the body is gone). Add an installer regression that poisons autoload with a retired id plus a generated row and asserts the row survives exactly once and stays idempotent on a second update.
+
+### [2026-09-21] Host capability `--declare` requires capability tokens, not binding aliases
+- **Layer**: `Domain`
+- **Module**: `host-dispatch`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/scripts/probe_host_capabilities.cjs, .ws/host-capabilities.json, .agents/skills/ws-shared/runtime/host-tool-map.json`
+- **Scenario / Context**: While enabling generic subagent dispatch for a Muse session, the planned command used `--declare subagentTool=subagent_spawn`. `parseDeclared` accepts only the seven capability tokens (`readFile`, `writeFile`, `editFile`, `shellExec`, `dispatchAgent`, `askQuestion`, `browserVerify`); the alias pair is silently dropped, so the binding falls back to the pre-map or minimal set. Separately, `--key muse::muse-spark-1.3-contributor` cannot infer a host shape because `muse` does not match `muse-spark-like` (neither equality, prefix, nor suffix), so an unknown-shape probe degrades `dispatchAgent` to `none` and the orchestrator silently executed every step as Tier 3 `inline:session` (0 subagents).
+- **DO NOT**: Pass binding aliases (`subagentTool`, `askQuestionTool`) to `--declare`; assume the host-id segment of `--key` infers a pre-map shape when it does not equal the shape base name (`muse-spark`).
+- **INSTEAD DO**: Declare capability tokens (`--declare dispatchAgent=subagent_spawn`) and pass `--host-shape muse-spark-like` explicitly when the host id does not match a shape name; then verify `.ws/host-capabilities.json` has `binding.subagentTool` set and `knownShape: true` for the session key.
+
+### [2026-09-21] Harness gates must scope recursive scans to package membership
+- **Layer**: `Tests / Workflow harness`
+- **Module**: `ws-check-harness Phase 5a gates (`check_unique_runtime.cjs`, `check_duplicates.cjs`, `check_harness_links.cjs`, `check_shell_quoting.cjs`)`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-check-harness/scripts/*.cjs`
+- **Scenario / Context**: Review threads flagged two opposite failure modes of the same defect class. (a) `check_unique_runtime.cjs` / `check_duplicates.cjs` recurse the whole resolved skills root — for a global-only/hybrid consumer that directory is `~/.agents/skills`, which also holds unrelated third-party skills (`atividades`, `evidencias`, `my-activities` with `.py` helpers), so the workflow-skills Node-only gate failed on foreign content. (b) `check_harness_links.cjs` (and `check_shell_quoting.cjs`, which read a non-existent `context.pathTokens.skillsRoot`) hardcoded project-local `.agents/skills`, so a global install was never audited and reported clean while broken links/nested-quote recipes went undetected (PR #377 review threads, scores 7/7/8).
+- **DO NOT**: Recurse the entire resolved skills root without a package-membership filter; hardcode `<repoRoot>/.agents/skills` as the audit root or read `context.pathTokens` (that key does not exist on the resolved context).
+- **INSTEAD DO**: Resolve the audit root from `resolveConsumerContext().skillsRoot` (absolute, local-first else global), then recurse only package dirs (`ws-shared` + `ws-*`) via a shared `packageRoots(dir)` helper; keep `bin/` fully scanned; point `{skillsRoot}` token expansion and resolved-hub reads at the same resolved root. Cover both modes with fixtures: an unrelated `custom-skill/` beside a clean `ws-demo` (must stay clean) and a `WORKFLOW_SKILLS_GLOBAL_DIR` fixture with no local tree (must be audited). Re-run `npm run test`, `test-harness-clean.js`, and integrity regen.
+
+### [2026-09-21] Generated consumer skill bodies are hub-hosted, and the SoT consumer hub has a hard byte budget
+- **Layer**: `Infrastructure`
+- **Module**: `ws-patterns-generator`, `ws-configure-project`, `ws-shared` hub`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-patterns-generator/scripts/seed_generated_skill.cjs, .agents/skills/ws-configure-project/scripts/configure_autoload.cjs, .agents/skills/ws-shared/runtime/hub-layout.json, .agents/skills/ws-shared/runtime/AGENTS.md`
+- **Scenario / Context**: The generator's body lived at `{skillsRoot}/ws-project-patterns/SKILL.md`, so a `ws-*` folder with a `SKILL.md` entered the integrity manifest (`listInstallableSkills` has no `externalSkills` filter) and the Phase 5a package scans — a consumer artifact inside the published SoT tree. Moving it to `{sharedDir}/ws-project-patterns/SKILL.md` (hub-hosted, autoload-only, tracked) removes both effects, but the autoload row, hub classification, and installer notes must move with it: `generatorManagedTreeExists` and `emitSkillPath` are hub-relative, and the row is dropped when the hub tree is absent. Separately, the SoT consumer hub (`ws-shared/runtime/AGENTS.md`) is capped at 14 000 B by `test-context-budget.js` (it sat at 13 953 B, 47 B of headroom), so any row added there must be offset.
+- **DO NOT**: Seed or vendor a generated consumer skill body under `{skillsRoot}` (breaks the integrity manifest, package scans, and upstream dogfooding). Do not add prose to the SoT consumer hub without measuring the 14 000 B budget, and do not resolve only part of the write target path (parent-only or root-only) when checking containment.
+- **INSTEAD DO**: Host the body under `{sharedDir}`, resolve the hub root from `.ws/config.json` `pathTokens.sharedDir` (default `.ws`, a fixed harness assumption), keep the Always-applied row existence-driven and hub-relative, and classify the path in `hub-layout.json` as consumer-owned tracked content. Keep the full-path `realpathLoose(target)` containment (fails closed on dangling links). When the hub budget is tight, consolidate existing hub prose rows instead of raising the limit, and verify with `test-context-budget.js` plus `test-ws-shared-layout.js`.
+
+### [2026-09-21] G2-Code Completeness and Ledger scoreState Boundary
+- **Layer**: `Tests / Workflow harness`
+- **Module**: `ws-spec-to-pr (commit_g2_code, update_state, ac_ledger)`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/plans/*/`, `.agents/skills/ws-spec-to-pr/scripts/*`
+- **Scenario / Context**: Standard run where a scoreAndRefine worker edited product files without calling `update_state finish` (the re-verify step does the finish). The Step 5 G2 commit then staged only manifest-recorded files, silently leaving the refine round's files uncommitted, and pre-advance 6 failed on the leftover dirt. Separately, an orch `ac_ledger link` without `--boundary` persisted scoreState at `pre-step6`, which failed pre-advance 7 (`step5` boundary expected), and `verify --persist-score` is not wired so it silently did not persist.
+- **DO NOT**: assume a G2-code commit captured the whole worktree, or assume any ledger mutation leaves scoreState valid for the next gate.
+- **INSTEAD DO**: after every G2-code commit, diff `git status` against the state manifest `files_touched`; merge leftovers via `update_state finish --step N --created/--modified` and commit the remainder before advancing. After any `ac_ledger link`, persist scoreState at the exact boundary the next pre-advance expects (`link --boundary step5 --plan-index …` when the next gate is Step 7; default `pre-step6` only fits Step 6). Verify with `validate_state --pre-advance N` before dispatching.
+
+### [2026-09-21] Edit tool multi-line matches fail on CRLF files
+- **Layer**: `Domain`
+- **Module**: `ws-monitor`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs, test/test-ws-monitor.js`
+- **Scenario / Context**: A new benign-transcript negative test passed `--transcript-root <green-dir>` with no filter and falsely failed: `resolveCandidateTranscriptRoots` appends explicit roots to auto-discovered workspace roots (`.cursor/transcripts`), so an earlier true-positive fixture in the same temp root leaked into the green run. Adding `--workflow-id wf-green` scoped the scan to the green file only.
+- **DO NOT**: Assume `--transcript-root` replaces discovery; run an unfiltered monitor assertion in a temp root that also holds positive fixtures.
+- **INSTEAD DO**: Pass `--workflow-id` (or `--slug`) matching only the target transcript in every monitor test that asserts absence of findings, and keep positive and negative fixtures correlatable to distinct workflow ids.
+
+### [2026-09-21] Config GUI rows must bind schema scalar types to matching controls
+- **Layer**: `Domain`
+- **Module**: `config-editor`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1, test/test-powershell-config-editor.js`
+- **Scenario / Context**: PR #377 review thread (score 6) flagged `defaults.convergence.backoff` bound as `-Type 'string' -DefaultVal '1.5'` while `config.schema.json` declares it `number, minimum 1, default 1.5`. Saving through the GUI persisted `"1.5"` (a quoted string) and produced a schema-invalid config; runtime `Number()` coercion does not repair the persisted violation. The editor had no decimal control type, so the reviewer's `-Type 'number'` suggestion could not be applied as-is.
+- **DO NOT**: Bind a numeric/boolean schema scalar to a `string` text row; apply a schema-type change without extending the editor's control vocabulary; rely on the runtime coercing a persisted string.
+- **INSTEAD DO**: Add a `number` branch to `Add-ConfigFieldRow` (NumericUpDown with `DecimalPlaces`, persists `[double]`) alongside `int`/`bool`, bind `number`-typed schema keys to it, and enforce the invariant in `test-powershell-config-editor.js` (scalar-type parity map + numeric round-trip asserting `typeof === 'number'`). Keep GUI rows in lockstep with `config.schema.json` per the root AGENTS GUI-sync obligation.
+
+### [2026-09-21] Autoload runtime links resolve local-first per file, not per directory
+- **Layer**: `Domain`
+- **Module**: `managed-hub-links`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-configure-project/scripts/configure_autoload.cjs, bin/cli.js`
+- **Scenario / Context**: PR #377 review threads (scores 6/6) flagged that the consumer autoload renderer picked the project-local runtime prefix from *directory* existence (`fs.existsSync(<repo>/.agents/skills/ws-shared/runtime)`) and applied it to every managed runtime link. A partial-hybrid install (local runtime dir present, sibling file missing) then rewrote a valid `{globalSkillsRoot}/ws-shared/runtime/<file>` link to `../.agents/skills/ws-shared/runtime/<file>`, which does not exist, so autoload consumers failed after refresh. `resolve_consumer_root.cjs` resolves each runtime file local-first with a global fallback, so directory presence is not equivalent to per-file availability.
+- **DO NOT**: Choose a local-vs-global link prefix from directory existence; apply one prefix to a whole file list; trust a fixture that seeds a partial local runtime while asserting "no global tokens" (that expectation encodes the bug).
+- **INSTEAD DO**: Resolve each link per file (`runtimePrefixFor(rel)` → local only when `<runtimeDir>/<rel>` exists, else `{globalSkillsRoot}` token) in both `configure_autoload.cjs` and `bin/cli.js`, capturing `rel` in every rewrite regex plus the bare-file loop. Update fixtures to model a partial local runtime explicitly: existing file stays project-relative, missing sibling keeps the global token. Keep the previous global-only trap (`2026-09-20-global-only-autoload-links.md`) as the no-local-tree case of the same rule.
+
+### [2026-09-21] Adversarial audit caveats: capture the baseline before changing the thing you must prove
+- **Layer**: `Tests / Workflow harness`
+- **Module**: `ws-fable-judge`, `ws-ship-pr` prepare board, lite pipeline`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-fable-judge/SKILL.md, .agents/skills/ws-ship-pr/PREPARE-CHECKLIST.md`
+- **Scenario / Context**: The fable audit of the hub-hosted patterns delivery returned **VERIFIED WITH CAVEATS** because one AC required measured non-regression (`npm run test` wall time) and no pre-change sample had been taken before implementation started, making the claim UNVERIFIABLE. Two further caveats were cross-scope housekeeping (a rename of another session's broken run summary) and an accepted documentation gap.
+- **DO NOT**: Start behavior changes before capturing the measurement baseline an AC will demand; present cross-scope housekeeping as if it were in-scope work; treat a caveated verdict as a silent pass without a memory entry.
+- **INSTEAD DO**: When an AC names a measurement, capture the baseline **before** the first product edit (one command, recorded in the companion/plan); keep unrelated housekeeping in its own commit with an explicit rationale; on a CAVEATS/REFUTED verdict write the mandatory memory entry (High/Critical), compile, and keep the verdict visible on the ship board.
+
+### [2026-09-21] A deferred behavior change must not leave the changed skill and canonical docs advertising the old contract
+- **Layer**: `Domain`
+- **Module**: `ws-patterns-generator` (SKILL.md), `ws-shared/runtime` (`tools.md`, `config-resolution.md`)`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-patterns-generator/SKILL.md, .agents/skills/ws-shared/runtime/tools.md, .agents/skills/ws-shared/runtime/config-resolution.md`
+- **Scenario / Context**: PR #384 review (score 6) found the generator skill told agents to "Expand `{skillsRoot}` / `{sharedDir}` / ... from project config" while its Rules pinned the generated body to the fixed `.ws` hub — a contradiction inside the changed file after review round 7 deferred hub relocation to a follow-up spec. `tools.md` and `config-resolution.md` still presented an explicit `pathTokens.sharedDir` as generally effective for hub content, so a consumer configuring it would split configured project data from the generated skill.
+- **DO NOT**: Fix one code path to a fixed value (or new contract) and leave the skill's own instructions and the canonical path-token docs still describing the old configurable behavior; defer behavior to a later spec without making the interim contract explicit where the token is defined.
+- **INSTEAD DO**: When a change narrows or defers a contract, update the changed skill's instruction step, the shared runtime docs that define the token, and add a regression asserting the docs/instruction no longer advertise the deferred behavior (e.g. the resolve step must not list the overridable token). Keep the caveat portable (no spec-file paths) and regenerate integrity when hashed runtime docs change.
+
+### [2026-09-21] A configurable hub root must be honored by every reader and writer, not only the seeder
+- **Layer**: `Infrastructure`
+- **Module**: `ws-configure-project` (`configure_autoload.cjs`), `ws-patterns-generator`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-configure-project/scripts/configure_autoload.cjs, .agents/skills/ws-patterns-generator/scripts/seed_generated_skill.cjs`
+- **Scenario / Context**: PR #384 review found that `seed_generated_skill.cjs` honored `pathTokens.sharedDir` (writing to `custom-hub/ws-project-patterns/SKILL.md`) while `configure_autoload.cjs` kept `.ws/autoload.md`, the hub pointer, and the `--check` target hardcoded — so a configured hub split the contract: the body was seeded in one root and registered/validated in another. A second thread showed the same file accepted any non-absolute autoload row whose basename matched, so `../unrelated/ws-project-patterns/SKILL.md` passed `--check`. Both scored Warning (7 and 6) and were fixed in one round.
+- **DO NOT**: Resolve a configurable root in one code path and hardcode the default in the reader/validator of the same contract; validate a path by its basename or final directory when the contract names a specific root.
+- **INSTEAD DO**: Derive every hub path from a single resolver (`hubRootFor(repoRoot)` → `sharedAutoloadPath`, `hubPointerPath`, `expectedGeneratedRowPath`) and compare rows against the exact expected path (normalized separators, trailing slash trimmed). Cover the custom-root round-trip in tests: write under the configured root, assert the default root is untouched, and assert `--check` is clean; plus a same-name-row-outside-root rejection case. Keep bootstrap config discovery at the installer-created location (`.ws/config.json`) and say so in the resolver comment.
+
+### [2026-09-20] Wiki sweep follow-through traps
+- **Layer**: `Tests`
+- **Module**: `wiki-sweep`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/specs/wiki/**, bin/build-wiki-site.js`
+- **Scenario / Context**: A bounded ws-wiki sweep added slug-form spec ids (`0097-us-354`) to page provenance and wrote a relocation sentence naming the retired consumer-hub path. Both broke post-sweep gates: the site builder infobox regex accepted digits only and truncated slugs, and `test-shared-hub-paths.js` failed on the retired-path literal.
+- **DO NOT**: assume site-builder extraction regexes accept the same id shapes that specs and wiki prose now use, nor write wiki sentences that name retired paths even as historical contrast.
+- **INSTEAD DO**: after any sweep, run `test-site-wiki.js` + `test-doc-sync.js` + `test-shared-hub-paths.js` before ship; keep builder regexes slug-open (`([^\n.]+)`-style); phrase relocation history with tokens (`{sharedDir}` / `{skillsRoot}`), never retired literals.
+
+### [2026-09-20] Spec validator matches `- AC<n>:` bullets document-wide
+- **Layer**: `Tests`
+- **Module**: `spec-format`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-format/scripts/validate_spec.cjs, .agents/specs/*.spec.md`
+- **Scenario / Context**: Authoring spec 0109, the `## Validation & Observation Notes` bullets were written as `- AC1: ...` to reference acceptance criteria. `validate_spec.cjs` collects AC rows with `/^- (AC([1-9][0-9]*)):\s*(.+)$/gm` over the whole document, so those bullets entered the AC sequence and produced `ac-sequence` errors (`Expected AC16, found AC1`) even though the `## Acceptance Criteria` list was sequential.
+- **DO NOT**: start any non-AC bullet in a `*.spec.md` with `- AC<n>:` (for example in Validation, Notes, or Negative scenarios).
+- **INSTEAD DO**: prefix the reference with context, e.g. `- State-write test (AC1) must fail if ...`, keeping the strict `- AC<n>:` shape exclusive to the `## Acceptance Criteria` section.
+
+### [2026-09-20] Re-verify review findings when HEAD can move mid-session
+- **Layer**: `DevOps`
+- **Module**: `code-review`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/plans/**, .agents/specs/**`
+- **Scenario / Context**: A read-only review of `dcc3aa10..origin/main` ran while a previously dispatched workflow (`code-review-findings-fixes`) finished its step 8 in another process. HEAD advanced from `3cbdd0b9` to `257de1e5` and then `2b9d5b89` mid-review; subagent findings captured against the earlier tree risked reporting issues that the concurrent commits had already fixed.
+- **DO NOT**: trust review findings gathered at session start when the working tree or HEAD can change during the session, and do not report a finding without re-checking it against the current tree.
+- **INSTEAD DO**: record the HEAD SHA at review start, re-verify every finding against the current working tree (grep/read the exact file:line) before consolidating, and state the verified SHA in the report and spec.
+
+### [2026-09-20] Migrate legacy rendered autoload forms on update; exclude fix-pr scratch from link gates
+- **Layer**: `Domain`
+- **Module**: `managed-hub-links`
+- **Severity**: `High`
+- **PathPattern**: `bin/cli.js, .agents/skills/ws-configure-project/scripts/configure_autoload.cjs, .agents/skills/ws-check-harness/scripts/check_harness_links.cjs`
+- **Scenario / Context**: After the managed runtime moved to the skills install, the renderers normalized only bare filenames, `../.agents/skills/...`, and `../../ws-*` forms. Existing consumer `.ws/autoload.md` files from the pre-0.4.46 renderer kept dead `](runtime/tools.md)` and `](../ws-<id>/SKILL.md)` links forever (update refresh is preserve-on-change), so agents followed non-existent paths (PR #376 round-2 review threads, score 8/10 each). Separately, gitignored `.agents/skills/ws-fix-pr/runs/**` gate prose tripped `check_harness_links` twice with link-like text such as `](runtime/<file>)`.
+- **DO NOT**: normalize only the newest rendered form when migrating generated markdown; assume `update` rewrites already-prefixed links; let gitignored fix-pr scratch participate in harness link scanning.
+- **INSTEAD DO**: in every hub-autoload renderer, normalize all previously rendered target forms to the current resolution: legacy `](runtime/<file>)` -> managed prefix; `](../ws-<id>/...)` -> per-skill resolved link; and `]({globalSkillsRoot}/ws-shared/runtime/...)` / `]({globalSkillsRoot}/ws-<id>/...)` tokens -> project-relative when the local skills install exists (local-first precedence). Keep every conversion idempotent, add regressions that seed legacy and token forms then run `update`/`--write-autoload` and assert migration, and exclude `ws-fix-pr/runs/**` from `check_harness_links` EXCLUDED_MD.
+
+### [2026-09-20] Managed runtime relocation traps (`.ws/runtime` retirement)
+- **Layer**: `Tests`
+- **Module**: `managed-runtime`
+- **Severity**: `High`
+- **PathPattern**: `bin/cli.js, .agents/skills/ws-shared/**, test/test-install.js, test/test-ws-shared-layout.js, test/test-skills-runtime-resolution.js`
+- **Scenario / Context**: Moving the managed `ws-shared` tree (runtime + templates) out of the consumer hub (`.ws/runtime`) into the skills install broke several pinned contracts before green: the alias `templates/hub.gitignore` -> `ws-shared/.gitignore` is part of the integrity manifest shape, so writing it only to `.ws` failed consumer verify (`hub/.gitignore missing`); generated `.ws/AGENTS.md` pointers are preserve-on-update, so stale pointers kept dead `.ws/runtime` links; tracked `test/.ws` fixtures persist between runs and served stale hub docs; 59 duplicated skill bootstrap snippets each carried a `'.ws', 'runtime'` fallback; and consumer `$schema`/`toolsFile` values stayed hub-relative.
+- **DO NOT**: write the hub alias to only one of the two roots; assume installer updates refresh generated hub pointers; rely on `test/.ws` being cleaned; sweep the resolver without sweeping the 59 bootstrap copies; leave config `$schema`/`toolsFile` pointing at a retired path.
+- **INSTEAD DO**: when moving managed hub content, sweep in one pass: `bin/cli.js` (copy roots, alias dest, pointer refresh via `isGeneratedHubEntrypoint`, legacy extraction), `resolve_consumer_root.cjs`, `check_hub_separation.cjs`, `check_harness_links.cjs` hub list, all bootstrap snippets (`rg "'\.ws', 'runtime'"`), templates/config example, and every suite fixture that builds `.ws/{runtime,templates}`; then regenerate integrity, rebuild site/wiki, and run `test-install`, `test-ws-shared-layout`, `test-skills-runtime-resolution`, `test-hub-separation`, `test-shared-hub-paths`, `test-doc-sync`, and `test-harness-clean` before ship.
+
+### [2026-09-20] Global-only consumers: never hardcode project-relative managed links
+- **Layer**: `Domain`
+- **Module**: `managed-hub-links`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-configure-project/scripts/configure_autoload.cjs, bin/cli.js`
+- **Scenario / Context**: The hub-root autoload renderer hardcoded `../.agents/skills/ws-shared/runtime/` and `../.agents/skills/` prefixes while the same command supports global-only execution (`resolveRuntimeSource` + `emitSkillPath` already emit `{globalSkillsRoot}/...` rows for skills). A global-only project got `.ws/autoload.md` full of links into a project skills tree that does not exist, so agents could not load the runtime contract or referenced skills (PR #376 review thread, score 8/10).
+- **DO NOT**: assume a project-local skills tree exists when rendering managed-hub links; use one scope flag for both runtime and per-skill links; ship a renderer without asserting the global-only output.
+- **INSTEAD DO**: derive each link from on-disk existence (`{repoRoot}/.agents/skills/ws-shared/runtime` for the runtime prefix; `{repoRoot}/.agents/skills/<id>` per skill), fall back to `{globalSkillsRoot}/...` tokens, normalize previously rendered prefixes so refreshes converge, and assert both modes in tests (local fixture seeds the managed runtime; global-only fixture asserts tokens and absence of project-relative links). The same scope rule applies to seeded configs: scope-normalize a freshly seeded `config.json` before writing (`./runtime/...` in the global hub; project-relative in the consumer hub), and normalize every managed `toolsFile` form so a global install never points at `../.agents/skills/...`.
+
+### [2026-09-20] Dynamic construction for retired hub path checks; explicit line ranges in AC ledger file evidence
+- **Layer**: `Tests`
+- **Module**: `harness-audits`
+- **Severity**: `Medium`
+- **PathPattern**: `test/test-shared-hub-paths.js, .agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs, .agents/skills/ws-check-harness/scripts/check_unique_runtime.cjs`
+- **Scenario / Context**: When adding an automated check in `check_unique_runtime.cjs` to detect forbidden `.ws/runtime` directories, using the literal string `'.ws/runtime'` tripped `test/test-shared-hub-paths.js` which statically scans the codebase for occurrences of that retired path. Separately, linking implementation file evidence into `ac-ledger.json` requires explicit line ranges (`file.cjs:Lstart-Lend`), rejecting bare paths.
+- **DO NOT**: hardcode the literal string `'.ws/runtime'` in source code or harness tests, even when implementing an audit that checks for its existence; nor pass bare file paths to `ac_ledger.cjs link --file`.
+- **INSTEAD DO**: construct banned path checks dynamically using `path.join(repoRoot, '.ws', 'runtime')` or `['.ws', 'runtime'].join('/')` to keep static path-invariant scanners clean; and format all file evidence for `ac_ledger.cjs link` with precise line ranges (e.g. `--file path/to/file.cjs:L1-L50`).
+
+### [2026-09-20] CRLF files defeat exact-match edits; shared helpers need export checks
+- **Layer**: `Infrastructure`
+- **Module**: `observer-us365`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/**/*.cjs`
+- **Scenario / Context**: While implementing the opt-in execution observer, exact-text edits failed on CRLF `.cjs`/`.example` files (invisible `\r` mismatch) and the new observer test crashed because `jsonStatePath` was used but never exported from `workflow_state.cjs`.
+- **DO NOT**: assume LF endings when editing skill scripts, nor assume a helper is exported because it exists in the module.
+- **INSTEAD DO**: check line endings first; patch CRLF files through a small Node replace script with explicit `\r\n` anchors, and verify every cross-module helper is in `module.exports` (smoke-require the consumer) before writing the test that depends on it.
+
 ### [2026-09-20] CRLF file edits via single-line anchors
 - **Layer**: `Application`
 - **Module**: `ws-shared`

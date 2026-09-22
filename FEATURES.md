@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.4.46** · 54 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.4.60** · 56 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 ### ws-shared hybrid configuration boundary
 
@@ -26,7 +26,7 @@ The machine-readable classification source is [`.agents/skills/ws-shared/runtime
 | [`AGENTS.md`](AGENTS.md) | Agent routing contract (upstream authoring) |
 | [`CATALOG.md`](CATALOG.md) | On-demand skill inventory, task router, and upstream ship checklist |
 | [`.ws/AGENTS.md`](.ws/AGENTS.md) | Consumer hub after install |
-| [`CHANGELOG.md`](CHANGELOG.md) | Dated history of every change |
+| [`.ws/CHANGELOG.md`](.ws/CHANGELOG.md) | Dated history of every change |
 
 ---
 
@@ -48,7 +48,7 @@ A finite state machine that carries one feature from an idea to a merged pull re
 | 5 | Spec-compliance scoring 0–10 (`ws-plan-verify`); **advances only at ≥ `defaults.minVerifyScore`** (default 9); below-bar refinement is a telemetry-backed `scoreAndRefine` substep | `step-05-{slug}.plan.report.md` |
 | 6 | Local code review of `{base}...HEAD` (`ws-code-review`) with a fix → re-review loop | `step-06-{slug}.review.md` (+ `.fix.report.md`) |
 | 7 | Test battery (`ws-testing`): unit, integration, E2E, coverage, optional mutation, regression sabotage | `step-07-{slug}.testing.*` |
-| 8 | Close implementation (result, G2-delivery, MEMORY, changelog, `status: completed`), then quiet-preflight ship gate, non-blocking preview dry-run, push/PR (`ws-ship-pr`), tracker comment | `step-08-{slug}.result.md` |
+| 8 | Close implementation (result, G2-delivery, MEMORY, changelog, `status: completed`), then quiet-preflight ship gate, non-blocking preview dry-run, push/PR (`ws-ship-pr`) with PR-body `Closes #{id}` auto-close, tracker comment | `step-08-{slug}.result.md` |
 | 9 | PR thread convergence (`ws-goal-fix-pr` orchestrator): session owns the loop inline, each Act-round/standalone batch runs in a fresh worker with one gate-only `fixPrPlan` then `fixPrExec`, then merge | plan gate + resolved threads / merge |
 
 Canonical dispatch table: [`STEP-DISPATCH.md`](.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md).
@@ -63,7 +63,7 @@ The same delivery guarantees with the planning ceremony removed: spec → plan �
 | 1 | Planning (design-intent git log) | `ws-plan-write` |
 | 2 | Implementation (defect-class repo sweep) | `ws-implement-tasks` |
 | 3 | Review (+ fix loop, sibling modules) | `ws-code-review` |
-| 4 | Close implementation, then ship (CI triage + tracker comment) | orch close + `ws-ship-pr` |
+| 4 | Close implementation, then ship (CI triage + PR-body auto-close + tracker comment) | orch close + `ws-ship-pr` |
 | 5 | Fix-PR (plan-before-edit inline on current model) | `ws-goal-fix-pr` / `ws-fix-pr` |
 
 ### 1.3 Batch delivery — `ws-spec-multi`
@@ -127,18 +127,19 @@ The suite's central claim is that nothing ships on an agent's word alone. Every 
 
 GitHub and Azure DevOps are interchangeable backends. Orchestrators call intents **by name** and never embed `gh` or `az` directly; host CLI recipes live inside each provider's `INTENTS.md`.
 
-Nine required intents, enforced by `node test/test-provider-parity.js` in `npm run test` (tables, INTENTS headings, and implementation: sweep/comment CLI + JSON aliases, local-spec SCM delegates, `resolve-thread --dry-run`, optional Azure `--model`):
+Ten required intents, enforced by `node test/test-provider-parity.js` in `npm run test` (tables, INTENTS headings, and implementation: sweep/comment/close CLI + JSON aliases, local-spec SCM delegates, `resolve-thread --dry-run`, optional Azure `--model`):
 
 | Intent | Guarantee |
 |--------|-----------|
 | `validate-auth` | STOP on failure; no silent provider fallback |
 | `fetch-to-spec` | Writes the `{specsDir}` spec of record first (downloads allowlisted visual attachments into `{specStem}.assets/` and `## Visual References` when present), then the `step-00` workflow copy and `{us-dir}/attachments/` at register |
-| `create-pr` | Reuses an existing open PR for the same head→base |
+| `create-pr` | Reuses an existing open PR for the same head→base; the caller keeps `Closes #{id}` in the PR body (GitHub auto-closes only when the PR base is the default branch); after merge on any base, callers dispatch `close-issue` for an explicit tracker transition |
 | `list-threads` | Structured threads with an active count |
 | `sweep-prior-work` | Prior PR hits and recent commits, run before plan or code |
 | `check-pr-status` | CI triage that classifies each failure as `diff-regression`, `baseline`, or `infra-flake`, with at most one flake rerun |
 | `resolve-thread` | Skips remote mutation under `dry-run` |
 | `comment-issue` | Posts the PR URL and summary back to the tracker; skipped for local specs |
+| `close-issue` | Explicit tracker state transition after merge (`gh issue close` / ADO WIT `Closed`); skipped for local specs |
 | `merge-pr` | Waits for required checks; never deletes `project.workingBranch` |
 
 Adding an intent to only one provider fails CI unless an allowlist row explains why the other host cannot mirror it. Contract: [`scm-provider-contract.md`](.agents/skills/ws-shared/runtime/scm-provider-contract.md).
@@ -157,7 +158,7 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 | Canonical `*.spec.md` schema, section hierarchy, AC rules, specify-time closure (`Out of Scope`, Assumptions), authoring-mode **Definition of Ready**, **Validation & Observation Notes**, and **Negative & Failing Test Scenarios** | `ws-spec-format` |
 | Promote any spec into a workflow run (`{specsDir}` spec of record → `step-00` copy) | `ws-spec-provider-local` |
 | Dual board of specs versus plan workflows, with a manage menu | `ws-spec-list` |
-| Bulk-import open GitHub issues or ADO User Stories (assigned to PAT) into `{specsDir}` + full register | `ws-spec-from-provider` |
+| Bulk-import open GitHub issues or ADO User Stories (assigned to PAT) into `{specsDir}` + full register + auto-track in `index.PRD` | `ws-spec-from-provider` |
 | Project feature index (`index.PRD`): init, sync against delivery evidence, promote from inbox, track an existing spec | `ws-spec-index` |
 | Harvest `{plansDir}` delivery facts into `index.PRD` Archive, then propose cleanup of shipped plan folders | `ws-spec-archive` |
 | Update spec bodies when code drifted after ad-hoc prompts | `ws-spec-update` |
@@ -291,6 +292,8 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-09-19).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.4.59** | Sep 22 | **Ownership-scoped git contract for parallel writers (`us-401`):** sessions stage only their own paths, never run whole-tree `reset`/`checkout`/`restore`/`clean`/`stash`/force-push, tolerate foreign dirty trees, and advance `baselineCommit` forward via `refresh_baseline.cjs` (STOP on foreign-path overlap); canonical contract in `.agents/skills/ws-shared/runtime/git-ownership.md` referenced by both orchestrators, `ws-spec-multi`, `ws-fix-pr`, and the G2 commit recipes |
+| **0.4.58** | Sep 22 | **Close the source issue on ship (GitHub):** `ws-ship-pr` Step 5 keeps `Closes #{id}` in the PR body via `ensure_pr_closer.cjs` (idempotent; no-op for null ids and non-GitHub providers) so merging the PR closes the source issue; wired through the provider contract, GitHub `create-pr` procedure, and standard/lite Step 8/4 dispatch |
 | **0.4.55** | Sep 22 | **Side-effect-free test suite for the hub config (`us-389`):** every test invocation of `Edit-WorkflowSkillsConfig.ps1` passes an explicit `-ConfigPath` to an isolated temp copy; `-CheckOnly` / `-NonInteractive` are strictly read-only (no rewrite, no `.bak`) even when `-ConfigPath` is omitted; the suite runner byte-compares `.ws/config.json` before/after and fails on mutation |
 | **0.4.38** | Sep 19 | **Step-level baton handoffs for multi-CLI runs:** `stepRunners`/`runners`/`stepBaton` run config with fail-fast validation; state-file baton with revision-serialized claim/release/expiry; deterministic `step_coordinator.cjs` run loop with advancement checks; one-shot workers with sparse pointers + baton envelope; `baton_*`/`runner_*` telemetry, read-only monitor baton fields, optional spec-memo handoff mirror |
 | **0.4.37** | Sep 18 | **ws-goal-fix-pr orchestrator dispatch:** session owns the wait/fetch convergence loop inline; every Act round batch runs in a fresh worker via `dispatch-agent` with one ordered `fixPrPlan` → `fixPrExec` pair; per-substep model chains (`reviewerModel` / `executionModel`, never numeric `"9"`); Tier 3 inline fallback on no-dispatch hosts; ordered dispatch telemetry |
@@ -407,12 +410,13 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) | W | Harvest plan history into `index.PRD` Archive; propose shipped-plan cleanup |
 | [`ws-spec-list`](.agents/skills/ws-spec-list/SKILL.md) | W | Dual board of specs versus plan workflows |
 | [`ws-spec-manager`](.agents/skills/ws-spec-manager/SKILL.md) | W | Unified router for spec create/list/update/sync/track/organize/archive/validate/import/run |
-| [`ws-spec-from-provider`](.agents/skills/ws-spec-from-provider/SKILL.md) | W | Bulk-import open GH issues / ADO User Stories → spec-write + register |
+| [`ws-spec-from-provider`](.agents/skills/ws-spec-from-provider/SKILL.md) | W | Bulk-import open GH issues / ADO User Stories → spec-write + register + auto-track |
 | [`ws-spec-update`](.agents/skills/ws-spec-update/SKILL.md) | W | Update spec bodies when code drifts |
 | [`ws-spec-memo`](.agents/skills/ws-spec-memo/SKILL.md) | W | Harness ↔ spec-memo **bridge** only; runtime vault ops are `ws-memo` / `ws-session-tracking` (`externalSkills`, spec-memo package) |
 | [`ws-spec-organizer`](.agents/skills/ws-spec-organizer/SKILL.md) | W | Resolve spec-of-record path and organize/prefix specs chronologically |
 | [`ws-task-lifecycle`](.agents/skills/ws-task-lifecycle/SKILL.md) | W | Prompt-driven intake → implement → complete tracking (not Spec-to-PR) |
 | [`ws-wiki`](.agents/skills/ws-wiki/SKILL.md) | W | Living feature wiki & domain knowledge base (init, from-code genesis, sweep, verify, apply, sync) |
+| [`ws-spec-translate-to-human`](.agents/skills/ws-spec-translate-to-human/SKILL.md) | W | Human runbook companion beside an agent spec (Implementation / UI Test / Out of scope; non-blocking refinement hook) |
 
 ### Quality and audit
 

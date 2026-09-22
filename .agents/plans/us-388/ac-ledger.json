@@ -1,0 +1,243 @@
+{
+  "schemaVersion": 1,
+  "revision": 1,
+  "workflowId": "us-388-20260922T080709Z",
+  "slug": "us-388",
+  "specPath": ".agents/plans/us-388/step-00-us-388.spec.md",
+  "planIndexPath": ".agents/plans/us-388/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": "2026-09-22T15:40:00Z",
+      "endedAt": "2026-09-22T15:52:00Z",
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "A standard child dispatched by ws-spec-multi persists {plansDir}/{slug}/{workflow-id}.state.json (machine SoT, including state.handoffs) plus its .state.md render by the time the child reaches close.",
+      "status": "Implemented",
+      "verdict": "satisfied-by-prior-work",
+      "evidence": [
+        ".agents/plans/us-393/us-393-20260922T080709Z.state.json",
+        ".agents/plans/us-389/us-389-20260922T080709Z.state.md"
+      ],
+      "commits": [
+        { "sha": "57449348", "step": 0 }
+      ],
+      "tests": [
+        { "name": "us-388 AC1 completed-child close", "sourceFile": "test/test-verify-child-artifacts-us388.js", "phase": "observed", "alias": null, "exitCode": 0, "timestamp": "2026-09-22T15:42:00.000Z" }
+      ],
+      "linkEventIds": ["ac-AC1"]
+    },
+    {
+      "id": "AC2",
+      "text": "The child writes the step artifacts for the steps it actually ran, under their contract names (step-01-{slug}.plan.md, and the other step files the pipeline executed) — never an ad-hoc name such as plan.md.",
+      "status": "Implemented",
+      "verdict": "satisfied-by-prior-work",
+      "evidence": [
+        ".agents/plans/us-395/step-01-us-395.plan.md",
+        ".agents/skills/ws-spec-multi/PROTOCOL.md"
+      ],
+      "commits": [
+        { "sha": "6aa19c83", "step": 5 }
+      ],
+      "tests": [
+        { "name": "us-388 AC2 ad-hoc plan.md rejected", "sourceFile": "test/test-verify-child-artifacts-us388.js", "phase": "observed", "alias": null, "exitCode": 0, "timestamp": "2026-09-22T15:42:00.000Z" }
+      ],
+      "linkEventIds": ["ac-AC2"]
+    },
+    {
+      "id": "AC3",
+      "text": "The child writes {plansDir}/{slug}/telemetry.jsonl.",
+      "status": "Implemented",
+      "verdict": "satisfied-by-prior-work",
+      "evidence": [
+        ".agents/plans/us-389/telemetry.jsonl",
+        ".agents/plans/us-395/telemetry.jsonl"
+      ],
+      "commits": [
+        { "sha": "57449348", "step": 0 }
+      ],
+      "tests": [],
+      "linkEventIds": ["ac-AC3"]
+    },
+    {
+      "id": "AC4",
+      "text": "PROTOCOL.md states the required child artifact set and the workflow id used for child state, so the batch orchestrator and the dispatched worker agree on the same {plansDir}/{slug} path.",
+      "status": "Implemented",
+      "verdict": "implemented-now",
+      "evidence": [
+        ".agents/skills/ws-spec-multi/PROTOCOL.md",
+        ".agents/skills/ws-spec-multi/STATE.md"
+      ],
+      "commits": [
+        { "sha": "6aa19c83", "step": 5 }
+      ],
+      "tests": [],
+      "linkEventIds": ["ac-AC4"]
+    },
+    {
+      "id": "AC5",
+      "text": "A child that reaches worker exit without the required state file or step-01 artifact for the active item fails closed with a surfaced reason, mirroring the existing missing-artifact class, instead of being recorded shipped.",
+      "status": "Implemented",
+      "verdict": "implemented-now",
+      "evidence": [
+        ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs",
+        "test/test-verify-child-artifacts-us388.js"
+      ],
+      "commits": [
+        { "sha": "6aa19c83", "step": 5 }
+      ],
+      "tests": [
+        { "name": "us-388 AC5 fail-closed guard", "sourceFile": "test/test-verify-child-artifacts-us388.js", "phase": "observed", "alias": null, "exitCode": 0, "timestamp": "2026-09-22T15:42:00.000Z" }
+      ],
+      "linkEventIds": ["ac-AC5"]
+    },
+    {
+      "id": "AC6",
+      "text": "ws-monitor emits a missing-child-state finding when a multi-spec item advances without child state, so the blind spot is surfaced instead of silent.",
+      "status": "Implemented",
+      "verdict": "implemented-now",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+        "test/test-ws-monitor-us388.js"
+      ],
+      "commits": [
+        { "sha": "6aa19c83", "step": 5 }
+      ],
+      "tests": [
+        { "name": "us-388 AC6 missing-child-state", "sourceFile": "test/test-ws-monitor-us388.js", "phase": "observed", "alias": null, "exitCode": 0, "timestamp": "2026-09-22T15:42:00.000Z" }
+      ],
+      "linkEventIds": ["ac-AC6"]
+    },
+    {
+      "id": "AC7",
+      "text": "A completed child leaves {plansDir}/{slug}/step-08-*.result.md so delivery-evidence consumers have a key to read.",
+      "status": "Implemented",
+      "verdict": "satisfied-by-prior-work",
+      "evidence": [
+        ".agents/plans/us-395/step-08-us-395.result.md",
+        ".agents/plans/us-393/step-08-us-393.result.md"
+      ],
+      "commits": [
+        { "sha": "57449348", "step": 0 }
+      ],
+      "tests": [],
+      "linkEventIds": ["ac-AC7"]
+    },
+    {
+      "id": "AC8",
+      "text": "The batch report does not claim delivery evidence for an item that lacks child state.",
+      "status": "Implemented",
+      "verdict": "implemented-now",
+      "evidence": [
+        ".agents/skills/ws-spec-multi/PROTOCOL.md"
+      ],
+      "commits": [
+        { "sha": "6aa19c83", "step": 5 }
+      ],
+      "tests": [],
+      "linkEventIds": ["ac-AC8"]
+    },
+    {
+      "id": "AC9",
+      "text": "npm run test, ws-check-harness, and node test/test-harness-clean.js exit clean, and a multi-spec fixture covers the missing-child-state finding.",
+      "status": "Implemented",
+      "verdict": "implemented-now",
+      "evidence": [
+        "test/test-suites.json",
+        "test/test-ws-monitor-us388.js"
+      ],
+      "commits": [
+        { "sha": "6aa19c83", "step": 5 }
+      ],
+      "tests": [
+        { "name": "us-388 AC9 suite", "sourceFile": "test/test-ws-monitor-us388.js", "phase": "observed", "alias": null, "exitCode": 0, "timestamp": "2026-09-22T15:52:00.000Z" }
+      ],
+      "linkEventIds": ["ac-AC9"]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "A standard child merges while {plansDir}/{slug}/ has no state file (must fail AC1).",
+      "tests": [
+        { "name": "us-388 AC5 fail-closed guard", "sourceFile": "test/test-verify-child-artifacts-us388.js", "phase": "observed", "alias": null, "exitCode": 0, "timestamp": "2026-09-22T15:42:00.000Z" }
+      ],
+      "linkEventIds": ["ns-NS1"]
+    },
+    {
+      "id": "NS2",
+      "text": "A child writes plan.md instead of step-01-{slug}.plan.md (must fail AC2).",
+      "tests": [
+        { "name": "us-388 AC2 ad-hoc plan.md rejected", "sourceFile": "test/test-verify-child-artifacts-us388.js", "phase": "observed", "alias": null, "exitCode": 0, "timestamp": "2026-09-22T15:42:00.000Z" }
+      ],
+      "linkEventIds": ["ns-NS2"]
+    },
+    {
+      "id": "NS3",
+      "text": "telemetry.jsonl is absent after a completed child (must fail AC3).",
+      "tests": [],
+      "linkEventIds": ["ns-NS3"]
+    },
+    {
+      "id": "NS4",
+      "text": "PROTOCOL.md does not state the required child artifact set, so orchestrator and worker disagree on the path (must fail AC4).",
+      "tests": [],
+      "linkEventIds": ["ns-NS4"]
+    },
+    {
+      "id": "NS5",
+      "text": "A child exits without state and is still recorded shipped (must fail AC5).",
+      "tests": [
+        { "name": "us-388 AC5 fail-closed guard", "sourceFile": "test/test-verify-child-artifacts-us388.js", "phase": "observed", "alias": null, "exitCode": 0, "timestamp": "2026-09-22T15:42:00.000Z" }
+      ],
+      "linkEventIds": ["ns-NS5"]
+    },
+    {
+      "id": "NS6",
+      "text": "A multi-spec item advances without child state and the monitor reports no finding (must fail AC6).",
+      "tests": [
+        { "name": "us-388 AC6 missing-child-state", "sourceFile": "test/test-ws-monitor-us388.js", "phase": "observed", "alias": null, "exitCode": 0, "timestamp": "2026-09-22T15:42:00.000Z" }
+      ],
+      "linkEventIds": ["ns-NS6"]
+    },
+    {
+      "id": "NS7",
+      "text": "step-08-*.result.md is missing for a completed child (must fail AC7).",
+      "tests": [],
+      "linkEventIds": ["ns-NS7"]
+    },
+    {
+      "id": "NS8",
+      "text": "The batch report asserts delivery evidence for an item that has no child state (must fail AC8).",
+      "tests": [],
+      "linkEventIds": ["ns-NS8"]
+    },
+    {
+      "id": "NS9",
+      "text": "npm run test, ws-check-harness, or test-harness-clean.js fails after the change (must fail AC9).",
+      "tests": [
+        { "name": "us-388 AC9 suite", "sourceFile": "test/test-ws-monitor-us388.js", "phase": "observed", "alias": null, "exitCode": 0, "timestamp": "2026-09-22T15:52:00.000Z" }
+      ],
+      "linkEventIds": ["ns-NS9"]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 10,
+    "earnedUnits": 90,
+    "totalUnits": 90,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-22T15:52:00.000Z"
+  }
+}

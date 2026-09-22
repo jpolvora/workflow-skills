@@ -17,7 +17,7 @@ Primary use cases from `index.PRD`: end-to-end Spec-to-PR (standard or lite), se
 
 ## Domain Catalog
 
-Living synthesis of specs 0001–0107 (only `0107-us-369` remains a true todo with no shipped signal yet). Feature subpages use `{domain}/{feature}.md` with `## Feature` and `## How it works` required; `## Backend`, `## Frontend`, and `## Third-party services` are conditional.
+Living synthesis of specs 0001–0121 (delta 0108–0121 reconciled from the spec boards and the shipped code in this run). Feature subpages use `{domain}/{feature}.md` with `## Feature` and `## How it works` required; `## Backend`, `## Frontend`, and `## Third-party services` are conditional.
 
 ## Domain: harness
 
@@ -55,7 +55,7 @@ Living synthesis of specs 0001–0107 (only `0107-us-369` remains a true todo wi
 
 ## Sync Baseline
 
-- Commit: `d9db97f190bf16715a9a094e285015f9014ab20d`
-- Synced: 2026-09-20
+- Commit: `174f2f44f581801b4355fcefa91dd975e400c446`
+- Synced: 2026-09-22
 
 Next wiki update: diff this commit against `HEAD` (`git diff --name-status <commit>..HEAD`) and sweep only the changed specs and code areas. A full-tree sweep is only needed when this block is missing or the commit is unreachable. Contract: `ws-wiki` SKILL.md § Incremental baseline.

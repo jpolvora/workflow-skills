@@ -159,7 +159,7 @@
     <span class="badge-dot"></span>
     <span>Deterministic Spec-Driven Harness</span>
     <span style="color:var(--text-dim)">&bull;</span>
-    <span style="color:var(--accent-cyan);font-family:var(--font-mono)">v0.4.57</span>
+    <span style="color:var(--accent-cyan);font-family:var(--font-mono)">v0.4.62</span>
   </a>
   <h1>From Spec to <span class="gradient-text">Delivery</span></h1>
   <p class="hero-brand">Workflow Skills</p>
@@ -336,7 +336,7 @@
         <div class="role-card-icon">⚡</div>
         <h4 class="role-card-title">Hermes delivery disciplines</h4>
       </div>
-      <p class="role-card-desc">Prior-work sweep before plan/code; design-intent git history; repo-wide defect-class fixes; regression sabotage when mutation is unset; CI triage via extended <code>check-pr-status</code>; tracker close-loop via <code>comment-issue</code>.</p>
+      <p class="role-card-desc">Prior-work sweep before plan/code; design-intent git history; repo-wide defect-class fixes; regression sabotage when mutation is unset; CI triage via extended <code>check-pr-status</code>; GitHub PR-body <code>Closes #{id}</code> auto-close on default-branch merges; tracker comments use <code>comment-issue</code> and post-merge state transitions use <code>close-issue</code>.</p>
     </div>
     <div class="role-matrix-card">
       <div class="role-card-header">
@@ -1311,7 +1311,7 @@ disable-model-invocation: true
       <p class="section-subtitle">Discover every shipped skill. Search by name, layer, or full vs lite.</p>
     </div>
     <div class="catalog-stats">
-      <span class="catalog-counter"><strong id="visible-skills-count">55</strong> skills available</span>
+      <span class="catalog-counter"><strong id="visible-skills-count">56</strong> skills available</span>
     </div>
   </div>
 
@@ -1575,7 +1575,7 @@ disable-model-invocation: true
           <a class="view-skill" href="#" data-path=".agents/skills/ws-plan-verify/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
-      <div class="skill-card" data-path=".agents/skills/ws-plan-write/SKILL.md" data-name="ws-plan-write" data-slug="ws-plan-write" data-desc="implementation plan generator — transforms feature specifications into structured, technical step-01 implementation plans." data-deps="" data-layer="layer-2" data-full="true" data-lite="true">
+      <div class="skill-card" data-path=".agents/skills/ws-plan-write/SKILL.md" data-name="ws-plan-write" data-slug="ws-plan-write" data-desc="implementation plan generator — transforms feature specifications into structured, technical step-01 implementation plans." data-deps="ws-spec-translate-to-human" data-layer="layer-2" data-full="true" data-lite="true">
         <div class="skill-card-top">
           <div class="name">ws-plan-write</div>
         <div class="skill-badges">
@@ -1585,7 +1585,7 @@ disable-model-invocation: true
         </div>
         <div class="desc">Implementation plan generator — transforms feature specifications into structured, technical step-01 implementation plans.</div>
         <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (1):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-spec-translate-to-human">ws-spec-translate-to-human</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/ws-plan-write/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
@@ -1715,7 +1715,7 @@ disable-model-invocation: true
   <div class="layer" data-layer-id="layer-5">
     <div class="layer-header">
       <h3><span class="layer-tag">Layer 5</span> — Utility & meta</h3>
-      <span class="count">28 skills</span>
+      <span class="count">29 skills</span>
     </div>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/ws-activity-report/SKILL.md" data-name="ws-activity-report" data-slug="ws-activity-report" data-desc="timesheet entries (date, start, end, description) for ws-spec-to-pr / ws-spec-to-pr-lite deliveries. start = earliest bootstrap file creation in the plan folder; end = latest of last pr thread comment or last delivery commit. trigger on activity-report {date}, log hours, timesheet, or activities for a day." data-deps="" data-layer="layer-5" data-full="false" data-lite="false">
@@ -1892,13 +1892,13 @@ disable-model-invocation: true
           <a class="view-skill" href="#" data-path=".agents/skills/ws-spec-format/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
-      <div class="skill-card" data-path=".agents/skills/ws-spec-from-provider/SKILL.md" data-name="ws-spec-from-provider" data-slug="ws-spec-from-provider" data-desc="bulk-import open github issues or ado user stories into local specs (spec-write + register). trigger when importing tracker backlog to {specsdir} for ws-spec-list / ws-spec-multi." data-deps="ws-spec-provider-github ws-spec-provider-azure-devops ws-spec-write ws-spec-provider-local ws-spec-format ws-configure-project" data-layer="layer-5" data-full="false" data-lite="false">
+      <div class="skill-card" data-path=".agents/skills/ws-spec-from-provider/SKILL.md" data-name="ws-spec-from-provider" data-slug="ws-spec-from-provider" data-desc="bulk-import open github issues or ado user stories into local specs (spec-write + register). trigger when importing tracker backlog to {specsdir} for ws-spec-list / ws-spec-multi." data-deps="ws-spec-provider-github ws-spec-provider-azure-devops ws-spec-write ws-spec-provider-local ws-spec-format ws-spec-index ws-configure-project" data-layer="layer-5" data-full="false" data-lite="false">
         <div class="skill-card-top">
           <div class="name">ws-spec-from-provider</div>
         </div>
         <div class="desc">Bulk-import open GitHub issues or ADO User Stories into local specs (spec-write + register). Trigger when importing tracker backlog to {specsDir} for ws-spec-list / ws-spec-multi.</div>
         <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (6):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-spec-provider-github">ws-spec-provider-github</span><span class="dep-pill" data-dep="ws-spec-provider-azure-devops">ws-spec-provider-azure-devops</span><span class="dep-pill" data-dep="ws-spec-write">ws-spec-write</span><span class="dep-pill" data-dep="ws-spec-provider-local">ws-spec-provider-local</span><span class="dep-pill" data-dep="ws-spec-format">ws-spec-format</span><span class="dep-pill" data-dep="ws-configure-project">ws-configure-project</span></div></div>
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (7):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-spec-provider-github">ws-spec-provider-github</span><span class="dep-pill" data-dep="ws-spec-provider-azure-devops">ws-spec-provider-azure-devops</span><span class="dep-pill" data-dep="ws-spec-write">ws-spec-write</span><span class="dep-pill" data-dep="ws-spec-provider-local">ws-spec-provider-local</span><span class="dep-pill" data-dep="ws-spec-format">ws-spec-format</span><span class="dep-pill" data-dep="ws-spec-index">ws-spec-index</span><span class="dep-pill" data-dep="ws-configure-project">ws-configure-project</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/ws-spec-from-provider/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
@@ -1970,7 +1970,7 @@ disable-model-invocation: true
           <a class="view-skill" href="#" data-path=".agents/skills/ws-spec-organizer/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
-      <div class="skill-card" data-path=".agents/skills/ws-spec-to-pr/SKILL.md" data-name="ws-spec-to-pr" data-slug="ws-spec-to-pr" data-desc="end-to-end spec-to-pr (steps 0–9). verify score ≥ `defaults.minverifyscore` (default 9) before review. trigger for full/standard delivery." data-deps="ws-spec-write ws-classify-complexity ws-plan-write ws-plan-interview ws-plan-to-tasks ws-implement-tasks ws-plan-verify ws-code-review ws-testing ws-ship-pr ws-fix-pr ws-goal-fix-pr ws-spec-provider-github ws-spec-provider-azure-devops ws-spec-provider-local ws-check-harness ws-check-workflows ws-tdah ws-spec-format ws-goal-loop ws-self-learning ws-changelog ws-configure-project ws-spec-index ws-wiki ws-senior-developer" data-layer="layer-5" data-full="true" data-lite="false">
+      <div class="skill-card" data-path=".agents/skills/ws-spec-to-pr/SKILL.md" data-name="ws-spec-to-pr" data-slug="ws-spec-to-pr" data-desc="end-to-end spec-to-pr (steps 0–9). verify score ≥ `defaults.minverifyscore` (default 9) before review. trigger for full/standard delivery." data-deps="ws-spec-write ws-classify-complexity ws-plan-write ws-plan-interview ws-plan-to-tasks ws-implement-tasks ws-plan-verify ws-code-review ws-testing ws-ship-pr ws-fix-pr ws-goal-fix-pr ws-spec-provider-github ws-spec-provider-azure-devops ws-spec-provider-local ws-check-harness ws-check-workflows ws-tdah ws-spec-format ws-goal-loop ws-self-learning ws-changelog ws-configure-project ws-spec-index ws-wiki ws-senior-developer ws-spec-translate-to-human" data-layer="layer-5" data-full="true" data-lite="false">
         <div class="skill-card-top">
           <div class="name">ws-spec-to-pr</div>
         <div class="skill-badges">
@@ -1979,11 +1979,11 @@ disable-model-invocation: true
         </div>
         <div class="desc">End-to-end Spec-to-PR (steps 0–9). Verify score ≥ `defaults.minVerifyScore` (default 9) before review. Trigger for full/standard delivery.</div>
         <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (26):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-spec-write">ws-spec-write</span><span class="dep-pill" data-dep="ws-classify-complexity">ws-classify-complexity</span><span class="dep-pill" data-dep="ws-plan-write">ws-plan-write</span><span class="dep-pill" data-dep="ws-plan-interview">ws-plan-interview</span><span class="dep-pill" data-dep="ws-plan-to-tasks">ws-plan-to-tasks</span><span class="dep-pill" data-dep="ws-implement-tasks">ws-implement-tasks</span><span class="dep-pill" data-dep="ws-plan-verify">ws-plan-verify</span><span class="dep-pill" data-dep="ws-code-review">ws-code-review</span><span class="dep-pill" data-dep="ws-testing">ws-testing</span><span class="dep-pill" data-dep="ws-ship-pr">ws-ship-pr</span><span class="dep-pill" data-dep="ws-fix-pr">ws-fix-pr</span><span class="dep-pill" data-dep="ws-goal-fix-pr">ws-goal-fix-pr</span><span class="dep-pill" data-dep="ws-spec-provider-github">ws-spec-provider-github</span><span class="dep-pill" data-dep="ws-spec-provider-azure-devops">ws-spec-provider-azure-devops</span><span class="dep-pill" data-dep="ws-spec-provider-local">ws-spec-provider-local</span><span class="dep-pill" data-dep="ws-check-harness">ws-check-harness</span><span class="dep-pill" data-dep="ws-check-workflows">ws-check-workflows</span><span class="dep-pill" data-dep="ws-tdah">ws-tdah</span><span class="dep-pill" data-dep="ws-spec-format">ws-spec-format</span><span class="dep-pill" data-dep="ws-goal-loop">ws-goal-loop</span><span class="dep-pill" data-dep="ws-self-learning">ws-self-learning</span><span class="dep-pill" data-dep="ws-changelog">ws-changelog</span><span class="dep-pill" data-dep="ws-configure-project">ws-configure-project</span><span class="dep-pill" data-dep="ws-spec-index">ws-spec-index</span><span class="dep-pill" data-dep="ws-wiki">ws-wiki</span><span class="dep-pill" data-dep="ws-senior-developer">ws-senior-developer</span></div></div>
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (27):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-spec-write">ws-spec-write</span><span class="dep-pill" data-dep="ws-classify-complexity">ws-classify-complexity</span><span class="dep-pill" data-dep="ws-plan-write">ws-plan-write</span><span class="dep-pill" data-dep="ws-plan-interview">ws-plan-interview</span><span class="dep-pill" data-dep="ws-plan-to-tasks">ws-plan-to-tasks</span><span class="dep-pill" data-dep="ws-implement-tasks">ws-implement-tasks</span><span class="dep-pill" data-dep="ws-plan-verify">ws-plan-verify</span><span class="dep-pill" data-dep="ws-code-review">ws-code-review</span><span class="dep-pill" data-dep="ws-testing">ws-testing</span><span class="dep-pill" data-dep="ws-ship-pr">ws-ship-pr</span><span class="dep-pill" data-dep="ws-fix-pr">ws-fix-pr</span><span class="dep-pill" data-dep="ws-goal-fix-pr">ws-goal-fix-pr</span><span class="dep-pill" data-dep="ws-spec-provider-github">ws-spec-provider-github</span><span class="dep-pill" data-dep="ws-spec-provider-azure-devops">ws-spec-provider-azure-devops</span><span class="dep-pill" data-dep="ws-spec-provider-local">ws-spec-provider-local</span><span class="dep-pill" data-dep="ws-check-harness">ws-check-harness</span><span class="dep-pill" data-dep="ws-check-workflows">ws-check-workflows</span><span class="dep-pill" data-dep="ws-tdah">ws-tdah</span><span class="dep-pill" data-dep="ws-spec-format">ws-spec-format</span><span class="dep-pill" data-dep="ws-goal-loop">ws-goal-loop</span><span class="dep-pill" data-dep="ws-self-learning">ws-self-learning</span><span class="dep-pill" data-dep="ws-changelog">ws-changelog</span><span class="dep-pill" data-dep="ws-configure-project">ws-configure-project</span><span class="dep-pill" data-dep="ws-spec-index">ws-spec-index</span><span class="dep-pill" data-dep="ws-wiki">ws-wiki</span><span class="dep-pill" data-dep="ws-senior-developer">ws-senior-developer</span><span class="dep-pill" data-dep="ws-spec-translate-to-human">ws-spec-translate-to-human</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/ws-spec-to-pr/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
-      <div class="skill-card" data-path=".agents/skills/ws-spec-to-pr-lite/SKILL.md" data-name="ws-spec-to-pr-lite" data-slug="ws-spec-to-pr-lite" data-desc="fast spec-to-pr (steps 0–5). plan, implement, commit, review, ship. trigger for lite/fast delivery." data-deps="ws-spec-write ws-classify-complexity ws-plan-write ws-implement-tasks ws-code-review ws-ship-pr ws-fix-pr ws-goal-fix-pr ws-spec-provider-github ws-spec-provider-azure-devops ws-spec-provider-local ws-tdah ws-spec-format ws-self-learning ws-changelog ws-configure-project ws-spec-index ws-wiki ws-senior-developer" data-layer="layer-5" data-full="false" data-lite="true">
+      <div class="skill-card" data-path=".agents/skills/ws-spec-to-pr-lite/SKILL.md" data-name="ws-spec-to-pr-lite" data-slug="ws-spec-to-pr-lite" data-desc="fast spec-to-pr (steps 0–5). plan, implement, commit, review, ship. trigger for lite/fast delivery." data-deps="ws-spec-write ws-classify-complexity ws-plan-write ws-implement-tasks ws-code-review ws-ship-pr ws-fix-pr ws-goal-fix-pr ws-spec-provider-github ws-spec-provider-azure-devops ws-spec-provider-local ws-tdah ws-spec-format ws-self-learning ws-changelog ws-configure-project ws-spec-index ws-wiki ws-senior-developer ws-spec-translate-to-human" data-layer="layer-5" data-full="false" data-lite="true">
         <div class="skill-card-top">
           <div class="name">ws-spec-to-pr-lite</div>
         <div class="skill-badges">
@@ -1992,8 +1992,22 @@ disable-model-invocation: true
         </div>
         <div class="desc">Fast Spec-to-PR (steps 0–5). Plan, implement, commit, review, ship. Trigger for lite/fast delivery.</div>
         <div class="skill-card-bottom">
-          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (19):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-spec-write">ws-spec-write</span><span class="dep-pill" data-dep="ws-classify-complexity">ws-classify-complexity</span><span class="dep-pill" data-dep="ws-plan-write">ws-plan-write</span><span class="dep-pill" data-dep="ws-implement-tasks">ws-implement-tasks</span><span class="dep-pill" data-dep="ws-code-review">ws-code-review</span><span class="dep-pill" data-dep="ws-ship-pr">ws-ship-pr</span><span class="dep-pill" data-dep="ws-fix-pr">ws-fix-pr</span><span class="dep-pill" data-dep="ws-goal-fix-pr">ws-goal-fix-pr</span><span class="dep-pill" data-dep="ws-spec-provider-github">ws-spec-provider-github</span><span class="dep-pill" data-dep="ws-spec-provider-azure-devops">ws-spec-provider-azure-devops</span><span class="dep-pill" data-dep="ws-spec-provider-local">ws-spec-provider-local</span><span class="dep-pill" data-dep="ws-tdah">ws-tdah</span><span class="dep-pill" data-dep="ws-spec-format">ws-spec-format</span><span class="dep-pill" data-dep="ws-self-learning">ws-self-learning</span><span class="dep-pill" data-dep="ws-changelog">ws-changelog</span><span class="dep-pill" data-dep="ws-configure-project">ws-configure-project</span><span class="dep-pill" data-dep="ws-spec-index">ws-spec-index</span><span class="dep-pill" data-dep="ws-wiki">ws-wiki</span><span class="dep-pill" data-dep="ws-senior-developer">ws-senior-developer</span></div></div>
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (20):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-spec-write">ws-spec-write</span><span class="dep-pill" data-dep="ws-classify-complexity">ws-classify-complexity</span><span class="dep-pill" data-dep="ws-plan-write">ws-plan-write</span><span class="dep-pill" data-dep="ws-implement-tasks">ws-implement-tasks</span><span class="dep-pill" data-dep="ws-code-review">ws-code-review</span><span class="dep-pill" data-dep="ws-ship-pr">ws-ship-pr</span><span class="dep-pill" data-dep="ws-fix-pr">ws-fix-pr</span><span class="dep-pill" data-dep="ws-goal-fix-pr">ws-goal-fix-pr</span><span class="dep-pill" data-dep="ws-spec-provider-github">ws-spec-provider-github</span><span class="dep-pill" data-dep="ws-spec-provider-azure-devops">ws-spec-provider-azure-devops</span><span class="dep-pill" data-dep="ws-spec-provider-local">ws-spec-provider-local</span><span class="dep-pill" data-dep="ws-tdah">ws-tdah</span><span class="dep-pill" data-dep="ws-spec-format">ws-spec-format</span><span class="dep-pill" data-dep="ws-self-learning">ws-self-learning</span><span class="dep-pill" data-dep="ws-changelog">ws-changelog</span><span class="dep-pill" data-dep="ws-configure-project">ws-configure-project</span><span class="dep-pill" data-dep="ws-spec-index">ws-spec-index</span><span class="dep-pill" data-dep="ws-wiki">ws-wiki</span><span class="dep-pill" data-dep="ws-senior-developer">ws-senior-developer</span><span class="dep-pill" data-dep="ws-spec-translate-to-human">ws-spec-translate-to-human</span></div></div>
           <a class="view-skill" href="#" data-path=".agents/skills/ws-spec-to-pr-lite/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="skill-card" data-path=".agents/skills/ws-spec-translate-to-human/SKILL.md" data-name="ws-spec-translate-to-human" data-slug="ws-spec-translate-to-human" data-desc="translates an agent spec into a parallel human runbook (numbered implementation / ui test / out of scope steps beside the source artifact). trigger on spec translate, human runbook, manual test script, or refinement companion." data-deps="" data-layer="layer-5" data-full="true" data-lite="true">
+        <div class="skill-card-top">
+          <div class="name">ws-spec-translate-to-human</div>
+        <div class="skill-badges">
+          <span class="skill-badge full">full</span>
+          <span class="skill-badge lite">lite</span>
+        </div>
+        </div>
+        <div class="desc">Translates an agent spec into a parallel human runbook (numbered Implementation / UI Test / Out of scope steps beside the source artifact). Trigger on spec translate, human runbook, manual test script, or refinement companion.</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies:</div><div class="deps-list"><span class="dep-pill none">none</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-spec-translate-to-human/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
       <div class="skill-card" data-path=".agents/skills/ws-spec-update/SKILL.md" data-name="ws-spec-update" data-slug="ws-spec-update" data-desc="feature spec updater — updates feature specifications after prompt-driven code changes to prevent spec drift, with optional self-learning memory recording." data-deps="" data-layer="layer-5" data-full="false" data-lite="false">
@@ -2081,9 +2095,9 @@ disable-model-invocation: true
         <span class="package-shortcut">Shortcut: <code>w</code></span>
       </div>
       <h4>Workflows Package</h4>
-      <p class="package-desc">Workflows package — 47 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the consumer (<code>.ws/</code>) hub.</p>
+      <p class="package-desc">Workflows package — 48 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the consumer (<code>.ws/</code>) hub.</p>
       <div class="package-preview">
-        <strong>Included core skills:</strong> <code>ws-spec-to-pr</code>, <code>ws-spec-to-pr-lite</code>, <code>ws-spec-write</code>, <code>ws-classify-complexity</code>, <code>ws-plan-write</code>, <code>ws-plan-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, … (+39)
+        <strong>Included core skills:</strong> <code>ws-spec-to-pr</code>, <code>ws-spec-to-pr-lite</code>, <code>ws-spec-write</code>, <code>ws-classify-complexity</code>, <code>ws-plan-write</code>, <code>ws-plan-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, … (+40)
       </div>
     </div>
 
@@ -2617,7 +2631,7 @@ npx --yes github:jpolvora/workflow-skills --global
     </div>
 
     <!-- Q7b -->
-    <div class="faq-item" data-faq-cat="config" data-search="scm provider parity github azure devops intents create-pr list-threads sweep-prior-work check-pr-status resolve-thread comment-issue merge-pr scm-provider-contract">
+    <div class="faq-item" data-faq-cat="config" data-search="scm provider parity github azure devops intents create-pr list-threads sweep-prior-work check-pr-status resolve-thread comment-issue close-issue merge-pr scm-provider-contract">
       <button type="button" class="faq-question" aria-expanded="false">
         <div class="faq-question-text">
           <span class="faq-cat-tag">Configuration</span>
@@ -2627,7 +2641,7 @@ npx --yes github:jpolvora/workflow-skills --global
       </button>
       <div class="faq-answer">
         <div class="faq-answer-content">
-          <p>Yes. Both SCM providers implement the same required intents: <code>validate-auth</code>, <code>fetch-to-spec</code>, <code>create-pr</code>, <code>list-threads</code>, <code>sweep-prior-work</code>, <code>check-pr-status</code>, <code>resolve-thread</code>, <code>comment-issue</code>, and <code>merge-pr</code>.</p>
+          <p>Yes. Both SCM providers implement the same required intents: <code>validate-auth</code>, <code>fetch-to-spec</code>, <code>create-pr</code>, <code>list-threads</code>, <code>sweep-prior-work</code>, <code>check-pr-status</code>, <code>resolve-thread</code>, <code>comment-issue</code>, <code>close-issue</code>, and <code>merge-pr</code>.</p>
           <p>The contract lives in <code>{skillsRoot}/ws-shared/runtime/scm-provider-contract.md</code>. Host CLI recipes stay inside each provider. An extra intent on one side without the other (and without an allowlist row) fails <code>npm run test</code> via <code>test/test-provider-parity.js</code>.</p>
           <p>The local spec provider is not an SCM implementer. It registers specs and delegates PR intents to <code>providers.scm</code>.</p>
         </div>
@@ -2801,7 +2815,7 @@ npx --yes github:jpolvora/workflow-skills --global
 <div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.4.57 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.4.62 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
 <!-- Skill Viewer Slide-Over Drawer -->

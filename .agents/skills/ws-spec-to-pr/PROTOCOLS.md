@@ -260,7 +260,9 @@ Tag `uswf/{workflow-id}/before-step-{N}` = HEAD before step N first mutation. `b
 
 **Revert** = manifest to checkpoint M. Scope: `reset --mixed` → per-path restore from `## Step file log` → remove worktrees ≥M → truncate state <M. Verify `preExistingDirty`. Forbidden: global `reset --hard`, `checkout -- .`, `restore .`, `clean -fd`, stash, push `uswf/*` tags.
 
-**Bootstrap revert data:** `baselineCommit`, `preExistingDirty[]`, backup `{workflow-id}.baseline/`. Full reset: M=1 + new workflow-id.
+**Bootstrap revert data:** `baselineCommit` (+ `baselineSourceRef`), `preExistingDirty[]`, backup `{workflow-id}.baseline/`. Full reset: M=1 + new workflow-id.
+
+**Baseline advancement (base branch moves mid-run):** refresh `baselineCommit` to the new tip and re-integrate the session's own commits forward — never `reset` back to the original baseline. Recipe: `node {skillsRoot}/ws-spec-to-pr/scripts/refresh_baseline.cjs --state {us-dir}/{workflow-id}.state.json --base-ref origin/{baseBranch}`, then `git fetch` + `git rebase {newTip}` (merge-forward where rebase is disallowed). A re-integration that would conflict on a path this session did not edit → STOP, report the overlapping paths, mutate nothing. Canonical ownership contract (forbidden-verb list, staging recipe, dirty-tree tolerance): [`git-ownership.md`](../ws-shared/runtime/git-ownership.md).
 
 **Backward nav** (normal only): Gate **Go back** / **Previous** or Step 5→4 shortcut. Targets: 0–7 in `completedSteps`. Sub-menu: Planning/Implementation/Review/Testing/Ship → confirm → checkpoint revert → redispatch M. Log `backward-nav | from | to | ISO`.
 

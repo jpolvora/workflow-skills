@@ -1,0 +1,986 @@
+{
+  "stateVersion": 3,
+  "revision": 1,
+  "workflowId": "us-388-20260922T080709Z",
+  "slug": "us-388",
+  "us": 388,
+  "workflowType": "standard",
+  "flowMode": "standard",
+  "workflowMode": "auto",
+  "status": "completed",
+  "shipStatus": "merged",
+  "branch": "develop",
+  "branchStrategy": "stay",
+  "baseBranch": "main",
+  "integrationBranch": "develop",
+  "baselineCommit": "57449348",
+  "batchRunId": "ms-20260922T080709Z",
+  "specPath": ".agents/plans/us-388/step-00-us-388.spec.md",
+  "statePath": ".agents/plans/us-388/us-388-20260922T080709Z.state.md",
+  "complexityClass": "complex",
+  "execMode": "sequential",
+  "runInterview": true,
+  "currentStep": 9,
+  "completedSteps": [
+    0,
+    1,
+    2,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "skippedSteps": [
+    {
+      "step": 3,
+      "reason": "dag-disabled",
+      "evidence": "defaults.enableDag=false; sequential mode writes no step-03 stubs"
+    }
+  ],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "skipped",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed",
+    "9": "completed"
+  },
+  "verificationScore": 10,
+  "minVerifyScore": 9,
+  "currentModel": "opencode-go/deepseek-v4.1-flash",
+  "modelsPreset": "muse-spark",
+  "acTotal": 9,
+  "acImplemented": 9,
+  "acLedger": {
+    "schemaVersion": 1,
+    "revision": 1,
+    "workflowId": "us-388-20260922T080709Z",
+    "slug": "us-388",
+    "specPath": ".agents/plans/us-388/step-00-us-388.spec.md",
+    "planIndexPath": ".agents/plans/us-388/.runtime/plan.index.json",
+    "declaredGaps": [],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+        "startedAt": "2026-09-22T15:40:00Z",
+        "endedAt": "2026-09-22T15:52:00Z",
+        "exitCode": 0
+      }
+    ],
+    "testingSkip": null,
+    "acceptanceCriteria": [
+      {
+        "id": "AC1",
+        "text": "A standard child dispatched by ws-spec-multi persists {plansDir}/{slug}/{workflow-id}.state.json (machine SoT, including state.handoffs) plus its .state.md render by the time the child reaches close.",
+        "status": "Implemented",
+        "verdict": "satisfied-by-prior-work",
+        "evidence": [
+          ".agents/plans/us-393/us-393-20260922T080709Z.state.json",
+          ".agents/plans/us-389/us-389-20260922T080709Z.state.md"
+        ],
+        "commits": [
+          {
+            "sha": "57449348",
+            "step": 0
+          },
+          {
+            "sha": "d2111cd1",
+            "step": 6
+          },
+          {
+            "sha": "3721a1e1",
+            "step": 6
+          }
+        ],
+        "tests": [
+          {
+            "name": "us-388 AC1 completed-child close",
+            "sourceFile": "test/test-verify-child-artifacts-us388.js",
+            "phase": "observed",
+            "alias": null,
+            "exitCode": 0,
+            "timestamp": "2026-09-22T15:42:00.000Z"
+          }
+        ],
+        "linkEventIds": [
+          "ac-AC1"
+        ]
+      },
+      {
+        "id": "AC2",
+        "text": "The child writes the step artifacts for the steps it actually ran, under their contract names (step-01-{slug}.plan.md, and the other step files the pipeline executed) — never an ad-hoc name such as plan.md.",
+        "status": "Implemented",
+        "verdict": "satisfied-by-prior-work",
+        "evidence": [
+          ".agents/plans/us-395/step-01-us-395.plan.md",
+          ".agents/skills/ws-spec-multi/PROTOCOL.md"
+        ],
+        "commits": [
+          {
+            "sha": "6aa19c83",
+            "step": 5
+          },
+          {
+            "sha": "d2111cd1",
+            "step": 6
+          },
+          {
+            "sha": "3721a1e1",
+            "step": 6
+          }
+        ],
+        "tests": [
+          {
+            "name": "us-388 AC2 ad-hoc plan.md rejected",
+            "sourceFile": "test/test-verify-child-artifacts-us388.js",
+            "phase": "observed",
+            "alias": null,
+            "exitCode": 0,
+            "timestamp": "2026-09-22T15:42:00.000Z"
+          }
+        ],
+        "linkEventIds": [
+          "ac-AC2"
+        ]
+      },
+      {
+        "id": "AC3",
+        "text": "The child writes {plansDir}/{slug}/telemetry.jsonl.",
+        "status": "Implemented",
+        "verdict": "satisfied-by-prior-work",
+        "evidence": [
+          ".agents/plans/us-389/telemetry.jsonl",
+          ".agents/plans/us-395/telemetry.jsonl"
+        ],
+        "commits": [
+          {
+            "sha": "57449348",
+            "step": 0
+          },
+          {
+            "sha": "d2111cd1",
+            "step": 6
+          },
+          {
+            "sha": "3721a1e1",
+            "step": 6
+          }
+        ],
+        "tests": [],
+        "linkEventIds": [
+          "ac-AC3"
+        ]
+      },
+      {
+        "id": "AC4",
+        "text": "PROTOCOL.md states the required child artifact set and the workflow id used for child state, so the batch orchestrator and the dispatched worker agree on the same {plansDir}/{slug} path.",
+        "status": "Implemented",
+        "verdict": "implemented-now",
+        "evidence": [
+          ".agents/skills/ws-spec-multi/PROTOCOL.md",
+          ".agents/skills/ws-spec-multi/STATE.md"
+        ],
+        "commits": [
+          {
+            "sha": "6aa19c83",
+            "step": 5
+          },
+          {
+            "sha": "d2111cd1",
+            "step": 6
+          },
+          {
+            "sha": "3721a1e1",
+            "step": 6
+          }
+        ],
+        "tests": [],
+        "linkEventIds": [
+          "ac-AC4"
+        ]
+      },
+      {
+        "id": "AC5",
+        "text": "A child that reaches worker exit without the required state file or step-01 artifact for the active item fails closed with a surfaced reason, mirroring the existing missing-artifact class, instead of being recorded shipped.",
+        "status": "Implemented",
+        "verdict": "implemented-now",
+        "evidence": [
+          ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs",
+          "test/test-verify-child-artifacts-us388.js"
+        ],
+        "commits": [
+          {
+            "sha": "6aa19c83",
+            "step": 5
+          },
+          {
+            "sha": "d2111cd1",
+            "step": 6
+          },
+          {
+            "sha": "3721a1e1",
+            "step": 6
+          }
+        ],
+        "tests": [
+          {
+            "name": "us-388 AC5 fail-closed guard",
+            "sourceFile": "test/test-verify-child-artifacts-us388.js",
+            "phase": "observed",
+            "alias": null,
+            "exitCode": 0,
+            "timestamp": "2026-09-22T15:42:00.000Z"
+          }
+        ],
+        "linkEventIds": [
+          "ac-AC5"
+        ]
+      },
+      {
+        "id": "AC6",
+        "text": "ws-monitor emits a missing-child-state finding when a multi-spec item advances without child state, so the blind spot is surfaced instead of silent.",
+        "status": "Implemented",
+        "verdict": "implemented-now",
+        "evidence": [
+          ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "test/test-ws-monitor-us388.js"
+        ],
+        "commits": [
+          {
+            "sha": "6aa19c83",
+            "step": 5
+          },
+          {
+            "sha": "d2111cd1",
+            "step": 6
+          },
+          {
+            "sha": "3721a1e1",
+            "step": 6
+          }
+        ],
+        "tests": [
+          {
+            "name": "us-388 AC6 missing-child-state",
+            "sourceFile": "test/test-ws-monitor-us388.js",
+            "phase": "observed",
+            "alias": null,
+            "exitCode": 0,
+            "timestamp": "2026-09-22T15:42:00.000Z"
+          }
+        ],
+        "linkEventIds": [
+          "ac-AC6"
+        ]
+      },
+      {
+        "id": "AC7",
+        "text": "A completed child leaves {plansDir}/{slug}/step-08-*.result.md so delivery-evidence consumers have a key to read.",
+        "status": "Implemented",
+        "verdict": "satisfied-by-prior-work",
+        "evidence": [
+          ".agents/plans/us-395/step-08-us-395.result.md",
+          ".agents/plans/us-393/step-08-us-393.result.md"
+        ],
+        "commits": [
+          {
+            "sha": "57449348",
+            "step": 0
+          },
+          {
+            "sha": "d2111cd1",
+            "step": 6
+          },
+          {
+            "sha": "3721a1e1",
+            "step": 6
+          }
+        ],
+        "tests": [],
+        "linkEventIds": [
+          "ac-AC7"
+        ]
+      },
+      {
+        "id": "AC8",
+        "text": "The batch report does not claim delivery evidence for an item that lacks child state.",
+        "status": "Implemented",
+        "verdict": "implemented-now",
+        "evidence": [
+          ".agents/skills/ws-spec-multi/PROTOCOL.md"
+        ],
+        "commits": [
+          {
+            "sha": "6aa19c83",
+            "step": 5
+          },
+          {
+            "sha": "d2111cd1",
+            "step": 6
+          },
+          {
+            "sha": "3721a1e1",
+            "step": 6
+          }
+        ],
+        "tests": [],
+        "linkEventIds": [
+          "ac-AC8"
+        ]
+      },
+      {
+        "id": "AC9",
+        "text": "npm run test, ws-check-harness, and node test/test-harness-clean.js exit clean, and a multi-spec fixture covers the missing-child-state finding.",
+        "status": "Implemented",
+        "verdict": "implemented-now",
+        "evidence": [
+          "test/test-suites.json",
+          "test/test-ws-monitor-us388.js"
+        ],
+        "commits": [
+          {
+            "sha": "6aa19c83",
+            "step": 5
+          },
+          {
+            "sha": "d2111cd1",
+            "step": 6
+          },
+          {
+            "sha": "3721a1e1",
+            "step": 6
+          }
+        ],
+        "tests": [
+          {
+            "name": "us-388 AC9 suite",
+            "sourceFile": "test/test-ws-monitor-us388.js",
+            "phase": "observed",
+            "alias": null,
+            "exitCode": 0,
+            "timestamp": "2026-09-22T15:52:00.000Z"
+          }
+        ],
+        "linkEventIds": [
+          "ac-AC9"
+        ]
+      }
+    ],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "text": "A standard child merges while {plansDir}/{slug}/ has no state file (must fail AC1).",
+        "tests": [
+          {
+            "name": "us-388 AC5 fail-closed guard",
+            "sourceFile": "test/test-verify-child-artifacts-us388.js",
+            "phase": "observed",
+            "alias": null,
+            "exitCode": 0,
+            "timestamp": "2026-09-22T15:42:00.000Z"
+          }
+        ],
+        "linkEventIds": [
+          "ns-NS1"
+        ]
+      },
+      {
+        "id": "NS2",
+        "text": "A child writes plan.md instead of step-01-{slug}.plan.md (must fail AC2).",
+        "tests": [
+          {
+            "name": "us-388 AC2 ad-hoc plan.md rejected",
+            "sourceFile": "test/test-verify-child-artifacts-us388.js",
+            "phase": "observed",
+            "alias": null,
+            "exitCode": 0,
+            "timestamp": "2026-09-22T15:42:00.000Z"
+          }
+        ],
+        "linkEventIds": [
+          "ns-NS2"
+        ]
+      },
+      {
+        "id": "NS3",
+        "text": "telemetry.jsonl is absent after a completed child (must fail AC3).",
+        "tests": [],
+        "linkEventIds": [
+          "ns-NS3"
+        ]
+      },
+      {
+        "id": "NS4",
+        "text": "PROTOCOL.md does not state the required child artifact set, so orchestrator and worker disagree on the path (must fail AC4).",
+        "tests": [],
+        "linkEventIds": [
+          "ns-NS4"
+        ]
+      },
+      {
+        "id": "NS5",
+        "text": "A child exits without state and is still recorded shipped (must fail AC5).",
+        "tests": [
+          {
+            "name": "us-388 AC5 fail-closed guard",
+            "sourceFile": "test/test-verify-child-artifacts-us388.js",
+            "phase": "observed",
+            "alias": null,
+            "exitCode": 0,
+            "timestamp": "2026-09-22T15:42:00.000Z"
+          }
+        ],
+        "linkEventIds": [
+          "ns-NS5"
+        ]
+      },
+      {
+        "id": "NS6",
+        "text": "A multi-spec item advances without child state and the monitor reports no finding (must fail AC6).",
+        "tests": [
+          {
+            "name": "us-388 AC6 missing-child-state",
+            "sourceFile": "test/test-ws-monitor-us388.js",
+            "phase": "observed",
+            "alias": null,
+            "exitCode": 0,
+            "timestamp": "2026-09-22T15:42:00.000Z"
+          }
+        ],
+        "linkEventIds": [
+          "ns-NS6"
+        ]
+      },
+      {
+        "id": "NS7",
+        "text": "step-08-*.result.md is missing for a completed child (must fail AC7).",
+        "tests": [],
+        "linkEventIds": [
+          "ns-NS7"
+        ]
+      },
+      {
+        "id": "NS8",
+        "text": "The batch report asserts delivery evidence for an item that has no child state (must fail AC8).",
+        "tests": [],
+        "linkEventIds": [
+          "ns-NS8"
+        ]
+      },
+      {
+        "id": "NS9",
+        "text": "npm run test, ws-check-harness, or test-harness-clean.js fails after the change (must fail AC9).",
+        "tests": [
+          {
+            "name": "us-388 AC9 suite",
+            "sourceFile": "test/test-ws-monitor-us388.js",
+            "phase": "observed",
+            "alias": null,
+            "exitCode": 0,
+            "timestamp": "2026-09-22T15:52:00.000Z"
+          }
+        ],
+        "linkEventIds": [
+          "ns-NS9"
+        ]
+      }
+    ],
+    "invariantViolations": [],
+    "scoreState": {
+      "boundary": "step5",
+      "score": 10,
+      "earnedUnits": 90,
+      "totalUnits": 90,
+      "knownDefect": false,
+      "missingEvidence": false,
+      "errors": [],
+      "invariantViolations": [],
+      "computedAt": "2026-09-22T15:52:00.000Z"
+    }
+  },
+  "commits": [
+    {
+      "sha": "6aa19c83",
+      "step": 5
+    },
+    {
+      "sha": "d2111cd1",
+      "step": 6
+    },
+    {
+      "sha": "3721a1e1",
+      "step": 6
+    },
+    {
+      "sha": "e2c6e0a4",
+      "step": 6
+    },
+    {
+      "sha": "927af867",
+      "step": 9
+    }
+  ],
+  "stepDispatches": [
+    {
+      "step": 1,
+      "agentType": "generic:task",
+      "model": "muse-spark-1.3-contributor",
+      "dispatchedAt": "2026-09-22T15:05:00.000Z"
+    },
+    {
+      "step": 2,
+      "agentType": "generic:task",
+      "model": "muse-spark-1.3-contributor",
+      "dispatchedAt": "2026-09-22T15:09:00.000Z"
+    },
+    {
+      "step": 4,
+      "agentType": "generic:task",
+      "model": "muse-spark-1.2-contributor",
+      "dispatchedAt": "2026-09-22T15:15:00.000Z"
+    },
+    {
+      "step": 5,
+      "agentType": "generic:task",
+      "model": "muse-spark-1.3-contributor",
+      "dispatchedAt": "2026-09-22T15:38:00.000Z"
+    },
+    {
+      "step": 6,
+      "agentType": "generic:task",
+      "model": "muse-spark-1.3-contributor",
+      "dispatchedAt": "2026-09-22T15:55:00.000Z"
+    },
+    {
+      "step": 7,
+      "agentType": "generic:task",
+      "model": "muse-spark-1.2-contributor",
+      "dispatchedAt": "2026-09-22T16:08:00.000Z"
+    },
+    {
+      "step": 9,
+      "agentType": "generic:task",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "dispatchedAt": "2026-09-22T16:30:00.000Z"
+    }
+  ],
+  "handoffs": {
+    "0": {
+      "step": 0,
+      "status": "completed",
+      "slug": "us-388",
+      "workflowId": "us-388-20260922T080709Z",
+      "workflowType": "standard",
+      "summary": "Finished step 0",
+      "nextAction": "Run step 1",
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "warning": 0,
+        "info": 0,
+        "suggestion": 0
+      }
+    },
+    "1": {
+      "step": 1,
+      "status": "completed",
+      "slug": "us-388",
+      "workflowId": "us-388-20260922T080709Z",
+      "workflowType": "standard",
+      "summary": "Finished step 1",
+      "nextAction": "Run step 2",
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-388/step-01-us-388.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "warning": 0,
+        "info": 0,
+        "suggestion": 0
+      }
+    },
+    "2": {
+      "step": 2,
+      "status": "completed",
+      "slug": "us-388",
+      "workflowId": "us-388-20260922T080709Z",
+      "workflowType": "standard",
+      "summary": "Finished step 2",
+      "nextAction": "Run step 3",
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-388/step-02-us-388.plan-interview.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "warning": 0,
+        "info": 0,
+        "suggestion": 0
+      }
+    },
+    "3": {
+      "step": 3,
+      "status": "skipped",
+      "slug": "us-388",
+      "workflowId": "us-388-20260922T080709Z",
+      "workflowType": "standard",
+      "summary": "Finished step 3",
+      "nextAction": "Run step 4",
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "warning": 0,
+        "info": 0,
+        "suggestion": 0
+      }
+    },
+    "4": {
+      "step": 4,
+      "status": "completed",
+      "slug": "us-388",
+      "workflowId": "us-388-20260922T080709Z",
+      "workflowType": "standard",
+      "summary": "Finished step 4",
+      "nextAction": "Run step 5",
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+        ".agents/skills/ws-monitor/SKILL.md",
+        ".agents/skills/ws-monitor/evals/evals.json",
+        ".agents/skills/ws-spec-multi/PROTOCOL.md",
+        ".agents/skills/ws-spec-multi/STATE.md",
+        ".agents/skills/ws-spec-multi/SKILL.md",
+        ".agents/skills/ws-spec-multi/evals/evals.json",
+        ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs",
+        "test/test-ws-monitor-us388.js",
+        "test/test-verify-child-artifacts-us388.js",
+        "test/test-suites.json",
+        "README.md",
+        "FEATURES.md",
+        "package.json",
+        "bin/skill-dependencies.json",
+        "bin/skill-integrity.json",
+        "docs/index.html",
+        "test/package.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "warning": 0,
+        "info": 0,
+        "suggestion": 0
+      }
+    },
+    "5": {
+      "step": 5,
+      "status": "completed",
+      "slug": "us-388",
+      "workflowId": "us-388-20260922T080709Z",
+      "workflowType": "standard",
+      "summary": "Finished step 5",
+      "nextAction": "Run step 6",
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-388/step-05-us-388.plan.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "warning": 0,
+        "info": 0,
+        "suggestion": 0
+      }
+    },
+    "6": {
+      "step": 6,
+      "status": "completed",
+      "slug": "us-388",
+      "workflowId": "us-388-20260922T080709Z",
+      "workflowType": "standard",
+      "summary": "Finished step 6",
+      "nextAction": "Run step 7",
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-388/step-06-us-388.review.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "warning": 0,
+        "info": 0,
+        "suggestion": 0
+      }
+    },
+    "7": {
+      "step": 7,
+      "status": "completed",
+      "slug": "us-388",
+      "workflowId": "us-388-20260922T080709Z",
+      "workflowType": "standard",
+      "summary": "Finished step 7",
+      "nextAction": "Run step 8",
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-388/step-07-us-388.testing.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "warning": 0,
+        "info": 0,
+        "suggestion": 0
+      }
+    },
+    "8": {
+      "step": 8,
+      "status": "completed",
+      "slug": "us-388",
+      "workflowId": "us-388-20260922T080709Z",
+      "workflowType": "standard",
+      "summary": "Finished step 8",
+      "nextAction": "Run step 9",
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-388/step-08-us-388.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "warning": 0,
+        "info": 0,
+        "suggestion": 0
+      }
+    },
+    "9": {
+      "step": 9,
+      "status": "completed",
+      "slug": "us-388",
+      "workflowId": "us-388-20260922T080709Z",
+      "workflowType": "standard",
+      "summary": "Finished step 9",
+      "nextAction": "Run step 9",
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "warning": 0,
+        "info": 0,
+        "suggestion": 0
+      }
+    }
+  },
+  "telemetry": {
+    "steps": [
+      {
+        "N": 0,
+        "label": "Spec",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "elapsedSec": 0,
+        "estimated": true,
+        "dispatchedAt": null,
+        "finishedAt": "2026-09-22T15:02:00.000Z",
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-388/step-00-us-388.spec.md",
+            ".agents/plans/us-388/ac-ledger.json"
+          ],
+          "modified": [],
+          "deleted": []
+        }
+      },
+      {
+        "N": 1,
+        "label": "Planning",
+        "model": "muse-spark-1.3-contributor",
+        "elapsedSec": 180,
+        "estimated": false,
+        "dispatchedAt": "2026-09-22T15:05:00.000Z",
+        "finishedAt": "2026-09-22T15:08:00.000Z",
+        "filesTouched": {
+          "created": [],
+          "modified": [
+            ".agents/plans/us-388/step-01-us-388.plan.md"
+          ],
+          "deleted": []
+        }
+      },
+      {
+        "N": 2,
+        "label": "Interview",
+        "model": "muse-spark-1.3-contributor",
+        "elapsedSec": 180,
+        "estimated": false,
+        "dispatchedAt": "2026-09-22T15:09:00.000Z",
+        "finishedAt": "2026-09-22T15:12:00.000Z",
+        "filesTouched": {
+          "created": [],
+          "modified": [
+            ".agents/plans/us-388/step-02-us-388.plan-interview.md"
+          ],
+          "deleted": []
+        }
+      },
+      {
+        "N": 3,
+        "label": "Plan to tasks",
+        "model": "muse-spark-1.3-contributor",
+        "elapsedSec": 0,
+        "estimated": true,
+        "dispatchedAt": null,
+        "finishedAt": "2026-09-22T15:13:00.000Z",
+        "filesTouched": {
+          "created": [],
+          "modified": [],
+          "deleted": []
+        }
+      },
+      {
+        "N": 4,
+        "label": "Implement",
+        "model": "muse-spark-1.2-contributor",
+        "elapsedSec": 1200,
+        "estimated": false,
+        "dispatchedAt": "2026-09-22T15:15:00.000Z",
+        "finishedAt": "2026-09-22T15:35:00.000Z",
+        "filesTouched": {
+          "created": [
+            "test/test-ws-monitor-us388.js",
+            "test/test-verify-child-artifacts-us388.js",
+            ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs"
+          ],
+          "modified": [],
+          "deleted": []
+        }
+      },
+      {
+        "N": 5,
+        "label": "Verify",
+        "model": "muse-spark-1.3-contributor",
+        "elapsedSec": 840,
+        "estimated": false,
+        "dispatchedAt": "2026-09-22T15:38:00.000Z",
+        "finishedAt": "2026-09-22T15:52:00.000Z",
+        "filesTouched": {
+          "created": [],
+          "modified": [
+            ".agents/plans/us-388/step-05-us-388.plan.report.md"
+          ],
+          "deleted": []
+        }
+      },
+      {
+        "N": 6,
+        "label": "Code review",
+        "model": "muse-spark-1.3-contributor",
+        "elapsedSec": 600,
+        "estimated": false,
+        "dispatchedAt": "2026-09-22T15:55:00.000Z",
+        "finishedAt": "2026-09-22T16:05:00.000Z",
+        "filesTouched": {
+          "created": [],
+          "modified": [
+            ".agents/plans/us-388/step-06-us-388.review.md"
+          ],
+          "deleted": []
+        }
+      },
+      {
+        "N": 7,
+        "label": "Testing",
+        "model": "muse-spark-1.2-contributor",
+        "elapsedSec": 720,
+        "estimated": false,
+        "dispatchedAt": "2026-09-22T16:08:00.000Z",
+        "finishedAt": "2026-09-22T16:20:00.000Z",
+        "filesTouched": {
+          "created": [],
+          "modified": [
+            ".agents/plans/us-388/step-07-us-388.testing.report.md"
+          ],
+          "deleted": []
+        }
+      },
+      {
+        "N": 8,
+        "label": "Ship",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "elapsedSec": 0,
+        "estimated": true,
+        "dispatchedAt": null,
+        "finishedAt": "2026-09-22T16:25:00.000Z",
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-388/step-08-us-388.result.md"
+          ],
+          "modified": [],
+          "deleted": []
+        }
+      },
+      {
+        "N": 9,
+        "label": "Fix PR",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "elapsedSec": 300,
+        "estimated": false,
+        "dispatchedAt": "2026-09-22T16:30:00.000Z",
+        "finishedAt": "2026-09-22T16:35:00.000Z",
+        "filesTouched": {
+          "created": [],
+          "modified": [],
+          "deleted": []
+        }
+      }
+    ],
+    "totalElapsedSec": 4140,
+    "totalTokens": 0
+  },
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/us-388/ac-ledger.json",
+      ".agents/plans/us-388/step-00-us-388.spec.md",
+      ".agents/plans/us-388/step-08-us-388.result.md",
+      ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs",
+      "test/test-ws-monitor-us388.js",
+      "test/test-verify-child-artifacts-us388.js"
+    ],
+    "modified": [
+      ".agents/skills/ws-monitor/SKILL.md",
+      ".agents/skills/ws-monitor/evals/evals.json",
+      ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+      ".agents/skills/ws-spec-multi/PROTOCOL.md",
+      ".agents/skills/ws-spec-multi/SKILL.md",
+      ".agents/skills/ws-spec-multi/STATE.md",
+      ".agents/skills/ws-spec-multi/evals/evals.json",
+      "test/test-suites.json",
+      "README.md",
+      "FEATURES.md",
+      "package.json",
+      "bin/skill-dependencies.json",
+      "bin/skill-integrity.json",
+      "docs/index.html",
+      "test/package.json"
+    ],
+    "deleted": []
+  },
+  "preExistingDirty": [
+    ".agents/plans/index.json",
+    ".agents/plans/us-389/step-00-us-389.spec.md",
+    ".ws/config.json",
+    "test/.ws/config.json"
+  ],
+  "nextAction": "Ship",
+  "createdAt": "2026-09-22T15:00:00Z",
+  "updatedAt": "2026-09-22T17:50:00Z",
+  "endedAt": "2026-09-22T15:55:00Z",
+  "prNumber": 400,
+  "prUrl": "https://github.com/jpolvora/workflow-skills/pull/400",
+  "merged": true,
+  "mergeCommit": "927af867833e5b34731360181f98f34b550088f5",
+  "activeThreads": 0,
+  "checksStatus": "green"
+}

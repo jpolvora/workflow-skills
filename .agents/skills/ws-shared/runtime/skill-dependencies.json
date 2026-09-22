@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.4.57",
+  "packageVersion": "0.4.62",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -83,6 +83,7 @@
         "ws-pre-daily",
         "ws-megabrain",
         "ws-spec-explain",
+        "ws-spec-translate-to-human",
         "ws-cleanup",
         "ws-spec-archive",
         "ws-spec-memo",
@@ -138,7 +139,8 @@
       "ws-configure-project",
       "ws-spec-index",
       "ws-wiki",
-      "ws-senior-developer"
+      "ws-senior-developer",
+      "ws-spec-translate-to-human"
     ],
     "ws-spec-to-pr-lite": [
       "ws-spec-write",
@@ -159,7 +161,8 @@
       "ws-configure-project",
       "ws-spec-index",
       "ws-wiki",
-      "ws-senior-developer"
+      "ws-senior-developer",
+      "ws-spec-translate-to-human"
     ],
     "ws-spec-write": [
       "ws-spec-format",
@@ -188,7 +191,9 @@
       "ws-goal-loop",
       "ws-self-learning"
     ],
-    "ws-plan-write": [],
+    "ws-plan-write": [
+      "ws-spec-translate-to-human"
+    ],
     "ws-monitor": [],
     "ws-plan-verify": [
       "ws-fable-judge"
@@ -234,6 +239,7 @@
       "ws-spec-write",
       "ws-spec-provider-local",
       "ws-spec-format",
+      "ws-spec-index",
       "ws-configure-project"
     ],
     "ws-activity-report": [],
@@ -260,6 +266,7 @@
       "ws-spec-provider-github",
       "ws-spec-provider-azure-devops"
     ],
+    "ws-spec-translate-to-human": [],
     "ws-cleanup": [
       "ws-configure-project"
     ],
