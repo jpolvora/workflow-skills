@@ -8,7 +8,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const skillsRoot = path.join(__dirname, '..', '.agents', 'skills');
+// Test-only helper: hermetic tests point the generator at a temp skills tree.
+const skillsRoot = process.env.WORKFLOW_SKILLS_EVALS_ROOT
+  ? path.resolve(process.env.WORKFLOW_SKILLS_EVALS_ROOT)
+  : path.join(__dirname, '..', '.agents', 'skills');
 
 /** @type {Record<string, { evals: object[] }>} */
 const EVALS = {
