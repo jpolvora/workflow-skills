@@ -1,6 +1,6 @@
 ---
 name: ws-spec-archive
-version: 0.4.61
+version: 0.4.62
 disable-model-invocation: true
 description: >-
   Harvests plansDir delivery facts into specsDir/index.PRD, then proposes
