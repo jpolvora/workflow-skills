@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "7b20fdc8ffcb1f3e0d313261db555965e288261a533c80a12a140bdfd5a99ba1",
+  "fullPackageDigest": "5d5ac6d2f4ec4406173f49e8fec3d3898a3e5761a1104421c533de682d1685fe",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -256,9 +256,9 @@
         "references/audit-report-template.md": "9c8f11b2ebe6c00cd89a9b00208cf128d62b338ba1cc71c3710deca83603d39a",
         "references/host-adapters.md": "6f1a977d1edbfaa0ff90917274be57011440c8ec4872479e645a4fb4e135b99d",
         "references/upstream-issue-template.md": "ab0c45d7e23b3cf78e4a05dd7923dff7e8fe8db2b80d49a8c83015a5ac59a311",
-        "scripts/monitor_snapshot.cjs": "6a3f5cf259132ac8dd71993e693baa1465597608761f5ab64ef69e9229448d90"
+        "scripts/monitor_snapshot.cjs": "09bc9318c4d0f7bfd9f14161ec50b3f0917c1d84e6aa7b374e2be6061faf2b20"
       },
-      "skillDigest": "7ac8657519620c9f00f73928fdd22e3b7ea792d87ff7321470e2d8d8ce6477dc"
+      "skillDigest": "da7bd3183f0f3a5523ed367c6e828d4cde634be54abe429895aecd018b68a83b"
     },
     "ws-patterns-generator": {
       "files": {

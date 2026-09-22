@@ -525,10 +525,17 @@ function listChildStateFiles(dir) {
 // is surfaced as `missing-child-state`, complementing (not duplicating)
 // `stale-parent-row`, which requires a child that already closed.
 const CHILD_ADVANCED_STATUSES = new Set(['in_progress', 'shipped', 'failed']);
+function isSafePlanSlug(slug) {
+  return typeof slug === 'string'
+    && slug.length > 0
+    && !slug.includes('..')
+    && !slug.includes('/')
+    && !slug.includes('\\');
+}
 function expectedChildArtifacts(items, plansDir, repoRoot) {
   const expected = [];
   for (const item of Array.isArray(items) ? items : []) {
-    if (!item || !item.slug || !CHILD_ADVANCED_STATUSES.has(String(item.status))) continue;
+    if (!item || !isSafePlanSlug(item.slug) || !CHILD_ADVANCED_STATUSES.has(String(item.status))) continue;
     const childDir = path.join(plansDir, item.slug);
     expected.push({
       path: toRepoRelative(repoRoot, childDir, { allowOutside: true }),
