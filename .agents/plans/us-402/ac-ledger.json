@@ -1,0 +1,652 @@
+{
+  "schemaVersion": 1,
+  "revision": 13,
+  "workflowId": "us-402",
+  "slug": "us-402",
+  "specPath": ".agents/plans/us-402/step-00-us-402.spec.md",
+  "planIndexPath": ".agents/plans/us-402/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "A packaged skill `ws-spec-translate-to-human` exists with `SKILL.md` (en-us body, valid frontmatter `name` / `description` / `version` / `invocation_names`), following the repository's skill-authoring conventions, and is registered in package membership.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-translate-to-human/SKILL.md:L1-L13",
+        "bin/skill-dependencies.json:L84-L87",
+        "test/test-spec-translate-to-human.js:L1-L12"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-translate-to-human/SKILL.md",
+          "lineStart": 1,
+          "lineEnd": 13,
+          "sha256": "500c0ea750267cf24badd11fe0e2a5439287e354e0b7833b932214e244a4b500"
+        },
+        {
+          "path": "bin/skill-dependencies.json",
+          "lineStart": 84,
+          "lineEnd": 87,
+          "sha256": "447f147e4855c147f3bbe02f0a9f37fec79b461d40c9c0faab1d7ab4e3723fe5"
+        },
+        {
+          "path": "test/test-spec-translate-to-human.js",
+          "lineStart": 1,
+          "lineEnd": 12,
+          "sha256": "cc8f5c58f975a3555be85827ae30f1adeceafa6ae66e8c6f0b4066a06b6aa1ad"
+        }
+      ],
+      "commits": [],
+      "tests": [
+        {
+          "name": "test-spec-translate-to-human: ok",
+          "sourceFile": "test/test-spec-translate-to-human.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T18:20:16.070Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "us402-evidence-ac1"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "The skill writes a human companion `step-NN-{slug}.spec-translated.md` beside the source step artifact under `{plansDir}/{slug}/` (default `step-00-{slug}.spec-translated.md` for the spec step), and never overwrites the agent spec or the source artifact.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-translate-to-human/SKILL.md:L50-L56",
+        ".agents/skills/ws-spec-translate-to-human/scripts/validate_companion.cjs:L1-L12",
+        "test/test-spec-translate-to-human.js:L64-L80"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-translate-to-human/scripts/validate_companion.cjs",
+          "lineStart": 1,
+          "lineEnd": 12,
+          "sha256": "c1d11f28e3dc1011a572de26d914105eba83775a8b228e155dff744a6d40f625"
+        },
+        {
+          "path": ".agents/skills/ws-spec-translate-to-human/SKILL.md",
+          "lineStart": 50,
+          "lineEnd": 56,
+          "sha256": "500c0ea750267cf24badd11fe0e2a5439287e354e0b7833b932214e244a4b500"
+        },
+        {
+          "path": "test/test-spec-translate-to-human.js",
+          "lineStart": 64,
+          "lineEnd": 80,
+          "sha256": "cc8f5c58f975a3555be85827ae30f1adeceafa6ae66e8c6f0b4066a06b6aa1ad"
+        }
+      ],
+      "commits": [],
+      "tests": [
+        {
+          "name": "test-spec-translate-to-human: ok",
+          "sourceFile": "test/test-spec-translate-to-human.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T18:20:16.129Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "us402-evidence-ac2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "The companion body has, in order, a short title and the sections `### Implementation`, `### UI Test`, and `### Out of scope` (the last omitted only when the source spec states no boundary); numbering is continuous within each section.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-translate-to-human/references/COMPANION-FORMAT.md:L1-L12",
+        ".agents/skills/ws-spec-translate-to-human/scripts/validate_companion.cjs:L80-L95"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-translate-to-human/references/COMPANION-FORMAT.md",
+          "lineStart": 1,
+          "lineEnd": 12,
+          "sha256": "c2a21a47676c090fb66dd81a8a7575f7b0295551b888f24ae5a7c940644268e5"
+        },
+        {
+          "path": ".agents/skills/ws-spec-translate-to-human/scripts/validate_companion.cjs",
+          "lineStart": 80,
+          "lineEnd": 95,
+          "sha256": "c1d11f28e3dc1011a572de26d914105eba83775a8b228e155dff744a6d40f625"
+        }
+      ],
+      "commits": [],
+      "tests": [
+        {
+          "name": "test-spec-translate-to-human: ok",
+          "sourceFile": "test/test-spec-translate-to-human.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T18:20:16.184Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "us402-evidence-ac3"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "Every acceptance criterion in the source spec maps to at least one implementation step or one UI-test step; each UI-test step is a single testable observation starting from an initial state and ending in a visible verification.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-translate-to-human/references/EXAMPLE.md:L1-L12",
+        ".agents/skills/ws-spec-translate-to-human/scripts/validate_companion.cjs:L122-L140"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-translate-to-human/references/EXAMPLE.md",
+          "lineStart": 1,
+          "lineEnd": 12,
+          "sha256": "2a807e2af5b27bb6a195358cd6c88315a89920f03a8be54c363787b2fcfaff7d"
+        },
+        {
+          "path": ".agents/skills/ws-spec-translate-to-human/scripts/validate_companion.cjs",
+          "lineStart": 122,
+          "lineEnd": 140,
+          "sha256": "c1d11f28e3dc1011a572de26d914105eba83775a8b228e155dff744a6d40f625"
+        }
+      ],
+      "commits": [],
+      "tests": [
+        {
+          "name": "test-spec-translate-to-human: ok",
+          "sourceFile": "test/test-spec-translate-to-human.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T18:20:16.238Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "us402-evidence-ac4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "Before writing, the skill gathers the listed context sources (agent spec, issue snapshot, original tracker item, MEMORY, changelog, README, docs, AGENTS/hub, optional vault) and records which were consulted; a blocking ambiguity is raised through `user-gate` when not in `autoMode`, otherwise recorded as an open question in the companion.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-translate-to-human/SKILL.md:L29-L32",
+        ".agents/skills/ws-spec-translate-to-human/references/COMPANION-FORMAT.md:L40-L52"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-translate-to-human/references/COMPANION-FORMAT.md",
+          "lineStart": 40,
+          "lineEnd": 52,
+          "sha256": "c2a21a47676c090fb66dd81a8a7575f7b0295551b888f24ae5a7c940644268e5"
+        },
+        {
+          "path": ".agents/skills/ws-spec-translate-to-human/SKILL.md",
+          "lineStart": 29,
+          "lineEnd": 32,
+          "sha256": "500c0ea750267cf24badd11fe0e2a5439287e354e0b7833b932214e244a4b500"
+        }
+      ],
+      "commits": [],
+      "tests": [
+        {
+          "name": "test-spec-translate-to-human: ok",
+          "sourceFile": "test/test-spec-translate-to-human.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T18:20:16.288Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "us402-evidence-ac5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "The skill maps spec terms to the real system labels from project sources (for example a route provider or the screen templates) without expanding scope; when a screen/button name cannot be resolved, it is flagged rather than invented.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-translate-to-human/SKILL.md:L33-L35",
+        ".agents/skills/ws-spec-translate-to-human/references/COMPANION-FORMAT.md:L16-L24"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-translate-to-human/references/COMPANION-FORMAT.md",
+          "lineStart": 16,
+          "lineEnd": 24,
+          "sha256": "c2a21a47676c090fb66dd81a8a7575f7b0295551b888f24ae5a7c940644268e5"
+        },
+        {
+          "path": ".agents/skills/ws-spec-translate-to-human/SKILL.md",
+          "lineStart": 33,
+          "lineEnd": 35,
+          "sha256": "500c0ea750267cf24badd11fe0e2a5439287e354e0b7833b932214e244a4b500"
+        }
+      ],
+      "commits": [],
+      "tests": [
+        {
+          "name": "test-spec-translate-to-human: ok",
+          "sourceFile": "test/test-spec-translate-to-human.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T18:20:16.354Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "us402-evidence-ac6"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "The skill never implements product code and never edits the agent spec; it preserves the source ACs and Out-of-scope intent, and its only write target is the `*-translated.md` companion.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-translate-to-human/SKILL.md:L51-L60",
+        "test/test-spec-translate-to-human.js:L100-L112"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-translate-to-human/SKILL.md",
+          "lineStart": 51,
+          "lineEnd": 60,
+          "sha256": "500c0ea750267cf24badd11fe0e2a5439287e354e0b7833b932214e244a4b500"
+        },
+        {
+          "path": "test/test-spec-translate-to-human.js",
+          "lineStart": 100,
+          "lineEnd": 112,
+          "sha256": "cc8f5c58f975a3555be85827ae30f1adeceafa6ae66e8c6f0b4066a06b6aa1ad"
+        }
+      ],
+      "commits": [],
+      "tests": [
+        {
+          "name": "test-spec-translate-to-human: ok",
+          "sourceFile": "test/test-spec-translate-to-human.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T18:20:36.786Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "us402-evidence-ac7"
+      ]
+    },
+    {
+      "id": "AC8",
+      "text": "Companion generation is wired into the refinement/planning path (`ws-spec-to-pr` / `ws-spec-to-pr-lite` / `ws-plan-write`) as a non-blocking, configurable step, and the output language is configurable (default `en-us`); enabling or disabling it does not change the agent spec or gate the pipeline.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-plan-write/SKILL.md:L56-L60",
+        ".agents/skills/ws-shared/runtime/config.schema.json:L653-L672",
+        ".agents/skills/ws-shared/templates/config.json.example:L376-L380",
+        ".agents/skills/ws-spec-to-pr-lite/SKILL.md:L52-L54",
+        ".agents/skills/ws-spec-to-pr/SKILL.md:L97-L97"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-plan-write/SKILL.md",
+          "lineStart": 56,
+          "lineEnd": 60,
+          "sha256": "00ad82148bb2e578986087f257c40846577161fa57407f05b0c0075a8e9eb64a"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/config.schema.json",
+          "lineStart": 653,
+          "lineEnd": 672,
+          "sha256": "726c210c07b44e44861590ae64a003f0b295edab354e034496a0ad0c2d1730b4"
+        },
+        {
+          "path": ".agents/skills/ws-shared/templates/config.json.example",
+          "lineStart": 376,
+          "lineEnd": 380,
+          "sha256": "684a2bbbaee26bbc073fdf6f0baf8e425d36b37392fb842647040edffcf2cb90"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+          "lineStart": 52,
+          "lineEnd": 54,
+          "sha256": "79179454b5c5a6097846654e2ec94ff1979d9bfdde5a253cf8b883cbe66b087a"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/SKILL.md",
+          "lineStart": 97,
+          "lineEnd": 97,
+          "sha256": "6b41ebd9ae325bc27942ba4a0e6da907f4d9b739b7e0b3dafaf68da630a32ae5"
+        }
+      ],
+      "commits": [],
+      "tests": [
+        {
+          "name": "test-spec-translate-to-human: ok",
+          "sourceFile": "test/test-spec-translate-to-human.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T18:20:36.846Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "us402-evidence-ac8"
+      ]
+    },
+    {
+      "id": "AC9",
+      "text": "`npm run test`, `ws-check-harness` (Phases 0–5c), and `node test/test-harness-clean.js` exit clean; version bump + `npm run generate-integrity` + `verify-integrity` are consistent, and catalog/FEATURES/docs reflect the new skill.",
+      "status": "Implemented",
+      "evidence": [
+        "CATALOG.md:L118-L118",
+        "CATALOG.md:L84-L84",
+        "FEATURES.md:L418-L418",
+        "README.md:L340-L340",
+        "test/test-suites.json:L450-L456"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002"
+      ],
+      "files": [
+        {
+          "path": "CATALOG.md",
+          "lineStart": 84,
+          "lineEnd": 84,
+          "sha256": "384fc054240e47876978b2bccf8d9ff6a3207626f0faef0d395b7fe138072e1a"
+        },
+        {
+          "path": "CATALOG.md",
+          "lineStart": 118,
+          "lineEnd": 118,
+          "sha256": "384fc054240e47876978b2bccf8d9ff6a3207626f0faef0d395b7fe138072e1a"
+        },
+        {
+          "path": "FEATURES.md",
+          "lineStart": 418,
+          "lineEnd": 418,
+          "sha256": "fbd2e057e95ae3ce369ea65c2cc9a22e8ea8a50bcef80eb07e16c3b7d2dedca7"
+        },
+        {
+          "path": "README.md",
+          "lineStart": 340,
+          "lineEnd": 340,
+          "sha256": "6f89cb587789d64dbea1bbda125b5de833178621cee4c50b6c69a8e636670ffa"
+        },
+        {
+          "path": "test/test-suites.json",
+          "lineStart": 450,
+          "lineEnd": 456,
+          "sha256": "4e2d7d5d53b9ad389333bc1c9ee42cdc88a36d7d604d574771a916a9794fcc8a"
+        }
+      ],
+      "commits": [],
+      "tests": [
+        {
+          "name": "test-spec-translate-to-human: ok",
+          "sourceFile": "test/test-spec-translate-to-human.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T18:20:36.903Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "us402-evidence-ac9"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "The skill is absent or not registered in package membership (must fail AC1).",
+      "tests": [
+        {
+          "name": "test-spec-translate-to-human: ok",
+          "sourceFile": "test/test-spec-translate-to-human.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T18:20:36.953Z"
+        }
+      ],
+      "linkEventIds": [
+        "us402-evidence-ns"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "The skill overwrites the agent `step-NN-{slug}.spec.md` or writes outside `{plansDir}/{slug}/` (must fail AC2).",
+      "tests": [
+        {
+          "name": "test-spec-translate-to-human: ok",
+          "sourceFile": "test/test-spec-translate-to-human.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T18:20:36.954Z"
+        }
+      ],
+      "linkEventIds": [
+        "us402-evidence-ns"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "The companion omits `### Implementation` / `### UI Test` or a source AC has no corresponding step (must fail AC3 / AC4).",
+      "tests": [
+        {
+          "name": "test-spec-translate-to-human: ok",
+          "sourceFile": "test/test-spec-translate-to-human.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T18:20:36.954Z"
+        }
+      ],
+      "linkEventIds": [
+        "us402-evidence-ns"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "A blocking ambiguity is silently guessed instead of gated or recorded (must fail AC5).",
+      "tests": [
+        {
+          "name": "test-spec-translate-to-human: ok",
+          "sourceFile": "test/test-spec-translate-to-human.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T18:20:36.954Z"
+        }
+      ],
+      "linkEventIds": [
+        "us402-evidence-ns"
+      ]
+    },
+    {
+      "id": "NS5",
+      "text": "A screen/button name is invented instead of resolved from project sources or flagged (must fail AC6).",
+      "tests": [
+        {
+          "name": "test-spec-translate-to-human: ok",
+          "sourceFile": "test/test-spec-translate-to-human.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T18:20:36.954Z"
+        }
+      ],
+      "linkEventIds": [
+        "us402-evidence-ns"
+      ]
+    },
+    {
+      "id": "NS6",
+      "text": "The skill edits product code or the agent spec (must fail AC7).",
+      "tests": [
+        {
+          "name": "test-spec-translate-to-human: ok",
+          "sourceFile": "test/test-spec-translate-to-human.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T18:20:36.954Z"
+        }
+      ],
+      "linkEventIds": [
+        "us402-evidence-ns"
+      ]
+    },
+    {
+      "id": "NS7",
+      "text": "Companion generation blocks or fails the pipeline, or the language setting is ignored (must fail AC8).",
+      "tests": [
+        {
+          "name": "test-spec-translate-to-human: ok",
+          "sourceFile": "test/test-spec-translate-to-human.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T18:20:36.954Z"
+        }
+      ],
+      "linkEventIds": [
+        "us402-evidence-ns"
+      ]
+    },
+    {
+      "id": "NS8",
+      "text": "`npm run test`, `ws-check-harness`, `test-harness-clean.js`, or integrity check fails after the change (must fail AC9).",
+      "tests": [
+        {
+          "name": "test-spec-translate-to-human: ok",
+          "sourceFile": "test/test-spec-translate-to-human.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T18:20:36.954Z"
+        }
+      ],
+      "linkEventIds": [
+        "us402-evidence-ns"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": null
+}
