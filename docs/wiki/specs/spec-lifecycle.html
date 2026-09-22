@@ -236,6 +236,7 @@
 <h2 id="how-it-works">How it works <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/main/.agents/specs/wiki/specs/spec-lifecycle.md" target="_blank" rel="noopener" title="Edit section: How it works">[edit]</a></span></h2>
 <p>Authoring mode requires sections for Out of Scope, Assumptions, Definition of Ready, Validation and Observation Notes, and Negative and Failing Test Scenarios. Every stated requirement maps to at least one acceptance criterion or an explicit out-of-scope row. <code>ws-spec-write</code> never blind-copies a tracker issue or pasted description: it reformulates the requirement into explicit, testable acceptance criteria, keeps public-issue context verbatim, and strips private consumer names, paths, hostnames, and customer data per the hub&#39;s Source anonymization rule. <code>validate_spec.cjs --mode=authoring</code> must exit zero before registration proceeds. Gray areas with two or more product options get a <code>{slug}.context.md</code> companion that is never empty.</p>
 <p>Plans are interrogated against DoR during the plan interview step. Implementation follows failing-tests-first discipline with positive and negative scenario verification. <code>ws-spec-update</code> (delta spec drift) and <code>ws-spec-index sync</code> (phase status) serve different purposes and must not be interchanged. Prefix ordering is opt-in via <code>plans.enforceSpecPrefixOrdering</code>; when true, specs-of-record use <code>NNNN-{slug}.spec.md</code> ordered by <code>specDate</code>, git first-add, or mtime, while frontmatter <code>slug</code> and <code>{plansDir}/{slug}/step-00</code> paths stay unprefixed. Reorder runs only through explicit <code>organize_specs.cjs --apply</code> with <code>git mv</code>; install never auto-renames existing files.</p>
+<p><code>ws-spec-translate-to-human</code> writes a human runbook beside the agent spec. The companion uses numbered Implementation, UI Test, and Out of scope steps. It does not replace the spec, and a refinement hook that offers it is non-blocking when the companion is absent.</p>
 <p>The dispatcher never reimplements specialist scripts. Slice specs for task-lifecycle work never create <code>{plansDir}</code> trees. Recent boards keep the same discipline at higher volume: review-fix rounds, coverage pushes, monitor and queue hardening, hub relocation, and generator work all land as prefixed specs-of-record with context companions where the gray area needs two or more product options, and shipped items archive with their plan trees harvested rather than left behind.</p>
 <h2 id="backend">Backend <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/main/.agents/specs/wiki/specs/spec-lifecycle.md" target="_blank" rel="noopener" title="Edit section: Backend">[edit]</a></span></h2>
 <p>Path authority lives in <code>resolve_spec_path.cjs</code>, which reads <code>plans.specsDir</code> (default <code>.agents/specs</code>) and the prefix flag. <code>organize_specs.cjs</code> supports <code>--dry-run</code> and <code>--apply</code> with index backtick updates after moves. Tracking order for index operations walks <code>FEATURES.md</code> → <code>PLAN.md</code> → <code>PRODUCT.PRD</code> → <code>index.PRD</code>, skipping missing files with a note.</p>
@@ -252,8 +253,25 @@
     </footer>
   </main>
 </div>
+<button type="button" id="to-top" class="to-top" aria-label="Back to top">↑</button>
 <script>
 (function() {
+  var toTop = document.getElementById('to-top');
+  if (toTop) {
+    var scrollRoot = function() {
+      return document.scrollingElement || document.documentElement;
+    };
+    var syncToTop = function() {
+      toTop.classList.toggle('is-visible', scrollRoot().scrollTop > 400);
+    };
+    document.addEventListener('scroll', syncToTop, { passive: true, capture: true });
+    syncToTop();
+    toTop.addEventListener('click', function() {
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      scrollRoot().scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    });
+  }
+
   /* Theme initialization */
   var themeToggle = document.getElementById('wiki-theme-toggle');
   function applyTheme(t) {
