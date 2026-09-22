@@ -1,0 +1,261 @@
+---
+id: 386
+slug: us-386
+title: create an optional step proof-of-work
+source: github
+specDate: 2026-09-21
+issueState: open
+issueUrl: "https://github.com/jpolvora/workflow-skills/issues/386"
+step: 0
+workflowId: us-386
+status: completed
+startedAt: "2026-09-22T02:22:46.533Z"
+endedAt: "2026-09-22T02:22:46.533Z"
+acRefs: []
+---
+# Specification — create an optional step proof-of-work
+
+## Description
+
+Add an opt-in, post-completion proof-of-work step to the delivery workflows. Today a run ends at PR creation (standard Step 8 `ws-ship-pr`) or at goal-fix-pr convergence (standard Step 9 / lite Step 5), sets `status: completed`, and stops; there is no hook that offers to collect UI evidence for the delivered user story.
+
+This spec introduces two boolean switches and one path setting that together gate a single optional final step. When the step is enabled, the workflow asks the user once whether to start the evidence-collector; when automatic collection is also enabled, the workflow starts it without asking. The collector produces numbered screenshots plus a Markdown evidence report per user story under a configured folder and never commits that folder unless separately asked.
+
+Architecture touchpoints: `config.schema.json` and `config.json.example` (new keys), the PowerShell config GUI (`{skillsRoot}/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1`), the post-close transition in `ws-spec-to-pr` (Steps 8–9) and `ws-spec-to-pr-lite` (Step 4), the shared gate vocabulary (`.agents/skills/ws-shared/runtime/gates.md`), and the evidence-collector skill the step invokes.
+
+Ownership of the evidence collector is a gray area (first-party packaged skill versus config-wired external skill); the options and the deferred decision are recorded in the companion `0117-us-386.context.md`.
+
+## Acceptance Criteria
+
+- AC1: A boolean config switch (proposed `defaults.enableOptionalProofOfWork`, default `false`) gates an optional post-completion proof-of-work step.
+- AC2: When the switch is `true`, one `user-gate` after workflow close (post PR or goal-fix-pr convergence with `status: completed`) asks whether to start the evidence-collector workflow.
+- AC3: A second boolean (proposed `defaults.enableAutomaticEvidenceCollectForProofOfWork`, default `false`) starts the evidence collector without a gate when both switches are `true`.
+- AC4: The evidence output folder resolves from a configured path (proposed `defaults.projectRootFolderToSave`, default `{projectRoot}/.proofOfWork/{slug}`).
+- AC5: With the switch `false` or omitted, workflow steps, gates, commits, telemetry events, and artifacts match current behavior exactly.
+- AC6: In `autoMode`, the post-completion step never blocks: the configured auto-start value decides and no gate is presented.
+- AC7: The evidence collector is opt-in and never commits the evidence folder nor mutates product files.
+- AC8: Absent host browser capability is reported as a skip with a reason instead of synthesized evidence.
+- AC9: `config.schema.json`, `config.json.example`, `Edit-WorkflowSkillsConfig.ps1`, and the consumer hub docs reflect the new keys, and `node test/test-powershell-config-editor.js` exits 0.
+- AC10: `npm run test`, `ws-check-harness`, and `scan_stack_invariants.cjs --stack typescript-node` exit clean after the change.
+
+## Original Issue Context
+
+After creating the PR / ending the goal-fix-pr loop and marking the workflow task done/finished, optionally add a final gate asking the user whether to start the evidence-collector workflow.
+
+Config:
+
+- `config.enableOptionalProofOfWork` (boolean, default `false`) - when enabled, ask the user once the workflow completes.
+- `config.enableAutomaticEvidenceCollectForProofOfWork` (boolean, default `false`) - when `enableOptionalProofOfWork` is `true` and this is enabled, run automatically without asking the user.
+- `config.projectRootFolderToSave` - default folder to save output (save path or fallback), e.g. `{projectRoot}/.proofOfWork/{slug}`.
+
+Example of what the evidence-collector skill should look like:
+
+```markdown
+---
+name: proof-of-work
+description: >
+  Collects UI evidence (host browser capability): numbered screenshots plus an
+  EVIDENCE.md per user story. First argument = user-story number. Use with
+  proof-of-work, UI evidence, proof of work, collect evidence, US-XXXX browser test.
+invocation_names:
+  - proof-of-work
+---
+
+# proof-of-work
+
+> When this skill is loaded, output "proof-of-work loaded."
+
+Runs a step-by-step UI test, saves screenshots, and generates a Markdown evidence report for a user story.
+
+Does not implement code unless explicitly asked. Does not commit the evidence folder unless explicitly asked.
+
+## Invocation
+
+```text
+/proof-of-work 1234
+/proof-of-work US-1234
+proof-of-work 1234 with TEST-REF-001
+```
+
+| Argument | Required | Use |
+|----------|----------|-----|
+| `{us}` | yes | Number or `US-{n}` -> folder `US-{n}` |
+| rest | no | Test data (reference id, acceptance criteria, entity) when not in the plan |
+
+Normalize: `1234` -> `US-1234`.
+
+## Output
+
+```text
+{projectRoot}/.proofOfWork/US-{n}/
+├── 01-{slug}.jpg
+├── 02-{slug}.jpg
+├── ...
+└── EVIDENCE.md
+```
+
+## Workflow (always in this order)
+
+### 1. Resolve the test script
+
+Search, in this order, until UI steps exist with menu/screen/action/verification:
+
+1. `{plansDir}/us-{n}/**/*.plan.md` or `*.spec.md`
+2. `git show` / the story plan history
+3. A **UI Test** section from an earlier spec translation in the chat or a file
+4. Plan AC checklist -> convert into steps (use the spec-translation skill when no script exists)
+
+Also extract: story title, AC1-ACn, test data (reference ids, acceptance criteria, entities).
+
+If a critical input is missing (entity, credential, tenant) -> ask once; otherwise use the project defaults.
+
+### 2. Preflight
+
+Probe the configured environment: backend health endpoint, frontend URL, and sign-in using the project's documented local test credentials resolved from project configuration (never hardcoded in this skill or the issue). If a probe fails, start the environment per the project setup docs / task runner.
+
+### 3. Prepare the folder
+
+```bash
+mkdir -p ".proofOfWork/US-{n}"
+```
+
+### 4. Run the browser capability
+
+For each script step:
+
+1. Navigate / click per the script
+2. Wait for a stable screen; dismiss overlays if present
+3. Take a screenshot (see below)
+4. Record: menu, action, observed verification, PASS/FAIL
+
+Browser rules:
+
+- Lock the browser before a long sequence; unlock when done
+- Click row-edge buttons when a control is intercepted
+- After OAuth, confirm the expected tenant/context before protected routes
+
+### 5. Screenshots
+
+The browser screenshot tool may not write directly into the repo. Pattern:
+
+1. Capture with `filename: us{n}-{nn}-{slug}.jpg`, `type: jpeg`
+2. Copy from the host screenshot temp location into the evidence folder
+
+Naming:
+
+- `{nn}` = 01, 02, . (script order)
+- `{slug}` = short kebab-case
+
+One screenshot per testable step; a dialogue-only step may share a frame with the next step when redundant.
+
+### 6. Write `EVIDENCE.md`
+
+Fill in:
+
+- Metadata (local date, environment, test data)
+- Overall-result table (AC -> PASS/FAIL + short note)
+- One section per step: Menu / Action / Verification + `![.]({nn}-{slug}.jpg)`
+- Observations (drifts, out of scope, related automated test)
+- Evidence-file table
+
+On FAIL -> describe what was seen and stop marking the AC as PASS.
+
+### 7. Deliver in chat
+
+- Evidence-folder path `.proofOfWork/US-{n}/`
+- Compact AC summary table
+- Link to `EVIDENCE.md`
+- Gaps or steps not executed
+
+## Integration with other skills
+
+| Skill | When |
+|-------|------|
+| spec translation | UI script missing or only a text spec |
+| evidence/timesheet collector | Timesheet/git/transcripts - does not replace this skill |
+| adversarial judge | Re-validate PASS claims against screenshots |
+
+## Checklist before finishing
+
+- [ ] All script steps executed or gap documented
+- [ ] Screenshots copied into the evidence folder (not only temp)
+- [ ] `EVIDENCE.md` references each image
+- [ ] AC table reflects what the UI showed
+- [ ] Browser unlocked
+
+## Do not
+
+- Invent PASS without a screenshot or coherent snapshot
+- Commit the evidence folder without a request
+- Use a real account email as a shared test login
+- Stop midway without listing what remains
+```
+
+Source: https://github.com/jpolvora/workflow-skills/issues/386 (state open, labels none, assignees none, comments none).
+
+### Prior Work Sweep
+
+Provider sweep on 2026-09-21 (`sweep_prior_work.cjs --issue 386 --keywords "proof-of-work optional step" --files .agents/skills/ws-spec-to-pr/SKILL.md`): status ok, zero exact open PR for #386, no duplicate-risk open work. Keyword PR hits are unrelated merges (#335 antigravity/gemini installer, #238 ws-task-lifecycle, #256 spec prefixes, #216 state versioning, #281 release). Commit history on `ws-spec-to-pr/SKILL.md` is prior feature work on other ids; none introduce a post-completion evidence step. No in-tree `proofOfWork` / `enableOptionalProofOfWork` reference exists yet (repository-wide grep returned none), so this is additive.
+
+### Design Intent
+
+Modification, not greenfield for the workflow engine: the change extends existing completion transitions rather than adding a pipeline. `git log` on `ws-spec-to-pr/SKILL.md` shows the Steps 8–9 shipped as the terminal pair, with close (`status: completed`, `shipStatus: pending`) owned before ship, confirming the correct insertion point is after close and after shipping/fix-pr convergence. The evidence-collector body itself is greenfield content, and its ownership is deliberately deferred to the companion context.
+
+## Notes
+
+- Issue-proposed keys are `config.enableOptionalProofOfWork`, `config.enableAutomaticEvidenceCollectForProofOfWork`, and `config.projectRootFolderToSave`; this repo sections config, so section placement is a recorded assumption (see companion).
+- The step must run after the workflow is finished, not before: it observes the shipped story, so it never gates close or shipping.
+- Both workflows need the hook: standard (after Step 8 / Step 9 convergence) and lite (after Step 4 close).
+- Evidence collection is user-visible and may be slow; it stays opt-in and out of the default path.
+- Never bake project credentials, hosts, or tenant values into the skill or the evidence folder.
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Auto-commit or push of the evidence folder | Evidence stays local unless the user separately asks |
+| New browser or automation capabilities | Uses the existing host browser capability only |
+| Changes to PR creation or the goal-fix-pr loop | The step runs strictly after those complete |
+| Non-Markdown report rendering (PDF, dashboards) | The collector's documented output shape is screenshots plus `EVIDENCE.md` |
+| Timesheet or activity-report integration | Separate skills own timesheet capture |
+| Additional post-completion gates beyond proof-of-work | Single optional step in this spec |
+| Mandatory evidence for every delivery | Opt-in by default; forcing it needs a separate decision |
+
+## Assumptions & Open Questions
+
+| Assumption | Chosen default | Rationale | Confirmed |
+|------------|----------------|-----------|-----------|
+| Config key placement | `defaults.*` (proposed names kept) | Matches existing boolean switches in the `defaults` block; schema plus GUI sync is required | y |
+| Evidence-collector ownership | Deferred; see `0117-us-386.context.md` | First-party package versus config-wired external collector are both viable | n |
+| Default behavior | Disabled unless `enableOptionalProofOfWork: true` / `N/A because` the opt-in default keeps every existing consumer unchanged | Opt-in is the safe default for a slow, user-visible step | y |
+| Folder default | `{projectRoot}/.proofOfWork/{slug}` overridable by `projectRootFolderToSave` | Issue-proposed default; override covers non-default projects | y |
+| `autoMode` semantics | Auto-start follows `enableAutomaticEvidenceCollectForProofOfWork`; no gate presented | Matches the zero-prompt `autoMode` contract | y |
+| Auth boundaries, rate limits, data expiry, idempotency, state-transition integrity | N/A because the step is user-initiated, local-only, single-run, and writes one isolated evidence folder | Dimensions absent for a post-completion observer | y |
+
+## Definition of Ready (DoR)
+
+| Readiness Item | Requirement | Verification Method |
+|----------------|-------------|---------------------|
+| Bounded scope | Gate plus config keys plus docs plus GUI sync; no pipeline restructuring | Diff lists config, workflow step, docs, and GUI paths only |
+| Atomic criteria | AC1–AC10 each pass or fail | Authoring validate plus command checks |
+| Failure modes | Disabled path identical; missing browser capability reported as skip; no fabricated evidence | AC5, AC8 plus negative scenarios |
+| Observation telemetry | Gate decision plus evidence folder path recorded on the post-completion step | Validation notes commands |
+| Stack invariants | typescript-node Node-subset enforced on touched scripts and the config GUI sync test on the PowerShell editor | `scan_stack_invariants.cjs --stack typescript-node` plus `test-powershell-config-editor.js` |
+| Open blockers | Evidence-collector ownership pending (companion context) | Resolve before planning the collector wiring |
+
+## Validation & Observation Notes
+
+### Telemetry & Observable Signals
+
+- Commands: `node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs --mode=authoring .agents/specs/0117-us-386.spec.md` exits 0; `node test/test-powershell-config-editor.js` exits 0; `npm run test` exits 0; `ws-check-harness` exits 0; `scan_stack_invariants.cjs --stack typescript-node` reports no new findings.
+- Artifacts: config key entries in `config.schema.json` and `config.json.example`; GUI bindings in `Edit-WorkflowSkillsConfig.ps1`; evidence folder at the configured path with numbered screenshots plus `EVIDENCE.md`.
+- Signals: gate decision recorded on the post-completion step; with the switch disabled, telemetry event stream is unchanged.
+
+### Negative & Failing Test Scenarios
+
+- A run with `enableOptionalProofOfWork` omitted presents a proof-of-work gate (must fail AC5).
+- A run with the switch `true` and `autoMode` on blocks on a gate prompt (must fail AC6).
+- The evidence collector fabricates a PASS without a screenshot or coherent snapshot (must fail AC7/AC8).
+- The evidence folder is auto-committed or product files are mutated by the step (must fail AC7).
+- Config schema, example, or the PowerShell GUI omits a new key, or `test-powershell-config-editor.js` fails (must fail AC9).
+- `npm run test`, `ws-check-harness`, or the invariant scan fails after the change (must fail AC10).

@@ -164,6 +164,12 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] enhance ps1 config gui (`spec: 0112-us-381.spec.md`)
 - [ ] increase test coverage to near 100% (`spec: 0113-us-380.spec.md`)
 - [x] Integrate ws-self-learning with the patterns track and store the generated ws-project-patterns body under the shared hub (`spec: 0114-patterns-generator-shared-hub-output.spec.md`)
+- [ ] Relocatable shared hub root across the harness (installer, configurator, generator, layout) (`spec: 0115-configurable-hub-root.spec.md`)
+- [ ] ws-monitor reports critical missing-artifact false positives on ws-spec-to-pr-lite runs (`spec: 0116-us-385.spec.md`)
+- [ ] create an optional step proof-of-work (`spec: 0117-us-386.spec.md`)
+
+
+
 
 
 
@@ -362,6 +368,12 @@ All Next-specs closed except true todos: `us-380`, `us-381`.
 | 117 | `us-380` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | increase test coverage to near 100% |
 
 | 118 | `patterns-generator-shared-hub-output` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Integrate ws-self-learning with the patterns track and store the generated ws-project-patterns body under the shared hub |
+
+| 119 | `configurable-hub-root` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Relocatable shared hub root across the harness (installer, configurator, generator, layout) |
+
+| 120 | `us-385` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor reports critical missing-artifact false positives on ws-spec-to-pr-lite runs |
+
+| 121 | `us-386` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | create an optional step proof-of-work |
 
 ## 9. Inbox
 
