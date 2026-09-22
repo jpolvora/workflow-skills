@@ -61,7 +61,7 @@ function isNonEmptyFile(file) {
 // resumable handoffs); the `.state.md` render alone is NOT a substitute, and a
 // truncated or unrelated `.json` is not valid state either.
 const REQUIRED_CHILD_STATE_FIELDS = ['stateVersion', 'workflowId', 'slug', 'workflowType', 'status', 'currentStep'];
-function isValidChildStateFile(file) {
+function isValidChildStateFile(file, expectedSlug) {
   let parsed;
   try {
     parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -69,10 +69,12 @@ function isValidChildStateFile(file) {
     return false;
   }
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return false;
-  return REQUIRED_CHILD_STATE_FIELDS.every((key) => parsed[key] !== undefined && parsed[key] !== null);
+  if (!REQUIRED_CHILD_STATE_FIELDS.every((key) => parsed[key] !== undefined && parsed[key] !== null)) return false;
+  // The state must be this item's child, not a stale/foreign state under its dir.
+  return expectedSlug === undefined || parsed.slug === expectedSlug;
 }
 
-function hasChildState(childDir) {
+function hasChildState(childDir, expectedSlug) {
   let entries;
   try {
     entries = fs.readdirSync(childDir, { withFileTypes: true });
@@ -81,7 +83,7 @@ function hasChildState(childDir) {
   }
   return entries
     .filter((entry) => entry.isFile() && entry.name.endsWith('.state.json'))
-    .some((entry) => isValidChildStateFile(path.join(childDir, entry.name)));
+    .some((entry) => isValidChildStateFile(path.join(childDir, entry.name), expectedSlug));
 }
 
 function fail(message, options) {
@@ -113,7 +115,7 @@ function main() {
 
   const checked = requested.map((name) => {
     if (name === 'state') {
-      return { name, path: childDir, present: hasChildState(childDir), detail: 'child workflow state ({workflow-id}.state.json)' };
+      return { name, path: childDir, present: hasChildState(childDir, slug), detail: 'child workflow state ({workflow-id}.state.json)' };
     }
     const planFile = path.join(childDir, `step-01-${slug}.plan.md`);
     return { name, path: planFile, present: isNonEmptyFile(planFile), detail: `Step 1 plan (step-01-${slug}.plan.md)` };

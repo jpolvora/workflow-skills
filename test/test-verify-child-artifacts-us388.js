@@ -107,6 +107,17 @@ const validChildState = {
   if (result2.status === 0) throw new Error('us-388 AC5: a state JSON missing required identity fields must not count');
 }
 
+// AC5: a valid state whose slug differs from the active item is not this child's state.
+{
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'verify-child-us388-foreign-'));
+  tempRoots.push(root);
+  const plans = plansDir(root);
+  write(path.join(plans, 'demo', 'other.state.json'), JSON.stringify({ ...validChildState, slug: 'somebody-else' }));
+  write(path.join(plans, 'demo', 'step-01-demo.plan.md'), '# plan\n');
+  const result = run(['--slug', 'demo', '--plans-dir', plans], root);
+  if (result.status === 0) throw new Error('us-388 AC5: a state whose slug differs from the active item must not satisfy the guard');
+}
+
 // AC1/AC5: the `.state.md` render alone is not the machine SoT.
 {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'verify-child-us388-render-'));

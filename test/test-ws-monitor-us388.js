@@ -96,12 +96,14 @@ ${[header, sep, ...rows].join('\n')}
   write(path.join(plans, 'render-only', 'render-only.state.md'), '# state render only\n');
   write(path.join(plans, 'broken-json', 'broken-json.state.json'), '{ not valid json');
   write(path.join(plans, 'wrong-shape', 'wrong-shape.state.json'), JSON.stringify({ hello: 'world' }));
+  write(path.join(plans, 'foreign-slug', 'other.state.json'), JSON.stringify({ ...validState, slug: 'somebody-else' }));
   const expected = expectedChildArtifacts(
     [
       { slug: 'live-two', status: 'in_progress' },
       { slug: 'render-only', status: 'shipped' },
       { slug: 'broken-json', status: 'shipped' },
       { slug: 'wrong-shape', status: 'shipped' },
+      { slug: 'foreign-slug', status: 'shipped' },
     ],
     plans,
     dir,
@@ -115,6 +117,9 @@ ${[header, sep, ...rows].join('\n')}
   }
   if (bySlug['broken-json'].present || bySlug['wrong-shape'].present) {
     throw new Error('us-388 AC6: an unparseable or identity-less .state.json must NOT count as child state');
+  }
+  if (bySlug['foreign-slug'].present) {
+    throw new Error('us-388 AC6: a valid state whose slug differs from the queue item must NOT count as this item child state');
   }
 }
 

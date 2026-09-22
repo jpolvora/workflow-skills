@@ -505,7 +505,7 @@ function expectedArtifacts(state, workflowDir, minVerifyScore, repoRoot = workfl
 // identity fields — a truncated or unrelated `.json`, or the `.state.md` render
 // alone, is not a resumable/observable child state.
 const REQUIRED_CHILD_STATE_FIELDS = ['stateVersion', 'workflowId', 'slug', 'workflowType', 'status', 'currentStep'];
-function isValidChildStateFile(file) {
+function isValidChildStateFile(file, expectedSlug) {
   let parsed;
   try {
     parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -513,16 +513,19 @@ function isValidChildStateFile(file) {
     return false;
   }
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return false;
-  return REQUIRED_CHILD_STATE_FIELDS.every((key) => parsed[key] !== undefined && parsed[key] !== null);
+  if (!REQUIRED_CHILD_STATE_FIELDS.every((key) => parsed[key] !== undefined && parsed[key] !== null)) return false;
+  // The state must belong to the queue item whose directory is inspected; a stale
+  // or foreign state file under the wrong directory is not this item's child state.
+  return expectedSlug === undefined || parsed.slug === expectedSlug;
 }
 
-function listChildStateFiles(dir) {
+function listChildStateFiles(dir, expectedSlug) {
   if (!dir || !fs.existsSync(dir)) return [];
   try {
     return fs.readdirSync(dir, { withFileTypes: true })
       .filter((entry) => entry.isFile() && entry.name.endsWith('.state.json'))
       .map((entry) => entry.name)
-      .filter((name) => isValidChildStateFile(path.join(dir, name)));
+      .filter((name) => isValidChildStateFile(path.join(dir, name), expectedSlug));
   } catch {
     return [];
   }
@@ -558,7 +561,7 @@ function expectedChildArtifacts(items, plansDir, repoRoot) {
       path: toRepoRelative(repoRoot, childDir, { allowOutside: true }),
       name: `${item.slug}.state.json`,
       reason: `queue item "${item.slug}" is ${item.status} without child workflow state`,
-      present: listChildStateFiles(childDir).length > 0,
+      present: listChildStateFiles(childDir, item.slug).length > 0,
       slug: item.slug,
       kind: 'child-state',
     });
