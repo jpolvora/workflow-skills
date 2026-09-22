@@ -14,7 +14,7 @@ invocation_names:
 
 **Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
-Bulk-import remote work items into the local specs pipeline: agentic `{specsDir}` specs + full `register_local_spec` (`step-00` under `{plansDir}`). Downstream: [`ws-spec-list`](../ws-spec-list/SKILL.md) / [`ws-spec-multi`](../ws-spec-multi/SKILL.md).
+Bulk-import remote work items into the local specs pipeline: agentic `{specsDir}` specs + full `register_local_spec` (`step-00` under `{plansDir}`) + auto-track in `index.PRD` via [`ws-spec-index`](../ws-spec-index/SKILL.md). Downstream: [`ws-spec-list`](../ws-spec-list/SKILL.md) / [`ws-spec-multi`](../ws-spec-multi/SKILL.md).
 
 **Specs family:** Role = batch tracker → local specs. Single-id fetch stays on providers. Router: [`../ws-shared/runtime/autoload.md`](../ws-shared/runtime/autoload.md).
 
@@ -81,10 +81,18 @@ Bulk-import remote work items into the local specs pipeline: agentic `{specsDir}
         --input "$(node {skillsRoot}/ws-spec-organizer/scripts/resolve_spec_path.cjs --slug us-{id})" --source {github|azure-devops}
       ```
 
-   On any non-zero exit: record failure for that id; continue remaining ids (do not abort the batch unless auth/config broke).
+   4. Auto-track in `index.PRD` (advisory, never fails the import):
+
+      ```bash
+      node {skillsRoot}/ws-spec-index/scripts/track_index.cjs --specs-dir {specsDir} --slug us-{id}
+      ```
+
+      `{specsDir}` ← `plans.specsDir` (default `.agents/specs`). A `skipped: "index.PRD missing"` (tell the user to run `ws-spec-index init`) or `skipped: "already tracked"` result keeps the id `imported` — record the track outcome for the report and continue.
+
+   On any non-zero exit of steps 1–3: record failure for that id; continue remaining ids (do not abort the batch unless auth/config broke).
    - Done when: every `to_import` id is `imported`, `failed`, or intentionally left unprocessed only if the session was stopped.
 
-6. **Report** — Print counts: imported / skipped / failed (with paths or errors). Handoff: `/ws-spec-list` or `/ws-spec-multi`.
+6. **Report** — Print counts: imported / skipped / failed (with paths or errors) plus the track outcome per imported id (tracked / track-skipped + reason). Handoff: `/ws-spec-list` or `/ws-spec-multi`.
    - Done when: summary printed with repo-relative paths.
 
 ## Rules
@@ -94,7 +102,8 @@ Bulk-import remote work items into the local specs pipeline: agentic `{specsDir}
 - Skip when `{specsDir}/us-{id}.spec.md`, `{specsDir}/NNNN-us-{id}.spec.md`, or `{plansDir}/us-{id}/step-00-us-{id}.spec.md` exists — no `--force` in this skill.
 - Full register (1B): every successful import writes `{us-dir}/step-00-us-{id}.spec.md`.
 - Full spec-write (5B): every successful import is agentically enhanced, not converter-only.
+- Auto-track (5C): every successful import runs `track_index.cjs --slug us-{id}`; a missing or already-tracked index is advisory, never a failure.
 
 ## Dependencies
 
-[ws-spec-provider-github](../ws-spec-provider-github/SKILL.md) · [ws-spec-provider-azure-devops](../ws-spec-provider-azure-devops/SKILL.md) · [ws-spec-write](../ws-spec-write/SKILL.md) · [ws-spec-provider-local](../ws-spec-provider-local/SKILL.md) · [ws-spec-format](../ws-spec-format/SKILL.md)
+[ws-spec-provider-github](../ws-spec-provider-github/SKILL.md) · [ws-spec-provider-azure-devops](../ws-spec-provider-azure-devops/SKILL.md) · [ws-spec-write](../ws-spec-write/SKILL.md) · [ws-spec-provider-local](../ws-spec-provider-local/SKILL.md) · [ws-spec-format](../ws-spec-format/SKILL.md) · [ws-spec-index](../ws-spec-index/SKILL.md)

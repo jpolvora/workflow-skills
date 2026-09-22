@@ -26,7 +26,7 @@ The machine-readable classification source is [`.agents/skills/ws-shared/runtime
 | [`AGENTS.md`](AGENTS.md) | Agent routing contract (upstream authoring) |
 | [`CATALOG.md`](CATALOG.md) | On-demand skill inventory, task router, and upstream ship checklist |
 | [`.ws/AGENTS.md`](.ws/AGENTS.md) | Consumer hub after install |
-| [`CHANGELOG.md`](CHANGELOG.md) | Dated history of every change |
+| [`.ws/CHANGELOG.md`](.ws/CHANGELOG.md) | Dated history of every change |
 
 ---
 
@@ -157,7 +157,7 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 | Canonical `*.spec.md` schema, section hierarchy, AC rules, specify-time closure (`Out of Scope`, Assumptions), authoring-mode **Definition of Ready**, **Validation & Observation Notes**, and **Negative & Failing Test Scenarios** | `ws-spec-format` |
 | Promote any spec into a workflow run (`{specsDir}` spec of record → `step-00` copy) | `ws-spec-provider-local` |
 | Dual board of specs versus plan workflows, with a manage menu | `ws-spec-list` |
-| Bulk-import open GitHub issues or ADO User Stories (assigned to PAT) into `{specsDir}` + full register | `ws-spec-from-provider` |
+| Bulk-import open GitHub issues or ADO User Stories (assigned to PAT) into `{specsDir}` + full register + auto-track in `index.PRD` | `ws-spec-from-provider` |
 | Project feature index (`index.PRD`): init, sync against delivery evidence, promote from inbox, track an existing spec | `ws-spec-index` |
 | Harvest `{plansDir}` delivery facts into `index.PRD` Archive, then propose cleanup of shipped plan folders | `ws-spec-archive` |
 | Update spec bodies when code drifted after ad-hoc prompts | `ws-spec-update` |
@@ -409,7 +409,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) | W | Harvest plan history into `index.PRD` Archive; propose shipped-plan cleanup |
 | [`ws-spec-list`](.agents/skills/ws-spec-list/SKILL.md) | W | Dual board of specs versus plan workflows |
 | [`ws-spec-manager`](.agents/skills/ws-spec-manager/SKILL.md) | W | Unified router for spec create/list/update/sync/track/organize/archive/validate/import/run |
-| [`ws-spec-from-provider`](.agents/skills/ws-spec-from-provider/SKILL.md) | W | Bulk-import open GH issues / ADO User Stories → spec-write + register |
+| [`ws-spec-from-provider`](.agents/skills/ws-spec-from-provider/SKILL.md) | W | Bulk-import open GH issues / ADO User Stories → spec-write + register + auto-track |
 | [`ws-spec-update`](.agents/skills/ws-spec-update/SKILL.md) | W | Update spec bodies when code drifts |
 | [`ws-spec-memo`](.agents/skills/ws-spec-memo/SKILL.md) | W | Harness ↔ spec-memo **bridge** only; runtime vault ops are `ws-memo` / `ws-session-tracking` (`externalSkills`, spec-memo package) |
 | [`ws-spec-organizer`](.agents/skills/ws-spec-organizer/SKILL.md) | W | Resolve spec-of-record path and organize/prefix specs chronologically |

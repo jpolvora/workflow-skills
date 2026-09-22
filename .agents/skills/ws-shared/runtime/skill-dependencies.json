@@ -239,6 +239,7 @@
       "ws-spec-write",
       "ws-spec-provider-local",
       "ws-spec-format",
+      "ws-spec-index",
       "ws-configure-project"
     ],
     "ws-activity-report": [],

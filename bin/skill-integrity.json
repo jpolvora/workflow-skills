@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "0f0ff2f37c6c5be7894f5c8afc2f71c372d2e7009d66736bdf175d5b29462441",
+  "fullPackageDigest": "91a0cc2104ee63ec273020e50fa83cf35dc3ebe4682d24ef9c8db9e43cb46ddd",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -49,7 +49,7 @@
       "runtime/scripts/validate_json_schema.cjs": "c6901a6ad2ed4fde4e5a6fcd85ebaa8b4c31f5707924f2928d25392d502dbbd9",
       "runtime/scripts/workflow_state.cjs": "dbae9615738b71b03a5e882af9c75ba30e83dece5fbd16a46ccaea0711884f8b",
       "runtime/setup.md": "16ce25751472da10061d71636af309d879c3f7f46d67eb2d690842656c7b16b9",
-      "runtime/skill-dependencies.json": "fbe4365a0bd1a9353ee65ebbbdfb29efec3c17c6a9e0d1ad3927776cb808542e",
+      "runtime/skill-dependencies.json": "78ef02f63f7d6184d4a9318fe7121fb465f99c55b280a78ed22d08f65dd78535",
       "runtime/stacks/abp-angular.md": "fc728fb3d39373b91f7bb4e0a719a24abc995a643fd55c856603a2a1f7bfd742",
       "runtime/stacks/nextjs-react.md": "a852fc0db314c4b99c0d1e7e0a16978bd30df732480536aebe82982a72e09bad",
       "runtime/stacks/php-laravel.md": "635b0ac523c0235dc6e22345266982aa66705bcc5c51ca659482272f2021b761",
@@ -63,7 +63,7 @@
       "templates/STACK.md.example": "829b7d3fce62b8167905fc1d921ee744db1d7e8ef895b0e7eb969f089973bebd",
       "templates/config.json.example": "3aac872c04b7f87fa4e07bb738d8132ad429f9d004fd1684a24dad81fc9f345f"
     },
-    "skillDigest": "d67ade2ac09db8947b51a49e782d901760b2e4f090565d52fb4a9eed0d160087"
+    "skillDigest": "dc1d5df2521232d6bc8889c79b7e747a45fc34272eaf52c8e67e71893fc1f7d8"
   },
   "packageVersion": "0.4.61",
   "skills": {
@@ -407,12 +407,12 @@
     },
     "ws-spec-from-provider": {
       "files": {
-        "SKILL.md": "b859e844f91a232d35b8a8b6033b42358e3ead6abf91f12a2819a8b37a198232",
+        "SKILL.md": "21612e48c026f032af78ab88bba779aa153770c4cacf6be9f7611763bf33e064",
         "evals/evals.json": "122c759303df2bee8cfd895a5f864aeef183df64b2428ce2ebca467bf5760217",
         "scripts/list_my_user_stories.cjs": "13e70ce4d7a3122b765821f7850a176df0ee4264d6aa727ac4bd680514028828",
         "scripts/list_open_issues.cjs": "0436dcc12a73b72c43cd2d9ba1cc24f12b19f18f452978b73da5fc7791cc710b"
       },
-      "skillDigest": "1569a97020b5a4ed76164e5456db655929c7c06ef85e575b7fe79cbc2b9f0473"
+      "skillDigest": "3acf840c890ddddad1e76611e1e8807e30c25eddd58d773989b1eac096ae6df0"
     },
     "ws-spec-index": {
       "files": {

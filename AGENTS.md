@@ -325,6 +325,14 @@ Use `--force` only when overwriting a differing plan copy. Handoff: `{specsDir}`
 
 Frontmatter: `id: {n}|null`, `slug`, `title`, `source: {local|github|azure-devops}`, `specDate`. Body: Description, testable one-line ACs, Out of Scope, Assumptions, Definition of Ready, Validation & Observation Notes, Negative & Failing Test Scenarios, `## Original Issue Context` (for tracker issues), Notes as needed. Every stated requirement → ≥1 AC or explicit out-of-scope. Downstream orch reads `{us-dir}/step-00-*.spec.md` after register, never live tracker APIs.
 
+### 6. index.PRD workflow lifecycle (auto-track / auto-sync)
+
+Keep `{specsDir}/index.PRD` reflecting workflow reality for every `{slug}` run (`ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-spec-multi`), whatever the entry point:
+
+1. **Start** (workflow opens for `{slug}` — Step 0 register, provider import, or local start): ensure the spec is tracked as pending — `node {skillsRoot}/ws-spec-index/scripts/track_index.cjs --specs-dir {specsDir} --slug {slug}` (Feature map `- [ ]` + Next-specs row). `skipped: "already tracked"` → continue. `skipped: "index.PRD missing"` → offer `ws-spec-index init` via `user-gate`, then continue. Never block the run on a track skip.
+2. **End / complete** (close with `status: completed`, or ship exit with delivery evidence): run `ws-spec-index sync {slug}` — `[ ]` → `[x]` plus Done-log row when a delivery commit or PR URL exists; without evidence it returns `skipped` — report and continue. Never hand-edit `index.PRD` rows to fake status and never auto-write `Verified:`.
+3. Orch-owned runs apply this through the existing call sites (`ws-spec-to-pr` Step 8, lite Step 4, `ws-ship-pr` ship action); standalone starts apply step 1 directly. Detail: [`ws-spec-index/REFERENCE.md`](.agents/skills/ws-spec-index/REFERENCE.md) § Orchestrator Call Contract.
+
 
 ---
 

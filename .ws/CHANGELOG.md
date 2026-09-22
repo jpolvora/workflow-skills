@@ -1,4 +1,12 @@
 # Changelog
+### [2026-09-22 16:10] Agent: Muse Code (changelog/memory hub consolidation)
+- **Prompt**: Merge root CHANGELOG.md into .ws/CHANGELOG.md; merge root MEMORY.md into .ws/MEMORY.md; remove the root files after merging.
+- **Done**: Root changelog (150 entries) merged insert-only into .ws/CHANGELOG.md (143 root-only inserted by timestamp, 3 same-heading conflicts kept at hub version, untouched hub bytes byte-verified, 522 entries total), then root CHANGELOG.md deleted. Memory relocation (user-gated): 35 root memory/*.md moved collision-free into .ws/memory/, rules.memoryDir set to ".ws", recompiled to 195 entries in .ws/MEMORY.md, read path verified via --match-paths, then root MEMORY.md + empty root memory/ removed. FEATURES.md inventory link retargeted to .ws/CHANGELOG.md.
+- **Result**: test-memory-dir-resolution ok; test-harness-clean.js 0 findings (fixed one broken FEATURES.md link the deletion exposed); recompile stable in .ws with no root recreation. Not committed.
+### [2026-09-22 16:00] Agent: Muse Code (index.PRD auto-track lifecycle)
+- **Prompt**: ws-spec-from-provider — update skill to automatically track imported specs from SCM (ado/gh); add AGENTS.md auto track/auto-sync of completed/pending index.PRD tasks as workflows start/end/complete.
+- **Done**: `ws-spec-from-provider` Step 5 gains auto-track via `track_index.cjs --specs-dir {specsDir} --slug us-{id}` (advisory; missing/already-tracked never fails the import) + report track outcome; `ws-spec-index` added to skill Dependencies and both `skill-dependencies.json` maps; new root `AGENTS.md` §6 index.PRD workflow lifecycle (start → pending `- [ ]`, end/complete → `sync {slug}` to `[x]` + Done log); SPEC-MANAGEMENT.md flow + FEATURES.md rows synced; integrity regenerated; memory trap `2026-09-22-us405-index-lifecycle.md` compiled (35 entries).
+- **Result**: `verify-integrity` OK (v0.4.61); `test-harness-clean.js` 0 findings; `test-ws-spec-index-track`, `test-ws-spec-manager`, `test-provider-listers` pass. Full `run-tests.cjs` stops at `test-install.js` global-hook case (`node not on PATH` under Git Bash) — verified pre-existing by re-running on stashed baseline. Not committed.
 ### [2026-09-22 18:24] Agent: ws-spec-multi child worker (us-402)
 - **Prompt**: Standard pipeline worker for spec `0123-us-402.spec.md` — new packaged skill `ws-spec-translate-to-human` emitting a human runbook companion (`step-NN-{slug}.spec-translated.md`) beside the agent spec, wired non-blocking into the refinement path.
 - **Done**: New skill package (SKILL.md + COMPANION-FORMAT.md + EXAMPLE.md + `validate_companion.cjs`); `ws-plan-write` owner hook + one-line pointers in both orchs; membership in both manifests; `ws-spec-translate-to-human` config section (`enabled`/`outputLanguage`, en-us default); CATALOG x2 + autoload x2 + FEATURES + README + rebuilt site; committed test `test/test-spec-translate-to-human.js`; version `0.4.60` + integrity regenerated; memory trap `2026-09-22-us-402-ship-verify-order.md` compiled.
@@ -31,6 +39,11 @@
 - **Prompt**: `ws-spec-multi` batch worker for spec `us-393` (standard pipeline, autoMode, branchStrategy stay on `develop`) — fix duplicate queue-row append in the `ws-spec-multi` run-state contract; ship `develop` -> `main` and converge.
 - **Done**: hardened the agent-owned queue contract so transitions update the single existing row keyed by `specPath`/`slug` in place; added a fail-closed duplicate guard (no duplicate `#`/`slug`), a frozen `totalItems` count, per-write `updatedAt` advancement, and a completed-with-pending invalidation in the Resume Policy; added eval id 3 for the duplicate-row scenario; version `0.4.54` + integrity regenerated.
 - **Result**: commits `939ef310` (product) and `401e3c9f` (release); PR [#396](https://github.com/jpolvora/workflow-skills/pull/396) merged into `main` at `74aecc18` with 0 open threads and green checks; `npm run test` 115/115; harness clean 0 findings; `check_workflows` 0 issues; `verify-integrity` OK.
+
+### [2026-09-22 01:30] Agent: Muse Code (muse-spark)
+- **Prompt**: Implement us-386 optional post-completion proof-of-work step (spec 0117-us-386), full standard pipeline to merged PR.
+- **Done**: Added `defaults.enableOptionalProofOfWork` / `defaults.enableAutomaticEvidenceCollectForProofOfWork` (bool, false) + `defaults.projectRootFolderToSave` (string token default) across schema, example, PS1 GUI, auto-configure, and interview; documented resolution + gate contracts (config-wire collector id `proof-of-work`, fail-closed skips, autoMode never blocks) and orch hooks (standard exit/dispatch, lite close); new `test/test-proof-of-work.js` + suite entry; README row; version 0.4.53 + integrity regen + site rebuild.
+- **Result**: `test-proof-of-work.js` 32/32; config-editor 11/11; `npm run test` 115/115; `test-harness-clean.js` 0 findings; invariant scan 0 issues; verify score 10/10; review 0 Critical/Warning.
 
 ### [2026-09-21 14:12] Agent: opencode (deepseek-v4.1-flash)
 - **Prompt**: `/ws-spec-to-pr-lite` for the merged spec `patterns-generator-shared-hub-output` (issue #382 integration scope + hub-hosted generated body), later switched to `autoMode` + `fullMode` to auto-ship and run `ws-goal-fix-pr`.
@@ -98,6 +111,11 @@
 - **Done**: Scoped `ws-check-harness` Phase 5a scans to package membership (`ws-shared` + `ws-*`) in `check_unique_runtime.cjs` / `check_duplicates.cjs` / `check_harness_links.cjs`, and fixed the same-class project-local pin in `check_shell_quoting.cjs` (`context.pathTokens` was never a real key). `check_harness_links.cjs` now resolves `context.skillsRoot` (local-first, global fallback), audits the resolved install, and maps `{skillsRoot}` token expansion to it. Regression fixtures added for both modes (unrelated `custom-skill/` stays clean; `WORKFLOW_SKILLS_GLOBAL_DIR` global-only tree is audited). Release bump 0.4.46 -> 0.4.47 via `npm run build-site:bump` (54 SKILL frontmatter, packageVersion x2, site + wiki), integrity regenerated.
 - **Result**: `npm run test` green; `test-harness-clean.js` 0 findings; `verify-integrity` OK (v0.4.47).
 
+### [2026-09-21 00:31] Agent: Muse Code (muse-spark)
+- **Prompt**: Update spec 0107-us-369 for issue #369, implement surgical fixes, bump, commit, push, ship PR.
+- **Done**: Tightened the three ws-monitor transcript signals to require failure-shaped evidence (`hybrid-path-resolution`: ENOENT-family within 200 chars of dispatch-context construction; `model-fallback`: dispatch + model + rejection on one dispatch record; `subagent-error`: exception marker plus stack-trace shape); updated ws-monitor SKILL.md predicate docs; refreshed spec 0107-us-369 sweep (HEAD 0.4.47, repro 3/3) and re-registered step-00; updated positive fixtures to failure-shaped evidence and added a benign-transcript negative test; version 0.4.48 + integrity regen + site rebuild.
+- **Result**: Benign transcript yields 0 findings (was 3); true positives preserved; `npm run tests` 102/102 green; `test-harness-clean.js` 0 findings; `verify-integrity` OK.
+
 ### [2026-09-20 21:55] Agent: Muse Code (muse-spark)
 - **Prompt**: `.agents/specs/0109-code-review-round-2-fixes.spec.md` full auto + ship (standard Spec-to-PR, autoMode, fullMode).
 - **Done**: Steps 0-7 complete on `develop` (stay): classify standard/complex, plan + interview + refined plan, sequential implement, verify 8 -> scoreAndRefine round 1 (AC14/AC15/NS coverage) -> re-verify 9/10 then ledger 10/10, fable-judge VERIFIED, review APPROVE 10/10, testing green. Product commits `ae3806d6` + `b6ca3eba`; delivery result written; memory trap + compile; plan checkmarks closed.
@@ -107,6 +125,11 @@
 - **Prompt**: Read-only code review of `dcc3aa10..origin/main` (HEAD~20 vs main), check already-fixed findings, then author a fix spec via `/ws-spec-write`.
 - **Done**: Five parallel read-only review passes over `bin/`+CI, orchestrators, providers/utilities, `ws-shared` hub, and `test/`; every finding re-verified against the current tree (HEAD moved `3cbdd0b9` -> `2b9d5b89` mid-review when the prior workflow shipped step 8). Confirmed spec 0108's six topics fixed and excluded them. Spec `.agents/specs/0109-code-review-round-2-fixes.spec.md` written (15 ACs, F01-F27 traceability), `validate_spec.cjs --mode=authoring` PASS, tracked in `index.PRD` (row 114). Two memory traps recorded and compiled.
 - **Result**: 27 open findings (5 high / 16 medium / 6 low) captured with evidence and suggested fixes; no source files modified.
+
+### [2026-09-20 19:15] Agent: Antigravity
+- **Prompt**: /ws-spec-to-pr .agents/specs/0108-code-review-findings-fixes.spec.md
+- **Done**: Implemented centralized runtime bootstrap helper in `bootstrap_runtime.cjs` (`resolveHubScriptsDir`), refactored skill scripts (`check_unique_runtime.cjs`, `observer.cjs`, `ac_ledger.cjs`), standardized cross-platform `os.homedir()` in `check_hub_separation.cjs`, added streaming multi-byte UTF-8 decoding with `StringDecoder` in `monitor_snapshot.cjs`, and enforced automated check against forbidden `.ws/runtime` directory in `check_unique_runtime.cjs`. Added regression test suite `test/test-bootstrap-runtime.js` and regenerated integrity manifest.
+- **Result**: Verification score 10/10; all ACs/NSs verified; `npm run test` green; `test-harness-clean.js` 0 findings; `verify-integrity` OK.
 
 ### [2026-09-20 12:31] Agent: opencode (deepseek-v4.1-flash)
 - **Prompt**: Enforce managed-runtime location: never allow `.ws/runtime`; runtime must resolve from `{projectRoot|globalSkillsRoot}/.agents/skills/ws-shared/runtime`.
@@ -118,11 +141,31 @@
 - **Done**: `npm run build-site:bump` 0.4.44 -> 0.4.45 (54 SKILL frontmatter, packageVersion x2, site + docs/wiki rebuild); integrity regen + verified (54 skills); bounded ws-wiki sweep 9919e5c..HEAD (25 specs, detailed prose, 8 pages, validate 11/11 PASS, baseline -> d9db97f1); changelog entry; secrets scan clean.
 - **Result**: npm run test green; test-harness-clean 0 findings; check_workflows clean; verify-integrity OK.
 
+### [2026-09-20 05:00] Agent: Muse Code (muse-spark)
+- **Prompt**: /ws-spec-index sync completed specs from latest merged PR info.
+- **Done**: Synced 5 merged specs to done in `.agents/specs/index.PRD` (Feature map + Next-specs rows + Done log): 0042 PR #370, 0066 PR #371, 0076 PR #372, 0105-us-365 PR #373, 0106 PR #374; set spec frontmatter `status: completed`. Left `us-369` as todo (no merged PR, E1 unsatisfied).
+- **Result**: Index now shows only `us-369` as true todo.
+
 ### [2026-09-20 03:15] Agent: Muse Code
 - **Prompt**: us-365 worker (standard): opt-in execution observer for ws-spec-to-pr (transcript paths in state schema, autoStartObserver default false, at most one parallel read-only watcher sharing instruction source with ws-monitor, 6 ACs).
 - **Done**: monitor.autoStartObserver schema+example+resolver (strict true) + PS1 GUI row; state agentTranscripts/observer schema fields + observer.cjs (resolve/should-dispatch/record/note-dispatch/watch, read-only outside observer/); shared runtime/observer-instructions.md referenced by both SKILL.md files; monitor snapshot surfaces stateAgentTranscripts; new test-observer-us365.js (46 checks) registered in package.json chain; integrity regen + verified (v0.4.44).
 - **Result**: AC1-AC6 delivered; observer test 46/46; npm run tests + tests:harness-efficiency green; powershell-config-editor, doc-sync, harness-clean 0 findings. Learning: recorded trap 2026-09-20-crlf-edits-and-exports (CRLF exact-match edits + missing module exports).
 
+
+### [2026-09-20 03:00] Agent: Muse Code (muse-spark)
+- **Prompt**: ws-spec-multi worker [standard] — spec 0066 ws-shared-hub-agents-separation (consumer hub vs upstream root AGENTS.md; AC1–AC12).
+- **Done**: Consumer banner + upstream relocation in ws-shared/runtime/AGENTS.md (under 14000 B cap); dropped upstream workflow/ship tables from consumer CATALOG.md + added External dependencies mirror; root AGENTS.md do-not-confuse row; new check_hub_separation.cjs Phase 5a gate (denylist + drift + local-first precedence + fail-closed); test-hub-separation.js + context-budget cap assertion; version 0.4.43 + integrity + site rebuild. Full npm run test green; harness self-audit 0 findings.
+- **Result**: Merged to main as PR #371 (6 commits: 1 feat + 5 review fixes; 8 review threads fixed and resolved; CI test green).
+
+### [2026-09-19 23:16] Agent: Muse Code (muse-spark)
+- **Prompt**: Queue newest pending specs and implement them all (ws-spec-multi).
+- **Done**: Blank-scan found 5 pending; probe showed no prior delivery/PR evidence. Created run state `.agents/plans/ws-spec-multi/ms-20260919T231639Z.state.md` (baseBranch main, oldest-first per user gate). Synced `feature/0042-unique-skill-script-runtime` from main and dispatched worker 1 (flowMode standard).
+- **Result**: Run active; worker 1 in progress, items 2-5 pending.
+
+### [2026-09-19 21:00] Agent: Muse Code (muse-spark)
+- **Prompt**: ws-spec-multi worker — finish standard flow for 0042 unique-skill-script-runtime (Node-22 unique runtime).
+- **Done**: Deleted remaining 22 `.py` + 3 `.sh` sources (zero tracked Python); fixed 4 port parity bugs (naive-time UTC, loadConfig import, resolveRepoRoot options, azure --help deferral) plus global-runtime bootstrap in 11 ports; retargeted 40+ docs, evals, bin strings, and 20 tests; added `check_unique_runtime.cjs` Phase 5a critical gate + `test-unique-runtime.js`; regenerated integrity. Full `npm run test` green.
+- **Result**: Committed on `feature/0042-unique-skill-script-runtime`; PR vs `main` pending review threads.
 
 ### [2026-09-19 19:13] Agent: Muse Code
 - **Prompt**: Fix config/runtime resolution to the skills installation (local `.agents/skills/ws-shared/runtime` or global `$HOME/.agents/skills/ws-shared/runtime`); keep `.ws` for local config variable files only.
@@ -563,6 +606,16 @@
 - **Prompt**: review committed 0068 consolidation (cacc0408) → approved fix plan → execute workstreams 1-5
 - **Done**: pruned dead run.json/RUN.md paths + renderRun + rebuildIndex runPath; aligned ARTIFACTS.md runtime/prereq/read-contract/never-staged/ownership; aligned lite SKILL telemetry + plan-index (handoff substring kept for pipeline check); added handoffs/acLedger to state schema with file-first fold-in; hardened telemetry legacy redirect regex; regen + verify integrity
 - **Result**: test-workflow-state-contract, telemetry-observability, quality-gates, update-state-yaml, hybrid-consumer-root pass; check_pipeline_handoff OK (11 skills)
+
+### [2026-09-06 12:10] Agent: Cursor
+- **Prompt**: bump version, update website, ship release with OpenCode CI + new skills
+- **Done**: Bumped package to `0.3.63`; switched agentic PR reviews to OpenCode on `pull_request`; shipped `ws-benchmarks` and `ws-spec-manager`; synced `docs/index.html`, `FEATURES.md`, skill frontmatter, dependency manifests, and `bin/skill-integrity.json`.
+- **Result**: Release `0.3.63` prepared; PR #282.
+
+### [2026-09-06 12:00] Agent: opencode (muse-spark)
+- **Prompt**: fix issue #280 (standard workflow stalls after native transition gate Step 0 → Step 1); check all step transitions for manual/auto continuation; bump version and ship PR
+- **Done**: Clarified the gate contract in `ws-shared/gates.md` (markdown fallback yields the turn; native modal `Next` dispatches Step N+1 in the same turn; stall named as bug), applied the same distinction to `ws-spec-to-pr` SKILL/STEP-DISPATCH/PROTOCOLS and `ws-spec-to-pr-lite`; added blanket all-gates continuation rule plus classifier/safety-valve auto-gate rows; added `test/test-transition-gate-continuation.js` regression test; bumped package to `0.3.62` with frontmatter/manifest/site sync.
+- **Result**: Release `0.3.62` prepared; PR closes #280.
 
 ### [2026-09-05 02:35] Agent: ws-spec-multi worker (standard pipeline)
 - **Prompt**: resume ws-spec-to-pr for skill-family-naming (steps 0-6 done) → re-verify → close → ship
@@ -1577,6 +1630,11 @@ Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) sk
 - **Done**: Added a cinematic responsive video hero with muted autoplay, WebM/MP4 sources, a WebP poster, and mobile styling.
 - **Result**: The optimized 1280x500 animation plays above “Workflow Skills” without horizontal overflow and keeps the title visible on desktop and phone viewports.
 
+### [2026-08-15 15:12] Agent: Cursor Composer
+- **Prompt**: `/ws-multi-spec` sequential lite full auto for GH #211, #209, #210 then ship + goal-fix-pr until merge
+- **Done**: Shipped 3/3 — PR 212 (#211 hybrid consumer-root), PR 213 (#209 en-us patterns + autoload), PR 214 (#210 ws-preview Extra skill, v0.3.21)
+- **Result**: All merged to `main` (`ff7e93c`, `af32fc4`, `b3ce293`)
+
 ### [2026-08-15 12:55] Agent: Cursor Grok 4.6
 - **Prompt**: /ws-spec-to-pr https://github.com/jpolvora/workflow-skills/issues/211
 - **Done**: Entry resume of leftover `testing-executor-model` (user chose resume, then mark-complete). Confirmed feature commits already in develop (0 unique; 51 behind). Restored HEAD to `develop`; Phase A cleanup CLEAN; state `status: completed`.
@@ -1956,3 +2014,672 @@ Append-only history written by the [`ws-changelog`](../ws-changelog/SKILL.md) sk
 - **Prompt:** `/ws-spec-to-pr` on `ws-doctor.spec.md` with `full auto ship-pr`
 - **Done:** Shipped `ws-doctor` read-only diagnostic skill + hubs/deps/tests; package 0.3.8; PR #191 merged
 - **Result:** https://github.com/jpolvora/workflow-skills/pull/191
+
+### [2026-08-01 02:56] Agent: Antigravity AI (Gemini 3.6 Flash)
+- **Prompt**: update website, readme, agents.md, installer npx, dependencies, checksum, then commit all and ws-ship-pr (bump version)
+- **Done**: Bumped package to `0.0.113`; updated site catalog (`docs/index.html`); updated `README.md`, `AGENTS.md`, `.agents/AGENTS.md` for `--global` (`-g`) and `--project` (`-p`) CLI scope options; regenerated skill integrity checksums (`bin/skill-integrity.json`); verified full test suite (`npm run tests`, 100% green).
+- **Result**: Release `0.0.113` ready and verified for shipping.
+
+### [2026-08-01 02:42] Agent: Antigravity AI (Gemini 3.6 Flash)
+- **Prompt**: `/ws-spec-to-pr` a new feature that allows user to choose between install skills globally or in directory project, with local project overriding skills support.
+- **Done**: Added `--global`/`-g` and `--project`/`-p` scope flags to `bin/cli.js` across `install`, `update`, and `uninstall`; added interactive scope selection prompt; added `resolveGlobalSkillsDir()` and `resolveTargetSkillsDir()` to `bin/install-rules.js`; updated `ws-check-harness` (`SKILL.md` & `PHASES.md`) for global token map and workspace skill override precedence; added comprehensive integration test suite in `test/test-install.js` (100% passing); regenerated `bin/skill-integrity.json`.
+- **Result**: Fully implemented and verified Spec-to-PR delivery for Global vs Project skill installation.
+
+### [2026-07-27 12:45] Agent: Cursor Grok 4.5
+- **Prompt**: Add `/ws-tdah` autoload in root AGENTS.md (development only)
+- **Done**: Root + packaged hubs keep Every-prompt `/ws-tdah`; `ws-shared` mandatory table drops it (on-demand invoke)
+- **Result**: Development dogfood autoload; consumers opt in via `/ws-tdah`
+
+### [2026-07-27 11:52] Agent: Cursor Grok 4.5
+- **Prompt**: Commit all + ship/release — full prepare checklist (`/ws-ship-pr`, `/ws-goal-fix-pr`)
+- **Done**: Release `0.0.100` — `ws-tdah` replaces caveman/gabarito; Step 6 fix→re-review (max 3); harness corrections; site/integrity/tests green
+- **Result**: Ready to push `develop` → PR `main`
+
+### [2026-07-27 11:40] Agent: Cursor Grok 4.5
+- **Prompt**: Merge ws-gabarito into ws-tdah (action-first + judgment; retire gabarito)
+- **Done**: Merged judgment directives into `ws-tdah`; deleted `ws-gabarito`; updated hubs/deps/tests/orch/harness/site; retired opt-out aliases; 36 skills; integrity OK
+- **Result**: One autoload communication skill (`ws-tdah`); dogfood duo with `ws-karpathy-guidelines`
+
+### [2026-07-27 11:35] Agent: Cursor Grok 4.5
+- **Prompt**: `/ws-write-a-skill` one-pass format for `ws-tdah`
+- **Done**: Pruned to gabarito-style flat reference; leading word `action-first`; Before/After → `EXAMPLES.md`; Opt-out + Before send; evals aligned; integrity OK (50 lines)
+- **Result**: Ready for user accept / further edit
+
+### [2026-07-27 11:30] Agent: Cursor Grok 4.5
+- **Prompt**: Replace ws-tdah examples with auth Before/After shape
+- **Done**: Canonical Before/After in `SKILL.md` + `README.md`; integrity regenerated
+- **Result**: Example matches required response shape
+
+### [2026-07-27 11:20] Agent: Cursor Grok 4.5
+- **Prompt**: Rename `ws-caveman` → `ws-tdah`; single default mode; ADHD-friendly structure rules
+- **Done**: Added `.agents/skills/ws-tdah/` (SKILL/README/evals); removed `ws-caveman`; updated hubs, deps, tests, harness docs, site catalog, integrity; dropped intensity levels; start/stop only
+- **Result**: Live contracts point at `ws-tdah`; integrity verify OK; historical plans/specs still mention retired id (exempt)
+
+### [2026-07-27 00:45] Agent: Cursor Composer
+- **Prompt**: Auto-load `ws-senior-developer`; rename `shared` → `ws-shared`; orchestrators use `AskQuestion` at each gate; allow short skill invocation names; update harness checks.
+- **Done**: Renamed `.agents/skills/shared` → `ws-shared` across repo (installer `HUB_DIR`, path tokens, scripts, tests, hubs); autoload `ws-senior-developer` in `AGENTS.md` / `ws-shared/AGENTS.md` / `.agents/AGENTS.md`; `gates.md` + both orchs prefer `AskQuestion` at every step boundary; added `invocation_names` short forms to all skills; `ws-check-harness` flags retired `shared/` paths; regenerated integrity; `npm test` + `check_workflows.py` green (0 issues).
+- **Result**: Skills invocable as `fable-method` or `ws-fable-method`; consumer hub at `.agents/skills/ws-shared/`.
+
+### 2026-07-27 — PR triage, merge, and branch sync (v0.0.99 ship)
+- **Prompt**: Check all active PRs, fix threads, merge when ready, close stale PRs, sync develop/main, ensure green consumer install.
+- **Done**: Merged PR #154 (develop→main, v0.0.99 release: ws-shared hub rename, senior-developer gate, npx upstream guard); fixed and merged PR #157 (harness bare-link false-positive guard + integrity regen); closed PR #155 (auto-generated ECC bundle — not aligned with harness neutrality); synced develop and main to `3af35c1`; verified `npm run tests --local`, integrity, and ws-check-workflows all pass.
+- **Result**: Zero open PRs; `main` and `develop` aligned at v0.0.99; consumer install path green.
+
+### [2026-07-26 18:10] Agent: Cursor Grok 4.5
+- **Prompt**: `/ws-spec-to-pr` GH issue #150 — ship optional `ws-senior-developer` with full auto checks, tests, site, integrity, and PR.
+- **Done**: Added installable opt-in `ws-senior-developer` (Workflows package); hubs/docs/config opt-in for `rules.seniorDeveloper`; dedicated evals; installer assertions; `ws-sync-spec` eval payload for npm pack parity; bumped to `0.0.97`; regenerated site catalog and integrity; synced branches with `develop` as source of truth.
+- **Result**: Release `0.0.97` ready (`develop` → `main`) with verified integrity and local package tests.
+
+### [2026-07-26 06:30] Agent: Antigravity AI (Gemini 3.6 Flash)
+- **Prompt**: Update `README.md`, website skills, installer, dependency graph, and checksums, then ship PR.
+- **Done**: Updated `README.md` catalog table to list `ws-sync-spec`, `ws-spec-format`, and `ws-goal-loop`; rebuilt site catalog (`docs/index.html`); bumped version to `0.0.96`; regenerated skill integrity checksums (`bin/skill-integrity.json`); verified `check_workflows.py` (0 issues) and `npm test` (all 11 phases green); created PR #148, verified CI checks, merged PR #148 to `main`, and synced local/remote `main` and `develop` branches.
+- **Result**: Release `0.0.96` shipped and merged to `main` with 100% test coverage and verified integrity.
+
+### [2026-07-26 06:24] Agent: Antigravity AI (Gemini 3.6 Flash)
+- **Prompt**: `/ws-check-harness` — Audit harness integrity and apply corrections.
+- **Done**: Executed Phases 0–5c scan; fixed relative links in `.agents/skills/ws-spec-index/INDEX-TEMPLATE.md` to point to repo-root `README.md` and `AGENTS.md`; bumped package version to `0.0.95`; rebuilt site catalog; regenerated skill integrity checksums (`bin/skill-integrity.json`); verified `check_workflows.py` (0 issues) and `npm test` (all 11 phases green); created PR #147, verified CI checks, merged PR #147 to `main`, and synced local/remote `main` and `develop` branches.
+- **Result**: Release `0.0.95` shipped and merged to `main` with 100% test coverage and verified harness integrity.
+
+### [2026-07-26 06:20] Agent: Antigravity AI (Gemini 3.6 Flash)
+- **Prompt**: Ensure each task cycle in `ws-multi-spec` merges PR after review threads = 0, and sync base branches (`main`/`master`/`develop`) post-merge before starting a new feature branch (`git checkout -b`).
+- **Done**: Updated `SKILL.md`, `PROTOCOL.md`, `STATE.md`, and `evals.json` in `ws-multi-spec` to enforce mandatory PR merge and closure via SCM provider, strict queue advancement blocking until `state: MERGED`, and immediate post-merge base branch synchronization (`git fetch` & `git pull {baseBranch}`) before creating subsequent feature branches; bumped version to `0.0.94`; rebuilt site catalog; regenerated integrity checksums; verified `check_workflows.py` (0 issues) and `npm test` (all 11 phases green); created PR #145 and PR #146, verified CI checks, merged PRs to `main`, and synced local/remote `main` and `develop` branches.
+- **Result**: Release `0.0.94` shipped and merged to `main` with 100% test coverage, verified integrity, and post-merge branch synchronization.
+
+### [2026-07-26 06:07] Agent: Antigravity AI (Gemini 3.6 Flash)
+- **Prompt**: `/ws-fable-method` ensure `ws-multi-spec` skill checks for base branch synchronization (`baseBranch`) before starting or resuming work on each spec in a batch.
+- **Done**: Added `baseBranch` auto-detection and persistence to `ws-multi-spec` state header; added pre-dispatch base branch sync preflight (`git merge` / `git rebase`) and conflict pause gate to `PROTOCOL.md` and `SKILL.md`; updated `STATE.md` schema, `EXAMPLES.md`, and `evals.json`; bumped package version to `0.0.92`; rebuilt site docs; regenerated skill integrity checksums (`bin/skill-integrity.json`); verified `check_workflows.py` (0 issues) and full test suite (`npm test`, 11/11 phases green); created PR #144, ran GitHub CI checks, and merged PR #144 to `main`.
+- **Result**: Release `0.0.92` shipped and merged to `main` with 100% test coverage and verified integrity.
+
+### [2026-07-26 00:29] Agent: Antigravity AI
+- **Prompt**: Refactor all skills to add ws-* prefix to folder/skill names, update all references across files/relations, rebuild site, test install/update, and ship PR.
+- **Done**: Renamed all 21 remaining unprefixed skill directories under `.agents/skills/` to use `ws-` prefix via `git mv` (36 total skills now all prefixed with `ws-`); updated `name: ws-<skill>` and `invocation_names` in SKILL.md frontmatters to support activation via both `ws-skillName` and `skillName`; updated dependency graphs (`bin/skill-dependencies.json` & `ws-shared/skill-dependencies.json`), CLI, test suite (`test-install.js`), and docs (`AGENTS.md`, `ws-shared/AGENTS.md`, `README.md`); bumped version to `0.0.90`; rebuilt site catalog (`docs/index.html`); regenerated integrity checksums (`bin/skill-integrity.json`); verified `check_workflows.py` (0 issues) and `npm test` (all 12 phases green); opened PR #141, verified CI checks, and merged PR #141 to `main`.
+- **Result**: Release `0.0.90` shipped and merged to `main` with 100% test coverage and verified integrity.
+
+### [2026-07-26 00:05] Agent: Gemini 3.6 Flash (High)
+- **Prompt**: Fix new GH issues (#138, #139, #129, #131, #132), update website, integrity digests, dependencies, tests, and ship PR.
+- **Done**: Routed `ws-sync-spec` in `ws-shared/AGENTS.md` (Promoted Utilities + Task Router); added `init` guard (`--force` flag requirement for non-empty `index.PRD`) and consumer dialect contract support to `ws-spec-index`; added consumer dialect eval case; bumped version to `0.0.88`; rebuilt site catalog (`docs/index.html`); regenerated integrity checksums (`bin/skill-integrity.json`); verified `check_workflows.py` (0 issues) and `npm run test` (all 11 phases green).
+- **Result**: Release `0.0.88` ready to ship (`develop` → `main`) with 100% verified integrity, site catalog, and test suite.
+
+### [2026-07-25 23:17] Agent: Gemini 3.6 Flash
+- **Prompt**: `/spec-to-pr-lite gh issue check and get to create spec` (Issue #129)
+- **Done**: Registered `ws-multi-spec` in `.agents/skills/ws-shared/skill-dependencies.json` to match `bin/skill-dependencies.json`; added automatic `bin` ↔ `shared` dependency graph sync assertions in `check_workflows.py`; updated test suite assertions in `test-install.js`; bumped version to `0.0.85`; regenerated integrity digests; created and merged PR #130.
+- **Result**: Managed consumer updates maintain `ws-multi-spec` dependency closure and prevent hub manifest drift.
+
+### [2026-07-25 22:48] Agent: Gemini 3.6 Flash (High)
+- **Prompt**: Brainstorm and grill `ws-sync-spec` skill, build skill, update dependencies, website, checksums, tests, and ship via `/ws-ship-pr`.
+- **Done**: Created `ws-sync-spec` skill (`v0.0.87`) for continuous feature spec auto-updates after prompt evolutions and code changes; updated dependency graphs (`bin/skill-dependencies.json` & `ws-shared/skill-dependencies.json`); updated site catalog (`docs/index.html`); regenerated integrity checksums (`bin/skill-integrity.json`); ran full test suite (`npm test`, 11/11 phases green) and `check_workflows.py` (0 issues); created PR #137, waited for Agentic Code Reviewer (`SUCCESS`), and merged PR #137 to `main`.
+- **Result**: `ws-sync-spec` shipped and merged to `main` with 100% test coverage and verified integrity.
+
+### [2026-07-25 22:30] Agent: Gemini 3.6 Flash (High)
+- **Prompt**: `/fable-method` update website, README.md, checksums, dependencies, installer, npx/bash script, AGENTS.md, check-workflows, tests, check-harness and bump version to prepare release 0.0.86
+- **Done**: Bumped package version to `0.0.86`; updated website catalog (`docs/index.html`) with 35 skills across 4 layers; updated `README.md` catalog tables; synced dependency manifests (`bin/skill-dependencies.json` and `.agents/skills/ws-shared/skill-dependencies.json`); updated test suite tarball reference in `test/package.json`; regenerated integrity checksums (`bin/skill-integrity.json`); verified `check_workflows.py` (0 issues, 100% PASS) and `npm run tests -- --local` (all 11 phases green).
+- **Result**: Release `0.0.86` ready to ship (`develop` → `main`) with 100% verified integrity, site catalog, installer, and test suite.
+
+### [2026-07-25 21:45] Agent: Gemini 3.6 Flash (High)
+- **Prompt**: `/spec-to-pr gh iisue 134 /write-a-skill /fable-method`
+- **Done**: Added `ws-spec-index` model-invoked skill for project spec index lifecycle management (`init`, `sync`, `promote`); created skill documentation, templates, reference schemas, and evals; registered in `bin/skill-dependencies.json` and `.agents/skills/ws-shared/skill-dependencies.json`; updated hub skill indexes and task routers (`AGENTS.md` and `.agents/skills/ws-shared/AGENTS.md`); wired auto-sync call sites in `spec-to-pr`, `spec-to-pr-lite`, and `ws-ship-pr`; updated integrity digests and website catalog; created PR #135, ran GitHub CI checks, and merged PR #135 to `main`.
+- **Result**: `ws-spec-index` skill shipped and merged to `main` with 100% test suite and harness validation passing.
+
+### [2026-07-25 02:40] Agent: Cursor Grok 4.5
+- **Prompt**: `/fable-method` fix GH Action code review false-positive success (OpenCode install / BASH_SOURCE)
+- **Done**: Removed `continue-on-error: true` from `.github/workflows/code-review.yml`; pre-install OpenCode via authenticated `gh api` + pinned `--version`; run `run.sh` from a downloaded file (not `curl|bash`); aligned root `AGENTS.md` dry-run recipe
+- **Result**: Reviewer exit 1 can no longer paint the job green; CI avoids unauthenticated GitHub rate-limit install failure
+
+### [2026-07-25 02:35] Agent: Cursor Grok 4.5
+- **Prompt**: `/ws-ship-pr` (develop → main)
+- **Done**: Restored Standalone/Workflow Mode sections on provider SKILL.md files; inlined check-harness Phase 3 skill-integrity `--check` gate in SKILL.md; bumped package to `0.0.82`, regenerated site footer + integrity digests; verified `verify.sh`, `check-workflows`, leak scan
+- **Result**: Release `0.0.82` ready to ship (`develop` → `main`)
+
+### [2026-07-25 02:20] Agent: Cursor Grok 4.5
+- **Prompt**: Add rules to `.github/agentic-code-reviewers-prompt.md` for harness/workflow gates, installer tests, dependency graph, skill lists, and naming
+- **Done**: Extended review prompt with must-pass `check-harness` / `check-workflows`, installer tests, `skill-dependencies.json` closure, skill inventory drift, `ws-*` + bare invocation names, and ban on `NN-*` folders
+- **Result**: Custom stack reviewer prompt encodes upstream ship gates and skill naming contract
+
+### [2026-07-25 00:57] Agent: Cursor Grok 4.5
+- **Prompt**: commit all, update website, graph, installer, prepare ship-pr (rename pipeline folders to ws-*)
+- **Done**: Renamed 12 pipeline folders to match frontmatter (`ws-write-spec`…`ws-fix-pr`, `ws-goal-fix-pr`, `ws-update-plan-implementation`); updated hubs, orch/dispatch, `skill-dependencies.json`, installer/CLI examples, validators, tests, and stale `00`–`09` prose; fixed `self_learning.py` shared-path after `scripts/` move; bumped to `0.0.81`, rebuilt site catalog + integrity digests
+- **Result**: Release `0.0.81` prepared for ship (`develop` → `main`); tests + check-workflows + integrity green
+
+### [2026-07-25 00:39] Agent: Cursor Grok 4.5
+- **Prompt**: prepare and ship-pr committing everything
+- **Done**: Added `evals/evals.json` for all 33 skills plus `bin/generate-skill-evals.js`; moved `self_learning.py` to `scripts/` and updated path refs (`SKILL.md`, `tools.md`, `spec-to-pr`, `cli.js`, `MEMORY.md.template`, `write-a-skill` layout); bumped package to `0.0.80`, regenerated site + integrity digests; verified with `npm run tests -- --local`, `check-workflows`, and `verify-integrity`
+- **Result**: Release `0.0.80` ready to ship (`develop` → `main`)
+
+### [2026-07-24 16:32] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: add to website in each skill card at the bottom each skill dependency badge.
+- **Done**: Updated `bin/build-site.js` to extract direct skill dependencies from `bin/skill-dependencies.json` and render interactive dependency badges (`.dep-pill`) at the bottom of every skill card in `docs/index.html`; styled `.skill-card-bottom`, `.skill-deps-wrap`, `.deps-heading`, `.deps-list`, and `.dep-pill` in `docs/assets/css/style.css` with theme-tailored colors, hover glow, and thin custom scrollbars; added interactive click-to-search on dependency pills; regenerated site HTML (`docs/index.html`); updated skill integrity digests (`npm run generate-integrity`); ran full installation test suite (`npm run test` ✅ PASS).
+- **Result**: Every skill card on the catalog now displays interactive dependency badges; test suite 100% green.
+
+### [2026-07-24 16:06] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: check last fixes. analyze, update website, README.md, dependencies graph, checksums, installer npx/bash, bump version to 0.0.79, commit, push, ship-pr, and wait for code-review.
+- **Done**: Audited codebase and harness integrity (`check-workflows` ✅ PASS, 0 issues); verified dependencies graph (`bin/skill-dependencies.json`); added domain catalog starter example (`specs/domains/index.md.example`); bumped version to `0.0.79` (`npm run build-site:bump`); updated site HTML (`docs/index.html`); regenerated integrity digests (`npm run generate-integrity`); updated test consumer package version (`test/package.json`); verified integrity (`npm run verify-integrity`); ran installation test suite (`npm run test` ✅ PASS across all 11 phases); prepared release commit and PR.
+- **Result**: Version `0.0.79` released with verified integrity digests, site catalog update, domain catalog example, and 100% passing test suite.
+
+### [2026-07-24 01:38] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: Address local Agentic Code Reviewer findings (deduplicate config-resolution.md and align fable spec defaults) and ship PR #118.
+- **Done**: Removed 65-line duplicated text block in `.agents/skills/ws-shared/config-resolution.md`; aligned `fable.enabled` default in `.agents/specs/fable-skills-integration.spec.md` (`true` default in fresh config example); regenerated integrity digests (`npm run generate-integrity`), ran workflow simulations (`check-workflows` ✅ PASS), created PR #118, merged PR #118 to `main`, and fast-forward synced `develop` with `main`.
+- **Result**: PR #118 merged; `config-resolution.md` deduplicated; `main` and `develop` branches 100% in sync (`01608a1`).
+
+### [2026-07-24 01:30] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: Fix merge conflict in docs/index.html, remove bot commit step from deploy-site.yml, add Jone Polvora portfolio link to site footer, and ship PR #117.
+- **Done**: Removed the `github-actions[bot]` commit step from `.github/workflows/deploy-site.yml` to permanently eliminate branch drift between `main` and `develop`. Updated `bin/build-site.js` and `docs/index.html` to add `Developed by Jone Polvora` linking to `https://jpolvora.github.io/` in the site footer. Rebuilt site catalog (`v0.0.78`), regenerated integrity digests (`npm run generate-integrity`), ran workflow simulations (`check-workflows` ✅ PASS), created PR #117, merged PR #117 to `main`, and fast-forward synced `develop` with `main`.
+- **Result**: PR #117 merged; permanent fix for `docs/index.html` merge conflicts applied; site footer displays link to `jpolvora.github.io`; `main` and `develop` branches 100% in sync (`6e36563`).
+
+### [2026-07-24 01:23] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: update AGENTS.md with new skills, verify if fable methods should be autoload (is it recommended?), check progressive disclosure index routing skills in root agents.md, and ship-pr.
+- **Done**: Replaced shorthand `.agents/skills/.../SKILL.md` in root `AGENTS.md` Layer 5 table with explicit paths for `spec-to-pr` and `spec-to-pr-lite`; updated Workflows package count reference from 28 to 31 ids in `.agents/AGENTS.md`; verified `fable-method` is not autoloaded and documented why autoloading it is not recommended; bumped version to `0.0.78`, regenerated site catalog and skill integrity manifest (`bin/skill-integrity.json`), ran full test suite (`npm run test` passed 100%), opened PR #116, resolved merge conflict with `main`, and merged PR #116 to `main`.
+- **Result**: PR #116 merged to `main`; `AGENTS.md` and `.agents/AGENTS.md` fully audited and aligned; test suite 100% green.
+
+### [2026-07-23 21:26] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: `/spec-to-pr gh 113` — [bug] cli: update fails post-verification when consumer workspace has repo-local custom skills
+- **Done**: Modified `bin/cli.js` `runUpdate()` to filter `afterManifest.skills` by `upstreamSet.has(n)` so that post-verification evaluates only upstream skills against `bin/skill-integrity.json`. Added Phase 2b test assertion in `test/test-install.js` verifying update with repo-local custom skills. Created delivery commit `4e3cde5`, created PR #114, waited for CI checks, and merged PR #114 to `main`.
+- **Result**: Issue #113 fixed; PR #114 merged; `npm run tests -- --local` passed 100%.
+
+### [2026-07-23 17:19] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: Consolidate all open GitHub issues in repo (#106, #109, #110), create consolidated spec, implement fixes, ship PR #111, and merge to main.
+- **Done**: Created consolidated spec `step-00-consolidated-gh-issues.spec.md`; fixed residual `AGENTS.md` wording in `check-harness/SKILL.md` and `REPORT-FORMAT.md` (#106); cleared missing optional domain default paths in `config.json.example`, cleaned template layer rows in `STACK.md`, updated consumer-mode check-harness policy (#109); updated `check_workflows.py` with dynamic root detection, explicit UTF-8 encoding across subprocess/IO operations, non-interactive execution handling, and custom `pathTokens` resolution (#110). Bumped version to `0.0.75`, updated site catalog and integrity digests, created and merged PR #111 to `main`.
+- **Result**: PR #111 merged to `main`; issues #106, #109, #110 resolved; all 11 test suite phases passed cleanly.
+
+### [2026-07-22 04:33] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: Standardize `ensure_utf8_stdio()` top-level import across all Python scripts; default `plans.dir` to `.agents/plans` and `plans.specsDir` to `.agents/specs`. Bump version to `0.0.70`.
+- **Done**: Added `os.environ["PYTHONIOENCODING"] = "utf-8"` and top-level `ensure_utf8_stdio()` to all 12 Python scripts across `.agents/skills/`; updated `config.json`, `config.json.example`, `config.schema.json`, `detect_specs_dir.py`, `local-spec-provider/SKILL.md`, `configure-project`, `AGENTS.md`, and `README.md` to default `plans.dir` to `.agents/plans` and `plans.specsDir` to `.agents/specs`; bumped version to `0.0.70`; regenerated site catalog and skill integrity manifest (`bin/skill-integrity.json`).
+- **Result**: Universal UTF-8 stdio stability across Windows cp1252 terminals; canonical defaults set to `.agents/plans` and `.agents/specs`; all 11 test suite phases passed 100%.
+
+### [2026-07-22 04:24] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: `/spec-to-pr-lite` — fix(check-workflows): immediate UTF-8 stdio reconfiguration
+- **Done**: Set `os.environ["PYTHONIOENCODING"] = "utf-8"` in `ensure_utf8_stdio()` and invoked `ensure_utf8_stdio()` immediately at module top-level import in `check_workflows.py`; regenerated skill integrity manifest (`bin/skill-integrity.json`).
+- **Result**: Prevents UnicodeEncodeError on cp1252 Windows terminals; `check_workflows.py` passes 100%; test suite green.
+
+### [2026-07-22 04:18] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: `/spec-to-pr 95` — fix(check-workflows): dependency closure audit fails in consumer repos (missing bin/skill-dependencies.json)
+- **Done**: Added `skill-dependencies.json` under `.agents/skills/ws-shared/skill-dependencies.json` and added it to `HUB_WHITELIST` in `bin/install-rules.js` so consumer repos receive the manifest on install/update; updated `bin/cli.js` `skillGraphPath` fallback; updated `check_workflows.py` to check `ws-shared/skill-dependencies.json` first, fall back to `bin/`, and guard closure audit when no manifest is loaded (`if self.deps_loaded:`); regenerated skill integrity manifest (`bin/skill-integrity.json`).
+- **Result**: `check_workflows.py` passes cleanly in consumer repos and upstream; all 11 test suite phases passed.
+
+### [2026-07-21 21:29] Agent: Antigravity (Gemini 3.6 Flash)
+- **Prompt**: update check-workflows skill to deeply validate and simulate full and lite workflows, detect broken steps, generate report, and offer user confirmation prompt. Bump version to 0.0.68 and ship.
+- **Done**: Enhanced `check_workflows.py` with full (`spec-to-pr`, steps 0–9) and lite (`spec-to-pr-lite`, steps 0–5) workflow step simulation, script compilation/syntax checks, dependency closure verification, broken step detection, actionable fix suggestions, markdown report generation (`--report`), auto-fix mode (`--fix`), and interactive user confirmation gate. Updated `check-workflows/SKILL.md`, `AGENTS.md`, and `README.md`. Bumped version to `0.0.68`, regenerated site catalog and skill integrity manifest, synced `test/package.json`, and ran test suite.
+- **Result**: `check-workflows` passes 100%, test suite green, ready to ship.
+
+### [2026-07-20 20:56] Agent: Antigravity (Gemini 3.5 Flash)
+- **Prompt**: design idea: in website skill cards, add badges into each skill card showing <full> or <lite> flaging that skill is dependency of one or both workflows. Update website and ship.
+- **Done**: Added recursive standard/lite dependency resolution to `build-site.js`; stored skill slug; generated dynamic HTML badge tags (`full` and `lite`) on skill cards; styled badges in `style.css` using theme Sky Blue and Emerald Green; bumped package version (0.0.66 -> 0.0.67); ran integrity checks and full test suite; committed and pushed to `develop`.
+- **Result**: Website updated and changes pushed to origin/develop.
+
+### [2026-07-20 19:40] Agent: Cursor Grok 4.5
+- **Prompt**: `/spec-to-pr gh 90 full auto` — fix skill integrity digest-mismatch on consumer install
+- **Done**: LF-canonical hashing in `skill-integrity-lib.js`; regen manifest v0.0.65; EOL parity test; PR #91 merged; issue #90 closed; MEMORY trap recorded
+- **Result**: MERGED `c85b0ed`; https://github.com/jpolvora/workflow-skills/pull/91 ; Learning: hash LF-canonical (CRLF WT vs GitHub LF)
+
+### [2026-07-20 19:26] Agent: Cursor Grok 4.5
+- **Prompt**: Step 8 ship create-pr for us-90 (LF-canonical integrity)
+- **Done**: Prepare board green; pushed develop (58479c1 + 12a776c); opened PR #91 develop→main with Closes #90
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/91 ; stopBeforeFixPr STOP (no merge / no goal-fix)
+
+### [2026-07-20 18:55] Agent: Cursor Grok 4.5
+- **Prompt**: Step 7 testing for skill-install-checksums (AUTO, no browser)
+- **Done**: Wrote `step-07-*.testing.plan.md` + `testing.report.md`; ran `node --check` on touched bin files, `generate-skill-integrity.js --check`, `npm run tests -- --local`
+- **Result**: PASS (0 fix loops); Phase 0b + Phase 11 green; all ACs 1–12 mapped PASS; Learning: N/A (standard testing)
+
+### [2026-07-20 18:50] Agent: Cursor Grok 4.5
+- **Prompt**: Step 6 code review for skill-install-checksums (AUTO fix Critical/Warning)
+- **Done**: Reviewed integrity scope; fixed W1 (no bless local record on post-verify fail), W2 (abs-path `memory` skip), S1 (mismatch printer); added Phase 11 regression; wrote `step-06-*.review.md` + `fix.report.md`
+- **Result**: 2 Warning + 1 Suggestion fixed; `npm run tests -- --local` PASS; Learning: Integrity — never bless failed post-verify with actual digests
+
+### [2026-07-20 18:45] Agent: Cursor Grok 4.5
+- **Prompt**: Step 4 implement skill-install-checksums DAG T1–T8 (integrity digests for install/update/audit)
+- **Done**: Added `bin/install-rules.js`, `skill-integrity-lib.js`, `generate-skill-integrity.js`, committed `skill-integrity.json`; wired pre/post verify + `integrity` + `--check` digest into `cli.js`; hub ships `hub.gitignore` (npm cannot pack `.gitignore`); skip `runs/`; Phase 0b/11 tests; README + check-harness docs
+- **Result**: `npm run tests -- --local` green; `generate-skill-integrity.js --check` OK; version unchanged (0.0.63); Learning: Integrity — npm never packs .gitignore; skip runs/
+
+### [2026-07-20 15:00] Agent: Cursor Grok 4.5
+- **Prompt**: Prepare to PR (site bump, checksums), commit, ship-pr
+- **Done**: Bumped 0.0.63→0.0.64; rebuilt site; regenerated integrity; synced test pack path; harness FAQ/gabarito fixes included
+- **Result**: verify.sh VERIFY_OK; ready to push develop→main
+
+### [2026-07-20 14:55] Agent: Cursor Grok 4.5
+- **Prompt**: Fix check-harness findings; add learnings to MEMORY
+- **Done**: Replaced `file://` FAQ links with relatives; gabarito opt-out phrases; seeded local STACK.md; 4 memory entries + compile; regenerated `bin/skill-integrity.json`
+- **Result**: faq links resolve; integrity `--check` OK; Learning: packaged `skills/` link resolve + no `file://` skill links
+
+### [2026-07-20 14:55] Agent: Cursor Grok
+- **Prompt**: Require checksum regenerate on skill commit/PR; tests for testing-step approve
+- **Done**: AGENTS.md § Upstream skill integrity regenerate + Verification item; `verify-integrity` script; verify.sh + PREPARE-CHECKLIST; check-harness correction; Phase 0b asserts; README; regenerated `bin/skill-integrity.json`
+- **Result**: `npm run verify-integrity` + Phase 0b/11 PASS; Learning: N/A
+
+### [2026-07-20 14:30] Agent: Cursor Grok 4.5
+- **Prompt**: Set agentic-code-reviewers publish min score to 4 (default is 6)
+- **Done**: Added `--score-min 4` to `.github/workflows/code-review.yml` and AGENTS.md dry-run curl
+- **Result**: CI + local dry-run publish findings with score ≥ 4
+
+### [2026-07-20 14:25] Agent: Cursor Grok
+- **Prompt**: Policy-only decision — migrate Python→Node? Chose option 1 (no big-bang)
+- **Done**: Documented runtime policy: Node required; new skill scripts = `.cjs`; existing `.py` frozen except bugfixes (`tools.md`, README, `write-a-skill`); MEMORY trap compiled
+- **Result**: Policy locked; no script rewrites
+
+### [2026-07-20 14:05] Agent: Cursor Grok
+- **Prompt**: `/00-write-spec` skill install checksums; set `plans.dir` to `specs/`
+- **Done**: `config.json` `plans.dir` → `specs`; wrote `specs/skill-install-checksums/step-00-skill-install-checksums.spec.md`
+- **Result**: Canonical spec ready for `01-write-plan`; Learning: N/A (spec only)
+
+### [2026-07-20 13:35] Agent: Composer
+- **Prompt**: Update docs/README/site/installers for path tokens, then ship-pr
+- **Done**: README + setup + build-site blurb; CLI help/post-install tips; `ensurePathTokensInConfig` on hub seed/preserve; install-skills.sh banner; self-learning site description de-braced
+- **Result**: Humans and installers surface pathTokens; ready to ship
+
+### [2026-07-20 13:30] Agent: Composer
+- **Prompt**: Update check-harness to know hint/path tokens before fixing relative paths
+- **Done**: Added § Path token map; Phase 0 load; Phase 1/2 expand-before-existence; forbid token→`../` false fixes; report + checklist token-aware
+- **Result**: check-harness expands `{skillsRoot}`/`{sharedDir}`/`{plansDir}`/`{reviewsDir}` before broken-link or relative rewrites
+
+### [2026-07-20 13:25] Agent: Composer
+- **Prompt**: Reliable path-token tip for agents (`{skillsRoot}` / `{sharedDir}`) like config placeholders
+- **Done**: Added `tools.md` § Path tokens + agent expand contract; `pathTokens` in config example/schema/local config; config-resolution + hub/autoload/self-learning/implement-tasks wired to braces; MEMORY traps updated
+- **Result**: Agents load `config.json` + `tools.md` first, expand braces before Read/Grep/Shell; no undeclared `ws-shared/` shorthands
+
+### [2026-07-20 13:15] Agent: Composer
+- **Prompt**: `/08-ship-pr` with create-PR + check-harness (1A)
+- **Done**: Prepare board green; check-harness PASS_WITH_WARNINGS; pushed develop; opened/merged PR #86; fixed gabarito MEMORY path from review thread; synced site catalog after main merge
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/86 MERGED (`4cf92fb`); `develop` intact
+
+### [2026-07-20 12:00] Agent: OpenCode kimi-k3
+- **Prompt**: Decouple gabarito/caveman/karpathy-guidelines into independent skills; apply write-a-skill filter to reduce lines
+- **Done**: Removed all cross-skill and hub (AGENTS.md) references from the three autoload skills — composition now owned solely by hubs/consumers; caveman 71→63 lines (dropped Persistence section + duplicate example), gabarito 46→43 (dropped Opt-out section + karpathy/senior-developer pointers + PT-BR filler example), karpathy 66 lines (deduped intro); link scan 0 broken / 344
+- **Result**: Skills self-contained; hub § Skill loading / Precedence / Opt-out remains the single composition point
+
+### [2026-07-20 11:00] Agent: OpenCode kimi-k3
+- **Prompt**: Run check-harness audit; fix references, links, semantics, workflow usage; improve portability/multi-agent
+- **Done**: Full audit (Phases 0–5c, 348 links clean) + 9 approved corrections: fixed critical `spec-to-pr-lite` dependency closure in `bin/skill-dependencies.json`; packaged hub 27→28 ids; untracked consumer-owned `ws-shared/stack.md` (+ de-sedimented retired 13-step refs); retitled `stack.md.example`; fixed run-test.md `stackFile` path + linked from spec-to-pr README (also fixed stale `00–11`); cleaned local config.json (glossaryFile, Step12→Step8 invariant key); added orchestrator dependency-closure check to check-harness Phase 3 + check-workflows; extracted check-harness report template to `REPORT-FORMAT.md` (586→~530 lines)
+- **Result**: Harness OK post-correction; `npm run tests -- --local` green
+
+### [2026-07-20 09:43] Agent: Cursor Grok
+- **Prompt**: bump
+- **Done**: Patch-bumped `0.0.61` → `0.0.62`; regenerated site footer; synced `test/package.json` tarball ref
+- **Result**: Install/`--version`/`--check` align with site v0.0.62
+
+### [2026-07-20 09:35] Agent: Cursor Grok
+- **Prompt**: Rename shared stack companion to STACK.md and update references
+- **Done**: `stack.md.example` → `STACK.md.example`; default seed/path `ws-shared/STACK.md`; installer renames legacy `ws-shared/stack.md` once; refs across hubs/skills/CLI/tests/docs updated
+- **Result**: Canonical consumer stack companion is `.agents/skills/ws-shared/STACK.md`
+
+### [2026-07-20 09:30] Agent: Cursor Grok
+- **Prompt**: Fresh consumer install check-harness noise; ship-ready skills without touching consumer root files
+- **Done**: Fixed stale `00`–`11` prose; installer seeds only under `ws-shared/` (`config.json`, `CHANGELOG.md`, `stack.md`, `MEMORY.md`); expanded consumer `ws-shared/AGENTS.md`; check-harness consumer hub = shared (root AGENTS optional suggestion only); never write consumer root/host files; README/tests updated
+- **Result**: Install scope limited to `.agents/skills/`; near-zero findings from shipped hub/skills
+
+### [2026-07-20 09:06] Agent: Cursor Composer
+- **Prompt**: Fix Node.js 20 deprecation annotation on Deploy site Actions
+- **Done**: Bumped `checkout@v5`, `setup-node@v6` (Node 22), `upload-pages-artifact@v5`, `deploy-pages@v5`; merged #82
+- **Result**: Deploy run annotations empty (no Node 20 warning)
+
+### [2026-07-20 09:05] Agent: Cursor Composer
+- **Prompt**: Fix typical main-push race between Deploy site and legacy pages-build-deployment
+- **Done**: Deploy site uploads `docs/` + `deploy-pages`; repo Pages `build_type` → `workflow`; kept docs sync commit with `[skip ci]`; removed invalid `include-hidden-files` input; merged #80/#81
+- **Result**: Push to main runs only Deploy site (build+deploy); no cancelled legacy Pages race; site built at jpolvora.github.io/workflow-skills
+
+### [2026-07-20 08:45] Agent: Cursor Composer
+- **Prompt**: Stop installing `.agents/AGENTS.md` into consumer projects
+- **Done**: Removed `installPackagedAgentsIndex` from CLI (install/update/uninstall); dropped `.agents/AGENTS.md` from npm package `files`; expanded `ws-shared/AGENTS.md` with External dependencies + skill discovery; retargeted spec-to-pr/spec-format/setup links; updated README/hubs/site copy; install tests assert no `.agents/AGENTS.md` copy
+- **Result**: Consumer agent contract is `skills/ws-shared/AGENTS.md` only; upstream packaged hub remains for authoring/check-harness drift
+
+### [2026-07-20 08:38] Agent: Cursor Composer
+- **Prompt**: Stop workflows from requiring/creating consumer files outside shared (changelog + specsDir)
+- **Done**: `rules.changelogFile` default → `.agents/skills/ws-shared/CHANGELOG.md`; `plans.specsDir` default → `.agents/plans/specs` (prefer existing root `specs/`); updated changelog skill, local-spec detect script, schema/example, hubs, README, tools
+- **Result**: Fresh consumers get no forced root `CHANGELOG.md` / `specs/`; root paths only when explicitly configured or already present
+
+### [2026-07-20 08:34] Agent: Cursor Composer
+- **Prompt**: configure-project warns ws-shared/stack.md exists but root STACK.md missing; avoid forcing files outside shared/
+- **Done**: Default `rules.stackFile` → `.agents/skills/ws-shared/stack.md`; configure-project/setup retarget to shared companion instead of creating root `STACK.md`; updated example, AGENTS, tools, PREPARE-CHECKLIST
+- **Result**: Stack companion stays under consumer-owned `shared/`; root STACK.md optional legacy only
+
+### [2026-07-20 08:12] Agent: Cursor Composer
+- **Prompt**: Fix version bump so package version matches website footer; sync GH Actions/local build; explain install vs site drift
+- **Done**: Made `package.json` canonical — `build-site.js` stamps footer without bumping by default (`--bump` / `npm run build-site:bump` for releases); deploy-site CI asserts footer==package.json and never bumps; aligned repo to **0.0.61** (package + footer + test tarball ref); documented contract in README/AGENTS
+- **Result**: `--version`/`--check`/install and site footer share one version; CI can no longer leave footer one patch ahead
+
+### [2026-07-19 18:35] Agent: Cursor Grok
+- **Prompt**: Update README/AGENTS/site for install/update/uninstall; check-harness; ship-pr full auto
+- **Done**: Documented uninstall + `installed-skills.json` in README, root/packaged AGENTS, site `#install`; CLI uninstall+manifest already in tree; harness link scan clean; package **0.0.59**
+- **Result**: Ready to ship develop → main
+
+### [2026-07-19 18:30] Agent: Cursor Grok
+- **Prompt**: Add uninstall to installer/updater; track installed skills in shared/
+- **Done**: `uninstall --skills` with reverse+orphan cascade; consumer-owned `ws-shared/installed-skills.json` (`skills` + `selected` roots); install/update write/bootstrap manifest; help/README/shared docs + Phase 10 tests
+- **Result**: `npm run tests -- --local` green
+
+### [2026-07-19 17:56] Agent: Cursor Grok
+- **Prompt**: check-harness, fix needed items, prepare PR, ship-pr for consumer testing
+- **Done**: Full harness audit (Phases 0–5c); synced site Extra catalog + package `0.0.50`; aligned `test/package.json` tarball; removed orphan `skills-lock.json`; retargeted promote-shared spec example; install tests `--local` green (29 skills)
+- **Result**: Harness OK post-correction; ready to ship develop→main PR (`no-merge` for consumer test)
+
+### [2026-07-19 17:45] Agent: Cursor Grok
+- **Prompt**: `/check-harness` clear `docs/superpowers` refs; remove missing-file / old-skill / dead-dir references
+- **Done**: Removed dead `docs/superpowers` tree + stale `.cursor/plans` artifacts; scrubbed `docs/superpowers/specs/` from check-harness scan patterns; aligned `configure-project` INTERVIEW gate labels; restored CLI `--help` `.agents/plans` note (tests); site/package **0.0.58**
+- **Result**: Harness OK post-correction; `npm run tests -- --local` green; ready to ship
+
+### [2026-07-19 17:35] Agent: Cursor Grok
+- **Prompt**: `/write-a-skill` create skill to interview/detect/suggest filling `config.json` anytime; callable during install; work with setup
+- **Done**: Added `configure-project` (SKILL + INTERVIEW); wired `setup.md`, Workflows deps (28), hubs/task router, CLI post-install hints, README; site `0.0.56`
+- **Result**: Ready for user review (write-a-skill Step 5); optional check-harness pending
+
+### [2026-07-19 17:30] Agent: {agent/runtime}
+- **Prompt**: Audit skill placeholders/config tokens; fix invalid vars
+- **Done**: Canonicalized `{plan-dir}`/`{output-dir}`→`{us-dir}`, `{reviews-dir}`→`{reviewsDir}`, `{specsDir}`→`{specs-dir}`, `{plans.dir}`→`{plansDir}`, `{workflowId}`→`{workflow-id}`; added `{reviewsDir}` to ARTIFACTS; fixed FAQ obsolete step-10/11/12 paths
+- **Result**: Path/config token vocabulary consistent; no remaining invalid path tokens
+
+### [2026-07-19 17:16] Agent: Cursor Grok
+- **Prompt**: Fix measuring time in full auto workflows (state/logs/final board)
+- **Done**: Required `--elapsed` in `update_state.py` (standard+lite); null-safe totals; nested `telemetry.steps` round-trip; upsert `## Telemetry log`; contracts for auto/full Benchmark + Step 8 final-board Total time (state-hygiene, delivery-result, progress-board, STEP-DISPATCH, SKILL)
+- **Result**: Smoke test: omit `--elapsed` → exit 1; multi-step sum 95+0+40 → `totalElapsedSec: 135` + Telemetry log rows
+
+### [2026-07-19 17:10] Agent: {agent/runtime}
+- **Prompt**: Replace `.agents/plans/{slug}` with `{plansDir}/{slug}` (config check)
+- **Done**: Confirmed no `plansDir` config key — token `{plansDir}` ← `plans.dir`; scrubbed skill prose/examples; schema/example keep literal defaults; hubs document the mapping
+- **Result**: Skills use `{plansDir}/{slug}/`; config still `plans.dir`
+
+### [2026-07-19 17:00] Agent: Cursor Grok
+- **Prompt**: ship-pr should wait for code-review and merge after no open issues (goal-fix-pr)
+- **Done**: Clarified `08-ship-pr` Phase 5–6 + GOAL-OVERRIDES; Step 9 / lite Step 5 wait→goal-fix→merge; goal-fix-pr merge handoff note; merged main into develop for PR #71
+- **Result**: Contract: never merge with open threads or red required checks
+
+### [2026-07-19 16:52] Agent: {agent/runtime}
+- **Prompt**: check-harness apply all (#1–#4)
+- **Done**: Restored+rewrote `.agents/AGENTS.md` (harness-neutral parity); cleared phantom `seniorDeveloper` paths in config example + local config; deleted `workflow-skills-0.0.55.tgz`
+- **Result**: Harness OK post-correction for critical packaged-hub gap
+
+### [2026-07-19 15:55] Agent: {agent/runtime}
+- **Prompt**: Portability rule in AGENTS.md; no compat; consumers choose asset paths; keep `.cursor` for upstream dogfood only
+- **Done**: Added root § Portability & harness neutrality; neutralized shipped defaults (`.agents/plans` / `.agents/codereviews`); `user-gate` / `dispatch-agent`; scrubbed host brands from skills + hubs + README; `ws-shared/config.json` stays `.cursor/plans` for this repo only
+- **Result**: Portable skill contract; no legacy path shims; host pointer files optional and out of skill contract
+
+### [2026-07-19 14:23] Agent: Cursor Grok
+- **Prompt**: `/08-ship-pr` create-pr (option 1)
+- **Done**: Prepare board green; merged `main` into `develop` (regen `docs/index.html`); pushed; reused/updated PR #72; 300s settle; threads 0 + review check pass; merged with merge commit; `develop` kept
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/72 merged (`0423b62`); package **0.0.54** on `main`
+
+### [2026-07-19 14:11] Agent: Cursor Grok
+- **Prompt**: Apply check-harness plan #1–#3 with #2A (promote secrets-leak-review into workflows)
+- **Done**: Fixed MEMORY prepare-checklist path; moved secrets into workflows (27) / Extra=2; `08-ship-pr`→secrets dep; hubs/CLI/site v0.0.51; trimmed PREPARE-CHECKLIST
+- **Result**: Harness OK post-correction; Workflows installs include leak scan for ship prepare gate
+
+### [2026-07-19 14:02] Agent: Cursor Grok
+- **Prompt**: Add prepare-to-PR checklist to ship-pr (coverage, build, tests, security, consumer ship steps, visible board); gate push/PR; monitor reviews → goal-fix-pr
+- **Done**: Added `08-ship-pr/PREPARE-CHECKLIST.md`; rewrote `SKILL.md` v1.9 (Steps 1–7 with prepare goal gate); aligned GOAL-OVERRIDES/examples + STEP-DISPATCH settle step ref
+- **Result**: ship-pr drives prepare board before commit/push/PR; green + SCM → create-pr; then monitor/`goal-fix-pr`
+
+### [2026-07-19 13:55] Agent: Cursor Grok
+- **Prompt**: No migration steps or older-version compatibility — always latest (package not in production)
+- **Done**: Removed CLI `SKILL_RENAMES` / migrate* paths and install-test Phases 2b/2c/5; docs/help say latest layout only; dropped `skipIntegration`/`us-workflow`/deprecated `invocation_names` + related orch/gates/setup/schema aliases
+- **Result**: Install/update copies current tree only; no older-folder rename path
+
+### [2026-07-19 13:50] Agent: Cursor Grok
+- **Prompt**: Update README, AGENTS, website, installer/bash, dependencies graph
+- **Done**: Trimmed Extra package to on-disk skills; retargeted hubs/README/CLI help/bash shim; `skill-dependencies.json` graph (goal-fix-pr deps + write-a-skill→writing-great-skills); site v0.0.48 + FSM 0–9 workflow cards
+- **Result**: Disk ↔ hubs ↔ installer map aligned (26 workflows + 3 extra); no phantom Extra routes
+
+### [2026-07-19 13:45] Agent: Cursor Grok
+- **Prompt**: Scan workflow/skill scripts for SyntaxError like `replace('\\', '/')` unterminated string
+- **Done**: Compiled all skill/bin/test `.py` (0 errors); `bash -n` on skill `.sh` (clean); no fragile pattern in repo. Documented trap in check-harness Phase 0 + MEMORY
+- **Result**: Repo scripts healthy; error was agent heredoc-only. Prefer `Path.as_posix()` / temp `.py` / `py_compile` in scans
+
+### [2026-07-19 13:42] Agent: Cursor Grok
+- **Prompt**: Fix secrets-leak-review hang/crash; graceful finish; reduce scripts; LLM-led findings
+- **Done**: Rewrote `SKILL.md` to Grep/Glob-only flow with hard tool budget + Done-when stop; demoted `secrets_scanner.sh` to optional pre-commit; removed `--no-ignore`/`-t all`/process-substitution hang path; capped hits; updated REFERENCE + pre-commit env
+- **Result**: Interactive skill no longer runs scanner; optional script exits ~2s on this repo (was unbounded hang)
+
+### [2026-07-19 13:40] Agent: Cursor Grok
+- **Prompt**: check-harness Phase 7 — adapt to unprefixed `goal-fix-pr` / `update-plan-implementation` (do not restore `10`/`11` folders)
+- **Done**: Retargeted hubs, deps, CLI renames, check-harness §3b, orch/providers/ship/fix links, tests/fixtures, README; rebuilt site (0.0.46); synced `test/package.json`
+- **Result**: Canonical folders are unprefixed; legacy `09`/`10`/`11` ids migrate via CLI; deprecated aliases only in `invocation_names`
+
+### [2026-07-19 13:25] Agent: Cursor Grok
+- **Prompt**: Rewrite/compose pipeline skills 01–11 with writing-great-skills + write-a-skill (same behavior)
+- **Done**: Pruned all eleven `SKILL.md` files to lead/invocation/steps+Done-when pattern; disclosed long templates to existing siblings (`TEMPLATE.md`, `GOAL-OVERRIDES.md`, `examples.md`, `README.md`, `plan-delta-template.md`, `config-resolution.md`); dropped autoload Prerequisites; patch-bumped versions; restored 300s settle + goal-loop auto-yes clarity on ship/fix
+- **Result**: ~895 lines removed net across 01–11; all ≤100 lines; contracts/artifacts/FSM steps preserved
+
+### [2026-07-19 13:20] Agent: Cursor Grok
+- **Prompt**: Rewrite `00-write-spec` using write-a-skill + writing-great-skills
+- **Done**: Pruned duplication; disclosed format to `spec-format`; sharpened step Done-when criteria; dropped autoload prerequisites; bumped version to 3.4
+- **Result**: Leaner `ws-write-spec` contract (~65 lines); behavior preserved (canonical path, optional mirror, handoff)
+
+### [2026-07-19 04:35] Agent: Cursor Grok
+- **Prompt**: Update website, AGENTS.md, README.md, npx installer, bash installer
+- **Done**: `bin/cli.js` pipeline `SKILL_RENAMES` (temp-stage cycle) + skip `__pycache__`/`*.pyc` on copy + help notes; README/AGENTS/packaged hub/install-skills.sh synced; site rebuilt; package `0.0.45`; Phase 2c install test for pipeline renames
+- **Result**: `npm run tests -- --local` PASSED (incl. us-workflow + pipeline migration). Site footer v0.0.45.
+
+### [2026-07-19 04:30] Agent: Cursor Grok
+- **Prompt**: Fix UnicodeEncodeError cp1252 / U+2192 (→) on Windows
+- **Done**: Hardened `ensure_utf8_stdio()` in 12 skill scripts (`encoding=utf-8`, `errors=replace` + fallback); documented Windows stdio rule in check-harness Phase 0
+- **Result**: Reproduced crash without reconfigure; scripts + UTF-8 reconfigure print `→` cleanly; `check_workflows` PASSED
+
+### [2026-07-19 04:28] Agent: Cursor Grok
+- **Prompt**: Remove missing/junk files from packages
+- **Done**: Excluded `**/__pycache__/` and `*.py[cod]` from npm pack (`.npmignore` + `package.json` `files` negations); tightened root `.gitignore`; deleted on-disk `__pycache__` under `.agents/skills`
+- **Result**: `npm pack --dry-run` no longer includes Python bytecode (`.npmignore` was overriding `.gitignore`)
+
+### [2026-07-19 04:25] Agent: Cursor Grok
+- **Prompt**: Fix contract drift after FSM redesign
+- **Done**: Aligned agent-facing contracts to steps 0–9: `04-implement-tasks` (Step 4 build / 6–7 fix; `step-06`/`step-07` findings), `update-plan-implementation` plan-delta (`step-08` result), `spec-to-pr-run-test.md`, `validate_state.py` comment, `stack.md.example` + `config.json.example` invariant key, root `STACK.md`; MEMORY entry compiled
+- **Result**: Pipeline skill step/artifact refs match orch FSM. FAQ body still LEGACY-bannered (intentional). Ask before check-harness / site.
+
+### [2026-07-19 04:15] Agent: Cursor Grok
+- **Prompt**: Update check-harness skill to notice the new structure of skills and paths
+- **Done**: Added § 3b canonical pipeline map (`00`–`11`, `ws-*`, FSM steps); retired-id table (`07-integration-validation`→`07-testing`, ship/fix renumbers); Phase 2 spot-check + Step↔folder / dual-hub checks; Phase 5 FSM map + folder matching; Phase 4b `skill-dependencies.json`; version `3.2-generic`
+- **Result**: check-harness aligned with post-rename pipeline layout
+
+### [2026-07-19 04:05] Agent: Cursor Grok
+- **Prompt**: Rename integration-validation to testing; check FSM redesign plan for missed items
+- **Done**: Renamed `07-integration-validation` → `07-testing` (`ws-testing`, deprecated aliases kept); fixed hubs/deps/site; rewrote stale `DIAGRAM.md` + `spec-to-pr/README.md` for FSM 0–9; FAQ legacy banner; gates Testing wording; orch frontmatter flag-combine notes; package `0.0.44`
+- **Result**: `check-workflows` and `npm run tests -- --local` passed. FAQ body still legacy-numbered (bannered).
+
+### [2026-07-19 03:55] Agent: Cursor Grok
+- **Prompt**: Rename skill folders according to step order and skill names
+- **Done**: Renumbered pipeline folders to match FSM steps: `11-ship-pr`→`08-ship-pr`, `08-fix-pr`→`09-fix-pr`, `09-goal-fix-pr`→`goal-fix-pr`, `10-update-plan-implementation`→`update-plan-implementation`; updated hubs, deps JSON, live refs, `test/` fixture, site catalog (`0.0.43`)
+- **Result**: `check-workflows` and `npm run tests -- --local` passed
+
+### [2026-07-19 03:50] Agent: Composer
+- **Prompt**: Implement Spec-to-PR reduced FSM redesign (standard 0–9, lite 0–5): plan→interview, check score gate, review fix substep, Testing step, combined ship, first-class fix-pr, shared entry, universal step controls
+- **Done**: Rewrote `spec-to-pr` and `spec-to-pr-lite` orchestrators, `STEP-DISPATCH.md`, `ARTIFACTS.md`, protocols, `ws-shared/gates.md`, `ws-shared/setup.md`, pipeline skills `05`–`07`/`09`/`11`, `check_workflows.py`, dual `AGENTS.md`, README, site catalog tagline
+- **Result**: `check-workflows` and `npm run tests -- --local` passed
+
+### [2026-07-19 00:36] Agent: Antigravity
+- **Prompt**: ensure ship-pr skill will run check commit status, pull, push, create pr for current scm config, monitor pr with goal-fix-pr and merge at the end; ensure spec-to-pr (subagents) and spec-to-pr-lite (inline) run independently sharing the same steps
+- **Done**: Updated `ws-ship-pr` in `.agents/skills/11-ship-pr/SKILL.md` to explicitly specify checking commit status, pulling remote updates, pushing local changes, creating a PR using the SCM configuration, monitoring PR review threads using `goal-fix-pr`, and merging. Documented independent execution and state isolation between `spec-to-pr` (standard) and `spec-to-pr-lite` (lite) using `workflowType`. Updated `spec-to-pr-lite/SKILL.md` to explicitly instruct inline execution for all step tasks within the main session, in contrast to the standard orchestrator's subagent task dispatching. Updated root `AGENTS.md` and packaged `.agents/AGENTS.md`.
+- **Result**: Re-compiled site (bumped package to `0.0.40`). Validated E2E installation test suites and workflow FSM step continuity checks successfully.
+
+### [2026-07-18 19:59] Agent: Antigravity
+- **Prompt**: update README.md and AGENTS.md, website for self-Contained and Non-Intrusive Installation Process
+- **Done**: Updated `README.md` and `AGENTS.md` to document the optional consumer-configured root files (`.cursorrules` pointer and `CHANGELOG.md` history) instead of describing them as automatic installer seeds, matching the new clean and non-intrusive installer behavior. Re-compiled the website catalog to version `0.0.39`.
+- **Result**: Validated E2E installation test suite and checked documentation alignment.
+
+### [2026-07-18 19:57] Agent: Antigravity
+- **Prompt**: inspect deeply the installation process (npx, bash) and remove changes to consumers when installing/consuming workflow skills. Make workflows compatible, generic, portalble, self-contained, focused on its tasks and do not force/require that the consumer should make modifications in his harness.
+- **Done**: Removed consumer root-level side effects (seeding `.cursorrules` and `CHANGELOG.md`) from `bin/cli.js` to ensure the installation is completely self-contained under `.agents/` and does not write files outside `.agents/` in the consumer's repository. Updated E2E test assertions in `test/test-install.js` to reflect the clean installer behavior and bumped package version to `0.0.38`.
+- **Result**: Checked and confirmed E2E install tree verification tests PASSED successfully.
+
+### [2026-07-18 19:55] Agent: Antigravity
+- **Prompt**: scan contents of worfklow skills and remove / replace Cursor text in skills or any other references to specific ides/harnesses. Use IDE/generic keywords.. Make skills contents compact, generic, portable.
+- **Done**: Removed specific IDE references to "Cursor" (such as "switch in Cursor" and "Cursor model picker") from the instructional texts in `spec-to-pr-lite/SKILL.md`, `spec-to-pr/SKILL.md`, `spec-to-pr/README.md`, `ws-shared/gates.md`, and `ws-shared/setup.md`, replacing them with generic terminology (`IDE`, `IDE/agent host`, `IDE/agent host model picker`). Replaced MCP tool name `cursor-ide-browser` with `ide-browser` in `ws-shared/tools.md`. Bumped package version to `0.0.37`.
+- **Result**: Re-verified E2E integration test suites and check-workflows continuity scans successfully.
+
+### [2026-07-18 19:48] Agent: Antigravity
+- **Prompt**: add invocation names (keep prefixed folders untouched), prefix skill internal names to ws-{skill-name} for each 00-nn skills. The skill internal names is ws-write-spec, ws-write-plan, etc). the skills can be invoked with write-spec or ws-write-spec, 00-write-spec.
+- **Done**: Prefixed the internal `name:` field in frontmatter of the 12 step skills (`00-write-spec` to `11-ship-pr`) to `ws-{skill-name}`, and added an `invocation_names` list to each containing the three invocation variations. Updated skill loading triggers, FSM tables, task routers, and step dispatch references in `AGENTS.md`, `.agents/AGENTS.md`, `spec-to-pr/SKILL.md`, `spec-to-pr-lite/SKILL.md`, `spec-to-pr/STEP-DISPATCH.md`, and `spec-to-pr/ARTIFACTS.md`. Updated E2E tests in `test-install.js` and regenerated the site catalog to version `0.0.36`.
+- **Result**: All E2E install tests and check-workflows continuity validation tests PASSED successfully.
+
+### [2026-07-18 19:38] Agent: Antigravity
+- **Prompt**: Add personas for each step skill (00-nn) according to the skill goal (as a senior developer, as a code reviewer, as a product manager, as a senior qa tester, etc).
+- **Done**: Added role-specific persona sections to each of the 12 step skills (`00-write-spec` to `11-ship-pr`) defining their respective roles (Product Manager, Technical Architect, Tech Lead, Scrum Master, Developer, QA, Code Reviewer, Release Manager, DevOps, etc.) directly under the introductory paragraph of their `SKILL.md` files.
+- **Result**: Checked file structure consistency, ran meta-harness validation and E2E install tree verification tests successfully.
+
+### [2026-07-18 14:03] Agent: Antigravity
+- **Prompt**: fix it all, check install npx and bash, update readme.md and agents.md, update website (put a theme more light, not so dark)
+- **Done**: Fixed broken link in `REFERENCE.md`, corrected plan link targets in `2026-07-17-session-model-gates.md`, sorted `CHANGELOG.md` in reverse-chronological order and updated the `changelog` skill template rules to insert at the top. Patched shell options syntax in `install-skills.sh` and created `.gitattributes` to enforce LF endings on script checkouts. Redesigned the website catalog style to a modern Light Slate theme, verified with local server + browser subagent screenshots, and bumped the package version to `0.0.34`.
+- **Result**: Link verification PASSED (0 broken links), FSM workflow validator PASSED, installer dry-run tests PASSED, and the light theme catalog site successfully built.
+
+### [2026-07-17 23:26] Agent: Cursor Grok 4.5
+- **Prompt**: Step 13 ship-pr — create PR develop→main for US #65+#66 harness fixes, goal-fix-pr, merge.
+- **Done**: Pushed develop (incl. remote merge), opened PR #68, waited Agentic Code Review (pass), zero review threads, merged without deleting develop; closed #65 and #66.
+- **Result**: MERGED — https://github.com/jpolvora/workflow-skills/pull/68 — merge `e98a298`.
+
+### [2026-07-17 16:05] Agent: Cursor Grok
+- **Prompt**: Sync website, FAQ, README, AGENTS, installer, package deps after session-model gates
+- **Done**: Root/packaged hubs + README + FAQ TOC/arch note; site workflows copy; CLI/`install-skills.sh` notes; `0.0.31`→`0.0.32`; `build-site` now updates layers badge; `test/package.json` synced; install tests pass
+- **Result**: Docs/site/installer aligned; package `0.0.32`
+
+### [2026-07-17 15:57] Agent: Cursor Grok
+- **Prompt**: Align residual phase soft-tip wording; commit
+- **Done**: `DIAGRAM.md` + `SKILL.md` phase soft tip / `model-hint` log rename
+- **Result**: Wording aligned; commit pending
+
+### [2026-07-17 15:55] Agent: Cursor Grok
+- **Prompt**: Apply check-harness corrections #1–#3 (phase soft-tip wording)
+- **Done**: FAQ †4/8, STEP-DISPATCH, validate/update_state comments+`PHASE_SOFT_TIP_STEPS` rename
+- **Result**: Revalidate clean on touched files
+
+### [2026-07-17 15:50] Agent: Cursor Grok
+- **Prompt**: Simplify model selection at step transitions (session model; Pause → Cursor → Resume)
+- **Done**: Updated `gates.md` / `setup.md` / state hygiene / progress board / both orchs / FAQ / README — drop in-gate Switch model and `--model`/`--model-chain`; soft tips at F1→F2 and F3→F4 only
+- **Result**: Session-derived `currentModel`; switch path clarified every gate; design+plan under `docs/superpowers/`
+
+### [2026-07-17 15:05] Agent: Cursor Composer
+- **Prompt**: Apply check-harness follow-ups; review README/AGENTS/site/package; prepare ship-pr
+- **Done**: Linked `STEP-DISPATCH`/`ARTIFACTS`/`README`/`DIAGRAM` to `protocols/*`; updated hub dual-mode gate wording; removed empty `cursor-rules/`; bumped package to 0.0.31; rebuilt site
+- **Result**: Tests + check-workflows pass; ready for PR
+
+- **Prompt**: Simplify AskQuestion + slim dual-mode workflows (spec-to-pr / lite)
+- **Done**: Made AskQuestion preferred-with-markdown-fallback in `gates.md`, `tools.md`, both orchs; removed `ask-question-gates.mdc`, setup step 1a, packaged Active rules section; extracted `spec-to-pr/protocols/*`; cut `spec-to-pr/SKILL.md` to 483 lines; updated FAQ
+- **Result**: No session probe / FORCE ceremony; gates still require explicit user choice in normal mode
+
+### [2026-07-17 14:20] Agent: Cursor Grok
+- **Prompt**: Sync README/AGENTS/site/installers/packs/UI after US 60; test and ship-pr
+- **Done**: Documented STEP-DISPATCH dual-mode + root seeds across hubs/README/FAQ/site/bash shim/package files/agentic prompt; enhanced install-packages site copy; nav Packages link
+- **Result**: Pending build-site + local tests + ship
+
+### [2026-07-17 14:11] Agent: Cursor Grok
+- **Prompt**: `/check-harness` apply all corrections (#1–#4)
+- **Done**: Added MIT `LICENSE`; root `.cursorrules` → AGENTS.md; ARTIFACTS pointer to STEP-DISPATCH; DIAGRAM build node uses stackFile/config wording
+- **Result**: Phase 2 revalidate clean on touched files
+
+### [2026-07-17 14:07] Agent: Cursor Grok
+- **Prompt**: `/spec-to-pr 60` — portable harness improvements from consumer check-harness (External Dependencies, STEP-DISPATCH, en-us, CLI seeds)
+- **Done**: AC1–AC6 on disk; dual-mode STEP-DISPATCH scoping; `test/package.json` 0.0.29 sync; delivery plan+result committed; MEMORY traps for dual-mode / version sync / retired-id vs artifacts
+- **Result**: develop @ `cfe256f`; AC7 full check-harness still open before main; ship gate pending
+
+### [2026-07-17 13:55] Agent: Cursor Grok
+- **Prompt**: US 60 AC6 — CLI create-if-missing seeds for root `.cursorrules` and `CHANGELOG.md` plus install tests
+- **Done**: Added `ensureRootConsumerSeeds()` in `bin/cli.js` (hooked after hub consumer artifacts); documented in CLI help and README; Phase 10 in `test/test-install.js` asserts create-once and no-clobber
+- **Result**: `npm run tests -- --local` pass; existing root files never overwritten
+
+### [2026-07-17 11:40] Agent: Cursor Composer
+- **Prompt**: Update README/AGENTS, website install cards (wide, one cmd/row, copy), npx + bash installers.
+- **Done**: Synced consumer-owned `shared/` docs; `#install` full-width cards with per-command Copy; CLI help + curl shim banners; `verify.sh` PYTHONUTF8 for python -c.
+- **Result**: Docs/installers/site aligned on `npx --yes` and shared consumer data contract.
+
+### [2026-07-17 11:35] Agent: Cursor Composer
+- **Prompt**: check-harness apply all — shared hub owns consumer data (MEMORY, stack, config).
+- **Done**: Moved MEMORY to `shared/`; `stack.md.example` + preserve/seed `stack.md`; installer migration from legacy self-learning paths; docs/task routers/`self_learning.py`/tests updated.
+- **Result**: Harness OK post-correction; `npm run tests -- --local` passed (Phases 5+9 cover shared memory/stack).
+
+### [2026-07-17 11:25] Agent: Cursor Composer
+- **Prompt**: Never leak upstream MEMORY.md / project-specific artifacts to consumer installs; seed fresh or preserve existing.
+- **Done**: Installer never copies `MEMORY.md`/`memory/`/`config.json` from upstream; seeds empty `MEMORY.md` from template; npm pack excludes compiled memory + `ws-shared/config.json`; fixed `check_memory_conflict.py` MEMORY path; Phase 9 install tests.
+- **Result**: `npm run tests -- --local` passed including MEMORY isolation; pack dry-run has no leaked memory/config.json.
+
+### [2026-07-17 11:15] Agent: Cursor Composer
+- **Prompt**: Update obsolete bash curl install; pair with npx install.
+- **Done**: Replaced flat-copy `install-skills.sh` with thin shim → local `bin/cli.js` or `npx --yes github:jpolvora/workflow-skills`; updated README, `docs/index.html` curl section, and CLI help note.
+- **Result**: `bash install-skills.sh --help` delegates to Node CLI; curl path shares same argv (`bash -s -- install --full --yes`).
+
+### [2026-07-17] Agent: Cursor Grok
+- **Prompt**: Enforce AGENTS.md = agent README, README.md = human README; rewrite both as needed.
+- **Done**: Rewrote root `AGENTS.md` (audience banner, doc-roles table, agent contracts) and `README.md` (human install/overview/contribute); aligned `.agents/AGENTS.md`, `ws-shared/AGENTS.md`, `check-harness` hub table, and site footer with the same split.
+- **Result**: Clear audience separation; facts (install commands, preserved `shared/` files) stay aligned across both docs.
+
+### [2026-07-16 06:05] Agent: Cursor Grok
+- **Prompt**: Promote shared skills to top-level installables; packages Full/Workflows/Extra; dep map + site section; ship via full auto spec-to-pr.
+- **Done**: Moved 7 skills to `.agents/skills/<name>/`; `skill-dependencies.json` + CLI packages/migration; harness/site/README/tests; PR #55 develop→main.
+- **Result**: Merged https://github.com/jpolvora/workflow-skills/pull/55 (merge `4ed6d3a`); Agentic Code Review passed; workflow complete.
+
+### [2026-07-15 22:10] Agent: Cursor Grok
+- **Prompt**: Apply all check-harness Phase 7 corrections (H1–H7 + S1–S5).
+- **Done**: Fixed shared-config primary paths in hubs; en-us DIAGRAM/TEMPLATE/tdd-reviewer; check-workflows prose + relative script link; domain-review REPORT link; shared AGENTS hyperlinks; FAQ/DIAGRAM dual-mode pointers; Task router check-workflows row; rebuilt site catalog.
+- **Result**: H1–H7 + S1–S5 applied; check-workflows PASSED; docs/index.html regenerated (package 0.0.24).
+
+### [2026-07-15 21:45] Agent: Cursor Grok
+- **Prompt**: Apply full spec-to-pr optimization plan; keep dual-mode compatible with lite; optimize lite too.
+- **Done**: Added ws-shared/gates.md + config-resolution.md; slimmed transitions (Advance/More); collapsed delivery+ship gates; formalized complexity/stub plan; conditional interview; quick-score verify; fixed --full/docs contradictions; deduped config/SCM to ws-shared/config.json across 08/09/11/providers; rewrote lite orch for gate parity; updated FAQ/DIAGRAM/README/AGENTS.
+- **Result**: check-workflows PASSED; orch 957→865 lines; dual-mode contracts documented. Optional: check-harness + build-site.
+
+### [2026-07-13 16:55] Agent: Cursor Composer
+- **Prompt**: Fix remaining UTF-8 encoding problems in Python scripts across the project; record as important learning.
+- **Done**: Hardened all skill Python entrypoints with `ensure_utf8_stdio()`; fixed `11-ship-pr/scripts/verify.sh` `python -c` config reads to `Path.read_text(encoding='utf-8')`; set `subprocess.run(..., text=True, encoding='utf-8')` in both `update_state.py` variants; appended MEMORY trap for Windows cp1252 vs UTF-8.
+- **Result**: 14 Python scripts compile clean; no remaining bare text opens in skill scripts (security-review examples excluded).
+
+### [2026-07-13 10:50] Agent: Composer
+- **Prompt**: Step 5 L5 / T14 — Docs polish + build-site
+- **Done**: Strengthened root README `update --include-new` for the three provider skills; updated `spec-to-pr/tools.md` SCM tools to resolve via providers; added FAQ section for provider paths + `--include-new`. Regenerated `docs/index.html` via `node bin/build-site.js` (33 skills, providers listed).
+- **Result**: T14 acceptance met; Step 5 DAG T1–T14 complete; no commit of `.cursor/plans/`.
+
+### [2026-07-13 10:45] Agent: Composer
+- **Prompt**: Step 5 L4 / T13 — Update install tests for providers + shims
+- **Done**: Extended `test/test-install.js` Phase 0b/2: assert three provider SKILL.md + dual-mode smoke, canonical converter scripts, AC9 shim paths under `spec-to-pr/scripts/`, `providers.active`/`scm` in config example; prefer removing a provider when testing `--include-new`; document consumer `--include-new` in test comments.
+- **Result**: `npm run tests -- --local` exit 0.
+
+### [2026-07-13 10:40] Agent: Composer
+- **Prompt**: Step 5 L3 / T9 — Wire 11-ship-pr to providers.scm
+- **Done**: Updated `.agents/skills/11-ship-pr/SKILL.md` (v1.3) Phases 4–6 to resolve `providers.scm`, load github/azure-devops provider, and dispatch `create-pr` / checks / `merge-pr`. Removed GitHub-only `gh pr` happy path; kept dual-mode and never-delete workingBranch rule.
+- **Result**: T9 acceptance met; no commit.
+
+### [2026-07-13 10:35] Agent: Composer
+- **Prompt**: Step 5 L2 / T8 — Wire 00-write-spec optional mirror to local-spec-provider
+- **Done**: Updated `.agents/skills/00-write-spec/SKILL.md` (v3.2) with optional `--mirror` flag, post-draft pipeline step delegating to `register_local_spec.py --mirror`, and dual-mode notes. Canonical remains `{us-dir}/step-00-{slug}.spec.md`.
+- **Result**: T8 acceptance met; no commit.
+
+### 2026-07-13 — Consumer audit follow-ups (portability + rename residue)
+- **Prompt**: Promote generic harness fixes from FiscalWR check-harness audit into workflow-skills.
+- **Done**: Fixed `spec-to-pr` Step 6 dispatch (`05-verify-plan`); corrected relative links (`plan-delta-template`, config.json links inside skill); pointed karpathy/senior-developer refs at shipped extra-skills + `AGENTS.md` § External Dependencies; fixed UTF-8 `§`/`·`; updated `config.json.example` karpathy path; documented dual-hub consumers; soft-warn ADO legacy fallback; added `specs/domains/index.md.example`; check-harness detects retired skill ids.
+- **Result**: Pending local validation / commit by maintainer.
+
+### 2026-07-12 15:20 Agent: Antigravity
+- **Prompt**: Separate Step 2 refinement output to step-02-{slug}.plan.refined.md, add refinement status metadata, and implement fallback logic in Step 3.
+- **Done**: Configured `01-write-plan` to output plan files with `status: "plan to be refined"`. Configured `02-interview` to output refined plans to `step-02-{slug}.plan.refined.md` with updated status `"plan refined ok"`. Modified `03-plan-to-tasks` to check for `step-02` refined plan and fall back to `step-01` if Step 2 was bypassed. Updated orchestrator definitions, artifact lists, Delivery Result, and Cleanup protocols in `spec-to-pr` to integrate and preserve the step-02 refined plan.
+- **Result**: Installation and package tests pass cleanly, catalog site successfully updated.
+
+### 2026-07-12 15:10 Agent: Antigravity
+- **Prompt**: Improve/enhance artifacts naming for each step of spec-to-pr with step prefixes, translate legacy Portuguese to English, and improve project portability.
+- **Done**: Renamed all step-generated artifact filenames to step-prefixed format (e.g., `step-01-{slug}.plan.md`, `step-12-{slug}.result.md`) across orchestrator logic, downstream skills, README, and test suites. Translated legacy Portuguese text to English (en-us) in `validate_state.py`, `check_memory_conflict.py`, `github-issue-to-spec.py`, `domain-review`, `multi-domain-review`, and `09-goal-fix-pr`. Generalized hardcoded `Matrix` solutions, namespaces, and build/test commands to make skills portable. Added language compliance and portability scan phases to `check-harness.md`.
+- **Result**: Successfully ran packaging tests (`npm run tests -- --local`) and rebuilt site catalog. All 29 skills packaged and verified.
+
+### 2026-07-12 14:53 Agent: Antigravity
+- **Prompt**: Review the spec-to-pr edge-to-edge process, execute it in dry-run mode, find opportunities to enhance/compact/stabilize it, and implement improvements.
+- **Done**: Simulated the end-to-end dry-run execution of `spec-to-pr` for `specs/test-workflow.spec.md` by generating all expected plans and state files under `.cursor/plans/test-workflow/`. Created `update_state.py` to automate state hygiene updates and step transitions, avoiding manual markdown/yaml editing errors. Fixed list parsing type-conversion bugs in `update_state.py` to prevent sorting errors. Updated `SKILL.md` to reference `update_state.py` while keeping a manual fallback. Cleaned up simulated folders, ran local skill package tests, and rebuilt the catalog website.
+- **Result**: The dry-run state validator passes fully, local installation tests pass cleanly, and the catalog website is updated.
+
+### 2026-07-12 14:31 Agent: Antigravity
+- **Prompt**: Create an install test for workflow-skills consumed by a test project and update AGENTS.md to allow install from remote only for the test/ folder.
+- **Done**: Modified AGENTS.md to allow remote installation only within the test/ directory. Created a test/ folder, initialized an empty package.json inside it, packed workflow-skills as a tarball, ran a clean npm installation of the packaged dependency inside test/ using the interactive installer, added a .gitignore to ignore .agents/ and node_modules/, added an automated test script (test/test-install.js), registered "npm run tests" in the root package.json, updated README.md and AGENTS.md with safety, reliability, and verification documentation, and documented the website catalog build process.
+- **Result**: Successfully verified installation by populating L:\source\workflow-skills\test\.agents\skills\ with all 29 skills, all of which are correctly ignored from version control. Both remote installation (npx github:jpolvora/workflow-skills) and local installer tests pass fully, documentation has been updated, and Pull Request #19 to main has been created.
+
+### 2026-07-12 03:01 Agent: opencode
+- **Prompt**: ship-pr (11-ship-pr pipeline)
+- **Done**: Fixed merge instruction in SKILL.md — removed `--delete-branch` to never delete branch after merge
+- **Result**: PR #18 merged to main
+
+### 2026-07-12 02:47 Agent: opencode
+- **Prompt**: Add .yml/.yaml scanning to secrets-leak-review skill and ship PR
+- **Done**: Added general yml/yaml tracked-file detection to secrets_scanner.sh, added yml/yaml patterns to .gitignore audit in both script and SKILL.md, added dedicated YAML content scan command for common secret key names, added sensitive file patterns (.env, *.pem, *.key, etc.) to .gitignore
+- **Result**: PR #16 merged to main
+
+### 2026-07-12 — Force AskQuestion + fix validate_state REPO_ROOT
+- **Prompt**: Promote FiscalWR consumer fixes for `spec-to-pr` gates and state validation into upstream workflow-skills.
+- **Done**: Added § AskQuestion requirement (FORCE invoke / probe / fallback-only-after-failure) in `spec-to-pr/SKILL.md` and `tools.md`; fixed `validate_state.py` `REPO_ROOT` to `parents[4]` (was resolving to `.agents`); shipped `cursor-rules/ask-question-gates.mdc` (+ hub `.cursor/rules/` copy); setup bootstrap copies the rule when missing; FAQ + MEMORY traps updated.
+- **Result**: Consumer gate UX and state-path resolution match the corrected FiscalWR harness.
+
+### 2026-07-12 — Spec entry: GitHub, Azure DevOps, hand-written
+- **Prompt**: Ensure compatibility with gh, ADO, and hand-written specs.
+- **Done**: Added `ado-workitem-to-spec.py`; expanded Specification Protocol with concrete fetch/register steps for GitHub (`gh` + `github-issue-to-spec.py`), Azure DevOps (`ADO {id}` / `{org}/{project}#{id}`), and local `*.spec.md` copy/normalize; updated ARTIFACTS, FAQ, README, spec-format, config.example.
+- **Result**: Install tests pass; offline ADO/GitHub converters smoke-tested.
+
+### 2026-07-12 — Rename orchestrator `us-workflow` → `spec-to-pr`
+- **Prompt**: Rename us-workflow to spec-to-pr across the multi-workflow hub; migrate consumers.
+- **Done**: Renamed skill folder and all references; legacy invoke aliases kept; CLI `update` migrates `us-workflow` → `spec-to-pr` preserving `config.json`; AGENTS/README frame repo as multi-workflow hub; runtime tokens `uswf/` and `us-{id}` unchanged.
+- **Result**: Catalog rebuilt; install tests cover rename migration.
