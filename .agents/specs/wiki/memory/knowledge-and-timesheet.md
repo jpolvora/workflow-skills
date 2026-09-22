@@ -1,6 +1,6 @@
 # Knowledge & Timesheet (`memory`)
 
-> Provenance: `.agents/skills/ws-self-learning/SKILL.md`, `.agents/skills/ws-changelog/SKILL.md`, `.agents/skills/ws-spec-memo/SKILL.md`, `.agents/skills/ws-activity-report/SKILL.md`, `.agents/skills/ws-pre-daily/SKILL.md`, root `AGENTS.md` § Memory + changelog, living synthesis of specs 0018, 0021, 0033, 0034, 0048, 0049.
+> Provenance: `.agents/skills/ws-self-learning/SKILL.md`, `.agents/skills/ws-changelog/SKILL.md`, `.agents/skills/ws-spec-memo/SKILL.md`, `.agents/skills/ws-activity-report/SKILL.md`, `.agents/skills/ws-pre-daily/SKILL.md`, root `AGENTS.md` § Memory + changelog, living synthesis of specs 0018, 0021, 0033, 0034, 0048, 0049, 0114-patterns-generator-shared-hub-output.
 
 ## Feature
 
@@ -13,6 +13,8 @@ The backend matrix supports local-only, vault-only, dual, and disabled-none comb
 Before plan, code, or fix work, agents gather three to eight keywords plus touched file paths and consult MEMORY or the vault via the configured routing order. Subagents touching layered files must prove `pattern_consult` and `memory_consult` in step output. Code review sweeps compiled entries against the diff for missed traps.
 
 Failure reflection is mandatory when two or more tool, test, or build failures occurred before passing; `Learning: N/A` is forbidden in that case. Real reviewer or CI mistakes from fix-PR rounds persist the same way. Adversarial audits with `REFUTED` or `CAVEATS` verdicts require High or Critical trap entries. `ws-spec-memo` never duplicates vault `SURFACE.md` and adds no MCP tools to this package; disabled vault remains the recommended default with warnings only when integration is enabled but the vault is missing.
+
+Pattern learning closes the loop into reusable project knowledge. Self-learning runs compile their traps into a generated project-patterns body that is stored under the shared hub output, so later skill generations and plan interviews consult the persisted patterns instead of rediscovering them. The generator and the memory track share the same hub root and the same layout classification, which keeps the stored body discoverable from any later run.
 
 Invoice timing through `ws-activity-report` treats Human Total as inclusive of agent supervision, requiring Human ≥ Agent Running when agent time is positive. Idle or AFK gaps over 30 minutes are non-billable and reported separately. `ws-pre-daily` is read-only over git, plan states, and changelog, classifying the window into Delivered, Made, Ongoing, Next, and Gaps with stable headings.
 
