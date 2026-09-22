@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "4a9e86d919a77998aa5645848ecebd3fb212a4142ab01fe033b18010f7cf4506",
+  "fullPackageDigest": "2274fa88a398263020f0524c278e0041ab0e42afd1a1bb0c4b55b85cc24f0f8f",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -509,7 +509,7 @@
         "PROTOCOLS.md": "3ce203e8a1128a2e5270e49e70da18b7e428f8633027dc00ef2d3c8074d97643",
         "README.md": "5440b572d91cd0f0e6e6f5d9e005f85b66e9eb7fd20f046242c52f608e7c705a",
         "SKILL.md": "0f6b2f0bd8af29abe41b2ec24921c0c6eaa5e03d95044f2ac1f3e2caf06fec45",
-        "STEP-DISPATCH.md": "a1afc84aefb941072948abe12bdb9c4419a9a30a1fd326136f0a3aa9d65b6116",
+        "STEP-DISPATCH.md": "a61ac080539b82c5e5462a1e0f0a5edbdbaa4b1929d2c6bf9cf12c95056b1a64",
         "WORKER-TURN-RULES.md": "bcd9848443d17da5b390d98e27c42083bfc22c3167c8ea9ea448784928844ea3",
         "docs/faq.md": "9100af8db6f817e82aff726b95c86e7a3447b91cbac48a206ce9e539eea7ae38",
         "evals/evals.json": "e696da923c1994e6aa9a380d0bc76b4fb9560ca5eacf1c4a278712ef710dbbde",
@@ -538,16 +538,16 @@
         "scripts/write_verification_manifest.cjs": "d2c2420752e063b604e438ce5a4b4398fb456ba4e5be71f45b00e20523b7c89d",
         "ws-spec-to-pr-run-test.md": "417b103bc5ea94cd83dbaaa71aa973cbf23e29f73d7ca567667b2870be914560"
       },
-      "skillDigest": "7b7a744655aacec63b1ec361300f995b3775a3e32dae139df388cdc68f69044f"
+      "skillDigest": "c9a5c2f594e64713c8f1e6c9728d07cb541efcbadd341e798f1437fcd0acae11"
     },
     "ws-spec-to-pr-lite": {
       "files": {
-        "SKILL.md": "f4423920485819a0f1c8327d8f27efaceef12f4ce26f299e1f9ef0332e1e1263",
+        "SKILL.md": "0386f2c2800b1d2515ba3e13cf1a21c56e289213350b8c329f0e0cdd43b60758",
         "evals/evals.json": "aa3d9012fadc486d422bf3913564f40c1e08a2f239b6fd1aa19d87f4725c8604",
         "scripts/update_state.cjs": "77761c3e8d1b92bd6448d0d9a2ae02ad0e741b21b274407115f1cd65aa0ef7be",
         "scripts/validate_state.cjs": "2009fd1371ccdddcea82044a30e5ce4bc07f3353e3e68b3773a7e2dc4646f400"
       },
-      "skillDigest": "24edce8b25e5d67a0f880cd1119711378c5d71a8ecf8ae7bdb01e9eecd95575c"
+      "skillDigest": "18e821d1966887723b1c6fed29a053cf7127306f0e994b0fc86e77b96e990f65"
     },
     "ws-spec-update": {
       "files": {

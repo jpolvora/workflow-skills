@@ -308,6 +308,32 @@ assert(
   'matrix: custom folder resolves tokens',
 );
 
+// Round-2: terminal transitions wire the executable runbook (helper → gate → collector → telemetry)
+assert(
+  /resolve_proof_of_work\.cjs --config \{sharedDir\}\/config\.json --slug \{slug\} --project-root \{projectRoot\}/.test(stepDispatch),
+  'STEP-DISPATCH.md runbook invokes the helper with config/slug/project-root',
+);
+assert(
+  stepDispatch.includes('--gate-decision start|skip'),
+  'STEP-DISPATCH.md runbook passes the gate decision to the helper',
+);
+assert(
+  stepDispatch.includes('proof-of-work | started:{folder}'),
+  'STEP-DISPATCH.md runbook records the start telemetry event',
+);
+assert(
+  stepDispatch.includes('proof-of-work | skipped:{reason}'),
+  'STEP-DISPATCH.md runbook records the skip telemetry event',
+);
+assert(
+  /invoke the `proof-of-work` collector/.test(stepDispatch),
+  'STEP-DISPATCH.md runbook dispatches the collector on start',
+);
+assert(
+  /helper → gate → collector invoke → telemetry/.test(liteSkill),
+  'ws-spec-to-pr-lite Step 5 wires the same runbook after convergence',
+);
+
 if (failures > 0) {
   console.error(`\n${failures} failure(s)`);
   process.exit(1);
