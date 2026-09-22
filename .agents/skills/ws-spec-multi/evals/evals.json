@@ -21,6 +21,18 @@
         "References ws-shared/config.json or configure-project when config missing",
         "Does not invent project-specific metadata"
       ]
+    },
+    {
+      "id": 3,
+      "prompt": "/spec-multi — duplicate queue row: transitioning an item to in_progress appends a second row for the same slug instead of updating the existing row",
+      "expected_output": "Agent updates the existing row in place keyed by specPath/slug, fails closed on a duplicate index or slug, and keeps the item count frozen at the Phase 2 selection length.",
+      "assertions": [
+        "Transitions update the existing row keyed by specPath or slug instead of appending a new row",
+        "A write that would duplicate a row index or slug fails closed and surfaces the conflict rather than writing the file",
+        "The reported item count equals the Phase 2 selection length (totalItems) and stays constant while items ship",
+        "After close, the state table holds exactly one terminal row per selected spec with no phantom pending rows",
+        "Per-row updatedAt and run frontmatter updatedAt advance on each transition"
+      ]
     }
   ]
 }
