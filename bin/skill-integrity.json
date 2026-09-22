@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "baa69831aec6aae4723b5d0d34d5c40167049e1b81562796008b78dcdb11cc0a",
+  "fullPackageDigest": "04b548252b89b2cce224ef7dd12579d65ae7421e9327dac6b4a8d193dae6978a",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -48,7 +48,7 @@
       "runtime/scripts/step_baton.cjs": "d18f4bd9cf4720c6bf5d3322c8a143a64c94593cce480f4577341f294645d071",
       "runtime/scripts/validate_json_schema.cjs": "c6901a6ad2ed4fde4e5a6fcd85ebaa8b4c31f5707924f2928d25392d502dbbd9",
       "runtime/scripts/workflow_state.cjs": "dbae9615738b71b03a5e882af9c75ba30e83dece5fbd16a46ccaea0711884f8b",
-      "runtime/setup.md": "61479e90694975b07686a245dfc3a10220473ddefbd18282809e4727d4a2aa26",
+      "runtime/setup.md": "16ce25751472da10061d71636af309d879c3f7f46d67eb2d690842656c7b16b9",
       "runtime/skill-dependencies.json": "d051ebececdf8ff3b5621a64a49d755fd2c4d41b70eb2f4f1a1b6d21c18e567a",
       "runtime/stacks/abp-angular.md": "fc728fb3d39373b91f7bb4e0a719a24abc995a643fd55c856603a2a1f7bfd742",
       "runtime/stacks/nextjs-react.md": "a852fc0db314c4b99c0d1e7e0a16978bd30df732480536aebe82982a72e09bad",
@@ -63,7 +63,7 @@
       "templates/STACK.md.example": "829b7d3fce62b8167905fc1d921ee744db1d7e8ef895b0e7eb969f089973bebd",
       "templates/config.json.example": "d45e4bbf1464a3352df73a5c1b0d97bf36e2245791888d37054a73f143bef47b"
     },
-    "skillDigest": "2fefc86c663d064f24cf58d2fa8a00682546c02f96bbb1d54899616e7743ba1a"
+    "skillDigest": "854485a2493cdbbd791624ca257f49c0f0d3643dd044d115b3016837644ad2e8"
   },
   "packageVersion": "0.4.59",
   "skills": {
