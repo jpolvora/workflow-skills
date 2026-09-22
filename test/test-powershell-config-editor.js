@@ -600,6 +600,19 @@ assert(
   guiScript.includes("$script:AppVersion = '1.1.0'"),
   'AppVersion 1.1.0 marker is missing'
 );
+const scriptLines = guiScript.split(/\r?\n/);
+const mixedCalls = scriptLines.filter((l) => l.includes('Add-ConfigFieldRow') && l.includes('Add-SectionHeader'));
+assert.strictEqual(
+  mixedCalls.length,
+  0,
+  'Section-header calls must stand on their own line, never share one with Add-ConfigFieldRow: ' + mixedCalls.slice(0, 2).join(' | ')
+);
+const danglingSections = scriptLines.filter((l) => /^-Section\s/.test(l));
+assert.strictEqual(
+  danglingSections.length,
+  0,
+  'No continuation line may start with a bare -Section argument: ' + danglingSections.slice(0, 2).join(' | ')
+);
 console.log('  PASS: Section headers (' + headerCalls.length + ' groups), tab order, and dirty cue validated.');
 
 console.log('\nALL 11 POWERSHELL CONFIG EDITOR TESTS PASSED.');
