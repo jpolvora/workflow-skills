@@ -1,6 +1,6 @@
 ---
 name: ws-cleanup
-version: 0.4.51
+version: 0.4.52
 disable-model-invocation: true
 description: >-
   Lists disposable workflow leftovers (telemetry, .runtime, fix-pr temps,
@@ -70,6 +70,6 @@ cleanup workflow leftovers
 ## Rules
 
 - Positive enclosure: delete only paths returned by `list_disposable` and re-checked by `apply_cleanup`.
-- Never `git clean -fdx`, never delete `{skillsRoot}/ws-*` bodies, never delete `{sharedDir}/config.json` / MEMORY / STACK / `memory/*`.
+- Never `git clean -fdx`, never delete `{skillsRoot}/ws-*` bodies, never delete `.ws/config.json` (bootstrap, fixed) / MEMORY / STACK / `memory/*`.
 - Active / paused workflows: scratch inside only — never the whole `{us-dir}` unless status is `cancelled` | `failed`, or `completed` **and** shipping is terminal (`shipStatus` `skipped` | `merged` | `stopped`; legacy `completed` with no `shipStatus` still counts). `completed` + `pending`/`pr-open`/`pushed` keeps the plan root.
 - Path tokens only.

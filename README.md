@@ -92,6 +92,8 @@ Skills land in your project’s `.agents/skills/`. Prefer **Node / npx** (requir
 
 The CLI tracks managed skills in `.ws/installed-skills.json` (`skills` = all folders; `selected` = install roots). `update` refreshes tracked skills; `uninstall` removes named skills and cascades unused deps. Consumer data under `.ws/` is never deleted by uninstall.
 
+**Relocatable hub root:** `pathTokens.sharedDir` in `.ws/config.json` moves the consumer hub (default `.ws/`) to any repo-relative, contained directory (e.g. `config/hub`); the installer, autoload configurator, and patterns generator all follow it. The bootstrap `.ws/config.json` itself never relocates — it is the hub discovery point. Traversal (`../`), absolute paths, and symlinked escapes are refused fail-closed.
+
 Packages in the interactive menu: `f` Full · `w` Workflows · `e` Extra (membership: [`bin/skill-dependencies.json`](./bin/skill-dependencies.json)).
 
 ### Option A — NPX (recommended)

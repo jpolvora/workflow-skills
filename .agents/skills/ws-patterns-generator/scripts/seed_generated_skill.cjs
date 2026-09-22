@@ -14,6 +14,18 @@ const path = require('path');
 
 const GENERATED_ID = 'ws-project-patterns';
 
+function loadHubResolver() {
+  // Single-sourced hub root (spec 0115, AC1): resolved against this
+  // script's own skills tree so SKILL.md and scripts stay the same version.
+  const candidate = path.join(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts', 'resolve_hub_root.cjs');
+  try {
+    return require(candidate);
+  } catch (err) {
+    process.stderr.write(`Missing hub resolver ${candidate}: ${err.message}\n`);
+    process.exit(1);
+  }
+}
+
 const SKELETON = `---
 name: ws-project-patterns
 description: Consumer project patterns (generator-managed).
@@ -104,11 +116,16 @@ function resolveTarget(repoRoot) {
     process.exit(1);
   }
   // Generated pattern bodies are consumer-owned hub content: they live under
-  // the project hub (fixed at <repo>/.ws), never in the published skills tree.
-  // The hub root is not relocatable for hub-hosted content (the installer, hub
-  // layout, and autoload all assume .ws); a custom root needs a harness-wide
-  // change tracked separately as a spec.
-  const hubRoot = path.resolve(root, '.ws');
+  // the configured project hub (single-sourced resolver: bootstrap
+  // <repo>/.ws/config.json, then pathTokens.sharedDir, else .ws), never in
+  // the published skills tree.
+  let hubRoot;
+  try {
+    hubRoot = loadHubResolver().resolveHubRoot(root).hubRoot;
+  } catch (err) {
+    process.stderr.write(`Refusing unusable hub root: ${err.code || 'HUB_ERROR'}: ${err.message} (fix pathTokens.sharedDir in .ws/config.json)\n`);
+    process.exit(1);
+  }
   const target = path.join(hubRoot, GENERATED_ID, 'SKILL.md');
   const contained = target.startsWith(hubRoot + path.sep) && target.startsWith(root + path.sep);
   if (!contained) {

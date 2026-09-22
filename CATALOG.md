@@ -155,7 +155,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | Record learning | This file § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) (live `ws-self-learning` only when authoring that skill) |
 | Convergence loop | `ws-goal-loop` |
 | Record ws-changelog | This file § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) (live `ws-changelog` only when authoring that skill) |
-| Fill / update `config.json` | `ws-configure-project` (wizard) · `npm run config:gui` / `Edit-Config.bat` (GUI editor) |
+| Fill / update `config.json` | `ws-configure-project` (wizard) · `npm run config:gui` / `Edit-Config.bat` (GUI editor). Hub root is relocatable via `pathTokens.sharedDir` (repo-relative, contained); bootstrap `.ws/config.json` stays fixed as the discovery point |
 | Discover/install skills | `find-skills` or `using-superpowers` |
 | Consumer project-patterns generator (harvest + refresh) | `ws-patterns-generator` |
 

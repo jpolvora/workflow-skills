@@ -3,7 +3,7 @@
   "_comment": "Fresh install seeds this file as config.json. Track it only when it contains project settings and environment-variable references. Fill via ws-configure-project. toolsFile points to the tool vocabulary all agents use (managed runtime lives in the skills install).",
   "toolsFile": "../.agents/skills/ws-shared/runtime/tools.md",
   "pathTokens": {
-    "_comment": "Fixed install layout (not relocatable). Expand brace tokens before Read/Grep/Shell. Full contract: {skillsRoot}/ws-shared/runtime/tools.md § Path tokens. plansDir/reviewsDir still resolve from plans.dir / reviews.dir.",
+    "_comment": "skillsRoot is fixed; sharedDir is the relocatable hub root (repo-relative, contained; bootstrap config stays at .ws/config.json). Expand brace tokens before Read/Grep/Shell. Full contract: {skillsRoot}/ws-shared/runtime/tools.md § Path tokens. plansDir/reviewsDir still resolve from plans.dir / reviews.dir.",
     "skillsRoot": ".agents/skills",
     "sharedDir": ".ws"
   },
@@ -299,7 +299,7 @@
     "previewBeforeShip": true
   },
   "rules": {
-    "_comment": "Guardrails paths. Resolve per ws-shared/AGENTS.md External dependencies (first match). harness default is the project-local .ws/AGENTS.md; on global-hybrid installs resolve via the {globalSkillsRoot} fallback (config-resolution.md Harness entrypoint fallback); installer seeds a thin local pointer when missing. seniorDeveloper = Delivery gate and surgical diffs (default packaged ws-senior-developer); set \"\" to disable or point at another guardrail; karpathyGuidelines = compatibility alias pointing to ws-senior-developer; stackFile = stack companion; changelogFile = append-only history (default repo-root CHANGELOG.md; legacy .ws/CHANGELOG.md used only when it holds entries and the configured file does not); memoryDir = local memory target dir holding MEMORY.md + memory/ (default repo root \".\"; same legacy fallback); other keys optional consumer rule paths — leave empty when unused.",
+    "_comment": "Guardrails paths. Resolve per ws-shared/AGENTS.md External dependencies (first match). harness default is the project-local {sharedDir}/AGENTS.md (default .ws/AGENTS.md; scoped to the configured hub on seed/upgrade); on global-hybrid installs resolve via the {globalSkillsRoot} fallback (config-resolution.md Harness entrypoint fallback); installer seeds a thin local pointer when missing. seniorDeveloper = Delivery gate and surgical diffs (default packaged ws-senior-developer); set \"\" to disable or point at another guardrail; karpathyGuidelines = compatibility alias pointing to ws-senior-developer; stackFile = stack companion; changelogFile = append-only history (default repo-root CHANGELOG.md; legacy .ws/CHANGELOG.md used only when it holds entries and the configured file does not); memoryDir = local memory target dir holding MEMORY.md + memory/ (default repo root \".\"; same legacy fallback); other keys optional consumer rule paths — leave empty when unused.",
     "harness": ".ws/AGENTS.md",
     "seniorDeveloper": ".agents/skills/ws-senior-developer/SKILL.md",
     "karpathyGuidelines": ".agents/skills/ws-senior-developer/SKILL.md",

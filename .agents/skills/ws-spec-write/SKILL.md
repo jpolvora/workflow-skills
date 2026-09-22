@@ -1,7 +1,7 @@
 ---
 name: ws-spec-write
 description: Local spec authoring & reformulation — drafts and enhances structured *.spec.md feature specifications under {specsDir} from free-text requirements or remote tracker issues.
-version: 0.4.51
+version: 0.4.52
 disable-model-invocation: true
 invocation_names:
   - spec-write
@@ -14,7 +14,7 @@ invocation_names:
 
 **Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
-**Write path:** Canonical prefix flag is `plans.enforceSpecPrefixOrdering` ([ws-spec-organizer](../ws-spec-organizer/SKILL.md)). Do **not** invent a second key name. If that key is **absent** from project `{sharedDir}/config.json`, insert it under `plans` (optional comment from `config.json.example`). Seed `true` when `{specsDir}` already has top-level `NNNN-*.spec.md`; otherwise seed `false`. Then resolve the path via `node {skillsRoot}/ws-spec-organizer/scripts/resolve_spec_path.cjs --slug {slug}` (`false` → `{specsDir}/{slug}.spec.md`; `true` → `{specsDir}/NNNN-{slug}.spec.md`; `{specsDir}` ← `config.json` → `plans.specsDir`, default `.agents/specs`). Frontmatter `slug` equals the unprefixed slug. Create `{specsDir}` if missing.
+**Write path:** Canonical prefix flag is `plans.enforceSpecPrefixOrdering` ([ws-spec-organizer](../ws-spec-organizer/SKILL.md)). Do **not** invent a second key name. If that key is **absent** from project `.ws/config.json` (bootstrap, fixed), insert it under `plans` (optional comment from `config.json.example`). Seed `true` when `{specsDir}` already has top-level `NNNN-*.spec.md`; otherwise seed `false`. Then resolve the path via `node {skillsRoot}/ws-spec-organizer/scripts/resolve_spec_path.cjs --slug {slug}` (`false` → `{specsDir}/{slug}.spec.md`; `true` → `{specsDir}/NNNN-{slug}.spec.md`; `{specsDir}` ← `config.json` → `plans.specsDir`, default `.agents/specs`). Frontmatter `slug` equals the unprefixed slug. Create `{specsDir}` if missing.
 
 **Do not** create `{plansDir}/{slug}/`, `step-00-*.spec.md`, state files, or any other plan/workflow artifact directly. Plan copies are owned by [ws-spec-provider-local](../ws-spec-provider-local/SKILL.md) `fetch-to-spec` / `--register` when a workflow starts — never by this skill’s default write.
 

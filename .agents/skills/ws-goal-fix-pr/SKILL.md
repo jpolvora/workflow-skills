@@ -1,7 +1,7 @@
 ---
 name: ws-goal-fix-pr
 description: PR thread convergence loop — orchestrates iterative fix-pr rounds until all open PR review threads are resolved and checks pass.
-version: 0.4.51
+version: 0.4.52
 disable-model-invocation: true
 invocation_names:
   - goal-fix-pr
@@ -146,7 +146,7 @@ The skill session is the orchestrator: it runs initialize, convergence check, he
 ## Fix-loop execution mode (`ws-goal-fix-pr.useSubAgents`, default inline)
 
 One config key selects the execution site of every Act-round batch on the fix
-path. Read `ws-goal-fix-pr.useSubAgents` from `{sharedDir}/config.json`
+path. Read `ws-goal-fix-pr.useSubAgents` from `.ws/config.json` (bootstrap, fixed)
 (machine helper: `resolveFixPrDispatchMode` in
 `{skillsRoot}/ws-shared/runtime/scripts/workflow_state.cjs`); fix semantics are
 identical in both modes — only the execution site changes.

@@ -1,7 +1,7 @@
 ---
 name: ws-spec-provider-local
 description: Local Markdown spec provider — detects, normalizes, and registers hand-written *.spec.md feature specifications into canonical pipeline artifacts.
-version: 0.4.51
+version: 0.4.52
 disable-model-invocation: true
 invocation_names:
   - spec-provider-local
@@ -94,7 +94,7 @@ node {skillsRoot}/ws-spec-provider-local/scripts/register_local_spec.cjs \
 
 Slug: frontmatter `slug:` else basename (strip `step-00-`); nested README twin → parent dir name. Always set `source:` (from `--source`) + `slug`/`title`. Overwrite only if identical or `--force` / confirm. Validate sections via [`ws-spec-format`](../ws-spec-format/SKILL.md).
 
-Path overrides when config defaults are wrong: `--specs-dir`, `--plans-dir`, `--repo-root` (the project owning `{sharedDir}/config.json` — needed when the skill runs from a global install).
+Path overrides when config defaults are wrong: `--specs-dir`, `--plans-dir`, `--repo-root` (the project owning `.ws/config.json` (bootstrap, fixed) — needed when the skill runs from a global install).
 
 ## Entry patterns
 

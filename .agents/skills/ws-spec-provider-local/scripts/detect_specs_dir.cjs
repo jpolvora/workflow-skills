@@ -74,7 +74,7 @@ function main() {
     return;
   }
   const context = resolveConsumerContext({ repoRoot: args.repoRoot, scriptFile: __filename });
-  const configFile = path.join(context.sharedDir, 'config.json');
+  const configFile = context.localConfig; // bootstrap config home (spec 0115)
   const config = fs.existsSync(configFile) ? JSON.parse(fs.readFileSync(configFile, 'utf8')) : {};
   const fallback = fs.existsSync(path.join(context.repoRoot, 'specs')) ? 'specs' : '.agents/specs';
   let configured = args.configure || config.plans?.specsDir || fallback;

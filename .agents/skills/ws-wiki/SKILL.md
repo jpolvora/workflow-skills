@@ -1,6 +1,6 @@
 ---
 name: ws-wiki
-version: 0.4.51
+version: 0.4.52
 disable-model-invocation: true
 description: Living project feature wiki and domain knowledge base manager — initializes, synchronizes, and validates living feature documentation, business rules, and technical architecture.
 invocation_names:
@@ -66,7 +66,7 @@ Page-writing flows (`from-code`, `sweep`, `sync`, `update`) resolve `verbosity` 
 
 - `condensed` (default): short terse statements, one fact per line. Keeps token cost low. Used when no choice is persisted and in `autoMode` without prompting.
 - `detailed`: full-sentence paragraphs, feature-by-feature walkthrough naming screens, services, aggregates, DTOs, permissions, side effects. Explicitly disables terse rewriting for wiki bodies.
-- Resolution: explicit gate choice > run-state `verbosity` (`from-code.state.json` for from-code/sync/update, `sweep.state.json` for sweep) > `plans.wiki.verbosity` in `{sharedDir}/config.json` > `condensed`. Unknown values fail closed to `condensed` with a warning. Sweep honors `plans.wiki.verbosity` as the pre-selected default like from-code; sync/update read `from-code.state.json` (a sweep choice is per-run only).
+- Resolution: explicit gate choice > run-state `verbosity` (`from-code.state.json` for from-code/sync/update, `sweep.state.json` for sweep) > `plans.wiki.verbosity` in `.ws/config.json` (bootstrap, fixed) > `condensed`. Unknown values fail closed to `condensed` with a warning. Sweep honors `plans.wiki.verbosity` as the pre-selected default like from-code; sync/update read `from-code.state.json` (a sweep choice is per-run only).
 - Before/after: condensed `User has email. Email unique.` vs detailed `Users sign up with an email and password. The onboarding form validates uniqueness per tenant before creating the account.` See `references/VERBOSITY-EXAMPLE.md`.
 
 ---

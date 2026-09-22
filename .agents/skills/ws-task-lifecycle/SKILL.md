@@ -1,7 +1,7 @@
 ---
 name: ws-task-lifecycle
 description: On-demand coordinator for prompt-driven product work — Intake, Implementation, Completion tracking without a Spec-to-PR plan tree.
-version: 0.4.51
+version: 0.4.52
 disable-model-invocation: true
 invocation_names:
   - task-lifecycle
@@ -44,7 +44,7 @@ Expand `{specsDir}` from `plans.specsDir` and `{sharedDir}` from config before R
 
 ## Phase 3 — Completion
 
-Resolve `tracking.featuresMdEnabled` from `{sharedDir}/config.json`: omitted or `true` → the features file participates in the **default** walk; explicit `false` → skip the features file entirely.
+Resolve `tracking.featuresMdEnabled` from `.ws/config.json` (bootstrap, fixed): omitted or `true` → the features file participates in the **default** walk; explicit `false` → skip the features file entirely.
 
 **Features file auto-detection** (default walk step 1): when `tracking.featuresMdEnabled` is not `false`, resolve the features file path in this order — (a) repo-root `FEATURES.md` when it exists, (b) `{specsDir}/index.PRD` (default). When `featuresMdEnabled` is `false`, skip the features file step entirely. Mark the matching item `[x]` and append a Done-log line when the resolved file exists; skip with a note when it is absent. Do not create an empty features file.
 

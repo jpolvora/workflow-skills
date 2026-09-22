@@ -134,8 +134,8 @@ if (fs.existsSync(seedCjs)) {
     } finally {
       rmFixture(dry);
     }
-    // AC1: the hub root is fixed at .ws; a configured pathTokens.sharedDir is ignored.
-    const customHub = makeFixture('ws-pg-fixedseedhub-');
+    // AC1 (spec 0115): the seeder honors a configured pathTokens.sharedDir.
+    const customHub = makeFixture('ws-pg-configuredseedhub-');
     try {
       fs.mkdirSync(path.join(customHub, '.ws'), { recursive: true });
       fs.writeFileSync(
@@ -144,14 +144,14 @@ if (fs.existsSync(seedCjs)) {
         'utf8',
       );
       const r5 = runNode([seedCjs, '--repo-root', customHub], { cwd: root });
-      assert(r5.status === 0, `seed ignores a configured sharedDir (got ${r5.status}: ${r5.stderr || ''})`);
+      assert(r5.status === 0, `seed honors a configured sharedDir (got ${r5.status}: ${r5.stderr || ''})`);
       assert(
-        fs.existsSync(path.join(customHub, '.ws/ws-project-patterns/SKILL.md')),
-        'seed writes to the fixed .ws hub',
+        fs.existsSync(path.join(customHub, 'custom-hub/ws-project-patterns/SKILL.md')),
+        'seed writes under the configured hub',
       );
       assert(
-        !fs.existsSync(path.join(customHub, 'custom-hub/ws-project-patterns/SKILL.md')),
-        'seed never relocates the generated body to a configured sharedDir',
+        !fs.existsSync(path.join(customHub, '.ws/ws-project-patterns/SKILL.md')),
+        'seed leaves the default hub untouched when sharedDir is configured',
       );
     } finally {
       rmFixture(customHub);
@@ -184,7 +184,7 @@ if (fs.existsSync(seedCjs)) {
       if (linked) {
         const r = runNode([seedCjs, '--repo-root', repo], { cwd: root });
         assert(r.status !== 0, `seed refuses symlinked hub root (got ${r.status})`);
-        assert(/outside the repo skills root/.test(r.stderr || ''), 'refusal message names containment');
+        assert(/outside the repo skills root|Refusing unusable hub root/.test(r.stderr || ''), 'refusal message names containment');
         assert(!fs.existsSync(path.join(outside, 'ws-project-patterns/SKILL.md')), 'no write escapes through symlink');
         fs.rmSync(linkPath, { recursive: true, force: true });
         const inner = path.join(repo, 'linked-hub');
@@ -218,7 +218,7 @@ if (fs.existsSync(seedCjs)) {
       if (linked) {
         const r = runNode([seedCjs, '--repo-root', repo], { cwd: root });
         assert(r.status !== 0, `seed refuses symlinked generated dir (got ${r.status})`);
-        assert(/outside the repo skills root/.test(r.stderr || ''), 'refusal message names containment');
+        assert(/outside the repo skills root|Refusing unusable hub root/.test(r.stderr || ''), 'refusal message names containment');
         assert(!fs.existsSync(path.join(outside, 'SKILL.md')), 'no write escapes through linked generated dir');
         fs.rmSync(linkPath, { recursive: true, force: true });
         const inner = path.join(repo, 'patterns-inside');
@@ -253,7 +253,7 @@ if (fs.existsSync(seedCjs)) {
       if (linked) {
         const r = runNode([seedCjs, '--repo-root', repo], { cwd: root });
         assert(r.status !== 0, `seed refuses dangling leaf symlink (got ${r.status})`);
-        assert(/outside the repo skills root/.test(r.stderr || ''), 'refusal message names containment');
+        assert(/outside the repo skills root|Refusing unusable hub root/.test(r.stderr || ''), 'refusal message names containment');
         assert(!fs.existsSync(escaped), 'no file created outside through dangling leaf');
         fs.rmSync(linkPath, { force: true });
         const inner = path.join(repo, 'leaf-inside.md');
@@ -312,10 +312,14 @@ if (fs.existsSync(seedCjs)) {
 
 // --- AC4: autoload carve-out -------------------------------------------------
 function writeAutoloadFixture(dir, rows) {
+  writeAutoloadFixtureAt(dir, '.ws', rows);
+}
+function writeAutoloadFixtureAt(dir, hubRel, rows) {
   const table = ['| Skill | Path | Trigger |', '|-------|------|---------|', ...rows].join('\n');
   const doc = ['# Autoload (fixture)', '', '## Always-applied skills', '', table, '', '## Optional skills', ''].join('\n');
-  fs.mkdirSync(path.join(dir, '.ws'), { recursive: true });
-  fs.writeFileSync(path.join(dir, '.ws/autoload.md'), doc, 'utf8');
+  const hubDir = path.join(dir, ...hubRel.split('/'));
+  fs.mkdirSync(hubDir, { recursive: true });
+  fs.writeFileSync(path.join(hubDir, 'autoload.md'), doc, 'utf8');
   fs.mkdirSync(path.join(dir, 'bin'), { recursive: true });
   fs.writeFileSync(
     path.join(dir, 'bin/skill-dependencies.json'),
@@ -380,30 +384,30 @@ function autoloadRowIds(doc) {
   } finally {
     rmFixture(fxc);
   }
-  // The hub root is fixed at .ws: a configured pathTokens.sharedDir must not
-  // relocate hub content or generated links.
-  const fxh = makeFixture('ws-pg-fixedhub-');
+  // Spec 0115: the configurator honors a configured pathTokens.sharedDir.
+  const fxh = makeFixture('ws-pg-configuredhub-');
   try {
-    fs.mkdirSync(path.join(fxh, '.ws/ws-project-patterns'), { recursive: true });
-    fs.writeFileSync(path.join(fxh, '.ws/ws-project-patterns/SKILL.md'), '# ws-project-patterns\n', 'utf8');
+    fs.mkdirSync(path.join(fxh, 'custom-hub/ws-project-patterns'), { recursive: true });
+    fs.writeFileSync(path.join(fxh, 'custom-hub/ws-project-patterns/SKILL.md'), '# ws-project-patterns\n', 'utf8');
+    fs.mkdirSync(path.join(fxh, '.ws'), { recursive: true });
     fs.writeFileSync(
       path.join(fxh, '.ws/config.json'),
       JSON.stringify({ pathTokens: { sharedDir: 'custom-hub' } }),
       'utf8',
     );
-    writeAutoloadFixture(fxh, ['| `ws-project-patterns` | `.ws/ws-project-patterns/SKILL.md` | Project patterns |']);
+    writeAutoloadFixtureAt(fxh, 'custom-hub', ['| `ws-project-patterns` | `.ws/ws-project-patterns/SKILL.md` | Project patterns |']);
     const wc = runNode([configureCjs, '--write-autoload', '--repo-root', fxh], { cwd: root });
-    assert(wc.status === 0, `configure ignores a configured sharedDir (got ${wc.status}: ${wc.stderr || ''})`);
-    const fixedRow = fs.readFileSync(path.join(fxh, '.ws/autoload.md'), 'utf8');
-    assert(fixedRow.includes('`ws-project-patterns/SKILL.md`'), 'row renders hub-relative on the fixed .ws hub');
-    assert(!fs.existsSync(path.join(fxh, 'custom-hub/autoload.md')), 'no autoload is written to a configured sharedDir');
+    assert(wc.status === 0, `configure honors a configured sharedDir (got ${wc.status}: ${wc.stderr || ''})`);
+    const hubRow = fs.readFileSync(path.join(fxh, 'custom-hub/autoload.md'), 'utf8');
+    assert(hubRow.includes('`ws-project-patterns/SKILL.md`'), 'row converges to hub-relative under the configured hub');
+    assert(!fs.existsSync(path.join(fxh, '.ws/autoload.md')), 'no autoload is written to the default hub');
     const wr = runNode([configureCjs, '--write-root-agents', '--repo-root', fxh], { cwd: root });
     assert(wr.status === 0, `configure --write-root-agents exit 0 (got ${wr.status}: ${wr.stderr || ''})`);
     const rootAg = fs.readFileSync(path.join(fxh, 'AGENTS.md'), 'utf8');
-    assert(rootAg.includes('(.ws/autoload.md)'), 'root AGENTS.md links the fixed .ws autoload');
+    assert(rootAg.includes('(custom-hub/autoload.md)'), 'root AGENTS.md links the configured hub autoload');
     assert(
-      rootAg.includes('`.ws/ws-project-patterns/SKILL.md`'),
-      'root AGENTS.md table renders the generated row repo-relative',
+      rootAg.includes('`custom-hub/ws-project-patterns/SKILL.md`'),
+      'root AGENTS.md table renders the generated row hub-prefixed',
     );
   } finally {
     rmFixture(fxh);
@@ -535,19 +539,21 @@ for (const check of ['check_duplicates.cjs', 'check_harness_links.cjs', 'check_h
   assert(r.status === 0, `${check} exit 0${r.status === 0 ? '' : `: ${(r.stdout || '') + (r.stderr || '')}`.slice(0, 400)}`);
 }
 
-// --- AC14: fixed-hub documentation coherence -----------------------------------
+// --- AC14: relocatable-hub documentation coherence (spec 0115) -----------------
 {
   const resolveStep = (skill.match(/^1\. \*\*Resolve paths\*\*.*$/m) || [''])[0];
-  assert(resolveStep.includes('.ws/'), 'resolve step names the fixed .ws hub');
-  assert(!resolveStep.includes('{sharedDir}'), 'resolve step does not advertise {sharedDir} hub relocation');
+  assert(resolveStep.includes('resolve_hub_root'), 'resolve step names the single hub resolver');
+  assert(resolveStep.includes('{sharedDir}'), 'resolve step advertises the configured {sharedDir} hub');
   for (const rel of [
     '.agents/skills/ws-shared/runtime/tools.md',
     '.agents/skills/ws-shared/runtime/config-resolution.md',
   ]) {
     const doc = fs.readFileSync(path.join(root, rel), 'utf8');
+    assert(/relocatable/i.test(doc), `${path.basename(rel)} states the hub root is relocatable`);
+    assert(/bootstrap/i.test(doc), `${path.basename(rel)} names the fixed bootstrap config`);
     assert(
-      /not (yet )?a relocation mechanism/i.test(doc),
-      `${path.basename(rel)} states pathTokens.sharedDir is not a relocation mechanism for hub-hosted content`,
+      !/not (yet )?a relocation mechanism/i.test(doc),
+      `${path.basename(rel)} drops the fixed-hub interim note`,
     );
   }
 }

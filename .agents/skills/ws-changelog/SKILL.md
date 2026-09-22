@@ -1,6 +1,6 @@
 ---
 name: ws-changelog
-version: 0.4.51
+version: 0.4.52
 description: Summarized task history writer — appends concise, structured task completion records to the project changelog file.
 invocation_names:
   - changelog
@@ -23,7 +23,7 @@ Run at the end of every implementation task to maintain a historical record of w
 
 ## Path resolution
 
-Resolve the target file from `{sharedDir}/config.json` (`resolveChangelogPath` in `resolve_consumer_root.cjs` is the SoT):
+Resolve the target file from `.ws/config.json` (bootstrap, fixed) (`resolveChangelogPath` in `resolve_consumer_root.cjs` is the SoT):
 
 | Source | Path |
 |--------|------|

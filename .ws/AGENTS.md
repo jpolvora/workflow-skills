@@ -4,9 +4,11 @@ This is the project-local entrypoint for the shared hub (`.ws/`). The managed co
 
 Project-specific data stays at this directory root:
 
-- `config.json`
+- `config.json` (bootstrap discovery point — fixed here even when `pathTokens.sharedDir` relocates the hub)
 - `STACK.md`
 - installer metadata and local caches
+
+Hub root is relocatable via `pathTokens.sharedDir` (repo-relative, contained; default `.ws/`): every path in this hub except the bootstrap `config.json` resolves under the configured hub through `resolve_hub_root.cjs`. Traversal, absolute, and symlinked escapes are refused fail-closed.
 
 `MEMORY.md` + `memory/*` and `CHANGELOG.md` live at their configured locations (`rules.memoryDir` / `rules.changelogFile`, both defaulting to the repo root); legacy copies under this directory remain as fallback when they hold entries.
 

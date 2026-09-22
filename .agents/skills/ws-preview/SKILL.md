@@ -1,7 +1,7 @@
 ---
 name: ws-preview
 description: Run the consumer-configured local pipeline review dry-run command without publishing PR threads.
-version: 0.4.51
+version: 0.4.52
 disable-model-invocation: true
 invocation_names:
   - ws-preview
@@ -13,7 +13,7 @@ invocation_names:
 
 > When this skill is loaded, output "ws-preview loaded."
 
-User-invoked **local pipeline review dry-run**. Resolve the command from the **project** `{sharedDir}/config.json` and run it in the consumer repo root. Complement to [`ws-code-review`](../ws-code-review/SKILL.md) (in-agent pre-push / orch Step 6) — this skill does **not** vendor or name a reviewer product; the consumer owns the recipe.
+User-invoked **local pipeline review dry-run**. Resolve the command from the **project** `.ws/config.json` (bootstrap, fixed) and run it in the consumer repo root. Complement to [`ws-code-review`](../ws-code-review/SKILL.md) (in-agent pre-push / orch Step 6) — this skill does **not** vendor or name a reviewer product; the consumer owns the recipe.
 
 **Never publish PR threads.** Do not wrap the command through packaged `{skillsRoot}/ws-preview` scripts (none are required).
 
@@ -35,7 +35,7 @@ Optional user wording after invoke (e.g. "committed only") is ignored unless the
 
 ## Steps
 
-1. **Resolve** — Read `{sharedDir}/config.json` → `preview.dryRunCommand` (trim). Expand path tokens from [`tools.md`](../ws-shared/runtime/tools.md) only if the string contains them.
+1. **Resolve** — Read `.ws/config.json` (bootstrap, fixed) → `preview.dryRunCommand` (trim). Expand path tokens from [`tools.md`](../ws-shared/runtime/tools.md) only if the string contains them.
    - Done when: a non-empty command string is known.
    - If missing/empty/whitespace-only: STOP. Tell the user to set `preview.dryRunCommand` in project `config.json` (or run `ws-configure-project --section preview`). Do not guess a default reviewer tool or download a backend.
 

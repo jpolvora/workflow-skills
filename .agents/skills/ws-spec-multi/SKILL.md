@@ -1,6 +1,6 @@
 ---
 name: ws-spec-multi
-version: 0.4.51
+version: 0.4.52
 description: Batch specs one by one. Classifies each spec and runs standard or lite. Trigger for multi-spec queues.
 disable-model-invocation: true
 invocation_names:
@@ -27,7 +27,7 @@ Sequential multi-spec batch delivery orchestrator with **smart complexity & flow
 
 ## Native Tool Contract
 
-Aliases: [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md). Params: `{sharedDir}/config.json`. Never narrate undone work. Master orchestrator never edits code directly — dispatches worker skills via `dispatch-agent`.
+Aliases: [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md). Params: `.ws/config.json` (bootstrap, fixed). Never narrate undone work. Master orchestrator never edits code directly — dispatches worker skills via `dispatch-agent`.
 
 | Intent | Alias | Rule |
 |--------|-------|------|
