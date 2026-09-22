@@ -1,6 +1,6 @@
 ---
 name: ws-configure-project
-version: 0.4.51
+version: 0.4.52
 description: Project configuration wizard — detects project settings and interviews config.json sections (including preview.dryRunCommand and optional specMemo).
 invocation_names:
   - configure-project
@@ -13,9 +13,9 @@ invocation_names:
 
 Fill or refresh consumer `config.json` via detect → suggest → user-gate. Portable: no host-product names; paths use `{plansDir}` tokens after write.
 
-**Config path:** `{sharedDir}/config.json` (consumer-owned). Managed runtime contracts/scripts and setup templates live in the skills install: `{skillsRoot}/ws-shared/runtime/` and `{skillsRoot}/ws-shared/templates/` (global fallback `{globalSkillsRoot}/ws-shared/{runtime,templates}/`) — never `{sharedDir}/runtime/` or `{sharedDir}/templates/`. Template: [`ws-shared/templates/config.json.example`](../ws-shared/templates/config.json.example). Schema: [`ws-shared/runtime/config.schema.json`](../ws-shared/runtime/config.schema.json).
+**Config path:** `.ws/config.json` (bootstrap discovery point, fixed — never relocates even when `pathTokens.sharedDir` sets a different hub root; consumer-owned). Managed runtime contracts/scripts and setup templates live in the skills install: `{skillsRoot}/ws-shared/runtime/` and `{skillsRoot}/ws-shared/templates/` (global fallback `{globalSkillsRoot}/ws-shared/{runtime,templates}/`) — never `{sharedDir}/runtime/` or `{sharedDir}/templates/`. Template: [`ws-shared/templates/config.json.example`](../ws-shared/templates/config.json.example). Schema: [`ws-shared/runtime/config.schema.json`](../ws-shared/runtime/config.schema.json).
 
-**Hybrid behavior:** When this skill executes from a global skills root, it resolves runtime/templates from the executing global `ws-shared/` and writes only the consumer project's `{sharedDir}/config.json` (plus optional consumer-owned `STACK.md`, memory, changelog, and autoload outputs). When it executes from a project-local installation, it uses the project skills install (`{skillsRoot}/ws-shared/`) and updates the local config without copying global files. The layout manifest is `{skillsRoot}/ws-shared/runtime/hub-layout.json`.
+**Hybrid behavior:** When this skill executes from a global skills root, it resolves runtime/templates from the executing global `ws-shared/` and writes only the consumer project's bootstrap `.ws/config.json` (plus hub content under the configured hub: `STACK.md`, memory, changelog, and autoload outputs). When it executes from a project-local installation, it uses the project skills install (`{skillsRoot}/ws-shared/`) and updates the local config without copying global files. The layout manifest is `{skillsRoot}/ws-shared/runtime/hub-layout.json`.
 
 **Callers:** standalone anytime; [`ws-shared/runtime/setup.md`](../ws-shared/runtime/setup.md) bootstrap step 1; post-install when user opts in.
 
@@ -57,9 +57,9 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 **Step 4b. Auto mode** — When `--auto` is explicit, run `node {skillsRoot}/ws-configure-project/scripts/auto_configure.cjs --repo-root {repoRoot} --json` after resolving the execution scope. It fills only missing, empty-required, or placeholder values, preserves existing consumer files, skips framework memory seeding for global execution, and reports `runtimeSource`, `templateSource`, `layoutManifest`, `copiedPaths`, and the manifest-derived source-control matrix.
    - Done when: the command exits 0 for the requested scope, or reports unresolved required gaps with exit 1; never continue after exit 2.
 
-5. **Stack companion & Framework Traps** — Default `rules.stackFile` = `.ws/STACK.md` (installer-seeded; consumer-owned). Prefer that path. Do **not** require or create a repo-root stack file. Skip when `--section autoload`, `--section specMemo`, or `--section preview`.
-   - If shared `STACK.md` exists but config points at a missing root file: suggest set `rules.stackFile` → `.ws/STACK.md` (**Recommended**) / Keep current / Skip.
-   - If the resolved target is missing: offer **Generate** into `.ws/STACK.md` (setup 1b heuristics) / **Skip**. Write only under `.ws/` unless the user explicitly chose another path.
+5. **Stack companion & Framework Traps** — Default `rules.stackFile` = `{sharedDir}/STACK.md` (default `.ws/STACK.md`; installer-seeded; consumer-owned). Prefer that path. Do **not** require or create a repo-root stack file. Skip when `--section autoload`, `--section specMemo`, or `--section preview`.
+   - If shared `STACK.md` exists but config points at a missing root file: suggest set `rules.stackFile` → `{sharedDir}/STACK.md` (**Recommended**) / Keep current / Skip.
+   - If the resolved target is missing: offer **Generate** into `{sharedDir}/STACK.md` (setup 1b heuristics) / **Skip**. Write only under `{sharedDir}/` unless the user explicitly chose another path.
    - **Framework Anti-Regression Traps:** When configuring project stack, `auto_configure.cjs` automatically detects the framework (`abp-angular`, `nextjs-react`, `typescript-node`, `php-laravel`) and seeds the initial framework traps into the effective `{memoryDir}/MEMORY.md` (idempotent, skipping if already present).
    - Done when: config points at an existing companion, framework traps seeded if detected, or user skipped.
 

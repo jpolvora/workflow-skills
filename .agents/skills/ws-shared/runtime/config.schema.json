@@ -19,7 +19,7 @@
     },
     "pathTokens": {
       "type": "object",
-      "description": "Fixed install-layout hints for brace tokens {skillsRoot} / {sharedDir}. Not relocatable; defaults match the installer. Agents expand before tool calls. See tools.md § Path tokens.",
+      "description": "Brace-token hints: {skillsRoot} is fixed; {sharedDir} is the relocatable hub root (repo-relative, contained; bootstrap config stays at .ws/config.json). Defaults match the installer. Agents expand before tool calls. See tools.md § Path tokens.",
       "additionalProperties": true,
       "properties": {
         "skillsRoot": {
@@ -30,7 +30,7 @@
         "sharedDir": {
           "type": "string",
           "default": ".ws",
-          "description": "Expand {sharedDir}. Project hub root; explicit value wins, no legacy fallback."
+          "description": "Expand {sharedDir}. Relocatable project hub root (repo-relative, contained; traversal and symlinked escapes are refused); explicit value wins, no legacy fallback. The bootstrap config stays fixed at .ws/config.json."
         }
       }
     },

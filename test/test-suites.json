@@ -111,6 +111,9 @@
       "test/test-ws-patterns-generator.js"
     ],
     [
+      "test/test-configurable-hub-root.js"
+    ],
+    [
       "test/test-classifier-history.js"
     ],
     [

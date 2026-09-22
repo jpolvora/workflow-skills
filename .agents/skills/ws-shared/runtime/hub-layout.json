@@ -1,6 +1,11 @@
 {
   "version": 1,
   "hub": "ws-shared",
+  "hubRoot": {
+    "bootstrapConfig": ".ws/config.json",
+    "overrideKey": "pathTokens.sharedDir",
+    "note": "The hub root is relocatable: bootstrap discovery always reads .ws/config.json (fixed, never relocates); pathTokens.sharedDir selects the effective hub root for every path in the categories below (repo-relative, contained, no traversal or symlinked escape; default .ws). All category paths are hub-relative, so they resolve under any configured root."
+  },
   "legacyPaths": {
     "AGENTS.md": "runtime/AGENTS.md",
     "CATALOG.md": "runtime/CATALOG.md",

@@ -7,14 +7,14 @@ Used by `ws-spec-to-pr`, `ws-spec-to-pr-lite`, providers, `ws-fix-pr`, `ws-goal-
 
 ## Entry check
 
-Resolve the project-local `{sharedDir}/config.json` before any config-dependent skill action. If it is missing or still contains required placeholders, use `user-gate` to recommend `ws-configure-project`; cancellation stops the action and never implies approval. Project config always overrides a global hub.
+Resolve the project-local bootstrap `.ws/config.json` (fixed hub discovery point) before any config-dependent skill action. If it is missing or still contains required placeholders, use `user-gate` to recommend `ws-configure-project`; cancellation stops the action and never implies approval. Project config always overrides a global hub.
 
 ---
 
 ## Config path (only)
 
 ```text
-{sharedDir}/config.json
+.ws/config.json (bootstrap, fixed — never relocates)
 ```
 
 Template: [`config.json.example`](../templates/config.json.example). Schema: [`config.schema.json`](config.schema.json).
@@ -24,7 +24,7 @@ Template: [`config.json.example`](../templates/config.json.example). Schema: [`c
 - `.agents/skills/ws-spec-to-pr/config.json`
 - `.agents/skills/ws-spec-to-pr-lite/config.json`
 
-Scripts and skills that still mention those paths are **bugs** — fix to `{sharedDir}/config.json` (expand per [tools.md](tools.md) § Path tokens; default `.ws/config.json`). Lite and full always share this file (dual-mode).
+Scripts and skills that still mention those paths are **bugs** — fix to `.ws/config.json` (bootstrap, fixed). Lite and full always share this file (dual-mode).
 
 ---
 
@@ -35,7 +35,7 @@ When skills are executed from a global install (`$HOME/.agents/skills` or `WORKF
 - **Config-Dependent Skills** (`ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-spec-multi`, `ws-plan-write`, `ws-plan-interview`, `ws-plan-to-tasks`, `ws-implement-tasks`, `ws-plan-verify`, `ws-code-review`, `ws-testing`, `ws-ship-pr`, `ws-fix-pr`, `ws-goal-fix-pr`, providers):
   - **Entry Gate:** Must verify `$PWD/.ws/config.json` exists and is non-empty.
   - **Missing Config:** If missing or unconfigured (`<...>` placeholders), trigger `user-gate` recommending running `ws-configure-project` (which seeds and populates `$PWD/.ws/config.json`).
-  - **Script enforcement (opt-in):** config-dependent scripts fail closed at runtime by resolving with `requireProjectHub: true`, which runs `requireProjectConfig()` after `resolveConsumerContext()` and throws with a `ws-configure-project` pointer when the concrete `{sharedDir}/config.json` is absent (the seeded templates example never counts). Default is `false` (no behavior change); adopt per script, starting with `ws-testing/scripts/probe_test_surface.cjs`.
+  - **Script enforcement (opt-in):** config-dependent scripts fail closed at runtime by resolving with `requireProjectHub: true`, which runs `requireProjectConfig()` after `resolveConsumerContext()` and throws with a `ws-configure-project` pointer when the concrete `.ws/config.json` is absent (the seeded templates example never counts). Default is `false` (no behavior change); adopt per script, starting with `ws-testing/scripts/probe_test_surface.cjs`.
 - **Config-Independent / Standalone Skills** (`ws-configure-project`, `ws-secrets-leak-review`, `ws-tdah`, `ws-write-a-skill`, `ws-spec-format`, `ws-check-harness`, `ws-megabrain`):
   - Run directly in any repository without requiring `config.json`.
 
@@ -45,9 +45,9 @@ When skills are executed from a global install (`$HOME/.agents/skills` or `WORKF
 
 `rules.harness` defaults to the project-local `.ws/AGENTS.md` (local-first; project config always overrides the global hub). On a global-hybrid install (skill bodies under `{globalSkillsRoot}`, project-local `.ws/` holding consumer data only), resolve the harness entrypoint in this order:
 
-1. Project-local `{sharedDir}/AGENTS.md` (`.ws/AGENTS.md`) — the installer seeds a thin local pointer here when the file is missing, so the configured `rules.harness` path still resolves.
+1. Project-local `{sharedDir}/AGENTS.md` (default `.ws/AGENTS.md`) — the installer seeds a thin local pointer here when the file is missing, so the configured `rules.harness` path still resolves.
 2. Global `{globalSkillsRoot}/ws-shared/AGENTS.md` (`~/.agents/skills` or `WORKFLOW_SKILLS_GLOBAL_DIR`) — documented fallback when no local file exists.
-3. Skill bodies via `resolveSkillMdPath` / `resolveConsumerContext` (`{skillsRoot}/ws-shared/runtime/scripts/resolve_consumer_root.cjs`, global fallback `{globalSkillsRoot}/ws-shared/runtime/scripts/resolve_consumer_root.cjs`): project `{skillsRoot}/ws-<id>/SKILL.md` first, then `{globalSkillsRoot}/ws-<id>/SKILL.md`. Managed skill scripts resolve the same way (local skills install, then global); the project consumer hub (`{sharedDir}`, default `.ws/`) holds only local config variable files (`config.json`, `STACK.md`, memory, changelog) and is not a managed-runtime source.
+3. Skill bodies via `resolveSkillMdPath` / `resolveConsumerContext` (`{skillsRoot}/ws-shared/runtime/scripts/resolve_consumer_root.cjs`, global fallback `{globalSkillsRoot}/ws-shared/runtime/scripts/resolve_consumer_root.cjs`): project `{skillsRoot}/ws-<id>/SKILL.md` first, then `{globalSkillsRoot}/ws-<id>/SKILL.md`. Managed skill scripts resolve the same way (local skills install, then global); the project consumer hub (`{sharedDir}`, default `.ws/`) holds local hub content — the bootstrap `config.json` stays fixed at `.ws/config.json` while `STACK.md`, memory, and changelog live under the configured hub — and is not a managed-runtime source.
 
 An agent reading the configured `rules.harness` path succeeds without manual fallback when either the local pointer or the global hub is present.
 
@@ -63,7 +63,7 @@ not depend on whether the entrypoint script was loaded from the global hub.
 
 | Rank | Dimension | Local wins | Global fallback |
 |------|-----------|------------|-----------------|
-| 1 | Config | `{sharedDir}/config.json` | `{globalSkillsRoot}/ws-shared/config.json` |
+| 1 | Config | `.ws/config.json` (bootstrap, fixed) | `{globalSkillsRoot}/ws-shared/config.json` |
 | 2 | Skill bodies and projections | `{skillsRoot}/ws-<id>/SKILL.md` | `{globalSkillsRoot}/ws-<id>/SKILL.md` |
 | 3 | Shared runtime and references | `{skillsRoot}/ws-shared/runtime/*` | `{globalSkillsRoot}/ws-shared/runtime/*` |
 | 4 | Harness and rules | `{sharedDir}/AGENTS.md` | `{globalSkillsRoot}/ws-shared/AGENTS.md` |
@@ -112,13 +112,21 @@ Load early with `toolsFile` (default `tools.md` § Path tokens).
 | `{reviewsDir}` | `reviews.dir` | `.agents/codereviews` |
 | `{memoryDir}` | `rules.memoryDir` | `.` (repo root) |
 
-Expand before tool calls. `{skillsRoot}` is **fixed install layout** (optional `pathTokens` in config for discoverability; not relocatable). `{sharedDir}` resolves to the project hub root (default `.ws`; explicit `pathTokens.sharedDir` wins when configured, with no fallback read of a previous hub location). Hub-hosted generated consumer content (e.g. `ws-project-patterns`) and the installer currently assume a fixed `.ws` hub: an explicit `pathTokens.sharedDir` is not yet a relocation mechanism for them (relocation needs a harness-wide change). `{plansDir}` / `{specsDir}` / `{wikiDir}` / `{reviewsDir}` / `{memoryDir}` remain consumer-configurable.
+Expand before tool calls. `{skillsRoot}` is **fixed install layout** (optional `pathTokens` in config for discoverability; not relocatable). `{sharedDir}` is the **relocatable hub root** (default `.ws`; explicit `pathTokens.sharedDir` wins when configured, with no fallback read of a previous hub location).
+
+Relocatable versus fixed:
+
+- **Fixed:** the bootstrap `.ws/config.json` (hub discovery point — the single resolver reads it first; never relocates) and `{skillsRoot}` (`.agents/skills`).
+- **Relocatable:** every other hub path — `autoload.md`, `AGENTS.md` pointer, `installed-skills.json`, `skill-integrity-local.json`, `STACK.md`, `ws-project-patterns/`, `.gitignore`, `host-capabilities.json` — resolves under the configured hub via `{skillsRoot}/ws-shared/runtime/scripts/resolve_hub_root.cjs` (called by the installer, `configure_autoload.cjs`, `seed_generated_skill.cjs`, and hub-layout reads; no duplicated hub-root logic).
+- **Containment:** hub values must be repo-relative and contained — traversal (`../`), absolute paths, and symlinked escapes are refused fail-closed, and `--check` reports them as critical findings.
+
+`{plansDir}` / `{specsDir}` / `{wikiDir}` / `{reviewsDir}` / `{memoryDir}` remain consumer-configurable.
 
 ---
 
 ## SCM provider resolution (`providers.scm`)
 
-1. Read `providers.active` / `providers.scm` from `{sharedDir}/config.json`.
+1. Read `providers.active` / `providers.scm` from `.ws/config.json`.
 2. If `providers` absent: enabled GitHub tracker → `scm=github`; else enabled Azure DevOps → `scm=azure-devops`; else STOP (require explicit `providers.scm`). Prefer GitHub if both enabled.
 3. If `scm` absent: if active is `github`|`azure-devops` → scm=active; if active=`local` → parse `project.repoUrl` host (`github.com` → github; `dev.azure.com` / `visualstudio.com` → azure-devops); else STOP.
 4. Reject `scm: "local"` for PR/thread/merge intents.
@@ -152,7 +160,7 @@ Standalone invokes omit these; skills may present their own gates.
 
 Optional integration block for `fable-*` skills in `ws-spec-to-pr` / `ws-spec-to-pr-lite` workflows.
 
-1. Read `fable` object from `{sharedDir}/config.json`.
+1. Read `fable` object from `.ws/config.json`.
 2. Default in fresh `config.json.example`: `enabled: true`. Default if absent in legacy config: `enabled: false` (strictly opt-in).
 3. When `fable.enabled: true`:
    - `autoAudit` (default `true`): `ws-code-review` (Step 6) and `ws-plan-verify` (Step 5) run adversarial audit via `ws-fable-judge`.

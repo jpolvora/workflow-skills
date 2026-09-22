@@ -4,7 +4,7 @@
   "toolsFile": "../.agents/skills/ws-shared/runtime/tools.md",
 
   "pathTokens": {
-    "_comment": "Fixed install layout (not relocatable). Expand brace tokens before Read/Grep/Shell. Full contract: {skillsRoot}/ws-shared/runtime/tools.md § Path tokens. plansDir/reviewsDir still resolve from plans.dir / reviews.dir.",
+    "_comment": "skillsRoot is fixed; sharedDir is the relocatable hub root (repo-relative, contained; bootstrap config stays at .ws/config.json). Expand brace tokens before Read/Grep/Shell. Full contract: {skillsRoot}/ws-shared/runtime/tools.md § Path tokens. plansDir/reviewsDir still resolve from plans.dir / reviews.dir.",
     "skillsRoot": ".agents/skills",
     "sharedDir": ".ws"
   },

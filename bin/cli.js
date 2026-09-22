@@ -6,6 +6,7 @@ import https from 'https';
 import { spawnSync } from 'child_process';
 import readline from 'readline/promises';
 import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
 import {
   HUB_WHITELIST,
   HUB_DEST_ALIASES,
@@ -94,9 +95,67 @@ function setScope(isGlobal, customDir = process.cwd()) {
 const CONFIG_FILE = 'config.json';
 const HUB_DIR = 'ws-shared';
 const PROJECT_HUB_DIR = '.ws';
+// Bootstrap config: FIXED at <targetDir>/.ws/config.json (hub discovery
+// point, never relocates). All other hub-hosted content follows the
+// configured hub via the single-sourced resolver (spec 0115, AC1).
+function consumerConfigPath() {
+  if (isGlobalScope) return path.join(targetSkillsDir, HUB_DIR, CONFIG_FILE);
+  return path.join(path.resolve(targetDir), PROJECT_HUB_DIR, CONFIG_FILE);
+}
+let cachedHubResolver = null;
+let hubResolverMissing = false;
+function loadPackagedHubResolver() {
+  if (cachedHubResolver || hubResolverMissing) return cachedHubResolver;
+  const candidate = path.join(packageRoot, '.agents', 'skills', 'ws-shared', 'runtime', 'scripts', 'resolve_hub_root.cjs');
+  try {
+    cachedHubResolver = createRequire(import.meta.url)(candidate);
+  } catch {
+    hubResolverMissing = true;
+    cachedHubResolver = null;
+  }
+  return cachedHubResolver;
+}
+function resolveConsumerHub() {
+  const root = path.resolve(targetDir);
+  const fallback = {
+    hubRoot: path.join(root, PROJECT_HUB_DIR),
+    hubRelPosix: PROJECT_HUB_DIR,
+    hubDepth: 1,
+    configured: false,
+  };
+  let rootStat = null;
+  try {
+    rootStat = fs.statSync(root);
+  } catch {
+    rootStat = null;
+  }
+  if (!rootStat || !rootStat.isDirectory()) return fallback;
+  const resolver = loadPackagedHubResolver();
+  if (!resolver) return fallback;
+  try {
+    const resolved = resolver.resolveHubRoot(root);
+    return {
+      hubRoot: resolved.hubRoot,
+      hubRelPosix: resolved.hubRelPosix,
+      hubDepth: resolved.hubDepth,
+      configured: resolved.configured,
+    };
+  } catch (err) {
+    console.error(`Error: refusing unusable hub root: ${err.code || 'HUB_ERROR'}: ${err.message} (fix pathTokens.sharedDir in .ws/config.json)`);
+    process.exit(1);
+  }
+}
 function consumerHubDir() {
   if (isGlobalScope) return path.join(targetSkillsDir, HUB_DIR);
-  return path.join(path.resolve(targetDir), PROJECT_HUB_DIR);
+  return resolveConsumerHub().hubRoot;
+}
+function consumerHubRelPosix() {
+  if (isGlobalScope) return HUB_DIR;
+  return resolveConsumerHub().hubRelPosix;
+}
+function consumerHubDepth() {
+  if (isGlobalScope) return 1;
+  return resolveConsumerHub().hubDepth;
 }
 function legacyHubDir() {
   return path.join(targetSkillsDir, HUB_DIR);
@@ -106,7 +165,8 @@ function hubPresent() {
   return !isGlobalScope && fs.existsSync(legacyHubDir());
 }
 function hubDisplay() {
-  return isGlobalScope ? 'ws-shared/' : '.ws/';
+  if (isGlobalScope) return 'ws-shared/';
+  return `${consumerHubRelPosix()}/`;
 }
 /**
  * Managed ws-shared content (runtime + templates) always lives in the skills
@@ -162,42 +222,55 @@ function packageHubPath(categoryName, relativePath) {
  * already refresh AGENTS.md from HUB_WHITELIST; this covers the residual
  * missing-file edge. Portable tokens only — no absolute paths.
  */
-const LOCAL_HUB_POINTER_MD = `# Shared — Workflow Config & Consumer Data Hub (local pointer)
+function localHubPointerMd() {
+  // Rendered for the configured hub (spec 0115): the bootstrap config stays
+  // fixed at `$PWD/.ws/config.json` (hub discovery point); all other hub
+  // content lives under the configured hub.
+  const hubRel = consumerHubRelPosix();
+  return `# Shared — Workflow Config & Consumer Data Hub (local pointer)
 
-This is the project-local entrypoint for the consumer hub (\`.ws/\`). Managed hub content (runtime contracts, schemas, scripts, templates) resolves from the project skills install (\`{skillsRoot}/ws-shared/\`) when present, otherwise from \`{globalSkillsRoot}/ws-shared/\`. This folder keeps project-local config only. Project consumer data lives in this folder (\`config.json\`, \`STACK.md\`, \`installed-skills.json\`); MEMORY/changelog live at their configured locations (defaults: repo-root \`MEMORY.md\` + \`memory/\`, repo-root \`CHANGELOG.md\`).
+This is the project-local entrypoint for the consumer hub (\`${hubRel}/\`). Managed hub content (runtime contracts, schemas, scripts, templates) resolves from the project skills install (\`{skillsRoot}/ws-shared/\`) when present, otherwise from \`{globalSkillsRoot}/ws-shared/\`. This folder keeps project-local config only. Project consumer data lives in this folder (\`STACK.md\`, \`installed-skills.json\`); the bootstrap \`config.json\` stays fixed at \`.ws/config.json\` (hub discovery point). MEMORY/changelog live at their configured locations (defaults: repo-root \`MEMORY.md\` + \`memory/\`, repo-root \`CHANGELOG.md\`).
 
 - Full hub contract: \`{skillsRoot}/ws-shared/runtime/AGENTS.md\` (global fallback \`{globalSkillsRoot}/ws-shared/runtime/AGENTS.md\`).
 - Config always resolves project-local first: \`$PWD/.ws/config.json\` overrides the global hub.
-- \`rules.harness\` default (\`.ws/AGENTS.md\`) resolves to this file; follow the canonical runtime link above. Run installer \`update\` to refresh this pointer.
+- \`rules.harness\` default (\`${hubRel}/AGENTS.md\`) resolves to this file; follow the canonical runtime link above. Run installer \`update\` to refresh this pointer.
 `;
+}
 
 /** Hub-root autoload link prefixes (managed runtime lives in the skills install). */
+function hubUpPrefix() {
+  // Relative climb from the configured hub to the repository root: `../` for
+  // the default `.ws` hub, `../../` for a nested hub such as `config/hub`.
+  return '../'.repeat(Math.max(1, consumerHubDepth()));
+}
 function managedRuntimeLinkPrefixFor(rel) {
   if (isGlobalScope) return 'runtime/';
   // Per-file local-first: a partial local runtime must keep the global token
   // for a sibling file that only exists in the global install.
   return rel && fs.existsSync(path.join(targetSkillsDir, 'ws-shared', 'runtime', rel))
-    ? '../.agents/skills/ws-shared/runtime/'
+    ? `${hubUpPrefix()}.agents/skills/ws-shared/runtime/`
     : '{globalSkillsRoot}/ws-shared/runtime/';
 }
 function managedSkillLink(rel) {
   if (isGlobalScope) return `../${rel}`;
   return fs.existsSync(path.join(targetSkillsDir, rel))
-    ? `../.agents/skills/${rel}`
+    ? `${hubUpPrefix()}.agents/skills/${rel}`
     : `{globalSkillsRoot}/${rel}`;
 }
 function renderConsumerAutoloadText(text) {
-  // Normalize previously rendered prefixes so refreshes converge.
+  // Normalize previously rendered prefixes so refreshes converge. Accept any
+  // `../` depth so nested configured hubs (`config/hub`) converge to their own
+  // prefix instead of keeping a stale shallower one.
   text = text.replace(
-    /\]\(\.\.\/\.agents\/skills\/ws-shared\/runtime\/([^)]+)\)/g,
+    /\]\((?:\.\.\/)+\.agents\/skills\/ws-shared\/runtime\/([^)]+)\)/g,
     (match, rel) => `](${managedRuntimeLinkPrefixFor(rel)}${rel})`,
   );
   if (!isGlobalScope) {
-    text = text.replace(/\]\(\.\.\/\.agents\/skills\/(ws-[^)]+)\)/g, (match, rel) => `](${managedSkillLink(rel)})`);
+    text = text.replace(/\]\((?:\.\.\/)+\.agents\/skills\/(ws-[^)]+)\)/g, (match, rel) => `](${managedSkillLink(rel)})`);
     // Legacy pre-0.4.46 rendered forms: `](runtime/<file>)` and `](../ws-<id>/...)`.
     // Global scope keeps these untouched (`runtime/` and `../ws-x` are valid there).
     text = text.replace(/\]\(runtime\/([^)]+)\)/g, (match, rel) => `](${managedRuntimeLinkPrefixFor(rel)}${rel})`);
-    text = text.replace(/\]\(\.\.\/(ws-[^)]+)\)/g, (match, rel) => `](${managedSkillLink(rel)})`);
+    text = text.replace(/\]\((?:\.\.\/)+(ws-[^)]+)\)/g, (match, rel) => `](${managedSkillLink(rel)})`);
     // Global-token links re-resolve once a local runtime file exists (local-first).
     text = text.replace(
       /\]\(\{globalSkillsRoot\}\/ws-shared\/runtime\/([^)]+)\)/g,
@@ -217,7 +290,7 @@ function renderConsumerAutoloadText(text) {
   ]) {
     text = text.split(`](${runtimeFile})`).join(`](${managedRuntimeLinkPrefixFor(runtimeFile)}${runtimeFile})`);
   }
-  return text.replace(/\]\(\.\.\/\.\.\/(ws-[^)]+)\)/g, (match, rel) => `](${managedSkillLink(rel)})`);
+  return text.replace(/\]\((?:\.\.\/){2,}(ws-[^)]+)\)/g, (match, rel) => `](${managedSkillLink(rel)})`);
 }
 
 function renderConsumerAutoload(sourcePath) {
@@ -717,7 +790,7 @@ function ensurePathTokensInConfig(configPath) {
   }
   const defaults = {
     _comment:
-      'Fixed install layout — expand brace tokens before tool calls. See {skillsRoot}/ws-shared/runtime/tools.md § Path tokens.',
+      'skillsRoot is fixed; sharedDir is the relocatable hub root (repo-relative, contained; bootstrap config stays at .ws/config.json). Expand brace tokens before tool calls. See {skillsRoot}/ws-shared/runtime/tools.md § Path tokens.',
     skillsRoot: '.agents/skills',
     sharedDir: '.ws',
   };
@@ -800,7 +873,7 @@ function upgradeConfigToLatestFormat(templateObj, userObj) {
   const prevSharedDir = prevTokens.sharedDir === '.agents/skills/ws-shared' ? '.ws' : prevTokens.sharedDir;
   merged.pathTokens = {
     _comment:
-      'Fixed install layout (not relocatable). Expand brace tokens before Read/Grep/Shell. Full contract: runtime/tools.md § Path tokens. plansDir/reviewsDir still resolve from plans.dir / reviews.dir.',
+      'skillsRoot is fixed; sharedDir is the relocatable hub root (repo-relative, contained; bootstrap config stays at .ws/config.json). Expand brace tokens before Read/Grep/Shell. Full contract: runtime/tools.md § Path tokens. plansDir/reviewsDir still resolve from plans.dir / reviews.dir.',
     skillsRoot: prevTokens.skillsRoot || '.agents/skills',
     sharedDir: prevSharedDir || '.ws',
     ...(merged.pathTokens || {}),
@@ -820,7 +893,7 @@ function upgradeConfigToLatestFormat(templateObj, userObj) {
  */
 /**
  * Extract consumer-owned hub artifacts from a legacy pre-move skills-tree hub
- * (`.agents/skills/ws-shared/`) into the project hub (`.ws/`). Managed content
+ * (`.agents/skills/ws-shared/`) into the project hub (configured hub, default `.ws/`). Managed content
  * (runtime/, templates/, flat managed docs) stays in the skills tree, where it
  * is refreshed from the package. Never writes consumer repo-root files.
  */
@@ -840,7 +913,7 @@ function relocateLegacyHub() {
     moved.push(name);
   }
   if (moved.length > 0) {
-    console.log(`    Extracted legacy ws-shared/ consumer data to .ws/ (${moved.join(', ')})`);
+    console.log(`    Extracted legacy ws-shared/ consumer data to ${hubDisplay()} (${moved.join(', ')})`);
   }
 }
 
@@ -850,9 +923,16 @@ function ensureSharedConsumerArtifacts(mode = 'install') {
 
   const memoryDir = path.join(destShared, 'memory');
 
-  const configPath = path.join(destShared, CONFIG_FILE);
-  const configBakPath = path.join(destShared, `${CONFIG_FILE}.bak`);
+  // The bootstrap config never relocates (spec 0115): it is the single hub
+  // discovery point the resolver reads. All other hub content follows the
+  // configured hub. In global scope both paths coincide.
+  const configPath = isGlobalScope ? path.join(destShared, CONFIG_FILE) : consumerConfigPath();
+  ensureWriteableDir(path.dirname(configPath));
+  const configBakPath = path.join(path.dirname(configPath), `${CONFIG_FILE}.bak`);
   const templatePath = packageHubPath('templates', 'config.json.example');
+  // Display the real config location: with a configured hub the bootstrap
+  // config lives at `.ws/config.json` while hubDisplay() shows the hub.
+  const configDisplay = path.relative(path.resolve(targetDir), configPath).split(path.sep).join('/') || CONFIG_FILE;
 
   if (fs.existsSync(configPath)) {
     let existingConfig = null;
@@ -861,12 +941,12 @@ function ensureSharedConsumerArtifacts(mode = 'install') {
       rawConfig = fs.readFileSync(configPath, 'utf8');
       existingConfig = JSON.parse(rawConfig);
     } catch (err) {
-      console.warn(`    Warning: Could not parse ${hubDisplay()}config.json as JSON: ${err.message}`);
+      console.warn(`    Warning: Could not parse ${configDisplay} as JSON: ${err.message}`);
     }
 
     if (rawConfig) {
       fs.writeFileSync(configBakPath, rawConfig);
-      console.log(`    Backed up ${hubDisplay()}config.json → ${hubDisplay()}config.json.bak`);
+      console.log(`    Backed up ${configDisplay} → ${configDisplay}.bak`);
     }
 
     let templateConfig = null;
@@ -881,9 +961,9 @@ function ensureSharedConsumerArtifacts(mode = 'install') {
     if (existingConfig && templateConfig) {
       const upgraded = upgradeConfigToLatestFormat(templateConfig, existingConfig);
       fs.writeFileSync(configPath, `${JSON.stringify(upgraded, null, 2)}\n`);
-      console.log(`    Updated ${hubDisplay()}config.json to latest format (preserved user values)`);
+      console.log(`    Updated ${configDisplay} to latest format (preserved user values)`);
     } else {
-      console.log(`    Preserved existing ${hubDisplay()}config.json`);
+      console.log(`    Preserved existing ${configDisplay}`);
     }
   } else {
     if (fs.existsSync(templatePath)) {
@@ -898,10 +978,10 @@ function ensureSharedConsumerArtifacts(mode = 'install') {
         // paths, which are wrong when the config lands in the global hub.
         const normalized = upgradeConfigToLatestFormat(seeded, {});
         fs.writeFileSync(configPath, `${JSON.stringify(normalized, null, 2)}\n`);
-        console.log(`    Seeded ${hubDisplay()}config.json from config.json.example (scope-normalized paths; run ws-configure-project to fill)`);
+        console.log(`    Seeded ${configDisplay} from config.json.example (scope-normalized paths; run ws-configure-project to fill)`);
       } else {
         fs.copyFileSync(templatePath, configPath);
-        console.log(`    Seeded ${hubDisplay()}config.json from config.json.example (run ws-configure-project to fill)`);
+        console.log(`    Seeded ${configDisplay} from config.json.example (run ws-configure-project to fill)`);
       }
       ensurePathTokensInConfig(configPath);
     }
@@ -1227,12 +1307,13 @@ function ensureSharedHubInstalled(mode = 'install') {
     // Global hub keeps its managed AGENTS.md from the package copy; the
     // project-worded local pointer is never seeded here.
   } else if (!fs.existsSync(hubPointerPath)) {
-    fs.writeFileSync(hubPointerPath, LOCAL_HUB_POINTER_MD);
+    fs.writeFileSync(hubPointerPath, localHubPointerMd());
     console.log(`    Seeded thin local ${hubDisplay()}AGENTS.md pointer to the managed hub`);
   } else if (isGeneratedHubEntrypoint(hubPointerPath)) {
     const currentPointer = fs.readFileSync(hubPointerPath, 'utf8');
-    if (currentPointer !== LOCAL_HUB_POINTER_MD) {
-      fs.writeFileSync(hubPointerPath, LOCAL_HUB_POINTER_MD);
+    const expectedPointer = localHubPointerMd();
+    if (currentPointer !== expectedPointer) {
+      fs.writeFileSync(hubPointerPath, expectedPointer);
       console.log(`    Refreshed ${hubDisplay()}AGENTS.md pointer to the managed hub`);
     }
   }
