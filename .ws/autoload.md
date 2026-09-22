@@ -106,6 +106,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | Pick lite vs standard for a ready spec | [`ws-classify-complexity`](../.agents/skills/ws-classify-complexity/SKILL.md) | Orthogonal to gates.md simple/standard/complex skip axis |
 | Deliver **many** specs sequentially (auto lite/standard workers) | [`ws-spec-multi`](../.agents/skills/ws-spec-multi/SKILL.md) | Master orch only — does not edit product code itself |
 | Explain status / what a spec delivered (read-only panorama) | [`ws-spec-explain`](../.agents/skills/ws-spec-explain/SKILL.md) | Does not implement, ship, or edit specs |
+| Translate a spec into a human runbook beside the source artifact | [`ws-spec-translate-to-human`](../.agents/skills/ws-spec-translate-to-human/SKILL.md) | Never implements code or edits the agent spec; one companion write target |
 | Bulk-import open GH issues / ADO User Stories → local specs + register | [`ws-spec-from-provider`](../.agents/skills/ws-spec-from-provider/SKILL.md) | Not single-id fetch (use provider `fetch-to-spec`); not orch delivery |
 
 ### Keyword → skill (quick map)
@@ -129,6 +130,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | classify complexity, lite or standard? | `ws-classify-complexity` |
 | multi-spec, batch specs, run all specs | `ws-spec-multi` |
 | explain spec, spec status, what did US deliver, /explain | `ws-spec-explain` |
+| translate spec, human runbook, manual test script, /translate-to-human | `ws-spec-translate-to-human` |
 | cleanup workflow, clean plan leftovers, delete telemetry/.runtime | `ws-cleanup` |
 | spec-memo-setup, /ws-spec-memo, external vault setup, off-repo memory, configure vault, import/migrate MEMORY, vault preflight check, hybrid fallback bootstrap | `ws-spec-memo` |
 | spec-memo search/get/upsert/bootstrap (runtime), /ws-memo, memo vault ops, canvas, doctor | `ws-memo` (external; skip if `SKILL.md` missing) |

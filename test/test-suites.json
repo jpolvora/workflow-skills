@@ -451,6 +451,9 @@
       "test/test-wiki.js"
     ],
     [
+      "test/test-spec-translate-to-human.js"
+    ],
+    [
       "test/test-host-capabilities.js"
     ],
     [

@@ -337,6 +337,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | [`ws-megabrain`](.agents/skills/ws-megabrain/SKILL.md) | Vibe-coding implementer without a spec; specialists; consumes fable |
 | [`ws-patterns-generator`](.agents/skills/ws-patterns-generator/SKILL.md) | Consumer project-patterns skill generator: harvests run artifacts and project knowledge to seed and refresh an autoloaded patterns skill body hosted under `{sharedDir}/ws-project-patterns` (never installed, never hashed) |
 | [`ws-spec-explain`](.agents/skills/ws-spec-explain/SKILL.md) | Spec/US status panorama — what it does, what it delivered, how to check & test |
+| [`ws-spec-translate-to-human`](.agents/skills/ws-spec-translate-to-human/SKILL.md) | Human runbook companion beside an agent spec (numbered Implementation / UI Test / Out of scope) |
 | [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) | Archive `{plansDir}` delivery facts into `index.PRD`, then propose cleanup of shipped plan folders |
 | [`ws-cleanup`](.agents/skills/ws-cleanup/SKILL.md) | Confirm-gated cleanup of workflow leftovers (telemetry, `.runtime`, shipped plans) + `.gitignore` suggestions |
 

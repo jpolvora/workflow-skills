@@ -1,6 +1,6 @@
 ---
 name: ws-spec-to-pr-lite
-version: 0.4.59
+version: 0.4.60
 description: Fast Spec-to-PR (steps 0–5). Plan, implement, commit, review, ship. Trigger for lite/fast delivery.
 disable-model-invocation: true
 invocation_names:
@@ -48,6 +48,8 @@ Aliases: [`tools.md`](../ws-shared/runtime/tools.md). Host mode: resolve the hos
 | 5 | Fix-PR | `ws-goal-fix-pr` / `ws-fix-pr`: for each batch, write and validate the gate-only plan before any product edit, then execute inline (`check-pr-status` baseline vs diff); ignore role model switches | Complete plan + execute/proactive evidence; PR merged or zero active threads (`activeThreads == 0`); then run the post-completion proof-of-work runbook (helper → gate → collector invoke → telemetry) per [`gates.md`](../ws-shared/runtime/gates.md) § Optional post-completion proof-of-work step |
 
 **No Step 5/7 verify or testing:** lite does not dispatch `ws-plan-verify` or `ws-testing`. **Regression sabotage** and **mutation testing** are **standard-orch Steps 5 and 7 only** — out of scope for lite.
+
+**Human companion (refinement, non-blocking):** Step 1 may produce `{us-dir}/step-00-{slug}.spec-translated.md` through [`ws-spec-translate-to-human`](../ws-spec-translate-to-human/SKILL.md) when `ws-spec-translate-to-human.enabled !== false` (`outputLanguage`, default `en-us`); generation failures are recorded and never block the lite advance.
 
 ## Post-Mutating Transition Sequence (Steps 0–4 → 1–5)
 

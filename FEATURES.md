@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.4.46** · 54 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.4.60** · 56 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 ### ws-shared hybrid configuration boundary
 
@@ -415,6 +415,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-spec-organizer`](.agents/skills/ws-spec-organizer/SKILL.md) | W | Resolve spec-of-record path and organize/prefix specs chronologically |
 | [`ws-task-lifecycle`](.agents/skills/ws-task-lifecycle/SKILL.md) | W | Prompt-driven intake → implement → complete tracking (not Spec-to-PR) |
 | [`ws-wiki`](.agents/skills/ws-wiki/SKILL.md) | W | Living feature wiki & domain knowledge base (init, from-code genesis, sweep, verify, apply, sync) |
+| [`ws-spec-translate-to-human`](.agents/skills/ws-spec-translate-to-human/SKILL.md) | W | Human runbook companion beside an agent spec (Implementation / UI Test / Out of scope; non-blocking refinement hook) |
 
 ### Quality and audit
 
