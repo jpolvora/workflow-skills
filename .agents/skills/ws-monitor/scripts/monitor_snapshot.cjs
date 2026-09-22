@@ -500,6 +500,80 @@ function expectedArtifacts(state, workflowDir, minVerifyScore, repoRoot = workfl
   return expected;
 }
 
+// us-388 AC1/AC6: a child workflow's machine SoT is `{workflow-id}.state.json`.
+// Presence requires a non-empty, parseable JSON state that carries the workflow
+// identity fields — a truncated or unrelated `.json`, or the `.state.md` render
+// alone, is not a resumable/observable child state.
+// us-388 AC1/AC6: a child workflow's machine SoT is `{workflow-id}.state.json`.
+// Presence requires a parseable JSON state with a real workflow identity — a
+// truncated/unrelated `.json`, empty identity, invalid step, or the `.state.md`
+// render alone is not a resumable/observable child state.
+function isValidChildStateFile(file, expectedSlug) {
+  let parsed;
+  try {
+    parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+  } catch {
+    return false;
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return false;
+  if (!Number.isInteger(parsed.stateVersion) || parsed.stateVersion < 1) return false;
+  if (!['workflowId', 'slug', 'workflowType', 'status'].every((key) => typeof parsed[key] === 'string' && parsed[key].trim())) return false;
+  if (!Number.isInteger(parsed.currentStep) || parsed.currentStep < 0) return false;
+  // The state must belong to the queue item whose directory is inspected; a stale
+  // or foreign state file under the wrong directory is not this item's child state.
+  return expectedSlug === undefined || parsed.slug === expectedSlug;
+}
+
+function listChildStateFiles(dir, expectedSlug) {
+  if (!dir || !fs.existsSync(dir)) return [];
+  try {
+    return fs.readdirSync(dir, { withFileTypes: true })
+      .filter((entry) => entry.isFile() && entry.name.endsWith('.state.json'))
+      .map((entry) => entry.name)
+      .filter((name) => isValidChildStateFile(path.join(dir, name), expectedSlug));
+  } catch {
+    return [];
+  }
+}
+
+// us-388 AC6: multi-spec child expectation model. The multi-spec branch used to
+// report `expectedArtifacts: []`, so an advanced queue item with no child state
+// produced no finding — the silent blind spot this spec fixes. Derive the
+// expectation from the batch queue rows (design intent: reuse `expectedArtifacts`
+// rather than add a parallel detector). An item that has advanced past `pending`
+// (`in_progress` / `shipped` / `failed`) is expected to have child state; absence
+// is surfaced as `missing-child-state`, complementing (not duplicating)
+// `stale-parent-row`, which requires a child that already closed.
+const CHILD_ADVANCED_STATUSES = new Set(['in_progress', 'shipped', 'failed']);
+// `{plansDir}/ws-spec-multi/` is the reserved batch directory holding the parent
+// run state, not any child's plan dir. A queue item that aliases that slug would
+// otherwise scan the parent batch state and mask a genuinely missing child state.
+const RESERVED_PLAN_DIRS = new Set(['ws-spec-multi']);
+function isSafePlanSlug(slug) {
+  return typeof slug === 'string'
+    && slug.length > 0
+    && !slug.includes('..')
+    && !slug.includes('/')
+    && !slug.includes('\\')
+    && !RESERVED_PLAN_DIRS.has(slug);
+}
+function expectedChildArtifacts(items, plansDir, repoRoot) {
+  const expected = [];
+  for (const item of Array.isArray(items) ? items : []) {
+    if (!item || !isSafePlanSlug(item.slug) || !CHILD_ADVANCED_STATUSES.has(String(item.status))) continue;
+    const childDir = path.join(plansDir, item.slug);
+    expected.push({
+      path: toRepoRelative(repoRoot, childDir, { allowOutside: true }),
+      name: `${item.slug}.state.json`,
+      reason: `queue item "${item.slug}" is ${item.status} without child workflow state`,
+      present: listChildStateFiles(childDir, item.slug).length > 0,
+      slug: item.slug,
+      kind: 'child-state',
+    });
+  }
+  return expected;
+}
+
 function addFinding(findings, severity, code, message, evidence = []) {
   const key = `${severity}:${code}:${message}`;
   if (findings.some((item) => `${item.severity}:${item.code}:${item.message}` === key)) return;
@@ -619,7 +693,7 @@ function classifyWorkflow(state, workflowDir, telemetry, minVerifyScore, repoRoo
   return findings;
 }
 
-function classifyMultiSpecWorkflow(state, stateFile, repoRoot = '.') {
+function classifyMultiSpecWorkflow(state, stateFile, repoRoot = '.', childArtifacts = null) {
   const findings = [];
   const items = Array.isArray(state.items) ? state.items : [];
   const runStatus = state.status || 'active';
@@ -665,6 +739,20 @@ function classifyMultiSpecWorkflow(state, stateFile, repoRoot = '.') {
       'warning',
       'multi-spec-concurrency',
       `Multi-spec run has multiple in_progress items (${inProgressItems.map((i) => i.slug).join(', ')}); sequential execution expected`,
+      [toRepoRelative(repoRoot, stateFile, { allowOutside: true })],
+    );
+  }
+  // us-388 AC6: an advanced queue item with no child workflow state is the silent
+  // blind spot. Distinct from stale-parent-row: that finding needs a child that
+  // closed (or a newer run claiming the slug); this one needs the child state to
+  // be absent entirely.
+  for (const artifact of Array.isArray(childArtifacts) ? childArtifacts : []) {
+    if (artifact.kind !== 'child-state' || artifact.present) continue;
+    addFinding(
+      findings,
+      'warning',
+      'missing-child-state',
+      `multi-spec item "${artifact.slug}" advanced without child workflow state; expected under ${artifact.path}`,
       [toRepoRelative(repoRoot, stateFile, { allowOutside: true })],
     );
   }
@@ -1288,7 +1376,8 @@ function snapshot(options) {
       const shippedItems = items.filter((item) => item.status === 'shipped');
       const failedItems = items.filter((item) => item.status === 'failed');
       const skippedItems = items.filter((item) => item.status === 'skipped');
-      const findings = classifyMultiSpecWorkflow(state, loaded.stateFile, context.repoRoot);
+      const childArtifacts = expectedChildArtifacts(items, plansDir, context.repoRoot);
+      const findings = classifyMultiSpecWorkflow(state, loaded.stateFile, context.repoRoot, childArtifacts);
       findings.push(...detectContextMismatch(state, gitContext, context.repoRoot));
       workflows.push({
         workflowId: state.runId || state.workflowId || path.basename(loaded.stateFile, loaded.stateFile.endsWith('.state.json') ? '.state.json' : '.state.md'),
@@ -1321,7 +1410,7 @@ function snapshot(options) {
           parseErrors: [],
           lastEvent: null,
         },
-        expectedArtifacts: [],
+        expectedArtifacts: childArtifacts,
         findings,
       });
       continue;
@@ -1614,6 +1703,7 @@ if (require.main === module) {
 module.exports = {
   parseArgs,
   expectedArtifacts,
+  expectedChildArtifacts,
   classifyWorkflow,
   classifyMultiSpecWorkflow,
   terminalShape,

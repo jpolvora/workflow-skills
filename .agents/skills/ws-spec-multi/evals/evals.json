@@ -45,6 +45,17 @@
         "The parent run frontmatter updatedAt advances on the child handoff (never frozen beside a terminal child)",
         "Re-applying a close or ship transition adds no rows and does not regress a terminal item status"
       ]
+    },
+    {
+      "id": 5,
+      "prompt": "/spec-multi — a child worker merges while {plansDir}/{slug}/ holds no state file and no step-01 plan artifact",
+      "expected_output": "Agent fails closed before recording shipped via verify_child_artifacts.cjs, and never claims delivery evidence for the item.",
+      "assertions": [
+        "The dispatch contract states the required child artifact set and the {child-workflow-id} state path under {plansDir}/{slug}/",
+        "Before recording shipped, the orchestrator runs the executable record_child_outcome.cjs (which invokes verify_child_artifacts.cjs) and a non-zero exit blocks the shipped row (mirroring missing-artifact)",
+        "The child step-01 artifact uses its contract name step-01-{slug}.plan.md, never an ad-hoc plan.md",
+        "The Phase 6 report claims delivery evidence only for items whose child state (and step-08-*.result.md for completed children) exists"
+      ]
     }
   ]
 }

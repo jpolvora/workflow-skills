@@ -79,6 +79,27 @@ step-output:
 
 Missing or unparseable output (or `merged: false` when PR exists) is treated as non-terminal, triggering Phase 4b convergence via `ws-goal-fix-pr` and `ws-ship-pr` merge.
 
+### Required child artifact set (us-388)
+
+A dispatched worker persists its own run under the batch's `{plansDir}/{slug}/` with
+workflow id `{child-workflow-id}`:
+
+| Artifact | Contract name |
+|----------|----------------|
+| Machine SoT (+ `.state.md` render) | `{plansDir}/{slug}/{child-workflow-id}.state.json` (with `state.handoffs`) |
+| Step 1 plan | `{plansDir}/{slug}/step-01-{slug}.plan.md` (never an ad-hoc `plan.md`) |
+| Other executed steps | `step-NN-{slug}.*` |
+| Telemetry | `{plansDir}/{slug}/telemetry.jsonl` |
+| Delivery evidence (completed child) | `{plansDir}/{slug}/step-08-*.result.md` |
+
+The batch orchestrator records terminal rows through the executable guard
+`node {skillsRoot}/ws-spec-multi/scripts/record_child_outcome.cjs --run {plansDir}/ws-spec-multi/{runId}.state.md --slug {slug} --status shipped|failed|skipped`.
+On `--status shipped` it invokes `verify_child_artifacts.cjs` and refuses (non-zero,
+no write) when the child state (machine SoT) or `step-01-{slug}.plan.md` is absent,
+mirroring the monitor `missing-artifact` class. `ws-monitor` surfaces the same blind
+spot as the `missing-child-state` finding when a multi-spec item advances without
+child state.
+
 ## Already-Implemented Probe
 
 Before evaluating flow mode or dispatching a worker, run the probe check:

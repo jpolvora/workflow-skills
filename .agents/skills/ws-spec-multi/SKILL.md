@@ -1,6 +1,6 @@
 ---
 name: ws-spec-multi
-version: 0.4.56
+version: 0.4.57
 description: Batch specs one by one. Classifies each spec and runs standard or lite. Trigger for multi-spec queues.
 disable-model-invocation: true
 invocation_names:
@@ -35,6 +35,7 @@ Aliases: [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md). Param
 | User gate | `user-gate` / `user-gate-auto` | Selection gate for blank scan (`pending[]` only); failure pause gate (Resume, Skip, Abort) |
 | Blank-scan inventory | `Shell` | `node {skillsRoot}/ws-spec-multi/scripts/list_pending_specs.cjs --specs-dir {specsDir} --plans-dir {plansDir} --json` |
 | SCM / state probe | `Shell` | SCM query & file probes; parse worker `step-output` |
+| Outcome transition | `Shell` | `node {skillsRoot}/ws-spec-multi/scripts/record_child_outcome.cjs --run {plansDir}/ws-spec-multi/{runId}.state.md --slug {slug} --status shipped\|failed\|skipped [--pr-number N --pr-url U --reason TEXT]` — the executable guarded row transition (fails closed on a `shipped` row lacking child state/`step-01`) |
 | State persistence | `write-to-file` | Update `{plansDir}/ws-spec-multi/{runId}.state.md` |
 
 ## Goals & Invariants

@@ -68,7 +68,7 @@ The same delivery guarantees with the planning ceremony removed: spec → plan �
 
 ### 1.3 Batch delivery — `ws-spec-multi`
 
-Runs a queue of specs one at a time. A blank `/ws-spec-multi` scan lists only pending/unfinished specs (index `[ ]` / `[~]` and untracked files; `[x]`, Done-log, and already-merged items stay off the gate). For each selected spec it calls `ws-classify-complexity` and dispatches lite or standard automatically, syncs the base branch before starting the next item, and blocks queue advancement until the current spec reaches a terminal state.
+Runs a queue of specs one at a time. A blank `/ws-spec-multi` scan lists only pending/unfinished specs (index `[ ]` / `[~]` and untracked files; `[x]`, Done-log, and already-merged items stay off the gate). For each selected spec it calls `ws-classify-complexity` and dispatches lite or standard automatically, syncs the base branch before starting the next item, and blocks queue advancement until the current spec reaches a terminal state. The dispatch contract requires each child to persist its own state, `step-01-{slug}.plan.md`, telemetry, and `step-08-*.result.md` under `{plansDir}/{slug}/`; terminal rows are recorded through the executable `record_child_outcome.cjs`, which fails closed via `verify_child_artifacts.cjs` when child state is absent.
 
 ### 1.4 Direct problem solving — `ws-fable-method`
 
@@ -198,7 +198,7 @@ Meta-skills that keep the suite itself honest.
 | `ws-check-harness` | Install mode/scope detection (upstream, project, global, hybrid) plus routing, links, portability, integrity digests, instruction duplication, role clarity, skill composition topology |
 | `ws-check-workflows` | FSM simulation of standard, lite, and multi-spec pipelines: step continuity, state isolation, provider dispatch, artifact transitions |
 | `ws-doctor` | Read-only diagnosis of path errors, tool recipes, config switches, and missing references across installed skills |
-| `ws-monitor` | Read-only live observation of workflow state, telemetry, expected artifacts, and configured transcript roots |
+| `ws-monitor` | Read-only live observation of workflow state, telemetry, expected artifacts, and configured transcript roots; multi-spec runs derive child-state expectations from the queue and surface `missing-child-state` |
 | `ws-show-harness` | Snapshot of the active session: loaded skills, rules, precedence hierarchy |
 | `ws-preview` | Consumer-configured local pipeline review dry-run (`preview.dryRunCommand`) without publishing PR threads |
 | `ws-write-a-skill` | Authoring and progressive-disclosure tuning protocol for new skills |
@@ -220,7 +220,7 @@ Diagnostics can be persisted under `plans.diagnosticsDir`. `workflow-skills tele
 | `ws-spec-explain` | Read-only panorama of a spec or US/issue: status, what it does, what it delivered, how to check in the project/UI, and how to test |
 | `ws-spec-archive` | Harvests `{plansDir}` state, artifacts, git/changelog/MEMORY (and optional SCM) into `{specsDir}/index.PRD` Archive, then proposes a commit that removes eligible shipped plan folders |
 | `ws-cleanup` | Lists disposable workflow leftovers (telemetry, `.runtime`, audit logs, shipped plan dirs, untracked orphans under partially tracked shipped plans), confirms via user-gate, deletes only approved untracked paths, and suggests missing `.gitignore` patterns |
-| `ws-monitor` | Snapshots active workflow runs, classifies live execution signals, and emits an optional consumer-local report without applying fixes |
+| `ws-monitor` | Snapshots active workflow runs, classifies live execution signals (including multi-spec `missing-child-state` / `stale-parent-row`), and emits an optional consumer-local report without applying fixes |
 
 ---
 
