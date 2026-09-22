@@ -34,6 +34,7 @@ flowchart TD
 - Parse raw arguments:
   - Existing state file (`{plansDir}/ws-spec-multi/*.state.md`) → load state and `baseBranch`, skip scan, continue at first non-terminal item (unmerged PR rows re-enter Phase 4b convergence gate).
   - **Queue integrity on load:** run the fail-closed duplicate guard (duplicate `#` or duplicate `slug`/`specPath` → stop and surface). A `completed` run whose table still holds any `pending`/`in_progress` row is corrupt (phantom row); surface it and re-dispatch nothing (see [`STATE.md`](STATE.md) § Resume Policy).
+  - **Supersede retirement:** when the loaded run's frontmatter sets `supersedesRunId` and that prior run is still `active`, run `node {skillsRoot}/ws-spec-multi/scripts/retire_superseded_run.cjs --run {plansDir}/ws-spec-multi/{runId}.state.md` (resolves the exact id; fails closed when unresolved) before dispatching; never leave two `active` runners on one lineage.
   - Explicit spec list (`*.spec.md` paths) → construct new run queue with items marked `pending` and recorded `baseBranch`.
   - No arguments → proceed to Phase 2 (Blank-list scan).
 
@@ -43,6 +44,7 @@ flowchart TD
 - Present `user-gate` multi-select **only** with sorted `pending[]` paths (index `[ ]` / `[~]`, plus untracked specs of record). Do **not** list `[x]` / Done-log / already-merged items, or `step-00-*.spec.md` copies.
 - If `pending[]` is empty: report no unfinished specs and stop (no state file).
 - Generate `runId` (`ms-{YYYYMMDDTHHMMSSZ}`).
+- **Supersede retirement:** when this new run supersedes an existing run, record its id in the run's `supersedesRunId` frontmatter, then run `node {skillsRoot}/ws-spec-multi/scripts/retire_superseded_run.cjs --run {plansDir}/ws-spec-multi/{runId}.state.md` before dispatching the first worker; the helper writes the superseded run's terminal `status` (`cancelled` / `superseded`) with an advancing `updatedAt` and fails closed when the named run cannot be resolved, so at most one `active` runner exists per lineage.
 - Write initial run state file at `{plansDir}/ws-spec-multi/{runId}.state.md` containing `baseBranch: {baseBranch}` in YAML frontmatter, plus `totalItems: {n}` where `{n}` is the frozen selection length. Assign each row a stable `#` (1..n) once; the `#` index is display-only and is never re-allocated. Row identity is `specPath` (fallback `slug`). One row per selected spec.
 
 ### Phase 3: Select Next Spec & Flow Auto-Detection
@@ -89,6 +91,7 @@ Every created PR MUST complete full code-review convergence, merge, and post-mer
    - This ensures `baseBranch` (`main`/`master`/`develop`) on local disk matches the remote merged state before the next spec worker creates a new feature branch (`git checkout -b feature/{slug}`).
 5. **Strict Block & Prohibition**: Leaving PRs open or unmerged is FORBIDDEN. Master orchestrator MUST NOT dispatch the next spec worker until the current spec PR is confirmed fully merged (`merged: true`, `activeThreads: 0`, `state: MERGED`) and base branches are synced locally.
 6. If convergence fails (max iterations, checks red, escalation): mark item `status: failed` and present Phase 5 `user-gate` failure menu.
+7. **Parent-child handoff:** when the child worker for `{slug}` reaches a terminal state (parsed `step-output`, or the child state reports a terminal `status` with `endedAt`), transition the parent queue row in place and advance the run frontmatter `updatedAt` immediately — a parent row left `in_progress` (or a frozen parent `updatedAt`) beside a terminal child is a defect.
 
 ### Phase 5: Record Outcome
 - Update the **existing** row for `{specPath}` (fallback `{slug}`) in place — never append a second row for the same spec. Run the fail-closed duplicate guard before writing; set the row `updatedAt` and the run frontmatter `updatedAt` to now. Reported totals use the frozen `totalItems`.

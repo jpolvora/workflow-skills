@@ -1,7 +1,7 @@
 ---
 name: ws-monitor
 description: Read-only live observer for active Spec-to-PR and multi-spec workflow runs, memory vault status, telemetry, artifacts, and multi-host transcripts.
-version: 0.4.55
+version: 0.4.56
 disable-model-invocation: true
 invocation_names:
   - monitor
@@ -80,6 +80,12 @@ When watching a live running workflow in the background or during paired session
   - `multi-spec-idle`: run status is `active` but no item is `pending` or `in_progress`.
   - `multi-spec-failed-item`: an item failed; inspect `reason` to diagnose child worker failure.
   - `multi-spec-concurrency`: multiple items marked `in_progress` simultaneously (batch execution is strictly sequential).
+  - `stale-parent-row`: a queue row is non-terminal while its child worker (same slug) is terminal, the run itself is terminal, or a newer active run claims the same `in_progress` slug (supersede never retired). The parent row did not propagate the child close.
+  - `terminal-run-active`: a run whose steps through the close step are all terminal still reports an active status with no `endedAt`. The observer derives a terminal reported status (never counted live) and flags the stale state file.
+
+## Terminal-state observation
+
+A run is **terminal-shaped** when every step from 0 through the pipeline close step (`standard` → 8, `lite` → 4) is terminal (`completed` or `skipped`) in `completedSteps` / `skippedSteps` / `stepStatus`. A terminal-shaped run that still reports `status: active` with `endedAt: null` emits `terminal-run-active` and is reported with a derived terminal status, so `activeCount` and `status == active` polling reflect only real in-flight work.
 
 ## Memory Vault Data Collection (Current Project)
 
@@ -135,6 +141,8 @@ Transcripts provide secondary evidence to diagnose why a subagent or orchestrato
 | Generic dispatch where named projection was expected (`generic-dispatch`) | Warning | Host supports named subagents but dispatch used generic fallback without explanation (embed-inline is healthy when host lacks named-agent binding) |
 | Multi-spec queue item failed (`multi-spec-failed-item`) | Warning | A spec within the batch run encountered a terminal failure |
 | Multi-spec queue active with no progress (`multi-spec-idle`) | Info | Batch run is active but all queue items are processed or none pending |
+| Multi-spec queue row stale vs child/lineage (`stale-parent-row`) | Warning | A non-terminal row never transitioned: the child worker closed, the run is terminal, or a superseding run claims the same slug |
+| Terminal-shaped run still active (`terminal-run-active`) | Warning | All steps through the close step are terminal but the state file still reports active with no `endedAt`; reported status is derived terminal |
 | Memory vault records active workflow missing on disk (`vault-unreconciled-workflow`) | Info | Memory vault lists an active workflow that does not exist in local plans |
 | Transcript contains an unhandled error with a stack trace (`subagent-error`) | Warning | Subagent or worker crashed or threw an unhandled exception |
 | Worker session idle while workflow is active (`worker-session-stall`) | Warning | The correlated session shows no recent activity; possible stall |
