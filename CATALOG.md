@@ -81,6 +81,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | `ws-pre-daily` | `.agents/skills/ws-pre-daily/SKILL.md` | 36-hour standup briefing |
 | `ws-megabrain` | `.agents/skills/ws-megabrain/SKILL.md` | Vibe-coding implementer + specialists |
 | `ws-spec-explain` | `.agents/skills/ws-spec-explain/SKILL.md` | Status and delivery panorama |
+| `ws-spec-translate-to-human` | `.agents/skills/ws-spec-translate-to-human/SKILL.md` | Human runbook beside an agent spec |
 | `ws-spec-archive` | `.agents/skills/ws-spec-archive/SKILL.md` | Harvest plan history into index.PRD |
 | `ws-cleanup` | `.agents/skills/ws-cleanup/SKILL.md` | Workflow leftover cleanup |
 | `ws-spec-update` | `.agents/skills/ws-spec-update/SKILL.md` | Auto-update specs after code changes |
@@ -114,6 +115,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | Standup briefing (last 36 hours) | `ws-pre-daily` |
 | What next / vibe-coding implement / megabrain | `ws-megabrain` |
 | Explain spec / US status & delivery panorama | `ws-spec-explain` |
+| Human runbook for a spec (Implementation / UI Test / Out of scope) | `ws-spec-translate-to-human` |
 | Archive plan history into `index.PRD` / clean shipped plan dirs | `ws-spec-archive` |
 | Clean workflow leftovers / shipped plan dirs | `ws-cleanup` |
 | Testing pre-PR | `ws-testing` |

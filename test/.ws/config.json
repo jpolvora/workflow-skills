@@ -360,5 +360,10 @@
     "_comment": "Per-skill section for the fix-PR convergence loop (seeds the one-parent-section-per-skill convention). useSubAgents false (default when omitted) runs the plan/fix loop inline in the current turn with zero subagent dispatches; true dispatches one fresh worker per round batch. One key gates the whole fix path (ws-fix-pr, ws-goal-fix-pr, ws-ship-pr pre-ship convergence).",
     "useSubAgents": false
   },
+  "ws-spec-translate-to-human": {
+    "_comment": "Per-skill section for the human-companion generator (ws-spec-translate-to-human, refinement hook in ws-plan-write). enabled false skips companion generation; outputLanguage selects the companion language (en-us default, pt-BR supported). Generation is non-blocking either way.",
+    "enabled": true,
+    "outputLanguage": "en-us"
+  },
   "_testMarker": "preserve-me-do-not-overwrite"
 }
