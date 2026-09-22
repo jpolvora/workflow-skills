@@ -101,6 +101,10 @@ ${multiTable(rows)}
   if (deriveTerminalStatus(live)) throw new Error('us-395 AC7: endedAt run must not be derived terminal');
   const incomplete = terminalState({ currentStep: 6, completedSteps: [0, 1, 2, 4, 5], stepStatus: { 0: 'completed', 1: 'completed', 2: 'completed', 4: 'completed', 5: 'completed' } });
   if (deriveTerminalStatus(incomplete)) throw new Error('us-395 AC2: incomplete run wrongly derived terminal');
+  // A step recorded in completedSteps but failed in stepStatus is not terminal.
+  const failedStep = terminalState({ stepStatus: { 0: 'completed', 1: 'completed', 2: 'completed', 3: 'skipped', 4: 'failed', 5: 'completed', 6: 'completed', 7: 'completed', 8: 'completed', 9: 'completed' } });
+  if (terminalShape(failedStep)) throw new Error('us-395 AC2: a failed step must not count as terminal');
+  if (deriveTerminalStatus(failedStep)) throw new Error('us-395 AC2: a failed run must not be derived terminal');
 }
 
 // AC7: classifyWorkflow emits terminal-run-active with the raw status in the message.

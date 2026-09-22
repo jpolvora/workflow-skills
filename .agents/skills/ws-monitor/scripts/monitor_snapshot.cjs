@@ -521,15 +521,19 @@ function pipelineCloseStep(state) {
 
 function terminalShape(state) {
   const closeStep = pipelineCloseStep(state);
-  const terminal = new Set();
-  for (const value of Array.isArray(state.completedSteps) ? state.completedSteps : []) terminal.add(Number(value));
-  for (const item of Array.isArray(state.skippedSteps) ? state.skippedSteps : []) terminal.add(Number(item?.step));
   const stepStatus = state.stepStatus && typeof state.stepStatus === 'object' ? state.stepStatus : {};
-  for (const [key, value] of Object.entries(stepStatus)) {
-    if (TERMINAL_STEP_STATUSES.has(String(value))) terminal.add(Number(key));
-  }
+  const completed = new Set((Array.isArray(state.completedSteps) ? state.completedSteps : []).map(Number));
+  const skipped = new Set((Array.isArray(state.skippedSteps) ? state.skippedSteps : []).map((item) => Number(item?.step)));
+  // `stepStatus` is authoritative when present: the finish path records a
+  // failed step in `completedSteps` too, so trusting `completedSteps` alone
+  // would misread a failed run as terminal.
   for (let step = 0; step <= closeStep; step += 1) {
-    if (!terminal.has(step)) return false;
+    const status = stepStatus[String(step)];
+    if (status !== undefined) {
+      if (!TERMINAL_STEP_STATUSES.has(String(status))) return false;
+    } else if (!completed.has(step) && !skipped.has(step)) {
+      return false;
+    }
   }
   return true;
 }

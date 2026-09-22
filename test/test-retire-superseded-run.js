@@ -155,5 +155,21 @@ function field(text, name) {
   }
 }
 
+// A same-second timestamp still advances updatedAt (never fails on equal).
+{
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-retire-us395-same-'));
+  tempRoots.push(root);
+  const dir = path.join(root, '.agents', 'plans', 'ws-spec-multi');
+  write(path.join(dir, 'ms-same.state.md'), stateBody({ runId: 'ms-same', status: 'active', createdAt: '2026-09-19T23:16:39Z' }));
+  write(path.join(dir, 'ms-same-new.state.md'), stateBody({ runId: 'ms-same-new', status: 'active', createdAt: '2026-09-19T23:16:39Z', supersedesRunId: 'ms-same' }));
+  const result = run(['--run', path.join(dir, 'ms-same-new.state.md'), '--plans-dir', path.join(root, '.agents', 'plans'), '--timestamp', '2026-09-19T23:16:39Z', '--json'], root);
+  if (result.status !== 0) throw new Error(result.stderr || result.stdout);
+  const text = fs.readFileSync(path.join(dir, 'ms-same.state.md'), 'utf8');
+  if (field(text, 'status') !== 'cancelled') throw new Error('us-395 AC3: same-second retirement did not retire');
+  if (field(text, 'updatedAt') !== '2026-09-19T23:16:40Z') {
+    throw new Error(`us-395 AC3: same-second updatedAt not advanced: ${field(text, 'updatedAt')}`);
+  }
+}
+
 for (const root of tempRoots) fs.rmSync(root, { recursive: true, force: true });
 console.log('us-395 supersede retirement ok');

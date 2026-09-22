@@ -120,6 +120,36 @@ workflowManifest: {"created":[],"modified":[],"deleted":[]}
   }
 }
 
+// AC1: a run with a failed step is not terminal-shaped and must not close,
+// even though the finish path also records the failed step in completedSteps.
+{
+  const failedState = `---
+stateVersion: 3
+revision: 0
+workflowId: wf-failed
+slug: close
+workflowType: standard
+status: active
+currentStep: 8
+completedSteps: [0,1,2,4,5,6,7]
+skippedSteps:
+  - { step: 3, reason: dag-disabled, evidence: "" }
+stepStatus: { 0: completed, 1: completed, 2: completed, 3: skipped, 4: completed, 5: completed, 6: failed, 7: completed }
+workflowManifest: {"created":[],"modified":[],"deleted":[]}
+---
+# State
+`;
+  const root = makeRoot('ws-close-us395-failed-', failedState);
+  const rel = '.agents/plans/close/close.state.md';
+  const result = run([
+    'finish', rel, '--step', '8', '--status', 'skipped', '--reason', 'fix-pr-not-applicable',
+    '--timestamp', '2026-09-22T13:00:00.000Z', '--repo-root', root,
+  ]);
+  if (result.status !== 0) throw new Error(result.stderr || result.stdout);
+  const json = readJson(root, rel.replace(/\.state\.md$/, '.state.json'));
+  if (json.status === 'completed') throw new Error('us-395 AC1: a run with a failed step must not close');
+}
+
 // AC9: the new fixtures are registered in the harness-efficiency suite so
 // `npm run test` and `test-harness-clean.js` exercise them.
 {

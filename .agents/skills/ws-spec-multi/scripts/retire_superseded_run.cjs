@@ -150,12 +150,17 @@ function main() {
   } else {
     const previousUpdatedAt = Date.parse(readField(text, 'updatedAt') || '');
     const nextUpdatedAt = Date.parse(timestamp);
-    if (!Number.isFinite(nextUpdatedAt) || (Number.isFinite(previousUpdatedAt) && nextUpdatedAt <= previousUpdatedAt)) {
-      fail('retirement timestamp must be later than the existing updatedAt', options);
+    if (!Number.isFinite(nextUpdatedAt) || (Number.isFinite(previousUpdatedAt) && nextUpdatedAt < previousUpdatedAt)) {
+      fail('retirement timestamp must not be earlier than the existing updatedAt', options);
       return;
     }
+    // A same-second retirement must still advance updatedAt.
+    const effectiveTimestamp = Number.isFinite(previousUpdatedAt) && nextUpdatedAt <= previousUpdatedAt
+      ? new Date(previousUpdatedAt + 1000).toISOString().replace(/\.\d{3}Z$/, 'Z')
+      : timestamp;
+    result.timestamp = effectiveTimestamp;
     let next = setField(text, 'status', status);
-    next = setField(next, 'updatedAt', `"${timestamp}"`);
+    next = setField(next, 'updatedAt', `"${effectiveTimestamp}"`);
     atomicWrite(targetMd, next);
     result.updated.push(path.relative(process.cwd(), targetMd).split(path.sep).join('/'));
   }
