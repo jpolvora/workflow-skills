@@ -127,18 +127,19 @@ The suite's central claim is that nothing ships on an agent's word alone. Every 
 
 GitHub and Azure DevOps are interchangeable backends. Orchestrators call intents **by name** and never embed `gh` or `az` directly; host CLI recipes live inside each provider's `INTENTS.md`.
 
-Nine required intents, enforced by `node test/test-provider-parity.js` in `npm run test` (tables, INTENTS headings, and implementation: sweep/comment CLI + JSON aliases, local-spec SCM delegates, `resolve-thread --dry-run`, optional Azure `--model`):
+Ten required intents, enforced by `node test/test-provider-parity.js` in `npm run test` (tables, INTENTS headings, and implementation: sweep/comment/close CLI + JSON aliases, local-spec SCM delegates, `resolve-thread --dry-run`, optional Azure `--model`):
 
 | Intent | Guarantee |
 |--------|-----------|
 | `validate-auth` | STOP on failure; no silent provider fallback |
 | `fetch-to-spec` | Writes the `{specsDir}` spec of record first (downloads allowlisted visual attachments into `{specStem}.assets/` and `## Visual References` when present), then the `step-00` workflow copy and `{us-dir}/attachments/` at register |
-| `create-pr` | Reuses an existing open PR for the same head→base; the caller keeps `Closes #{id}` in the PR body so GitHub auto-closes the source issue on merge |
+| `create-pr` | Reuses an existing open PR for the same head→base; the caller keeps `Closes #{id}` in the PR body (GitHub auto-closes only when the PR base is the default branch); after merge on any base, callers dispatch `close-issue` for an explicit tracker transition |
 | `list-threads` | Structured threads with an active count |
 | `sweep-prior-work` | Prior PR hits and recent commits, run before plan or code |
 | `check-pr-status` | CI triage that classifies each failure as `diff-regression`, `baseline`, or `infra-flake`, with at most one flake rerun |
 | `resolve-thread` | Skips remote mutation under `dry-run` |
 | `comment-issue` | Posts the PR URL and summary back to the tracker; skipped for local specs |
+| `close-issue` | Explicit tracker state transition after merge (`gh issue close` / ADO WIT `Closed`); skipped for local specs |
 | `merge-pr` | Waits for required checks; never deletes `project.workingBranch` |
 
 Adding an intent to only one provider fails CI unless an allowlist row explains why the other host cannot mirror it. Contract: [`scm-provider-contract.md`](.agents/skills/ws-shared/runtime/scm-provider-contract.md).

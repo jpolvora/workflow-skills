@@ -8,7 +8,7 @@ Three provider skills own all tracker and pull-request intents behind one parity
 
 ## How it works
 
-GitHub and Azure DevOps must implement the same required intents: `validate-auth`, `fetch-to-spec`, `create-pr`, `list-threads`, `sweep-prior-work`, `check-pr-status`, `resolve-thread`, `comment-issue`, and `merge-pr`. Only URL discovery may differ; one-sided behavior fails closed in `test/test-provider-parity.js`. Local provider writes stay `source: local` and must register `{specsDir}/{slug}.spec.md` before any `{plansDir}` copy is created. The working branch is never deleted after merge.
+GitHub and Azure DevOps must implement the same required intents: `validate-auth`, `fetch-to-spec`, `create-pr`, `list-threads`, `sweep-prior-work`, `check-pr-status`, `resolve-thread`, `comment-issue`, `close-issue`, and `merge-pr`. Only URL discovery may differ; one-sided behavior fails closed in `test/test-provider-parity.js`. Local provider writes stay `source: local` and must register `{specsDir}/{slug}.spec.md` before any `{plansDir}` copy is created. The working branch is never deleted after merge.
 
 Attachment ingestion tolerates per-file 404, 403, timeout, size caps, and disallowed hosts or MIME types without aborting the entire fetch, but authentication failures STOP the run. Files land in `{specStem}.assets/` with a `manifest.json`, patch a `## Visual References` section into the spec, and copy the sidecar to `{us-dir}/attachments/` at register time.
 

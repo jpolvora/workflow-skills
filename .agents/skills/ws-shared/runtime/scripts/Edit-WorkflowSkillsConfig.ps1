@@ -1449,6 +1449,10 @@ Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'monitor' -Key 'autoS
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'monitor' -Key 'hostHome' -LabelText 'Monitor: Host Home Override (monitor.hostHome)' -Type 'string' -Placeholder 'e.g. /srv/ci-agent-home (empty = OS home)'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'monitor' -Key 'transcriptRoots' -LabelText 'Monitor: Extra Transcript Roots' -Type 'array' -DefaultVal @()
 
+                Add-SectionHeader -ParentPanel $page -YOffset $y -Title 'Human Spec Companion' -Subtitle 'Configure optional translated spec companions.'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'ws-spec-translate-to-human' -Key 'enabled' -LabelText 'Human Companion: Enabled (ws-spec-translate-to-human.enabled)' -Type 'bool' -DefaultVal $true
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'ws-spec-translate-to-human' -Key 'outputLanguage' -LabelText 'Human Companion: Output Language (ws-spec-translate-to-human.outputLanguage)' -Type 'string' -DefaultVal 'en-us'
+
                 Add-SectionHeader -ParentPanel $page -YOffset $y -Title 'Fix-PR Loop' -Subtitle 'Subagent dispatch for review-thread convergence.'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'ws-goal-fix-pr' -Key 'useSubAgents' -LabelText 'Fix-PR Loop: Dispatch Subagents Per Round (ws-goal-fix-pr.useSubAgents)' -Type 'bool' -DefaultVal $false
             }
