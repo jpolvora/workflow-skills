@@ -32,9 +32,15 @@ const { spawnSync } = require('child_process');
 const TERMINAL_STATUSES = new Set(['shipped', 'skipped', 'failed']);
 const TARGET_STATUSES = new Set(['shipped', 'skipped', 'failed']);
 const SLUG_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
+// `{plansDir}/ws-spec-multi/` holds the parent batch run state, not a child plan
+// dir; a queue item aliasing it must never resolve its child artifacts there.
+const RESERVED_PLAN_DIRS = new Set(['ws-spec-multi']);
 
 function isSafeSlug(value) {
-  return typeof value === 'string' && SLUG_PATTERN.test(value) && !value.includes('..');
+  return typeof value === 'string'
+    && SLUG_PATTERN.test(value)
+    && !value.includes('..')
+    && !RESERVED_PLAN_DIRS.has(value);
 }
 
 function parseArgs(argv) {

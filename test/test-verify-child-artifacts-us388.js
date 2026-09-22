@@ -135,6 +135,8 @@ const validChildState = {
   tempRoots.push(root);
   const badSlug = run(['--slug', '..\\escape', '--plans-dir', plansDir(root)], root);
   if (badSlug.status === 0) throw new Error('us-388 AC5: unsafe slug must be refused');
+  const reserved = run(['--slug', 'ws-spec-multi', '--plans-dir', plansDir(root)], root);
+  if (reserved.status === 0) throw new Error('us-388 AC5: the reserved ws-spec-multi slug must be refused');
   const badReq = run(['--slug', 'demo', '--plans-dir', plansDir(root), '--require', 'bogus'], root);
   if (badReq.status === 0) throw new Error('us-388 AC5: unknown --require must be refused');
 }

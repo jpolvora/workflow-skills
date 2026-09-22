@@ -134,5 +134,15 @@ function setupRoot() {
   if (regress.status === 0) throw new Error('us-388 AC5: terminal-status regression must fail closed');
 }
 
+// The reserved batch-directory slug is refused (the guard must not inspect the parent run dir).
+{
+  const root = setupRoot();
+  const plans = path.join(root, '.agents', 'plans');
+  const runFile = path.join(plans, 'ws-spec-multi', 'ms-us388.state.md');
+  write(runFile, runState('ms-us388', ['| 1 | ws-spec-multi | .agents/specs/x.spec.md | standard | pending | | | | 2026-09-22T08:07:09Z |']));
+  const reserved = run(['--run', runFile, '--slug', 'ws-spec-multi', '--status', 'skipped', '--json'], root);
+  if (reserved.status === 0) throw new Error('us-388 AC5: the reserved ws-spec-multi slug must be refused');
+}
+
 for (const root of tempRoots) fs.rmSync(root, { recursive: true, force: true });
 console.log('us-388 guarded queue transition ok');
