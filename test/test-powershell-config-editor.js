@@ -572,5 +572,35 @@ try {
   } catch {}
 }
 
-console.log('\nALL 10 POWERSHELL CONFIG EDITOR TESTS PASSED.');
+console.log('Test 11: Verifying visual-hierarchy enhancements (us-381)...');
+assert(
+  guiScript.includes('function Add-SectionHeader'),
+  'Add-SectionHeader helper is missing from Edit-WorkflowSkillsConfig.ps1'
+);
+const headerCalls = guiScript.match(/Add-SectionHeader\s+-ParentPanel/g) || [];
+assert(
+  headerCalls.length >= 15,
+  'Expected at least 15 section-header call sites, found ' + headerCalls.length
+);
+for (const tabId of ['project', 'verification', 'defaults', 'models', 'plans', 'rules', 'integrations']) {
+  assert(
+    guiScript.includes("Id = '" + tabId + "'"),
+    'Tab definition Id ' + tabId + ' is missing from Populate-Sections'
+  );
+}
+assert(
+  guiScript.includes('$fc.TabIndex = $script:NextTabIndex'),
+  'Sequential TabIndex wiring is missing from Add-ConfigFieldRow'
+);
+assert(
+  guiScript.includes('Unsaved changes - review, then Save or Apply.'),
+  'Status-bar dirty indicator text is missing from Update-WindowTitle'
+);
+assert(
+  guiScript.includes("$script:AppVersion = '1.1.0'"),
+  'AppVersion 1.1.0 marker is missing'
+);
+console.log('  PASS: Section headers (' + headerCalls.length + ' groups), tab order, and dirty cue validated.');
+
+console.log('\nALL 11 POWERSHELL CONFIG EDITOR TESTS PASSED.');
 
