@@ -24,10 +24,11 @@ const REPO_ROOT = path.resolve(__dirname, '..');
 const SUITES_FILE = path.join(__dirname, 'test-suites.json');
 
 // AC3/AC6 regression: the suite is side-effect free for the repository's own
-// consumer hub config (`.ws/config.json`). Snapshot before the suite and assert
-// byte-identity after — on both the success and the failure path.
-const HUB_CONFIG_FILES = ['.ws/config.json'];
-const HUB_BACKUP_FILES = ['.ws/config.json.bak'];
+// consumer hub config (`.ws/config.json`) and its backup. Snapshot the content
+// hash of both before the suite and assert byte-identity after — on both the
+// success and the failure path. Hashing the backup (not just its presence) also
+// catches a pre-existing `.bak` being overwritten in place.
+const HUB_CONFIG_FILES = ['.ws/config.json', '.ws/config.json.bak'];
 
 function hashFileIfPresent(file) {
   return fs.existsSync(file)
@@ -38,7 +39,6 @@ function hashFileIfPresent(file) {
 function snapshotHubState() {
   return {
     hashes: HUB_CONFIG_FILES.map((rel) => [rel, hashFileIfPresent(path.join(REPO_ROOT, rel))]),
-    backups: HUB_BACKUP_FILES.map((rel) => [rel, fs.existsSync(path.join(REPO_ROOT, rel))]),
   };
 }
 
@@ -47,10 +47,6 @@ function hubStateProblems(before) {
   for (const [rel, hash] of before.hashes) {
     const now = hashFileIfPresent(path.join(REPO_ROOT, rel));
     if (now !== hash) problems.push(`${rel} changed (before=${hash} after=${now})`);
-  }
-  for (const [rel, existed] of before.backups) {
-    const now = fs.existsSync(path.join(REPO_ROOT, rel));
-    if (now !== existed) problems.push(`${rel} presence changed (before=${existed} after=${now})`);
   }
   return problems;
 }

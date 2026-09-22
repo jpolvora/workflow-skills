@@ -150,10 +150,11 @@ assert.strictEqual(
 );
 console.log('  PASS: Script is 100% ASCII-safe.');
 
-// Regression baseline (AC6): the repository's own hub config must be byte-identical
-// before and after every editor invocation in this suite.
+// Regression baseline (AC6): the repository's own hub config and its backup must
+// be byte-identical before and after every editor invocation in this suite.
+// Hashing the backup (not just its presence) also catches an in-place overwrite.
 const hubConfigShaBefore = fileSha256(HUB_CONFIG_PATH);
-const hubBackupExistedBefore = fs.existsSync(HUB_BACKUP_PATH);
+const hubBackupShaBefore = fileSha256(HUB_BACKUP_PATH);
 
 function assertHubConfigUnchanged(stage) {
   assert.strictEqual(
@@ -162,9 +163,9 @@ function assertHubConfigUnchanged(stage) {
     `AC6: repository hub config must be byte-identical ${stage}`
   );
   assert.strictEqual(
-    fs.existsSync(HUB_BACKUP_PATH),
-    hubBackupExistedBefore,
-    `AC6: repository hub config backup presence must be unchanged ${stage}`
+    fileSha256(HUB_BACKUP_PATH),
+    hubBackupShaBefore,
+    `AC6: repository hub config backup must be byte-identical ${stage}`
   );
 }
 
@@ -223,9 +224,10 @@ try {
     hubConfigShaBefore,
     'AC2: -CheckOnly without -ConfigPath must not mutate the repository hub config'
   );
-  assert(
-    !fs.existsSync(HUB_BACKUP_PATH) || hubBackupExistedBefore,
-    'AC2: -CheckOnly without -ConfigPath must not create .ws/config.json.bak'
+  assert.strictEqual(
+    fileSha256(HUB_BACKUP_PATH),
+    hubBackupShaBefore,
+    'AC2: -CheckOnly without -ConfigPath must not create or modify .ws/config.json.bak'
   );
   console.log('  PASS: Diagnostic execution is read-only, with and without -ConfigPath.');
 } finally {
@@ -710,9 +712,10 @@ console.log('  PASS: Section headers (' + headerCalls.length + ' groups), tab or
 
 console.log('Test 12: Verifying repository hub config byte-identity (AC3/AC6 regression)...');
 assertHubConfigUnchanged('after all editor invocations');
-assert(
-  !fs.existsSync(path.join(REPO_ROOT, '.ws', 'config.json.bak')) || hubBackupExistedBefore,
-  'AC3: no leftover .ws/config.json.bak may be produced by the editor tests'
+assert.strictEqual(
+  fileSha256(HUB_BACKUP_PATH),
+  hubBackupShaBefore,
+  'AC3: no leftover or modified .ws/config.json.bak may be produced by the editor tests'
 );
 console.log('  PASS: Repository hub config is byte-identical; no leftover backup.');
 
