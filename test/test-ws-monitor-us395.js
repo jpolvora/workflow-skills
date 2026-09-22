@@ -158,6 +158,12 @@ ${multiTable(rows)}
   if (detectStaleParentRows(workflow, historical).some((f) => f.code === 'stale-parent-row')) {
     throw new Error('us-395 AC5: historical child falsely flagged as the current row child');
   }
+  // A derived-terminal-shape child (status completed, endedAt null) is still a
+  // closed child; its last write is the close reference.
+  const derivedChild = [workflow, { workflowId: 'child-done-d', slug: 'child-done', status: 'completed', statusSource: 'derived-terminal-shape', endedAt: null, updatedAt: '2026-09-22T09:00:00Z', multiSpec: null }];
+  if (!detectStaleParentRows(workflow, derivedChild).some((f) => f.code === 'stale-parent-row')) {
+    throw new Error('us-395 AC5: derived-terminal child not detected');
+  }
 }
 
 // AC3: detectStaleParentRows flags the superseded run when a newer active run claims the same slug.

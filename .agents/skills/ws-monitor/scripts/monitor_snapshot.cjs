@@ -705,7 +705,9 @@ function detectStaleParentRows(workflow, allWorkflows) {
     // historical run of the same spec and must not flag a healthy current row.
     const child = terminalChildren.find((other) => {
       if (!other.slug || other.slug !== item.slug) return false;
-      const childEndedAt = Date.parse(other.endedAt || '');
+      // A derived-terminal-shape child has no endedAt; its last write
+      // (updatedAt) is the close reference.
+      const childEndedAt = Date.parse(other.endedAt || other.updatedAt || '');
       if (!Number.isFinite(childEndedAt) || !Number.isFinite(reference)) return false;
       return childEndedAt >= reference;
     });
@@ -1341,6 +1343,7 @@ function snapshot(options) {
       reportedStatus: derivedTerminal ? derivedTerminal.reportedStatus : undefined,
       statusSource: derivedTerminal ? derivedTerminal.statusSource : undefined,
       endedAt: state.endedAt || null,
+      updatedAt: state.updatedAt || null,
       currentStep: Number(state.currentStep),
       completedSteps: state.completedSteps || [],
       stepStatus: state.stepStatus || {},
