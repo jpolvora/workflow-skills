@@ -1,7 +1,7 @@
 ---
 name: ws-spec-to-pr
 description: End-to-end Spec-to-PR (steps 0–9). Verify score ≥ `defaults.minVerifyScore` (default 9) before review. Trigger for full/standard delivery.
-version: 0.4.58
+version: 0.4.59
 disable-model-invocation: true
 invocation_names:
   - spec-to-pr
@@ -94,7 +94,7 @@ both sides reference that file; never duplicate its contract here.
 | F5 Testing | 7 | Verifier + optional browser | 7 |
 | F6 Ship + Fix-PR | 8–9 | Orch + shell (+ fix-pr) | 8 (ship) / 9 (fix-pr complete) |
 
-Worktree & complexity rules: [`PROTOCOLS.md`](PROTOCOLS.md). Setup: [`setup.md`](../ws-shared/runtime/setup.md). Dispatch bodies: [`STEP-DISPATCH.md`](STEP-DISPATCH.md). Filenames: [`ARTIFACTS.md`](ARTIFACTS.md).
+Worktree & complexity rules: [`PROTOCOLS.md`](PROTOCOLS.md). Setup: [`setup.md`](../ws-shared/runtime/setup.md). Dispatch bodies: [`STEP-DISPATCH.md`](STEP-DISPATCH.md). Filenames: [`ARTIFACTS.md`](ARTIFACTS.md). Git ownership (parallel writers): [`git-ownership.md`](../ws-shared/runtime/git-ownership.md).
 
 ## Step 0 — Pipeline Classifier
 

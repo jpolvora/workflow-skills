@@ -9,6 +9,10 @@
 // baseBranch/workingBranch). Invoked by orch when status -> completed
 // (shared by standard/lite).
 //
+// Ownership scope (us-401): this helper touches only uswf/{workflow-id}-namespaced
+// runtime (its own tags/branches/worktrees). It never stages, stashes, reverts,
+// or cleans worktree paths, and issues no whole-tree verb.
+//
 // Usage:
 //   node cleanup_workflow_git.cjs --workflow-id {id}
 //   node cleanup_workflow_git.cjs --workflow-id {id} --dry-run
