@@ -51,6 +51,9 @@ totalItems: 2
 - **Frozen item count.** `totalItems` is written once at queue init and never recomputed from the table; the reported `shipped/total` uses `totalItems`.
 - **Fail-closed duplicate guard.** Before writing the state file, verify the table has no duplicate `#` and no duplicate `slug` / `specPath`. If either is found, do **not** write the file; surface the conflict (HS-5 style stop) naming the duplicated key. Silent dedupe is forbidden.
 - **`updatedAt` advances.** Every write sets the transitioned row's `updatedAt` and the run frontmatter `updatedAt` to the current UTC timestamp. A row whose `updatedAt` still equals `createdAt` after a transition is a defect.
+- **Supersede retirement.** When a new run supersedes a prior run it names, the superseding run writes the retired run's terminal `status` (`cancelled` or `superseded`) with an advancing `updatedAt`, so at most one `active` runner exists per lineage and at most one item is `in_progress` per slug. Leaving the retired run `active` is a defect.
+- **Parent-child handoff.** When a dispatched child worker reaches a terminal state, the parent run transitions that item's row (`in_progress` → `shipped` / `failed` / `skipped`) and advances the run frontmatter `updatedAt`. A frozen parent `updatedAt` beside a terminal child, or a child closed while its parent row stays `in_progress`, is a defect.
+- **Idempotent transitions.** Re-applying a close or ship transition never adds rows and never regresses a terminal item status.
 
 *Note on `shipped`:* An item is terminal `shipped` ONLY when the PR is fully merged (`merged: true`, `state: MERGED`) with 0 open review threads (`activeThreads: 0`). Open, unmerged PRs are non-terminal and must complete Phase 4b delivery convergence and PR merge before advancing to the next spec.
 
@@ -107,3 +110,4 @@ When loading an existing `{plansDir}/ws-spec-multi/*.state.md`:
 7. Resume execution at the first `pending`, `in_progress` (reset to `pending`), or `failed` item.
 8. Before re-dispatching worker for a spec, sync feature branch with `baseBranch` (`git merge {baseBranch}` or `git rebase {baseBranch}`) to ensure all prior merged changes and base features are incorporated.
 9. Immediately after any PR merge success (`state: MERGED`), pull the latest `baseBranch` before creating a new feature branch for the next spec.
+10. **Supersede retirement on load:** when this run's notes name a prior run it supersedes and that prior run is still `active`, retire it (`cancelled` / `superseded`) with an advancing `updatedAt` before dispatching — never leave two `active` runners claiming the same item.

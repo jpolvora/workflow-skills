@@ -379,6 +379,12 @@
       "test/test-ws-monitor-us385.js"
     ],
     [
+      "test/test-ws-monitor-us395.js"
+    ],
+    [
+      "test/test-terminal-close-us395.js"
+    ],
+    [
       "test/test-observer-us365.js"
     ],
     [

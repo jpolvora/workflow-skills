@@ -39,6 +39,12 @@ const SKIP_REASONS = new Set([
 ]);
 const SHIP_STATUSES = new Set(['pending', 'skipped', 'pushed', 'pr-open', 'merged', 'stopped']);
 const STEP_FINISH_STATUSES = new Set(['completed', 'failed', 'skipped']);
+// us-395: statuses that already represent a finished run; a terminal-shape
+// close must never rewrite one of these.
+const TERMINAL_RUN_STATUSES = new Set(['completed', 'cancelled', 'failed', 'superseded', 'stopped']);
+// us-395: a step is terminal (finished) when completed or skipped. `failed` is
+// not a completion and must not trigger the terminal-shape close.
+const TERMINAL_STEP_STATUSES = new Set(['completed', 'skipped']);
 const FILE_LIST_FLAGS = new Set(['created', 'modified', 'deleted']);
 const CLOSE_STEP = { standard: 8, lite: 4 };
 const RUNTIME_NAMES = [
@@ -816,6 +822,36 @@ function applyCloseAndShipStatus(state, options, pipeline, step, finishedAt, ste
     state.endedAt = finishedAt;
     if (!state.shipStatus) state.shipStatus = 'pending';
   }
+  // us-395 AC1: a run whose steps up to the close step are all terminal is
+  // finished even when the close step itself finished `skipped`, finished out
+  // of order, or the state predates the single-step close trigger. This is
+  // unconditional on telemetry presence and idempotent: it never rewrites an
+  // already-terminal run and never regresses `endedAt`.
+  if (
+    stepFinishStatus !== 'failed'
+    && !TERMINAL_RUN_STATUSES.has(String(state.status))
+    && isTerminalShape(state, closeStep)
+  ) {
+    state.status = 'completed';
+    if (!state.endedAt) state.endedAt = finishedAt;
+    if (!state.shipStatus) state.shipStatus = 'pending';
+  }
+}
+
+// us-395: terminal-shape predicate shared by the close guard. Steps are
+// terminal when completed, skipped, or marked terminal in `stepStatus`.
+function isTerminalShape(state, closeStep) {
+  const terminal = new Set();
+  for (const value of Array.isArray(state.completedSteps) ? state.completedSteps : []) terminal.add(Number(value));
+  for (const item of Array.isArray(state.skippedSteps) ? state.skippedSteps : []) terminal.add(Number(item?.step));
+  const stepStatus = state.stepStatus && typeof state.stepStatus === 'object' ? state.stepStatus : {};
+  for (const [key, value] of Object.entries(stepStatus)) {
+    if (TERMINAL_STEP_STATUSES.has(String(value))) terminal.add(Number(key));
+  }
+  for (let step = 0; step <= closeStep; step += 1) {
+    if (!terminal.has(step)) return false;
+  }
+  return true;
 }
 
 function requirePreAdvanceStep(value) {

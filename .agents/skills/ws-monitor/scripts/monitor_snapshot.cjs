@@ -506,6 +506,44 @@ function addFinding(findings, severity, code, message, evidence = []) {
   findings.push({ severity, code, message, evidence });
 }
 
+// us-395: terminal-state observation. A run whose steps up to its pipeline
+// close step are all terminal is finished even when its state file still says
+// `active` with no `endedAt`; the observer must surface it and never count it
+// as live. `failed` is not a completion.
+const TERMINAL_STEP_STATUSES = new Set(['completed', 'skipped']);
+const TERMINAL_RUN_STATUSES = new Set(['completed', 'cancelled', 'failed', 'superseded', 'stopped']);
+const ACTIVE_RUN_STATUSES = new Set(['active', 'blocked', 'in_progress']);
+
+function pipelineCloseStep(state) {
+  if (state && state.workflowType === 'lite') return 4;
+  return 8;
+}
+
+function terminalShape(state) {
+  const closeStep = pipelineCloseStep(state);
+  const terminal = new Set();
+  for (const value of Array.isArray(state.completedSteps) ? state.completedSteps : []) terminal.add(Number(value));
+  for (const item of Array.isArray(state.skippedSteps) ? state.skippedSteps : []) terminal.add(Number(item?.step));
+  const stepStatus = state.stepStatus && typeof state.stepStatus === 'object' ? state.stepStatus : {};
+  for (const [key, value] of Object.entries(stepStatus)) {
+    if (TERMINAL_STEP_STATUSES.has(String(value))) terminal.add(Number(key));
+  }
+  for (let step = 0; step <= closeStep; step += 1) {
+    if (!terminal.has(step)) return false;
+  }
+  return true;
+}
+
+// Derives a terminal status for a terminal-shaped run that still reports an
+// active status with no endedAt. Returns null when the run is genuinely live.
+function deriveTerminalStatus(state) {
+  if (!state || !ACTIVE_RUN_STATUSES.has(String(state.status)) || state.endedAt) return null;
+  if (!terminalShape(state)) return null;
+  const failed = Object.values(state.stepStatus && typeof state.stepStatus === 'object' ? state.stepStatus : {})
+    .some((value) => String(value) === 'failed');
+  return { status: failed ? 'failed' : 'completed', reportedStatus: state.status, statusSource: 'derived-terminal-shape' };
+}
+
 function classifyWorkflow(state, workflowDir, telemetry, minVerifyScore, repoRoot = workflowDir, config = null) {
   const findings = [];
   const missing = expectedArtifacts(state, workflowDir, minVerifyScore, repoRoot).filter((item) => !item.present);
@@ -563,6 +601,17 @@ function classifyWorkflow(state, workflowDir, telemetry, minVerifyScore, repoRoo
     }
   }
 
+  // us-395 AC2/AC7: a terminal-shaped run must never be reported as live.
+  if (deriveTerminalStatus(state)) {
+    addFinding(
+      findings,
+      'warning',
+      'terminal-run-active',
+      `workflow is terminal-shaped (all steps through the close step are terminal) but reports status "${state.status}" with no endedAt`,
+      [toRepoRelative(repoRoot, workflowDir, { allowOutside: true })],
+    );
+  }
+
   return findings;
 }
 
@@ -574,6 +623,20 @@ function classifyMultiSpecWorkflow(state, stateFile, repoRoot = '.') {
   const pendingItems = items.filter((item) => item.status === 'pending');
   const failedItems = items.filter((item) => item.status === 'failed');
 
+  // us-395 AC6: a terminal run whose queue still holds non-terminal rows has
+  // stale parent rows (phantom rows that were never transitioned at close).
+  if (TERMINAL_RUN_STATUSES.has(String(runStatus))) {
+    const staleRows = items.filter((item) => item.status === 'pending' || item.status === 'in_progress');
+    if (staleRows.length > 0) {
+      addFinding(
+        findings,
+        'warning',
+        'stale-parent-row',
+        `Multi-spec run ${state.runId || path.basename(stateFile)} is ${runStatus} but its queue still lists ${staleRows.length} non-terminal row(s) (${staleRows.map((i) => i.slug).join(', ')}); parent rows did not transition`,
+        [toRepoRelative(repoRoot, stateFile, { allowOutside: true })],
+      );
+    }
+  }
   if (runStatus === 'active' && items.length > 0 && inProgressItems.length === 0 && pendingItems.length === 0) {
     addFinding(
       findings,
@@ -600,6 +663,54 @@ function classifyMultiSpecWorkflow(state, stateFile, repoRoot = '.') {
       `Multi-spec run has multiple in_progress items (${inProgressItems.map((i) => i.slug).join(', ')}); sequential execution expected`,
       [toRepoRelative(repoRoot, stateFile, { allowOutside: true })],
     );
+  }
+  return findings;
+}
+
+// us-395 AC5/AC6: cross-workflow handoff and lineage detection for a
+// ws-spec-multi run. A queue row that is `in_progress` while its child worker
+// is terminal, or while a newer active run claims the same slug, is a stale
+// parent row that never propagated its child's terminal state.
+function detectStaleParentRows(workflow, allWorkflows) {
+  const findings = [];
+  const items = workflow.multiSpec?.items || [];
+  const inProgress = items.filter((item) => item.status === 'in_progress' && item.slug);
+  if (inProgress.length === 0) return findings;
+  const terminalSlugs = new Set(
+    allWorkflows
+      .filter((other) => !other.multiSpec && TERMINAL_RUN_STATUSES.has(String(other.status)))
+      .map((other) => other.slug)
+      .filter(Boolean),
+  );
+  const activeMulti = allWorkflows.filter((other) => other.multiSpec
+    && other !== workflow
+    && ACTIVE_RUN_STATUSES.has(String(other.status)));
+  const myCreatedAt = Date.parse(workflow.multiSpec?.createdAt || '') || 0;
+  for (const item of inProgress) {
+    if (terminalSlugs.has(item.slug)) {
+      addFinding(
+        findings,
+        'warning',
+        'stale-parent-row',
+        `queue row "${item.slug}" is in_progress but its child workflow is terminal; the parent row did not propagate the child close`,
+        [workflow.statePath],
+      );
+      continue;
+    }
+    const newerRun = activeMulti.find((other) => {
+      const claims = (other.multiSpec?.items || []).some((row) => row.status === 'in_progress' && row.slug === item.slug);
+      const otherCreatedAt = Date.parse(other.multiSpec?.createdAt || '') || 0;
+      return claims && otherCreatedAt >= myCreatedAt && other !== workflow;
+    });
+    if (newerRun) {
+      addFinding(
+        findings,
+        'warning',
+        'stale-parent-row',
+        `queue row "${item.slug}" is in_progress but a newer active run (${newerRun.workflowId}) also claims it; this run was superseded and never retired`,
+        [workflow.statePath],
+      );
+    }
   }
   return findings;
 }
@@ -1165,6 +1276,7 @@ function snapshot(options) {
         multiSpec: {
           runId: state.runId || null,
           baseBranch: state.baseBranch || null,
+          createdAt: state.createdAt || null,
           itemCount: items.length,
           activeItem: inProgressItems[0] || null,
           pendingCount: pendingItems.length,
@@ -1197,11 +1309,16 @@ function snapshot(options) {
     findings.push(...detectStaleState(state, workflowDir, telemetry, loaded.stateFile, context.repoRoot));
     findings.push(...detectContextMismatch(state, gitContext, context.repoRoot));
     const batonRaw = state.baton && typeof state.baton === 'object' ? state.baton : null;
+    // us-395 AC2: a terminal-shaped run is never reported as active, so
+    // `activeCount` and `status == active` polling reflect real work only.
+    const derivedTerminal = deriveTerminalStatus(state);
     workflows.push({
       workflowId: state.workflowId || path.basename(loaded.stateFile, '.state.md'),
       slug: state.slug || state.us || path.basename(workflowDir),
       pipeline: state.workflowType || 'unknown',
-      status: state.status || 'unknown',
+      status: derivedTerminal ? derivedTerminal.status : (state.status || 'unknown'),
+      reportedStatus: derivedTerminal ? derivedTerminal.reportedStatus : undefined,
+      statusSource: derivedTerminal ? derivedTerminal.statusSource : undefined,
       currentStep: Number(state.currentStep),
       completedSteps: state.completedSteps || [],
       stepStatus: state.stepStatus || {},
@@ -1227,6 +1344,12 @@ function snapshot(options) {
       expectedArtifacts: expectedArtifacts(state, workflowDir, minVerifyScore, context.repoRoot),
       findings,
     });
+  }
+
+  // us-395: cross-workflow stale-parent-row detection needs the full set.
+  for (const workflow of workflows) {
+    if (!workflow.multiSpec) continue;
+    workflow.findings.push(...detectStaleParentRows(workflow, workflows));
   }
 
   const memoryVault = queryMemoryVault(context, options);
@@ -1468,6 +1591,10 @@ module.exports = {
   expectedArtifacts,
   classifyWorkflow,
   classifyMultiSpecWorkflow,
+  terminalShape,
+  deriveTerminalStatus,
+  detectStaleParentRows,
+  pipelineCloseStep,
   parseMultiSpecTable,
   queryMemoryVault,
   resolveCandidateTranscriptRoots,

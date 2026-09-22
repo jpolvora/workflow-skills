@@ -33,6 +33,18 @@
         "After close, the state table holds exactly one terminal row per selected spec with no phantom pending rows",
         "Per-row updatedAt and run frontmatter updatedAt advance on each transition"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "/spec-multi — a new run supersedes an older run that is still active on the same item, and a child worker closes while its parent row stays in_progress",
+      "expected_output": "Agent retires the superseded run (cancelled/superseded) with an advancing updatedAt, and propagates the child's terminal state to the parent row and parent updatedAt.",
+      "assertions": [
+        "The superseding run writes the superseded run's terminal status (cancelled or superseded) with an advancing updatedAt",
+        "At most one active runner exists per lineage and at most one item is in_progress per slug after retirement",
+        "A child worker reaching a terminal state transitions its parent queue row in place instead of leaving it in_progress",
+        "The parent run frontmatter updatedAt advances on the child handoff (never frozen beside a terminal child)",
+        "Re-applying a close or ship transition adds no rows and does not regress a terminal item status"
+      ]
     }
   ]
 }

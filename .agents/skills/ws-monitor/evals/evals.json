@@ -14,12 +14,34 @@
     },
     {
       "id": 2,
-      "prompt": "/monitor — edge case: missing or incomplete config.json",
+      "prompt": "/monitor - edge case: missing or incomplete config.json",
       "expected_output": "Agent stops or bootstraps via configure-project/setup, not silent guessing.",
       "assertions": [
         "Recognizes ws-monitor trigger from slash or @ invocation",
         "References ws-shared/config.json or configure-project when config missing",
         "Does not invent project-specific metadata"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/monitor - a standard run with every step terminal (Step 3 skipped dag-disabled) still reports status: active with endedAt: null",
+      "expected_output": "Agent reports terminal-run-active, derives a terminal reported status so the run is not counted active, and points at the stale state file.",
+      "assertions": [
+        "Emits the terminal-run-active finding for a terminal-shaped run still reporting active with endedAt null",
+        "Does not count a terminal-shaped run in activeCount or report status == active for it",
+        "Explains the terminal shape (all steps through the close step terminal) and cites the state file as evidence",
+        "Does not modify the state file (read-only observation)"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "/monitor - a ws-spec-multi run whose in_progress row's child worker already closed, or a completed run that still lists pending rows",
+      "expected_output": "Agent reports stale-parent-row for the completed-child / non-terminal parent-row shape.",
+      "assertions": [
+        "Emits stale-parent-row when a queue row is non-terminal while its child workflow is terminal",
+        "Emits stale-parent-row when a terminal run still lists pending/in_progress rows (phantom rows)",
+        "Emits stale-parent-row when a newer active run claims the same in_progress slug (supersede never retired)",
+        "Names the affected slug and cites the queue state file as evidence"
       ]
     }
   ]
