@@ -1,0 +1,731 @@
+{
+  "schemaVersion": 1,
+  "revision": 27,
+  "workflowId": "us-395-20260922T080709Z",
+  "slug": "us-395",
+  "specPath": ".agents/plans/us-395/step-00-us-395.spec.md",
+  "planIndexPath": ".agents/plans/us-395/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "Completing the terminal step writes a terminal `status` and sets `endedAt`, regardless of whether a telemetry file exists on disk.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L1",
+        "test/test-terminal-close-us395.js:L1-L1"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "5d765c348d869ce6fbc1c851333bafdbfe6810f566fda10aec84bda9fb74db40"
+        },
+        {
+          "path": "test/test-terminal-close-us395.js",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "586bd0a88e450a88e48e925e62757318c1fe02a93cdf213650b1249a415d8c41"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "59fe3e3cada4a88a64283e3cca6be32edb8634e1",
+          "step": 5
+        },
+        {
+          "sha": "3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "us-395 AC1",
+          "sourceFile": "test/test-terminal-close-us395.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T13:19:16.370Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ac-AC1",
+        "g2-commit-3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+        "g2-commit-59fe3e3cada4a88a64283e3cca6be32edb8634e1"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "A standard run whose `completedSteps` cover every step and whose `stepStatus` values are all terminal is never reported as `active`; a consumer polling `status == active` sees it close.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1-L1",
+        "test/test-ws-monitor-us395.js:L1-L1"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "ffee53b10a2feea167029ec7ed00e4ae885e0b37d41f274a1a9e13b1e6b4be23"
+        },
+        {
+          "path": "test/test-ws-monitor-us395.js",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "708e075a91fe461826dd9ff45cd2159544d647ec9a948237b85c2ecf75286935"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "59fe3e3cada4a88a64283e3cca6be32edb8634e1",
+          "step": 5
+        },
+        {
+          "sha": "3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "us-395 AC2",
+          "sourceFile": "test/test-ws-monitor-us395.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T13:19:16.428Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ac-AC2",
+        "ac-AC2-fix1",
+        "g2-commit-3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+        "g2-commit-59fe3e3cada4a88a64283e3cca6be32edb8634e1"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "A superseding batch run retires the run it supersedes (`cancelled` / `superseded`), so at most one `active` runner exists per queue lineage and at most one item is `in_progress` per slug.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-multi/PROTOCOL.md:L1-L1",
+        "test/test-ws-monitor-us395.js:L1-L1"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-multi/PROTOCOL.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "5db1b03de0dfc2ed0acff9b8ec722f307ffb183108db0fe6e05fb7b7319c3f12"
+        },
+        {
+          "path": "test/test-ws-monitor-us395.js",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "708e075a91fe461826dd9ff45cd2159544d647ec9a948237b85c2ecf75286935"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "59fe3e3cada4a88a64283e3cca6be32edb8634e1",
+          "step": 5
+        },
+        {
+          "sha": "3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "us-395 AC3",
+          "sourceFile": "test/test-ws-monitor-us395.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T13:19:16.486Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ac-AC3",
+        "g2-commit-3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+        "g2-commit-59fe3e3cada4a88a64283e3cca6be32edb8634e1"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "Batch ship updates transition the existing item row in place; a finished queue table has exactly one row per item, with no stale `pending` rows carrying the run-creation timestamp.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-multi/STATE.md:L1-L1",
+        "test/test-ws-monitor-us395.js:L1-L1"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-multi/STATE.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "d34e2d77f27b0dec5175358c9e0f8003330d28ab731e537b22d0aac99924e108"
+        },
+        {
+          "path": "test/test-ws-monitor-us395.js",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "708e075a91fe461826dd9ff45cd2159544d647ec9a948237b85c2ecf75286935"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "59fe3e3cada4a88a64283e3cca6be32edb8634e1",
+          "step": 5
+        },
+        {
+          "sha": "3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "us-395 AC4",
+          "sourceFile": "test/test-ws-monitor-us395.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T13:19:16.542Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ac-AC4",
+        "g2-commit-3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+        "g2-commit-59fe3e3cada4a88a64283e3cca6be32edb8634e1"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "When a batch child worker reaches a terminal state, the parent queue row transitions and the parent state `updatedAt` advances — the parent-child handoff propagates instead of freezing.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-multi/PROTOCOL.md:L1-L1",
+        "test/test-ws-monitor-us395.js:L1-L1"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-multi/PROTOCOL.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "5db1b03de0dfc2ed0acff9b8ec722f307ffb183108db0fe6e05fb7b7319c3f12"
+        },
+        {
+          "path": "test/test-ws-monitor-us395.js",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "708e075a91fe461826dd9ff45cd2159544d647ec9a948237b85c2ecf75286935"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "59fe3e3cada4a88a64283e3cca6be32edb8634e1",
+          "step": 5
+        },
+        {
+          "sha": "3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "us-395 AC5",
+          "sourceFile": "test/test-ws-monitor-us395.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T13:19:16.600Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ac-AC5",
+        "g2-commit-3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+        "g2-commit-59fe3e3cada4a88a64283e3cca6be32edb8634e1"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "`ws-monitor` emits a finding for the completed-child / stale-parent-row shape, so this class is surfaced rather than staying green.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1-L1",
+        "test/test-ws-monitor-us395.js:L1-L1"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "ffee53b10a2feea167029ec7ed00e4ae885e0b37d41f274a1a9e13b1e6b4be23"
+        },
+        {
+          "path": "test/test-ws-monitor-us395.js",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "708e075a91fe461826dd9ff45cd2159544d647ec9a948237b85c2ecf75286935"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "59fe3e3cada4a88a64283e3cca6be32edb8634e1",
+          "step": 5
+        },
+        {
+          "sha": "3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "us-395 AC6",
+          "sourceFile": "test/test-ws-monitor-us395.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T13:19:16.660Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ac-AC6",
+        "ac-AC6-fix1",
+        "g2-commit-3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+        "g2-commit-59fe3e3cada4a88a64283e3cca6be32edb8634e1"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "`ws-monitor` emits a finding for a terminal-shaped run still reporting `status: active` (all steps terminal, `endedAt` null).",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1-L1",
+        "test/test-ws-monitor-us395.js:L1-L1"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "ffee53b10a2feea167029ec7ed00e4ae885e0b37d41f274a1a9e13b1e6b4be23"
+        },
+        {
+          "path": "test/test-ws-monitor-us395.js",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "708e075a91fe461826dd9ff45cd2159544d647ec9a948237b85c2ecf75286935"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "59fe3e3cada4a88a64283e3cca6be32edb8634e1",
+          "step": 5
+        },
+        {
+          "sha": "3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "us-395 AC7",
+          "sourceFile": "test/test-ws-monitor-us395.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T13:19:16.723Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ac-AC7",
+        "ac-AC7-fix1",
+        "g2-commit-3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+        "g2-commit-59fe3e3cada4a88a64283e3cca6be32edb8634e1"
+      ]
+    },
+    {
+      "id": "AC8",
+      "text": "State writes are idempotent: re-applying a close or ship transition does not add rows and does not regress a terminal status.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L1",
+        "test/test-terminal-close-us395.js:L1-L1"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "5d765c348d869ce6fbc1c851333bafdbfe6810f566fda10aec84bda9fb74db40"
+        },
+        {
+          "path": "test/test-terminal-close-us395.js",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "586bd0a88e450a88e48e925e62757318c1fe02a93cdf213650b1249a415d8c41"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "59fe3e3cada4a88a64283e3cca6be32edb8634e1",
+          "step": 5
+        },
+        {
+          "sha": "3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "us-395 AC8",
+          "sourceFile": "test/test-terminal-close-us395.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T13:19:16.784Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ac-AC8",
+        "g2-commit-3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+        "g2-commit-59fe3e3cada4a88a64283e3cca6be32edb8634e1"
+      ]
+    },
+    {
+      "id": "AC9",
+      "text": "`npm run test`, `ws-check-harness`, and `node test/test-harness-clean.js` exit clean, and the monitor fixture covers the new finding codes.",
+      "status": "Implemented",
+      "evidence": [
+        "test/test-suites.json:L1-L1",
+        "test/test-terminal-close-us395.js:L1-L1"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003"
+      ],
+      "files": [
+        {
+          "path": "test/test-suites.json",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "822894d5aebce2bd332f1a1401c1517b3a71dd59660dcd648f564f67b5dc98ce"
+        },
+        {
+          "path": "test/test-terminal-close-us395.js",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "586bd0a88e450a88e48e925e62757318c1fe02a93cdf213650b1249a415d8c41"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "59fe3e3cada4a88a64283e3cca6be32edb8634e1",
+          "step": 5
+        },
+        {
+          "sha": "3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "us-395 AC9",
+          "sourceFile": "test/test-terminal-close-us395.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T13:19:16.847Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ac-AC9",
+        "g2-commit-3482023aaa4c2055437b7e2ad399fce9c8f796aa",
+        "g2-commit-59fe3e3cada4a88a64283e3cca6be32edb8634e1"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "A run with every step terminal still reports `status: active` with `endedAt: null` (must fail AC1/AC2).",
+      "tests": [
+        {
+          "name": "us-395 AC1",
+          "sourceFile": "test/test-terminal-close-us395.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T13:19:16.899Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns-NS1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Close is skipped because the telemetry file is absent (must fail AC1).",
+      "tests": [
+        {
+          "name": "us-395 AC1",
+          "sourceFile": "test/test-terminal-close-us395.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T13:19:16.951Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns-NS2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Two batch runs remain `active` on the same item after one supersedes the other (must fail AC3).",
+      "tests": [
+        {
+          "name": "us-395 AC3",
+          "sourceFile": "test/test-ws-monitor-us395.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T13:19:17.006Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns-NS3"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "A finished queue table has more rows than items, or a stale `pending` row carrying the run-creation timestamp (must fail AC4).",
+      "tests": [
+        {
+          "name": "us-395 AC4",
+          "sourceFile": "test/test-ws-monitor-us395.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T13:19:17.063Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns-NS4"
+      ]
+    },
+    {
+      "id": "NS5",
+      "text": "A child worker closes while its parent row stays `in_progress` and the parent `updatedAt` stays frozen (must fail AC5).",
+      "tests": [
+        {
+          "name": "us-395 AC5",
+          "sourceFile": "test/test-ws-monitor-us395.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T13:19:17.117Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns-NS5"
+      ]
+    },
+    {
+      "id": "NS6",
+      "text": "The monitor reports no finding for a completed-child / stale-parent-row shape (must fail AC6).",
+      "tests": [
+        {
+          "name": "us-395 AC6",
+          "sourceFile": "test/test-ws-monitor-us395.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T13:19:17.166Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns-NS6"
+      ]
+    },
+    {
+      "id": "NS7",
+      "text": "The monitor reports no finding for a terminal-shaped run still `active` (must fail AC7).",
+      "tests": [
+        {
+          "name": "us-395 AC7",
+          "sourceFile": "test/test-ws-monitor-us395.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T13:19:17.218Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns-NS7"
+      ]
+    },
+    {
+      "id": "NS8",
+      "text": "Re-applying close or ship adds rows or regresses a terminal status (must fail AC8).",
+      "tests": [
+        {
+          "name": "us-395 AC8",
+          "sourceFile": "test/test-terminal-close-us395.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T13:19:17.271Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns-NS8"
+      ]
+    },
+    {
+      "id": "NS9",
+      "text": "`npm run test`, `ws-check-harness`, or `test-harness-clean.js` fails after the change (must fail AC9).",
+      "tests": [
+        {
+          "name": "us-395 AC9",
+          "sourceFile": "test/test-terminal-close-us395.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-22T13:19:17.320Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns-NS9"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 10,
+    "earnedUnits": 90,
+    "totalUnits": 90,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-22T13:22:04.441Z"
+  }
+}

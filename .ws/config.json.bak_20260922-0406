@@ -122,7 +122,7 @@
     "maxLayers": 2
   },
   "defaults": {
-    "autoMode": true,
+    "autoMode": false,
     "dryRun": false,
     "skipTesting": false,
     "skipMutationTesting": true,

@@ -1,0 +1,104 @@
+{
+  "stateVersion": 3,
+  "revision": 8,
+  "workflowId": "us-393-20260922T080709Z",
+  "slug": "us-393",
+  "us": "393",
+  "workflowType": "standard",
+  "status": "completed",
+  "shipStatus": "merged",
+  "currentStep": 9,
+  "completedSteps": [0, 1, 2, 4, 5, 6, 7, 8],
+  "skippedSteps": [
+    {
+      "step": 3,
+      "reason": "dag-disabled",
+      "evidence": "defaults.enableDag=false; sequential mode writes no step-03 stubs"
+    }
+  ],
+  "branch": "develop",
+  "baseBranch": "main",
+  "integrationBranch": "develop",
+  "branchStrategy": "stay",
+  "workflowMode": "auto",
+  "batchRunId": "ms-20260922T080709Z",
+  "flowMode": "standard",
+  "complexityClass": "complex",
+  "runInterview": true,
+  "execMode": "sequential",
+  "currentModel": "opencode-go/deepseek-v4.1-flash",
+  "modelsPreset": "muse-spark",
+  "createdAt": "2026-09-22T08:07:09Z",
+  "updatedAt": "2026-09-22T09:10:00Z",
+  "verificationScore": 10,
+  "acTotal": 8,
+  "acImplemented": 8,
+  "gateHistory": [
+    {
+      "gate": "step-0-pipeline-classifier",
+      "choice": "Accept recommendation (standard)",
+      "reason": "autoMode index 0",
+      "round": 1
+    },
+    {
+      "gate": "step-1-complexity",
+      "choice": "complex",
+      "reason": "autoMode; classifier complex, runInterview true",
+      "round": 1
+    },
+    {
+      "gate": "step-2-plan-interview",
+      "choice": "Proceed (interview ran)",
+      "reason": "autoMode index 0; refined plan produced",
+      "round": 1
+    },
+    {
+      "gate": "step-5-verify",
+      "choice": "Accept (score 10 >= minVerifyScore 9)",
+      "reason": "autoMode index 0",
+      "round": 1
+    },
+    {
+      "gate": "step-6-code-review",
+      "choice": "Advance (no Critical/Warning)",
+      "reason": "autoMode index 0",
+      "round": 1
+    },
+    {
+      "gate": "step-8-ship",
+      "choice": "Commit configured delivery artifacts and Create PR",
+      "reason": "autoMode index 0; delivery in scope",
+      "round": 1
+    }
+  ],
+  "filesTouched": [
+    ".agents/skills/ws-spec-multi/STATE.md",
+    ".agents/skills/ws-spec-multi/SKILL.md",
+    ".agents/skills/ws-spec-multi/PROTOCOL.md",
+    ".agents/skills/ws-spec-multi/evals/evals.json"
+  ],
+  "handoffs": {},
+  "commits": [
+    {
+      "sha": "939ef310",
+      "step": 5,
+      "message": "feat(us-393): key ws-spec-multi queue mutations by spec identity"
+    },
+    {
+      "sha": "401e3c9f",
+      "step": 8,
+      "message": "chore(release): bump 0.4.54 and regenerate skill integrity"
+    },
+    {
+      "sha": "74aecc181e35c9f1c3cef0dd86a6415c5de0e9de",
+      "step": 9,
+      "message": "Merge pull request #396 from jpolvora/develop"
+    }
+  ],
+  "prNumber": 396,
+  "prUrl": "https://github.com/jpolvora/workflow-skills/pull/396",
+  "mergeCommit": "74aecc181e35c9f1c3cef0dd86a6415c5de0e9de",
+  "mergedAt": "2026-09-22T08:22:43Z",
+  "activeThreads": 0,
+  "checksStatus": "green"
+}

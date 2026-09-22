@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 14,
-  "generatedAt": "2026-09-22T15:20:00.000Z",
+  "revision": 17,
+  "generatedAt": "2026-09-22T16:05:00.000Z",
   "workflows": [
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
@@ -690,10 +690,10 @@
       "slug": "us-395",
       "pipeline": "standard",
       "statePath": ".agents/plans/us-395/us-395-20260922T080709Z.state.md",
-      "stateSha256": "d103da636ad3a09bed2bcc29a214f48cf9c386a795c2c8800d642a364c818ab5",
-      "status": "active",
-      "currentStep": 8,
-      "updatedAt": "2026-09-22T15:20:00.000Z",
+      "stateSha256": "0e828d46714b0cc8aa3bf0447a90975f104aa9b70ec8f41c965a07c224d05f9c",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-22T16:05:00.000Z",
       "runPath": ".agents/plans/us-395/us-395-20260922T080709Z.state.json"
     },
     {
