@@ -152,13 +152,16 @@ function testCreateFromBaseAndDirtyStop() {
     'testCreateFromBaseAndDirtyStop: local base checkout documented',
   );
   assert(
-    /Stash then continue/.test(setup) &&
-      /Switch to create-from-current/.test(setup) &&
+    /Leave foreign paths in place and create from current HEAD instead/.test(setup) &&
+      /preExistingDirty/.test(setup) &&
+      !/Stash then continue/.test(setup) &&
+      !/git stash push/.test(setup) &&
+      /Proceed on the new branch with `preExistingDirty` recorded/.test(setup) &&
       /Cancel \(HS-1\)/.test(setup),
-    'testCreateFromBaseAndDirtyStop: dirty STOP offers stash / from-current / cancel',
+    'testCreateFromBaseAndDirtyStop: dirty STOP offers ownership-scoped options (no stash-all) / cancel',
   );
   assert(
-    /Never `git reset --hard`/i.test(setup),
+    /`git reset --hard`/.test(setup) && /forbidden/i.test(setup),
     'testCreateFromBaseAndDirtyStop: forbids reset --hard',
   );
   assert(

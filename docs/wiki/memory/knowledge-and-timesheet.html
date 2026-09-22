@@ -206,7 +206,7 @@
       </tr>
       <tr>
         <th>Provenance</th>
-        <td>Specs 0018, 0021, 0033, 0034, 0048, 0049</td>
+        <td>Specs 0018, 0021, 0033, 0034, 0048, 0049, 0114-patterns-generator-shared-hub-output</td>
       </tr>
       <tr>
         <th>Framework</th>
@@ -219,7 +219,7 @@
     </tbody>
   </table>
 </aside>
-<p>&gt; Provenance: <code>.agents/skills/ws-self-learning/SKILL.md</code>, <code>.agents/skills/ws-changelog/SKILL.md</code>, <code>.agents/skills/ws-spec-memo/SKILL.md</code>, <code>.agents/skills/ws-activity-report/SKILL.md</code>, <code>.agents/skills/ws-pre-daily/SKILL.md</code>, root <code>AGENTS.md</code> § Memory + changelog, living synthesis of specs 0018, 0021, 0033, 0034, 0048, 0049.</p>
+<p>&gt; Provenance: <code>.agents/skills/ws-self-learning/SKILL.md</code>, <code>.agents/skills/ws-changelog/SKILL.md</code>, <code>.agents/skills/ws-spec-memo/SKILL.md</code>, <code>.agents/skills/ws-activity-report/SKILL.md</code>, <code>.agents/skills/ws-pre-daily/SKILL.md</code>, root <code>AGENTS.md</code> § Memory + changelog, living synthesis of specs 0018, 0021, 0033, 0034, 0048, 0049, 0114-patterns-generator-shared-hub-output.</p>
 <div class="wiki-toc-box" id="toc" role="navigation" aria-label="Table of contents">
   <div class="wiki-toc-header">
     <span class="wiki-toc-title">Contents</span>
@@ -237,6 +237,7 @@
 <p>The backend matrix supports local-only, vault-only, dual, and disabled-none combinations. Empty reads degrade gracefully rather than inventing traps. Legacy <code>specMemo.enabled</code> and <code>mode</code> keys map onto the two boolean flags. Dual mode persists traps to both backends on write.</p>
 <p>Before plan, code, or fix work, agents gather three to eight keywords plus touched file paths and consult MEMORY or the vault via the configured routing order. Subagents touching layered files must prove <code>pattern_consult</code> and <code>memory_consult</code> in step output. Code review sweeps compiled entries against the diff for missed traps.</p>
 <p>Failure reflection is mandatory when two or more tool, test, or build failures occurred before passing; <code>Learning: N/A</code> is forbidden in that case. Real reviewer or CI mistakes from fix-PR rounds persist the same way. Adversarial audits with <code>REFUTED</code> or <code>CAVEATS</code> verdicts require High or Critical trap entries. <code>ws-spec-memo</code> never duplicates vault <code>SURFACE.md</code> and adds no MCP tools to this package; disabled vault remains the recommended default with warnings only when integration is enabled but the vault is missing.</p>
+<p>Pattern learning closes the loop into reusable project knowledge. Self-learning runs compile their traps into a generated project-patterns body that is stored under the shared hub output, so later skill generations and plan interviews consult the persisted patterns instead of rediscovering them. The generator and the memory track share the same hub root and the same layout classification, which keeps the stored body discoverable from any later run.</p>
 <p>Invoice timing through <code>ws-activity-report</code> treats Human Total as inclusive of agent supervision, requiring Human ≥ Agent Running when agent time is positive. Idle or AFK gaps over 30 minutes are non-billable and reported separately. <code>ws-pre-daily</code> is read-only over git, plan states, and changelog, classifying the window into Delivered, Made, Ongoing, Next, and Gaps with stable headings.</p>
 <h2 id="backend">Backend <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/main/.agents/specs/wiki/memory/knowledge-and-timesheet.md" target="_blank" rel="noopener" title="Edit section: Backend">[edit]</a></span></h2>
 <p>Local memory compiles through <code>self_learning.cjs</code> with <code>--match-paths</code> and <code>--compile</code>. Conflict checks use dynamic <code>{sharedDir}</code> resolution. Spec-memo presence checks run via <code>check_spec_memo.cjs</code> as soft gates. Human timing inference lives in dedicated helpers that emit <code>humanSeconds</code> and <code>agentRunningSeconds</code>. Standup collection uses stdlib-only window gatherers. Configure interviews expose memory and pattern sections.</p>

@@ -157,6 +157,8 @@
         }
       }
     },
+    "baselineCommit": { "type": "string", "description": "us-401: commit the run integrates against; refreshed forward when the base branch advances, never reset back." },
+    "baselineSourceRef": { "type": "string", "description": "us-401: ref the baselineCommit was read from (e.g. origin/develop or the local base tip)." },
     "currentModel": { "type": "string" },
     "configuredModel": { "type": "string" },
     "modelsPreset": { "type": "string" },
