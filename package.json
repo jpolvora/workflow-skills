@@ -1,6 +1,6 @@
 {
   "name": "workflow-skills",
-  "version": "0.4.50",
+  "version": "0.4.51",
   "description": "Spec-driven delivery skills for coding agents: spec as contract of record through a reviewed pull request",
   "license": "MIT",
   "author": "Jone Polvora",
@@ -26,6 +26,8 @@
     "tests:harness-efficiency": "node test/run-tests.cjs --harness-efficiency",
     "build-site": "node bin/build-site.js",
     "build-site:bump": "node bin/build-site.js --bump",
+    "precoverage": "npm pack",
+    "coverage": "c8 --all --check-coverage --lines 80 --branches 68 --reporter=text --reporter=json --include=\".agents/skills/**/scripts/*.{cjs,js}\" --include=\"bin/*.js\" --include=\"test/run-tests.cjs\" --exclude=\"test/test-*.js\" --exclude=\"test/harness-test-utils.cjs\" node test/run-tests.cjs",
     "generate-integrity": "node bin/generate-skill-integrity.js",
     "verify-integrity": "node bin/generate-skill-integrity.js --check",
     "benchmark": "node scripts/harness-benchmark/cli.cjs",
@@ -50,5 +52,8 @@
     "!.agents/skills/**/*.py[cod]",
     "!.agents/skills/**/*.pyo"
   ],
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "c8": "^12.0.0"
+  }
 }

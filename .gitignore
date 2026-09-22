@@ -27,6 +27,8 @@ config/credentials
 
 
 # Temporary files & Logs
+coverage/
+*.tgz
 audit_results.txt
 __pycache__/
 **/__pycache__/

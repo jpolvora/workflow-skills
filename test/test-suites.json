@@ -109,6 +109,33 @@
     ],
     [
       "test/test-ws-patterns-generator.js"
+    ],
+    [
+      "test/test-classifier-history.js"
+    ],
+    [
+      "test/test-spec-validation.js"
+    ],
+    [
+      "test/test-workflow-state-contract.js"
+    ],
+    [
+      "test/test-bootstrap-start.js"
+    ],
+    [
+      "test/test-ac-counts.js"
+    ],
+    [
+      "test/test-provider-listers.js"
+    ],
+    [
+      "test/test-write-verification-manifest.js"
+    ],
+    [
+      "test/test-generate-skill-evals.js"
+    ],
+    [
+      "test/test-runner-contract.js"
     ]
   ],
   "remote": [
