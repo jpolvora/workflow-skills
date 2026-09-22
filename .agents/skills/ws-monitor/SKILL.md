@@ -124,6 +124,7 @@ Transcripts provide secondary evidence to diagnose why a subagent or orchestrato
 | `currentStep` past Step 5 with a score below `minVerifyScore` | Critical | The workflow has advanced while verification is below the gate |
 | Completed mutating step with empty `filesTouched` | Warning | The subagent handoff did not reach telemetry (silent only with an explicit no-op declaration on the finish event, or a skip reason) |
 | Missing exec artifact on a truly completed Step 3 (`missing-exec-artifact`) | Critical | Step 3 finished `completed` but `step-03-*.plan.exec.md` is absent; a `dag-disabled` skip is the designed sequential shape (no stubs written) and stays silent as grandfathered |
+| Expected artifacts on a `lite` pipeline run | Critical only for the lite contract | Lite Steps 0-5 (spec, plan, implement, review, ship, fix-pr) expect only the shared-name `step-00` spec, `step-01` plan, `step-06` review, and `step-08` result (us-385); standard-only interview/exec/verify artifacts stay silent, and unknown or legacy pipeline values keep the standard contract |
 | `packageVersion: "unknown"` | Warning | Runtime provenance is unavailable |
 | `ENOENT`-family failure adjacent to dispatch-context construction in a transcript | Critical | A path or hybrid installation resolution failed |
 | Rejected/unavailable model inside a dispatch record in a transcript | Warning | Dispatch should fall back to the active session model |

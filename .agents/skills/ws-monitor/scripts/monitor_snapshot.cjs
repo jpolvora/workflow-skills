@@ -465,6 +465,18 @@ function expectedArtifacts(state, workflowDir, minVerifyScore, repoRoot = workfl
     reason,
     present: isNonEmptyFile(path.join(workflowDir, name)),
   });
+  // us-385: lite runs reuse the numeric step fields with different per-step meaning
+  // (0 spec, 1 plan, 2 implement, 3 review, 4 ship, 5 fix-pr) and write only the
+  // shared-name artifacts. Branch on the pipeline discriminator so healthy lite
+  // runs stop reporting standard-only interview/exec/verify artifacts as missing.
+  // Unknown or legacy pipeline values fall through to the standard contract.
+  if (state.workflowType === 'lite') {
+    if (Number(state.currentStep) >= 1 || isCompleted(state, 0)) add(`step-00-${slug}.spec.md`, 'Step 0 spec completed');
+    if (Number(state.currentStep) >= 2 || isCompleted(state, 1)) add(`step-01-${slug}.plan.md`, 'Step 1 plan completed');
+    if (Number(state.currentStep) >= 4 || isCompleted(state, 3)) add(`step-06-${slug}.review.md`, 'Step 3 review completed');
+    if (Number(state.currentStep) >= 5 || isCompleted(state, 4)) add(`step-08-${slug}.result.md`, 'Step 4 ship completed');
+    return expected;
+  }
   if (Number(state.currentStep) >= 1 || isCompleted(state, 0)) add(`step-00-${slug}.spec.md`, 'Step 0 completed');
   if (Number(state.currentStep) >= 2 || isCompleted(state, 1)) add(`step-01-${slug}.plan.md`, 'Step 1 completed');
   const interviewRan = skippedReason(state, 2) !== 'interview-not-required';
