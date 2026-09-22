@@ -536,12 +536,12 @@ function terminalShape(state) {
 
 // Derives a terminal status for a terminal-shaped run that still reports an
 // active status with no endedAt. Returns null when the run is genuinely live.
+// `terminalShape` only admits completed/skipped steps, so the derived status is
+// always a completed close.
 function deriveTerminalStatus(state) {
   if (!state || !ACTIVE_RUN_STATUSES.has(String(state.status)) || state.endedAt) return null;
   if (!terminalShape(state)) return null;
-  const failed = Object.values(state.stepStatus && typeof state.stepStatus === 'object' ? state.stepStatus : {})
-    .some((value) => String(value) === 'failed');
-  return { status: failed ? 'failed' : 'completed', reportedStatus: state.status, statusSource: 'derived-terminal-shape' };
+  return { status: 'completed', reportedStatus: state.status, statusSource: 'derived-terminal-shape' };
 }
 
 function classifyWorkflow(state, workflowDir, telemetry, minVerifyScore, repoRoot = workflowDir, config = null) {
@@ -700,7 +700,7 @@ function detectStaleParentRows(workflow, allWorkflows) {
     const newerRun = activeMulti.find((other) => {
       const claims = (other.multiSpec?.items || []).some((row) => row.status === 'in_progress' && row.slug === item.slug);
       const otherCreatedAt = Date.parse(other.multiSpec?.createdAt || '') || 0;
-      return claims && otherCreatedAt >= myCreatedAt && other !== workflow;
+      return claims && otherCreatedAt >= myCreatedAt;
     });
     if (newerRun) {
       addFinding(
