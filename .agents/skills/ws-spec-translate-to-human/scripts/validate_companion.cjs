@@ -130,7 +130,7 @@ function main() {
   }
 
   const specAcs = new Set();
-  for (const m of spec.matchAll(/^- AC(\d+):/gm)) specAcs.add(m[1]);
+  for (const m of spec.matchAll(/^-\s+(?:\*\*)?AC(\d+)(?:\*\*)?:/gm)) specAcs.add(m[1]);
   const citedAcs = new Set();
   for (const m of companion.matchAll(/AC(\d+)/g)) citedAcs.add(m[1]);
   for (const ac of [...specAcs].sort((a, b) => Number(a) - Number(b))) {

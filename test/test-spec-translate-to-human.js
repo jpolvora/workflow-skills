@@ -91,6 +91,15 @@ const ok = run(validator, ['--spec', spec, '--companion', good]);
 assert.strictEqual(ok.status, 0, `valid companion passes: ${ok.stdout}`);
 assert.match(ok.stdout, /covers ACs \[1, 2\]/, 'validator reports covered ACs');
 
+const boldSpec = write(
+  path.join(dir, 'step-00-bold.spec.md'),
+  '---\nslug: bold\n---\n# Bold\n\n## Acceptance Criteria\n\n- **AC1:** Drafts auto-save every 30 seconds.\n- **AC2:** A banner shows the last saved time.\n',
+);
+const boldCompanion = write(path.join(dir, 'step-00-bold.spec-translated.md'), goodCompanion);
+const boldOk = run(validator, ['--spec', boldSpec, '--companion', boldCompanion]);
+assert.strictEqual(boldOk.status, 0, `bold AC headings pass: ${boldOk.stdout}`);
+assert.match(boldOk.stdout, /covers ACs \[1, 2\]/, 'validator recognizes bold AC headings');
+
 function expectFail(name, body, pattern) {
   const target = write(path.join(dir, name), body);
   const result = run(validator, ['--spec', spec, '--companion', target]);
