@@ -176,6 +176,29 @@ ${multiTable(rows)}
   if (newerFindings.some((f) => f.code === 'stale-parent-row')) {
     throw new Error('us-395 AC3: newer active run wrongly flagged as stale');
   }
+
+  // Equal/missing createdAt must not flag two valid runs against each other:
+  // the tie-break is the timestamp-ordered run id.
+  const tieA = {
+    workflowId: 'ms-20260919T231639Z',
+    status: 'active',
+    statePath: '.agents/plans/ws-spec-multi/a.state.md',
+    multiSpec: { createdAt: null, items: [{ slug: 'tie-item', status: 'in_progress' }] },
+  };
+  const tieB = {
+    workflowId: 'ms-20260919T232556Z',
+    status: 'active',
+    statePath: '.agents/plans/ws-spec-multi/b.state.md',
+    multiSpec: { createdAt: null, items: [{ slug: 'tie-item', status: 'in_progress' }] },
+  };
+  const tieAFindings = detectStaleParentRows(tieA, [tieA, tieB]);
+  const tieBFindings = detectStaleParentRows(tieB, [tieA, tieB]);
+  if (!tieAFindings.some((f) => f.code === 'stale-parent-row')) {
+    throw new Error('us-395 AC3: lower run id must be flagged on an equal/missing createdAt tie');
+  }
+  if (tieBFindings.some((f) => f.code === 'stale-parent-row')) {
+    throw new Error('us-395 AC3: higher run id must not be flagged on a tie');
+  }
 }
 
 // AC4: a finished queue table parses to exactly one row per item (no synthesized

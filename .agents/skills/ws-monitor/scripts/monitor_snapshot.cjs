@@ -675,6 +675,17 @@ function classifyMultiSpecWorkflow(state, stateFile, repoRoot = '.') {
 // ws-spec-multi run. A queue row that is `in_progress` while its child worker
 // is terminal, or while a newer active run claims the same slug, is a stale
 // parent row that never propagated its child's terminal state.
+// us-395: deterministic "newer run" ordering for the lineage check. Runs are
+// ordered by createdAt when both are valid and differ; otherwise run ids are
+// timestamp-ordered (`ms-YYYYMMDDTHHMMSSZ`), so equal or missing createdAt
+// values never flag two valid runs against each other arbitrarily.
+function isNewerRun(workflow, other) {
+  const mine = Date.parse(workflow.multiSpec?.createdAt || '');
+  const theirs = Date.parse(other.multiSpec?.createdAt || '');
+  if (Number.isFinite(mine) && Number.isFinite(theirs) && mine !== theirs) return theirs > mine;
+  return String(other.workflowId) > String(workflow.workflowId);
+}
+
 function detectStaleParentRows(workflow, allWorkflows) {
   const findings = [];
   const items = workflow.multiSpec?.items || [];
@@ -689,7 +700,6 @@ function detectStaleParentRows(workflow, allWorkflows) {
   const activeMulti = allWorkflows.filter((other) => other.multiSpec
     && other !== workflow
     && ACTIVE_RUN_STATUSES.has(String(other.status)));
-  const myCreatedAt = Date.parse(workflow.multiSpec?.createdAt || '') || 0;
   for (const item of inProgress) {
     if (terminalSlugs.has(item.slug)) {
       addFinding(
@@ -703,8 +713,7 @@ function detectStaleParentRows(workflow, allWorkflows) {
     }
     const newerRun = activeMulti.find((other) => {
       const claims = (other.multiSpec?.items || []).some((row) => row.status === 'in_progress' && row.slug === item.slug);
-      const otherCreatedAt = Date.parse(other.multiSpec?.createdAt || '') || 0;
-      return claims && otherCreatedAt >= myCreatedAt;
+      return claims && isNewerRun(workflow, other);
     });
     if (newerRun) {
       addFinding(
