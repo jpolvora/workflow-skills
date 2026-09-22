@@ -67,6 +67,17 @@ Evaluate the target `*.spec.md` file:
   - This guarantees every feature branch starts from an up-to-date base containing all PRs merged by previous specs in the batch or external commits.
   - On merge/rebase conflict: pause with Phase 5 `user-gate` (Resume after resolving, Skip, Abort).
 - Transition the **existing** row for `{specPath}` (fallback `{slug}`) to `status: in_progress`, `flowMode: {lite|standard}` — a keyed in-place update, never a new appended row. Before writing, run the fail-closed duplicate guard (no duplicate `#`, no duplicate `slug`/`specPath`); on conflict, do not write and surface it. Set the row `updatedAt` and run frontmatter `updatedAt` to the current UTC timestamp. The item count stays at `totalItems`.
+- **Required child artifact set (dispatch contract):** the dispatched worker is a
+  full child orchestrator (`ws-spec-to-pr` / `ws-spec-to-pr-lite`) and MUST persist
+  its own run under the **same `{plansDir}/{slug}/`** directory the batch uses, with
+  the workflow id `{child-workflow-id}`:
+  - `{plansDir}/{slug}/{child-workflow-id}.state.json` — machine SoT, including `state.handoffs`, plus its `.state.md` render
+  - `{plansDir}/{slug}/step-01-{slug}.plan.md` — contract name (never an ad-hoc `plan.md`)
+  - the other `step-NN-{slug}.*` artifacts for the steps the pipeline actually ran
+  - `{plansDir}/{slug}/telemetry.jsonl`
+  - `{plansDir}/{slug}/step-08-*.result.md` for a completed child (delivery-evidence key)
+  The child orch creates the state at dispatch; the worker honors and updates it.
+  The batch and the worker agree on `{plansDir}/{slug}` and `{child-workflow-id}`.
 - Dispatch subagent via `dispatch-agent`:
   - `description: "ws-spec-multi worker [{flowMode}] — {slug}"`
   - Command: if `flowMode == lite`: `/ws-spec-to-pr-lite full auto {specPath}` else: `/ws-spec-to-pr full auto {specPath}` (pass `dryRun` if set and `baseBranch: {baseBranch}`).
@@ -94,6 +105,12 @@ Every created PR MUST complete full code-review convergence, merge, and post-mer
 7. **Parent-child handoff:** when the child worker for `{slug}` reaches a terminal state (parsed `step-output`, or the child state reports a terminal `status` with `endedAt`), transition the parent queue row in place and advance the run frontmatter `updatedAt` immediately — a parent row left `in_progress` (or a frozen parent `updatedAt`) beside a terminal child is a defect.
 
 ### Phase 5: Record Outcome
+- **Fail-closed child-exit guard:** before recording `shipped`, verify the child
+  artifact set for the active item — `node {skillsRoot}/ws-spec-multi/scripts/verify_child_artifacts.cjs --slug {slug} --plans-dir {plansDir}`.
+  A non-zero exit names the absent artifact(s) (mirroring the monitor `missing-artifact`
+  class) and the item MUST NOT be recorded `shipped`: surface the reason and
+  transition the row to `failed` (or the Phase 5 failure menu) instead. A child
+  that merges without leaving state / `step-01` is the defect this guard blocks.
 - Update the **existing** row for `{specPath}` (fallback `{slug}`) in place — never append a second row for the same spec. Run the fail-closed duplicate guard before writing; set the row `updatedAt` and the run frontmatter `updatedAt` to now. Reported totals use the frozen `totalItems`.
 - Row transitions:
   - On full merge convergence & post-merge sync: set `status: shipped`, `merged: true`, `activeThreads: 0`, `prNumber`, `prUrl`, `updatedAt`.
@@ -105,6 +122,7 @@ Every created PR MUST complete full code-review convergence, merge, and post-mer
 
 ### Phase 6: Final Report
 - Summarize run metrics from the frozen queue: total items (`totalItems`), shipped & merged, skipped, failed, flow mode breakdown, `baseBranch`. Before reporting, assert exactly one row per selected spec and every row terminal (`shipped` / `skipped` / `failed`); any surviving `pending`/`in_progress` row is a phantom — surface it, do not silently recount.
+- **Delivery-evidence honesty (no fabrication):** claim delivery evidence for an item ONLY when its child state exists (`verify_child_artifacts.cjs --slug {slug}` exits 0) and, for a completed child, `{plansDir}/{slug}/step-08-*.result.md` is present. An item whose row is `shipped` but that lacks child state is reported as a defect, never counted as evidenced delivery.
 - Set overall run state `status: completed` (or `status: paused` if aborted).
 - Present summary report to the user.
 - Batch-level `completed` does not invoke Phase A for `runId`; per-child cleanup already ran (or was skipped) in Phase 5.

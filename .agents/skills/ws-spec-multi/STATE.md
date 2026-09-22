@@ -79,6 +79,25 @@ step-output:
 
 Missing or unparseable output (or `merged: false` when PR exists) is treated as non-terminal, triggering Phase 4b convergence via `ws-goal-fix-pr` and `ws-ship-pr` merge.
 
+### Required child artifact set (us-388)
+
+A dispatched worker persists its own run under the batch's `{plansDir}/{slug}/` with
+workflow id `{child-workflow-id}`:
+
+| Artifact | Contract name |
+|----------|----------------|
+| Machine SoT (+ `.state.md` render) | `{plansDir}/{slug}/{child-workflow-id}.state.json` (with `state.handoffs`) |
+| Step 1 plan | `{plansDir}/{slug}/step-01-{slug}.plan.md` (never an ad-hoc `plan.md`) |
+| Other executed steps | `step-NN-{slug}.*` |
+| Telemetry | `{plansDir}/{slug}/telemetry.jsonl` |
+| Delivery evidence (completed child) | `{plansDir}/{slug}/step-08-*.result.md` |
+
+The batch orchestrator fails closed at child exit before recording `shipped`:
+`node {skillsRoot}/ws-spec-multi/scripts/verify_child_artifacts.cjs --slug {slug} --plans-dir {plansDir}`
+must exit 0 (state + `step-01`). A non-zero exit mirrors the monitor `missing-artifact`
+class and blocks the `shipped` row. `ws-monitor` surfaces the same blind spot as the
+`missing-child-state` finding when a multi-spec item advances without child state.
+
 ## Already-Implemented Probe
 
 Before evaluating flow mode or dispatching a worker, run the probe check:

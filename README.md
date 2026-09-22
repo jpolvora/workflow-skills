@@ -300,7 +300,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | [`ws-check-harness`](.agents/skills/ws-check-harness/SKILL.md) | Audit routing, links, portability |
 | [`ws-check-workflows`](.agents/skills/ws-check-workflows/SKILL.md) | Deep workflow simulation & validation (Full/Lite) |
 | [`ws-doctor`](.agents/skills/ws-doctor/SKILL.md) | Read-only install/runtime diagnose (paths, recipes, config, missing refs, hybrid runtime source) |
-| [`ws-monitor`](.agents/skills/ws-monitor/SKILL.md) | Read-only live workflow observer for state, telemetry, artifacts, and configured transcripts |
+| [`ws-monitor`](.agents/skills/ws-monitor/SKILL.md) | Read-only live workflow observer for state, telemetry, artifacts, and configured transcripts; multi-spec runs surface `missing-child-state` when a queue item advances without child state |
 | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) | Create/edit/optimize skills (Extra) |
 | [`ws-show-harness`](.agents/skills/ws-show-harness/SKILL.md) | Snapshot active session harness (Extra) |
 | [`ws-preview`](.agents/skills/ws-preview/SKILL.md) | Run consumer-configured local pipeline review dry-run via `preview.dryRunCommand` (Extra; configure with `/ws-configure-project --section preview`) |

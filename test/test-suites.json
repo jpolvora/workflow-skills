@@ -382,6 +382,12 @@
       "test/test-ws-monitor-us395.js"
     ],
     [
+      "test/test-ws-monitor-us388.js"
+    ],
+    [
+      "test/test-verify-child-artifacts-us388.js"
+    ],
+    [
       "test/test-terminal-close-us395.js"
     ],
     [
