@@ -41,6 +41,20 @@ const { fetchRetry } = require(path.join(HUB_SCRIPTS_DIR, 'http_retry.cjs'));
 const WIT_API_VERSION = '7.1';
 const TERMINAL_STATES = ['Closed', 'Done'];
 
+function isClosedTransitionRejection(error) {
+  const detail = String((error && error.detail) || (error && error.message) || '').toLowerCase();
+  if (!detail) return false;
+  const patterns = [
+    'not in the list of supported values',
+    'the value is not in the list',
+    'cannot transition',
+    'invalid state transition',
+    'state transition',
+    'is not supported',
+  ];
+  return patterns.some((pattern) => detail.includes(pattern));
+}
+
 function printHelp() {
   console.log(`Usage: node close_issue.cjs --id <work-item| null> [options]
 
@@ -222,7 +236,7 @@ async function closeWorkItem(ado, workItemId, pat) {
       return { state: applied || state };
     } catch (error) {
       lastError = error;
-      if (error && error.status === 400 && state === 'Closed') {
+      if (error && error.status === 400 && state === 'Closed' && isClosedTransitionRejection(error)) {
         continue;
       }
       throw error;
@@ -305,4 +319,5 @@ if (require.main === module) {
 
 module.exports = {
   parseArgs, loadAdoConfig, resolvePat, validateAuth, applyCliOverrides, patchWorkItemState, closeWorkItem,
+  isClosedTransitionRejection,
 };

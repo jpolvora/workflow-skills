@@ -31,7 +31,7 @@ ws-plan-write … → ws-spec-translate-to-human (refinement hook, non-blocking)
 | `<spec-input>` | required | Agent spec path (`{specsDir}/*.spec.md` or `{us-dir}/step-NN-*.spec.md`) |
 | `slug` | inferred | From spec frontmatter or filename |
 | `output` | `step-NN-{slug}.spec-translated.md` | Basename only; always beside the source artifact |
-| `lang` | `ws-spec-translate-to-human.outputLanguage` | `en-us` default; `pt-BR` supported |
+| `lang` | `ws-spec-translate-to-human.outputLanguage` | `en-us` default; optional consumer companion locale (e.g. `pt-BR`). Harness en-us applies to skill bodies; this controls only the generated runbook artifact. |
 
 Companion shape → [`references/COMPANION-FORMAT.md`](references/COMPANION-FORMAT.md). Worked example → [`references/EXAMPLE.md`](references/EXAMPLE.md).
 

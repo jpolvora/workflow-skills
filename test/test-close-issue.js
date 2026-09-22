@@ -4,6 +4,7 @@
  */
 import assert from 'node:assert';
 import cp from 'node:child_process';
+import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -22,6 +23,19 @@ function run(scriptRel, args, env = process.env) {
 
 const ghScript = 'ws-spec-provider-github/scripts/close_issue.cjs';
 const adoScript = 'ws-spec-provider-azure-devops/scripts/close_issue.cjs';
+const require = createRequire(import.meta.url);
+const { isClosedTransitionRejection } = require(path.join(SKILLS, adoScript));
+
+assert.strictEqual(
+  isClosedTransitionRejection({ status: 400, detail: 'The field System.State contains the value Closed which is not in the list of supported values' }),
+  true,
+  'ADO Closed rejection triggers Done fallback',
+);
+assert.strictEqual(
+  isClosedTransitionRejection({ status: 400, detail: 'Work item 2817 does not exist' }),
+  false,
+  'non-transition 400 must not trigger Done fallback',
+);
 
 // GitHub: --id null -> skipped, exit 0
 let res = run(ghScript, ['--id', 'null']);
