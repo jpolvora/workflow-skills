@@ -171,5 +171,21 @@ function field(text, name) {
   }
 }
 
+// A custom plans.dir is honored from the run path alone (no --plans-dir), the
+// documented invocation form.
+{
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-retire-us395-custom-'));
+  tempRoots.push(root);
+  const customPlans = path.join(root, 'custom-plans');
+  const dir = path.join(customPlans, 'ws-spec-multi');
+  write(path.join(dir, 'ms-custom.state.md'), stateBody({ runId: 'ms-custom', status: 'active', createdAt: '2026-09-19T23:16:39Z' }));
+  write(path.join(dir, 'ms-custom-new.state.md'), stateBody({ runId: 'ms-custom-new', status: 'active', createdAt: '2026-09-19T23:25:56Z', supersedesRunId: 'ms-custom' }));
+  const result = run(['--run', path.join(dir, 'ms-custom-new.state.md'), '--timestamp', '2026-09-22T17:00:00Z', '--json'], root);
+  if (result.status !== 0) throw new Error(result.stderr || result.stdout);
+  if (field(fs.readFileSync(path.join(dir, 'ms-custom.state.md'), 'utf8'), 'status') !== 'cancelled') {
+    throw new Error('us-395 AC3: custom plans dir not honored from --run');
+  }
+}
+
 for (const root of tempRoots) fs.rmSync(root, { recursive: true, force: true });
 console.log('us-395 supersede retirement ok');

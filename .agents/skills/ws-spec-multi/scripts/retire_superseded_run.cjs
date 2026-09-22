@@ -96,14 +96,18 @@ function fail(message, options) {
 
 function main() {
   const options = parseArgs(process.argv.slice(2));
-  const plansDir = path.resolve(options.plansDir || '.agents/plans');
-  const runDir = path.join(plansDir, 'ws-spec-multi');
   const status = options.status || 'cancelled';
   if (!['cancelled', 'superseded'].includes(status)) {
     fail(`--status must be cancelled or superseded (received: ${status})`, options);
     return;
   }
   const timestamp = options.timestamp || new Date().toISOString();
+
+  // Resolve the ws-spec-multi directory. An explicit --plans-dir wins; when the
+  // helper is invoked with only --run (the documented form) the directory is
+  // derived from the run file itself, so a custom plans.dir is honored without
+  // requiring the caller to repeat it.
+  let runDir = options.plansDir ? path.join(path.resolve(options.plansDir), 'ws-spec-multi') : null;
 
   let supersededRunId = options.supersedes || null;
   let sourceFile = null;
@@ -113,8 +117,10 @@ function main() {
       fail(`superseding run state not found: ${options.run}`, options);
       return;
     }
+    if (!runDir) runDir = path.dirname(sourceFile);
     supersededRunId = supersededRunId || readField(fs.readFileSync(sourceFile, 'utf8'), 'supersedesRunId');
   }
+  if (!runDir) runDir = path.join(path.resolve('.agents/plans'), 'ws-spec-multi');
   if (!supersededRunId) {
     fail('no supersedesRunId found on the superseding run and --supersedes was not provided', options);
     return;
