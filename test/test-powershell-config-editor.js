@@ -39,6 +39,12 @@ function createTempConfig() {
   return { dir, configPath };
 }
 
+// Safely embed a path inside a PowerShell single-quoted literal: double the
+// backslashes (Win32 collapses them) and escape embedded apostrophes as ''.
+function toPsLiteral(value) {
+  return String(value).replace(/\\/g, '\\\\').replace(/'/g, "''");
+}
+
 const SCRIPT_PATH = path.join(
   REPO_ROOT,
   '.agents',
@@ -184,7 +190,7 @@ console.log('Test 3: Validating PowerShell script syntax via Language AST parser
 const astCheck = runPowerShell(`
   $errors = $null
   $tokens = $null
-  $ast = [System.Management.Automation.Language.Parser]::ParseFile('${SCRIPT_PATH.replace(/\\/g, '\\\\')}', [ref]$tokens, [ref]$errors)
+  $ast = [System.Management.Automation.Language.Parser]::ParseFile('${toPsLiteral(SCRIPT_PATH)}', [ref]$tokens, [ref]$errors)
   if ($errors -and $errors.Count -gt 0) {
     $errors | ForEach-Object { Write-Error $_.Message }
     exit 1
@@ -258,7 +264,7 @@ try {
 
   // Run a headless PowerShell snippet using the script's functions to load, toggle a value, and save
   const testScript = `
-    . '${SCRIPT_PATH.replace(/\\/g, '\\\\')}' -ConfigPath '${tmpConfig.replace(/\\/g, '\\\\')}' -RepoRoot '${REPO_ROOT.replace(/\\/g, '\\\\')}' -FunctionsOnly
+    . '${toPsLiteral(SCRIPT_PATH)}' -ConfigPath '${toPsLiteral(tmpConfig)}' -RepoRoot '${toPsLiteral(REPO_ROOT)}' -FunctionsOnly
     Set-ConfigValue -Path 'defaults.enableDag' -Value $false
     Set-ConfigValue -Path 'defaults.minVerifyScore' -Value 8
     Set-ConfigValue -Path 'defaults.convergence.backoff' -Value ([double]1.5)
@@ -368,7 +374,7 @@ const winFormsSection = winFormsAvailable
 const t7 = createTempConfig();
 const eventTestScript = `
   $ErrorActionPreference = 'Stop'
-  . '${SCRIPT_PATH.replace(/\\/g, '\\\\')}' -ConfigPath '${t7.configPath.replace(/\\/g, '\\\\')}' -RepoRoot '${REPO_ROOT.replace(/\\/g, '\\\\')}' -FunctionsOnly
+  . '${toPsLiteral(SCRIPT_PATH)}' -ConfigPath '${toPsLiteral(t7.configPath)}' -RepoRoot '${toPsLiteral(REPO_ROOT)}' -FunctionsOnly
 
   # 1. Defensively handle null/empty/whitespace paths
   Set-ConfigValue -Path '' -Value $true
@@ -406,20 +412,24 @@ ${winFormsSection}
 
   Write-Output 'OK'
 `;
-const eventRun = runPowerShell(eventTestScript);
-assert.strictEqual(
-  eventRun.status,
-  0,
-  `Control event test failed with code ${eventRun.status}:\n${eventRun.stderr || eventRun.stdout}`
-);
-assert(eventRun.stdout.includes('OK'), 'Event handler test did not output OK');
-if (winFormsAvailable) {
-  console.log('  PASS: Control events and Tag bindings validated without exception.');
-} else {
-  console.log('  SKIP: WinForms control events skipped (System.Windows.Forms not available in this environment).');
-  console.log('  PASS: Defensive path routing and configuration isolation validated.');
+try {
+  const eventRun = runPowerShell(eventTestScript);
+  assert.strictEqual(
+    eventRun.status,
+    0,
+    `Control event test failed with code ${eventRun.status}:\n${eventRun.stderr || eventRun.stdout}`
+  );
+  assert(eventRun.stdout.includes('OK'), 'Event handler test did not output OK');
+  if (winFormsAvailable) {
+    console.log('  PASS: Control events and Tag bindings validated without exception.');
+  } else {
+    console.log('  SKIP: WinForms control events skipped (System.Windows.Forms not available in this environment).');
+    console.log('  PASS: Defensive path routing and configuration isolation validated.');
+  }
+} finally {
+  // AC4: remove the isolated fixture on both the pass and the failure path.
+  fs.rmSync(t7.dir, { recursive: true, force: true });
 }
-fs.rmSync(t7.dir, { recursive: true, force: true });
 
 console.log('Test 8: Verifying Schema-to-GUI key parity for configured sections...');
 const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, 'utf8'));
@@ -610,7 +620,7 @@ try {
   const tmpConfig10 = path.join(tmpDir10, 'config.json');
   fs.copyFileSync(EXAMPLE_PATH, tmpConfig10);
   const roundTrip = `
-    . '${SCRIPT_PATH.replace(/\\/g, '\\\\')}' -ConfigPath '${tmpConfig10.replace(/\\/g, '\\\\')}' -RepoRoot '${REPO_ROOT.replace(/\\/g, '\\\\')}' -FunctionsOnly
+    . '${toPsLiteral(SCRIPT_PATH)}' -ConfigPath '${toPsLiteral(tmpConfig10)}' -RepoRoot '${toPsLiteral(REPO_ROOT)}' -FunctionsOnly
     Set-ConfigValue -Path 'fable.auditVerdictsBlockShip' -Value 'false'
     Set-ConfigValue -Path 'issueTrackers.github.owner' -Value 'acme'
     Save-ConfigurationFile
