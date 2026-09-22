@@ -693,8 +693,25 @@ ${tabsHtml}
     </footer>
   </main>
 </div>
+<button type="button" id="to-top" class="to-top" aria-label="Back to top">↑</button>
 <script>
 (function() {
+  var toTop = document.getElementById('to-top');
+  if (toTop) {
+    var scrollRoot = function() {
+      return document.scrollingElement || document.documentElement;
+    };
+    var syncToTop = function() {
+      toTop.classList.toggle('is-visible', scrollRoot().scrollTop > 400);
+    };
+    document.addEventListener('scroll', syncToTop, { passive: true, capture: true });
+    syncToTop();
+    toTop.addEventListener('click', function() {
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      scrollRoot().scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    });
+  }
+
   /* Theme initialization */
   var themeToggle = document.getElementById('wiki-theme-toggle');
   function applyTheme(t) {

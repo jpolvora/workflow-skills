@@ -1,4 +1,12 @@
 # Changelog
+### [2026-09-22 19:05] Agent: grok-4.7
+- **Prompt**: Update the website FAQ and roadmap, refresh skills and the dependency graph, and update the left and top menus.
+- **Done**: Rebuilt the catalog (56 skills) and a dependency-graph list from `bin/skill-dependencies.json`. Roadmap marks the Node-only runtime and `close-issue` as done. FAQ covers non-default-base close, human runbooks, and where config versus memory live. Header, sidebar, dots, and on-this-page menus link Skills, Graph, and Wiki.
+- **Result**: `node bin/build-site.js` exit 0. Not committed.
+### [2026-09-22 16:54] Agent: ws-plan-verify (us-405 Step 5)
+- **Prompt**: Quick-score Step 5 verify for us-405 close-issue ship path; minVerifyScore 9; report-only preferred.
+- **Done**: Ran `test-close-issue.js`, `test-provider-parity.js`, and `npm run test` (all exit 0); linked AC1–AC6 + NS1–NS5 into `ac-ledger.json`; wrote `step-05-us-405.plan.report.md` with score 9/10. Added NS4/NS5 assertions to `test/test-close-issue.js` so uncovered negatives would not cap the ledger.
+- **Result**: Score 9/10 (54/60); AC1 live `gh issue view` deferred to ship; no product commit.
 ### [2026-09-22 16:10] Agent: Muse Code (changelog/memory hub consolidation)
 - **Prompt**: Merge root CHANGELOG.md into .ws/CHANGELOG.md; merge root MEMORY.md into .ws/MEMORY.md; remove the root files after merging.
 - **Done**: Root changelog (150 entries) merged insert-only into .ws/CHANGELOG.md (143 root-only inserted by timestamp, 3 same-heading conflicts kept at hub version, untouched hub bytes byte-verified, 522 entries total), then root CHANGELOG.md deleted. Memory relocation (user-gated): 35 root memory/*.md moved collision-free into .ws/memory/, rules.memoryDir set to ".ws", recompiled to 195 entries in .ws/MEMORY.md, read path verified via --match-paths, then root MEMORY.md + empty root memory/ removed. FEATURES.md inventory link retargeted to .ws/CHANGELOG.md.

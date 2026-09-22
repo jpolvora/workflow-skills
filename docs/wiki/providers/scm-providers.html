@@ -235,7 +235,7 @@
 <h2 id="feature">Feature <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/main/.agents/specs/wiki/providers/scm-providers.md" target="_blank" rel="noopener" title="Edit section: Feature">[edit]</a></span></h2>
 <p>Three provider skills own all tracker and pull-request intents behind one parity contract so orchestrators never embed host CLI names directly. <code>ws-spec-provider-github</code> converts GitHub issues to specs and performs PR operations. <code>ws-spec-provider-azure-devops</code> converts Azure DevOps work items to specs with the same intent surface. <code>ws-spec-provider-local</code> detects hand-written <code>*.spec.md</code> files, normalizes them, and registers them into the workflow tree. Exactly one provider is active per project through <code>providers.active</code>, while the PR and review-thread host (<code>providers.scm</code>) may differ, supporting hybrid flows such as local specs with GitHub pull requests. Shared <code>fetch-to-spec</code> behavior downloads tracker images and attachments identically on both remote providers.</p>
 <h2 id="how-it-works">How it works <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/main/.agents/specs/wiki/providers/scm-providers.md" target="_blank" rel="noopener" title="Edit section: How it works">[edit]</a></span></h2>
-<p>GitHub and Azure DevOps must implement the same required intents: <code>validate-auth</code>, <code>fetch-to-spec</code>, <code>create-pr</code>, <code>list-threads</code>, <code>sweep-prior-work</code>, <code>check-pr-status</code>, <code>resolve-thread</code>, <code>comment-issue</code>, <code>close-issue</code>, and <code>merge-pr</code>. Only URL discovery may differ; one-sided behavior fails closed in <code>test/test-provider-parity.js</code>. Local provider writes stay <code>source: local</code> and must register <code>{specsDir}/{slug}.spec.md</code> before any <code>{plansDir}</code> copy is created. The working branch is never deleted after merge.</p>
+<p>GitHub and Azure DevOps must implement the same required intents: <code>validate-auth</code>, <code>fetch-to-spec</code>, <code>create-pr</code>, <code>list-threads</code>, <code>sweep-prior-work</code>, <code>check-pr-status</code>, <code>resolve-thread</code>, <code>comment-issue</code>, <code>close-issue</code>, and <code>merge-pr</code>. Only URL discovery may differ; one-sided behavior fails closed in <code>test/test-provider-parity.js</code>. <code>comment-issue</code> posts a comment and never changes work-item state. <code>close-issue</code> is the explicit transition: GitHub runs <code>gh issue close</code>, and Azure DevOps patches the work item to Closed (Done only when the process rejects Closed). Callers invoke it after merge when threads are zero, including when the pull request base is not the repository default branch, because <code>Closes #N</code> in the PR body auto-closes only on that default branch. A null or non-numeric id exits 0 with status <code>skipped</code>. Dry-run prints the planned close and does not call the host. Authentication failure stops with <code>validate-auth</code> and does not fall through to the other provider. Local provider writes stay <code>source: local</code> and must register <code>{specsDir}/{slug}.spec.md</code> before any <code>{plansDir}</code> copy is created. The working branch is never deleted after merge.</p>
 <p>Attachment ingestion tolerates per-file 404, 403, timeout, size caps, and disallowed hosts or MIME types without aborting the entire fetch, but authentication failures STOP the run. Files land in <code>{specStem}.assets/</code> with a <code>manifest.json</code>, patch a <code>## Visual References</code> section into the spec, and copy the sidecar to <code>{us-dir}/attachments/</code> at register time.</p>
 <p>Thread resolution is explicit: posting a fix reply never marks a thread resolved. The <code>resolveReviewThread</code> GraphQL mutation (GitHub) or equivalent ADO procedure must run after reply and commit verification using the <code>threadId</code> from structured thread listings. Dry-run callers skip remote mutation. Resolution comments must describe the correction, not hash-only or filler text.</p>
 <p>Local provider delegates PR intents to <code>providers.scm</code>; <code>scm: &quot;local&quot;</code> is rejected for PR, thread, and merge operations. Step skills hold no provider resolution tables of their own: <code>ws-fix-pr</code>, <code>ws-goal-fix-pr</code>, and <code>ws-ship-pr</code> call intents by name and point at <code>config-resolution.md</code> plus this contract, and raw <code>gh</code> or <code>az</code> command literals are banned from skill bodies.</p>
@@ -256,8 +256,25 @@
     </footer>
   </main>
 </div>
+<button type="button" id="to-top" class="to-top" aria-label="Back to top">↑</button>
 <script>
 (function() {
+  var toTop = document.getElementById('to-top');
+  if (toTop) {
+    var scrollRoot = function() {
+      return document.scrollingElement || document.documentElement;
+    };
+    var syncToTop = function() {
+      toTop.classList.toggle('is-visible', scrollRoot().scrollTop > 400);
+    };
+    document.addEventListener('scroll', syncToTop, { passive: true, capture: true });
+    syncToTop();
+    toTop.addEventListener('click', function() {
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      scrollRoot().scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    });
+  }
+
   /* Theme initialization */
   var themeToggle = document.getElementById('wiki-theme-toggle');
   function applyTheme(t) {

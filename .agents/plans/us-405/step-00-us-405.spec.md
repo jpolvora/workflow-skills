@@ -1,0 +1,126 @@
+---
+id: 405
+slug: us-405
+title: Ship phase leaves source issue open when baseBranch is not the repo default branch
+source: local
+specDate: 2026-09-22
+issueState: open
+issueUrl: "https://github.com/jpolvora/workflow-skills/issues/405"
+step: 0
+workflowId: us-405-20260922T203800Z
+status: completed
+startedAt: "2026-09-22T20:38:00.000Z"
+endedAt: "2026-09-22T20:41:19.579Z"
+acRefs: []
+---
+# Specification — Ship phase leaves source issue open when baseBranch is not the repo default branch
+
+## Description
+
+When a Spec-to-PR delivery (`ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-spec-multi`) ships a PR whose base is a configured non-default integration branch (`project.baseBranch`, e.g. `develop`), the linked GitHub source issue stays OPEN after merge even though the PR body carries a `Closes #N` line. GitHub only auto-closes on `Closes #N` when the PR base is the repository default branch, so the current ship path — which relies solely on that keyword — silently skips the tracker transition on non-default bases.
+
+System boundaries: `scm-provider-contract.md` (`create-pr` row), `ws-spec-provider-github` (`create-pr`, `comment-issue`/`close-loop`), `ws-spec-provider-azure-devops` (parity surface), `ws-ship-pr` Step 5 (post-merge close-loop path) and `scripts/ensure_pr_closer.cjs`, plus the `ws-fix-pr` / `ws-goal-fix-pr` convergence path that reuses the same close assumption. Fix must add an explicit provider-level close mechanism and invoke it on the merged path so CLOSED is reached regardless of base branch, on both SCM backends.
+
+## Acceptance Criteria
+
+- AC1: After a PR created by the ship path is merged with zero active review threads, the linked GitHub issue with a numeric tracker id reaches state CLOSED even when PR base (`project.baseBranch`) differs from the repository default branch.
+- AC2: `scm-provider-contract.md` defines an explicit close intent (e.g. `close-issue`: GitHub `gh issue close`, Azure DevOps work-item state transition to Closed/Done) with the same required-intent parity rules as existing intents, and both provider `SKILL.md` + `INTENTS.md` implement it.
+- AC3: `ws-ship-pr` invokes the explicit close intent on the merged path (when base is not the default branch, or unconditionally after merge with `activeThreads == 0`) instead of relying solely on the `Closes #N` auto-close keyword; the `Closes #N` body line is retained for default-branch auto-close.
+- AC4: `comment-issue` (alias `close-loop`) behavior is unchanged — comment-only, no state change — so callers can distinguish comment from close; docs state this explicitly.
+- AC5: `source: local` / `id: null` deliveries skip the close intent with exit 0 `skipped` (same convention as `comment-issue`), and `dry-run` prints the planned close without mutating the tracker.
+- AC6: Provider parity gate (`node test/test-provider-parity.js`) passes with the new intent on both implementers (or a documented allowlist row with a host-capability reason).
+
+## Original Issue Context
+
+## Summary
+
+When a Spec-to-PR / `ws-spec-multi` delivery merges its PR into a **non-default integration branch** (configured `baseBranch`, e.g. `develop`), the linked source issue is **never closed**. The ship path relies entirely on GitHub's PR-body `Closes #N` auto-close keyword, and that keyword only fires when the PR base is the repository **default branch**. On a non-default base the PR merges green with `threads 0 checks green`, but the tracker item stays OPEN.
+
+## Observed
+
+- A `ws-spec-multi` batch shipped two specs. Each PR body carried `Closes #N` (added by `ws-ship-pr/scripts/ensure_pr_closer.cjs`) and was merged into the configured `baseBranch` = `develop`.
+- Both source issues remained `OPEN` after merge; they had to be closed manually.
+- Historical PRs in the same repo that targeted the default branch (`main`) did auto-close (queue `reason` noted `#NNN auto-closed`), which masks the gap until someone runs with a non-default `baseBranch`.
+
+## Root cause (contract)
+
+- `.agents/skills/ws-shared/runtime/scm-provider-contract.md` — `create-pr`: "the caller keeps a `Closes #{id}` line in the PR body (GitHub auto-closes the issue on merge)". This is base-branch dependent and undocumented as such.
+- `.agents/skills/ws-spec-provider-github/SKILL.md` — `create-pr`: "body carries `Closes #{id}` when tracker id present (auto-close on merge; caller ensures it)".
+- `ws-ship-pr` Step 5 dispatches provider **`comment-issue`** (alias `close-loop`), but that intent runs `comment_issue.cjs` → `gh issue comment` (comment only; no state change).
+- `scm-provider-contract` exposes **no `close-issue` intent**, so there is no provider-parity way to explicitly transition the work item to CLOSED.
+
+## Expected
+
+After a successful ship/merge with `activeThreads == 0`, the linked source work item should reach a **CLOSED** state regardless of the PR base branch. Options:
+
+1. Add a `close-issue` intent to `scm-provider-contract` (GitHub `gh issue close`; Azure DevOps state transition) and invoke it from the ship / fix-pr convergence path when the PR base is not the default branch (or unconditionally once merged and threads=0).
+2. Or make `ensure_pr_closer.cjs` / `ws-ship-pr` detect `base != default branch` and require/emit the explicit provider close instead of assuming auto-close.
+
+## Impact
+
+Any consumer whose integration branch differs from the default branch accumulates **delivered-but-open** source issues, requiring manual tracker hygiene after every run.
+
+## Failure class
+
+Provider close-intent missing / auto-close is base-branch dependent. Reproduce generically: set `baseBranch` to a non-default branch, run a standard delivery, merge the PR, observe the source issue stays OPEN despite the `Closes #N` body.
+
+### Prior Work Sweep
+
+- Sweep (`sweep_prior_work.cjs --issue 405 --keywords ship baseBranch close-issue Closes`): no open PR for the same tracker id 405. Related merged PRs are keyword hits only: #214 (ws-preview skill), #216 and #230 (both `develop` head ref). No duplicate-risk stop.
+- Commit history on `scm-provider-contract.md` / `ws-ship-pr/SKILL.md`: `174f2f44 feat(ship): close the source issue via GitHub PR body` introduced the `Closes #N` body guarantee — the direct predecessor of this gap. Other touching commits are release bumps and unrelated features (#388, #386, #380, #382, #378, #369, #377).
+- `ensure_pr_closer.cjs` history: single commit `174f2f44` (same change).
+
+### Design Intent
+
+- `git log -p -S "Closes #" -- scm-provider-contract.md` shows `174f2f44` intentionally added the `Closes #{id}` line as the close mechanism ("GitHub auto-closes the issue on merge"). The base-branch dependence was an accidental gap, not a documented constraint — no branch check or fallback close was part of that change. This spec treats the gap as a bug in that assumption, not a reversal of its intent (the keyword line stays).
+
+## Notes
+
+- Preferred direction is the issue's option 1 (new `close-issue` required intent on both SCM backends) because it gives `ws-ship-pr` / `ws-fix-pr` / `ws-goal-fix-pr` an intent-name-only call that survives host differences; option 2 (branch detection inside `ensure_pr_closer.cjs`) can be the invocation condition, not the whole fix.
+- ADO parity needs a work-item state transition (not a comment), since ADO has no `Closes` auto-close equivalent on the GitHub path.
+- Do not delete `project.workingBranch` on merge (existing contract rule stays).
+- No visual attachments on the source issue; no `## Visual References` sidecar.
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Changing PR base-branch selection or default-branch configuration | Branch topology is out of scope; fix is the post-merge tracker transition |
+| Auto-closing issues for unmerged / closed-without-merge PRs | Only the merged path with zero active threads transitions to CLOSED |
+| Bulk-closing historically stranded open issues | Forward fix only; backlog hygiene is a separate manual pass |
+| New comment body content or close-loop message format | `comment-issue` output is unchanged; only the state transition is added |
+
+## Assumptions & Open Questions
+
+| Assumption | Chosen default | Rationale | Confirmed |
+|------------|----------------|-----------|-----------|
+| Close fires after merge with `activeThreads == 0`; exact trigger (only when base != default vs unconditionally) is an implementation choice | Invoke explicitly whenever merged and threads are zero, keeping `Closes #N` for default-branch auto-close | Idempotent and covers both branches without branch-detection fragility | n |
+| Stack `node-skills-package` has no applicable stack rule pack, so no stack invariants are injected | N/A because no `stacks/*.md` pack matches a Node skill-package harness | Avoid inventing auth/concurrency ACs for absent dimensions | y |
+| `gh issue close` is the GitHub host primitive; ADO uses a state-transition call | Follows each host's native close capability | Keeps intent-name parity with host-specific recipes | n |
+
+## Definition of Ready (DoR)
+
+| Readiness Item | Requirement | Verification Method |
+|----------------|-------------|---------------------|
+| Scope bounded | Contract intent + ship-path invocation + parity test only; no branch-topology changes | Review diff touches `scm-provider-contract.md`, both providers, `ws-ship-pr`, parity test |
+| ACs atomic and testable | AC1–AC6 each have a pass/fail check (issue state, intent docs, skip/dry-run behavior, parity gate) | Authoring validation passes; reviewer checks each AC against the diff |
+| Failure modes stated | Unmerged PRs never close; `id: null` skips; auth failure STOPs with `validate-auth` remediation | Negative scenarios below cover each mode |
+| No open blockers | No exact same-issue open PR; sweep recorded above | Re-run sweep before implementation if stale |
+| Telemetry named | Parity test + issue-state check commands listed under Validation Notes | Run commands in Validation Notes and cite exit codes |
+
+## Validation & Observation Notes
+
+### Telemetry & Observable Signals
+
+- `node test/test-provider-parity.js` — must exit 0 after the new intent is added to both providers.
+- `gh issue view 405 --json state` — source issue state before (OPEN) vs after a verification delivery (CLOSED on the merged path).
+- `npm run test` — full suite stays green (parity test runs inside it).
+- `node .agents/skills/ws-spec-format/scripts/validate_spec.cjs --mode=authoring ".agents/specs/0124-us-405.spec.md"` — authoring validation exits 0.
+
+### Negative & Failing Test Scenarios
+
+- Negative 1: PR merged into non-default base without the fix — issue stays OPEN despite `Closes #N` body (the reported bug; expected red before fix, green after).
+- Negative 2: `source: local` / `id: null` delivery invokes close — must exit 0 `skipped` with no tracker mutation.
+- Negative 3: close intent in caller `dry-run` — must print the planned close and perform no remote state change.
+- Negative 4: auth failure (`gh auth status` non-zero) on the close path — must STOP with `validate-auth` remediation, no silent fallback to the other provider.
+- Negative 5: PR closed without merge — linked issue must remain OPEN (no close on unmerged path).

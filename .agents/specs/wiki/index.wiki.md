@@ -17,7 +17,7 @@ Primary use cases from `index.PRD`: end-to-end Spec-to-PR (standard or lite), se
 
 ## Domain Catalog
 
-Living synthesis of specs 0001–0121 (delta 0108–0121 reconciled from the spec boards and the shipped code in this run). Feature subpages use `{domain}/{feature}.md` with `## Feature` and `## How it works` required; `## Backend`, `## Frontend`, and `## Third-party services` are conditional.
+Living synthesis of specs 0001–0124 (delta since `174f2f44` covers ownership-scoped git writes, the human spec companion, and explicit `close-issue` after merge). Feature subpages use `{domain}/{feature}.md` with `## Feature` and `## How it works` required; `## Backend`, `## Frontend`, and `## Third-party services` are conditional.
 
 ## Domain: harness
 
@@ -34,7 +34,7 @@ Living synthesis of specs 0001–0121 (delta 0108–0121 reconciled from the spe
 
 ## Domain: specs
 
-- [Spec Lifecycle](specs/spec-lifecycle.md): Author, validate, organize, index, list, explain, update, and archive specifications.
+- [Spec Lifecycle](specs/spec-lifecycle.md): Author, validate, organize, index, list, explain, translate to a human runbook, update, and archive specifications.
 
 ## Domain: quality
 
@@ -55,7 +55,7 @@ Living synthesis of specs 0001–0121 (delta 0108–0121 reconciled from the spe
 
 ## Sync Baseline
 
-- Commit: `174f2f44f581801b4355fcefa91dd975e400c446`
+- Commit: `9d1cdef619c67f8685579ec13daad8c553880f00`
 - Synced: 2026-09-22
 
 Next wiki update: diff this commit against `HEAD` (`git diff --name-status <commit>..HEAD`) and sweep only the changed specs and code areas. A full-tree sweep is only needed when this block is missing or the commit is unreachable. Contract: `ws-wiki` SKILL.md § Incremental baseline.
