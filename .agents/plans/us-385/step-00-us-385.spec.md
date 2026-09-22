@@ -1,0 +1,136 @@
+---
+id: 385
+slug: us-385
+title: ws-monitor reports critical missing-artifact false positives on ws-spec-to-pr-lite runs
+source: github
+specDate: 2026-09-21
+issueState: open
+issueUrl: "https://github.com/jpolvora/workflow-skills/issues/385"
+step: 0
+workflowId: us-385
+status: completed
+startedAt: "2026-09-22T02:22:01.488Z"
+endedAt: "2026-09-22T02:22:01.488Z"
+acRefs: []
+---
+# Specification — ws-monitor reports critical missing-artifact false positives on ws-spec-to-pr-lite runs
+
+## Description
+
+`ws-monitor` classifies healthy `ws-spec-to-pr-lite` runs as failing. The read-only snapshot builder `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs` derives its expected-artifact set from a single hard-coded standard-pipeline step map, then emits `critical` `missing-artifact` / `missing-exec-artifact` findings for every expected file that is absent.
+
+The standard map (`expectedArtifacts`, `monitor_snapshot.cjs:459`) assumes Step 2 = plan interview, Step 3 = DAG/task execution, Step 5 = verify report, and Step 7 = testing report. Lite runs reuse the same numeric step fields (`state.currentStep`, `state.completedSteps`) with a different per-step meaning: Step 0 spec, Step 1 plan, Step 2 implement, Step 3 review, Step 4 ship, Step 5 fix-pr. The monitor never reads the pipeline discriminator (`state.workflowType`, surfaced as `workflow.pipeline` at `monitor_snapshot.cjs:1191`), so lite step completions collide with standard artifact names.
+
+Result on a green lite run (`workflowType: lite`, steps 0–4 `completed`, fix-pr converged with zero active threads): four false criticals — `step-02-<slug>.plan-interview.md`, `step-02-<slug>.plan.refined.md`, `step-03-<slug>.plan.exec.md`, `step-05-<slug>.plan.report.md` — each labelled with the standard step meaning. An unfiltered snapshot repeats them across every historical lite slug, and the Step 2 pair also fires on older completed standard runs that predate the current artifact contract, so the board is unreadable without `--slug` filtering.
+
+Architecture touchpoints: the expected-artifact map and its caller (`expectedArtifacts`, `classifyWorkflow`) in `monitor_snapshot.cjs`; the workflow projection that exposes `pipeline`; the `ws-monitor` signal-map documentation (`.agents/skills/ws-monitor/SKILL.md`); and the monitor tests under `test/` (`test-ws-monitor.js`, `test-ws-monitor-us356.js`, `test-step-baton-monitor.js`).
+
+An existing precedent already conditions one expectation on the actual run shape rather than the numeric step: the `dag-disabled` Step 3 skip is grandfathered and never treated as a missing exec artifact (`monitor_snapshot.cjs:475-480`; `ws-monitor/SKILL.md:126`). Lite has no analogous branch — an accidental gap, not an intentional constraint.
+
+## Acceptance Criteria
+
+- AC1: The expected-artifact map in `monitor_snapshot.cjs` resolves the artifact contract from the workflow pipeline discriminator (`state.workflowType`), selecting the lite contract for `lite` and the standard contract otherwise.
+- AC2: A lite workflow state at `currentStep` 5 with steps 0 through 4 completed yields zero `missing-artifact` and zero `missing-exec-artifact` findings.
+- AC3: The lite contract excludes `step-02-*.plan-interview.md`, `step-02-*.plan.refined.md`, `step-03-*.plan.exec.md`, and `step-05-*.plan.report.md` from its expected set.
+- AC4: A lite workflow whose genuinely required artifact is absent (`step-00-*.spec.md` or `step-01-*.plan.md`) still yields a `critical` `missing-artifact` finding.
+- AC5: The lite contract expects only artifacts the lite pipeline actually writes (shared-name `step-00` spec, `step-01` plan, `step-06` review, `step-08` result) and never standard-only artifacts.
+- AC6: Standard and `ws-spec-multi` workflows produce the same expected-artifact findings as before the change for identical state inputs.
+- AC7: Unfiltered snapshot output no longer contains the four listed criticals for historical lite slugs.
+- AC8: A regression fixture drives a lite state plus telemetry through close and asserts zero missing-artifact findings in the snapshot.
+- AC9: The `ws-monitor` signal map documents the pipeline-branching rule for the expected-artifact map.
+- AC10: `npm run test` and `node test/test-harness-clean.js` exit 0 after the change, and `scan_stack_invariants.cjs --stack typescript-node` reports no new findings.
+
+## Original Issue Context
+
+## Summary
+`ws-monitor` reports `critical` `missing-artifact` / `missing-exec-artifact` findings on healthy `ws-spec-to-pr-lite` runs. The expected-artifact map applies standard-pipeline step semantics (Step 2 = interview, Step 3 = DAG exec, Step 5 = verify report) to lite runs, whose own Steps 0-5 table (spec, plan, implement, review, ship, fix-pr) defines none of those artifacts.
+
+## Observed
+On a fully green lite run (`pipeline: "lite"` on every telemetry event; steps 0-4 `completed`; Step 5 fix-pr converged with 0 active threads; product commit, review, and tests green), the monitor reports:
+- `step-02-<slug>.plan-interview.md is missing (Step 2 interview completed)`
+- `step-02-<slug>.plan.refined.md is missing (Step 2 interview completed)`
+- `step-03-<slug>.plan.exec.md is missing (Step 3 completed)`
+- `step-05-<slug>.plan.report.md is missing (Step 5 completed)`
+
+An unfiltered snapshot floods with the same criticals across every historical lite run (slugs completing at Step 5), and the Step 2 pair also fires on older completed standard runs that predate the current artifact contract, so the board is unreadable without `--slug` filtering.
+
+## Expected
+Expected artifacts branch on the workflow `pipeline` / `workflowType` field:
+- lite Steps 0-5 = spec, plan, implement, review, ship, fix-pr; no interview, DAG-exec, or verify-report artifacts expected (a `dag-disabled` sequential shape already stays silent by design).
+- Standard expectations unchanged.
+
+## Suggested fix
+- Gate `expectedArtifacts` in the monitor snapshot on `pipeline === "lite"` vs standard.
+- Add a regression fixture: lite state + telemetry through close asserting zero `missing-artifact` findings.
+
+## Environment
+- Telemetry `packageVersion`: 0.4.50 (observed 0.4.49 to 0.4.50 across the run after the run's own version bump).
+- Hub: project-local config; skill executed from the installed skills root.
+
+Source: https://github.com/jpolvora/workflow-skills/issues/385 (state open, labels none, assignees none, comments none).
+
+### Prior Work Sweep
+
+Provider sweep on 2026-09-21 (`sweep_prior_work.cjs --issue 385 --keywords "ws-monitor missing-artifact lite false positive" --files .agents/skills/ws-monitor/scripts/monitor_snapshot.cjs`): status ok, zero exact open PR for #385, no duplicate-risk open work. Two merged PRs matched only on text `#385` and are unrelated (#350 step-baton handoffs, #191 ws-doctor). Recent commits touching the monitor script are prior fixes on other ids (#383 review threads, #377 review threads, #369 transcript evidence, #365 execution observer, #356 host-adapter tails); none address the pipeline-branching gap. Closest in-tree relatives: `monitor_snapshot.cjs` `expectedArtifacts` / `classifyWorkflow`, `ws-monitor/SKILL.md` signal map, and `test/test-ws-monitor.js` plus `test/test-ws-monitor-us356.js`.
+
+### Design Intent
+
+Modification, not greenfield. `git log -S "expectedArtifacts" -- .agents/skills/ws-monitor/scripts/monitor_snapshot.cjs` shows the map introduced with the monitor itself (`5db6f9f7`) and extended by dispatch-provenance work (`d97f48a2`, issues #315/#316); a single unconditional standard map was the original design. `git log -S "dag-disabled"` shows `016f64ad` (us-355) added the first run-shape-aware exception, proving the intended pattern is to key expectations off the actual step/skip shape rather than the numeric index alone. There is no lite analogue: accidental gap, so this spec extends the established pattern instead of replacing it.
+
+## Notes
+
+- The pipeline discriminator already travels on the workflow projection (`pipeline: state.workflowType || 'unknown'`), and telemetry events carry `pipeline: "lite"`; the fix should reuse that field instead of inferring from artifact presence.
+- Lite shared-name artifacts are `step-00-{slug}.spec.md`, `step-01-{slug}.plan.md`, `step-06-{slug}.review.md`, and `step-08-{slug}.result.md`; the lite pipeline writes no `step-02`/`step-03`/`step-05`/`step-07` artifacts.
+- The Step 2 pair also mis-fires on pre-contract completed standard runs; the fix may reuse the same run-shape guard pattern (for example a documented skip reason or grandfathering) without weakening the standard contract.
+- The fix must not blanket-suppress findings: an absent genuinely required artifact still raises a critical (AC4).
+- Keep the change read-only: the monitor never writes workflow state or artifacts.
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Changing lite or standard step numbering | The numeric step fields stay; only the monitor's expectation map changes |
+| New monitor signals beyond expected artifacts | Single-defect fix; new signals need their own spec |
+| Auto-repair of missing artifacts | The monitor is read-only by contract |
+| Dashboard or report UI changes | `/ws-monitor` output shape stays; only findings change |
+| Rewriting historical telemetry or state files | Historical runs are read as-is |
+| Reworking `ws-spec-to-pr`/lite themselves | No pipeline behavior change |
+
+## Assumptions & Open Questions
+
+| Assumption | Chosen default | Rationale | Confirmed |
+|------------|----------------|-----------|-----------|
+| Pipeline discriminator field | `state.workflowType` (projected as `pipeline`) | Already present on state and telemetry; no new field needed | y |
+| Lite artifact contract | `step-00` spec, `step-01` plan, `step-06` review, `step-08` result | Matches the lite Steps 0–5 index and its documented exit-criteria artifacts | y |
+| Unknown/legacy pipeline values | Standard contract (current behavior) | Preserves existing findings for unlabelled historical runs | y |
+| Regression fixture location | `test/` beside `test-ws-monitor.js` | Follows the existing monitor-test convention | y |
+| Auth, rate limits, concurrency, data expiry, idempotency, external-dependency failure | N/A because the monitor is a local read-only snapshot with no network, no writes, and no shared mutable state | Dimensions absent | y |
+
+## Definition of Ready (DoR)
+
+| Readiness Item | Requirement | Verification Method |
+|----------------|-------------|---------------------|
+| Bounded scope | Change confined to `monitor_snapshot.cjs`, `ws-monitor/SKILL.md` signal map, and monitor tests | Diff lists those paths only |
+| Atomic criteria | AC1–AC10 each pass or fail | Authoring validate plus command checks |
+| Failure modes | Missing genuinely required artifacts still critical; unknown pipelines fall back to standard | AC4, AC6 plus negative scenarios |
+| Observation telemetry | Snapshot JSON findings plus suite output | Validation notes commands |
+| Stack invariants | typescript-node Node-subset enforced on touched scripts (awaited promises, validated inputs, contained paths, closed handles) | `scan_stack_invariants.cjs --stack typescript-node` plus negative scenarios |
+| Open blockers | None | Implementable from this spec |
+
+## Validation & Observation Notes
+
+### Telemetry & Observable Signals
+
+- Commands: `node {skillsRoot}/ws-monitor/scripts/monitor_snapshot.cjs --slug us-<lite-slug> --json` returns zero `missing-artifact` / `missing-exec-artifact` findings for a green lite run; `node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs --mode=authoring .agents/specs/0116-us-385.spec.md` exits 0; `npm run test` exits 0; `node test/test-harness-clean.js` exits 0; `scan_stack_invariants.cjs --stack typescript-node` reports no new findings.
+- Artifacts: regression fixture asserting zero missing-artifact findings for lite state plus telemetry through close; snapshot JSON for a standard workflow showing unchanged findings.
+- Signals: no `critical` `missing-artifact` or `missing-exec-artifact` on a lite run; `critical` retained for a lite run whose `step-01-{slug}.plan.md` is genuinely absent.
+
+### Negative & Failing Test Scenarios
+
+- A lite state at `currentStep` 5 still emits `step-02-*.plan-interview.md is missing` (must fail AC2/AC3).
+- A lite state with `step-01-{slug}.plan.md` absent emits no missing-artifact finding (must fail AC4 — over-suppression).
+- A standard state whose expected findings change versus the pre-change baseline (must fail AC6).
+- A `ws-spec-multi` state regresses to lite semantics (must fail AC6).
+- Snapshot for a lite slug still contains any of the four listed criticals (must fail AC7).
+- `npm run test` or `node test/test-harness-clean.js` fails after the change (must fail AC10).
+- A touched script floats a promise, builds a path from unsanitized input, or leaks a handle (must fail AC10).

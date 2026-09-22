@@ -4,7 +4,7 @@ slug: patterns-generator-shared-hub-output
 title: "Integrate ws-self-learning with the patterns track and store the generated ws-project-patterns body under the shared hub"
 source: local
 specDate: 2026-09-21
-issueState: open
+issueState: closed
 issueUrl: "https://github.com/jpolvora/workflow-skills/issues/382"
 ---
 
