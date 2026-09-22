@@ -24,9 +24,10 @@ const REPO_ROOT = path.resolve(__dirname, '..');
 const SUITES_FILE = path.join(__dirname, 'test-suites.json');
 
 // AC3/AC6 regression: the suite is side-effect free for the repository's own
-// consumer hub config. Snapshot before the suite and assert byte-identity after.
-const HUB_CONFIG_FILES = ['.ws/config.json', 'test/.ws/config.json'];
-const HUB_BACKUP_FILES = ['.ws/config.json.bak', 'test/.ws/config.json.bak'];
+// consumer hub config (`.ws/config.json`). Snapshot before the suite and assert
+// byte-identity after — on both the success and the failure path.
+const HUB_CONFIG_FILES = ['.ws/config.json'];
+const HUB_BACKUP_FILES = ['.ws/config.json.bak'];
 
 function hashFileIfPresent(file) {
   return fs.existsSync(file)
@@ -93,6 +94,7 @@ function main() {
   );
 
   const hubStateBefore = snapshotHubState();
+  let suiteExitCode = 0;
 
   for (let index = 0; index < entries.length; index += 1) {
     const entry = entries[index];
@@ -101,23 +103,29 @@ function main() {
     const result = spawnSync(process.execPath, entry, { cwd: REPO_ROOT, stdio: 'inherit' });
     if (result.error) {
       process.stderr.write(`\nrun-tests: failed to launch ${entry[0]}: ${result.error.message}\n`);
-      process.exit(1);
+      suiteExitCode = 1;
+      break;
     }
     if (result.status !== 0) {
       process.stderr.write(
         `\nrun-tests: ${entry.join(' ')} exited ${result.status} (stopped at ${index + 1}/${entries.length})\n`,
       );
-      process.exit(result.status === null ? 1 : result.status);
+      suiteExitCode = result.status === null ? 1 : result.status;
+      break;
     }
   }
 
+  // AC3/AC6: run the hub-mutation guard on the failure path too, so a test that
+  // corrupts the repository hub config is reported even when it also fails.
   const hubProblems = hubStateProblems(hubStateBefore);
   if (hubProblems.length) {
     process.stderr.write(
       `\nrun-tests: hub config mutation detected (AC3/AC6): ${hubProblems.join('; ')}\n`,
     );
-    process.exit(1);
+    suiteExitCode = 1;
   }
+
+  if (suiteExitCode) process.exit(suiteExitCode);
 
   process.stdout.write(`\nrun-tests: all ${entries.length} entries passed (mode=${mode})\n`);
   process.stdout.write('run-tests: hub config byte-identity verified (no mutation, no leftover backup)\n');
