@@ -11,7 +11,10 @@
     real-time search/filter, and atomic persistence with comment preservation and backups.
 
 .PARAMETER ConfigPath
-    Explicit path to config.json. Defaults to discovering {sharedDir}/config.json.
+    Explicit path to config.json. Interactive use may omit it and the editor
+    resolves the project hub config ({sharedDir}/config.json). Automated callers
+    (tests, CI) MUST pass an explicit -ConfigPath to an isolated copy so they never
+    target the repository's own hub config.
 
 .PARAMETER RepoRoot
     Explicit repository root directory. Defaults to discovering Git/skills root.
@@ -38,6 +41,10 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+
+# Diagnostic modes (-CheckOnly / -NonInteractive) are strictly read-only: they
+# validate and inspect but never persist, even if a caller omits -ConfigPath.
+$script:DiagnosticMode = [bool]($CheckOnly -or $NonInteractive)
 
 # ---------------------------------------------------------------------------
 # Version & App Metadata
@@ -595,6 +602,13 @@ function Format-JsonToTwoSpaces {
 function Save-ConfigurationFile {
     if (-not $script:ActiveConfigPath) {
         throw "Active config path is not set."
+    }
+
+    # Diagnostic mode never writes: no mutation and no .bak, even when
+    # -ConfigPath was omitted and the active path resolved to the live hub config.
+    if ($script:DiagnosticMode) {
+        Write-Warning "Diagnostic mode (-CheckOnly/-NonInteractive): configuration is read-only; no file or backup was written."
+        return
     }
 
     # Create parent folder if missing

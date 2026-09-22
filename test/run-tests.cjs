@@ -17,10 +17,39 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { spawnSync } = require('child_process');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 const SUITES_FILE = path.join(__dirname, 'test-suites.json');
+
+// AC3/AC6 regression: the suite is side-effect free for the repository's own
+// consumer hub config (`.ws/config.json`) and its backup. Snapshot the content
+// hash of both before the suite and assert byte-identity after — on both the
+// success and the failure path. Hashing the backup (not just its presence) also
+// catches a pre-existing `.bak` being overwritten in place.
+const HUB_CONFIG_FILES = ['.ws/config.json', '.ws/config.json.bak'];
+
+function hashFileIfPresent(file) {
+  return fs.existsSync(file)
+    ? crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')
+    : null;
+}
+
+function snapshotHubState() {
+  return {
+    hashes: HUB_CONFIG_FILES.map((rel) => [rel, hashFileIfPresent(path.join(REPO_ROOT, rel))]),
+  };
+}
+
+function hubStateProblems(before) {
+  const problems = [];
+  for (const [rel, hash] of before.hashes) {
+    const now = hashFileIfPresent(path.join(REPO_ROOT, rel));
+    if (now !== hash) problems.push(`${rel} changed (before=${hash} after=${now})`);
+  }
+  return problems;
+}
 
 function loadSuites() {
   const data = JSON.parse(fs.readFileSync(SUITES_FILE, 'utf8'));
@@ -60,6 +89,9 @@ function main() {
     `run-tests: mode=${mode} entries=${entries.length} (Node ${process.version})\n`,
   );
 
+  const hubStateBefore = snapshotHubState();
+  let suiteExitCode = 0;
+
   for (let index = 0; index < entries.length; index += 1) {
     const entry = entries[index];
     const label = `${index + 1}/${entries.length} ${entry.join(' ')}`;
@@ -67,17 +99,32 @@ function main() {
     const result = spawnSync(process.execPath, entry, { cwd: REPO_ROOT, stdio: 'inherit' });
     if (result.error) {
       process.stderr.write(`\nrun-tests: failed to launch ${entry[0]}: ${result.error.message}\n`);
-      process.exit(1);
+      suiteExitCode = 1;
+      break;
     }
     if (result.status !== 0) {
       process.stderr.write(
         `\nrun-tests: ${entry.join(' ')} exited ${result.status} (stopped at ${index + 1}/${entries.length})\n`,
       );
-      process.exit(result.status === null ? 1 : result.status);
+      suiteExitCode = result.status === null ? 1 : result.status;
+      break;
     }
   }
 
+  // AC3/AC6: run the hub-mutation guard on the failure path too, so a test that
+  // corrupts the repository hub config is reported even when it also fails.
+  const hubProblems = hubStateProblems(hubStateBefore);
+  if (hubProblems.length) {
+    process.stderr.write(
+      `\nrun-tests: hub config mutation detected (AC3/AC6): ${hubProblems.join('; ')}\n`,
+    );
+    suiteExitCode = 1;
+  }
+
+  if (suiteExitCode) process.exit(suiteExitCode);
+
   process.stdout.write(`\nrun-tests: all ${entries.length} entries passed (mode=${mode})\n`);
+  process.stdout.write('run-tests: hub config byte-identity verified (no mutation, no leftover backup)\n');
 }
 
 main();
