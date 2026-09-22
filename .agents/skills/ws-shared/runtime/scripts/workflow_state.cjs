@@ -817,7 +817,12 @@ function applyCloseAndShipStatus(state, options, pipeline, step, finishedAt, ste
     state.shipStatus = value;
   }
   const closeStep = CLOSE_STEP[pipeline];
-  if (step === closeStep && stepFinishStatus === 'completed') {
+  // The close-step branch is guarded against a failed earlier step so a failed
+  // run cannot be closed by finishing the close step `completed`. It keeps the
+  // documented close-on-completion semantics (unlike the terminal-shape guard
+  // below, which additionally requires every step through the close step to be
+  // terminal for an out-of-order/skipped close).
+  if (step === closeStep && stepFinishStatus === 'completed' && !hasFailedStep(state)) {
     state.status = 'completed';
     state.endedAt = finishedAt;
     if (!state.shipStatus) state.shipStatus = 'pending';
@@ -836,6 +841,12 @@ function applyCloseAndShipStatus(state, options, pipeline, step, finishedAt, ste
     if (!state.endedAt) state.endedAt = finishedAt;
     if (!state.shipStatus) state.shipStatus = 'pending';
   }
+}
+
+// us-395: a run with any explicitly failed step is never a clean close.
+function hasFailedStep(state) {
+  const stepStatus = state.stepStatus && typeof state.stepStatus === 'object' ? state.stepStatus : {};
+  return Object.values(stepStatus).some((value) => String(value) === 'failed');
 }
 
 // us-395: terminal-shape predicate shared by the close guard. `stepStatus` is

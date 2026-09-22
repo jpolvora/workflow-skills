@@ -5,7 +5,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "4d226e378c4c4366634f6d3de8e412f817cab446944ec10d257cbb46c243b922",
+  "fullPackageDigest": "f3e7ceb23f94a91f547df5cdde42f817492ddbbd25eeb54849d09dd1301c3d0d",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -46,7 +46,7 @@
       "runtime/scripts/scan_stack_invariants.cjs": "f186e197040142066fa7e78b563b11a171c8dc5a62c8026a135457fa82faf5e7",
       "runtime/scripts/step_baton.cjs": "d18f4bd9cf4720c6bf5d3322c8a143a64c94593cce480f4577341f294645d071",
       "runtime/scripts/validate_json_schema.cjs": "c6901a6ad2ed4fde4e5a6fcd85ebaa8b4c31f5707924f2928d25392d502dbbd9",
-      "runtime/scripts/workflow_state.cjs": "fb3da12169829b14f614fa7c8d7a57eb91fa6c1adec73b6bed527a31e1a2cb4e",
+      "runtime/scripts/workflow_state.cjs": "dbae9615738b71b03a5e882af9c75ba30e83dece5fbd16a46ccaea0711884f8b",
       "runtime/setup.md": "d23f4ba6e030d58b5712a7c0bb1ef7f7716b176c57c62ef77ccc4d75143821c5",
       "runtime/skill-dependencies.json": "75ca575d6f8a41bbb9eee677f9ff9babe107ebdd93f6c69686310a1fdad8bb28",
       "runtime/stacks/abp-angular.md": "fc728fb3d39373b91f7bb4e0a719a24abc995a643fd55c856603a2a1f7bfd742",
@@ -62,7 +62,7 @@
       "templates/STACK.md.example": "829b7d3fce62b8167905fc1d921ee744db1d7e8ef895b0e7eb969f089973bebd",
       "templates/config.json.example": "d45e4bbf1464a3352df73a5c1b0d97bf36e2245791888d37054a73f143bef47b"
     },
-    "skillDigest": "1b6cedef7fddd05e0bad6d18af8fa1a9ec4261385cb951789bb0bdd67b2e408a"
+    "skillDigest": "33dbaf0554938640d0f413dc537f5bb9edbf6b9d09c0e6c8a49d55c11454a8e2"
   },
   "packageVersion": "0.4.56",
   "skills": {
