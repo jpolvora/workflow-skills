@@ -425,7 +425,7 @@ On demand: [`CATALOG.md`](CATALOG.md). Package membership: [`bin/skill-dependenc
 
 ## Task router
 
-Intent → skill: [`CATALOG.md`](CATALOG.md) § Task router (includes `ws-spec-explain` / `ws-spec-archive` / `ws-cleanup` / `ws-spec-memo` / `ws-monitor`). Vault runtime ops after setup → `ws-memo` (spec-memo package / `{globalSkillsRoot}`). Specs keywords: [`autoload.md`](.agents/skills/ws-shared/runtime/autoload.md). Standalone write-spec: § [6. Write a spec](#6-write-a-spec-on-demand).
+Intent → skill: [`CATALOG.md`](CATALOG.md) § Task router (includes `ws-spec-explain` / `ws-spec-archive` / `ws-spec-translate-to-human` / `ws-cleanup` / `ws-spec-memo` / `ws-monitor`). Vault runtime ops after setup → `ws-memo` (spec-memo package / `{globalSkillsRoot}`). Specs keywords: [`autoload.md`](.agents/skills/ws-shared/runtime/autoload.md). Standalone write-spec: § [6. Write a spec](#6-write-a-spec-on-demand).
 
 ## Verification (before claim complete / commit)
 
