@@ -171,6 +171,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Test suite run mutates the repository's own hub config and leaves a backup file (`spec: 0119-us-389.spec.md`) — PR #397 MERGED
 - [x] ws-spec-multi standard workers do not persist {plansDir}/{slug} state, step artifacts, or telemetry (`spec: 0120-us-388.spec.md`) — PR #400 MERGED
 - [x] (ws-monitor) Terminal-state workflows stay active; batch queue keeps stale/superseded rows (`spec: 0121-us-395.spec.md`) — PR #399 MERGED
+- [ ] Allow parallel work by other agents - commit only own work in session, do not undo/stash/unstash files (`spec: 0122-us-401.spec.md`)
+
 
 
 
@@ -390,6 +392,8 @@ All Next-specs closed.
 | 124 | `us-388` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-multi standard workers do not persist {plansDir}/{slug} state, step artifacts, or telemetry |
 
 | 125 | `us-395` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | [ws-monitor] Terminal-state workflows stay active; batch queue keeps stale/superseded rows |
+
+| 126 | `us-401` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Allow parallel work by other agents - commit only own work in session, do not undo/stash/unstash files |
 
 ## 9. Inbox
 
