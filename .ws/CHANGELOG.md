@@ -1,4 +1,8 @@
 # Changelog
+### [2026-09-22 22:16] Agent: opencode (mimo-v2.6-flash)
+- **Prompt**: Configure agentic-code-reviewers in GitHub to use mimo-2.6-flash for code-review in GitHub Actions (active reviewer), variant medium.
+- **Done**: `opencode-code-review.yml` now active on `pull_request` with `--engine opencode --model opencode-go/mimo-v2.6-flash --variant medium`; `cursor-code-review.yml` demoted to `workflow_dispatch` backup; CATALOG dry-run + `review:dry` script + `preview.dryRunCommand` comment aligned to the new active CI; version bumped.
+- **Result**: Pending commit/push/PR; OpenCode workflow already `active` on GitHub, so the new config runs from this PR's merge ref onward.
 ### [2026-09-22 19:05] Agent: grok-4.7
 - **Prompt**: Update the website FAQ and roadmap, refresh skills and the dependency graph, and update the left and top menus.
 - **Done**: Rebuilt the catalog (56 skills) and a dependency-graph list from `bin/skill-dependencies.json`. Roadmap marks the Node-only runtime and `close-issue` as done. FAQ covers non-default-base close, human runbooks, and where config versus memory live. Header, sidebar, dots, and on-this-page menus link Skills, Graph, and Wiki.
