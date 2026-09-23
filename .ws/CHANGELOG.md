@@ -1,4 +1,8 @@
 # Changelog
+### [2026-09-23 04:05] Agent: opencode (ws-fable-method + ws-ship-pr)
+- **Prompt**: Implement issue #409 via gh client using agentic-code-reviewers docs; after fix commit + create PR, then close the issue in gh.
+- **Done**: Added `.github/workflows/agentic-code-review.yml` (single active reviewer; engine/model/variant from repo Variables with defaults `opencode` / `opencode-go/mimo-v2.6-flash` / `medium`); removed `cursor-code-review.yml` + `opencode-code-review.yml`; set the three repo Variables via `gh variable set`; updated `.ws/config.json` dry-run comment + `CATALOG.md` active-CI reference.
+- **Result**: `npm run test` 125/125, `verify-integrity` OK, `build-site --check` current, GUI 12/12, harness-clean 0 findings; PR feat/issue-409-unified-reviewer → develop; issue #409 closed with PR link.
 ### [2026-09-22 22:16] Agent: opencode (mimo-v2.6-flash)
 - **Prompt**: Configure agentic-code-reviewers in GitHub to use mimo-2.6-flash for code-review in GitHub Actions (active reviewer), variant medium.
 - **Done**: `opencode-code-review.yml` now active on `pull_request` with `--engine opencode --model opencode-go/mimo-v2.6-flash --variant medium`; `cursor-code-review.yml` demoted to `workflow_dispatch` backup; CATALOG dry-run + `review:dry` script + `preview.dryRunCommand` comment aligned to the new active CI; version bumped.
