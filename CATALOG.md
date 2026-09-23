@@ -291,24 +291,8 @@ Print a board after each row (same ✅ / ❌ / ⏭ convention as [`ws-ship-pr/PR
 
 ## Local dry-run: agentic code reviewers
 
-Upstream-only verification helper. Requires reviewer API key env var. Reviews `develop`…`main` (Custom stack + repo prompt). Active CI: [`.github/workflows/cursor-code-review.yml`](.github/workflows/cursor-code-review.yml). OpenCode backup [`.github/workflows/opencode-code-review.yml`](.github/workflows/opencode-code-review.yml) is `workflow_dispatch` only. Cursor dry-run:
+Upstream-only verification helper. Reviews `develop`…`main` (Custom stack + repo prompt). Active CI: [`.github/workflows/opencode-code-review.yml`](.github/workflows/opencode-code-review.yml) — engine `opencode`, model `opencode-go/mimo-v2.6-flash`, variant `medium`. Cursor backup [`.github/workflows/cursor-code-review.yml`](.github/workflows/cursor-code-review.yml) is `workflow_dispatch` only.
 
-```bash
-# Download to a file first — curl|bash leaves BASH_SOURCE unbound under set -u.
-curl -fsSL https://raw.githubusercontent.com/jpolvora/agentic-code-reviewers/release/run.sh \
-  -o /tmp/agentic-code-reviewers-run.sh
-AGENTIC_CODE_REVIEWERS_EXTRA_EXCLUDE_PATTERNS=".agents/plans/**,.agents/specs/**" \
-bash /tmp/agentic-code-reviewers-run.sh \
-  --dry-run \
-  --gh \
-  --engine cursor-sdk \
-  --model composer-2.5 \
-  --variant high \
-  --stack Custom \
-  --custom-prompt .github/agentic-code-reviewers-prompt.md \
-  --include-patterns "**/*.md,**/*.yml,**/*.yaml,**/*.json,**/*.sh,**/*.ps1,**/*.psm1,**/*.psd1,**/*.cmd,**/*.js,**/*.ts,**/*.css,**/*.html" \
-  --target-branch refs/heads/main \
-  --source-branch refs/heads/develop
-```
+`npm run review:dry` mirrors the active CI recipe with `--dry-run` (no `--gh`/`--pr-id`, so no PR threads); downloads `run.sh` to a file first (`curl|bash` leaves `BASH_SOURCE` unbound under `set -u`). Requires network + `OPENCODE_API_KEY` at run time.
 
 ---

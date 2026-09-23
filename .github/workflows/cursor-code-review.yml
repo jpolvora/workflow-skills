@@ -1,11 +1,10 @@
 name: Agentic Code Review (Cursor)
 
-# Active PR reviewer (Cursor, composer-2.5). Uses CURSOR_API_KEY repository secret.
-# opencode-code-review.yml is workflow_dispatch-only backup until re-enabled.
+# Backup PR reviewer (Cursor). Uses CURSOR_API_KEY repository secret.
+# Active reviewer is opencode-code-review.yml (opencode-go/mimo-v2.6-flash).
+# Kept as workflow_dispatch only — re-enable pull_request here only after
+# removing pull_request triggers from opencode-code-review.yml.
 on:
-  pull_request:
-    branches: [main]
-    types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
     inputs:
       pr_number:
@@ -18,7 +17,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: cursor-review-${{ github.event.pull_request.number || github.event.inputs.pr_number || github.ref }}
+  group: cursor-review-${{ github.event.inputs.pr_number || github.ref }}
   cancel-in-progress: true
 
 jobs:

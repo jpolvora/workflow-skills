@@ -1,9 +1,12 @@
 name: Agentic Code Review (OpenCode)
 
-# Disabled for automatic PR reviews. Active reviewer is cursor-code-review.yml.
-# Kept as workflow_dispatch backup (requires OPENCODE_API_KEY). Re-enable pull_request here
-# only after disabling cursor-code-review.yml pull_request triggers.
+# Active PR reviewer (OpenCode, opencode-go/mimo-v2.6-flash, variant medium).
+# Uses OPENCODE_API_KEY repository secret. cursor-code-review.yml is the
+# workflow_dispatch-only backup.
 on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
     inputs:
       pr_number:
@@ -16,7 +19,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: opencode-review-${{ github.event.inputs.pr_number || github.ref }}
+  group: opencode-review-${{ github.event.pull_request.number || github.event.inputs.pr_number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -83,8 +86,8 @@ jobs:
             -o /tmp/agentic-code-reviewers-run.sh
           bash /tmp/agentic-code-reviewers-run.sh \
             --engine opencode \
-            --model opencode-go/deepseek-v4.1-flash \
-            --variant low \
+            --model opencode-go/mimo-v2.6-flash \
+            --variant medium \
             --gh \
             --pr-id "${{ steps.pr.outputs.number }}" \
             --stack Custom \
