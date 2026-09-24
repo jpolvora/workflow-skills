@@ -2206,7 +2206,7 @@ function validateSnapshot({ stateFile, indexFile, context, maxStep, preAdvance, 
       if (!derived || derived.score < minVerifyScore) {
         errors.push(`ledger score must be at least ${minVerifyScore} before step 6`);
       }
-      const ledgerRel = toRepoRelative(context.repoRoot, ledgerFile);
+      const ledgerRel = toRepoRelative(context.repoRoot, ledgerFile, { allowOutside: true });
       const rescoreCommand = `ac_ledger.cjs score --ledger ${ledgerRel} --boundary ${boundary}`;
       if (ledger.scoreState && ledger.scoreState.ledgerHash) {
         let currentHash = null;
