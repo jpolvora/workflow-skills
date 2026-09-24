@@ -277,6 +277,9 @@
       "test/test-ac-ledger.js"
     ],
     [
+      "test/test-script-ux-golden-path.js"
+    ],
+    [
       "test/test-state-observability.js"
     ],
     [

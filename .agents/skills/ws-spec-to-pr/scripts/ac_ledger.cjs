@@ -391,7 +391,7 @@ function link(options, context) {
   const linkBoundary = requestedBoundary || (hasCommit ? 'pre-step6' : 'step5');
   try {
     const linkScore = scoreLedger(ledger, linkBoundary, context);
-    ledger.scoreState = { ...linkScore, boundary: linkBoundary, computedAt: new Date().toISOString() };
+    ledger.scoreState = { ...linkScore, boundary: linkBoundary, computedAt: new Date().toISOString(), writer: 'ac_ledger.cjs link', ledgerHash: ledgerContentHash(ledger) };
   } catch {
     ledger.scoreState = null;
   }
@@ -409,6 +409,21 @@ function verifyFileHashes(ledger, context, errors) {
   }
 }
 
+function canonicalize(value) {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (value && typeof value === 'object') {
+    const out = {};
+    for (const key of Object.keys(value).sort()) out[key] = canonicalize(value[key]);
+    return out;
+  }
+  return value;
+}
+
+function ledgerContentHash(ledger) {
+  const { scoreState, ...rest } = ledger;
+  return sha256(JSON.stringify(canonicalize(rest)));
+}
+
 function scoreLedger(ledger, boundary, context) {
   if (!BOUNDARIES.has(boundary)) throw new Error(`boundary must be one of: ${[...BOUNDARIES].join(', ')}`);
   const errors = [];
@@ -417,6 +432,7 @@ function scoreLedger(ledger, boundary, context) {
   let total = 0;
   let knownDefect = ledger.declaredGaps.length > 0;
   let missingEvidence = false;
+  const deficiencies = [];
   const configuredAliases = Object.entries(context.config?.verification || {})
     .filter(([key, value]) => /(?:Build|Test|Format)$/.test(key) && !/^_/.test(key) && typeof value === 'string' && value.trim() && !/^<.*>$/.test(value.trim()))
     .map(([key]) => key)
@@ -434,7 +450,13 @@ function scoreLedger(ledger, boundary, context) {
     if (['Implemented', 'ImplementedDifferently'].includes(row.status)) earned += 4;
     else if (row.status === 'NotImplemented') knownDefect = true;
     if (row.files.length && !errors.some((error) => error.startsWith(`${row.id}: linked file`))) earned += 3;
-    else missingEvidence = true;
+    else {
+      missingEvidence = true;
+      deficiencies.push(`${row.id}: no linked files`);
+    }
+    for (const [fileIndex, entry] of (row.files || []).entries()) {
+      if (!entry || !entry.sha256) deficiencies.push(`${row.id}: files[${fileIndex}] missing sha256`);
+    }
     const mapped = row.tests.some((test) => {
       if (!test.name || !test.sourceFile) return false;
       const source = path.resolve(context.repoRoot, test.sourceFile);
@@ -443,22 +465,34 @@ function scoreLedger(ledger, boundary, context) {
       return test.phase === 'planned' || (test.phase === 'observed' && test.exitCode === 0);
     }) || (boundary === 'ship' && validTestingSkip);
     if (mapped) earned += 2;
-    else missingEvidence = true;
+    else {
+      missingEvidence = true;
+      deficiencies.push(`${row.id}: no mapped tests (need {name, sourceFile} with the name present in the file${boundary === 'ship' ? '; ship boundary needs phase observed with exitCode 0' : ''})`);
+    }
     if (row.tasks.length || row.planSections.length) earned += 1;
+    else deficiencies.push(`${row.id}: no tasks or planSections`);
     if (row.sabotage.required && row.sabotage.status !== 'passed') knownDefect = true;
     if (row.findings.some((finding) => finding.state === 'open' && ['Critical', 'Warning'].includes(finding.severity))) knownDefect = true;
     if (boundary === 'pre-step6' && !row.commits.length) errors.push(`${row.id}: product commit linkage required before step 6`);
   }
   if (ledger.aliasResults.some((result) => !isSkipped(result) && result.exitCode !== 0)) knownDefect = true;
-  const missingNegative = (ledger.negativeScenarios || []).some((row) =>
-    !row.tests.some((test) => test.phase === 'observed' && Number(test.exitCode) === 0));
-  if (missingNegative) knownDefect = true;
+  for (const row of ledger.negativeScenarios || []) {
+    const covered = (row.tests || []).some((test) => test.phase === 'observed' && Number(test.exitCode) === 0);
+    if (!covered) {
+      knownDefect = true;
+      deficiencies.push(`${row.id}: no observed passing test (caps score at 8)`);
+    }
+  }
   const criticalInvariants = (ledger.invariantViolations || []).filter((item) => item.severity === 'Critical');
   if (criticalInvariants.length > 0) knownDefect = true;
   let score = total ? Math.floor((10 * earned) / total) : 0;
-  if (criticalInvariants.length > 0) score = Math.min(score, 7);
-  else if (knownDefect) score = Math.min(score, 8);
-  else if (missingEvidence) score = Math.min(score, 9);
+  if (criticalInvariants.length > 0) {
+    score = Math.min(score, 7);
+    deficiencies.push('score capped at 7: Critical invariant violations');
+  } else if (knownDefect) {
+    score = Math.min(score, 8);
+    deficiencies.push('score capped at 8: knownDefect');
+  } else if (missingEvidence) score = Math.min(score, 9);
   const completeTen = !knownDefect && !missingEvidence && !errors.length && ledger.acceptanceCriteria.every((row) => row.status === 'Implemented' || row.status === 'ImplementedDifferently');
   if (!completeTen) score = Math.min(score, 9);
   return {
@@ -468,19 +502,19 @@ function scoreLedger(ledger, boundary, context) {
     totalUnits: total,
     knownDefect,
     missingEvidence,
+    deficiencies,
     errors,
     invariantViolations: ledger.invariantViolations || [],
   };
 }
-
 function verify(options, context, persistScore) {
   if (!options.ledger) throw new Error('verify requires --ledger');
   const file = path.resolve(context.repoRoot, options.ledger);
   const ledger = readJson(file);
   const result = scoreLedger(ledger, options.boundary || 'step5', context);
   if (persistScore) {
-    ledger.scoreState = { ...result, computedAt: new Date().toISOString() };
     ledger.revision += 1;
+    ledger.scoreState = { ...result, computedAt: new Date().toISOString(), writer: 'ac_ledger.cjs score', ledgerHash: ledgerContentHash(ledger) };
     writeJson(file, ledger);
   }
   return result;
@@ -504,6 +538,7 @@ function report(options, context) {
     lines.push(`| ${row.id} | ${row.status} | ${row.files.length} | ${row.tests.length} | ${open} | ${row.sabotage.status} |`);
   }
   if (score.errors.length) lines.push('', '## Verification errors', '', ...score.errors.map((error) => `- ${error}`));
+  if (score.deficiencies && score.deficiencies.length) lines.push('', '## Deficiencies', '', ...score.deficiencies.map((item) => `- ${item}`));
   lines.push('');
   fs.writeFileSync(path.resolve(context.repoRoot, options.output), lines.join('\n'), 'utf8');
   return score;
@@ -544,10 +579,60 @@ function syncPlanIndex(options, context) {
   return ledger;
 }
 
+function ledgerHelpText(command) {
+  const generic = 'Usage: ac_ledger.cjs init|link|sync-plan-index|verify|score|report [options]\n'
+    + 'Run with <subcommand> --help for flags and an example, e.g. ac_ledger.cjs score --help.\n'
+    + 'Subcommands: init (create ledger), link (attach evidence), sync-plan-index (task backfill),\n'
+    + 'verify (dry-run score), score (derive and persist scoreState), report (markdown report).\n';
+  const notes = 'Notes: every read/write subcommand requires --ledger <ledger>; score takes a boundary\n'
+    + 'label (--boundary step5|pre-step6|ship, default step5) and PERSISTS scoreState, while verify\n'
+    + 'with the same boundary is a dry run that writes nothing.\n';
+  switch (command) {
+    case 'init':
+      return 'Usage: ac_ledger.cjs init --spec <spec> --output <ledger> [--plan-index <index>] [--workflow-id <id>] [--slug <slug>]\n'
+        + 'Create a ledger from the spec Acceptance Criteria bullets (plus Negative & Failing Test Scenarios).\n'
+        + notes
+        + 'Example: node ac_ledger.cjs init --spec step-00-slug.spec.md --output ac-ledger.json --slug slug --workflow-id wf\n';
+    case 'link':
+      return 'Usage: ac_ledger.cjs link --ledger <ledger> --event-id <id> [--ac ACn ...] [--negative NSn ...]\n'
+        + '  [--status Implemented|ImplementedDifferently|NotImplemented|Pending] [--file <path:Lstart-Lend> ...]\n'
+        + '  [--test <name=N,sourceFile=F,phase=planned|observed,exitCode=C> ...] [--commit <sha=S,step=N> ...]\n'
+        + '  [--verdict ...] [--finding ...] [--sabotage-exit N] [--gap <text>] [--plan-index <index>]\n'
+        + '  [--alias-result ...] [--test-surface-skip ...] [--invariant-violation ...] [--score-boundary <label>]\n'
+        + 'Attach evidence to AC rows. Requires --ledger and --event-id plus at least one target (--ac,\n'
+        + '--negative, --alias-result, --test-surface-skip, --gap, or --plan-index). --file ranges use the\n'
+        + 'path:Lstart-Lend shape. --plan-index backfills taskIds, planSectionIds, and expected test names.\n'
+        + 'Persist: link recomputes scoreState (--score-boundary wins; else pre-step6 when commits exist,\n'
+        + 'else step5), so re-score only when the next gate expects a different boundary.\n'
+        + 'Example: node ac_ledger.cjs link --ledger ac-ledger.json --event-id impl-ac1 --ac AC1 --status Implemented --file impl.js:L1-L10 --commit sha=<sha>,step=4\n';
+    case 'sync-plan-index':
+      return 'Usage: ac_ledger.cjs sync-plan-index --ledger <ledger> --plan-index <index>\n'
+        + 'Backfill tasks, plan sections, and expected test names from the plan index. Clears scoreState;\n'
+        + 're-run score afterwards.\n'
+        + 'Example: node ac_ledger.cjs sync-plan-index --ledger ac-ledger.json --plan-index .runtime/plan.index.json\n';
+    case 'verify':
+      return 'Usage: ac_ledger.cjs verify --ledger <ledger> [--boundary step5|pre-step6|ship]\n'
+        + 'Dry run: derive the score without writing. Prints score, earnedUnits/totalUnits, knownDefect,\n'
+        + 'missingEvidence, per-row deficiencies[], and errors[].\n'
+        + 'Example: node ac_ledger.cjs verify --ledger ac-ledger.json --boundary pre-step6\n';
+    case 'score':
+      return 'Usage: ac_ledger.cjs score --ledger <ledger> [--boundary step5|pre-step6|ship]\n'
+        + 'Derive the score AND persist scoreState (boundary defaults to step5). Use the boundary the next\n'
+        + 'gate expects: pre-step6 before step 6, step5 before steps 7-8, ship before step 9.\n'
+        + 'Example: node ac_ledger.cjs score --ledger ac-ledger.json --boundary pre-step6\n';
+    case 'report':
+      return 'Usage: ac_ledger.cjs report --ledger <ledger> --output <report> [--boundary ship]\n'
+        + 'Write a markdown ledger report (score, per-AC table, verification errors, deficiencies).\n'
+        + 'Example: node ac_ledger.cjs report --ledger ac-ledger.json --output ledger-report.md --boundary ship\n';
+    default:
+      return generic;
+  }
+}
+
 function main() {
   const { command, options } = parseArgs(process.argv.slice(2));
   if (options.help) {
-    process.stdout.write('Usage: ac_ledger.cjs init|link|sync-plan-index|verify|score|report [options]\n');
+    process.stdout.write(ledgerHelpText(command));
     return;
   }
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
@@ -572,4 +657,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { scoreLedger, verifyFileHashes, criteriaFromSpec, negativeScenariosFromSpec, readJson };
+module.exports = { scoreLedger, verifyFileHashes, criteriaFromSpec, negativeScenariosFromSpec, readJson, ledgerContentHash };

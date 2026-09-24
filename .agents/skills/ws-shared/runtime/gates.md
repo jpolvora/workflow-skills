@@ -195,6 +195,31 @@ Optional More-options **Commit** at Step 4 / other boundaries does not replace t
 
 ---
 
+## Golden-path state commands (both orchestrators)
+
+Drive every gate with the commands below, in order. Do not hand-edit
+`{workflow-id}.state.md`, `{workflow-id}.state.json`, or `ac-ledger.json`:
+those files are machine state, hand edits are unsupported, and the gates fail
+closed on inconsistencies with the remediating command named in the error.
+`<ledger>` is `{plansDir}/{slug}/ac-ledger.json`; `<state>` is
+`{plansDir}/{slug}/{workflow-id}.state.md`.
+
+| Gate | Commands (in order) |
+|------|---------------------|
+| Standard pre-advance 4 | `plan_index.cjs build` (Step 1 output), then `node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs <state> --pre-advance 4` |
+| Standard Steps 4-5 evidence | `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs link --ledger <ledger> --event-id <id> --ac ACn --status Implemented --file <path:Lstart-Lend> --test <name=N,sourceFile=F,phase=observed,exitCode=0>`, then dry-run `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs verify --ledger <ledger> --boundary step5` |
+| Standard pre-advance 6 | `node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs finish <state> --step 5 --verification-score <score>`, then G2-code `node {skillsRoot}/ws-spec-to-pr/scripts/commit_g2_code.cjs --state <state> --step 5 --message "feat({slug}): verified implementation"` (links the commit SHA and persists `pre-step6` scoreState), then `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs score --ledger <ledger> --boundary pre-step6` only if ledger content changed after the G2 link, then `node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs <state> --pre-advance 6` |
+| Standard pre-advance 7 / 8 | `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs score --ledger <ledger> --boundary step5`, then validate `--pre-advance 7` (or `8`) |
+| Standard pre-advance 9 | `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs score --ledger <ledger> --boundary ship`, then validate `--pre-advance 9` |
+| Lite after Step 2 | `link` evidence plus `--commit sha=<sha>,step=2`, G2-code, then hygiene `score --ledger <ledger> --boundary step5` before review |
+| Lite close (Step 4) | `score --ledger <ledger> --boundary step5`, then advance |
+
+When a gate reports a ledger mismatch, the error names the expected boundary
+label, the differing fields, and the exact `ac_ledger.cjs score` invocation
+that repairs it. Re-running `link` or `score` re-persists derived state, so
+the repair is always a supported command, never a file edit.
+
+---
 ## Step 8 combined gate (standard Step 8 / lite Step 4)
 
 **Before any push or PR.** Ends spec/plan implementation; sets `status: completed`, `endedAt`, `shipStatus: pending`. Step 8 presents a **primary question plus overflow** (rule 8: at most 3 options per question); state still records close then `shipStatus` (two phases).
