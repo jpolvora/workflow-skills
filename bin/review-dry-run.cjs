@@ -9,6 +9,7 @@ const REVIEWER_URL = 'https://raw.githubusercontent.com/jpolvora/agentic-code-re
 const DEFAULT_ENGINE = 'opencode';
 const DEFAULT_MODEL = 'opencode-go/mimo-v2.6-flash';
 const DEFAULT_VARIANT = 'medium';
+const DEFAULT_TIMEOUT_MS = '1200000';
 const EXTRA_EXCLUDES = '.agents/plans/**,.agents/specs/**';
 const INCLUDE_PATTERNS = '**/*.md,**/*.mdc,**/*.yml,**/*.yaml,**/*.json,**/*.sh,**/*.ps1,**/*.psm1,**/*.psd1,**/*.cmd,**/*.js,**/*.ts,**/*.css,**/*.html,**/*.cjs,**/*.py,**/*.prd';
 
@@ -38,6 +39,14 @@ function buildReviewerArgs(config) {
   ];
 }
 
+function buildReviewerEnv(env = process.env) {
+  return {
+    ...env,
+    AGENTIC_CODE_REVIEWERS_EXTRA_EXCLUDE_PATTERNS: EXTRA_EXCLUDES,
+    AGENTIC_CODE_REVIEWERS_TIMEOUT_MS: String(env.AGENTIC_CODE_REVIEWERS_TIMEOUT_MS || '').trim() || DEFAULT_TIMEOUT_MS,
+  };
+}
+
 function run() {
   const config = resolveReviewerConfig();
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'workflow-skills-review-'));
@@ -48,10 +57,7 @@ function run() {
     if (download.status !== 0) return download.status || 1;
     const review = spawnSync('bash', [runnerPath, ...buildReviewerArgs(config)], {
       stdio: 'inherit',
-      env: {
-        ...process.env,
-        AGENTIC_CODE_REVIEWERS_EXTRA_EXCLUDE_PATTERNS: EXTRA_EXCLUDES,
-      },
+      env: buildReviewerEnv(),
     });
     if (review.error) throw review.error;
     return review.status || 0;
@@ -62,6 +68,7 @@ function run() {
 
 module.exports = {
   buildReviewerArgs,
+  buildReviewerEnv,
   resolveReviewerConfig,
   run,
 };

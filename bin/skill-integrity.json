@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "f3a013f3715bfefefa2de42d91de3acfbed5ceff91ee1124dfd742c1bbcb0554",
+  "fullPackageDigest": "859420be0cfdc4980d8300c2986ef8f72b9efff5b9151dae49e4fb8c02f2316d",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -76,13 +76,13 @@
       "bin/generate-skill-integrity.js": "732c80b1251153e5078d59c3d23c615afa756a52c7670a20a7363970bebb72c2",
       "bin/generate-telemetry-aggregate.cjs": "57fa865c30651ae60e90c37f1f10a29665508f0de3080252a84627b7740d3f8e",
       "bin/install-rules.js": "73066b5ca2547493ad53b5862f25aac468e7652f9b6019240d396bec5f57e269",
-      "bin/review-dry-run.cjs": "c2ac741a4ea16dd9d9aa6f5ac959ded7e8288484dbb5ef9b5ad5be023dd86959",
+      "bin/review-dry-run.cjs": "341e78957ea71e3265297fa8cb2ab591a1f6f3cc3e75aa674c183be5081c8de4",
       "bin/skill-dependencies.json": "9b1975c5bce94cb148c57e526ceae959c530b00057123b77815df05a35f13255",
       "bin/skill-frontmatter.js": "ed6fec8e9617568631c287341b92fd269e9f3ebe58fb2c3f3d2437ad4b21d1d3",
       "bin/skill-integrity-lib.js": "ddec34895dc8227c384b5a5d68f0e90032b2de7255e4a63a161784d559ed6cc8",
       "bin/validate-evals.cjs": "f95d4ccdc70335fa1c5857bd56a9367daf16ba6404f9dac5117bd51a1251a15e"
     },
-    "packageDigest": "cd48e723ee7d404b512124795f2fd75386d455a97eafb06f7361a4d5349e0873"
+    "packageDigest": "faad56e6a6bea63324e70c576dd77cf6dc3a73a2dd4c0c09db76139df285c8ec"
   },
   "packageVersion": "0.4.65",
   "skills": {

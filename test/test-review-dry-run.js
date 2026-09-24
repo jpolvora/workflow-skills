@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const { buildReviewerArgs, resolveReviewerConfig } = require('../bin/review-dry-run.cjs');
+const { buildReviewerArgs, buildReviewerEnv, resolveReviewerConfig } = require('../bin/review-dry-run.cjs');
 const pkg = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'));
 
 const defaults = resolveReviewerConfig({ OPENCODE_API_KEY: 'test' });
@@ -37,6 +37,11 @@ const args = buildReviewerArgs(cursor);
 assert.deepEqual(args.slice(0, 6), ['--engine', 'cursor-sdk', '--model', 'cursor-sdk/auto', '--variant', 'high']);
 assert.ok(args.includes('--dry-run'));
 assert.ok(!args.includes('--gh'));
+const defaultEnv = buildReviewerEnv({});
+assert.equal(defaultEnv.AGENTIC_CODE_REVIEWERS_TIMEOUT_MS, '1200000');
+assert.equal(defaultEnv.AGENTIC_CODE_REVIEWERS_EXTRA_EXCLUDE_PATTERNS, '.agents/plans/**,.agents/specs/**');
+const overriddenEnv = buildReviewerEnv({ AGENTIC_CODE_REVIEWERS_TIMEOUT_MS: '900000' });
+assert.equal(overriddenEnv.AGENTIC_CODE_REVIEWERS_TIMEOUT_MS, '900000');
 assert.equal(pkg.scripts['review:dry'], 'node bin/review-dry-run.cjs');
 
 console.log('test-review-dry-run: ok');
