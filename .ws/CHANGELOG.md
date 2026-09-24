@@ -1,4 +1,19 @@
 # Changelog
+### [2026-09-23 22:53] Agent: opencode (space-bunny-free)
+- **Prompt**: Align the local review preview with the CI timeout after the live preview timed out.
+- **Done**: Set the local dry-run default to 1,200,000 ms with caller override support and added regression assertions for both paths.
+- **Result**: Fix round 3/3 is clean; 126 tests, site build, integrity verification, and harness audit pass.
+
+### [2026-09-23 22:25] Agent: opencode (space-bunny-free)
+- **Prompt**: Clear all pre-merge review findings before shipping the website update.
+- **Done**: Corrected desktop/tablet/mobile grid placement; added a variable-driven local review launcher; expanded integrity coverage to packaged `bin/` files; added regression and tamper tests.
+- **Result**: Code review round 2 is clean; 126 tests, site build, integrity verification, and harness audit pass.
+
+### [2026-09-23 21:40] Agent: opencode (space-bunny-free)
+- **Prompt**: Simplify the website landing page by removing legacy sections and controls, floating the left menu, and ship the result.
+- **Done**: Removed the dependency graph, roadmap, specialized-subagents announcement, redundant verification sentence, and root scroll-to-top control; made the desktop sidebar fixed with regression coverage; bumped the release to 0.4.65 and regenerated integrity.
+- **Result**: Site build check, all 125 tests, integrity verification, leak scan, and harness audit passed; PR shipping is in progress.
+
 ### [2026-09-23 04:05] Agent: opencode (ws-fable-method + ws-ship-pr)
 - **Prompt**: Implement issue #409 via gh client using agentic-code-reviewers docs; after fix commit + create PR, then close the issue in gh.
 - **Done**: Added `.github/workflows/agentic-code-review.yml` (single active reviewer; engine/model/variant from repo Variables with defaults `opencode` / `opencode-go/mimo-v2.6-flash` / `medium`); removed `cursor-code-review.yml` + `opencode-code-review.yml`; set the three repo Variables via `gh variable set`; updated `.ws/config.json` dry-run comment + `CATALOG.md` active-CI reference.
