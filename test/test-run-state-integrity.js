@@ -163,6 +163,13 @@ const PRESETS = {
   assert(stateJson.prUrl === 'https://example.com/pr/421', `AC3: prUrl persisted (got ${stateJson.prUrl})`);
   const bad = runUpdate(['finish', stateFile, '--step', '8', '--ship-status', 'bogus'], root);
   assert(bad.status !== 0, 'AC3: invalid shipStatus fails closed');
+  const replay = runUpdate(
+    ['finish', stateFile, '--step', '8', '--ship-status', 'pr-open', '--pr-number', '422', '--pr-url', 'https://example.com/pr/422'],
+    root,
+  );
+  assert(replay.status === 0, `AC3: pr-only update applies: ${replay.stderr}`);
+  const replayed = JSON.parse(fs.readFileSync(stateFile.replace(/\.state\.md$/, '.state.json'), 'utf8'));
+  assert(replayed.prNumber === '422', `AC3: pr-only update not swallowed by replay (got ${replayed.prNumber})`);
 }
 
 // AC4/NEG3: round-artifact-or-reason rule.

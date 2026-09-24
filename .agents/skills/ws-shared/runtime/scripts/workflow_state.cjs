@@ -133,6 +133,8 @@ function finishFingerprint(state, output, step) {
     verificationScore: state.verificationScore,
     fableVerdict: state.fableVerdict,
     shipStatus: state.shipStatus,
+    prNumber: state.prNumber,
+    prUrl: state.prUrl,
     outputSummary,
     outputFindings: findingsHistogram(output?.findings),
   }));
