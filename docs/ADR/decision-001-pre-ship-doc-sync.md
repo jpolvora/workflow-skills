@@ -1,6 +1,6 @@
 # Decision 001 — Pre-ship doc-sync gate (DRAFT)
 
-Status: **Draft** (not accepted; acceptance requires explicit user sign-off).
+Status: **Final** (accepted by owner on 2026-09-24).
 
 ## Context
 
@@ -25,10 +25,29 @@ pre-ship. The three surfaces disagree in strength and placement.
   `autoload`, `enableDag`); one GUI checkbox; default on matches the hub
   required-step intent.
 
+## Settled (continued)
+
+- D4 — Wiki absent/unconfigured with flag on: warn-and-skip the wiki leg
+  (visible warning in close output), index-sync and changelog legs still
+  required. Reason: must not block ships for consumers who never adopted
+  `ws-wiki`; silent skip would hide staleness.
+
+## Settled (continued)
+
+- D5 — Enforcement: gate-enforced close step. Both orchs block the ship
+  phase until the trio legs complete (or the wiki leg warn-skips),
+  honoring the flag. Reason: documentation-only "required" repeats the
+  offered-not-mandatory drift being fixed.
+
+## Settled (continued)
+
+- D6 — Flag off restores exactly today's behavior (standard:
+  offered-not-mandatory; lite: inline doc sync; index/changelog as today).
+  Reason: zero regression risk for consumers who opt out.
+
 ## Open
 
-- O2 — Enforcement when the wiki is absent/unconfigured: fail, warn-skip,
-  or silent skip.
+- None. Pending explicit acceptance to flip Draft → Final.
 - O3 — Gate vs documentation: hard gate in orch close logic or documented
   required step only.
 - O4 — Artifact boundary for the implementing change (skill bodies, schema,
