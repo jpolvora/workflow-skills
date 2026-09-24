@@ -1,4 +1,9 @@
 # Changelog
+### [2026-09-24 11:10] Agent: opencode (ws-spec-to-pr)
+- **Prompt**: Spec-to-PR for us-412/us-413 — make an active workflow observable as alive, resumable, and not falsely stalled.
+- **Done**: Added `update_state.cjs` `checkpoint`/`pause-turn` ops with schema + telemetry + validator coverage; `finish` clears the pause marker and step checkpoint; documented the turn-boundary pause/resume contract (autoMode does not chain host turns); hardened `ws-monitor` discovery (correlated-root prioritization, shared correlation window, honest `scan-capped`, `worker-session-stall`, pause suppression, `--watch --until-terminal`); new regression suites `test-liveness-checkpoints` + `test-ws-monitor-liveness`; README/FEATURES updated; bumped release to 0.4.66.
+- **Result**: verify 10/10, review clean (0 Critical/Warning), `npm run test` 128/128, sabotage passed, integrity regenerated+verified, harness-clean 0 findings, ws-check-workflows PASS.
+
 ### [2026-09-23 22:53] Agent: opencode (space-bunny-free)
 - **Prompt**: Align the local review preview with the CI timeout after the live preview timed out.
 - **Done**: Set the local dry-run default to 1,200,000 ms with caller override support and added regression assertions for both paths.
