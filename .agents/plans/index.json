@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 21,
-  "generatedAt": "2026-09-24T11:46:01Z",
+  "revision": 15,
+  "generatedAt": "2026-09-24T19:13:02Z",
   "workflows": [
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
@@ -745,11 +745,22 @@
       "slug": "us-412-413-liveness-checkpoints",
       "pipeline": "standard",
       "statePath": ".agents/plans/us-412-413-liveness-checkpoints/us-412-413-liveness-checkpoints-20260924T043148Z.state.md",
-      "stateSha256": "08ce31986c406b2977d95cc8b6b5bf0e252a8d6757b79a0d0749a74194dc0127",
+      "stateSha256": "a0bad2aa07088e479d1a4f7f8b7c5ccc01b22383a7f23660b86b524ff7d572b6",
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-09-24T11:46:01Z",
       "runPath": ".agents/plans/us-412-413-liveness-checkpoints/us-412-413-liveness-checkpoints-20260924T043148Z.state.json"
+    },
+    {
+      "workflowId": "us-415-416-script-ux-golden-path-20260924T190500Z",
+      "slug": "us-415-416-script-ux-golden-path",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/us-415-416-script-ux-golden-path/us-415-416-script-ux-golden-path-20260924T190500Z.state.md",
+      "stateSha256": "9a2f21fc6db8de104042e15b6663df849baec39fb35e02d3d4cb523064e82b1d",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-24T19:13:02Z",
+      "runPath": ".agents/plans/us-415-416-script-ux-golden-path/us-415-416-script-ux-golden-path-20260924T190500Z.state.json"
     },
     {
       "workflowId": "us-global-vs-project-skill-installation",
