@@ -163,6 +163,22 @@
     "configuredModel": { "type": "string" },
     "modelsPreset": { "type": "string" },
     "nextAction": { "type": "string" },
+    "stepCheckpoints": {
+      "type": "object",
+      "description": "us-413: mid-step checkpoint records keyed by step number (completed unit ids, remaining count, substep, updatedAt). Shallow declaration: step-keyed record shapes are enforced by validateSnapshot, not by this schema."
+    },
+    "turnPause": {
+      "type": "object",
+      "description": "us-413: turn-boundary pause marker written only when a host turn ends mid-step; cleared by the terminating finish for that step.",
+      "additionalProperties": false,
+      "required": ["step", "reason", "at", "nextAction"],
+      "properties": {
+        "step": { "type": "integer", "minimum": 0, "maximum": 9 },
+        "reason": { "type": "string", "minLength": 1 },
+        "at": { "type": "string", "format": "date-time" },
+        "nextAction": { "type": "string", "minLength": 1 }
+      }
+    },
     "pendingGate": { "type": ["object", "null"] },
     "acTotal": { "type": "integer", "minimum": 0 },
     "acImplemented": { "type": "integer", "minimum": 0 },

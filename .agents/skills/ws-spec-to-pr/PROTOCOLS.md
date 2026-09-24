@@ -228,7 +228,7 @@ Stop: max exhausted · escalate · merge blocked · cancelled · PR closed · ch
 
 Parse: `auto` + combinable `dry-run`, `skip-testing`, `skip-tests`, US/spec entry.
 
-Resume: active `autoMode` same US → continue `currentStep`; else new `workflow-id`.
+Resume: active `autoMode` same US → continue `currentStep`; else new `workflow-id`. `autoMode` removes gate halts but **does not chain host turns** — a step too large for one turn ends with mid-step checkpoints plus a turn-boundary pause marker (see § Turn-boundary pause & mid-step checkpoints), and the next turn resumes at that marker.
 
 | Context | Auto choice (index 0) |
 |---------|----------------------|
@@ -256,6 +256,20 @@ Shared defaults: [`gates.md`](../ws-shared/runtime/gates.md) § Auto-gate defaul
 
 Tag `uswf/{workflow-id}/before-step-{N}` = HEAD before step N first mutation. `before-step-1` = `baselineCommit`. Mirror in `checkpoints[]`. **Delete on shipping terminal:** Phase A via [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md) when `shipStatus` is terminal (mandatory git runtime cleanup — not gated on delete-temps). Dry-run: log only (`--dry-run`).
 
+### Turn-boundary pause & mid-step checkpoints
+
+Distinct from the git-tag § Checkpoints above (the `checkpoints[]` mirror array and `uswf/*` tags): these are **state records** written through `update_state.cjs` when a host turn cannot finish the step. `status` stays `active`; whole-step gates remain authoritative.
+
+- **Mid-step checkpoint** (`checkpoint`) — replaceable sub-progress record per step:
+  `state.stepCheckpoints["N"] = { step, substep, completedUnits: [unit ids], remainingUnits: int >= 0, updatedAt }`.
+  CLI: `node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs checkpoint {state} --step N --progress '<json>'` or `--progress-file <path>` (mutually exclusive; file form keeps shell recipes portable — payload `{ "substep": "...", "completedUnits": ["..."], "remainingUnits": N }`). Malformed JSON, wrong types, negative counts, or an out-of-range `--step` exit non-zero with the state unchanged.
+- **Turn-boundary pause** (`pause-turn`) — explicit park marker:
+  `state.turnPause = { step, reason, at: ISO, nextAction }`.
+  CLI: `node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs pause-turn {state} --step N --reason "<text>" [--next-action "<text>"]`. `--next-action` wins; when omitted it derives `Resume step N (<substep>; <remainingUnits> remaining)` from `state.stepCheckpoints[N]`; with neither, the call exits non-zero. Write it **only** when a turn actually ends mid-step, never speculatively.
+- **Telemetry:** every `checkpoint` appends one `checkpoint` event (`step`, `substep`, `progress`, `timestamp`) and every `pause-turn` one `turn_paused` event (`reason`, `nextAction`); each call bumps `state.revision` by exactly one.
+- **Resume:** a later turn reads `state.turnPause` (and `state.stepCheckpoints[turnPause.step]`) and continues `turnPause.nextAction`; the unchanged `revision` is a pause, not a stall. `ws-monitor` reports `worker-session-paused` and suppresses `worker-session-stall` while the marker exists.
+- **Lifetime:** the step's terminating `finish` clears `state.stepCheckpoints["N"]` and a `state.turnPause` naming step N (an internal substep finish does not); `dispatch` never writes or clears either record. No TTL, no second state artifact.
+
 ### Safe Revert & Backward Navigation
 
 **Revert** = manifest to checkpoint M. Scope: `reset --mixed` → per-path restore from `## Step file log` → remove worktrees ≥M → truncate state <M. Verify `preExistingDirty`. Forbidden: global `reset --hard`, `checkout -- .`, `restore .`, `clean -fd`, stash, push `uswf/*` tags.
@@ -279,6 +293,8 @@ currentStep, dryRun, autoMode, skipTesting, skipTests, fullMode, scoreAndRefine
 execMode: sequential|parallel|null  # set after Step 3
 branch, branchStrategy: from-current | from-base | stay | checkout-existing, baseBranch, baselineCommit, preExistingDirty: []
 checkpoints, workflowManifest, commits: [{sha, step, message}]  # G2-code and G2-delivery append here
+stepCheckpoints: {"N": {step, substep, completedUnits, remainingUnits, updatedAt}}  # mid-step progress (update_state checkpoint)
+turnPause: {step, reason, at, nextAction}  # turn-boundary pause marker (update_state pause-turn)
 completedSteps, stepStatus, skippedSteps, completedTasks, stepDispatches
 pass1Scores, pass2Scores, scoreGateChoice
 refineRound, currentModel  # session-derived; refresh on resume

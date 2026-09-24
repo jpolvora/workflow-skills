@@ -27,6 +27,9 @@
       "test/test-update-state-yaml.js"
     ],
     [
+      "test/test-liveness-checkpoints.js"
+    ],
+    [
       "test/test-resume-gate.js"
     ],
     [
@@ -171,6 +174,9 @@
     ],
     [
       "test/test-update-state-yaml.js"
+    ],
+    [
+      "test/test-liveness-checkpoints.js"
     ],
     [
       "test/test-resume-gate.js"
@@ -398,6 +404,9 @@
     ],
     [
       "test/test-ws-monitor-us388.js"
+    ],
+    [
+      "test/test-ws-monitor-liveness.js"
     ],
     [
       "test/test-verify-child-artifacts-us388.js"

@@ -37,11 +37,12 @@ Upstream issue text must be anonymized before filing: remove consumer repository
 ```text
 /ws-monitor [--slug <slug>] [--workflow-id <id>] [--transcript-root <path>]
 /ws-monitor --watch --interval <seconds> --iterations <count>
+/ws-monitor --watch --interval <seconds> --until-terminal
 /ws-monitor --vault
 /ws-monitor --discover-host-transcripts
 ```
 
-The command observes all workflow folders under the configured `plans.dir` by default. Use `--json` for machine-readable output and `--report <path>` to save a consumer-local report. `--watch` requires positive-integer `--iterations` and repeats snapshots for that bounded count; `--interval` must also be a positive integer when supplied.
+The command observes all workflow folders under the configured `plans.dir` by default. Use `--json` for machine-readable output and `--report <path>` to save a consumer-local report. `--watch` requires positive-integer `--iterations` **or** `--until-terminal` (mutually exclusive; a usage error exits non-zero before any scan); `--interval` must also be a positive integer when supplied. `--until-terminal` repeats snapshots until the scoped report has no workflow in `active` / `blocked` / `in_progress`, then exits 0 — bounded unattended watching without an external poll loop.
 
 ## Steps
 
@@ -58,7 +59,7 @@ The command observes all workflow folders under the configured `plans.dir` by de
 
 When watching a live running workflow in the background or during paired sessions:
 
-- **Bounded polling loop:** Execute `/ws-monitor --watch --interval <seconds> --iterations <count>`. Recommended cadence: `--interval 10` for active subagent steps (Step 4 build, Step 7 testing), `--interval 5` during fast convergence loops (`ws-goal-fix-pr`).
+- **Bounded polling loop:** Execute `/ws-monitor --watch --interval <seconds> --iterations <count>`, or `--watch --interval <seconds> --until-terminal` to stop automatically when the scoped workflow reaches a non-active status. Recommended cadence: `--interval 10` for active subagent steps (Step 4 build, Step 7 testing), `--interval 5` during fast convergence loops (`ws-goal-fix-pr`).
 - **State transitions to track:**
   - `currentStep` advancement (e.g. Step 0 Spec -> Step 1 Plan -> Step 2 Interview -> Step 3 Tasks -> Step 4 Implement -> Step 5 Verify -> Step 6 Review -> Step 7 Test -> Step 8 Ship).
   - Step status changes in `stepStatus` (`in_progress` -> `completed` / `skipped` / `failed`).
@@ -66,6 +67,7 @@ When watching a live running workflow in the background or during paired session
   - Files touched: verify mutating steps report non-empty `filesTouched` in telemetry upon finish.
 - **Stall & drift detection:**
   - `stale-state`: telemetry timestamp is newer than state file mtime (> 5 seconds), indicating delayed state flush or revision race.
+  - Pause vs stall: a workflow whose state carries `state.turnPause` is **paused at a turn boundary** — report `worker-session-paused` (info) and never `worker-session-stall` for it; the stall warning applies only to an active workflow with an available, idle session and **no** pause marker.
   - Stalled turn: if a transcript indicates `turn_ended` without a corresponding workflow handoff or state update.
 
 ## Multi-Spec Batch Monitoring (`ws-spec-multi`)
@@ -111,7 +113,9 @@ Transcripts provide secondary evidence to diagnose why a subagent or orchestrato
   - **Muse**: User sessions (`~/.local/share/muse/sessions/YYYY/MM/DD/<session-id>/session.jsonl`, `$XDG_DATA_HOME` honored when set).
 - **Adapter table:** per-OS default locations for Cursor, OpenCode, Antigravity, and Muse live in `references/host-adapters.md` (adapter data, not portable contract).
 - **Transcript source:** each workflow reports `transcriptSource` (`available` with adapter + location class, or `transcript-unavailable` with reason `discovery-disabled` / `no-matching-session` / `scan-capped` when the bounded scan stopped early with zero candidates).
-- **Read-only + bounded:** SQLite-family stores are tail-read in place through read-only file descriptors (WAL-safe, never copied, locked, or modified); only the recent-window tail is read under per-tick time/read caps; a session idle beyond the stall window while its workflow is active raises `worker-session-stall`.
+- **Read-only + bounded:** SQLite-family stores are tail-read in place through read-only file descriptors (WAL-safe, never copied, locked, or modified); only the recent-window tail is read under per-tick time/read caps; a session idle beyond the stall window while its workflow is active raises `worker-session-stall` unless the state carries a turn-boundary pause marker (`worker-session-paused` instead).
+- **Discovery budget:** candidate roots are ranked (correlated-path roots first, then explicit, config, workspace, and host roots) and each root gets a reserved slice of the per-tick file budget, so unrelated roots cannot exhaust the budget before the correlated session is read. Correlated-path entries are collected first within a root, and a truncated root slice is reported honestly through `transcript.capped`.
+- **Shared correlation window:** the scan sanitizes each bounded window once, filters on that same window, stores it, and `transcriptSource` resolution matches the identical window — a file the scan counted always resolves `available` when it matches, and `scan-capped` is reported only when the scan stopped before reading the matching file (`discovery-disabled` / `no-matching-session` / `scan-capped`).
 - **Discovery:**
   - Workspace candidate roots are auto-discovered if they exist in the repository.
   - User-level / host IDE transcript paths are scanned when passing `--discover-host-transcripts` or configured via `monitor.discoverHostTranscripts` (`monitor.hostHome` overrides the home; `monitor.transcriptRoots` adds explicit roots) or `--transcript-root <path>`.
@@ -147,7 +151,8 @@ Transcripts provide secondary evidence to diagnose why a subagent or orchestrato
 | Terminal-shaped run still active (`terminal-run-active`) | Warning | All steps through the close step are terminal but the state file still reports active with no `endedAt`; reported status is derived terminal |
 | Memory vault records active workflow missing on disk (`vault-unreconciled-workflow`) | Info | Memory vault lists an active workflow that does not exist in local plans |
 | Transcript contains an unhandled error with a stack trace (`subagent-error`) | Warning | Subagent or worker crashed or threw an unhandled exception |
-| Worker session idle while workflow is active (`worker-session-stall`) | Warning | The correlated session shows no recent activity; possible stall |
+| Worker session idle while workflow is active (`worker-session-stall`) | Warning | The correlated session shows no recent activity and the state carries no turn-boundary pause marker; possible stall |
+| Workflow paused at a turn boundary (`worker-session-paused`) | Info | `state.turnPause` is present: the host turn ended mid-step; awaiting continuation. Replaces `worker-session-stall` while set |
 
 ## Launcher
 
@@ -157,6 +162,9 @@ node {skillsRoot}/ws-monitor/scripts/monitor_snapshot.cjs
 
 # Watch active runs with bounded polling
 node {skillsRoot}/ws-monitor/scripts/monitor_snapshot.cjs --watch --interval 10 --iterations 30
+
+# Watch until the scoped workflow leaves active|blocked|in_progress
+node {skillsRoot}/ws-monitor/scripts/monitor_snapshot.cjs --slug us-example --watch --interval 10 --until-terminal
 
 # Filter by slug or workflow ID (supports single-spec and multi-spec batch)
 node {skillsRoot}/ws-monitor/scripts/monitor_snapshot.cjs --slug us-example --json

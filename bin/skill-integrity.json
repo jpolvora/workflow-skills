@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "859420be0cfdc4980d8300c2986ef8f72b9efff5b9151dae49e4fb8c02f2316d",
+  "fullPackageDigest": "031826abbce888d9fc0495c3c28781d6732ec631596d63a49057d6e4761b594b",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -18,13 +18,13 @@
       "runtime/config-resolution.md": "7b490b1e691be4c9bee64774f89e9552fe796f89b8f0edeb5e8c0ef9feb6870d",
       "runtime/config.schema.json": "726c210c07b44e44861590ae64a003f0b295edab354e034496a0ad0c2d1730b4",
       "runtime/evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
-      "runtime/gates.md": "e6b094c59de635dbf697b1b81838ebd04071fc849363e9455f1efac1ecd28e1f",
+      "runtime/gates.md": "e691c060f23a59c30fad9c65164b1b7fa0ac63097247c3470b24a0c457d58d05",
       "runtime/git-ownership.md": "e0c22380367874beaa98d9985cc65114704bbe0182a1ccba7a23451d74ba10d3",
       "runtime/host-capability-tokens.md": "66ccef0e08d5518954982bf36b74bc39f727ed07d4c2040090fc4a4e7085395f",
       "runtime/host-dispatch.md": "de8446ce1b19db0371105fc364b43a2c2b5c3404e39646b05bedb2b0cb43ca70",
       "runtime/host-tool-map.json": "3d9ba399da3b049f29ca927ae3179a1618a222ab84dd25497da066c02e3bdbe0",
       "runtime/hub-layout.json": "9c3a2606af5d4d5180784945d7b9b34b9ad12e03abfc4c0f75dc4ae812ba29b7",
-      "runtime/observer-instructions.md": "b208a6e4a18b1339b2434080d6ce4d3a60f23f6efb61087f2c0264e1793b2582",
+      "runtime/observer-instructions.md": "91618186f4cef984a9a861e60147e0486c4447c8f8e57dcb117fcf23d5b96426",
       "runtime/plan-index.schema.json": "36df14cc8d9ba17413c456baf6550662b6218465cdf28d9981d624dac9ab4c7f",
       "runtime/plans-index.schema.json": "7f40795ad30dd6deec567b7eb4f4758177da65b4c5633eebba59d44e989ed585",
       "runtime/run.schema.json": "d7b735086589e34c272bb14a3d0e895714aede0a3de6f1bf60be3c34116463f2",
@@ -48,23 +48,23 @@
       "runtime/scripts/scan_stack_invariants.cjs": "f186e197040142066fa7e78b563b11a171c8dc5a62c8026a135457fa82faf5e7",
       "runtime/scripts/step_baton.cjs": "d18f4bd9cf4720c6bf5d3322c8a143a64c94593cce480f4577341f294645d071",
       "runtime/scripts/validate_json_schema.cjs": "c6901a6ad2ed4fde4e5a6fcd85ebaa8b4c31f5707924f2928d25392d502dbbd9",
-      "runtime/scripts/workflow_state.cjs": "dbae9615738b71b03a5e882af9c75ba30e83dece5fbd16a46ccaea0711884f8b",
-      "runtime/setup.md": "16ce25751472da10061d71636af309d879c3f7f46d67eb2d690842656c7b16b9",
+      "runtime/scripts/workflow_state.cjs": "d236bc65df18ab4d59f7f8e378ac9b33e8968a6b0a4be28eb7807379a75b0e3f",
+      "runtime/setup.md": "55170e4e3b6eff1903acf638a7d3abcffcad47697a94027c01f4feba84faa99a",
       "runtime/skill-dependencies.json": "9b1975c5bce94cb148c57e526ceae959c530b00057123b77815df05a35f13255",
       "runtime/stacks/abp-angular.md": "fc728fb3d39373b91f7bb4e0a719a24abc995a643fd55c856603a2a1f7bfd742",
       "runtime/stacks/nextjs-react.md": "a852fc0db314c4b99c0d1e7e0a16978bd30df732480536aebe82982a72e09bad",
       "runtime/stacks/php-laravel.md": "635b0ac523c0235dc6e22345266982aa66705bcc5c51ca659482272f2021b761",
       "runtime/stacks/typescript-node.md": "8b6290e02dbfdf7d8ad5221627fb602bb0193e83f04853456897af5c1ec962ea",
       "runtime/step-artifact.schema.json": "85a1674590d900df2bbbf818d9f4a4c5ccaf004bdc4a1523fe2c28e4dab554a2",
-      "runtime/telemetry.schema.json": "ce2a72184f68e8b765200fa8cc49789e5e7ae06d2a2bd11203f30261d80751a0",
+      "runtime/telemetry.schema.json": "21a577e8fe956cd65fedee4fbb3b79b74eb078030f37c5ceaa72a7933d274b8a",
       "runtime/tools.md": "367be83566b83eee5031a1b53719bbb356a02c7d08c102c3f4aa77617c725f72",
-      "runtime/workflow-state.schema.json": "9a7f1d98d0a3a6017d5c194dab22d9cf35362beda851dbc14154026829e23f94",
+      "runtime/workflow-state.schema.json": "2153a607b5b5f030500385b6e179d692bc803d64b9481f9d61325c2b79356bdb",
       "templates/CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
       "templates/MEMORY.md.template": "1a604cb2184c9c54cfb24a2da547d3664bc5d4d8e713ffa937c3c3083c21340d",
       "templates/STACK.md.example": "829b7d3fce62b8167905fc1d921ee744db1d7e8ef895b0e7eb969f089973bebd",
       "templates/config.json.example": "3aac872c04b7f87fa4e07bb738d8132ad429f9d004fd1684a24dad81fc9f345f"
     },
-    "skillDigest": "e75a5f0235a0ffcd4c3640c630fa3a97b9a4b599139cbca92fd7fc2cffc2c74e"
+    "skillDigest": "e71ddddb49d1b09531417ba4b50a2fa03e32480d53085cc7ce280b19e6b68bb1"
   },
   "package": {
     "files": {
@@ -270,15 +270,15 @@
     },
     "ws-monitor": {
       "files": {
-        "SKILL.md": "6ffa18f0396d042483f73e794d49091a1a27c1b8c696596070985cf99dd3797e",
+        "SKILL.md": "be9f74f4990e93c5e77a745285b03e35680885d1013b5a54525f1b8c1254b7e7",
         "evals/evals.json": "7a83a689e3ad2e5e53af2ba2167cdf0dc588ab46e07430309472dc2a6dff6ced",
         "examples.md": "5055b3dfb95fcc0a3e63fbbeb02a01a6d8bad17ede237ec0e7a130a31b036e69",
         "references/audit-report-template.md": "9c8f11b2ebe6c00cd89a9b00208cf128d62b338ba1cc71c3710deca83603d39a",
         "references/host-adapters.md": "6f1a977d1edbfaa0ff90917274be57011440c8ec4872479e645a4fb4e135b99d",
         "references/upstream-issue-template.md": "ab0c45d7e23b3cf78e4a05dd7923dff7e8fe8db2b80d49a8c83015a5ac59a311",
-        "scripts/monitor_snapshot.cjs": "beb01baf6332c7301b180a82dc5e917118ae372236dc5f249d34d641155ad621"
+        "scripts/monitor_snapshot.cjs": "b91c12dd8aa48b802f06becb4e11f1051c82a812d16bfa684f65e118ca5fce85"
       },
-      "skillDigest": "195fbc2c275c4c4d4efbe0ba29f7365dfca8a2a5f7e05d23f1d48666c18626eb"
+      "skillDigest": "b651cd399243e39a9eadf1edb71935b041eb6d71c68cdda63f410cbfea6c6b86"
     },
     "ws-patterns-generator": {
       "files": {
@@ -532,9 +532,9 @@
       "files": {
         "ARTIFACTS.md": "16a25662724e6ee5b481c66def1785db15d7f0a18d7b28d2f5d4e47f56d9ebd5",
         "DIAGRAM.md": "fb8a09f8a1ca72065a911aa4b24a3614e66c1611fda48d4dd57b128e82331303",
-        "PROTOCOLS.md": "58ea45b09775bcea67e5557ab5b801da8054c0fbc5bc2bf868538e0ffad02fdd",
+        "PROTOCOLS.md": "e481c45c91bd50457902bb9b148e777ef0f93e443d9d09642dab3d9afc681112",
         "README.md": "5440b572d91cd0f0e6e6f5d9e005f85b66e9eb7fd20f046242c52f608e7c705a",
-        "SKILL.md": "c665cccb2d9ed6cab54331bf4ed585e705dd7f0d2e88f98fbce319b3280778ea",
+        "SKILL.md": "ff24dbb9ea63982aa7acf35c741ab26b3b1c524850b2c357cda1bdcdba0e874d",
         "STEP-DISPATCH.md": "3d6776b95336d33d45bafff60d9269e0862ed41cab6c35b2ee8a983e8c2107b9",
         "WORKER-TURN-RULES.md": "bcd9848443d17da5b390d98e27c42083bfc22c3167c8ea9ea448784928844ea3",
         "docs/faq.md": "c0d5bb80742b719fd615e5d4c7a7994b435cb963464e2a9e9a49802b7df034c1",
@@ -565,7 +565,7 @@
         "scripts/write_verification_manifest.cjs": "d2c2420752e063b604e438ce5a4b4398fb456ba4e5be71f45b00e20523b7c89d",
         "ws-spec-to-pr-run-test.md": "417b103bc5ea94cd83dbaaa71aa973cbf23e29f73d7ca567667b2870be914560"
       },
-      "skillDigest": "bad365a6742a89a3b7f42b74e3f354d13fb62be7f0564bce2ec500f74980f757"
+      "skillDigest": "673cdc757f9932c72fde02786b38738b052b2c61b444deca8f6ab23c2e8c0cfc"
     },
     "ws-spec-to-pr-lite": {
       "files": {

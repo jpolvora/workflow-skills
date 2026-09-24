@@ -6,7 +6,7 @@
   "required": ["schemaVersion", "type", "timestamp", "workflowId", "pipeline", "packageVersion", "step", "model", "retries", "reviewRounds", "refineRounds", "skipReason", "acTotal", "acImplemented"],
   "properties": {
     "schemaVersion": { "const": 1 },
-    "type": { "enum": ["dispatch", "finish", "gate-bypass", "audit-finalize", "index-rebuilt", "baton_claimed", "baton_released", "baton_lease_expired", "runner_spawned", "runner_exited", "worker_zero_tool_calls", "worker_missing_artifact"] },
+    "type": { "enum": ["dispatch", "finish", "gate-bypass", "audit-finalize", "index-rebuilt", "baton_claimed", "baton_released", "baton_lease_expired", "runner_spawned", "runner_exited", "worker_zero_tool_calls", "worker_missing_artifact", "checkpoint", "turn_paused"] },
     "timestamp": { "type": "string", "format": "date-time" },
     "workflowId": { "type": "string" },
     "pipeline": { "enum": ["standard", "lite"] },
@@ -63,6 +63,17 @@
     "pruneAfterStep": { "type": "boolean" },
     "juryIgnored": { "type": "string" },
     "substep": { "type": "string", "minLength": 1 },
+    "nextAction": { "type": "string", "minLength": 1 },
+    "progress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["completedUnits", "remainingUnits"],
+      "properties": {
+        "completedUnits": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "remainingUnits": { "type": "integer", "minimum": 0 },
+        "substep": { "type": "string", "minLength": 1 }
+      }
+    },
     "bypassed": { "type": "boolean" },
     "idempotentReplay": { "type": "boolean" },
     "holder": { "type": "string" },
