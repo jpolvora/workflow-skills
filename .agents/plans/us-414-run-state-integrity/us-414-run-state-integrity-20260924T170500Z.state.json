@@ -1,0 +1,1165 @@
+{
+  "acImplemented": 7,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "50455501b0fc3a43007ab0d01050119dac412926",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1272-L1308",
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1578-L1589",
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1606-L1612",
+          ".agents/skills/ws-shared/runtime/setup.md:L71-L71"
+        ],
+        "files": [
+          {
+            "lineEnd": 1308,
+            "lineStart": 1272,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          },
+          {
+            "lineEnd": 1589,
+            "lineStart": 1578,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          },
+          {
+            "lineEnd": 1612,
+            "lineStart": 1606,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          },
+          {
+            "lineEnd": 71,
+            "lineStart": 71,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "9cc7e4da41a3a26bf5e2254b4c4e54734aa2ae08eb7f5b62c38a62f3f6ed0247"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "ev-ac1",
+          "ev-ac1t",
+          "g2-commit-50455501b0fc3a43007ab0d01050119dac412926"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002",
+          "section-003",
+          "section-004",
+          "section-011",
+          "section-012"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1: dispatch with unknown modelsPreset fails closed",
+            "phase": "observed",
+            "sourceFile": "test/test-run-state-integrity.js",
+            "timestamp": "2026-09-24T21:19:59.951Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-414: unknown preset dispatch fails closed",
+            "phase": "observed",
+            "sourceFile": "test/test-models-preset-and-per-step.js",
+            "timestamp": "2026-09-24T21:19:59.958Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-414: unknown preset never resolves to another preset model (fail-closed)",
+            "phase": "observed",
+            "sourceFile": "test/test-models-preset-and-per-step.js",
+            "timestamp": "2026-09-24T21:19:59.951Z"
+          }
+        ],
+        "text": "A run whose configured `modelsPreset` is absent from `defaults.modelPresets` fails at run start with an error naming the unknown preset and the available presets; it never silently resolves to another preset's model.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "50455501b0fc3a43007ab0d01050119dac412926",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1310-L1317",
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1474-L1478",
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1805-L1806"
+        ],
+        "files": [
+          {
+            "lineEnd": 1317,
+            "lineStart": 1310,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          },
+          {
+            "lineEnd": 1478,
+            "lineStart": 1474,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          },
+          {
+            "lineEnd": 1806,
+            "lineStart": 1805,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "ev-ac2",
+          "ev-ac2b",
+          "ev-ac2t",
+          "g2-commit-50455501b0fc3a43007ab0d01050119dac412926"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-005",
+          "section-012"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2: dispatch records resolved id not preset name",
+            "phase": "observed",
+            "sourceFile": "test/test-run-state-integrity.js",
+            "timestamp": "2026-09-24T21:19:52.548Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2: finish records resolved id not preset name",
+            "phase": "observed",
+            "sourceFile": "test/test-run-state-integrity.js",
+            "timestamp": "2026-09-24T21:19:52.549Z"
+          }
+        ],
+        "text": "Telemetry records the resolved model id per step; steps never record a preset name in a `model` field.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "50455501b0fc3a43007ab0d01050119dac412926",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L135-L137",
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L2317-L2317",
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L2323-L2323",
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L819-L830",
+          ".agents/skills/ws-shared/runtime/workflow-state.schema.json:L14-L27",
+          ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L159-L159",
+          ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L177-L177"
+        ],
+        "files": [
+          {
+            "lineEnd": 137,
+            "lineStart": 135,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "1a43c8665c3ef9c0077b5bd5ed103a1534db2f4725030f20ff6692e70b7b5ffd"
+          },
+          {
+            "lineEnd": 830,
+            "lineStart": 819,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          },
+          {
+            "lineEnd": 2317,
+            "lineStart": 2317,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          },
+          {
+            "lineEnd": 2323,
+            "lineStart": 2323,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          },
+          {
+            "lineEnd": 27,
+            "lineStart": 14,
+            "path": ".agents/skills/ws-shared/runtime/workflow-state.schema.json",
+            "sha256": "09b246b983b5a1d4c9e3f5223e8e7935bcca964f608e8da9b2d4e2357f128eec"
+          },
+          {
+            "lineEnd": 159,
+            "lineStart": 159,
+            "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+            "sha256": "ec20244beab8bd2ba15fef109ab6aec6c196ad67a24c5de78a750314987cb5ff"
+          },
+          {
+            "lineEnd": 177,
+            "lineStart": 177,
+            "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+            "sha256": "ec20244beab8bd2ba15fef109ab6aec6c196ad67a24c5de78a750314987cb5ff"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "ev-ac3",
+          "ev-ac3-revfix",
+          "g2-commit-50455501b0fc3a43007ab0d01050119dac412926"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-006",
+          "section-007",
+          "section-012"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC3: invalid shipStatus fails closed",
+            "phase": "observed",
+            "sourceFile": "test/test-run-state-integrity.js",
+            "timestamp": "2026-09-24T21:20:06.442Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC3: pr-only update not swallowed by replay",
+            "phase": "observed",
+            "sourceFile": "test/test-run-state-integrity.js",
+            "timestamp": "2026-09-24T21:32:51.084Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC3: prNumber persisted",
+            "phase": "observed",
+            "sourceFile": "test/test-run-state-integrity.js",
+            "timestamp": "2026-09-24T21:20:06.441Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC3: prUrl persisted",
+            "phase": "observed",
+            "sourceFile": "test/test-run-state-integrity.js",
+            "timestamp": "2026-09-24T21:20:06.441Z"
+          }
+        ],
+        "text": "On ship/merge, `shipStatus`, `prNumber`, and `prUrl` are written back to state and a Step 9 handoff is recorded; a `completed` run never leaves ship fields empty after a merged PR.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "50455501b0fc3a43007ab0d01050119dac412926",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-goal-fix-pr/SKILL.md:L116-L116",
+          ".agents/skills/ws-goal-fix-pr/SKILL.md:L89-L89",
+          ".agents/skills/ws-goal-fix-pr/scripts/check_fixpr_rounds.cjs:L1-L70"
+        ],
+        "files": [
+          {
+            "lineEnd": 70,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-goal-fix-pr/scripts/check_fixpr_rounds.cjs",
+            "sha256": "f026f7678f0465d568d2616f25014e66082f8b1efa78372cd0b83302e6ef066e"
+          },
+          {
+            "lineEnd": 89,
+            "lineStart": 89,
+            "path": ".agents/skills/ws-goal-fix-pr/SKILL.md",
+            "sha256": "e24632eeb42d0108ca143212250b4bfc142ea2f51950a5d0b91cbfbd86d8cec3"
+          },
+          {
+            "lineEnd": 116,
+            "lineStart": 116,
+            "path": ".agents/skills/ws-goal-fix-pr/SKILL.md",
+            "sha256": "e24632eeb42d0108ca143212250b4bfc142ea2f51950a5d0b91cbfbd86d8cec3"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "ev-ac4",
+          "g2-commit-50455501b0fc3a43007ab0d01050119dac412926"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-008",
+          "section-012"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC4: empty reviews dir fails with no artifacts or reason",
+            "phase": "observed",
+            "sourceFile": "test/test-run-state-integrity.js",
+            "timestamp": "2026-09-24T21:20:19.944Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC4: reason-less marker fails",
+            "phase": "observed",
+            "sourceFile": "test/test-run-state-integrity.js",
+            "timestamp": "2026-09-24T21:20:19.944Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC4: reasoned clean-immediate marker passes",
+            "phase": "observed",
+            "sourceFile": "test/test-run-state-integrity.js",
+            "timestamp": "2026-09-24T21:20:19.944Z"
+          }
+        ],
+        "text": "Step 9 convergence emits `{reviewsDir}/PR-<N>-round-*.md` round artifacts, or explicitly records a clean-immediate reason when no review rounds were needed.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "50455501b0fc3a43007ab0d01050119dac412926",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1586-L1588",
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1784-L1784",
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1926-L1926"
+        ],
+        "files": [
+          {
+            "lineEnd": 1588,
+            "lineStart": 1586,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          },
+          {
+            "lineEnd": 1784,
+            "lineStart": 1784,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          },
+          {
+            "lineEnd": 1926,
+            "lineStart": 1926,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "ev-ac5",
+          "g2-commit-50455501b0fc3a43007ab0d01050119dac412926"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-009",
+          "section-012"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC5: bare dag dispatch reason fails closed",
+            "phase": "observed",
+            "sourceFile": "test/test-run-state-integrity.js",
+            "timestamp": "2026-09-24T21:20:26.060Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC5: bare dag skip reason fails closed",
+            "phase": "observed",
+            "sourceFile": "test/test-run-state-integrity.js",
+            "timestamp": "2026-09-24T21:20:26.059Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC5: dag-disabled still accepted",
+            "phase": "observed",
+            "sourceFile": "test/test-run-state-integrity.js",
+            "timestamp": "2026-09-24T21:20:26.060Z"
+          }
+        ],
+        "text": "`skipReason: \"dag\"` is never recorded for a step whose DAG artifacts (`step-03-*.plan.exec.md`) were produced; skip reasons describe the step's actual fate.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "50455501b0fc3a43007ab0d01050119dac412926",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L196-L196"
+        ],
+        "files": [
+          {
+            "lineEnd": 196,
+            "lineStart": 196,
+            "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+            "sha256": "ec20244beab8bd2ba15fef109ab6aec6c196ad67a24c5de78a750314987cb5ff"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "ev-ac6",
+          "g2-commit-50455501b0fc3a43007ab0d01050119dac412926"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002",
+          "section-003",
+          "section-010"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-dispatch-provenance: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-dispatch-provenance.js",
+            "timestamp": "2026-09-24T21:20:26.129Z"
+          }
+        ],
+        "text": "Step 4 dispatch provenance reconciles telemetry `agentType` with host subagent accounting, or documents the mapping when the host cannot report it (host-side item: fix if host-owned, document if not).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "50455501b0fc3a43007ab0d01050119dac412926",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "test/test-run-state-integrity.js:L1-L196",
+          "test/test-suites.json:L280-L285"
+        ],
+        "files": [
+          {
+            "lineEnd": 196,
+            "lineStart": 1,
+            "path": "test/test-run-state-integrity.js",
+            "sha256": "3e9be013f97c47376071866aab0076ae1156733c3a70f2478fd06f26dd710e4d"
+          },
+          {
+            "lineEnd": 285,
+            "lineStart": 280,
+            "path": "test/test-suites.json",
+            "sha256": "37156a31fbcf63cb0db65b4b59d42afb6b4f78b7b2995ef9ec45715086db00e9"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [
+          "ev-ac7",
+          "g2-commit-50455501b0fc3a43007ab0d01050119dac412926"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-006",
+          "section-012"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-models-preset-and-per-step: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-models-preset-and-per-step.js",
+            "timestamp": "2026-09-24T21:20:31.490Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-run-state-integrity: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-run-state-integrity.js",
+            "timestamp": "2026-09-24T21:20:31.489Z"
+          }
+        ],
+        "text": "Existing suites (`npm run test`, `ws-check-harness`) stay green; new coverage pins the fail-closed preset error (AC1), the ship writeback (AC3), and the round-artifact-or-reason rule (AC4).",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      }
+    ],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "ev-ns1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1: dispatch with unknown modelsPreset fails closed",
+            "phase": "observed",
+            "sourceFile": "test/test-run-state-integrity.js",
+            "timestamp": "2026-09-24T21:20:31.559Z"
+          }
+        ],
+        "text": "NEG1: run with `modelsPreset` absent from `defaults.modelPresets` must fail at start (red before fix: silent fallback with `presetWarning`; green after: fail-closed error)."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "ev-ns2"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC3: prNumber persisted",
+            "phase": "observed",
+            "sourceFile": "test/test-run-state-integrity.js",
+            "timestamp": "2026-09-24T21:20:31.620Z"
+          }
+        ],
+        "text": "NEG2: merged-PR run asserting empty `shipStatus`/`prNumber`/`prUrl` must fail after the fix (red before: fields empty on completed runs)."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "ev-ns3"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC4: empty reviews dir fails with no artifacts or reason",
+            "phase": "observed",
+            "sourceFile": "test/test-run-state-integrity.js",
+            "timestamp": "2026-09-24T21:20:31.677Z"
+          }
+        ],
+        "text": "NEG3: Step 9 convergence with zero round artifacts and no recorded clean-immediate reason must fail (red before, green after)."
+      }
+    ],
+    "planIndexPath": ".agents/plans/us-414-run-state-integrity/.runtime/plan.index.json",
+    "revision": 19,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "pre-step6",
+      "computedAt": "2026-09-24T21:32:51.088Z",
+      "deficiencies": [
+        "AC1: no linked files",
+        "AC2: no linked files",
+        "AC3: no linked files",
+        "AC5: no linked files",
+        "AC7: no linked files"
+      ],
+      "earnedUnits": 55,
+      "errors": [
+        "AC1: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+        "AC1: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+        "AC1: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+        "AC2: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+        "AC2: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+        "AC2: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+        "AC3: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+        "AC3: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+        "AC3: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+        "AC5: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+        "AC5: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+        "AC5: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+        "AC7: linked file hash changed: test/test-run-state-integrity.js"
+      ],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "ledgerHash": "50e51b52349548effa4d77963038727bc54f6c4e434d6967028b1dad795aae79",
+      "missingEvidence": true,
+      "score": 7,
+      "totalUnits": 70,
+      "writer": "ac_ledger.cjs link"
+    },
+    "slug": "us-414-run-state-integrity",
+    "specPath": ".agents/plans/us-414-run-state-integrity/step-00-us-414-run-state-integrity.spec.md",
+    "testingSkip": null,
+    "workflowId": "us-414-run-state-integrity-20260924T170500Z"
+  },
+  "acTotal": 7,
+  "baseBranch": "main",
+  "baselineCommit": "b73182af1bee18f1a12d0d71df5f8d8e3be71981",
+  "baselineSourceRef": "develop",
+  "branch": "feat/us-414-run-state-integrity",
+  "branchStrategy": "from-current",
+  "commits": [
+    {
+      "sha": "50455501b0fc3a43007ab0d01050119dac412926",
+      "step": 5
+    }
+  ],
+  "completedSteps": [
+    0,
+    1,
+    2,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "currentModel": "composer-2.5",
+  "currentStep": 9,
+  "endedAt": "2026-09-24T21:39:46Z",
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-414-run-state-integrity/step-00-us-414-run-state-integrity.spec.md",
+        ".agents/plans/us-414-run-state-integrity/step-00-us-414-run-state-integrity.classify.md",
+        ".agents/plans/us-414-run-state-integrity/ac-ledger.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "us-414-run-state-integrity",
+      "status": "completed",
+      "step": 0,
+      "summary": "Finished step 0",
+      "workflowId": "us-414-run-state-integrity-20260924T170500Z",
+      "workflowType": "standard"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-414-run-state-integrity/step-01-us-414-run-state-integrity.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "us-414-run-state-integrity",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "us-414-run-state-integrity-20260924T170500Z",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-414-run-state-integrity/step-02-us-414-run-state-integrity.plan-interview.md",
+        ".agents/plans/us-414-run-state-integrity/step-02-us-414-run-state-integrity.plan.refined.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "us-414-run-state-integrity",
+      "status": "completed",
+      "step": 2,
+      "summary": "Finished step 2",
+      "workflowId": "us-414-run-state-integrity-20260924T170500Z",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "us-414-run-state-integrity",
+      "status": "skipped",
+      "step": 3,
+      "summary": "Finished step 3",
+      "workflowId": "us-414-run-state-integrity-20260924T170500Z",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [
+        "bin/skill-integrity.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "us-414-run-state-integrity",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "us-414-run-state-integrity-20260924T170500Z",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-414-run-state-integrity/step-05-us-414-run-state-integrity.plan.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "us-414-run-state-integrity",
+      "status": "completed",
+      "step": 5,
+      "summary": "Finished step 5",
+      "workflowId": "us-414-run-state-integrity-20260924T170500Z",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-414-run-state-integrity/step-06-us-414-run-state-integrity.review.md",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+        "test/test-run-state-integrity.js"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "us-414-run-state-integrity",
+      "status": "completed",
+      "step": 6,
+      "summary": "Finished step 6",
+      "workflowId": "us-414-run-state-integrity-20260924T170500Z",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-414-run-state-integrity/step-07-us-414-run-state-integrity.testing.report.md",
+        "bin/skill-integrity.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "us-414-run-state-integrity",
+      "status": "completed",
+      "step": 7,
+      "summary": "Finished step 7",
+      "workflowId": "us-414-run-state-integrity-20260924T170500Z",
+      "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-414-run-state-integrity/step-08-us-414-run-state-integrity.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-414-run-state-integrity",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "us-414-run-state-integrity-20260924T170500Z",
+      "workflowType": "standard"
+    }
+  },
+  "modelsPreset": "cursor",
+  "nextAction": "Run step 9",
+  "revision": 17,
+  "shipStatus": "pending",
+  "skippedSteps": [
+    {
+      "evidence": "",
+      "reason": "dag-disabled",
+      "step": 3
+    }
+  ],
+  "slug": "us-414-run-state-integrity",
+  "statePath": ".agents/plans/us-414-run-state-integrity/us-414-run-state-integrity-20260924T170500Z.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-24T21:05:00Z",
+      "model": "cursor-grok-4.7-high",
+      "step": 0
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-24T21:06:42Z",
+      "model": "cursor-grok-4.7-high",
+      "step": 1
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-24T21:07:41Z",
+      "model": "cursor-grok-4.7-high",
+      "step": 2
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-24T21:08:38Z",
+      "model": "composer-2.5",
+      "step": 4
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-24T21:16:43Z",
+      "model": "cursor-grok-4.7-medium",
+      "step": 5
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-24T21:31:49Z",
+      "model": "cursor-grok-4.7-medium",
+      "step": 6
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-24T21:33:16Z",
+      "model": "composer-2.5",
+      "step": 7
+    }
+  ],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "skipped",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed"
+  },
+  "telemetry": {
+    "steps": [
+      {
+        "N": 0,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-24T21:05:00Z",
+        "elapsedSec": 98,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-414-run-state-integrity/step-00-us-414-run-state-integrity.spec.md",
+            ".agents/plans/us-414-run-state-integrity/step-00-us-414-run-state-integrity.classify.md",
+            ".agents/plans/us-414-run-state-integrity/ac-ledger.json"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-24T21:06:38Z",
+        "label": "Spec",
+        "model": "cursor-grok-4.7-high",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 1,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-24T21:06:42Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-414-run-state-integrity/step-01-us-414-run-state-integrity.plan.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-24T21:06:42Z",
+        "label": "Planning",
+        "model": "cursor-grok-4.7-high",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-24T21:07:41Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-414-run-state-integrity/step-02-us-414-run-state-integrity.plan-interview.md",
+            ".agents/plans/us-414-run-state-integrity/step-02-us-414-run-state-integrity.plan.refined.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-24T21:07:41Z",
+        "label": "Interview",
+        "model": "cursor-grok-4.7-high",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-24T21:07:45Z",
+        "label": "Plan to tasks",
+        "model": "cursor-grok-4.7-high",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-24T21:08:38Z",
+        "elapsedSec": 818,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            "bin/skill-integrity.json"
+          ]
+        },
+        "finishedAt": "2026-09-24T21:22:16Z",
+        "label": "Implement",
+        "model": "cursor-grok-4.7-medium",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-24T21:16:43Z",
+        "elapsedSec": 885,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-414-run-state-integrity/step-05-us-414-run-state-integrity.plan.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-24T21:31:28Z",
+        "label": "Verify",
+        "model": "cursor-grok-4.7-medium",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 6,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-24T21:31:49Z",
+        "elapsedSec": 76,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-414-run-state-integrity/step-06-us-414-run-state-integrity.review.md"
+          ],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "test/test-run-state-integrity.js"
+          ]
+        },
+        "finishedAt": "2026-09-24T21:33:05Z",
+        "label": "Code review",
+        "model": "cursor-grok-4.7-medium",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 7,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-24T21:33:16Z",
+        "elapsedSec": 310,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-414-run-state-integrity/step-07-us-414-run-state-integrity.testing.report.md"
+          ],
+          "deleted": [],
+          "modified": [
+            "bin/skill-integrity.json"
+          ]
+        },
+        "finishedAt": "2026-09-24T21:38:26Z",
+        "label": "Testing",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-414-run-state-integrity/step-08-us-414-run-state-integrity.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-24T21:39:46Z",
+        "label": "Ship",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 2187,
+    "totalTokens": 0
+  },
+  "us": "us-414-run-state-integrity",
+  "verificationScore": 10,
+  "workflowId": "us-414-run-state-integrity-20260924T170500Z",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/us-414-run-state-integrity/ac-ledger.json",
+      ".agents/plans/us-414-run-state-integrity/step-00-us-414-run-state-integrity.classify.md",
+      ".agents/plans/us-414-run-state-integrity/step-00-us-414-run-state-integrity.spec.md",
+      ".agents/plans/us-414-run-state-integrity/step-01-us-414-run-state-integrity.plan.md",
+      ".agents/plans/us-414-run-state-integrity/step-02-us-414-run-state-integrity.plan-interview.md",
+      ".agents/plans/us-414-run-state-integrity/step-02-us-414-run-state-integrity.plan.refined.md",
+      ".agents/plans/us-414-run-state-integrity/step-05-us-414-run-state-integrity.plan.report.md",
+      ".agents/plans/us-414-run-state-integrity/step-06-us-414-run-state-integrity.review.md",
+      ".agents/plans/us-414-run-state-integrity/step-07-us-414-run-state-integrity.testing.report.md",
+      ".agents/plans/us-414-run-state-integrity/step-08-us-414-run-state-integrity.result.md",
+      ".agents/skills/ws-goal-fix-pr/scripts/check_fixpr_rounds.cjs",
+      "test/test-run-state-integrity.js"
+    ],
+    "deleted": [],
+    "modified": [
+      ".agents/skills/ws-goal-fix-pr/SKILL.md",
+      ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+      ".agents/skills/ws-shared/runtime/setup.md",
+      ".agents/skills/ws-shared/runtime/workflow-state.schema.json",
+      ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+      "bin/skill-integrity.json",
+      "test/test-models-preset-and-per-step.js",
+      "test/test-run-state-integrity.js",
+      "test/test-suites.json"
+    ]
+  },
+  "workflowType": "standard"
+}

@@ -1,0 +1,666 @@
+{
+  "schemaVersion": 1,
+  "revision": 19,
+  "workflowId": "us-414-run-state-integrity-20260924T170500Z",
+  "slug": "us-414-run-state-integrity",
+  "specPath": ".agents/plans/us-414-run-state-integrity/step-00-us-414-run-state-integrity.spec.md",
+  "planIndexPath": ".agents/plans/us-414-run-state-integrity/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "A run whose configured `modelsPreset` is absent from `defaults.modelPresets` fails at run start with an error naming the unknown preset and the available presets; it never silently resolves to another preset's model.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1272-L1308",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1578-L1589",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1606-L1612",
+        ".agents/skills/ws-shared/runtime/setup.md:L71-L71"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001",
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-011",
+        "section-012"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1272,
+          "lineEnd": 1308,
+          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1578,
+          "lineEnd": 1589,
+          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1606,
+          "lineEnd": 1612,
+          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/setup.md",
+          "lineStart": 71,
+          "lineEnd": 71,
+          "sha256": "9cc7e4da41a3a26bf5e2254b4c4e54734aa2ae08eb7f5b62c38a62f3f6ed0247"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "50455501b0fc3a43007ab0d01050119dac412926",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC1: dispatch with unknown modelsPreset fails closed",
+          "sourceFile": "test/test-run-state-integrity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T21:19:59.951Z"
+        },
+        {
+          "name": "us-414: unknown preset dispatch fails closed",
+          "sourceFile": "test/test-models-preset-and-per-step.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T21:19:59.958Z"
+        },
+        {
+          "name": "us-414: unknown preset never resolves to another preset model (fail-closed)",
+          "sourceFile": "test/test-models-preset-and-per-step.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T21:19:59.951Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac1",
+        "ev-ac1t",
+        "g2-commit-50455501b0fc3a43007ab0d01050119dac412926"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "Telemetry records the resolved model id per step; steps never record a preset name in a `model` field.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1310-L1317",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1474-L1478",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1805-L1806"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-005",
+        "section-012"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1310,
+          "lineEnd": 1317,
+          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1474,
+          "lineEnd": 1478,
+          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1805,
+          "lineEnd": 1806,
+          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "50455501b0fc3a43007ab0d01050119dac412926",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC2: dispatch records resolved id not preset name",
+          "sourceFile": "test/test-run-state-integrity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T21:19:52.548Z"
+        },
+        {
+          "name": "AC2: finish records resolved id not preset name",
+          "sourceFile": "test/test-run-state-integrity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T21:19:52.549Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac2",
+        "ev-ac2b",
+        "ev-ac2t",
+        "g2-commit-50455501b0fc3a43007ab0d01050119dac412926"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "On ship/merge, `shipStatus`, `prNumber`, and `prUrl` are written back to state and a Step 9 handoff is recorded; a `completed` run never leaves ship fields empty after a merged PR.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L135-L137",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L2317-L2317",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L2323-L2323",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L819-L830",
+        ".agents/skills/ws-shared/runtime/workflow-state.schema.json:L14-L27",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L159-L159",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L177-L177"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-006",
+        "section-007",
+        "section-012"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 135,
+          "lineEnd": 137,
+          "sha256": "1a43c8665c3ef9c0077b5bd5ed103a1534db2f4725030f20ff6692e70b7b5ffd"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 819,
+          "lineEnd": 830,
+          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 2317,
+          "lineEnd": 2317,
+          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 2323,
+          "lineEnd": 2323,
+          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/workflow-state.schema.json",
+          "lineStart": 14,
+          "lineEnd": 27,
+          "sha256": "09b246b983b5a1d4c9e3f5223e8e7935bcca964f608e8da9b2d4e2357f128eec"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+          "lineStart": 159,
+          "lineEnd": 159,
+          "sha256": "ec20244beab8bd2ba15fef109ab6aec6c196ad67a24c5de78a750314987cb5ff"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+          "lineStart": 177,
+          "lineEnd": 177,
+          "sha256": "ec20244beab8bd2ba15fef109ab6aec6c196ad67a24c5de78a750314987cb5ff"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "50455501b0fc3a43007ab0d01050119dac412926",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC3: invalid shipStatus fails closed",
+          "sourceFile": "test/test-run-state-integrity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T21:20:06.442Z"
+        },
+        {
+          "name": "AC3: pr-only update not swallowed by replay",
+          "sourceFile": "test/test-run-state-integrity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T21:32:51.084Z"
+        },
+        {
+          "name": "AC3: prNumber persisted",
+          "sourceFile": "test/test-run-state-integrity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T21:20:06.441Z"
+        },
+        {
+          "name": "AC3: prUrl persisted",
+          "sourceFile": "test/test-run-state-integrity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T21:20:06.441Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac3",
+        "ev-ac3-revfix",
+        "g2-commit-50455501b0fc3a43007ab0d01050119dac412926"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "Step 9 convergence emits `{reviewsDir}/PR-<N>-round-*.md` round artifacts, or explicitly records a clean-immediate reason when no review rounds were needed.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-goal-fix-pr/SKILL.md:L116-L116",
+        ".agents/skills/ws-goal-fix-pr/SKILL.md:L89-L89",
+        ".agents/skills/ws-goal-fix-pr/scripts/check_fixpr_rounds.cjs:L1-L70"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-008",
+        "section-012"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-goal-fix-pr/scripts/check_fixpr_rounds.cjs",
+          "lineStart": 1,
+          "lineEnd": 70,
+          "sha256": "f026f7678f0465d568d2616f25014e66082f8b1efa78372cd0b83302e6ef066e"
+        },
+        {
+          "path": ".agents/skills/ws-goal-fix-pr/SKILL.md",
+          "lineStart": 89,
+          "lineEnd": 89,
+          "sha256": "e24632eeb42d0108ca143212250b4bfc142ea2f51950a5d0b91cbfbd86d8cec3"
+        },
+        {
+          "path": ".agents/skills/ws-goal-fix-pr/SKILL.md",
+          "lineStart": 116,
+          "lineEnd": 116,
+          "sha256": "e24632eeb42d0108ca143212250b4bfc142ea2f51950a5d0b91cbfbd86d8cec3"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "50455501b0fc3a43007ab0d01050119dac412926",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC4: empty reviews dir fails with no artifacts or reason",
+          "sourceFile": "test/test-run-state-integrity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T21:20:19.944Z"
+        },
+        {
+          "name": "AC4: reason-less marker fails",
+          "sourceFile": "test/test-run-state-integrity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T21:20:19.944Z"
+        },
+        {
+          "name": "AC4: reasoned clean-immediate marker passes",
+          "sourceFile": "test/test-run-state-integrity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T21:20:19.944Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac4",
+        "g2-commit-50455501b0fc3a43007ab0d01050119dac412926"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "`skipReason: \"dag\"` is never recorded for a step whose DAG artifacts (`step-03-*.plan.exec.md`) were produced; skip reasons describe the step's actual fate.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1586-L1588",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1784-L1784",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1926-L1926"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-009",
+        "section-012"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1586,
+          "lineEnd": 1588,
+          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1784,
+          "lineEnd": 1784,
+          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1926,
+          "lineEnd": 1926,
+          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "50455501b0fc3a43007ab0d01050119dac412926",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC5: bare dag dispatch reason fails closed",
+          "sourceFile": "test/test-run-state-integrity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T21:20:26.060Z"
+        },
+        {
+          "name": "AC5: bare dag skip reason fails closed",
+          "sourceFile": "test/test-run-state-integrity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T21:20:26.059Z"
+        },
+        {
+          "name": "AC5: dag-disabled still accepted",
+          "sourceFile": "test/test-run-state-integrity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T21:20:26.060Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac5",
+        "g2-commit-50455501b0fc3a43007ab0d01050119dac412926"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "Step 4 dispatch provenance reconciles telemetry `agentType` with host subagent accounting, or documents the mapping when the host cannot report it (host-side item: fix if host-owned, document if not).",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L196-L196"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001",
+        "section-002",
+        "section-003",
+        "section-010"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+          "lineStart": 196,
+          "lineEnd": 196,
+          "sha256": "ec20244beab8bd2ba15fef109ab6aec6c196ad67a24c5de78a750314987cb5ff"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "50455501b0fc3a43007ab0d01050119dac412926",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-dispatch-provenance: ok",
+          "sourceFile": "test/test-dispatch-provenance.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T21:20:26.129Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac6",
+        "g2-commit-50455501b0fc3a43007ab0d01050119dac412926"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "Existing suites (`npm run test`, `ws-check-harness`) stay green; new coverage pins the fail-closed preset error (AC1), the ship writeback (AC3), and the round-artifact-or-reason rule (AC4).",
+      "status": "Implemented",
+      "evidence": [
+        "test/test-run-state-integrity.js:L1-L196",
+        "test/test-suites.json:L280-L285"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-006",
+        "section-012"
+      ],
+      "files": [
+        {
+          "path": "test/test-run-state-integrity.js",
+          "lineStart": 1,
+          "lineEnd": 196,
+          "sha256": "3e9be013f97c47376071866aab0076ae1156733c3a70f2478fd06f26dd710e4d"
+        },
+        {
+          "path": "test/test-suites.json",
+          "lineStart": 280,
+          "lineEnd": 285,
+          "sha256": "37156a31fbcf63cb0db65b4b59d42afb6b4f78b7b2995ef9ec45715086db00e9"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "50455501b0fc3a43007ab0d01050119dac412926",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-models-preset-and-per-step: ok",
+          "sourceFile": "test/test-models-preset-and-per-step.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T21:20:31.490Z"
+        },
+        {
+          "name": "test-run-state-integrity: ok",
+          "sourceFile": "test/test-run-state-integrity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T21:20:31.489Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac7",
+        "g2-commit-50455501b0fc3a43007ab0d01050119dac412926"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "NEG1: run with `modelsPreset` absent from `defaults.modelPresets` must fail at start (red before fix: silent fallback with `presetWarning`; green after: fail-closed error).",
+      "tests": [
+        {
+          "name": "AC1: dispatch with unknown modelsPreset fails closed",
+          "sourceFile": "test/test-run-state-integrity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T21:20:31.559Z"
+        }
+      ],
+      "linkEventIds": [
+        "ev-ns1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "NEG2: merged-PR run asserting empty `shipStatus`/`prNumber`/`prUrl` must fail after the fix (red before: fields empty on completed runs).",
+      "tests": [
+        {
+          "name": "AC3: prNumber persisted",
+          "sourceFile": "test/test-run-state-integrity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T21:20:31.620Z"
+        }
+      ],
+      "linkEventIds": [
+        "ev-ns2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "NEG3: Step 9 convergence with zero round artifacts and no recorded clean-immediate reason must fail (red before, green after).",
+      "tests": [
+        {
+          "name": "AC4: empty reviews dir fails with no artifacts or reason",
+          "sourceFile": "test/test-run-state-integrity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T21:20:31.677Z"
+        }
+      ],
+      "linkEventIds": [
+        "ev-ns3"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "pre-step6",
+    "score": 7,
+    "earnedUnits": 55,
+    "totalUnits": 70,
+    "knownDefect": false,
+    "missingEvidence": true,
+    "deficiencies": [
+      "AC1: no linked files",
+      "AC2: no linked files",
+      "AC3: no linked files",
+      "AC5: no linked files",
+      "AC7: no linked files"
+    ],
+    "errors": [
+      "AC1: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+      "AC1: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+      "AC1: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+      "AC2: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+      "AC2: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+      "AC2: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+      "AC3: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+      "AC3: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+      "AC3: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+      "AC5: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+      "AC5: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+      "AC5: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+      "AC7: linked file hash changed: test/test-run-state-integrity.js"
+    ],
+    "invariantViolations": [],
+    "computedAt": "2026-09-24T21:32:51.088Z",
+    "writer": "ac_ledger.cjs link",
+    "ledgerHash": "50e51b52349548effa4d77963038727bc54f6c4e434d6967028b1dad795aae79"
+  }
+}
