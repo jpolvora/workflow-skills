@@ -90,6 +90,11 @@ On exit ≠ 0 → **HS-5**; **STOP** — no Progress Board, no Transition Gate, 
 
 5. **Progress Board** → **Transition Gate** → dispatch step N+1 (or auto-gate + dispatch in `autoMode`).
 
+### Golden-path state commands (per gate)
+
+At each gate boundary, drive state only with the commands in [`gates.md`](../ws-shared/runtime/gates.md) § Golden-path state commands (both orchestrators) — never hand-edit `.state.*` or `ac-ledger.json`. The pre-advance 6 sequence is: `update_state.cjs finish <state> --step 5 --verification-score <score>`, then G2-code (`commit_g2_code.cjs --state <state> --step 5`, which links the commit SHA and persists `pre-step6` scoreState), then `ac_ledger.cjs score --ledger <ledger> --boundary pre-step6` only if ledger content changed after the G2 link, then `validate_state.cjs <state> --pre-advance 6`. Pre-advance 7/8 re-score at boundary `step5`; pre-advance 9 at boundary `ship`.
+
+---
 ### Step 5 — Check-implementation (score gate)
 
 Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.md`**. Publish integer **score 0–10** in Progress Board + report.

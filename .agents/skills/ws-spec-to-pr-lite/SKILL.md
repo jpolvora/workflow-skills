@@ -60,6 +60,10 @@ After completing step N (0..4), before step N+1:
 4. **Pre-Advance CI:** Unless `skipQualityGates`, run `node {skillsRoot}/ws-spec-to-pr-lite/scripts/validate_state.cjs {plansDir}/{slug}/{workflow-id}.state.md --pre-advance {N+1}`. Exit code > 0 → **HS-5** (STOP). Does **not** skip G2-code.
 5. **Progress Board:** Display board → transition gate → proceed to step N+1.
 
+## Golden-path state commands
+
+Drive every gate with the commands in [`gates.md`](../ws-shared/runtime/gates.md) § Golden-path state commands (both orchestrators) — never hand-edit `.state.*` or `ac-ledger.json`. Lite sequence: after Step 2, `link` evidence plus `--commit sha=<sha>,step=2`, G2-code, then hygiene `score --ledger <ledger> --boundary step5` before review; at close, `score --boundary step5` then advance.
+
 ## Step 0 — Pipeline Classifier
 
 After `step-00-{slug}.spec.md` exists and before Step 1:
