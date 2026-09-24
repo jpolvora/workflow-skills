@@ -237,7 +237,7 @@
   },
   "preview": {
     "_comment": "Optional. /ws-preview runs preview.dryRunCommand from the consumer repo root — no packaged reviewer backend. Prefer /ws-configure-project --section preview (infers from AGENTS.md, README, MEMORY, rules.*, package.json scripts, and local skills) or set the string below. Empty → /ws-preview stops until configured.",
-    "_comment_dryRunCommand": "Local dry-run mirror of .github/workflows/opencode-code-review.yml via `npm run review:dry` (same engine opencode / model opencode-go/mimo-v2.6-flash / variant medium / stack / prompt / threshold / patterns, --dry-run, --target-branch refs/heads/main, no --gh/--pr-id, so no PR threads are published). Requires network (downloads run.sh) and OPENCODE_API_KEY at run time.",
+    "_comment_dryRunCommand": "Local dry-run mirror of .github/workflows/agentic-code-review.yml via `npm run review:dry` (engine/model/variant read from repo Variables AGENTIC_CODE_REVIEWERS_ENGINE/_MODEL/_VARIANT with same defaults opencode / opencode-go/mimo-v2.6-flash / medium; same stack / prompt / threshold / patterns, --dry-run, --target-branch refs/heads/main, no --gh/--pr-id, so no PR threads are published). Requires network and the selected engine credential (OPENCODE_API_KEY or CURSOR_API_KEY) at run time.",
     "dryRunCommand": "npm run review:dry",
     "_comment_localReviewCommand": "Examples: cursor-reviewer --dry-run | node scripts/cursor-reviewer/cli.cjs --dry-run",
     "localReviewCommand": "",

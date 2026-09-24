@@ -28,6 +28,7 @@ const CANONICAL_ORDER = {
   skills: 'sorted skill ids ascending',
   paths: 'sorted relative paths ascending (posix `/`)',
   hubPlacement: 'after-skills',
+  packagePlacement: 'after-hub',
 };
 
 export function sha256Hex(buf) {
@@ -118,7 +119,7 @@ export function digestFromFilesMap(filesMap) {
  * fullPackageDigest / installedClosureDigest: sorted skill ids, each skill's file lines,
  * then hub file lines when hub is non-null (hubPlacement: after-skills).
  */
-export function aggregateDigest(skillIds, skillsMap, hub) {
+export function aggregateDigest(skillIds, skillsMap, hub, packageEntry = null) {
   const parts = [];
   const ids = [...skillIds].sort(compareCodepoint);
   for (const id of ids) {
@@ -132,6 +133,11 @@ export function aggregateDigest(skillIds, skillsMap, hub) {
   if (hub?.files) {
     for (const rel of Object.keys(hub.files).sort(compareCodepoint)) {
       parts.push(`hub/${rel}\0${hub.files[rel]}\n`);
+    }
+  }
+  if (packageEntry?.files) {
+    for (const rel of Object.keys(packageEntry.files).sort(compareCodepoint)) {
+      parts.push(`package/${rel}\0${packageEntry.files[rel]}\n`);
     }
   }
   return sha256Hex(Buffer.from(parts.join(''), 'utf8'));
@@ -247,6 +253,39 @@ export function buildHubEntry(sharedRoot) {
   };
 }
 
+export function enumeratePackageFiles(packageRoot) {
+  const files = {};
+  const binRoot = path.join(packageRoot, 'bin');
+  if (!fs.existsSync(binRoot)) return files;
+
+  function walk(dir) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const abs = path.join(dir, entry.name);
+      if (SKIP_INSTALL_FILES.has(entry.name) || shouldSkipInstallEntry(entry.name)) continue;
+      if (entry.isDirectory()) {
+        if (CONSUMER_OWNED_DIRS.has(entry.name)) continue;
+        walk(abs);
+        continue;
+      }
+      const rel = toPosix(path.relative(packageRoot, abs));
+      if (rel === toPosix(MANIFEST_REL)) continue;
+      files[rel] = hashFileBytes(fs.readFileSync(abs));
+    }
+  }
+
+  walk(binRoot);
+  return files;
+}
+
+export function buildPackageEntry(packageRoot) {
+  const files = enumeratePackageFiles(packageRoot);
+  return {
+    files,
+    packageDigest: digestFromFilesMap(files),
+  };
+}
+
 /**
  * Build upstream publish manifest for packageRoot.
  */
@@ -258,12 +297,14 @@ export function buildUpstreamManifest(packageRoot, packageVersion) {
     skills[id] = buildSkillEntry(path.join(skillsDir, id));
   }
   const hub = buildHubEntry(path.join(skillsDir, HUB_DIR));
-  const fullPackageDigest = aggregateDigest(skillIds, skills, hub);
+  const packageEntry = buildPackageEntry(packageRoot);
+  const fullPackageDigest = aggregateDigest(skillIds, skills, hub, packageEntry);
   return {
     packageVersion: String(packageVersion),
     algorithm: ALGORITHM,
     skills,
     hub,
+    package: packageEntry,
     fullPackageDigest,
     canonicalOrder: { ...CANONICAL_ORDER },
   };

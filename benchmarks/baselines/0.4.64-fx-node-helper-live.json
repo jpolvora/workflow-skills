@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "packageVersion": "0.4.64",
+    "gitSha": "0379519163b8f28a5941abf6720190503ec8654b",
+    "fixtureId": "fx-node-helper",
+    "mode": "live",
+    "orch": "lite",
+    "dryRun": true,
+    "timestamp": "2026-09-23T22:46:28.334Z",
+    "wallSec": 42
+  },
+  "dimensions": {
+    "completeness": 10,
+    "verifyScore": 10,
+    "judge": 0,
+    "discrimination": 10,
+    "efficiency": null,
+    "time": 10,
+    "honesty": 7
+  },
+  "index": {
+    "value": 81,
+    "weights": {
+      "completeness": 20,
+      "verifyScore": 20,
+      "judge": 15,
+      "discrimination": 15,
+      "efficiency": 15,
+      "time": 10,
+      "honesty": 5
+    }
+  },
+  "fixtureId": "fx-node-helper"
+}

@@ -1947,6 +1947,18 @@ child.on('close', async (code) => {
 
     const manifestPath = path.join(parentDir, 'bin', 'skill-integrity.json');
     const manifest = loadJson(manifestPath);
+    if (!manifest.package?.files?.['bin/build-site.js']) {
+      fail('Manifest package files missing bin/build-site.js');
+    }
+    if (!manifest.package?.files?.['bin/review-dry-run.cjs']) {
+      fail('Manifest package files missing bin/review-dry-run.cjs');
+    }
+    if (manifest.package?.files?.['bin/skill-integrity.json']) {
+      fail('Manifest package files must exclude self-referential bin/skill-integrity.json');
+    }
+    if (!/^[0-9a-f]{64}$/.test(manifest.package?.packageDigest || '')) {
+      fail('packageDigest not lowercase hex');
+    }
     const pkgVersion = JSON.parse(
       fs.readFileSync(path.join(parentDir, 'package.json'), 'utf8')
     ).version;
@@ -2032,6 +2044,22 @@ child.on('close', async (code) => {
       fs.writeFileSync(skillMd, original);
     }
     ok('fullPackageDigest changes when included file changes');
+
+    const tamperBin = path.join(parentDir, 'bin', 'build-site.js');
+    const originalBin = fs.readFileSync(tamperBin);
+    try {
+      fs.writeFileSync(tamperBin, Buffer.concat([originalBin, Buffer.from('\n// integrity-tamper\n')]));
+      const changed = buildUpstreamManifest(parentDir, pkgVersion);
+      if (changed.fullPackageDigest === manifest.fullPackageDigest) {
+        fail('fullPackageDigest did not change after editing bin/build-site.js');
+      }
+      if (changed.package.packageDigest === manifest.package.packageDigest) {
+        fail('packageDigest did not change after editing bin/build-site.js');
+      }
+    } finally {
+      fs.writeFileSync(tamperBin, originalBin);
+    }
+    ok('fullPackageDigest changes when packaged bin content changes');
 
     // AC9: evaluateVersionAndDigestCheck labels mismatch
     {

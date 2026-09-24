@@ -105,6 +105,9 @@
       "test/test-reviewer-aligned-gates.js"
     ],
     [
+      "test/test-review-dry-run.js"
+    ],
+    [
       "test/test-check-harness-install-mode.js"
     ],
     [
@@ -240,6 +243,9 @@
     ],
     [
       "test/test-reviewer-aligned-gates.js"
+    ],
+    [
+      "test/test-review-dry-run.js"
     ],
     [
       "test/test-check-harness-install-mode.js"

@@ -589,16 +589,6 @@ if (fs.existsSync(depMapPath)) {
     </div>
   </div>
 
-  <div id="dependency-graph" class="dep-graph">
-    <h3>Dependency graph</h3>
-    <p class="section-subtitle">Install edges from <code>bin/skill-dependencies.json</code>. A skill pulls these companions when you select it.</p>
-    <ul class="dep-graph-list">
-${Object.keys(depMap.dependencies || {}).sort().map((id) => {
-    const list = (depMap.dependencies[id] || []).map((d) => `<code>${d}</code>`).join(' ');
-    return `      <li><code>${id}</code> ${list}</li>`;
-  }).join('\n')}
-    </ul>
-  </div>
 </section>
 
 `;

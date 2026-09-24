@@ -86,11 +86,9 @@
   <a href="#how-it-works" class="dot-nav-item"><span class="tooltip">How It Works</span></a>
   <a href="#workflows" class="dot-nav-item"><span class="tooltip">Workflows</span></a>
   <a href="#catalog" class="dot-nav-item"><span class="tooltip">Skills</span></a>
-  <a href="#dependency-graph" class="dot-nav-item"><span class="tooltip">Graph</span></a>
   <a href="wiki/" class="dot-nav-item"><span class="tooltip">Wiki</span></a>
   <a href="#install-packages" class="dot-nav-item"><span class="tooltip">Packages</span></a>
   <a href="#install" class="dot-nav-item"><span class="tooltip">Install</span></a>
-  <a href="#roadmap" class="dot-nav-item"><span class="tooltip">Roadmap</span></a>
   <a href="#faq" class="dot-nav-item"><span class="tooltip">FAQ</span></a>
 </aside>
 
@@ -107,9 +105,7 @@
       <a href="#features">Features</a>
       <a href="#workflows">Workflows</a>
       <a href="#catalog">Skills</a>
-      <a href="#dependency-graph">Graph</a>
       <a href="wiki/">Wiki</a>
-      <a href="#roadmap">Roadmap</a>
       <a href="#faq">FAQ</a>
     </div>
     <div class="nav-right">
@@ -140,12 +136,10 @@
         <div class="sidebar-group-heading">Catalog</div>
         <a href="#catalog">Skills</a>
         <a href="#install-packages">Packages</a>
-        <a href="#dependency-graph">Dependency graph</a>
       </div>
       <div class="sidebar-group">
         <div class="sidebar-group-heading">Project</div>
         <a href="#install">Installation</a>
-        <a href="#roadmap">Roadmap</a>
         <a href="#faq">FAQ</a>
         <a href="#contribute">Contribute</a>
       </div>
@@ -158,26 +152,17 @@
   <main id="content" tabindex="-1">
 
 <header class="hero">
-  <div style="display:flex;justify-content:center;margin-bottom:14px;">
-    <a href="#specialized-subagents" class="hero-announcement">
-      <span class="announcement-badge">NEW IN v0.4.5</span>
-      <span class="announcement-title">Specialized Subagents:</span>
-      <span class="announcement-desc">Native host projections for Cursor &amp; zero-turn bootstrap</span>
-      <span class="announcement-link">Explore &rarr;</span>
-    </a>
-  </div>
   <a href="#features" class="hero-badge">
     <span class="badge-dot"></span>
     <span>Deterministic Spec-Driven Harness</span>
     <span style="color:var(--text-dim)">&bull;</span>
-    <span style="color:var(--accent-cyan);font-family:var(--font-mono)">v0.4.64</span>
+    <span style="color:var(--accent-cyan);font-family:var(--font-mono)">v0.4.65</span>
   </a>
   <h1>From Spec to <span class="gradient-text">Delivery</span></h1>
   <p class="hero-brand">Workflow Skills</p>
   <p class="hero-subtitle">Spec in. Named pipeline. Reviewed pull request out. Any coding agent. GitHub and Azure DevOps.</p>
   <div class="hero-proof">
     <span class="hero-proof-tag">SCORE &ge; 9</span>
-    <span>Verification advances only at a ledger-derived score. Agents cannot author that score.</span>
   </div>
 
   <div class="hero-cta-row">
@@ -2124,46 +2109,6 @@ disable-model-invocation: true
     </div>
   </div>
 
-  <div id="dependency-graph" class="dep-graph">
-    <h3>Dependency graph</h3>
-    <p class="section-subtitle">Install edges from <code>bin/skill-dependencies.json</code>. A skill pulls these companions when you select it.</p>
-    <ul class="dep-graph-list">
-      <li><code>ws-activity-report</code> </li>
-      <li><code>ws-benchmarks</code> </li>
-      <li><code>ws-cleanup</code> <code>ws-configure-project</code></li>
-      <li><code>ws-code-review</code> <code>ws-senior-developer</code> <code>ws-tdah</code> <code>ws-self-learning</code> <code>ws-fable-judge</code></li>
-      <li><code>ws-doctor</code> </li>
-      <li><code>ws-fable-judge</code> <code>ws-tdah</code> <code>ws-senior-developer</code></li>
-      <li><code>ws-fable-method</code> <code>ws-fable-judge</code> <code>ws-tdah</code> <code>ws-senior-developer</code> <code>ws-self-learning</code></li>
-      <li><code>ws-fix-pr</code> <code>ws-self-learning</code></li>
-      <li><code>ws-goal-fix-pr</code> <code>ws-fix-pr</code> <code>ws-goal-loop</code> <code>ws-self-learning</code></li>
-      <li><code>ws-megabrain</code> <code>ws-fable-method</code> <code>ws-senior-developer</code> <code>ws-tdah</code> <code>ws-self-learning</code> <code>ws-changelog</code></li>
-      <li><code>ws-monitor</code> </li>
-      <li><code>ws-patterns-generator</code> <code>ws-configure-project</code> <code>ws-self-learning</code> <code>ws-changelog</code> <code>ws-secrets-leak-review</code></li>
-      <li><code>ws-plan-verify</code> <code>ws-fable-judge</code></li>
-      <li><code>ws-plan-write</code> <code>ws-spec-translate-to-human</code></li>
-      <li><code>ws-pre-daily</code> <code>ws-configure-project</code></li>
-      <li><code>ws-run-benchmark</code> </li>
-      <li><code>ws-ship-pr</code> <code>ws-secrets-leak-review</code> <code>ws-fable-judge</code> <code>ws-spec-index</code></li>
-      <li><code>ws-spec-archive</code> <code>ws-configure-project</code> <code>ws-spec-index</code> <code>ws-spec-provider-github</code> <code>ws-spec-provider-azure-devops</code></li>
-      <li><code>ws-spec-explain</code> <code>ws-configure-project</code> <code>ws-spec-provider-github</code> <code>ws-spec-provider-azure-devops</code></li>
-      <li><code>ws-spec-from-provider</code> <code>ws-spec-provider-github</code> <code>ws-spec-provider-azure-devops</code> <code>ws-spec-write</code> <code>ws-spec-provider-local</code> <code>ws-spec-format</code> <code>ws-spec-index</code> <code>ws-configure-project</code></li>
-      <li><code>ws-spec-list</code> <code>ws-spec-to-pr</code> <code>ws-spec-to-pr-lite</code> <code>ws-configure-project</code></li>
-      <li><code>ws-spec-manager</code> <code>ws-spec-write</code> <code>ws-spec-list</code> <code>ws-spec-index</code> <code>ws-spec-update</code> <code>ws-spec-explain</code> <code>ws-spec-organizer</code> <code>ws-spec-archive</code> <code>ws-spec-format</code> <code>ws-spec-from-provider</code> <code>ws-classify-complexity</code> <code>ws-configure-project</code></li>
-      <li><code>ws-spec-memo</code> <code>ws-configure-project</code> <code>ws-self-learning</code></li>
-      <li><code>ws-spec-multi</code> <code>ws-spec-to-pr</code> <code>ws-spec-to-pr-lite</code> <code>ws-classify-complexity</code> <code>ws-ship-pr</code> <code>ws-goal-fix-pr</code> <code>ws-tdah</code> <code>ws-senior-developer</code></li>
-      <li><code>ws-spec-organizer</code> </li>
-      <li><code>ws-spec-provider-azure-devops</code> <code>ws-spec-format</code> <code>ws-spec-write</code> <code>ws-spec-provider-local</code></li>
-      <li><code>ws-spec-provider-github</code> <code>ws-spec-format</code> <code>ws-spec-write</code> <code>ws-spec-provider-local</code></li>
-      <li><code>ws-spec-provider-local</code> <code>ws-spec-format</code> <code>ws-spec-organizer</code></li>
-      <li><code>ws-spec-to-pr</code> <code>ws-spec-write</code> <code>ws-classify-complexity</code> <code>ws-plan-write</code> <code>ws-plan-interview</code> <code>ws-plan-to-tasks</code> <code>ws-implement-tasks</code> <code>ws-plan-verify</code> <code>ws-code-review</code> <code>ws-testing</code> <code>ws-ship-pr</code> <code>ws-fix-pr</code> <code>ws-goal-fix-pr</code> <code>ws-spec-provider-github</code> <code>ws-spec-provider-azure-devops</code> <code>ws-spec-provider-local</code> <code>ws-check-harness</code> <code>ws-check-workflows</code> <code>ws-tdah</code> <code>ws-spec-format</code> <code>ws-goal-loop</code> <code>ws-self-learning</code> <code>ws-changelog</code> <code>ws-configure-project</code> <code>ws-spec-index</code> <code>ws-wiki</code> <code>ws-senior-developer</code> <code>ws-spec-translate-to-human</code></li>
-      <li><code>ws-spec-to-pr-lite</code> <code>ws-spec-write</code> <code>ws-classify-complexity</code> <code>ws-plan-write</code> <code>ws-implement-tasks</code> <code>ws-code-review</code> <code>ws-ship-pr</code> <code>ws-fix-pr</code> <code>ws-goal-fix-pr</code> <code>ws-spec-provider-github</code> <code>ws-spec-provider-azure-devops</code> <code>ws-spec-provider-local</code> <code>ws-tdah</code> <code>ws-spec-format</code> <code>ws-self-learning</code> <code>ws-changelog</code> <code>ws-configure-project</code> <code>ws-spec-index</code> <code>ws-wiki</code> <code>ws-senior-developer</code> <code>ws-spec-translate-to-human</code></li>
-      <li><code>ws-spec-translate-to-human</code> </li>
-      <li><code>ws-spec-write</code> <code>ws-spec-format</code> <code>ws-spec-provider-local</code> <code>ws-spec-organizer</code></li>
-      <li><code>ws-task-lifecycle</code> <code>ws-spec-write</code> <code>ws-spec-format</code> <code>ws-spec-index</code> <code>ws-senior-developer</code> <code>ws-changelog</code> <code>ws-self-learning</code></li>
-      <li><code>ws-wiki</code> <code>ws-configure-project</code> <code>ws-spec-write</code></li>
-    </ul>
-  </div>
 </section>
 
 
@@ -2385,28 +2330,6 @@ npx --yes github:jpolvora/workflow-skills --global
 /ws-check-harness</code></pre>
         </div>
       </div>
-    </div>
-  </div>
-</section>
-
-<section id="roadmap">
-  <div class="section-header">
-    <h2>Roadmap</h2>
-    <p class="section-subtitle">Not in the current package. Shipped capabilities are on Features.</p>
-  </div>
-  <div class="contribute-box">
-    <ul class="roadmap-list">
-      <li><span class="status">done</span> Node-only skill and installer runtime (no Python helpers)</li>
-      <li><span class="status">done</span> Explicit <code>close-issue</code> after merge on any base branch</li>
-      <li><span class="status">todo</span> Skill-family renaming (<code>ws-{family}-{verb}</code>)</li>
-      <li><span class="status">todo</span> Step 5 to 6 deadlock diagnostics (<code>us-235</code>)</li>
-      <li><span class="status">inbox</span> Multi-repository orchestrator; CI/CD workflow generator</li>
-    </ul>
-    <div class="hero-cta-row">
-      <a href="#install" class="offer-cta-fill">
-        <span class="offer-cta-fill__bg"></span>
-        <span>Install the current package</span>
-      </a>
     </div>
   </div>
 </section>
@@ -2859,10 +2782,8 @@ npx --yes github:jpolvora/workflow-skills --global
       <a href="#workflows">Workflows</a>
       <a href="#catalog">Skills</a>
       <a href="#install-packages">Packages</a>
-      <a href="#dependency-graph">Dependency graph</a>
       <a href="wiki/">Wiki</a>
       <a href="#install">Installation</a>
-      <a href="#roadmap">Roadmap</a>
       <a href="#faq">FAQ</a>
       <a href="#contribute">Contribute</a>
     </nav>
@@ -2871,7 +2792,7 @@ npx --yes github:jpolvora/workflow-skills --global
 <div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.4.64 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.4.65 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
 <!-- Skill Viewer Slide-Over Drawer -->
@@ -3398,25 +3319,8 @@ npx --yes github:jpolvora/workflow-skills --global
     if (mq.addEventListener) mq.addEventListener('change', function(e) { if (!e.matches) setOpen(false); });
   })();
 
-  var toTop = document.getElementById('to-top');
-  if (toTop) {
-    var scrollRoot = function() {
-      return document.scrollingElement || document.documentElement;
-    };
-    var syncToTop = function() {
-      toTop.classList.toggle('is-visible', scrollRoot().scrollTop > 400);
-    };
-    document.addEventListener('scroll', syncToTop, { passive: true, capture: true });
-    syncToTop();
-    toTop.addEventListener('click', function() {
-      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      scrollRoot().scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
-    });
-  }
-
 })();
 </script>
-<button type="button" id="to-top" class="to-top" aria-label="Back to top">↑</button>
 
 </body>
 </html>
