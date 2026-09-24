@@ -591,7 +591,8 @@ function ledgerHelpText(command) {
     case 'init':
       return 'Usage: ac_ledger.cjs init --spec <spec> --output <ledger> [--plan-index <index>] [--workflow-id <id>] [--slug <slug>]\n'
         + 'Create a ledger from the spec Acceptance Criteria bullets (plus Negative & Failing Test Scenarios).\n'
-        + notes
+        + 'init creates the ledger via --output and takes no --ledger; every later subcommand\n'
+        + '(link, sync-plan-index, verify, score, report) passes --ledger <ledger> instead.\n'
         + 'Example: node ac_ledger.cjs init --spec step-00-slug.spec.md --output ac-ledger.json --slug slug --workflow-id wf\n';
     case 'link':
       return 'Usage: ac_ledger.cjs link --ledger <ledger> --event-id <id> [--ac ACn ...] [--negative NSn ...]\n'

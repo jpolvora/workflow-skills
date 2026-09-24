@@ -206,13 +206,13 @@ closed on inconsistencies with the remediating command named in the error.
 
 | Gate | Commands (in order) |
 |------|---------------------|
-| Standard pre-advance 4 | `plan_index.cjs build` (Step 1 output), then `node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs <state> --pre-advance 4` |
+| Standard pre-advance 4 | `node {skillsRoot}/ws-spec-to-pr/scripts/plan_index.cjs build --plan "{us-dir}/step-01-{slug}.plan.md" --spec "{us-dir}/step-00-{slug}.spec.md" --output "{us-dir}/.runtime/plan.index.json"` (Step 1 output), then `node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs <state> --pre-advance 4` |
 | Standard Steps 4-5 evidence | `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs link --ledger <ledger> --event-id <id> --ac ACn --status Implemented --file <path:Lstart-Lend> --test <name=N,sourceFile=F,phase=observed,exitCode=0>`, then dry-run `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs verify --ledger <ledger> --boundary step5` |
 | Standard pre-advance 6 | `node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs finish <state> --step 5 --verification-score <score>`, then G2-code `node {skillsRoot}/ws-spec-to-pr/scripts/commit_g2_code.cjs --state <state> --step 5 --message "feat({slug}): verified implementation"` (links the commit SHA and persists `pre-step6` scoreState), then `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs score --ledger <ledger> --boundary pre-step6` only if ledger content changed after the G2 link, then `node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs <state> --pre-advance 6` |
 | Standard pre-advance 7 / 8 | `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs score --ledger <ledger> --boundary step5`, then validate `--pre-advance 7` (or `8`) |
 | Standard pre-advance 9 | `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs score --ledger <ledger> --boundary ship`, then validate `--pre-advance 9` |
-| Lite after Step 2 | `link` evidence plus `--commit sha=<sha>,step=2`, G2-code, then hygiene `score --ledger <ledger> --boundary step5` before review |
-| Lite close (Step 4) | `score --ledger <ledger> --boundary step5`, then advance |
+| Lite after Step 2 | `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs link --ledger <ledger> --event-id <id> --ac ACn --file <path:Lstart-Lend> --commit sha=<sha>,step=2`, then G2-code, then `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs score --ledger <ledger> --boundary step5` before review |
+| Lite close (Step 4) | `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs score --ledger <ledger> --boundary step5`, then advance |
 
 When a gate reports a ledger mismatch, the error names the expected boundary
 label, the differing fields, and the exact `ac_ledger.cjs score` invocation
