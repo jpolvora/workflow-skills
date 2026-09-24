@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "f2b7c44ba697188a79b523a4f3ea72e1e76390ab22cebaf3e38900ae66d0a795",
+  "fullPackageDigest": "9c9c02c4064ef3c2b75fc7bfe3299769e7df520fd89abde9ce6b4d3d2897e73c",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -18,7 +18,7 @@
       "runtime/config-resolution.md": "7b490b1e691be4c9bee64774f89e9552fe796f89b8f0edeb5e8c0ef9feb6870d",
       "runtime/config.schema.json": "726c210c07b44e44861590ae64a003f0b295edab354e034496a0ad0c2d1730b4",
       "runtime/evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
-      "runtime/gates.md": "8c11a3d7135fc97917e49d3ce0561d1ef6202c0e34284e309ee3cef85292ac93",
+      "runtime/gates.md": "33f6d523d9e3fd80dfafed5fb50e48cae15223e38b829394b01d169a5d34208d",
       "runtime/git-ownership.md": "e0c22380367874beaa98d9985cc65114704bbe0182a1ccba7a23451d74ba10d3",
       "runtime/host-capability-tokens.md": "66ccef0e08d5518954982bf36b74bc39f727ed07d4c2040090fc4a4e7085395f",
       "runtime/host-dispatch.md": "de8446ce1b19db0371105fc364b43a2c2b5c3404e39646b05bedb2b0cb43ca70",
@@ -48,7 +48,7 @@
       "runtime/scripts/scan_stack_invariants.cjs": "f186e197040142066fa7e78b563b11a171c8dc5a62c8026a135457fa82faf5e7",
       "runtime/scripts/step_baton.cjs": "d18f4bd9cf4720c6bf5d3322c8a143a64c94593cce480f4577341f294645d071",
       "runtime/scripts/validate_json_schema.cjs": "c6901a6ad2ed4fde4e5a6fcd85ebaa8b4c31f5707924f2928d25392d502dbbd9",
-      "runtime/scripts/workflow_state.cjs": "333180f24237298eabc80c1db82b0c882a49e4997adc99f285e582dcdb68c9d6",
+      "runtime/scripts/workflow_state.cjs": "b6d22bd7f4d3b5062f3d3c520b953b1e8c135889cfc0c6365a0f84d5f1ab6d84",
       "runtime/setup.md": "55170e4e3b6eff1903acf638a7d3abcffcad47697a94027c01f4feba84faa99a",
       "runtime/skill-dependencies.json": "11a68bb1a9364b8b9a55c2c6adc60e61c06b736e16b86b1d2dd6008064f47a4f",
       "runtime/stacks/abp-angular.md": "fc728fb3d39373b91f7bb4e0a719a24abc995a643fd55c856603a2a1f7bfd742",
@@ -64,7 +64,7 @@
       "templates/STACK.md.example": "829b7d3fce62b8167905fc1d921ee744db1d7e8ef895b0e7eb969f089973bebd",
       "templates/config.json.example": "3aac872c04b7f87fa4e07bb738d8132ad429f9d004fd1684a24dad81fc9f345f"
     },
-    "skillDigest": "7204529a2354124ef31d160be3493d94f63358ed1ed55b4be313e66b20342b19"
+    "skillDigest": "296460dcd528e9ed4300ed611a7acbde70c39c96197f30c576dcda2534b8fd02"
   },
   "package": {
     "files": {
@@ -545,7 +545,7 @@
         "protocols/delivery-result.md": "c55d864d0d8eece086cc7863661574a9761fb8b947f2a7968b9648ebc4145173",
         "protocols/progress-board.md": "70b39d7711dbb8c3d8868b37e125a9630c63e4e22dff7923c51af9f5ab89ba58",
         "protocols/state-hygiene.md": "75c0a80323bf1be621ac2894abb6f826749378b0d26b7fe596305511f9f6d304",
-        "scripts/ac_ledger.cjs": "9519ee836acbee17dd4fed48f01429db7c762745c4ed3a08a9b4233cba537f94",
+        "scripts/ac_ledger.cjs": "14fb959e14cc5aaa88f051bed30aa2e3da908c105df6a4246a41348e4b54c809",
         "scripts/ado-workitem-to-spec.cjs": "6cd06147f60a2aee095b94502ccc4d9f95c0da65071946432c828f4d4e81c3b5",
         "scripts/build_dispatch_context.cjs": "e6ca4853d04a67474c1ca0780bef2bfca7bfec1d6a980688bee1fbdb8fe7b732",
         "scripts/check_memory_conflict.cjs": "403a507a26b1394b41e0c84abab1c9a4a12b02c15992754daf5368d451c83c22",
@@ -567,7 +567,7 @@
         "scripts/write_verification_manifest.cjs": "d2c2420752e063b604e438ce5a4b4398fb456ba4e5be71f45b00e20523b7c89d",
         "ws-spec-to-pr-run-test.md": "417b103bc5ea94cd83dbaaa71aa973cbf23e29f73d7ca567667b2870be914560"
       },
-      "skillDigest": "4e1800eb259b6904ce815177097b56eed1426ac8b7eb4444b83720be04232dbb"
+      "skillDigest": "0c74b49e15eae74fd9640d352d21f9480de6d1868e6a41a2b5f2cf2d565784b3"
     },
     "ws-spec-to-pr-lite": {
       "files": {

@@ -212,4 +212,23 @@ function seedState(root, stateRel, { currentStep = 0, completed = [], skipped = 
   assert.match(mdAfter, /revision: 0/, 'phantom finish leaves the revision unchanged');
 }
 
+// AC7: golden-path table rows are runnable copy-paste commands (launcher + flags).
+{
+  const gates = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/runtime/gates.md'), 'utf8');
+  const sectionStart = gates.indexOf('## Golden-path state commands');
+  assert.ok(sectionStart >= 0, 'golden-path section exists in gates.md');
+  const sectionEnd = gates.indexOf('\n## ', sectionStart + 1);
+  const section = gates.slice(sectionStart, sectionEnd < 0 ? undefined : sectionEnd);
+  const rows = section.split('\n').filter((line) => line.startsWith('| ') && !line.startsWith('| Gate'));
+  assert.ok(rows.length >= 7, `golden-path table covers standard + lite boundaries (found ${rows.length})`);
+  for (const row of rows) assert.ok(row.includes('node {skillsRoot}/'), `golden-path row carries a runnable launcher: ${row.slice(0, 60)}`);
+}
+
+// AC1: init help teaches its own contract (no --ledger requirement).
+{
+  const initHelp = run(ledgerScript, ['init', '--help']).stdout;
+  assert.ok(!initHelp.includes('requires --ledger'), 'init help claims no --ledger requirement');
+  assert.match(initHelp, /--spec.*--output/, 'init help centers --spec and --output');
+}
+
 console.log('test-script-ux-golden-path: ok');
