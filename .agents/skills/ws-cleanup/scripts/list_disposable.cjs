@@ -164,6 +164,7 @@ function isScratchName(name) {
   if (/^step-00-.+\.issue\.json$/.test(name)) return true;
   if (/^audit-.+\.log\.md$/i.test(name)) return true;
   if (name === 'post-bootstrap-commits.md') return true;
+  if (name === 'pr-body.md') return true;
   return false;
 }
 
@@ -177,6 +178,7 @@ function scratchReason(name) {
   if (/^step-00-.+\.issue\.json$/.test(name)) return 'issue fetch temp';
   if (/^audit-.+\.log\.md$/i.test(name)) return 'audit log';
   if (name === 'post-bootstrap-commits.md') return 'bootstrap commits scratch';
+  if (name === 'pr-body.md') return 'PR body temp';
   return 'plan scratch';
 }
 
@@ -328,6 +330,23 @@ function main() {
       }
     }
 
+    // Cross-plan PR body temp written at the {plansDir} root.
+    const topPrBody = path.join(plansAbs, 'pr-body.md');
+    if (fs.existsSync(topPrBody)) {
+      const relPrBody = `${plansPosix}/pr-body.md`;
+      if (isTracked(repoRoot, relPrBody)) {
+        skipped.push({ path: relPrBody, reason: 'tracked' });
+      } else {
+        pushCandidate(candidates, {
+          path: relPrBody,
+          kind: 'scratch',
+          reason: 'PR body temp',
+          bytes: dirSize(topPrBody),
+          tracked: false,
+        });
+      }
+    }
+
     const entries = fs.readdirSync(plansAbs).filter((n) => {
       if (opts.slug) return n === opts.slug || n === `${opts.slug}.archive`;
       return true;
@@ -450,6 +469,7 @@ function main() {
     `${plansPosix}/**/audit-*.log.md`,
     `${plansPosix}/**/post-bootstrap-commits.md`,
     `${plansPosix}/**/*.baseline/`,
+    `${plansPosix}/**/pr-body.md`,
     `${reviewsPosix}/PR*.md`,
     '.tmp-*/',
     '.tmp-ws-cleanup-approved.json',

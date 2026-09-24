@@ -17,6 +17,7 @@ Scan enclosure: `{plansDir}` (required), `{reviewsDir}` (code-review rounds), op
 | `{plansDir}/**/step-03-*.plan.exec.md` | Exec dump |
 | `{plansDir}/**/step-03-*.exec.dag.json` | DAG dump |
 | `{plansDir}/**/step-00-*.issue.json` | Issue fetch temp |
+| `{plansDir}/**/pr-body.md` | PR body temp (consumed by `ws-ship-pr` create-pr) |
 | `{reviewsDir}/PR*.md` | Local code-review round artifacts (`PR-NNN-round-K.md`) |
 | Repo root `.tmp-*/` | Agent temp dirs |
 | Repo root `.tmp-*` files (e.g. `.tmp-ws-cleanup-approved.json`) | Cleanup / agent temp files |
@@ -64,6 +65,7 @@ Suggest when matching debris exists or patterns are recommended and absent from 
 .agents/plans/**/audit-*.log.md
 .agents/plans/**/post-bootstrap-commits.md
 .agents/plans/**/*.baseline/
+.agents/plans/**/pr-body.md
 .agents/codereviews/PR*.md
 .tmp-*/
 .tmp-ws-cleanup-approved.json
