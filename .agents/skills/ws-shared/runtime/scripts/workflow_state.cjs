@@ -1161,6 +1161,79 @@ function validateGateDecision(value) {
   return { gate: String(parsed.gate), choice: String(parsed.choice), reason: String(parsed.reason), round: Number(parsed.round) };
 }
 
+// us-413: mid-step checkpoints + turn-boundary pause writer inputs. All
+// validation runs before any mutation so malformed input fails closed with
+// byte-identical state (NS5).
+const PROGRESS_MAX_STRING = 500;
+const PROGRESS_MAX_UNITS = 500;
+
+function boundedProgressString(value, field, { required = false, max = PROGRESS_MAX_STRING } = {}) {
+  if (value === undefined || value === null || String(value).trim() === '') {
+    if (required) throw new Error(`${field} must be a non-empty string`);
+    return null;
+  }
+  const text = String(value).trim();
+  if (text.length > max) throw new Error(`${field} exceeds ${max} characters`);
+  return text;
+}
+
+function parseCheckpointProgress(options, context) {
+  if (options.progress !== undefined && options.progressFile !== undefined) {
+    throw new Error('--progress and --progress-file are mutually exclusive');
+  }
+  if (options.progress === undefined && options.progressFile === undefined) {
+    throw new Error("checkpoint requires --progress '<json>' or --progress-file <path>");
+  }
+  let raw = options.progress;
+  if (options.progressFile !== undefined) {
+    const progressFile = path.resolve(context.repoRoot, String(options.progressFile));
+    try {
+      raw = fs.readFileSync(progressFile, 'utf8');
+    } catch (error) {
+      throw new Error(`--progress-file could not be read: ${error.message}`);
+    }
+  }
+  let parsed;
+  try {
+    parsed = JSON.parse(String(raw));
+  } catch (error) {
+    throw new Error(`--progress must be a JSON object: ${error.message}`);
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error('--progress must be a JSON object');
+  }
+  const unknown = Object.keys(parsed).filter((key) => !['substep', 'completedUnits', 'remainingUnits'].includes(key));
+  if (unknown.length) throw new Error(`--progress has unsupported key(s): ${unknown.join(', ')}`);
+  const substep = boundedProgressString(parsed.substep, '--progress.substep', { required: true, max: 200 });
+  if (!Array.isArray(parsed.completedUnits)) throw new Error('--progress.completedUnits must be an array of unit ids');
+  if (parsed.completedUnits.length > PROGRESS_MAX_UNITS) {
+    throw new Error(`--progress.completedUnits exceeds ${PROGRESS_MAX_UNITS} entries`);
+  }
+  const completedUnits = parsed.completedUnits.map((unit) => boundedProgressString(unit, '--progress.completedUnits[]', { required: true, max: 200 }));
+  const remainingUnits = Number(parsed.remainingUnits);
+  if (!Number.isInteger(remainingUnits) || remainingUnits < 0) {
+    throw new Error('--progress.remainingUnits must be an integer >= 0');
+  }
+  return { substep, completedUnits, remainingUnits };
+}
+
+// Q2/AC9: explicit --next-action wins; else derive from the step checkpoint;
+// else fail closed with a usage error naming the required flag.
+function parsePauseTurnRecord(options, state, step) {
+  const reason = boundedProgressString(options.reason, '--reason', { required: true });
+  const explicit = boundedProgressString(options.nextAction, '--next-action');
+  if (explicit) return { reason, nextAction: explicit };
+  const record = state?.stepCheckpoints?.[String(step)];
+  if (record && typeof record === 'object' && !Array.isArray(record)) {
+    const substep = boundedProgressString(record.substep, '--progress.substep', { required: true, max: 200 });
+    const remainingUnits = Number(record.remainingUnits);
+    if (Number.isInteger(remainingUnits) && remainingUnits >= 0) {
+      return { reason, nextAction: `Resume step ${step} (${substep}; ${remainingUnits} remaining)` };
+    }
+  }
+  throw new Error('pause-turn requires --next-action when no checkpoint exists for the step (e.g. --next-action "Finish step 4")');
+}
+
 function statePaths(stateFile, context) {
   const mdPath = markdownStatePath(stateFile);
   const statePath = toRepoRelative(context.repoRoot, mdPath);
@@ -1438,7 +1511,8 @@ function resolveStepAgentType(step, options, context, state) {
 }
 
 function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, options) {
-  if (!['dispatch', 'finish', 'bypass'].includes(operation)) throw new Error('operation must be dispatch, finish, or bypass');
+  const operations = ['dispatch', 'finish', 'bypass', 'checkpoint', 'pause-turn'];
+  if (!operations.includes(operation)) throw new Error(`operation must be one of: ${operations.join(', ')}`);
   if (options.elapsed !== undefined) throw new Error('--elapsed is not accepted; elapsedSec is derived from timestamps');
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: options.scriptFile });
   const absoluteInput = path.resolve(context.repoRoot, stateFile);
@@ -1448,6 +1522,10 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   const state = loaded.state;
   const step = Number(options.step);
   if (!Number.isInteger(step) || step < 0 || step > maxStep) throw new Error(`step must be in range 0..${maxStep}`);
+  // us-413: validate progress/pause inputs before any mutation (fail closed).
+  const isProgressOperation = operation === 'checkpoint' || operation === 'pause-turn';
+  const progressRecord = operation === 'checkpoint' ? parseCheckpointProgress(options, context) : null;
+  const pauseRecord = operation === 'pause-turn' ? parsePauseTurnRecord(options, state, step) : null;
   const timestamp = String(options.timestamp || options.finishedAt || options.dispatchedAt || nowIso());
   const paths = statePaths(absoluteState, context);
   const priorHandoffOutput = operation === 'finish' ? readPriorHandoffOutput(loaded.state, step) : null;
@@ -1455,7 +1533,9 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   const priorStepTelemetry = (loaded.state.telemetry?.steps || []).find((row) => Number(row.N ?? row.step) === step);
   const priorFinishDispatchedAt = priorStepTelemetry?.dispatchedAt || null;
   const wasStepCompletedBeforeUpdate = stepCompleted(loaded.state, step);
-  syncAcCountsFromLedger(state, paths.usDir);
+  // us-413: progress operations are additive only; they never re-derive AC
+  // counts or touch whole-step semantics.
+  if (!isProgressOperation) syncAcCountsFromLedger(state, paths.usDir);
   state.stateVersion = STATE_VERSION;
   state.revision = Number(state.revision || 0) + 1;
   state.workflowType = pipeline;
@@ -1573,6 +1653,20 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     if (!['completed', 'failed', 'skipped'].includes(status)) throw new Error('finish status must be completed, failed, or skipped');
     stepFinishStatus = status;
     isInternalSubstep = Boolean(options.substep && ['scoreAndRefine', 'reviewFix', 'fixPrPlan', 'fixPrExec'].includes(options.substep));
+    // AC5/BR3/Q3: the terminating finish for the step clears its mid-step
+    // checkpoint and a turn-boundary pause naming that step; markers for other
+    // steps survive. Internal substep finishes leave the step active and keep
+    // the mid-step record. The pre-mutation finishFingerprint above keeps the
+    // repeated-finish replay byte-stable (G4).
+    if (!isInternalSubstep) {
+      if (state.stepCheckpoints && typeof state.stepCheckpoints === 'object' && !Array.isArray(state.stepCheckpoints)) {
+        delete state.stepCheckpoints[String(step)];
+        if (!Object.keys(state.stepCheckpoints).length) delete state.stepCheckpoints;
+      }
+      if (state.turnPause && typeof state.turnPause === 'object' && Number(state.turnPause.step) === step) {
+        delete state.turnPause;
+      }
+    }
     let derivedScore = null;
     if (options.verificationScore !== undefined || (pipeline === 'standard' && step === 5 && status === 'completed' && !isInternalSubstep)) {
       const ledgerFile = path.join(paths.usDir, 'ac-ledger.json');
@@ -1726,6 +1820,41 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       verdict: options.fableVerdict || null,
       errors: listArg(options.errors).map(redactSecrets),
     };
+  } else if (operation === 'checkpoint') {
+    // AC1/AC2: additive sub-progress record keyed by step (BR8 naming).
+    state.stepCheckpoints = state.stepCheckpoints && typeof state.stepCheckpoints === 'object' && !Array.isArray(state.stepCheckpoints)
+      ? state.stepCheckpoints
+      : {};
+    state.stepCheckpoints[String(step)] = {
+      step,
+      substep: progressRecord.substep,
+      completedUnits: [...progressRecord.completedUnits],
+      remainingUnits: progressRecord.remainingUnits,
+      updatedAt: timestamp,
+    };
+    event = {
+      ...commonEvent(state, pipeline, step, 'checkpoint', timestamp, options, context),
+      substep: progressRecord.substep,
+      progress: {
+        completedUnits: [...progressRecord.completedUnits],
+        remainingUnits: progressRecord.remainingUnits,
+      },
+    };
+  } else if (operation === 'pause-turn') {
+    // AC3/AC4/AC9: explicit turn-boundary pause marker, written only on a real
+    // turn end (BR7); `dispatch` never writes or clears markers (G9).
+    state.turnPause = {
+      step,
+      reason: pauseRecord.reason,
+      at: timestamp,
+      nextAction: pauseRecord.nextAction,
+    };
+    event = {
+      // The pause reason is event `reason`, never a skip reason.
+      ...commonEvent(state, pipeline, step, 'turn_paused', timestamp, { ...options, reason: undefined }, context),
+      reason: pauseRecord.reason,
+      nextAction: pauseRecord.nextAction,
+    };
   } else {
     if (!options.gate || !options.reason) throw new Error('bypass requires --gate and --reason');
     event = {
@@ -1736,7 +1865,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     state.nextAction ||= `Run step ${step}`;
   }
 
-  syncAcCountsFromLedger(state, paths.usDir);
+  if (!isProgressOperation) syncAcCountsFromLedger(state, paths.usDir);
   if (Array.isArray(state.stepDispatches)) {
     state.stepDispatches = state.stepDispatches
       .map((item) => {
@@ -1918,6 +2047,56 @@ function requiredAdvanceArtifact(pipeline, next, state) {
   return requiredAdvanceArtifacts(pipeline, next, state)[0] || null;
 }
 
+// G10: step-keyed maps are outside the lightweight schema validator's
+// vocabulary, so record shapes are enforced here, fail closed (AC7/NS6).
+function stepCheckpointErrors(state, maxStep) {
+  const checkpoints = state.stepCheckpoints;
+  if (checkpoints === undefined) return [];
+  if (!checkpoints || typeof checkpoints !== 'object' || Array.isArray(checkpoints)) {
+    return ['stepCheckpoints must be an object keyed by step number'];
+  }
+  const errors = [];
+  for (const [key, record] of Object.entries(checkpoints)) {
+    const label = `stepCheckpoints.${key}`;
+    const stepNumber = Number(key);
+    if (!/^\d+$/.test(key) || !Number.isInteger(stepNumber) || stepNumber < 0 || stepNumber > maxStep) {
+      errors.push(`${label}: step key outside 0..${maxStep}`);
+      continue;
+    }
+    if (!record || typeof record !== 'object' || Array.isArray(record)) {
+      errors.push(`${label}: record must be an object`);
+      continue;
+    }
+    if (Number(record.step) !== stepNumber) errors.push(`${label}: record step must equal the key`);
+    if (typeof record.substep !== 'string' || !record.substep.trim()) errors.push(`${label}: substep must be a non-empty string`);
+    if (!Array.isArray(record.completedUnits) || !record.completedUnits.every((unit) => typeof unit === 'string' && unit.trim())) {
+      errors.push(`${label}: completedUnits must be an array of non-empty strings`);
+    }
+    if (!Number.isInteger(record.remainingUnits) || record.remainingUnits < 0) {
+      errors.push(`${label}: remainingUnits must be an integer >= 0`);
+    }
+    if (typeof record.updatedAt !== 'string' || Number.isNaN(Date.parse(record.updatedAt))) {
+      errors.push(`${label}: updatedAt must be an ISO timestamp`);
+    }
+  }
+  return errors;
+}
+
+function turnPauseErrors(state, maxStep) {
+  const pause = state.turnPause;
+  if (pause === undefined) return [];
+  if (!pause || typeof pause !== 'object' || Array.isArray(pause)) return ['turnPause must be an object'];
+  const errors = [];
+  const stepNumber = Number(pause.step);
+  if (!Number.isInteger(stepNumber) || stepNumber < 0 || stepNumber > maxStep) {
+    errors.push(`turnPause.step must be an integer in 0..${maxStep}`);
+  }
+  if (typeof pause.reason !== 'string' || !pause.reason.trim()) errors.push('turnPause.reason must be a non-empty string');
+  if (typeof pause.at !== 'string' || Number.isNaN(Date.parse(pause.at))) errors.push('turnPause.at must be an ISO timestamp');
+  if (typeof pause.nextAction !== 'string' || !pause.nextAction.trim()) errors.push('turnPause.nextAction must be a non-empty string');
+  return errors;
+}
+
 function validateSnapshot({ stateFile, indexFile, context, maxStep, preAdvance, pipeline }) {
   const mdPath = markdownStatePath(stateFile);
   const jsonPath = jsonStatePath(stateFile);
@@ -1941,6 +2120,8 @@ function validateSnapshot({ stateFile, indexFile, context, maxStep, preAdvance, 
   if (state.gateDecision !== undefined) {
     try { validateGateDecision(state.gateDecision); } catch (error) { errors.push(error.message); }
   }
+  errors.push(...stepCheckpointErrors(state, maxStep));
+  errors.push(...turnPauseErrors(state, maxStep));
   if (jsonText) {
     errors.push(...validateNode(state, loadJsonSchema(path.join(__dirname, '..', 'workflow-state.schema.json'), 'workflow state schema'), 'state.json'));
   }
@@ -2040,14 +2221,16 @@ function runUpdateCli(config) {
   try {
     const { positional, options } = parseArgs(process.argv.slice(2));
     if (options.help) {
-      process.stdout.write('Usage: update_state.cjs dispatch|finish|finish-batch|bypass <state> --step N [options]\n');
+      process.stdout.write('Usage: update_state.cjs dispatch|finish|finish-batch|bypass|checkpoint|pause-turn <state> --step N [options]\n');
       process.stdout.write('  finish-batch <state> --steps "2:skipped:interview-not-required,3:skipped:dag-disabled"\n');
       process.stdout.write('  finish <state> --step 4 --noop "<reason>" (explicit no-op when a completed mutating step touched nothing)\n');
+      process.stdout.write('  checkpoint <state> --step N --progress \'<json>\' | --progress-file <path>\n');
+      process.stdout.write('  pause-turn <state> --step N --reason "<text>" [--next-action "<text>"]\n');
       return;
     }
     const [operation, stateFile] = positional;
-    if (!['dispatch', 'finish', 'finish-batch', 'bypass'].includes(operation)) {
-      throw new Error('operation must be dispatch, finish, finish-batch, or bypass');
+    if (!['dispatch', 'finish', 'finish-batch', 'bypass', 'checkpoint', 'pause-turn'].includes(operation)) {
+      throw new Error('operation must be dispatch, finish, finish-batch, bypass, checkpoint, or pause-turn');
     }
     if (!stateFile) throw new Error('state path or workflow id is required');
     options.scriptFile = config.scriptFile;

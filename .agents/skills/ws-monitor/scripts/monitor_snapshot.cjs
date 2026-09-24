@@ -313,7 +313,7 @@ function parseArgs(argv) {
       index += 1;
       continue;
     }
-    if (['json', 'watch', 'discoverHostTranscripts', 'checkVault'].includes(key) && (index + 1 >= argv.length || argv[index + 1].startsWith('--'))) {
+    if (['json', 'watch', 'discoverHostTranscripts', 'checkVault', 'untilTerminal'].includes(key) && (index + 1 >= argv.length || argv[index + 1].startsWith('--'))) {
       options[key] = true;
       continue;
     }
@@ -1029,13 +1029,12 @@ function queryMemoryVault(context, options = {}) {
 }
 
 function resolveCandidateTranscriptRoots(context, explicitRoots = [], options = {}) {
-  const roots = [];
-  if (Array.isArray(context.config?.monitor?.transcriptRoots)) {
-    roots.push(...context.config.monitor.transcriptRoots);
-  }
-  if (Array.isArray(explicitRoots)) {
-    roots.push(...explicitRoots);
-  }
+  // us-412 G7: rank correlated-path roots first, then explicit, config,
+  // workspace, and host roots so no source can starve the correlated session.
+  const configRoots = Array.isArray(context.config?.monitor?.transcriptRoots)
+    ? [...context.config.monitor.transcriptRoots]
+    : [];
+  const explicit = Array.isArray(explicitRoots) ? [...explicitRoots] : [];
   // Workspace candidate roots (local to repoRoot)
   const workspaceCandidates = [
     path.join(context.repoRoot, '.agents', 'transcripts'),
@@ -1048,14 +1047,10 @@ function resolveCandidateTranscriptRoots(context, explicitRoots = [], options = 
     // Generic repo-local candidate (content-correlated, not adapter-gated);
     // kept after the Claude-to-Muse adapter rename for existing checkouts.
     path.join(context.repoRoot, '.claude', 'sessions'),
-  ];
-  for (const candidate of workspaceCandidates) {
-    if (fs.existsSync(candidate)) {
-      roots.push(candidate);
-    }
-  }
+  ].filter((candidate) => fs.existsSync(candidate));
   // Host user-level roots (us-356): strictly opt-in. Without the flag (or the
   // config equivalent) no host store is probed — zero host-store reads.
+  const hostRoots = [];
   const checkHostRoots = options.discoverHostTranscripts || context.config?.monitor?.discoverHostTranscripts;
   if (checkHostRoots) {
     const home = getHostHome(context.config);
@@ -1080,7 +1075,7 @@ function resolveCandidateTranscriptRoots(context, explicitRoots = [], options = 
               .sort((a, b) => b.mtimeMs - a.mtimeMs)
               .slice(0, 10)
               .map((entry) => entry.logsDir);
-            roots.push(...convos);
+            hostRoots.push(...convos);
           } catch {
             // ignore
           }
@@ -1088,14 +1083,23 @@ function resolveCandidateTranscriptRoots(context, explicitRoots = [], options = 
         }
         if (adapter.id === 'muse' && fs.existsSync(resolved)) {
           const sessions = expandMuseSessionDirs(resolved, 50);
-          roots.push(...(sessions.length > 0 ? sessions : [resolved]));
+          hostRoots.push(...(sessions.length > 0 ? sessions : [resolved]));
           continue;
         }
-        if (fs.existsSync(resolved)) roots.push(resolved);
+        if (fs.existsSync(resolved)) hostRoots.push(resolved);
       }
     }
   }
-  return [...new Set(roots.filter(Boolean).map((r) => path.isAbsolute(r) ? r : path.resolve(context.repoRoot, r)))];
+  const keys = [options.workflowId, options.slug].map(normalizeCorrelationKey).filter(Boolean);
+  const isCorrelated = (root) => keys.length > 0 && keys.some((key) => correlationMatches(root, key));
+  const buckets = [explicit, configRoots, workspaceCandidates, hostRoots];
+  // Correlated-path roots first (any source, source order preserved), then the
+  // source-precedence order with correlation already ranked.
+  const ordered = [
+    ...buckets.flat().filter(isCorrelated),
+    ...buckets.flatMap((bucket) => bucket.filter((root) => !isCorrelated(root))),
+  ];
+  return [...new Set(ordered.filter(Boolean).map((r) => path.isAbsolute(r) ? r : path.resolve(context.repoRoot, r)))];
 }
 
 // Issue #369: transcript signals require failure-shaped evidence. Bare
@@ -1129,6 +1133,32 @@ function hasSubagentError(text) {
     .test(text.slice(lastFailure));
 }
 
+// us-412: bounded candidate enumeration for one root. Directory entries are
+// name-sorted for deterministic slices; enumeration stops at `slice + 1`
+// candidates so per-root truncation is detectable without walking a huge tree.
+function listTranscriptCandidates(directory, slice) {
+  const candidates = [];
+  const visit = (dir, depth) => {
+    if (depth > 6 || candidates.length > slice) return;
+    let entries;
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    entries.sort((a, b) => String(a.name).localeCompare(String(b.name)));
+    for (const entry of entries) {
+      if (candidates.length > slice) return;
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) visit(full, depth + 1);
+      else if (/-(wal|shm)$/i.test(entry.name)) continue; // SQLite sidecars: co-copied with the primary, never read standalone
+      else if (/\.(jsonl|log|txt|md|db|sqlite3?|vscdb)$/i.test(entry.name)) candidates.push(full);
+    }
+  };
+  visit(directory, 0);
+  return candidates;
+}
+
 function scanTranscriptRoots(context, roots, filter = {}) {
   // us-356: per-tick budget (time/read caps, recent-window tails only).
   const startedAt = Date.now();
@@ -1137,26 +1167,33 @@ function scanTranscriptRoots(context, roots, filter = {}) {
   const hostHome = getHostHome(context?.config);
   const findings = [];
   const files = [];
-  const visit = (directory, depth = 0) => {
-    if (depth > 6 || files.length >= TRANSCRIPT_LIMITS.maxFilesPerTick || !fs.existsSync(directory)) return;
-    let entries;
-    try {
-      entries = fs.readdirSync(directory, { withFileTypes: true });
-    } catch {
-      return;
+  let capped = false;
+  const keys = [filter?.workflowId, filter?.slug].map(normalizeCorrelationKey).filter(Boolean);
+  const rootList = [...new Set((roots || []).filter(Boolean))];
+  const maxFiles = TRANSCRIPT_LIMITS.maxFilesPerTick;
+  // us-412 AC10/AC11 + G6: per-root reservation so no single root can exhaust
+  // the per-tick file budget before the correlated session's root is reached;
+  // any truncated root slice is reported honestly through `capped`.
+  for (let index = 0; index < rootList.length; index += 1) {
+    const remainingRoots = rootList.length - index;
+    const remaining = maxFiles - files.length;
+    if (remaining <= 0) {
+      capped = true;
+      break;
     }
-    for (const entry of entries) {
-      if (files.length >= TRANSCRIPT_LIMITS.maxFilesPerTick) break;
-      const full = path.join(directory, entry.name);
-      if (entry.isDirectory()) visit(full, depth + 1);
-      else if (/-(wal|shm)$/i.test(entry.name)) continue; // SQLite sidecars: co-copied with the primary, never read standalone
-      else if (/\.(jsonl|log|txt|md|db|sqlite3?|vscdb)$/i.test(entry.name)) files.push(full);
-    }
-  };
-  for (const root of roots) visit(root);
+    const slice = Math.max(1, Math.floor(remaining / remainingRoots));
+    const candidates = listTranscriptCandidates(rootList[index], slice);
+    const correlated = keys.length
+      ? candidates.filter((file) => keys.some((key) => correlationMatches(file, key)))
+      : [];
+    const correlatedSet = new Set(correlated);
+    const ordered = [...correlated, ...candidates.filter((file) => !correlatedSet.has(file))];
+    if (ordered.length > slice) capped = true;
+    files.push(...ordered.slice(0, slice));
+  }
+  if (files.length >= maxFiles) capped = true;
   let filesScanned = 0;
   let bytesRead = 0;
-  let capped = files.length >= TRANSCRIPT_LIMITS.maxFilesPerTick;
   const scannedFiles = [];
   const repoRootResolved = path.resolve(context.repoRoot);
   for (const file of files) {
@@ -1164,20 +1201,23 @@ function scanTranscriptRoots(context, roots, filter = {}) {
       capped = true;
       break;
     }
-    // Correlate on the raw tail, then sanitize before any pattern matching so
-    // tokens, prompt content, and host-private paths never drive reporting.
+    // G8: sanitize first, then use the same bounded window for the correlation
+    // filter, the stored tail, and resolveTranscriptSource matching, so no
+    // secret or host-private path drives retention or reporting.
     const read = readBoundedTailText(file);
     if (read.text === null) continue;
-    const rawText = read.text;
+    const sanitized = sanitizeTranscriptText(read.text, hostHome);
+    const text = sanitized.length > TRANSCRIPT_LIMITS.maxBytesPerFile
+      ? sanitized.slice(-TRANSCRIPT_LIMITS.maxBytesPerFile)
+      : sanitized;
     if (filter && (filter.workflowId || filter.slug)) {
-      const matchesWf = Boolean(filter.workflowId && (correlationMatches(file, filter.workflowId) || correlationMatches(rawText, filter.workflowId)));
-      const matchesSlug = Boolean(filter.slug && (correlationMatches(file, filter.slug) || correlationMatches(rawText, filter.slug)));
+      const matchesWf = Boolean(filter.workflowId && (correlationMatches(file, filter.workflowId) || correlationMatches(text, filter.workflowId)));
+      const matchesSlug = Boolean(filter.slug && (correlationMatches(file, filter.slug) || correlationMatches(text, filter.slug)));
       const pass = filter.workflowId && filter.slug
         ? (matchesWf && matchesSlug)
         : (matchesWf || matchesSlug);
       if (!pass) continue;
     }
-    const text = sanitizeTranscriptText(rawText, hostHome);
     filesScanned += 1;
     bytesRead += read.bytesRead;
     let mtimeMs = null;
@@ -1186,7 +1226,7 @@ function scanTranscriptRoots(context, roots, filter = {}) {
     } catch {
       // mtime is liveness-only; unreadable stats stay observable via scan, not here.
     }
-    scannedFiles.push({ file, mtimeMs, tail: text.slice(-8000) });
+    scannedFiles.push({ file, mtimeMs, tail: text });
     const evidence = sanitizeReportPath(toRepoRelative(context.repoRoot, file, { allowOutside: true }), hostHome);
     if (HYBRID_FAILURE_NEAR_CONTEXT.test(text)) {
       addFinding(findings, 'critical', 'hybrid-path-resolution', 'Transcript contains a missing-skill or dispatch-context path failure', [evidence]);
@@ -1295,6 +1335,19 @@ function resolveStateTranscriptSource(stateTx, repoRoot) {
     };
   }
   return null;
+}
+
+// us-413/AC15: expose the turn-boundary pause marker (or null) on the workflow
+// record; malformed markers are ignored so a corrupt state never crashes the
+// read-only snapshot.
+function normalizeTurnPause(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const step = Number(value.step);
+  if (!Number.isInteger(step) || step < 0) return null;
+  const reason = typeof value.reason === 'string' ? value.reason : '';
+  const at = typeof value.at === 'string' ? value.at : '';
+  const nextAction = typeof value.nextAction === 'string' ? value.nextAction : '';
+  return { step, reason, at, ...(nextAction ? { nextAction } : {}) };
 }
 
 function resolveTranscriptSource(workflow, scannedFiles, discoveryEnabled, repoRoot, scanMeta = {}) {
@@ -1455,6 +1508,7 @@ function snapshot(options) {
         lastEvent: telemetry.events.at(-1) || null,
       },
       stateAgentTranscripts: resolveStateAgentTranscripts(state),
+      turnPause: normalizeTurnPause(state.turnPause),
       expectedArtifacts: expectedArtifacts(state, workflowDir, minVerifyScore, context.repoRoot),
       findings,
     });
@@ -1507,7 +1561,17 @@ function snapshot(options) {
     );
     const source = workflow.transcriptSource;
     const isActive = ['active', 'blocked', 'in_progress'].includes(workflow.status);
-    if (source.status === 'available' && isActive && source.sessionMtime) {
+    if (workflow.turnPause) {
+      // AC15/Q5: an explicit turn-boundary pause is not a stall; report the
+      // pause instead of the worker-session-stall warning.
+      addFinding(
+        workflow.findings,
+        'info',
+        'worker-session-paused',
+        'workflow paused at a turn boundary; awaiting continuation',
+        [workflow.statePath],
+      );
+    } else if (source.status === 'available' && isActive && source.sessionMtime) {
       const idleMs = snapshotNow - Date.parse(source.sessionMtime);
       if (Number.isFinite(idleMs) && idleMs > TRANSCRIPT_LIMITS.stallWindowMs) {
         addFinding(
@@ -1621,6 +1685,7 @@ function markdownReport(report) {
       `- Telemetry events: ${workflow.telemetry.eventCount}`,
     '- State transcripts: ' + (() => { const m = workflow.stateAgentTranscripts; if (!m) return 'not recorded'; if (m.status === 'available') return 'available (' + m.paths.length + ' paths)'; return 'transcript-unavailable (' + m.reason + ')'; })(),
     '- Transcript: ' + (workflow.transcriptSource ? workflow.transcriptSource.status : 'unknown') + (workflow.transcriptSource && workflow.transcriptSource.adapter ? ' via ' + workflow.transcriptSource.adapter + ' (' + workflow.transcriptSource.locationClass + ')' : ' (' + ((workflow.transcriptSource && workflow.transcriptSource.reason) || 'unknown') + ')'),
+    '- Turn pause: ' + (workflow.turnPause ? 'step ' + workflow.turnPause.step + ' (' + (workflow.turnPause.reason || 'paused') + ')' : 'none'),
       '',
       'Expected artifacts:',
     );
@@ -1660,22 +1725,29 @@ function requirePositiveInteger(value, token) {
 function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help) {
-    process.stdout.write('Usage: node monitor_snapshot.cjs [--repo-root DIR] [--slug SLUG] [--workflow-id ID] [--transcript-root DIR] [--discover-host-transcripts] [--vault] [--report FILE] [--json] [--watch --interval SEC --iterations N]\n');
+    process.stdout.write('Usage: node monitor_snapshot.cjs [--repo-root DIR] [--slug SLUG] [--workflow-id ID] [--transcript-root DIR] [--discover-host-transcripts] [--vault] [--report FILE] [--json] [--watch --interval SEC --iterations N | --watch --interval SEC --until-terminal]\n');
     return;
   }
-  if (options.watch && options.iterations === undefined) {
-    throw new Error('--watch requires --iterations <count> for a bounded run');
+  // AC16/NS4: usage validation happens before any snapshot() call.
+  if (options.untilTerminal && !options.watch) {
+    throw new Error('--until-terminal requires --watch');
+  }
+  if (options.untilTerminal && options.iterations !== undefined) {
+    throw new Error('--until-terminal and --iterations are mutually exclusive');
+  }
+  if (options.watch && !options.untilTerminal && options.iterations === undefined) {
+    throw new Error('--watch requires --iterations <count> for a bounded run (or --until-terminal)');
   }
   if (options.interval !== undefined) {
     options.interval = requirePositiveInteger(options.interval, '--interval');
   }
-  if (options.watch) {
+  if (options.watch && !options.untilTerminal) {
     options.iterations = requirePositiveInteger(options.iterations, '--iterations');
   }
-  const iterations = options.watch
-    ? options.iterations
-    : 1;
+  // G13/Q4: 0 = unbounded iterations (only reachable via --until-terminal).
+  const maxIterations = options.untilTerminal ? 0 : (options.watch ? options.iterations : 1);
   let count = 0;
+  let terminalReached = false;
   do {
     const report = snapshot(options);
     if (options.report) {
@@ -1687,8 +1759,14 @@ function main() {
     }
     process.stdout.write(options.json ? `${JSON.stringify(report)}\n` : markdownReport(report));
     count += 1;
-    if (iterations === 0 || count < iterations) sleep(options.interval || DEFAULT_INTERVAL_SECONDS);
-  } while (iterations === 0 || count < iterations);
+    if (options.untilTerminal) {
+      // G5: terminal means the scoped report has no active|blocked|in_progress
+      // workflow left.
+      terminalReached = report.activeCount === 0;
+      if (terminalReached) break;
+    }
+    if (maxIterations === 0 || count < maxIterations) sleep(options.interval || DEFAULT_INTERVAL_SECONDS);
+  } while (!terminalReached && (maxIterations === 0 || count < maxIterations));
 }
 
 if (require.main === module) {
@@ -1728,7 +1806,9 @@ module.exports = {
   readBoundedTailText,
   resolveStateAgentTranscripts,
   resolveStateTranscriptSource,
+  normalizeTurnPause,
   resolveTranscriptSource,
+  listTranscriptCandidates,
   guessTranscriptAdapter,
   resolveMuseSessionsRoot,
   expandMuseSessionDirs,

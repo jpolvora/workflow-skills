@@ -6,6 +6,60 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-09-24] ws-monitor liveness tests: discovery flag gates transcriptSource; absence assertions need scoping
+- **Layer**: `tests`
+- **Module**: `ws-monitor / test-ws-monitor-liveness.js`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs; test/test-ws-monitor-liveness.js`
+- **Scenario / Context**: Writing the us-412/us-413 regression suite, the first run failed three times: (1) `--transcript-root <dir>` alone still reports `transcriptSource.status: transcript-unavailable / reason: discovery-disabled` because `resolveTranscriptSource` is gated on `--discover-host-transcripts` (or `monitor.discoverHostTranscripts`), so explicit-root runs that assert `available` must also pass the discovery flag; (2) a `--slug`-scoped snapshot omits workflows whose slug does not match, so a "ghost workflow reports scan-capped" assertion needed its own scoped invocation; (3) an idle-window sanity check compared `Date.now() - minutes` (epoch) against `stallWindowMs` (duration).
+- **DO NOT**: Assume an explicit `--transcript-root` enables transcript source resolution; assert on workflows absent from a slug/workflow-id-scoped report; compare epoch timestamps with duration thresholds.
+- **INSTEAD DO**: Add `--discover-host-transcripts` (or the config switch) to every monitor test that asserts `transcriptSource` while using explicit roots; run one scoped invocation per asserted workflow; compare durations with durations.
+
+### [2026-09-24] build_dispatch_context.cjs repeatable flag is --path, not --paths
+- **Layer**: `infrastructure`
+- **Module**: `ws-shared / workflow_state.cjs validateRuntime`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/scripts/workflow_state.cjs; .agents/plans/*/.runtime/*`
+- **Scenario / Context**: During us-412-413 Step 8 the orchestrator wrote `.runtime/step-7-dispatch-manifest.json` (a `--manifest` side output of `build_dispatch_context.cjs`). The next `update_state.cjs dispatch` failed with `ERROR: unknown .runtime residue: step-7-dispatch-manifest.json` because `validateRuntime` only allows names matching `RUNTIME_NAMES` (`plan.index.json`, `step(-\d+)?-output.json`, `verification-manifest.json`, `*.cjs|*.patch|*.md`, …).
+- **DO NOT**: Persist arbitrary `.json` (or any unmatched name) under `{us-dir}/.runtime/`; every `dispatch`/`finish`/`validate_state` re-checks residue fail-closed.
+- **INSTEAD DO**: Keep dispatch manifests outside `.runtime/` (or omit `--manifest`), name step payloads `step-{N}-output.json`, and delete any stray non-matching file under `.runtime/` before calling `update_state.cjs`.
+
+### [2026-09-24] ac_ledger link --file evidence needs the L prefix on both range bounds
+- **Layer**: `tests`
+- **Module**: `ws-spec-to-pr / ac_ledger.cjs link --file evidence`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs; .agents/plans/*/ac-ledger.json`
+- **Scenario / Context**: During us-412-413 Step 5, a batch evidence-link driver passed explicit ranges as `path:1180-1217` (no `L` prefix). All 21 link calls exited 1 with `file evidence must use path:Lstart-Lend`; the ledger stayed unlinked. Re-running the same batch with `path:L1180-L1217` linked all 19 ACs and 6 NS in one pass.
+- **DO NOT**: Pass explicit line ranges to `ac_ledger.cjs link --file` without the `L` prefix on both bounds (`path:12-40`), or run batch links without per-call exit-code assertions.
+- **INSTEAD DO**: Format every file evidence value as `path:Lstart-Lend` (e.g. `workflow_state.cjs:L1180-L1217`); batch links through a Node driver with argv arrays and check each call's exit code (this also avoids host shell JSON-quoting traps).
+
+### [2026-09-23] Separate tested integration contracts from live external runs
+- **Layer**: `devops`
+- **Module**: `ws-fable-judge / ws-ship-pr`
+- **Severity**: `High`
+- **PathPattern**: `bin/review-dry-run.cjs; package.json; test/test-review-dry-run.js`
+- **Scenario / Context**: The final ship audit verified the local dry-run launcher through unit tests and configuration inspection, but the live external reviewer invocation was not run because it requires network access and a selected credential.
+- **DO NOT**: Claim the external reviewer completed successfully when only its argument and credential-selection contract was unit-tested.
+- **INSTEAD DO**: Report the live invocation as unverified until it runs, while allowing a non-blocking optional preview gate to continue under its configured policy.
+
+### [2026-09-23] Local dry-run must mirror the CI timeout budget
+- **Layer**: `devops`
+- **Module**: `bin/review-dry-run.cjs / agentic reviewer workflow`
+- **Severity**: `High`
+- **PathPattern**: `bin/review-dry-run.cjs; test/test-review-dry-run.js; .github/workflows/agentic-code-review.yml`
+- **Scenario / Context**: The local dry-run launcher mirrored CI arguments but inherited the reviewer's 10-minute default while CI explicitly allowed 20 minutes, so a valid local run timed out.
+- **DO NOT**: Claim a local command mirrors CI when engine, model, variant, and timeout behavior are not synchronized.
+- **INSTEAD DO**: Set the same default timeout as CI, preserve an explicit environment override, and unit-test both the default and override paths.
+
+### [2026-09-23] Fable scope audits must use the ship-stage file set
+- **Layer**: `devops`
+- **Module**: `ws-fable-judge / ws-ship-pr`
+- **Severity**: `Critical`
+- **PathPattern**: `docs/**; bin/**; test/**; package.json`
+- **Scenario / Context**: A ship audit marked a pre-existing untracked directory as scope creep even though the directory was explicitly excluded and never entered the commit diff.
+- **DO NOT**: Treat unrelated untracked working-tree entries as ship scope without checking whether the planned commit includes them.
+- **INSTEAD DO**: Audit the effective ship-stage set (tracked diff plus files to be committed); report excluded pre-existing entries separately and block only when the commit or PR contains them.
+
 ### [2026-09-22] ws-monitor multi-spec expectation blindness and PowerShell node -e quoting
 - **Layer**: `application`
 - **Module**: `ws-monitor-multi-spec-expectations`

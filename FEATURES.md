@@ -53,6 +53,8 @@ A finite state machine that carries one feature from an idea to a merged pull re
 
 Canonical dispatch table: [`STEP-DISPATCH.md`](.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md).
 
+Unattended runs: `autoMode` removes gate halts but does not chain host turns. A step that cannot finish inside one host turn checkpoints resumable sub-progress (`update_state.cjs checkpoint --step N --progress '<json>'` or `--progress-file <path>` → `state.stepCheckpoints`, `checkpoint` telemetry) and records a turn-boundary pause (`update_state.cjs pause-turn --step N --reason "<text>" [--next-action "<text>"]` → `state.turnPause`, `turn_paused` telemetry). The next turn resumes `state.turnPause.nextAction` instead of treating the unchanged `revision` as a stall; the step's terminating `finish` clears both markers and `dispatch` never touches them. Contract: [`PROTOCOLS.md`](.agents/skills/ws-spec-to-pr/PROTOCOLS.md) § Turn-boundary pause & mid-step checkpoints.
+
 ### 1.2 Lite pipeline — `ws-spec-to-pr-lite` (steps 0–5)
 
 The same delivery guarantees with the planning ceremony removed: spec → plan → implement → commit → review → ship → fix threads. It uses identical GitHub/Azure PR operations and the same `config.json`, but keeps **isolated state** (`workflowType`), so a lite run and a standard run never cross-resume. Lite inline steps use the same `defaults.verboseMode` runtime rule (explicit `true` only).
@@ -199,7 +201,7 @@ Meta-skills that keep the suite itself honest.
 | `ws-check-harness` | Install mode/scope detection (upstream, project, global, hybrid) plus routing, links, portability, integrity digests, instruction duplication, role clarity, skill composition topology |
 | `ws-check-workflows` | FSM simulation of standard, lite, and multi-spec pipelines: step continuity, state isolation, provider dispatch, artifact transitions |
 | `ws-doctor` | Read-only diagnosis of path errors, tool recipes, config switches, and missing references across installed skills |
-| `ws-monitor` | Read-only live observation of workflow state, telemetry, expected artifacts, and configured transcript roots; multi-spec runs derive child-state expectations from the queue and surface `missing-child-state` |
+| `ws-monitor` | Read-only live observation of workflow state, telemetry, expected artifacts, and configured transcript roots; per-root discovery budget + one shared sanitized correlation window (honest `scan-capped`), `worker-session-paused` replaces the stall warning under a turn-boundary pause, `--watch --until-terminal` exits on a non-active scoped workflow; multi-spec runs derive child-state expectations from the queue and surface `missing-child-state` |
 | `ws-show-harness` | Snapshot of the active session: loaded skills, rules, precedence hierarchy |
 | `ws-preview` | Consumer-configured local pipeline review dry-run (`preview.dryRunCommand`) without publishing PR threads |
 | `ws-write-a-skill` | Authoring and progressive-disclosure tuning protocol for new skills |
@@ -221,7 +223,7 @@ Diagnostics can be persisted under `plans.diagnosticsDir`. `workflow-skills tele
 | `ws-spec-explain` | Read-only panorama of a spec or US/issue: status, what it does, what it delivered, how to check in the project/UI, and how to test |
 | `ws-spec-archive` | Harvests `{plansDir}` state, artifacts, git/changelog/MEMORY (and optional SCM) into `{specsDir}/index.PRD` Archive, then proposes a commit that removes eligible shipped plan folders |
 | `ws-cleanup` | Lists disposable workflow leftovers (telemetry, `.runtime`, audit logs, shipped plan dirs, untracked orphans under partially tracked shipped plans), confirms via user-gate, deletes only approved untracked paths, and suggests missing `.gitignore` patterns |
-| `ws-monitor` | Snapshots active workflow runs, classifies live execution signals (including multi-spec `missing-child-state` / `stale-parent-row`), and emits an optional consumer-local report without applying fixes |
+| `ws-monitor` | Snapshots active workflow runs, classifies live execution signals (including multi-spec `missing-child-state` / `stale-parent-row`, and `worker-session-paused` vs `worker-session-stall`), supports `--watch --until-terminal` for unattended watching, and emits an optional consumer-local report without applying fixes |
 
 ---
 
