@@ -175,7 +175,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] add new skill for enhancing refinement ws-spec-translate-to-human (`spec: 0123-us-402.spec.md`) — PR #404 MERGED
 - [x] Ship phase leaves source issue open when baseBranch is not the repo default branch (`spec: 0124-us-405.spec.md`) — PR #406 MERGED
 - [x] Unattended autoMode runs: mid-step checkpoints, turn-boundary pause state, and monitor stall detection (`spec: 0125-us-412-413-liveness-checkpoints.spec.md`) — commit 72c13dea
-- [x] Workflow script UX and golden-path state commands: discoverable help, score diagnostics, boundary errors, exit codes, per-gate commands, tamper-evidence (`spec: 0126-us-415-416-script-ux-golden-path.spec.md`) — commit e0645820
+- [x] Workflow script UX and golden-path state commands: discoverable help, score diagnostics, boundary errors, exit codes, per-gate commands, tamper-evidence (`spec: 0126-us-415-416-script-ux-golden-path.spec.md`) — PR #421 MERGED
 - [ ] Run-state and telemetry integrity: fail-closed preset resolution, ship writeback, Step 9 round artifacts, truthful skip semantics (`spec: 0127-us-414-run-state-integrity.spec.md`)
 - [ ] Monitor accuracy: step-membership artifact expectations, legacy terminal tolerance, transcript correlation windows, discovery budget (`spec: 0128-us-412-418-monitor-accuracy.spec.md`)
 - [ ] Observer-log follow-ups (us-412-413 run): intra-root enumeration edge, missing agentTranscripts marker, G2 plans-index hash staleness, compactOutputs no-op (`spec: 0129-us-419.spec.md`)

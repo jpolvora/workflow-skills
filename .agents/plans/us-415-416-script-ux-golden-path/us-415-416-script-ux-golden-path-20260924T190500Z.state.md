@@ -2,7 +2,7 @@
 acImplemented: 10
 acLedger:
   schemaVersion: 1
-  revision: 28
+  revision: 30
   workflowId: us-415-416-script-ux-golden-path-20260924T190500Z
   slug: us-415-416-script-ux-golden-path
   specPath: .agents/plans/us-415-416-script-ux-golden-path/step-00-us-415-416-script-ux-golden-path.spec.md
@@ -19,7 +19,7 @@ acLedger:
     - { id: AC5, text: "`validate_state --pre-advance N` failures name the expected boundary label (`step5` vs `pre-step6` vs `ship`) and, when cheap to compute, the differing fields.", status: Implemented, evidence: [".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L2210-L2241"], tasks: [], planSections: [section-003, section-006], files: [{ path: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs, lineStart: 2210, lineEnd: 2241, sha256: 7cb110c9c9e13c8bac6024d865d26b7b26defcc319627b1b285f2087c064db9a }], commits: [{ sha: c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf, step: 5 }], tests: [{ name: error names the expected boundary label, sourceFile: test/test-script-ux-golden-path.js, phase: observed, alias: null, exitCode: 0, timestamp: "2026-09-24T18:58:05.107Z" }], verdicts: [], findings: [], sabotage: { required: false, status: not-required, exitCode: null }, linkEventIds: [ev-ac5, g2-commit-c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf] }
     - { id: AC6, text: "`finish` with phantom `filesTouched` paths is unambiguous: either it fails without applying, or it applies and exits 0. An `ok: true` payload with an incremented revision must never accompany a non-zero exit.", status: Implemented, evidence: [".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1764-L1766"], tasks: [], planSections: [section-003, section-004, section-006, section-008], files: [{ path: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs, lineStart: 1764, lineEnd: 1766, sha256: 7cb110c9c9e13c8bac6024d865d26b7b26defcc319627b1b285f2087c064db9a }], commits: [{ sha: c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf, step: 5 }], tests: [{ name: phantom finish exits non-zero, sourceFile: test/test-script-ux-golden-path.js, phase: observed, alias: null, exitCode: 0, timestamp: "2026-09-24T18:58:05.153Z" }], verdicts: [], findings: [], sabotage: { required: false, status: not-required, exitCode: null }, linkEventIds: [ev-ac6, g2-commit-c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf] }
     - { id: AC7, text: "`ws-spec-to-pr` / `ws-spec-to-pr-lite` `STEP-DISPATCH` (or `gates.md`) prints the exact copy-paste commands at each gate boundary (e.g. pre-advance 6: `link --ledger ... --commit sha=<sha>,step=4`, then `score pre-step6`, then `finish --step 4/5`).", status: Implemented, evidence: [".agents/skills/ws-shared/runtime/gates.md:L198-L224"], tasks: [], planSections: [section-003, section-006], files: [{ path: .agents/skills/ws-shared/runtime/gates.md, lineStart: 198, lineEnd: 224, sha256: ee51013e116978de0898d035514a09d7608a59c73c42f5179eb0b8896a651658 }], commits: [{ sha: c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf, step: 5 }], tests: [{ name: "test-script-ux-golden-path: ok", sourceFile: test/test-script-ux-golden-path.js, phase: observed, alias: null, exitCode: 0, timestamp: "2026-09-24T18:58:05.200Z" }], verdicts: [], findings: [], sabotage: { required: false, status: not-required, exitCode: null }, linkEventIds: [ev-ac7, g2-commit-c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf] }
-    - { id: AC8, text: "A fresh agent completing a green slice reaches every gate using only documented commands, with zero hand-edits to `.state.*` or `ac-ledger.json`.", status: Implemented, evidence: [".agents/plans/us-415-416-script-ux-golden-path/step-05-us-415-416-script-ux-golden-path.plan.report.md:L1-L14", ".agents/plans/us-415-416-script-ux-golden-path/step-05-us-415-416-script-ux-golden-path.plan.report.md:L22-L35"], tasks: [], planSections: [section-003, section-006], files: [{ path: .agents/plans/us-415-416-script-ux-golden-path/step-05-us-415-416-script-ux-golden-path.plan.report.md, lineStart: 1, lineEnd: 14, sha256: 6a30c2341e5c85f9c5b7bb646ab6c825fb87b8452c28218a1c6c25f72e947966 }, { path: .agents/plans/us-415-416-script-ux-golden-path/step-05-us-415-416-script-ux-golden-path.plan.report.md, lineStart: 22, lineEnd: 35, sha256: 6a30c2341e5c85f9c5b7bb646ab6c825fb87b8452c28218a1c6c25f72e947966 }], commits: [{ sha: c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf, step: 5 }], tests: [{ name: "test-script-ux-golden-path: ok", sourceFile: test/test-script-ux-golden-path.js, phase: observed, alias: null, exitCode: 0, timestamp: "2026-09-24T18:58:05.247Z" }], verdicts: [], findings: [], sabotage: { required: false, status: not-required, exitCode: null }, linkEventIds: [ev-ac8, ev-ac8-restamp, ev-ac8-restamp2, g2-commit-c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf] }
+    - { id: AC8, text: "A fresh agent completing a green slice reaches every gate using only documented commands, with zero hand-edits to `.state.*` or `ac-ledger.json`.", status: Implemented, evidence: [".agents/plans/us-415-416-script-ux-golden-path/step-05-us-415-416-script-ux-golden-path.plan.report.md:L1-L14", ".agents/plans/us-415-416-script-ux-golden-path/step-05-us-415-416-script-ux-golden-path.plan.report.md:L22-L35", ".agents/plans/us-415-416-script-ux-golden-path/step-08-us-415-416-script-ux-golden-path.result.md:L1-L14"], tasks: [], planSections: [section-003, section-006], files: [{ path: .agents/plans/us-415-416-script-ux-golden-path/step-05-us-415-416-script-ux-golden-path.plan.report.md, lineStart: 1, lineEnd: 14, sha256: 6a30c2341e5c85f9c5b7bb646ab6c825fb87b8452c28218a1c6c25f72e947966 }, { path: .agents/plans/us-415-416-script-ux-golden-path/step-05-us-415-416-script-ux-golden-path.plan.report.md, lineStart: 22, lineEnd: 35, sha256: 6a30c2341e5c85f9c5b7bb646ab6c825fb87b8452c28218a1c6c25f72e947966 }, { path: .agents/plans/us-415-416-script-ux-golden-path/step-08-us-415-416-script-ux-golden-path.result.md, lineStart: 1, lineEnd: 14, sha256: 32579d4ad06ae0baf4df7412798c4080538984d359dbed4b9f76008d8fa46398 }], commits: [{ sha: c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf, step: 5 }], tests: [{ name: "test-script-ux-golden-path: ok", sourceFile: test/test-script-ux-golden-path.js, phase: observed, alias: null, exitCode: 0, timestamp: "2026-09-24T18:58:05.247Z" }], verdicts: [], findings: [], sabotage: { required: false, status: not-required, exitCode: null }, linkEventIds: [ev-ac8, ev-ac8-close, ev-ac8-restamp, ev-ac8-restamp2, g2-commit-c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf] }
     - { id: AC9, text: "Any future hand-edit to `.state.*` / `ac-ledger.json` (`scoreState`, `commits[]`) either fails closed with a message naming the supported command, or is explicitly documented as supported; at minimum, skill text states hand-editing these files is unsupported.", status: Implemented, evidence: [".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L2209-L2231"], tasks: [], planSections: [section-003, section-006], files: [{ path: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs, lineStart: 2209, lineEnd: 2231, sha256: 7cb110c9c9e13c8bac6024d865d26b7b26defcc319627b1b285f2087c064db9a }], commits: [{ sha: c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf, step: 5 }], tests: [{ name: tamper error names the cause, sourceFile: test/test-script-ux-golden-path.js, phase: observed, alias: null, exitCode: 0, timestamp: "2026-09-24T18:58:05.297Z" }], verdicts: [], findings: [], sabotage: { required: false, status: not-required, exitCode: null }, linkEventIds: [ev-ac9, g2-commit-c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf] }
     - { id: AC10, text: "Existing suites (`npm run test`, `ws-check-harness`) stay green; new unit coverage pins the exit-code contract (AC6) and the boundary-label error content (AC5).", status: Implemented, evidence: ["test/test-script-ux-golden-path.js:L160-L215"], tasks: [], planSections: [section-003, section-006], files: [{ path: test/test-script-ux-golden-path.js, lineStart: 160, lineEnd: 215, sha256: cbd7672436b22b18f6f26d813856a47a93b46cf26a54e45029a1a6bb0bf4d733 }], commits: [{ sha: c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf, step: 5 }], tests: [{ name: "test-script-ux-golden-path: ok", sourceFile: test/test-script-ux-golden-path.js, phase: observed, alias: null, exitCode: 0, timestamp: "2026-09-24T18:58:15.131Z" }], verdicts: [], findings: [], sabotage: { required: false, status: not-required, exitCode: null }, linkEventIds: [ev-ac10, g2-commit-c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf] }
   negativeScenarios:
@@ -27,7 +27,7 @@ acLedger:
     - { id: NS2, text: "NEG2: `validate_state --pre-advance 6` with a `step5`-persisted ledger must fail naming `pre-step6` (red before fix listing no label, green after).", tests: [{ name: step5-persisted ledger fails pre-advance 6, sourceFile: test/test-script-ux-golden-path.js, phase: observed, alias: null, exitCode: 0, timestamp: "2026-09-24T18:58:15.231Z" }], linkEventIds: [ev-ns2] }
     - { id: NS3, text: "NEG3: hand-editing `scoreState.boundary` then advancing must fail closed naming `ac_ledger score <boundary>` (red before fix, green after).", tests: [{ name: hand-flipped boundary fails pre-advance 6, sourceFile: test/test-script-ux-golden-path.js, phase: observed, alias: null, exitCode: 0, timestamp: "2026-09-24T18:58:15.282Z" }], linkEventIds: [ev-ns3] }
   invariantViolations: []
-  scoreState: { boundary: step5, score: 10, earnedUnits: 100, totalUnits: 100, knownDefect: false, missingEvidence: false, deficiencies: [], errors: [], invariantViolations: [], computedAt: "2026-09-24T19:12:17.865Z", writer: ac_ledger.cjs score, ledgerHash: 9e9302f3fa6a22073f0fcb601b626cb013fdb66cc78147016436fc24759d2fc2 }
+  scoreState: { boundary: step5, score: 10, earnedUnits: 100, totalUnits: 100, knownDefect: false, missingEvidence: false, deficiencies: [], errors: [], invariantViolations: [], computedAt: "2026-09-24T19:14:02.947Z", writer: ac_ledger.cjs score, ledgerHash: e31057d1373ad3006a8194f5a02fba4fe6414220836a4c8a60aae09f70c5e380 }
 acTotal: 10
 commits:
   - { sha: c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf, step: 5 }
@@ -39,8 +39,10 @@ completedSteps:
   - 6
   - 7
   - 8
+  - 9
 currentModel: composer-2.5
 currentStep: 9
+endedAt: "2026-09-24T19:13:02Z"
 handoffs:
   0: { acRefs: [], artifactPaths: [.agents/plans/us-415-416-script-ux-golden-path/step-00-us-415-416-script-ux-golden-path.spec.md, .agents/plans/us-415-416-script-ux-golden-path/ac-ledger.json], findings: { critical: 0, info: 0, suggestion: 0, warning: 0 }, nextAction: Run step 1, slug: us-415-416-script-ux-golden-path, status: completed, step: 0, summary: Finished step 0, workflowId: us-415-416-script-ux-golden-path-20260924T190500Z, workflowType: standard }
   1: { acRefs: [], artifactPaths: [.agents/plans/us-415-416-script-ux-golden-path/step-01-us-415-416-script-ux-golden-path.plan.md], findings: { critical: 0, info: 0, suggestion: 0, warning: 0 }, nextAction: Run step 2, slug: us-415-416-script-ux-golden-path, status: completed, step: 1, summary: Finished step 1, workflowId: us-415-416-script-ux-golden-path-20260924T190500Z, workflowType: standard }
@@ -50,9 +52,11 @@ handoffs:
   5: { acRefs: [], artifactPaths: [.agents/plans/us-415-416-script-ux-golden-path/step-05-us-415-416-script-ux-golden-path.plan.report.md], findings: { critical: 0, info: 0, suggestion: 0, warning: 0 }, nextAction: Run step 6, slug: us-415-416-script-ux-golden-path, status: completed, step: 5, summary: Finished step 5, workflowId: us-415-416-script-ux-golden-path-20260924T190500Z, workflowType: standard }
   6: { acRefs: [], artifactPaths: [.agents/plans/us-415-416-script-ux-golden-path/step-06-us-415-416-script-ux-golden-path.review.md], findings: { critical: 0, info: 0, suggestion: 0, warning: 0 }, nextAction: Run step 7, slug: us-415-416-script-ux-golden-path, status: completed, step: 6, summary: Finished step 6, workflowId: us-415-416-script-ux-golden-path-20260924T190500Z, workflowType: standard }
   7: { acRefs: [], artifactPaths: [.agents/plans/us-415-416-script-ux-golden-path/step-07-us-415-416-script-ux-golden-path.testing.report.md], findings: { critical: 0, info: 0, suggestion: 0, warning: 0 }, nextAction: Run step 8, slug: us-415-416-script-ux-golden-path, status: completed, step: 7, summary: Finished step 7, workflowId: us-415-416-script-ux-golden-path-20260924T190500Z, workflowType: standard }
-  8: { step: 8, slug: us-415-416-script-ux-golden-path, workflowId: us-415-416-script-ux-golden-path-20260924T190500Z, workflowType: standard, status: completed, artifactPaths: [.agents/plans/us-415-416-script-ux-golden-path/step-08-us-415-416-script-ux-golden-path.result.md], acRefs: [], summary: Finished step 8, nextAction: Run step 9, findings: { critical: 0, warning: 0, suggestion: 0, info: 0 } }
+  8: { acRefs: [], artifactPaths: [.agents/plans/us-415-416-script-ux-golden-path/step-08-us-415-416-script-ux-golden-path.result.md], findings: { critical: 0, info: 0, suggestion: 0, warning: 0 }, nextAction: Run step 9, slug: us-415-416-script-ux-golden-path, status: completed, step: 8, summary: Finished step 8, workflowId: us-415-416-script-ux-golden-path-20260924T190500Z, workflowType: standard }
+  9: { step: 9, slug: us-415-416-script-ux-golden-path, workflowId: us-415-416-script-ux-golden-path-20260924T190500Z, workflowType: standard, status: completed, artifactPaths: [], acRefs: [], summary: Finished step 9, nextAction: Run step 9, findings: { critical: 0, warning: 0, suggestion: 0, info: 0 } }
 nextAction: Run step 9
-revision: 15
+revision: 17
+shipStatus: merged
 skippedSteps:
   - { evidence: "", reason: interview-not-required, step: 2 }
   - { evidence: "", reason: dag-disabled, step: 3 }
@@ -67,6 +71,7 @@ stepDispatches:
   - { step: 5, dispatchedAt: "2026-09-24T18:56:52Z", model: cursor-grok-4.7-medium, agentType: "generic:task" }
   - { step: 6, dispatchedAt: "2026-09-24T19:04:48Z", model: cursor-grok-4.7-medium, agentType: "generic:task" }
   - { step: 7, dispatchedAt: "2026-09-24T19:05:33Z", model: composer-2.5, agentType: "generic:task" }
+  - { step: 9, dispatchedAt: "2026-09-24T20:54:10Z", model: composer-2.5, agentType: "generic:task" }
 stepStatus:
   0: completed
   1: completed
@@ -77,6 +82,7 @@ stepStatus:
   6: completed
   7: completed
   8: completed
+  9: completed
 telemetry:
   steps:
     - { N: 0, agentType: "generic:task", completionTokens: 0, dispatchedAt: "2026-09-24T18:50:06Z", elapsedSec: 8, estimated: false, filesTouched: { created: [.agents/plans/us-415-416-script-ux-golden-path/step-00-us-415-416-script-ux-golden-path.spec.md, .agents/plans/us-415-416-script-ux-golden-path/ac-ledger.json], deleted: [], modified: [] }, finishedAt: "2026-09-24T18:50:14Z", label: Spec, model: cursor-grok-4.7-high, promptTokens: 0, subagentId: null }
@@ -87,8 +93,9 @@ telemetry:
     - { N: 5, agentType: "generic:task", completionTokens: 0, dispatchedAt: "2026-09-24T18:56:52Z", elapsedSec: 401, estimated: false, filesTouched: { created: [.agents/plans/us-415-416-script-ux-golden-path/step-05-us-415-416-script-ux-golden-path.plan.report.md], deleted: [], modified: [] }, finishedAt: "2026-09-24T19:03:33Z", label: Verify, model: cursor-grok-4.7-medium, promptTokens: 0, subagentId: null }
     - { N: 6, agentType: "generic:task", completionTokens: 0, dispatchedAt: "2026-09-24T19:04:48Z", elapsedSec: 33, estimated: false, filesTouched: { created: [.agents/plans/us-415-416-script-ux-golden-path/step-06-us-415-416-script-ux-golden-path.review.md], deleted: [], modified: [] }, finishedAt: "2026-09-24T19:05:21Z", label: Code review, model: cursor-grok-4.7-medium, promptTokens: 0, subagentId: null }
     - { N: 7, agentType: "generic:task", completionTokens: 0, dispatchedAt: "2026-09-24T19:05:33Z", elapsedSec: 60, estimated: false, filesTouched: { created: [.agents/plans/us-415-416-script-ux-golden-path/step-07-us-415-416-script-ux-golden-path.testing.report.md], deleted: [], modified: [] }, finishedAt: "2026-09-24T19:06:33Z", label: Testing, model: composer-2.5, promptTokens: 0, subagentId: null }
-    - { N: 8, label: Ship, dispatchedAt: null, finishedAt: "2026-09-24T19:13:02Z", elapsedSec: 0, promptTokens: 0, completionTokens: 0, estimated: true, model: composer-2.5, filesTouched: { created: [.agents/plans/us-415-416-script-ux-golden-path/step-08-us-415-416-script-ux-golden-path.result.md], modified: [], deleted: [] }, agentType: null, subagentId: null }
-  totalElapsedSec: 828
+    - { N: 8, agentType: null, completionTokens: 0, dispatchedAt: null, elapsedSec: 0, estimated: true, filesTouched: { created: [.agents/plans/us-415-416-script-ux-golden-path/step-08-us-415-416-script-ux-golden-path.result.md], deleted: [], modified: [] }, finishedAt: "2026-09-24T19:13:02Z", label: Ship, model: composer-2.5, promptTokens: 0, subagentId: null }
+    - { N: 9, label: Fix PR, dispatchedAt: "2026-09-24T20:54:10Z", finishedAt: "2026-09-24T20:54:17Z", elapsedSec: 7, promptTokens: 0, completionTokens: 0, estimated: false, model: composer-2.5, filesTouched: { created: [], modified: [], deleted: [] }, agentType: "generic:task", subagentId: null }
+  totalElapsedSec: 835
   totalTokens: 0
 verificationScore: 10
 workflowId: us-415-416-script-ux-golden-path-20260924T190500Z
@@ -97,8 +104,6 @@ workflowManifest:
   deleted: []
   modified: [.agents/skills/ws-shared/runtime/gates.md, .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs, .agents/skills/ws-spec-to-pr-lite/SKILL.md, .agents/skills/ws-spec-to-pr/STEP-DISPATCH.md, .agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs, bin/skill-integrity.json, test/test-suites.json]
 workflowType: standard
-endedAt: "2026-09-24T19:13:02Z"
-shipStatus: pending
 ---
 # State
 

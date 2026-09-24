@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 15,
-  "generatedAt": "2026-09-24T19:13:02Z",
+  "revision": 17,
+  "generatedAt": "2026-09-24T20:54:17Z",
   "workflows": [
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
@@ -756,10 +756,10 @@
       "slug": "us-415-416-script-ux-golden-path",
       "pipeline": "standard",
       "statePath": ".agents/plans/us-415-416-script-ux-golden-path/us-415-416-script-ux-golden-path-20260924T190500Z.state.md",
-      "stateSha256": "9a2f21fc6db8de104042e15b6663df849baec39fb35e02d3d4cb523064e82b1d",
+      "stateSha256": "99697dfee21c05827e1f8aea7c16bcb3aa2f1c61013a246548224fc2cd6c2799",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-09-24T19:13:02Z",
+      "updatedAt": "2026-09-24T20:54:17Z",
       "runPath": ".agents/plans/us-415-416-script-ux-golden-path/us-415-416-script-ux-golden-path-20260924T190500Z.state.json"
     },
     {
