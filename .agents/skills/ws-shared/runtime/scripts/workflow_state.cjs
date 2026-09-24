@@ -816,6 +816,18 @@ function applyCloseAndShipStatus(state, options, pipeline, step, finishedAt, ste
     }
     state.shipStatus = value;
   }
+  // us-414 AC3: ship writeback — PR number/URL persist alongside shipStatus so
+  // a completed run never leaves ship fields empty after a merged PR.
+  if (options.prNumber !== undefined) {
+    const prNumber = String(options.prNumber).trim();
+    if (!prNumber) throw new Error('prNumber must be a non-empty PR number');
+    state.prNumber = prNumber;
+  }
+  if (options.prUrl !== undefined) {
+    const prUrl = String(options.prUrl).trim();
+    if (!prUrl) throw new Error('prUrl must be a non-empty PR URL');
+    state.prUrl = prUrl;
+  }
   const closeStep = CLOSE_STEP[pipeline];
   // The close-step branch is guarded against a failed earlier step so a failed
   // run cannot be closed by finishing the close step `completed`. It keeps the
@@ -1257,19 +1269,51 @@ function normalizeSubstep(value) {
   return KNOWN_SUBSTEPS.has(role) ? role : null;
 }
 
+function presetKeys(defaults) {
+  const presets = defaults?.modelPresets;
+  if (!presets || typeof presets !== 'object') return null;
+  return Object.keys(presets);
+}
+
+// us-414 AC1: an explicitly requested preset that is absent from
+// defaults.modelPresets fails closed. No-op when modelPresets is not an
+// object (nothing to be absent from) or when nothing was requested.
+function assertKnownPreset(defaults, requested) {
+  const name = typeof requested === 'string' ? requested.trim() : '';
+  if (!name) return name;
+  const keys = presetKeys(defaults);
+  if (!keys) return name;
+  if (!keys.includes(name)) {
+    throw new Error(`unknown modelsPreset "${name}" (available: ${[...keys].sort().join(', ')}); set defaults.modelsPreset to a listed preset or pass preset=<name>`);
+  }
+  return name;
+}
+
 function getActivePreset(defaults, presetOverride) {
   const presets = defaults?.modelPresets;
   if (!presets || typeof presets !== 'object') return null;
   const candidate = isNonEmptyModel(presetOverride) ? String(presetOverride).trim() : null;
-  if (candidate && presets[candidate]) {
-    return presets[candidate];
+  if (candidate) {
+    // us-414 AC1: an unknown explicit request never falls through to another
+    // preset's bundle; the dispatch gate throws first for runs.
+    return presets[candidate] || null;
   }
   const selected = defaults.modelsPreset;
-  if (isNonEmptyModel(selected) && presets[String(selected).trim()]) {
-    return presets[String(selected).trim()];
+  if (isNonEmptyModel(selected)) {
+    // us-414 AC1: an unknown configured preset never falls through to default.
+    return presets[String(selected).trim()] || null;
   }
   if (presets.default) return presets.default;
   return null;
+}
+
+// us-414 AC2: a preset name in a model field resolves to the concrete model id
+// for this step/role; genuine model ids pass through untouched.
+function resolvePresetNameToId(defaults, name, { step, role, pipeline = 'standard', sessionModel = 'unknown' }) {
+  const trimmed = typeof name === 'string' ? name.trim() : '';
+  const presets = defaults?.modelPresets;
+  if (!trimmed || !presets || typeof presets !== 'object' || !presets[trimmed]) return trimmed;
+  return resolvePhaseModel(defaults || {}, { step, role, pipeline, sessionModel, preset: trimmed });
 }
 
 function resolveStepOverride(defaults, preset, stepKey, role, pipeline) {
@@ -1427,6 +1471,11 @@ function resolveRecordedModelDetails(options, context, state, pipeline, step) {
     const prior = (state.stepDispatches || []).find((item) => Number(item.step) === Number(step));
     role = prior?.substep;
   }
+  // us-414 AC2: a preset name passed as --model resolves to the concrete id;
+  // genuine model ids pass through untouched.
+  if (isNonEmptyModel(options.model)) {
+    options.model = resolvePresetNameToId(context.config?.defaults || {}, options.model, { step, role, pipeline, sessionModel });
+  }
   const presetOverride = isNonEmptyModel(options.preset)
     ? String(options.preset).trim()
     : (isNonEmptyModel(state.modelsPreset) ? String(state.modelsPreset).trim() : undefined);
@@ -1526,6 +1575,18 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   const isProgressOperation = operation === 'checkpoint' || operation === 'pause-turn';
   const progressRecord = operation === 'checkpoint' ? parseCheckpointProgress(options, context) : null;
   const pauseRecord = operation === 'pause-turn' ? parsePauseTurnRecord(options, state, step) : null;
+  // us-414 AC1/AC5: fail closed on unknown preset requests and on the stale
+  // `dag` reason token before any mutation (dispatch path only; finish and
+  // bypass carry their own reason checks below).
+  if (operation === 'dispatch') {
+    const requestedPreset = isNonEmptyModel(options.preset)
+      ? String(options.preset).trim()
+      : (isNonEmptyModel(state.modelsPreset) ? String(state.modelsPreset).trim() : undefined);
+    assertKnownPreset(context.config?.defaults || {}, requestedPreset || context.config?.defaults?.modelsPreset);
+    if (options.reason !== undefined && options.reason !== null && String(options.reason).trim() === 'dag') {
+      throw new Error('invalid skipReason "dag" (ambiguous: use "dag-disabled" for the sequential Step 3 skip; a step whose step-03 exec artifacts exist ran — finish it completed)');
+    }
+  }
   const timestamp = String(options.timestamp || options.finishedAt || options.dispatchedAt || nowIso());
   const paths = statePaths(absoluteState, context);
   const priorHandoffOutput = operation === 'finish' ? readPriorHandoffOutput(loaded.state, step) : null;
@@ -1545,8 +1606,8 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
   if (isNonEmptyModel(options.preset)) {
     const requested = String(options.preset).trim();
     const presets = context.config?.defaults?.modelPresets;
-    const known = presets && typeof presets === 'object' && Boolean(presets[requested]);
-    if (known) {
+    assertKnownPreset({ modelPresets: presets }, requested);
+    if (presets && typeof presets === 'object' && presets[requested]) {
       state.modelsPreset = requested;
     }
   } else if (isNonEmptyModel(state.modelsPreset)) {
@@ -1720,6 +1781,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       }
     }
     if (status === 'skipped') {
+      if (String(options.reason || '').trim() === 'dag') throw new Error('invalid skipReason "dag" (ambiguous: use "dag-disabled" for the sequential Step 3 skip; a step whose step-03 exec artifacts exist ran - finish it completed)');
       if (!SKIP_REASONS.has(options.reason)) throw new Error(`skip reason must be one of: ${[...SKIP_REASONS].join(', ')}`);
       state.skippedSteps = [...(Array.isArray(state.skippedSteps) ? state.skippedSteps : []).filter((item) => Number(item.step) !== step), {
         step,
@@ -1740,7 +1802,8 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       state.currentStep = step;
       state.stepStatus[String(step)] = 'active';
     }
-    state.currentModel = String(options.model || state.currentModel || 'unknown');
+    // us-414 AC2: never record a preset name in the model field (self-heals pre-fix states too).
+    state.currentModel = resolvePresetNameToId(context.config?.defaults || {}, String(options.model || state.currentModel || 'unknown'), { step, role: options.substep, pipeline, sessionModel: String(state.currentModel || 'unknown') }) || 'unknown';
     if (isNonEmptyModel(options.configuredModel)) state.configuredModel = String(options.configuredModel).trim();
     if (isNonEmptyModel(state.configuredModel)) options.configuredModel = state.configuredModel;
     options.model = state.currentModel;
@@ -1860,6 +1923,7 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     };
   } else {
     if (!options.gate || !options.reason) throw new Error('bypass requires --gate and --reason');
+    if (String(options.reason).trim() === 'dag') throw new Error('invalid skipReason "dag" (ambiguous: use "dag-disabled" for the sequential Step 3 skip; a step whose step-03 exec artifacts exist ran - finish it completed)');
     event = {
       ...commonEvent(state, pipeline, step, 'gate-bypass', timestamp, options, context),
       gate: String(options.gate),
@@ -2250,11 +2314,13 @@ function updateHelpText(operation) {
       return 'Usage: update_state.cjs finish <state> --step N [--status completed|failed|skipped] [--reason "<text>"]\n'
         + '  [--created <path> ...] [--modified <path> ...] [--deleted <path> ...] [--noop "<reason>"]\n'
         + '  [--step-output <json>] [--verification-score N] [--commit <sha>] [--gate-decision ...] [--model <id>]\n'
+        + '  [--ship-status pending|skipped|pushed|pr-open|merged|stopped] [--pr-number <n>] [--pr-url <url>]\n'
         + 'Close step execution. File flags are repeatable; --step-output auto-discovers {us-dir}/.runtime/step-{N}-output.json.\n'
         + 'A completed mutating step requires non-empty filesTouched or an explicit --noop reason. Every listed path\n'
         + 'must exist in git (tracked, or present on disk and not ignored): phantom paths fail the finish without\n'
         + 'applying anything. Hand-editing the state files is unsupported; this command is the sanctioned writer.\n'
-        + 'Example: node update_state.cjs finish .agents/plans/slug/wf.state.md --step 4 --modified path/to/file.cjs\n';
+        + 'Example: node update_state.cjs finish .agents/plans/slug/wf.state.md --step 4 --modified path/to/file.cjs\n'
+        + 'Ship writeback (Steps 8-9): node update_state.cjs finish .agents/plans/slug/wf.state.md --step 8 --ship-status pr-open --pr-number 421 --pr-url https://example.com/pr/421\n';
     case 'finish-batch':
       return 'Usage: update_state.cjs finish-batch <state> --steps "N:status:reason,..."\n'
         + 'Bulk finish, usually for skips. A failure stops at that step with no rollback; fix the cause then\n'
@@ -2485,6 +2551,7 @@ module.exports = {
   resolvePackageVersion,
   resolveDispatchModel,
   resolveStepAgentType,
+  assertKnownPreset,
   performUpdate,
   resolvePhaseModel,
   resolveFixPrDispatchMode,
