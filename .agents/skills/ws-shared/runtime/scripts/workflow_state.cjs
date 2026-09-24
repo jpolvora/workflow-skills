@@ -15,7 +15,7 @@ const {
 // us-351: ac_ledger ships with the ws-spec-to-pr skill: beside the runtime in
 // the upstream package / global skills tree, under {skillsRoot} for project
 // consumer hubs (<repo>/.ws).
-const { scoreLedger } = require((() => {
+const { scoreLedger, ledgerContentHash } = require((() => {
   const packaged = path.resolve(__dirname, '..', '..', '..', 'ws-spec-to-pr', 'scripts', 'ac_ledger.cjs');
   try {
     require.resolve(packaged);
@@ -1761,6 +1761,9 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       fallbackArtifacts.push(path.join(paths.usDir, 'ac-ledger.json'));
     }
     const { created, modified, deleted, phantoms } = normalizeFilesTouched(output, options, context.repoRoot, fallbackArtifacts);
+    if (operation === 'finish' && phantoms.length) {
+      throw new Error(`cannot finish step ${step}: ${phantoms.length} filesTouched path(s) not in git (${phantoms.join(', ')}); nothing was applied (revision unchanged); fix the paths or drop them and re-run`);
+    }
     const finishNoop = options.noop === undefined || options.noop === null ? '' : String(options.noop).trim();
     if (options.noop !== undefined && options.noop !== null && (!finishNoop || finishNoop.startsWith('--'))) {
       throw new Error('finish --noop requires a non-empty reason (e.g. --noop "verification-only retry touched nothing")');
@@ -2203,8 +2206,28 @@ function validateSnapshot({ stateFile, indexFile, context, maxStep, preAdvance, 
       if (!derived || derived.score < minVerifyScore) {
         errors.push(`ledger score must be at least ${minVerifyScore} before step 6`);
       }
+      const ledgerRel = toRepoRelative(context.repoRoot, ledgerFile, { allowOutside: true });
+      const rescoreCommand = `ac_ledger.cjs score --ledger ${ledgerRel} --boundary ${boundary}`;
+      if (ledger.scoreState && ledger.scoreState.ledgerHash) {
+        let currentHash = null;
+        try {
+          currentHash = ledgerContentHash(ledger);
+        } catch {
+          currentHash = null;
+        }
+        if (currentHash && currentHash !== ledger.scoreState.ledgerHash) {
+          errors.push(`ledger content changed after scoring (possible hand-edit of ac-ledger.json, which is unsupported); re-run ${rescoreCommand} to re-persist scoreState`);
+        }
+      }
       if (!ledger.scoreState || Number(ledger.scoreState.score) !== derived?.score || ledger.scoreState.boundary !== boundary) {
-        errors.push(`ledger scoreState must match derived ${boundary} score`);
+        const persisted = ledger.scoreState || {};
+        const differing = [];
+        if (!ledger.scoreState) differing.push('scoreState is missing');
+        else {
+          if (persisted.boundary !== boundary) differing.push(`boundary "${persisted.boundary}" instead of "${boundary}"`);
+          if (Number(persisted.score) !== derived?.score) differing.push(`score ${persisted.score} instead of derived ${derived?.score}`);
+        }
+        errors.push(`ledger scoreState must match derived ${boundary} score (expected boundary "${boundary}"; ${differing.join('; ')}; re-run ${rescoreCommand}; hand-editing ac-ledger.json is unsupported, use ac_ledger.cjs link|score)`);
       }
       for (const error of derived?.errors || []) errors.push(`ledger: ${error}`);
       if ((ledger.acceptanceCriteria || []).some((row) => !row.commits?.length)) errors.push('every AC requires a linked product commit before step 6');
@@ -2217,15 +2240,53 @@ function validateSnapshot({ stateFile, indexFile, context, maxStep, preAdvance, 
   return { ok: true, workflowId: state.workflowId, revision: Number(state.revision), stateSha256: actualHash };
 }
 
+function updateHelpText(operation) {
+  switch (operation) {
+    case 'dispatch':
+      return 'Usage: update_state.cjs dispatch <state> --step N [--model <id>] [--agent-type <type>] [--subagent-id <id>] [--step-output <json>]\n'
+        + 'Open step execution (records dispatch telemetry, advances currentStep). <state> is the .state.md path or workflow id.\n'
+        + 'Example: node update_state.cjs dispatch .agents/plans/slug/wf.state.md --step 4\n';
+    case 'finish':
+      return 'Usage: update_state.cjs finish <state> --step N [--status completed|failed|skipped] [--reason "<text>"]\n'
+        + '  [--created <path> ...] [--modified <path> ...] [--deleted <path> ...] [--noop "<reason>"]\n'
+        + '  [--step-output <json>] [--verification-score N] [--commit <sha>] [--gate-decision ...] [--model <id>]\n'
+        + 'Close step execution. File flags are repeatable; --step-output auto-discovers {us-dir}/.runtime/step-{N}-output.json.\n'
+        + 'A completed mutating step requires non-empty filesTouched or an explicit --noop reason. Every listed path\n'
+        + 'must exist in git (tracked, or present on disk and not ignored): phantom paths fail the finish without\n'
+        + 'applying anything. Hand-editing the state files is unsupported; this command is the sanctioned writer.\n'
+        + 'Example: node update_state.cjs finish .agents/plans/slug/wf.state.md --step 4 --modified path/to/file.cjs\n';
+    case 'finish-batch':
+      return 'Usage: update_state.cjs finish-batch <state> --steps "N:status:reason,..."\n'
+        + 'Bulk finish, usually for skips. A failure stops at that step with no rollback; fix the cause then\n'
+        + 're-run the remaining steps.\n'
+        + 'Example: node update_state.cjs finish-batch .agents/plans/slug/wf.state.md --steps "2:skipped:interview-not-required,3:skipped:dag-disabled"\n';
+    case 'bypass':
+      return 'Usage: update_state.cjs bypass <state> --step N --gate <name> --reason "<text>"\n'
+        + 'Record a quality-gate bypass (only with --skip-gates or invariants.skipQualityGates active).\n'
+        + 'Example: node update_state.cjs bypass .agents/plans/slug/wf.state.md --step 4 --gate pre-advance --reason skip-gates\n';
+    case 'checkpoint':
+      return 'Usage: update_state.cjs checkpoint <state> --step N --progress \'<json>\' | --progress-file <path>\n'
+        + 'Record additive sub-step progress without closing the step.\n'
+        + 'Example: node update_state.cjs checkpoint .agents/plans/slug/wf.state.md --step 4 --progress-file .runtime/step-4-output.json\n';
+    case 'pause-turn':
+      return 'Usage: update_state.cjs pause-turn <state> --step N --reason "<text>" [--next-action "<text>"]\n'
+        + 'Record a turn-boundary pause marker so the next turn resumes deterministically.\n'
+        + 'Example: node update_state.cjs pause-turn .agents/plans/slug/wf.state.md --step 4 --reason "turn budget" --next-action "resume implement"\n';
+    default:
+      return 'Usage: update_state.cjs dispatch|finish|finish-batch|bypass|checkpoint|pause-turn <state> --step N [options]\n'
+        + '  finish-batch <state> --steps "2:skipped:interview-not-required,3:skipped:dag-disabled"\n'
+        + '  finish <state> --step 4 --noop "<reason>" (explicit no-op when a completed mutating step touched nothing)\n'
+        + '  checkpoint <state> --step N --progress \'<json>\' | --progress-file <path>\n'
+        + '  pause-turn <state> --step N --reason "<text>" [--next-action "<text>"]\n'
+        + 'Run with <operation> --help for flags and an example, e.g. update_state.cjs finish --help.\n';
+  }
+}
+
 function runUpdateCli(config) {
   try {
     const { positional, options } = parseArgs(process.argv.slice(2));
     if (options.help) {
-      process.stdout.write('Usage: update_state.cjs dispatch|finish|finish-batch|bypass|checkpoint|pause-turn <state> --step N [options]\n');
-      process.stdout.write('  finish-batch <state> --steps "2:skipped:interview-not-required,3:skipped:dag-disabled"\n');
-      process.stdout.write('  finish <state> --step 4 --noop "<reason>" (explicit no-op when a completed mutating step touched nothing)\n');
-      process.stdout.write('  checkpoint <state> --step N --progress \'<json>\' | --progress-file <path>\n');
-      process.stdout.write('  pause-turn <state> --step N --reason "<text>" [--next-action "<text>"]\n');
+      process.stdout.write(updateHelpText(positional[0]));
       return;
     }
     const [operation, stateFile] = positional;

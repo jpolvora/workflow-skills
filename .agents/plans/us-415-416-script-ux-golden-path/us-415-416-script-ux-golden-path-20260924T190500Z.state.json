@@ -1,0 +1,1063 @@
+{
+  "acImplemented": 10,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L582-L630"
+        ],
+        "files": [
+          {
+            "lineEnd": 630,
+            "lineStart": 582,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+            "sha256": "70e7b4c489d87bc92ae2fd1752aa067ca9ebce1b8b63c3772648fb6f7f8b4776"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "ev-ac1",
+          "g2-commit-c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf"
+        ],
+        "planSections": [
+          "section-003",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "bare --help keeps the generic usage line",
+            "phase": "observed",
+            "sourceFile": "test/test-script-ux-golden-path.js",
+            "timestamp": "2026-09-24T18:57:49.640Z"
+          }
+        ],
+        "text": "`node .agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs <subcommand> --help` documents that subcommand's required and optional flags with one example, for every subcommand (`init`, `link`, `sync-plan-index`, `verify`, `score`, `report`); the generic usage line alone no longer satisfies this AC.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L2243-L2289"
+        ],
+        "files": [
+          {
+            "lineEnd": 2289,
+            "lineStart": 2243,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "7cb110c9c9e13c8bac6024d865d26b7b26defcc319627b1b285f2087c064db9a"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "ev-ac2",
+          "g2-commit-c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf"
+        ],
+        "planSections": [
+          "section-003",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "update_state subcommand documents flags",
+            "phase": "observed",
+            "sourceFile": "test/test-script-ux-golden-path.js",
+            "timestamp": "2026-09-24T18:58:04.961Z"
+          }
+        ],
+        "text": "`node .agents/skills/ws-spec-to-pr/scripts/update_state.cjs <subcommand> --help` documents that subcommand's flags with one example, for every subcommand (`dispatch`, `finish`, `finish-batch`, `bypass`), including `--modified` / `--created` / `--deleted` / `--noop` on `finish`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L632-L640"
+        ],
+        "files": [
+          {
+            "lineEnd": 640,
+            "lineStart": 632,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+            "sha256": "70e7b4c489d87bc92ae2fd1752aa067ca9ebce1b8b63c3772648fb6f7f8b4776"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "ev-ac3",
+          "g2-commit-c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf"
+        ],
+        "planSections": [
+          "section-003",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "score help states it persists scoreState",
+            "phase": "observed",
+            "sourceFile": "test/test-script-ux-golden-path.js",
+            "timestamp": "2026-09-24T18:58:05.006Z"
+          }
+        ],
+        "text": "`ac_ledger` help states that `--ledger` plus a positional boundary (`score <boundary>`) is required, that `score` persists `scoreState` while `verify` is a dry run, and documents the `link` evidence-linking flags (`--ledger --event-id --ac/--negative/--gap/--plan-index/--commit`, task/test backfill).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L453-L508"
+        ],
+        "files": [
+          {
+            "lineEnd": 508,
+            "lineStart": 453,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+            "sha256": "70e7b4c489d87bc92ae2fd1752aa067ca9ebce1b8b63c3772648fb6f7f8b4776"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "ev-ac4",
+          "g2-commit-c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf"
+        ],
+        "planSections": [
+          "section-003",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "score exposes deficiencies[]",
+            "phase": "observed",
+            "sourceFile": "test/test-script-ux-golden-path.js",
+            "timestamp": "2026-09-24T18:58:05.057Z"
+          }
+        ],
+        "text": "`score` / `verify` output lists per-row deficiencies (missing `sha256` in `files[]` entries, unmapped `tests[]`, missing `tasks`/`planSections`, `knownDefect` cap at 8) instead of only the aggregate `missingEvidence` / `earnedUnits` numbers.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L2210-L2241"
+        ],
+        "files": [
+          {
+            "lineEnd": 2241,
+            "lineStart": 2210,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "7cb110c9c9e13c8bac6024d865d26b7b26defcc319627b1b285f2087c064db9a"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "ev-ac5",
+          "g2-commit-c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf"
+        ],
+        "planSections": [
+          "section-003",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "error names the expected boundary label",
+            "phase": "observed",
+            "sourceFile": "test/test-script-ux-golden-path.js",
+            "timestamp": "2026-09-24T18:58:05.107Z"
+          }
+        ],
+        "text": "`validate_state --pre-advance N` failures name the expected boundary label (`step5` vs `pre-step6` vs `ship`) and, when cheap to compute, the differing fields.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1764-L1766"
+        ],
+        "files": [
+          {
+            "lineEnd": 1766,
+            "lineStart": 1764,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "7cb110c9c9e13c8bac6024d865d26b7b26defcc319627b1b285f2087c064db9a"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "ev-ac6",
+          "g2-commit-c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf"
+        ],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-006",
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "phantom finish exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-script-ux-golden-path.js",
+            "timestamp": "2026-09-24T18:58:05.153Z"
+          }
+        ],
+        "text": "`finish` with phantom `filesTouched` paths is unambiguous: either it fails without applying, or it applies and exits 0. An `ok: true` payload with an incremented revision must never accompany a non-zero exit.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/gates.md:L198-L224"
+        ],
+        "files": [
+          {
+            "lineEnd": 224,
+            "lineStart": 198,
+            "path": ".agents/skills/ws-shared/runtime/gates.md",
+            "sha256": "ee51013e116978de0898d035514a09d7608a59c73c42f5179eb0b8896a651658"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [
+          "ev-ac7",
+          "g2-commit-c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf"
+        ],
+        "planSections": [
+          "section-003",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-script-ux-golden-path: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-script-ux-golden-path.js",
+            "timestamp": "2026-09-24T18:58:05.200Z"
+          }
+        ],
+        "text": "`ws-spec-to-pr` / `ws-spec-to-pr-lite` `STEP-DISPATCH` (or `gates.md`) prints the exact copy-paste commands at each gate boundary (e.g. pre-advance 6: `link --ledger ... --commit sha=<sha>,step=4`, then `score pre-step6`, then `finish --step 4/5`).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/plans/us-415-416-script-ux-golden-path/step-05-us-415-416-script-ux-golden-path.plan.report.md:L1-L14",
+          ".agents/plans/us-415-416-script-ux-golden-path/step-05-us-415-416-script-ux-golden-path.plan.report.md:L22-L35"
+        ],
+        "files": [
+          {
+            "lineEnd": 14,
+            "lineStart": 1,
+            "path": ".agents/plans/us-415-416-script-ux-golden-path/step-05-us-415-416-script-ux-golden-path.plan.report.md",
+            "sha256": "6a30c2341e5c85f9c5b7bb646ab6c825fb87b8452c28218a1c6c25f72e947966"
+          },
+          {
+            "lineEnd": 35,
+            "lineStart": 22,
+            "path": ".agents/plans/us-415-416-script-ux-golden-path/step-05-us-415-416-script-ux-golden-path.plan.report.md",
+            "sha256": "6a30c2341e5c85f9c5b7bb646ab6c825fb87b8452c28218a1c6c25f72e947966"
+          }
+        ],
+        "findings": [],
+        "id": "AC8",
+        "linkEventIds": [
+          "ev-ac8",
+          "ev-ac8-restamp",
+          "ev-ac8-restamp2",
+          "g2-commit-c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf"
+        ],
+        "planSections": [
+          "section-003",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-script-ux-golden-path: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-script-ux-golden-path.js",
+            "timestamp": "2026-09-24T18:58:05.247Z"
+          }
+        ],
+        "text": "A fresh agent completing a green slice reaches every gate using only documented commands, with zero hand-edits to `.state.*` or `ac-ledger.json`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L2209-L2231"
+        ],
+        "files": [
+          {
+            "lineEnd": 2231,
+            "lineStart": 2209,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "7cb110c9c9e13c8bac6024d865d26b7b26defcc319627b1b285f2087c064db9a"
+          }
+        ],
+        "findings": [],
+        "id": "AC9",
+        "linkEventIds": [
+          "ev-ac9",
+          "g2-commit-c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf"
+        ],
+        "planSections": [
+          "section-003",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "tamper error names the cause",
+            "phase": "observed",
+            "sourceFile": "test/test-script-ux-golden-path.js",
+            "timestamp": "2026-09-24T18:58:05.297Z"
+          }
+        ],
+        "text": "Any future hand-edit to `.state.*` / `ac-ledger.json` (`scoreState`, `commits[]`) either fails closed with a message naming the supported command, or is explicitly documented as supported; at minimum, skill text states hand-editing these files is unsupported.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "test/test-script-ux-golden-path.js:L160-L215"
+        ],
+        "files": [
+          {
+            "lineEnd": 215,
+            "lineStart": 160,
+            "path": "test/test-script-ux-golden-path.js",
+            "sha256": "cbd7672436b22b18f6f26d813856a47a93b46cf26a54e45029a1a6bb0bf4d733"
+          }
+        ],
+        "findings": [],
+        "id": "AC10",
+        "linkEventIds": [
+          "ev-ac10",
+          "g2-commit-c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf"
+        ],
+        "planSections": [
+          "section-003",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-script-ux-golden-path: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-script-ux-golden-path.js",
+            "timestamp": "2026-09-24T18:58:15.131Z"
+          }
+        ],
+        "text": "Existing suites (`npm run test`, `ws-check-harness`) stay green; new unit coverage pins the exit-code contract (AC6) and the boundary-label error content (AC5).",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "016215c5c28c3f13ffdf614a4d52f8d9141ce274918e5d3e276b2b12efa7165b",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      }
+    ],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "ev-ns1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "phantom finish exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-script-ux-golden-path.js",
+            "timestamp": "2026-09-24T18:58:15.179Z"
+          }
+        ],
+        "text": "NEG1: `finish --modified <nonexistent-file>` must not yield `ok: true` with a non-zero exit (red before fix, green after)."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "ev-ns2"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "step5-persisted ledger fails pre-advance 6",
+            "phase": "observed",
+            "sourceFile": "test/test-script-ux-golden-path.js",
+            "timestamp": "2026-09-24T18:58:15.231Z"
+          }
+        ],
+        "text": "NEG2: `validate_state --pre-advance 6` with a `step5`-persisted ledger must fail naming `pre-step6` (red before fix listing no label, green after)."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "ev-ns3"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "hand-flipped boundary fails pre-advance 6",
+            "phase": "observed",
+            "sourceFile": "test/test-script-ux-golden-path.js",
+            "timestamp": "2026-09-24T18:58:15.282Z"
+          }
+        ],
+        "text": "NEG3: hand-editing `scoreState.boundary` then advancing must fail closed naming `ac_ledger score <boundary>` (red before fix, green after)."
+      }
+    ],
+    "planIndexPath": ".agents/plans/us-415-416-script-ux-golden-path/.runtime/plan.index.json",
+    "revision": 28,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "step5",
+      "computedAt": "2026-09-24T19:12:17.865Z",
+      "deficiencies": [],
+      "earnedUnits": 100,
+      "errors": [],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "ledgerHash": "9e9302f3fa6a22073f0fcb601b626cb013fdb66cc78147016436fc24759d2fc2",
+      "missingEvidence": false,
+      "score": 10,
+      "totalUnits": 100,
+      "writer": "ac_ledger.cjs score"
+    },
+    "slug": "us-415-416-script-ux-golden-path",
+    "specPath": ".agents/plans/us-415-416-script-ux-golden-path/step-00-us-415-416-script-ux-golden-path.spec.md",
+    "testingSkip": null,
+    "workflowId": "us-415-416-script-ux-golden-path-20260924T190500Z"
+  },
+  "acTotal": 10,
+  "commits": [
+    {
+      "sha": "c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf",
+      "step": 5
+    }
+  ],
+  "completedSteps": [
+    0,
+    1,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "currentModel": "composer-2.5",
+  "currentStep": 9,
+  "endedAt": "2026-09-24T19:13:02Z",
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-415-416-script-ux-golden-path/step-00-us-415-416-script-ux-golden-path.spec.md",
+        ".agents/plans/us-415-416-script-ux-golden-path/ac-ledger.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "us-415-416-script-ux-golden-path",
+      "status": "completed",
+      "step": 0,
+      "summary": "Finished step 0",
+      "workflowId": "us-415-416-script-ux-golden-path-20260924T190500Z",
+      "workflowType": "standard"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-415-416-script-ux-golden-path/step-01-us-415-416-script-ux-golden-path.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "us-415-416-script-ux-golden-path",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "us-415-416-script-ux-golden-path-20260924T190500Z",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "us-415-416-script-ux-golden-path",
+      "status": "skipped",
+      "step": 2,
+      "summary": "Finished step 2",
+      "workflowId": "us-415-416-script-ux-golden-path-20260924T190500Z",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "us-415-416-script-ux-golden-path",
+      "status": "skipped",
+      "step": 3,
+      "summary": "Finished step 3",
+      "workflowId": "us-415-416-script-ux-golden-path-20260924T190500Z",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [
+        "test/test-script-ux-golden-path.js",
+        ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+        ".agents/skills/ws-shared/runtime/gates.md",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+        ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+        "test/test-suites.json",
+        "bin/skill-integrity.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "us-415-416-script-ux-golden-path",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "us-415-416-script-ux-golden-path-20260924T190500Z",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-415-416-script-ux-golden-path/step-05-us-415-416-script-ux-golden-path.plan.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "us-415-416-script-ux-golden-path",
+      "status": "completed",
+      "step": 5,
+      "summary": "Finished step 5",
+      "workflowId": "us-415-416-script-ux-golden-path-20260924T190500Z",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-415-416-script-ux-golden-path/step-06-us-415-416-script-ux-golden-path.review.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "us-415-416-script-ux-golden-path",
+      "status": "completed",
+      "step": 6,
+      "summary": "Finished step 6",
+      "workflowId": "us-415-416-script-ux-golden-path-20260924T190500Z",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-415-416-script-ux-golden-path/step-07-us-415-416-script-ux-golden-path.testing.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "us-415-416-script-ux-golden-path",
+      "status": "completed",
+      "step": 7,
+      "summary": "Finished step 7",
+      "workflowId": "us-415-416-script-ux-golden-path-20260924T190500Z",
+      "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-415-416-script-ux-golden-path/step-08-us-415-416-script-ux-golden-path.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-415-416-script-ux-golden-path",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "us-415-416-script-ux-golden-path-20260924T190500Z",
+      "workflowType": "standard"
+    }
+  },
+  "nextAction": "Run step 9",
+  "revision": 15,
+  "shipStatus": "pending",
+  "skippedSteps": [
+    {
+      "evidence": "",
+      "reason": "interview-not-required",
+      "step": 2
+    },
+    {
+      "evidence": "",
+      "reason": "dag-disabled",
+      "step": 3
+    }
+  ],
+  "slug": "us-415-416-script-ux-golden-path",
+  "statePath": ".agents/plans/us-415-416-script-ux-golden-path/us-415-416-script-ux-golden-path-20260924T190500Z.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-24T18:50:06Z",
+      "model": "cursor-grok-4.7-high",
+      "step": 0
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-24T18:50:18Z",
+      "model": "cursor-grok-4.7-high",
+      "step": 1
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-24T18:51:02Z",
+      "model": "composer-2.5",
+      "step": 4
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-24T18:56:52Z",
+      "model": "cursor-grok-4.7-medium",
+      "step": 5
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-24T19:04:48Z",
+      "model": "cursor-grok-4.7-medium",
+      "step": 6
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-24T19:05:33Z",
+      "model": "composer-2.5",
+      "step": 7
+    }
+  ],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "skipped",
+    "3": "skipped",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed"
+  },
+  "telemetry": {
+    "steps": [
+      {
+        "N": 0,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-24T18:50:06Z",
+        "elapsedSec": 8,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-415-416-script-ux-golden-path/step-00-us-415-416-script-ux-golden-path.spec.md",
+            ".agents/plans/us-415-416-script-ux-golden-path/ac-ledger.json"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-24T18:50:14Z",
+        "label": "Spec",
+        "model": "cursor-grok-4.7-high",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 1,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-24T18:50:18Z",
+        "elapsedSec": 1,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-415-416-script-ux-golden-path/step-01-us-415-416-script-ux-golden-path.plan.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-24T18:50:19Z",
+        "label": "Planning",
+        "model": "cursor-grok-4.7-high",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-24T18:50:23Z",
+        "label": "Interview",
+        "model": "cursor-grok-4.7-high",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-24T18:50:23Z",
+        "label": "Plan to tasks",
+        "model": "cursor-grok-4.7-high",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-24T18:51:02Z",
+        "elapsedSec": 325,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            "test/test-script-ux-golden-path.js"
+          ],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+            ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            ".agents/skills/ws-shared/runtime/gates.md",
+            ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+            ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+            "test/test-suites.json",
+            "bin/skill-integrity.json"
+          ]
+        },
+        "finishedAt": "2026-09-24T18:56:27Z",
+        "label": "Implement",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-24T18:56:52Z",
+        "elapsedSec": 401,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-415-416-script-ux-golden-path/step-05-us-415-416-script-ux-golden-path.plan.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-24T19:03:33Z",
+        "label": "Verify",
+        "model": "cursor-grok-4.7-medium",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 6,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-24T19:04:48Z",
+        "elapsedSec": 33,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-415-416-script-ux-golden-path/step-06-us-415-416-script-ux-golden-path.review.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-24T19:05:21Z",
+        "label": "Code review",
+        "model": "cursor-grok-4.7-medium",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 7,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-24T19:05:33Z",
+        "elapsedSec": 60,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-415-416-script-ux-golden-path/step-07-us-415-416-script-ux-golden-path.testing.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-24T19:06:33Z",
+        "label": "Testing",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-415-416-script-ux-golden-path/step-08-us-415-416-script-ux-golden-path.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-24T19:13:02Z",
+        "label": "Ship",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 828,
+    "totalTokens": 0
+  },
+  "verificationScore": 10,
+  "workflowId": "us-415-416-script-ux-golden-path-20260924T190500Z",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/us-415-416-script-ux-golden-path/ac-ledger.json",
+      ".agents/plans/us-415-416-script-ux-golden-path/step-00-us-415-416-script-ux-golden-path.spec.md",
+      ".agents/plans/us-415-416-script-ux-golden-path/step-01-us-415-416-script-ux-golden-path.plan.md",
+      ".agents/plans/us-415-416-script-ux-golden-path/step-05-us-415-416-script-ux-golden-path.plan.report.md",
+      ".agents/plans/us-415-416-script-ux-golden-path/step-06-us-415-416-script-ux-golden-path.review.md",
+      ".agents/plans/us-415-416-script-ux-golden-path/step-07-us-415-416-script-ux-golden-path.testing.report.md",
+      ".agents/plans/us-415-416-script-ux-golden-path/step-08-us-415-416-script-ux-golden-path.result.md",
+      "test/test-script-ux-golden-path.js"
+    ],
+    "deleted": [],
+    "modified": [
+      ".agents/skills/ws-shared/runtime/gates.md",
+      ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+      ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+      ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+      ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+      "bin/skill-integrity.json",
+      "test/test-suites.json"
+    ]
+  },
+  "workflowType": "standard"
+}
