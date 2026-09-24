@@ -16,6 +16,26 @@ node {skillsRoot}/ws-monitor/scripts/monitor_snapshot.cjs --watch --interval 10 
 node {skillsRoot}/ws-monitor/scripts/monitor_snapshot.cjs --watch --interval 5 --iterations 20 --json
 ```
 
+## Default live watch profile (poll until terminal, follow transcript, file a defect issue)
+
+```bash
+# 60s poll until the scoped workflow is terminal; follow the transcript by
+# session id; detect stall/hang; propose an enriched defect issue and write the report.
+node {skillsRoot}/ws-monitor/scripts/monitor_snapshot.cjs --slug us-example \
+  --watch --interval 60 --until-terminal --follow-transcript \
+  --session-id "<session-id>" --agent "<agent-name>" --open-issue \
+  --report {plansDir}/us-example/workflow-monitor.report.md
+
+# Advisory: propose the issue without filing (the skill skips create-issue)
+node {skillsRoot}/ws-monitor/scripts/monitor_snapshot.cjs --slug us-example --open-issue --dry-run --json
+
+# Override the stall/hang threshold (seconds)
+node {skillsRoot}/ws-monitor/scripts/monitor_snapshot.cjs --slug us-example --stall-window 1800 --json
+```
+
+The proposal body is written to `{plansDir}/us-example/workflow-monitor.issue.md`; the skill
+then runs the configured provider `create-issue` intent (GitHub/ADO) with that title/body.
+
 ## Observe multi-spec batch runs (ws-spec-multi)
 
 ```bash

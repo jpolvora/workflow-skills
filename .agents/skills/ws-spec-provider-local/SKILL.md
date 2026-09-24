@@ -1,7 +1,7 @@
 ---
 name: ws-spec-provider-local
 description: Local Markdown spec provider — detects, normalizes, and registers hand-written *.spec.md feature specifications into canonical pipeline artifacts.
-version: 0.4.66
+version: 0.4.67
 disable-model-invocation: true
 invocation_names:
   - spec-provider-local
@@ -74,7 +74,7 @@ Registering never leaves a workflow copy without a spec of record.
 |--------|----------|
 | `fetch-to-spec` | Normalize → write spec of record under `{specsDir}`, then workflow copy `step-00`; stamps `--source` (default `local`); skip Step 0 |
 | `validate-auth` | `specsDir` exists/creatable; `config.json` writable when configuring |
-| `create-pr` / `list-threads` / `sweep-prior-work` / `check-pr-status` / `resolve-thread` / `comment-issue` / `close-issue` / `merge-pr` | **Delegate** to `providers.scm` |
+| `create-pr` / `list-threads` / `sweep-prior-work` / `check-pr-status` / `resolve-thread` / `comment-issue` / `close-issue` / `create-issue` / `merge-pr` | **Delegate** to `providers.scm` |
 
 ### Provider resolution
 

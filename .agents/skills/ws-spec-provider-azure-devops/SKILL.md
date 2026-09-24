@@ -1,7 +1,7 @@
 ---
 name: ws-spec-provider-azure-devops
 description: Azure DevOps work-item→spec and PR ops. Same required intents as GitHub (scm-provider-contract). Trigger when providers.scm is azure-devops.
-version: 0.4.66
+version: 0.4.67
 disable-model-invocation: true
 invocation_names:
   - spec-provider-azure-devops
@@ -60,6 +60,7 @@ Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/runtime/scm
 | `resolve-thread` | thread id (+ PR id, comment; optional `--model`) | Resolved (or dry-run); comment describes the correction (not hash-only); footer `LLM model: {id}` when `--model` set | `fix_pr_azure_context.cjs resolve-thread` |
 | `comment-issue` | work item id, body | WIT comment (alias `close-loop`; comment-only) | `comment_issue.cjs` → WIT Comments `api-version=7.1-preview.4` |
 | `close-issue` | work item id | Work item closed / skipped / dry-run | `close_issue.cjs` → WIT `System.State` PATCH (`Closed`, fallback `Done`) |
+| `create-issue` | title, body (+ optional work-item type) | New work-item URL + id | `create_issue.cjs` → WIT work-item create (anonymized defect report; `--dry-run` prints the payload) |
 | `merge-pr` | PR id | Merged | Wait policies then `az repos pr update --status completed` |
 
 **Spec path rule:** `fetch-to-spec` **always** writes the agentic-enhanced spec of record first (via `ws-spec-write` / `resolve_spec_path.cjs`), then promotes it to `{us-dir}/step-00-{slug}.spec.md` via [ws-spec-provider-local](../ws-spec-provider-local/SKILL.md) `register_local_spec.cjs --source azure-devops`. Never write `step-00` straight from the converter, and never skip the `{specsDir}` copy.
@@ -80,6 +81,7 @@ Prefer these paths (legacy orch/fix-pr shims may forward here):
 | Prior-work sweep | `{skillsRoot}/ws-spec-provider-azure-devops/scripts/sweep_prior_work.cjs` |
 | Comment on work item | `{skillsRoot}/ws-spec-provider-azure-devops/scripts/comment_issue.cjs` |
 | Close work item | `{skillsRoot}/ws-spec-provider-azure-devops/scripts/close_issue.cjs` |
+| Create work item | `{skillsRoot}/ws-spec-provider-azure-devops/scripts/create_issue.cjs` |
 
 ## Config keys
 

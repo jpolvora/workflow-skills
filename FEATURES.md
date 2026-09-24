@@ -129,7 +129,7 @@ The suite's central claim is that nothing ships on an agent's word alone. Every 
 
 GitHub and Azure DevOps are interchangeable backends. Orchestrators call intents **by name** and never embed `gh` or `az` directly; host CLI recipes live inside each provider's `INTENTS.md`.
 
-Ten required intents, enforced by `node test/test-provider-parity.js` in `npm run test` (tables, INTENTS headings, and implementation: sweep/comment/close CLI + JSON aliases, local-spec SCM delegates, `resolve-thread --dry-run`, optional Azure `--model`):
+Eleven required intents, enforced by `node test/test-provider-parity.js` in `npm run test` (tables, INTENTS headings, and implementation: sweep/comment/close/create CLI + JSON aliases, local-spec SCM delegates, `resolve-thread --dry-run`, optional Azure `--model`):
 
 | Intent | Guarantee |
 |--------|-----------|
@@ -142,6 +142,7 @@ Ten required intents, enforced by `node test/test-provider-parity.js` in `npm ru
 | `resolve-thread` | Skips remote mutation under `dry-run` |
 | `comment-issue` | Posts the PR URL and summary back to the tracker; skipped for local specs |
 | `close-issue` | Explicit tracker state transition after merge (`gh issue close` / ADO WIT `Closed`); skipped for local specs |
+| `create-issue` | Opens a new tracker issue/work item carrying an anonymized, enriched defect report (failure class + contract to change); `dry-run` prints the payload; used by `ws-monitor --open-issue` |
 | `merge-pr` | Waits for required checks; never deletes `project.workingBranch` |
 
 Adding an intent to only one provider fails CI unless an allowlist row explains why the other host cannot mirror it. Contract: [`scm-provider-contract.md`](.agents/skills/ws-shared/runtime/scm-provider-contract.md).
@@ -201,7 +202,7 @@ Meta-skills that keep the suite itself honest.
 | `ws-check-harness` | Install mode/scope detection (upstream, project, global, hybrid) plus routing, links, portability, integrity digests, instruction duplication, role clarity, skill composition topology |
 | `ws-check-workflows` | FSM simulation of standard, lite, and multi-spec pipelines: step continuity, state isolation, provider dispatch, artifact transitions |
 | `ws-doctor` | Read-only diagnosis of path errors, tool recipes, config switches, and missing references across installed skills |
-| `ws-monitor` | Read-only live observation of workflow state, telemetry, expected artifacts, and configured transcript roots; per-root discovery budget + one shared sanitized correlation window (honest `scan-capped`), `worker-session-paused` replaces the stall warning under a turn-boundary pause, `--watch --until-terminal` exits on a non-active scoped workflow; multi-spec runs derive child-state expectations from the queue and surface `missing-child-state` |
+| `ws-monitor` | Read-only live observation of workflow state, telemetry, expected artifacts, and configured transcript roots; per-root discovery budget + one shared sanitized correlation window (honest `scan-capped`), `worker-session-paused` replaces the stall warning under a turn-boundary pause, `--watch --until-terminal` exits on a non-active scoped workflow; multi-spec runs derive child-state expectations from the queue and surface `missing-child-state`; the default live watch profile (`--watch --interval 60 --until-terminal --follow-transcript --session-id <id> --agent <name> --open-issue`) follows a session, detects stall/hang via a `stopwatch` (`worker-session-stall` / `stalled-workflow`, `--stall-window`), and proposes an enriched anonymized defect issue for the configured SCM provider `create-issue` intent |
 | `ws-show-harness` | Snapshot of the active session: loaded skills, rules, precedence hierarchy |
 | `ws-preview` | Consumer-configured local pipeline review dry-run (`preview.dryRunCommand`) without publishing PR threads |
 | `ws-write-a-skill` | Authoring and progressive-disclosure tuning protocol for new skills |
@@ -223,7 +224,7 @@ Diagnostics can be persisted under `plans.diagnosticsDir`. `workflow-skills tele
 | `ws-spec-explain` | Read-only panorama of a spec or US/issue: status, what it does, what it delivered, how to check in the project/UI, and how to test |
 | `ws-spec-archive` | Harvests `{plansDir}` state, artifacts, git/changelog/MEMORY (and optional SCM) into `{specsDir}/index.PRD` Archive, then proposes a commit that removes eligible shipped plan folders |
 | `ws-cleanup` | Lists disposable workflow leftovers (telemetry, `.runtime`, audit logs, shipped plan dirs, untracked orphans under partially tracked shipped plans), confirms via user-gate, deletes only approved untracked paths, and suggests missing `.gitignore` patterns |
-| `ws-monitor` | Snapshots active workflow runs, classifies live execution signals (including multi-spec `missing-child-state` / `stale-parent-row`, and `worker-session-paused` vs `worker-session-stall`), supports `--watch --until-terminal` for unattended watching, and emits an optional consumer-local report without applying fixes |
+| `ws-monitor` | Snapshots active workflow runs, classifies live execution signals (including multi-spec `missing-child-state` / `stale-parent-row`, `worker-session-paused` vs `worker-session-stall`, and `stalled-workflow` hangs), supports `--watch --until-terminal` for unattended watching, follows a transcript by `--session-id`, and proposes an enriched anonymized defect issue (`--open-issue`) for the SCM provider `create-issue` intent; emits an optional consumer-local report without applying fixes |
 
 ---
 
@@ -294,6 +295,7 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-09-19).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.4.67** | Sep 24 | **ws-monitor live watch profile + SCM defect issue:** default profile (`--watch --interval 60 --until-terminal --follow-transcript --session-id <id> --agent <name> --open-issue`) polls until terminal, follows a session, detects stall/hang via a `stopwatch` (`worker-session-stall` / `stalled-workflow`, `--stall-window`), and proposes an enriched anonymized defect issue; new SCM `create-issue` intent on GitHub + Azure DevOps (`create_issue.cjs`) with parity coverage |
 | **0.4.59** | Sep 22 | **Ownership-scoped git contract for parallel writers (`us-401`):** sessions stage only their own paths, never run whole-tree `reset`/`checkout`/`restore`/`clean`/`stash`/force-push, tolerate foreign dirty trees, and advance `baselineCommit` forward via `refresh_baseline.cjs` (STOP on foreign-path overlap); canonical contract in `.agents/skills/ws-shared/runtime/git-ownership.md` referenced by both orchestrators, `ws-spec-multi`, `ws-fix-pr`, and the G2 commit recipes |
 | **0.4.58** | Sep 22 | **Close the source issue on ship (GitHub):** `ws-ship-pr` Step 5 keeps `Closes #{id}` in the PR body via `ensure_pr_closer.cjs` (idempotent; no-op for null ids and non-GitHub providers) so merging the PR closes the source issue; wired through the provider contract, GitHub `create-pr` procedure, and standard/lite Step 8/4 dispatch |
 | **0.4.55** | Sep 22 | **Side-effect-free test suite for the hub config (`us-389`):** every test invocation of `Edit-WorkflowSkillsConfig.ps1` passes an explicit `-ConfigPath` to an isolated temp copy; `-CheckOnly` / `-NonInteractive` are strictly read-only (no rewrite, no `.bak`) even when `-ConfigPath` is omitted; the suite runner byte-compares `.ws/config.json` before/after and fails on mutation |

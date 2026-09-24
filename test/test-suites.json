@@ -409,6 +409,9 @@
       "test/test-ws-monitor-liveness.js"
     ],
     [
+      "test/test-ws-monitor-watch-profile.js"
+    ],
+    [
       "test/test-verify-child-artifacts-us388.js"
     ],
     [

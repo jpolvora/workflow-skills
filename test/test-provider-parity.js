@@ -109,6 +109,7 @@ for (const id of [
   'sweep-prior-work',
   'comment-issue',
   'close-issue',
+  'create-issue',
 ]) {
   assert(required.includes(id), `required includes ${id}`);
 }
@@ -437,6 +438,18 @@ for (const skillId of ['ws-spec-provider-github', 'ws-spec-provider-azure-devops
   }
   assert(closeSrc.includes('skipped'), `${skillId} close_issue.cjs skips null tracker id`);
   assert(closeSrc.includes('--dry-run'), `${skillId} close_issue.cjs supports dry-run`);
+  const createSrc = read(path.join(SKILLS, skillId, 'scripts/create_issue.cjs'));
+  for (const flag of ['--title', '--body-file', '--body', '--dry-run', '--repo-root']) {
+    assert(createSrc.includes(flag), `${skillId} create_issue.cjs has ${flag}`);
+  }
+  assert(
+    /anonymized/i.test(createSrc),
+    `${skillId} create_issue.cjs requires an anonymized defect report body`,
+  );
+  assert(
+    createSrc.includes('validate-auth') || createSrc.includes('validateAuth'),
+    `${skillId} create_issue.cjs validates auth before mutate`,
+  );
   if (skillId === 'ws-spec-provider-github') {
     assert(/issue',\s*'close'/.test(closeSrc) || /issue close/.test(closeSrc),
       'GitHub close_issue.cjs uses gh issue close');
@@ -550,6 +563,21 @@ for (const skillId of ['ws-spec-provider-github', 'ws-spec-provider-azure-devops
   );
   assert(closeSkip.status === 0, `${skillId} close_issue.cjs --id null exits 0`);
   assert(/skipped/.test(closeSkip.stdout || ''), `${skillId} close_issue.cjs --id null prints skipped`);
+
+  const createDry = spawnSync(
+    process.execPath,
+    [path.join(SKILLS, skillId, 'scripts/create_issue.cjs'), '--title', 'x', '--body', 'y', '--dry-run'],
+    { encoding: 'utf8', cwd: REPO },
+  );
+  assert(createDry.status === 0, `${skillId} create_issue.cjs --dry-run exits 0`);
+  assert(/dry-run/.test(createDry.stdout || ''), `${skillId} create_issue.cjs --dry-run prints dry-run`);
+  let createEnvelope = null;
+  try {
+    createEnvelope = JSON.parse(createDry.stdout || '{}');
+  } catch {
+    createEnvelope = null;
+  }
+  assert(createEnvelope && createEnvelope.provider, `${skillId} create_issue.cjs --dry-run prints provider JSON`);
 
   const closeDry = spawnSync(
     process.execPath,

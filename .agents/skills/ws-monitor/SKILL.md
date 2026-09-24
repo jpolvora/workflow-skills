@@ -1,7 +1,7 @@
 ---
 name: ws-monitor
 description: Read-only live observer for active Spec-to-PR and multi-spec workflow runs, memory vault status, telemetry, artifacts, and multi-host transcripts.
-version: 0.4.66
+version: 0.4.67
 disable-model-invocation: true
 invocation_names:
   - monitor
@@ -40,9 +40,33 @@ Upstream issue text must be anonymized before filing: remove consumer repository
 /ws-monitor --watch --interval <seconds> --until-terminal
 /ws-monitor --vault
 /ws-monitor --discover-host-transcripts
+/ws-monitor --follow-transcript --session-id <id> [--agent <name>] --open-issue --report <path>
 ```
 
 The command observes all workflow folders under the configured `plans.dir` by default. Use `--json` for machine-readable output and `--report <path>` to save a consumer-local report. `--watch` requires positive-integer `--iterations` **or** `--until-terminal` (mutually exclusive; a usage error exits non-zero before any scan); `--interval` must also be a positive integer when supplied. `--until-terminal` repeats snapshots until the scoped report has no workflow in `active` / `blocked` / `in_progress`, then exits 0 — bounded unattended watching without an external poll loop.
+
+## Default prompt parameters (live watch profile)
+
+A natural-language invocation of the form
+
+```text
+ws-monitor full live watch poll every minute until workflow finished + session id = '<id>' agent <name> follow transcript and open SCM provider issue, detect stall or hung up stopwatch, show report when workflow finished
+```
+
+activates the **default watch profile**. When any part of that phrasing appears, apply the mapped parameters without re-asking; `agent` and `session id` are optional (omit `--session-id` to correlate by slug/workflow id).
+
+| Prompt parameter | Applied flag | Behavior |
+|------------------|--------------|----------|
+| full live watch | `--watch` | Repeated snapshots instead of one |
+| poll every minute until workflow finished | `--interval 60 --until-terminal` | 60s cadence; exit when the scoped report has no `active`/`blocked`/`in_progress` workflow |
+| session id = '<id>' | `--session-id <id>` | Alternative transcript correlation key (a session may not mention the slug) |
+| agent <name> (optional) | `--agent <name>` | Annotates the report/issue with the observed agent; no filtering side effects |
+| follow transcript | `--follow-transcript` (alias of `--discover-host-transcripts`) | Enables bounded host-session discovery |
+| open SCM provider issue | `--open-issue` | Proposes an enriched defect issue and writes the body; the skill runs the configured provider `create-issue` intent at terminal |
+| detect stall or hung up stopwatch | `--stall-window <sec>` (default 600) | `worker-session-stall` (idle session) / `stalled-workflow` (hung state/telemetry clock); `stopwatch` reports idle vs threshold |
+| show report when workflow finished | `--report <path>` | Writes the final Markdown report when the watch exits |
+
+Profile flags stay explicit: nothing changes unless the phrasing or the flags are present. `--dry-run` keeps `--open-issue` advisory (proposal only, no tracker mutation).
 
 ## Steps
 
@@ -69,6 +93,21 @@ When watching a live running workflow in the background or during paired session
   - `stale-state`: telemetry timestamp is newer than state file mtime (> 5 seconds), indicating delayed state flush or revision race.
   - Pause vs stall: a workflow whose state carries `state.turnPause` is **paused at a turn boundary** — report `worker-session-paused` (info) and never `worker-session-stall` for it; the stall warning applies only to an active workflow with an available, idle session and **no** pause marker.
   - Stalled turn: if a transcript indicates `turn_ended` without a corresponding workflow handoff or state update.
+  - Stopwatch: each active workflow exposes `stopwatch` (`lastActivityAt`, `idleMs`, `thresholdMs`, `stalled`, `source`); `--stall-window <seconds>` overrides the default 600s threshold.
+  - Hung workflow: no correlated session and the state/telemetry clock has not advanced beyond the threshold → `stalled-workflow` (warning). A turn-boundary pause marker suppresses both stall signals.
+
+## Detecting workflow defects & opening a fix issue
+
+The live watch exists to catch **workflow misbehavior**: failed operations, workarounds, and stalls that point at an instruction, tool-calling spec, contract, or logic that should change. The observer never patches code or state; it reports the failure class and the contract to fix.
+
+- **Actionable signals:** every `critical` / `warning` finding is a candidate defect (`missing-artifact`, `missing-exec-artifact`, `step-drift`, `empty-files-touched`, `stale-state`, `context-mismatch`, `config-unreadable`, `telemetry-parse-error`, `hybrid-path-resolution`, `model-fallback`, `turn-ended`, `generic-dispatch`, `subagent-error`, `worker-session-stall`, `stalled-workflow`, `terminal-run-active`, and the multi-spec queue signals).
+- **Stopwatch:** `source: session` uses the correlated session mtime; `source: state-telemetry` is the hung-workflow clock when no session is available.
+- **Enriched proposal:** with `--open-issue`, `report.issueProposal` carries `provider`, `title`, `codes`, `slugs`, `dryRun`, and an anonymized `body`; the body is written to `{plansDir}/{slug}/workflow-monitor.issue.md` (or `{plansDir}/workflow-monitor.issue.md`) and `bodyPath` is reported.
+- **Filing (opt-in, agent step):** when the proposal exists and the run is not `dry-run`, load the configured SCM provider (`providers.scm`) and run its `create-issue` intent with the proposed title/body:
+  - GitHub: `node {skillsRoot}/ws-spec-provider-github/scripts/create_issue.cjs --title "<title>" --body-file <bodyPath> [--label bug]`
+  - Azure DevOps: `node {skillsRoot}/ws-spec-provider-azure-devops/scripts/create_issue.cjs --title "<title>" --body-file <bodyPath> [--type Bug]`
+  - `provider: unresolved` → do not file; report the missing `providers.scm` and stop.
+- **Anonymization guardrail:** strip consumer repository names, local paths, hostnames, tracker ids, transcripts, credentials, and customer data before filing. The proposal body is already sanitized; re-check before posting.
 
 ## Multi-Spec Batch Monitoring (`ws-spec-multi`)
 
@@ -118,7 +157,8 @@ Transcripts provide secondary evidence to diagnose why a subagent or orchestrato
 - **Shared correlation window:** the scan sanitizes each bounded window once, filters on that same window, stores it, and `transcriptSource` resolution matches the identical window — a file the scan counted always resolves `available` when it matches, and `scan-capped` is reported only when the scan stopped before reading the matching file (`discovery-disabled` / `no-matching-session` / `scan-capped`).
 - **Discovery:**
   - Workspace candidate roots are auto-discovered if they exist in the repository.
-  - User-level / host IDE transcript paths are scanned when passing `--discover-host-transcripts` or configured via `monitor.discoverHostTranscripts` (`monitor.hostHome` overrides the home; `monitor.transcriptRoots` adds explicit roots) or `--transcript-root <path>`.
+  - User-level / host IDE transcript paths are scanned when passing `--discover-host-transcripts` (alias `--follow-transcript`) or configured via `monitor.discoverHostTranscripts` (`monitor.hostHome` overrides the home; `monitor.transcriptRoots` adds explicit roots) or `--transcript-root <path>`.
+  - `--session-id <id>` adds an alternative correlation key so a session that does not mention the slug/workflow id still resolves; `--agent <name>` annotates the report and issue proposal.
 - **Diagnostic pattern scanning:**
   - `hybrid-path-resolution`: a resolution failure (`ENOENT` family) adjacent to dispatch-context construction (missing skills or path resolution failures; bare script-name substrings stay silent).
   - `model-fallback`: a rejected, unsupported, or unavailable model identifier inside a dispatch record (docs prose and reconciler outcomes stay silent).
@@ -153,6 +193,7 @@ Transcripts provide secondary evidence to diagnose why a subagent or orchestrato
 | Transcript contains an unhandled error with a stack trace (`subagent-error`) | Warning | Subagent or worker crashed or threw an unhandled exception |
 | Worker session idle while workflow is active (`worker-session-stall`) | Warning | The correlated session shows no recent activity and the state carries no turn-boundary pause marker; possible stall |
 | Workflow paused at a turn boundary (`worker-session-paused`) | Info | `state.turnPause` is present: the host turn ended mid-step; awaiting continuation. Replaces `worker-session-stall` while set |
+| Workflow active but state/telemetry clock idle beyond the threshold (`stalled-workflow`) | Warning | No correlated session and no state/telemetry progress; possible hang. Suppressed by a turn-boundary pause marker |
 
 ## Launcher
 
@@ -165,6 +206,13 @@ node {skillsRoot}/ws-monitor/scripts/monitor_snapshot.cjs --watch --interval 10 
 
 # Watch until the scoped workflow leaves active|blocked|in_progress
 node {skillsRoot}/ws-monitor/scripts/monitor_snapshot.cjs --slug us-example --watch --interval 10 --until-terminal
+
+# Default live watch profile: 60s poll until terminal, follow transcript by
+# session id, detect stall/hang, and propose an enriched defect issue
+node {skillsRoot}/ws-monitor/scripts/monitor_snapshot.cjs --slug us-example \
+  --watch --interval 60 --until-terminal --follow-transcript \
+  --session-id "<session-id>" --agent "<agent-name>" --open-issue \
+  --report {plansDir}/us-example/workflow-monitor.report.md
 
 # Filter by slug or workflow ID (supports single-spec and multi-spec batch)
 node {skillsRoot}/ws-monitor/scripts/monitor_snapshot.cjs --slug us-example --json

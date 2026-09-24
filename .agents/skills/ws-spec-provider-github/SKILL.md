@@ -1,7 +1,7 @@
 ---
 name: ws-spec-provider-github
 description: GitHub issue→spec and PR ops. Same required intents as Azure DevOps (scm-provider-contract). Trigger when providers.scm is github.
-version: 0.4.66
+version: 0.4.67
 disable-model-invocation: true
 invocation_names:
   - spec-provider-github
@@ -59,6 +59,7 @@ Shared ids and guarantees: [`scm-provider-contract.md`](../ws-shared/runtime/scm
 | `resolve-thread` | thread id (+ comment; optional `--model`) | Resolved (`isResolved: true` via `resolveReviewThread` GraphQL mutation); comment describes the correction (not hash-only); footer `LLM model: {id}` when `--model` set | `resolve_thread.cjs` |
 | `comment-issue` | issue id, body | Public issue comment (alias `close-loop`; comment-only) | `comment_issue.cjs` → `gh issue comment` |
 | `close-issue` | issue id | Issue closed / skipped / dry-run | `close_issue.cjs` → `gh issue close` |
+| `create-issue` | title, body (+ optional labels) | New issue URL + number | `create_issue.cjs` → `gh issue create` (anonymized defect report; `--dry-run` prints the payload) |
 | `merge-pr` | PR id | Merged | `gh pr checks --watch` then `gh pr merge --merge` |
 
 **Spec path rule:** `fetch-to-spec` **always** writes the agentic-enhanced spec of record first (via `ws-spec-write` / `resolve_spec_path.cjs`), then promotes it to `{us-dir}/step-00-{slug}.spec.md` via [ws-spec-provider-local](../ws-spec-provider-local/SKILL.md) `register_local_spec.cjs --source github`. Never write `step-00` straight from the converter, and never skip the `{specsDir}` copy.
@@ -80,6 +81,7 @@ Prefer these paths (legacy orch/fix-pr shims may forward here):
 | Prior-work sweep | `{skillsRoot}/ws-spec-provider-github/scripts/sweep_prior_work.cjs` |
 | Comment on issue | `{skillsRoot}/ws-spec-provider-github/scripts/comment_issue.cjs` |
 | Close issue | `{skillsRoot}/ws-spec-provider-github/scripts/close_issue.cjs` |
+| Create issue | `{skillsRoot}/ws-spec-provider-github/scripts/create_issue.cjs` |
 
 Optional: `issueTrackers.github.issueToSpecScript` must still resolve to the converter.
 

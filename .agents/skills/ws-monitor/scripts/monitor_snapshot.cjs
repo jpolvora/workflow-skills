@@ -313,13 +313,15 @@ function parseArgs(argv) {
       index += 1;
       continue;
     }
-    if (['json', 'watch', 'discoverHostTranscripts', 'checkVault', 'untilTerminal'].includes(key) && (index + 1 >= argv.length || argv[index + 1].startsWith('--'))) {
+    if (['json', 'watch', 'discoverHostTranscripts', 'checkVault', 'untilTerminal', 'followTranscript', 'openIssue', 'dryRun'].includes(key) && (index + 1 >= argv.length || argv[index + 1].startsWith('--'))) {
       options[key] = true;
       continue;
     }
     options[key] = requireValue(index, token);
     index += 1;
   }
+  // `--follow-transcript` is the profile alias for host transcript discovery.
+  if (options.followTranscript) options.discoverHostTranscripts = true;
   return options;
 }
 
@@ -1090,7 +1092,7 @@ function resolveCandidateTranscriptRoots(context, explicitRoots = [], options = 
       }
     }
   }
-  const keys = [options.workflowId, options.slug].map(normalizeCorrelationKey).filter(Boolean);
+  const keys = [options.workflowId, options.slug, options.sessionId].map(normalizeCorrelationKey).filter(Boolean);
   const isCorrelated = (root) => keys.length > 0 && keys.some((key) => correlationMatches(root, key));
   const buckets = [explicit, configRoots, workspaceCandidates, hostRoots];
   // Correlated-path roots first (any source, source order preserved), then the
@@ -1168,7 +1170,7 @@ function scanTranscriptRoots(context, roots, filter = {}) {
   const findings = [];
   const files = [];
   let capped = false;
-  const keys = [filter?.workflowId, filter?.slug].map(normalizeCorrelationKey).filter(Boolean);
+  const keys = [filter?.workflowId, filter?.slug, filter?.sessionId].map(normalizeCorrelationKey).filter(Boolean);
   const rootList = [...new Set((roots || []).filter(Boolean))];
   const maxFiles = TRANSCRIPT_LIMITS.maxFilesPerTick;
   // us-412 AC10/AC11 + G6: per-root reservation so no single root can exhaust
@@ -1210,13 +1212,16 @@ function scanTranscriptRoots(context, roots, filter = {}) {
     const text = sanitized.length > TRANSCRIPT_LIMITS.maxBytesPerFile
       ? sanitized.slice(-TRANSCRIPT_LIMITS.maxBytesPerFile)
       : sanitized;
-    if (filter && (filter.workflowId || filter.slug)) {
+    if (filter && (filter.workflowId || filter.slug || filter.sessionId)) {
+      // A supplied session id is an alternative correlation key (a session may
+      // not mention the slug); workflowId+slug keep their AND semantics.
+      const matchesSession = filter.sessionId
+        ? (correlationMatches(file, filter.sessionId) || correlationMatches(text, filter.sessionId))
+        : false;
       const matchesWf = Boolean(filter.workflowId && (correlationMatches(file, filter.workflowId) || correlationMatches(text, filter.workflowId)));
       const matchesSlug = Boolean(filter.slug && (correlationMatches(file, filter.slug) || correlationMatches(text, filter.slug)));
-      const pass = filter.workflowId && filter.slug
-        ? (matchesWf && matchesSlug)
-        : (matchesWf || matchesSlug);
-      if (!pass) continue;
+      const base = filter.workflowId && filter.slug ? (matchesWf && matchesSlug) : (matchesWf || matchesSlug);
+      if (!(matchesSession || base)) continue;
     }
     filesScanned += 1;
     bytesRead += read.bytesRead;
@@ -1354,7 +1359,7 @@ function resolveTranscriptSource(workflow, scannedFiles, discoveryEnabled, repoR
   if (!discoveryEnabled) {
     return { status: 'transcript-unavailable', reason: 'discovery-disabled' };
   }
-  const keys = [workflow.slug, workflow.workflowId]
+  const keys = [workflow.slug, workflow.workflowId, workflow.sessionId]
     .map(normalizeCorrelationKey)
     .filter((key) => key && key !== 'ws-spec-multi');
   const repoRootResolved = path.resolve(repoRoot);
@@ -1375,6 +1380,137 @@ function resolveTranscriptSource(workflow, scannedFiles, discoveryEnabled, repoR
     adapter: guessTranscriptAdapter(best.file),
     locationClass: classifyLocation(repoRootResolved, best.file),
     sessionMtime: best.mtimeMs ? new Date(best.mtimeMs).toISOString() : null,
+  };
+}
+
+// Resolve the configured SCM provider so the observer can propose an enriched
+// defect issue against the right tracker. Never guesses a provider silently.
+function resolveScmProvider(config) {
+  const providers = (config && config.providers) || {};
+  const scm = String(providers.scm || '').trim();
+  if (scm === 'github' || scm === 'azure-devops') return scm;
+  const active = String(providers.active || '').trim();
+  if (active === 'github' || active === 'azure-devops') return active;
+  const repoUrl = String((config && config.project && config.project.repoUrl) || '');
+  if (/dev\.azure\.com|visualstudio\.com/i.test(repoUrl)) return 'azure-devops';
+  if (/github\.com/i.test(repoUrl)) return 'github';
+  return null;
+}
+
+// Actionable monitor signals mapped to the contract, instruction, or
+// tool-calling spec most likely to need a change. Keeps a filed issue enriched
+// (failure class plus where to fix), not a bare alert.
+const DEFECT_CONTRACTS = {
+  'missing-artifact': { area: 'workflow artifact contract', contract: 'expectedArtifacts / step artifact naming (monitor_snapshot.cjs)' },
+  'missing-exec-artifact': { area: 'Step 3 exec artifact', contract: 'ws-plan-to-tasks / write_sequential_dag.cjs' },
+  'step-drift': { area: 'verify gate', contract: 'ws-plan-verify / gates.md minVerifyScore' },
+  'empty-files-touched': { area: 'telemetry handoff', contract: 'update_state.cjs finish / step dispatch filesTouched' },
+  'stale-state': { area: 'state/telemetry sync', contract: 'workflow_state.cjs syncStateDualWrite' },
+  'context-mismatch': { area: 'config/branch resolution', contract: 'config-resolution.md / workflow bootstrap' },
+  'config-unreadable': { area: 'config resolution', contract: 'config-resolution.md' },
+  'package-version-unknown': { area: 'telemetry provenance', contract: 'packageVersion stamping' },
+  'telemetry-parse-error': { area: 'telemetry writer', contract: 'workflow_state.cjs telemetry append (UTF-8 / BOM)' },
+  'hybrid-path-resolution': { area: 'path resolution', contract: 'build_dispatch_context / bootstrap_runtime.cjs' },
+  'model-fallback': { area: 'model resolution', contract: 'modelsPreset / stepModels resolution' },
+  'turn-ended': { area: 'host turn handling', contract: 'PROTOCOLS.md turn-boundary pause' },
+  'generic-dispatch': { area: 'dispatch projection', contract: 'specialized-subagents compiler / host dispatch' },
+  'subagent-error': { area: 'subagent runtime', contract: 'dispatch context / worker contract' },
+  'worker-session-stall': { area: 'liveness', contract: 'PROTOCOLS.md turn-boundary pause and checkpoint' },
+  'stalled-workflow': { area: 'liveness', contract: 'PROTOCOLS.md turn-boundary pause and checkpoint' },
+  'terminal-run-active': { area: 'state close', contract: 'update_state.cjs close' },
+  'stale-parent-row': { area: 'multi-spec queue', contract: 'ws-spec-multi STATE.md' },
+  'missing-child-state': { area: 'multi-spec child persistence', contract: 'ws-spec-multi PROTOCOL.md' },
+  'multi-spec-idle': { area: 'multi-spec queue', contract: 'ws-spec-multi' },
+  'multi-spec-failed-item': { area: 'multi-spec queue', contract: 'ws-spec-multi' },
+  'multi-spec-concurrency': { area: 'multi-spec queue', contract: 'ws-spec-multi' },
+  'vault-unreconciled-workflow': { area: 'memory vault sync', contract: 'ws-self-learning / spec-memo' },
+};
+
+function defectContractFor(code) {
+  return DEFECT_CONTRACTS[code] || { area: 'workflow/harness contract', contract: 'upstream skill or orchestrator contract for this signal' };
+}
+
+function actionableFindings(findings) {
+  return (findings || []).filter((finding) => finding.severity === 'critical' || finding.severity === 'warning');
+}
+
+// Build an enriched, anonymized defect-issue proposal for the configured SCM
+// provider. The observer only proposes; the skill runs the provider
+// `create-issue` intent when the flag or default watch profile is active.
+function buildIssueProposal(context, workflows, findings, options) {
+  if (!options.openIssue) return null;
+  const actionable = actionableFindings(findings);
+  if (actionable.length === 0) return null;
+  const scmProvider = resolveScmProvider(context.config);
+  const codes = [...new Set(actionable.map((finding) => finding.code))].sort();
+  const slugs = [...new Set(workflows.map((workflow) => workflow.slug).filter(Boolean))];
+  const projectName = String((context.config && context.config.project && context.config.project.name) || 'consumer project');
+  const title = codes.length === 1
+    ? `Workflow defect [${codes[0]}] detected by ws-monitor`
+    : `Workflow defects detected by ws-monitor (${codes.length} classes: ${codes.join(', ')})`;
+  const byCode = new Map();
+  for (const finding of actionable) {
+    if (!byCode.has(finding.code)) byCode.set(finding.code, []);
+    byCode.get(finding.code).push(finding);
+  }
+  const lines = [
+    '# Workflow defect report',
+    '',
+    'Detected by `ws-monitor` live watch (read-only observer). Filed to fix the workflow/harness contract that produced the failure class below.',
+    '',
+    `- Generated: ${new Date().toISOString()}`,
+    `- Project: ${projectName}`,
+    `- Session id: ${options.sessionId || 'not supplied'}`,
+    `- Agent: ${options.agent || 'not supplied'}`,
+    `- SCM provider: ${scmProvider || 'unresolved (set providers.scm in config)'}`,
+    `- Command: node {skillsRoot}/ws-monitor/scripts/monitor_snapshot.cjs ${options.slug ? `--slug ${options.slug} ` : ''}--watch --interval 60 --until-terminal --follow-transcript${options.sessionId ? ` --session-id ${options.sessionId}` : ''}${options.agent ? ` --agent ${options.agent}` : ''} --open-issue`,
+    '',
+    '## Summary',
+    '',
+    `${actionable.length} actionable finding(s) across ${slugs.length || 0} workflow(s).`,
+    '',
+    `Codes: ${codes.join(', ')}`,
+    '',
+    '## Failure classes',
+    '',
+  ];
+  for (const code of codes) {
+    const group = byCode.get(code);
+    const severity = group.some((finding) => finding.severity === 'critical') ? 'critical' : 'warning';
+    const { area, contract } = defectContractFor(code);
+    lines.push(`### \`${code}\` (${severity})`, '');
+    for (const finding of group.slice(0, 5)) {
+      lines.push(`- ${finding.message}`);
+      if (finding.evidence && finding.evidence.length) {
+        lines.push(`  - Evidence: ${finding.evidence.join(', ')}`);
+      }
+    }
+    lines.push(`- Suspected contract to update: ${contract} (${area})`, '');
+  }
+  lines.push(
+    '## Expected contract',
+    '',
+    'A live workflow must either progress to a terminal state or record an explicit turn-boundary pause, with telemetry and step artifacts consistent with the state file. The contracts above should make the observed failure class deterministic-free.',
+    '',
+    '## Reproduction shape',
+    '',
+    '- Install scope: project-local or global skills install (state the scope when filing).',
+    '- A workflow run reaching the step named in the evidence with the reported signal.',
+    '- Re-run the command above with `--json` to reproduce the finding list.',
+    '',
+    '## Scope checklist',
+    '',
+    '- [ ] Observer did not modify product code or workflow state',
+    '- [ ] Body anonymized (no consumer secrets, customer data, or absolute machine paths)',
+    '',
+  );
+  return {
+    provider: scmProvider,
+    title,
+    body: lines.join('\n'),
+    codes,
+    slugs,
+    dryRun: Boolean(options.dryRun),
   };
 }
 
@@ -1541,19 +1677,26 @@ function snapshot(options) {
   const transcript = scanTranscriptRoots(context, transcriptRoots, {
     workflowId: options.workflowId || null,
     slug: options.slug || null,
+    sessionId: options.sessionId || null,
   });
 
   // us-356: transcript source per workflow + worker-session liveness.
   const discoveryEnabled = Boolean(options.discoverHostTranscripts || context.config?.monitor?.discoverHostTranscripts);
   const snapshotNow = Date.now();
+  // `--stall-window <seconds>` overrides the default liveness threshold.
+  const stallWindowMs = (() => {
+    const raw = Number(options.stallWindow);
+    return Number.isInteger(raw) && raw > 0 ? raw * 1000 : TRANSCRIPT_LIMITS.stallWindowMs;
+  })();
   for (const workflow of workflows) {
     if (workflow.multiSpec) {
       workflow.transcriptSource = null;
+      workflow.stopwatch = null;
       continue;
     }
     workflow.transcriptSource = resolveStateTranscriptSource(workflow.stateAgentTranscripts, context.repoRoot)
       || resolveTranscriptSource(
-      { slug: workflow.slug, workflowId: workflow.workflowId },
+      { slug: workflow.slug, workflowId: workflow.workflowId, sessionId: options.sessionId || null },
       transcript.files,
       discoveryEnabled,
       context.repoRoot,
@@ -1561,6 +1704,40 @@ function snapshot(options) {
     );
     const source = workflow.transcriptSource;
     const isActive = ['active', 'blocked', 'in_progress'].includes(workflow.status);
+    // Stopwatch: liveness clock for an active workflow. When a correlated
+    // session is available its mtime drives the clock; otherwise the local
+    // state/telemetry files do (a hung workflow with no transcript).
+    let lastActivityMs = null;
+    if (source.status === 'available' && source.sessionMtime) {
+      const parsed = Date.parse(source.sessionMtime);
+      if (Number.isFinite(parsed)) lastActivityMs = parsed;
+    } else {
+      for (const rel of [workflow.statePath, workflow.telemetry.path]) {
+        if (!rel) continue;
+        try {
+          const abs = path.isAbsolute(rel) ? rel : path.join(context.repoRoot, rel);
+          const mtimeMs = fs.statSync(abs).mtimeMs;
+          if (Number.isFinite(mtimeMs)) lastActivityMs = lastActivityMs === null ? mtimeMs : Math.max(lastActivityMs, mtimeMs);
+        } catch {
+          // Unreadable file: remaining evidence still drives the stopwatch.
+        }
+      }
+    }
+    if (isActive && lastActivityMs !== null) {
+      const idleMs = snapshotNow - lastActivityMs;
+      workflow.stopwatch = {
+        lastActivityAt: new Date(lastActivityMs).toISOString(),
+        idleMs,
+        thresholdMs: stallWindowMs,
+        stalled: idleMs > stallWindowMs,
+        source: source.status === 'available' && source.sessionMtime ? 'session' : 'state-telemetry',
+      };
+    } else {
+      workflow.stopwatch = null;
+    }
+    const stopwatchLabel = workflow.stopwatch
+      ? `${Math.max(1, Math.round(workflow.stopwatch.idleMs / 60000))}m idle (threshold ${Math.max(1, Math.round(stallWindowMs / 60000))}m)`
+      : 'idle time unknown';
     if (workflow.turnPause) {
       // AC15/Q5: an explicit turn-boundary pause is not a stall; report the
       // pause instead of the worker-session-stall warning.
@@ -1573,15 +1750,25 @@ function snapshot(options) {
       );
     } else if (source.status === 'available' && isActive && source.sessionMtime) {
       const idleMs = snapshotNow - Date.parse(source.sessionMtime);
-      if (Number.isFinite(idleMs) && idleMs > TRANSCRIPT_LIMITS.stallWindowMs) {
+      if (Number.isFinite(idleMs) && idleMs > stallWindowMs) {
         addFinding(
           workflow.findings,
           'warning',
           'worker-session-stall',
-          'worker session shows no recent activity while the workflow is active (possible stall)',
-          [],
+          `worker session shows no recent activity while the workflow is active (possible stall; stopwatch ${stopwatchLabel})`,
+          [workflow.statePath],
         );
       }
+    } else if (isActive && workflow.stopwatch && workflow.stopwatch.stalled) {
+      // Hung workflow: no correlated session and the local state/telemetry
+      // clock has not advanced beyond the threshold while the run is active.
+      addFinding(
+        workflow.findings,
+        'warning',
+        'stalled-workflow',
+        `workflow is active but its state/telemetry stopwatch shows no progress (possible hang; stopwatch ${stopwatchLabel})`,
+        [workflow.statePath],
+      );
     }
   }
 
@@ -1600,7 +1787,10 @@ function snapshot(options) {
     plansDir: toRepoRelative(context.repoRoot, plansDir, { allowOutside: true }),
     workflowCount: workflows.length,
     activeCount: workflows.filter((workflow) => ['active', 'blocked', 'in_progress'].includes(workflow.status)).length,
+    sessionId: options.sessionId || null,
+    agent: options.agent || null,
     findings,
+    issueProposal: buildIssueProposal(context, workflows, findings, options),
     resolvedContext,
     gitContext: { branch: gitContext.branch, head: gitContext.head ? `${String(gitContext.head).slice(0, 12)}…` : null },
     memoryVault: {
@@ -1627,6 +1817,8 @@ function markdownReport(report) {
     '',
     `Generated: ${report.generatedAt}`,
     `Workflows: ${report.workflowCount} (${report.activeCount} active)`,
+    ...(report.sessionId ? [`Session id: ${report.sessionId}`] : []),
+    ...(report.agent ? [`Agent: ${report.agent}`] : []),
     '',
     '## Findings',
     '',
@@ -1686,6 +1878,9 @@ function markdownReport(report) {
     '- State transcripts: ' + (() => { const m = workflow.stateAgentTranscripts; if (!m) return 'not recorded'; if (m.status === 'available') return 'available (' + m.paths.length + ' paths)'; return 'transcript-unavailable (' + m.reason + ')'; })(),
     '- Transcript: ' + (workflow.transcriptSource ? workflow.transcriptSource.status : 'unknown') + (workflow.transcriptSource && workflow.transcriptSource.adapter ? ' via ' + workflow.transcriptSource.adapter + ' (' + workflow.transcriptSource.locationClass + ')' : ' (' + ((workflow.transcriptSource && workflow.transcriptSource.reason) || 'unknown') + ')'),
     '- Turn pause: ' + (workflow.turnPause ? 'step ' + workflow.turnPause.step + ' (' + (workflow.turnPause.reason || 'paused') + ')' : 'none'),
+    '- Stopwatch: ' + (workflow.stopwatch
+      ? `${Math.max(1, Math.round(workflow.stopwatch.idleMs / 60000))}m idle / ${Math.max(1, Math.round(workflow.stopwatch.thresholdMs / 60000))}m threshold (${workflow.stopwatch.source})${workflow.stopwatch.stalled ? ' - STALLED' : ''}`
+      : 'not active'),
       '',
       'Expected artifacts:',
     );
@@ -1693,6 +1888,18 @@ function markdownReport(report) {
       lines.push(`- ${artifact.present ? '[x]' : '[ ]'} \`${artifact.path}\``);
     }
     lines.push('');
+  }
+  if (report.issueProposal) {
+    lines.push(
+      '',
+      '## Issue proposal',
+      '',
+      `- Provider: ${report.issueProposal.provider || 'unresolved (set providers.scm in config)'}`,
+      `- Title: ${report.issueProposal.title}`,
+      `- Codes: ${report.issueProposal.codes.join(', ')}`,
+      `- Body: ${report.issueProposal.bodyPath || '(see JSON issueProposal.body)'}`,
+      '- Action: run the configured SCM provider `create-issue` intent with this title/body (skip when `dry-run`).',
+    );
   }
   lines.push(
     '## Transcript scan',
@@ -1725,7 +1932,7 @@ function requirePositiveInteger(value, token) {
 function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help) {
-    process.stdout.write('Usage: node monitor_snapshot.cjs [--repo-root DIR] [--slug SLUG] [--workflow-id ID] [--transcript-root DIR] [--discover-host-transcripts] [--vault] [--report FILE] [--json] [--watch --interval SEC --iterations N | --watch --interval SEC --until-terminal]\n');
+    process.stdout.write('Usage: node monitor_snapshot.cjs [--repo-root DIR] [--slug SLUG] [--workflow-id ID] [--session-id ID] [--agent NAME] [--transcript-root DIR] [--discover-host-transcripts | --follow-transcript] [--stall-window SEC] [--open-issue] [--dry-run] [--vault] [--report FILE] [--json] [--watch --interval SEC --iterations N | --watch --interval SEC --until-terminal]\n');
     return;
   }
   // AC16/NS4: usage validation happens before any snapshot() call.
@@ -1741,6 +1948,9 @@ function main() {
   if (options.interval !== undefined) {
     options.interval = requirePositiveInteger(options.interval, '--interval');
   }
+  if (options.stallWindow !== undefined) {
+    options.stallWindow = requirePositiveInteger(options.stallWindow, '--stall-window');
+  }
   if (options.watch && !options.untilTerminal) {
     options.iterations = requirePositiveInteger(options.iterations, '--iterations');
   }
@@ -1750,6 +1960,23 @@ function main() {
   let terminalReached = false;
   do {
     const report = snapshot(options);
+    if (report.issueProposal) {
+      // The observer proposes the enriched defect body; the skill runs the SCM
+      // provider `create-issue` intent. Writing the body keeps the report
+      // actionable without the observer mutating the tracker itself.
+      const repoRootResolved = path.resolve(options.repoRoot || process.cwd());
+      const plansAbs = path.resolve(repoRootResolved, report.plansDir);
+      const issuePath = options.slug
+        ? path.join(plansAbs, options.slug, 'workflow-monitor.issue.md')
+        : path.join(plansAbs, 'workflow-monitor.issue.md');
+      try {
+        fs.mkdirSync(path.dirname(issuePath), { recursive: true });
+        fs.writeFileSync(issuePath, report.issueProposal.body, 'utf8');
+        report.issueProposal.bodyPath = toRepoRelative(repoRootResolved, issuePath, { allowOutside: true });
+      } catch (error) {
+        report.issueProposal.bodyPathError = String((error && error.message) || error);
+      }
+    }
     if (options.report) {
       const reportPath = path.isAbsolute(options.report)
         ? options.report
@@ -1815,4 +2042,9 @@ module.exports = {
   collapseHomePaths,
   correlationMatches,
   classifyLocation,
+  resolveScmProvider,
+  buildIssueProposal,
+  actionableFindings,
+  defectContractFor,
+  DEFECT_CONTRACTS,
 };

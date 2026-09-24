@@ -121,6 +121,22 @@ node .agents/skills/ws-spec-provider-github/scripts/close_issue.cjs \
 - `validate-auth` before mutating. Auth failure → STOP with `validate-auth` remediation; no silent provider fallback.
 - Call after successful merge when `activeThreads == 0`; complements PR-body `Closes #{id}` (default-branch auto-close only).
 
+## `create-issue`
+
+```bash
+node .agents/skills/ws-spec-provider-github/scripts/create_issue.cjs \
+  --title "{title}" \
+  --body-file {plansDir}/{slug}/workflow-monitor.stall-issue.md \
+  [--label bug] [--dry-run]
+```
+
+- Opens a new GitHub issue carrying an actionable defect report: failure class, the contract/instruction/tool-calling spec to change, sanitized evidence, and a reproduction shape.
+- Body must be anonymized: no consumer repository names, local paths, hostnames, secrets, tracker ids, transcripts, or customer data. Describe the generic failure class only.
+- `--label` is repeatable; omit to apply no labels.
+- `--dry-run`: print the payload JSON, no `gh` mutation.
+- `validate-auth` before mutating; auth failure → STOP with `validate-auth` remediation; no silent provider fallback.
+- Primary caller: `ws-monitor` `--open-issue` (the observer proposes the enriched body; this intent is run only when the flag or the default watch profile is active).
+
 ## `resolve-thread`
 
 ```bash

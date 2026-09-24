@@ -49,12 +49,19 @@ stall warning requires an active workflow, an available correlated
 session, and **no** pause marker. The step's terminating `finish` clears
 the marker, after which stall detection applies again.
 
+When no correlated session is available, the same pause marker also
+suppresses `stalled-workflow` (warning): the local state/telemetry clock
+is idle beyond the threshold while the run is active — a possible hang.
+`ws-monitor` exposes the liveness clock as `stopwatch` (`lastActivityAt`,
+`idleMs`, `thresholdMs`, `stalled`, `source`); `--stall-window <seconds>`
+overrides the threshold.
+
 ## Finding classification
 
 | Severity | Meaning |
 |----------|---------|
 | `critical` | Missing mandatory artifact, verify score below the gate with advancement, path-resolution failure |
-| `warning` | Empty `filesTouched` on a completed mutating step, rejected model without fallback, turn ended before handoff, worker-session stall (no pause marker) |
+| `warning` | Empty `filesTouched` on a completed mutating step, rejected model without fallback, turn ended before handoff, worker-session stall or `stalled-workflow` hang (no pause marker) |
 | `info` | Idle queue, vault record missing on disk, workflow paused at a turn boundary, healthy run with no defects |
 
 Every finding carries a stable code, a message, and the evidence path that
