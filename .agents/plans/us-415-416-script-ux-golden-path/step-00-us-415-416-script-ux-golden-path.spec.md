@@ -7,7 +7,7 @@ specDate: 2026-09-24
 issueState: open
 issueUrl: "https://github.com/jpolvora/workflow-skills/issues/416"
 step: 0
-workflowId: us-415-416-script-ux-golden-path
+workflowId: us-415-416-script-ux-golden-path-20260924T190500Z
 status: completed
 startedAt: "2026-09-24T12:44:25.967Z"
 endedAt: "2026-09-24T12:44:25.967Z"
