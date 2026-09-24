@@ -17,7 +17,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | `ws-check-harness` | `.agents/skills/ws-check-harness/SKILL.md` | Harness integrity audit |
 | `ws-check-workflows` | `.agents/skills/ws-check-workflows/SKILL.md` | Deep workflow simulation & validation |
 | `ws-doctor` | `.agents/skills/ws-doctor/SKILL.md` | Install & runtime diagnostics, hybrid hub resolution |
-| `ws-monitor` | `.agents/skills/ws-monitor/SKILL.md` | Read-only live workflow observer |
+| `ws-monitor` | `.agents/skills/ws-monitor/SKILL.md` | Read-only live workflow observer; live watch profile + enriched defect-issue proposal |
 | `ws-write-a-skill` | `.agents/skills/ws-write-a-skill/SKILL.md` | Create/edit/optimize skills (Extra) |
 | `ws-show-harness` | `.agents/skills/ws-show-harness/SKILL.md` | Session harness snapshot (Extra) |
 | `ws-preview` | `.agents/skills/ws-preview/SKILL.md` | Run consumer `preview.dryRunCommand` local dry-run (Extra; `/ws-configure-project --section preview`) |

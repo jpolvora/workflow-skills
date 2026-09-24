@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 18,
-  "generatedAt": "2026-09-24T11:03:08Z",
+  "revision": 21,
+  "generatedAt": "2026-09-24T11:46:01Z",
   "workflows": [
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
@@ -745,10 +745,10 @@
       "slug": "us-412-413-liveness-checkpoints",
       "pipeline": "standard",
       "statePath": ".agents/plans/us-412-413-liveness-checkpoints/us-412-413-liveness-checkpoints-20260924T043148Z.state.md",
-      "stateSha256": "0853673573515711a207755fe1995ebc1b672598f6954d015333d85ee4fba6fe",
-      "status": "active",
-      "currentStep": 8,
-      "updatedAt": "2026-09-24T11:03:08Z",
+      "stateSha256": "08ce31986c406b2977d95cc8b6b5bf0e252a8d6757b79a0d0749a74194dc0127",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-24T11:46:01Z",
       "runPath": ".agents/plans/us-412-413-liveness-checkpoints/us-412-413-liveness-checkpoints-20260924T043148Z.state.json"
     },
     {

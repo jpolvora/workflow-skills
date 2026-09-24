@@ -111,6 +111,8 @@ try {
     'utf8',
   );
   fs.writeFileSync(path.join(active, 'post-bootstrap-commits.md'), 'c1\n', 'utf8');
+  fs.writeFileSync(path.join(active, 'pr-body.md'), '# PR body\n', 'utf8');
+  fs.writeFileSync(path.join(plans, 'pr-body.md'), '# PR body\n', 'utf8');
 
   // Partially tracked shipped plan: refined plan committed, leftovers untracked
   const partial = path.join(plans, 'partial-shipped');
@@ -179,6 +181,14 @@ try {
     'post-bootstrap scratch listed',
   );
   assert(
+    paths.includes('.agents/plans/active-slug/pr-body.md'),
+    'per-slug PR body temp listed',
+  );
+  assert(
+    paths.includes('.agents/plans/pr-body.md'),
+    'top-level PR body temp listed',
+  );
+  assert(
     !paths.includes('.agents/plans/partial-shipped'),
     'partially tracked shipped root not deleted wholesale',
   );
@@ -210,6 +220,10 @@ try {
   assert(
     json.gitignoreSuggestions.some((g) => g.pattern.endsWith('audit-*.log.md')),
     'gitignore suggests audit log pattern',
+  );
+  assert(
+    json.gitignoreSuggestions.some((g) => g.pattern.endsWith('pr-body.md')),
+    'gitignore suggests PR body pattern',
   );
   assert(
     json.gitignoreSuggestions.some((g) => g.pattern === '/MEMORY.md') &&

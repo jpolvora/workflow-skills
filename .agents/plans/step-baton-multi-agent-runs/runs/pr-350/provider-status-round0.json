@@ -1,9 +1,0 @@
-{
-  "prNumber": 350,
-  "activeThreads": [],
-  "checks": [
-    {"name": "review", "state": "in_progress"},
-    {"name": "test", "state": "success"},
-    {"name": "test", "state": "success"}
-  ]
-}

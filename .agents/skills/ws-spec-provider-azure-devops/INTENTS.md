@@ -134,6 +134,25 @@ node .agents/skills/ws-spec-provider-azure-devops/scripts/close_issue.cjs \
 - `validate-auth` before mutating. Auth failure → STOP; no silent provider fallback.
 - Call after successful merge when `activeThreads == 0`.
 
+## `create-issue`
+
+```bash
+node .agents/skills/ws-spec-provider-azure-devops/scripts/create_issue.cjs \
+  --title "{title}" \
+  --body-file {plansDir}/{slug}/workflow-monitor.stall-issue.md \
+  [--type Bug] \
+  [--org {org} --project {project} --api-base {apiBase} --pat-env {patEnvVar}] \
+  [--dry-run]
+```
+
+- Creates a new ADO work item (default type `Bug`) carrying an actionable defect report: failure class, the contract/instruction/tool-calling spec to change, sanitized evidence, and a reproduction shape.
+- POST `{apiBase}/{org}/{project}/_apis/wit/workitems/${type}?api-version=7.1` with a JSON-Patch body.
+- Body must be anonymized: no consumer repository names, local paths, hostnames, secrets, tracker ids, transcripts, or customer data. Describe the generic failure class only.
+- `{org}` / `{project}` / `{apiBase}` / `{patEnvVar}` default from `issueTrackers.azureDevOps`. Optional CLI flags override (hybrid/global script runs).
+- `--dry-run`: print the payload JSON, no REST mutation.
+- `validate-auth` before mutating; auth failure → STOP; no silent provider fallback.
+- Primary caller: `ws-monitor` `--open-issue` (the observer proposes the enriched body; this intent is run only when the flag or the default watch profile is active).
+
 ## `resolve-thread`
 
 ```bash

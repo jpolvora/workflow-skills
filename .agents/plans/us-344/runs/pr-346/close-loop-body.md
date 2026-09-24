@@ -1,3 +1,0 @@
-Shipped via https://github.com/jpolvora/workflow-skills/pull/346 (merged to main).
-
-Decision: **KEEP `From Spec to Delivery`**. The pipeline ends at a reviewed PR plus fix-PR convergence, not at merge/deploy, so `Delivery` (reviewed-PR handoff) fits and `Ship` (merged/deployed) would overpromise. Verified zero stale `From Spec to Ship` hits across site, README, llms.txt, hub/catalog docs, and wiki (historical release rows untouched), with site/docs checks green. No product-code change was needed; the merged batch also carries the memoryDir/user-gate updates plus fix-PR review resolutions, all CI green with zero open threads.
