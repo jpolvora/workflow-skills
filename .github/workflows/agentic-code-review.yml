@@ -36,8 +36,8 @@ concurrency:
 
 env:
   REVIEW_ENGINE: ${{ vars.AGENTIC_CODE_REVIEWERS_ENGINE || 'opencode' }}
-  REVIEW_MODEL: ${{ vars.AGENTIC_CODE_REVIEWERS_MODEL || 'opencode-go/mimo-v2.6-flash' }}
-  REVIEW_VARIANT: ${{ vars.AGENTIC_CODE_REVIEWERS_VARIANT || 'medium' }}
+  REVIEW_MODEL: ${{ vars.AGENTIC_CODE_REVIEWERS_MODEL || 'opencode-go/space-bunny-free' }}
+  REVIEW_VARIANT: ${{ vars.AGENTIC_CODE_REVIEWERS_VARIANT || 'high' }}
 
 jobs:
   review:
