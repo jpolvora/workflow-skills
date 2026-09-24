@@ -242,7 +242,7 @@
     "_comment_localReviewCommand": "Examples: cursor-reviewer --dry-run | node scripts/cursor-reviewer/cli.cjs --dry-run",
     "localReviewCommand": "",
     "_comment_previewBeforeShip": "When true (default if omitted), ws-ship-pr runs the dry-run once after commit/push and before Create PR; failures are reported, shipping continues. Explicit false disables the gate.",
-    "previewBeforeShip": true
+    "previewBeforeShip": false
   },
   "rules": {
     "_comment": "Guardrails paths. Resolve per .ws/AGENTS.md External dependencies (first match). seniorDeveloper = Delivery gate and surgical diffs (default packaged ws-senior-developer); set \"\" to disable or point at another guardrail; karpathyGuidelines = compatibility alias pointing to ws-senior-developer; stackFile = stack companion; changelogFile = append-only history (default under .ws/); other keys optional consumer rule paths — leave empty when unused.",
