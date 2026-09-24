@@ -1,0 +1,1332 @@
+{
+  "schemaVersion": 1,
+  "revision": 36,
+  "workflowId": "us-412-413-liveness-checkpoints-20260924T043148Z",
+  "slug": "us-412-413-liveness-checkpoints",
+  "specPath": ".agents/plans/us-412-413-liveness-checkpoints/step-00-us-412-413-liveness-checkpoints.spec.md",
+  "planIndexPath": ".agents/plans/us-412-413-liveness-checkpoints/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "`update_state.cjs` exposes a `checkpoint` operation that accepts `--step` and `--progress` and persists the step's sub-progress (completed unit ids, remaining unit count) in `{workflow-id}.state.json`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1180-L1217",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1823-L1842",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L2224-L2233"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006",
+        "section-009",
+        "section-010",
+        "section-016",
+        "section-017",
+        "section-029"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1180,
+          "lineEnd": 1217,
+          "sha256": "41731654132c2a109114d328d7e1d10e0c1dcb90c01af482d3cbb5c231506993"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1823,
+          "lineEnd": 1842,
+          "sha256": "41731654132c2a109114d328d7e1d10e0c1dcb90c01af482d3cbb5c231506993"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 2224,
+          "lineEnd": 2233,
+          "sha256": "41731654132c2a109114d328d7e1d10e0c1dcb90c01af482d3cbb5c231506993"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ad134fcede771d87ae058dad7f7081f782aace81",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T1 checkpoint persists sub-progress, telemetry, and revision: ok",
+          "sourceFile": "test/test-liveness-checkpoints.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:11.543Z"
+        },
+        {
+          "name": "T8 --progress-file parity and fail-closed: ok",
+          "sourceFile": "test/test-liveness-checkpoints.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:11.544Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac1",
+        "ev-plan-index",
+        "g2-commit-ad134fcede771d87ae058dad7f7081f782aace81"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "Every `checkpoint` call appends a `checkpoint` telemetry event (step, substep, progress, timestamp) to `telemetry.jsonl` and increments `state.revision` by one.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1823-L1842"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-009",
+        "section-010",
+        "section-016",
+        "section-017",
+        "section-029"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1823,
+          "lineEnd": 1842,
+          "sha256": "41731654132c2a109114d328d7e1d10e0c1dcb90c01af482d3cbb5c231506993"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ad134fcede771d87ae058dad7f7081f782aace81",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T1 checkpoint persists sub-progress, telemetry, and revision: ok",
+          "sourceFile": "test/test-liveness-checkpoints.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:11.595Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac2",
+        "g2-commit-ad134fcede771d87ae058dad7f7081f782aace81"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "`update_state.cjs` exposes a `pause-turn` operation that accepts `--step` and `--reason` and persists a turn-boundary pause marker (step, reason, ISO timestamp) in `{workflow-id}.state.json`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1222-L1234",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1843-L1858"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-016",
+        "section-017",
+        "section-029"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1222,
+          "lineEnd": 1234,
+          "sha256": "41731654132c2a109114d328d7e1d10e0c1dcb90c01af482d3cbb5c231506993"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1843,
+          "lineEnd": 1858,
+          "sha256": "41731654132c2a109114d328d7e1d10e0c1dcb90c01af482d3cbb5c231506993"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ad134fcede771d87ae058dad7f7081f782aace81",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T2 pause-turn persists marker, nextAction, telemetry, and revision: ok",
+          "sourceFile": "test/test-liveness-checkpoints.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:11.659Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac3",
+        "g2-commit-ad134fcede771d87ae058dad7f7081f782aace81"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "Every `pause-turn` call appends a `turn_paused` telemetry event to `telemetry.jsonl` and increments `state.revision` by one.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1843-L1858"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-009",
+        "section-010",
+        "section-016",
+        "section-017",
+        "section-029"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1843,
+          "lineEnd": 1858,
+          "sha256": "41731654132c2a109114d328d7e1d10e0c1dcb90c01af482d3cbb5c231506993"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ad134fcede771d87ae058dad7f7081f782aace81",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T2 pause-turn persists marker, nextAction, telemetry, and revision: ok",
+          "sourceFile": "test/test-liveness-checkpoints.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:11.708Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac4",
+        "g2-commit-ad134fcede771d87ae058dad7f7081f782aace81"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "`update_state.cjs finish` clears the pause marker and the checkpoint record of the finished step before rendering the state.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1656-L1668"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001",
+        "section-002",
+        "section-009",
+        "section-010",
+        "section-016",
+        "section-018",
+        "section-029"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1656,
+          "lineEnd": 1668,
+          "sha256": "41731654132c2a109114d328d7e1d10e0c1dcb90c01af482d3cbb5c231506993"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ad134fcede771d87ae058dad7f7081f782aace81",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T3 finish clears pause marker and step checkpoint: ok",
+          "sourceFile": "test/test-liveness-checkpoints.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:11.763Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac5",
+        "g2-commit-ad134fcede771d87ae058dad7f7081f782aace81"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "`telemetry.schema.json` accepts `checkpoint` and `turn_paused` event types and validates their required fields.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/telemetry.schema.json:L66-L76",
+        ".agents/skills/ws-shared/runtime/telemetry.schema.json:L9-L9"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-016",
+        "section-019",
+        "section-029"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/telemetry.schema.json",
+          "lineStart": 9,
+          "lineEnd": 9,
+          "sha256": "02cc6f7750debb417e2a8d739b6c7fd8136e3904fe46d96f0de81bdaaafa4b36"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/telemetry.schema.json",
+          "lineStart": 66,
+          "lineEnd": 76,
+          "sha256": "02cc6f7750debb417e2a8d739b6c7fd8136e3904fe46d96f0de81bdaaafa4b36"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ad134fcede771d87ae058dad7f7081f782aace81",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T4 telemetry schema accepts checkpoint and turn_paused: ok",
+          "sourceFile": "test/test-liveness-checkpoints.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:11.824Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac6",
+        "g2-commit-ad134fcede771d87ae058dad7f7081f782aace81"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "`workflow-state.schema.json` accepts the checkpoint and pause fields, and `validate_state.cjs` exits 0 on a state that carries them.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L2052-L2097",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L2123-L2124",
+        ".agents/skills/ws-shared/runtime/workflow-state.schema.json:L166-L181"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006",
+        "section-009",
+        "section-010",
+        "section-011",
+        "section-016",
+        "section-019",
+        "section-029"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 2052,
+          "lineEnd": 2097,
+          "sha256": "41731654132c2a109114d328d7e1d10e0c1dcb90c01af482d3cbb5c231506993"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 2123,
+          "lineEnd": 2124,
+          "sha256": "41731654132c2a109114d328d7e1d10e0c1dcb90c01af482d3cbb5c231506993"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/workflow-state.schema.json",
+          "lineStart": 166,
+          "lineEnd": 181,
+          "sha256": "e0082a10e51aaec35fa88d8f13008237e46c52fb8d14edde42e835e1953efb89"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ad134fcede771d87ae058dad7f7081f782aace81",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T5 state schema + validate_state accept checkpoint/pause fields: ok",
+          "sourceFile": "test/test-liveness-checkpoints.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:11.883Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac7",
+        "g2-commit-ad134fcede771d87ae058dad7f7081f782aace81"
+      ]
+    },
+    {
+      "id": "AC8",
+      "text": "`ws-spec-to-pr/SKILL.md` and `PROTOCOLS.md` document the turn-boundary pause/resume contract, stating that autoMode removes gate halts but does not chain host turns.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/PROTOCOLS.md:L259-L271",
+        ".agents/skills/ws-spec-to-pr/SKILL.md:L54-L57"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006",
+        "section-009",
+        "section-013",
+        "section-016",
+        "section-023",
+        "section-029"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/PROTOCOLS.md",
+          "lineStart": 259,
+          "lineEnd": 271,
+          "sha256": "4a190df4ab04aada8ca10495a38d3c1939336819a555ca60d36026a10298b7fb"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/SKILL.md",
+          "lineStart": 54,
+          "lineEnd": 57,
+          "sha256": "ff24dbb9ea63982aa7acf35c741ab26b3b1c524850b2c357cda1bdcdba0e874d"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ad134fcede771d87ae058dad7f7081f782aace81",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "D1 orchestrator docs state autoMode does not chain host turns: ok",
+          "sourceFile": "test/test-liveness-checkpoints.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:11.944Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac8",
+        "g2-commit-ad134fcede771d87ae058dad7f7081f782aace81"
+      ]
+    },
+    {
+      "id": "AC9",
+      "text": "`pause-turn` records a `nextAction` naming the resumable unit so a later turn resumes deterministically.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1220-L1234",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1843-L1858"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006",
+        "section-009",
+        "section-010",
+        "section-013",
+        "section-016",
+        "section-017",
+        "section-023",
+        "section-029",
+        "section-032"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1220,
+          "lineEnd": 1234,
+          "sha256": "41731654132c2a109114d328d7e1d10e0c1dcb90c01af482d3cbb5c231506993"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1843,
+          "lineEnd": 1858,
+          "sha256": "41731654132c2a109114d328d7e1d10e0c1dcb90c01af482d3cbb5c231506993"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ad134fcede771d87ae058dad7f7081f782aace81",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "T2 pause-turn persists marker, nextAction, telemetry, and revision: ok",
+          "sourceFile": "test/test-liveness-checkpoints.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:12.004Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac9",
+        "g2-commit-ad134fcede771d87ae058dad7f7081f782aace81"
+      ]
+    },
+    {
+      "id": "AC10",
+      "text": "`scanTranscriptRoots` reads the correlated workflow session (filesScanned >= 1) even when at least 200 unrelated candidate files and 61 candidate roots precede it.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1174-L1194"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006",
+        "section-009",
+        "section-012",
+        "section-016",
+        "section-020",
+        "section-029"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1174,
+          "lineEnd": 1194,
+          "sha256": "e046abbff3161cc2b21f513af549f04995d315c396a93fc039e23c807063b29b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ad134fcede771d87ae058dad7f7081f782aace81",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "M1 unrelated-root flood still reads the correlated session: ok",
+          "sourceFile": "test/test-ws-monitor-liveness.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:12.061Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac10",
+        "g2-commit-ad134fcede771d87ae058dad7f7081f782aace81"
+      ]
+    },
+    {
+      "id": "AC11",
+      "text": "Discovery applies a per-root budget (or prioritizes the correlated root) so unrelated roots cannot exhaust the per-tick file or time budget before the target session is read.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1029-L1100",
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1139-L1194"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-009",
+        "section-012",
+        "section-016",
+        "section-020",
+        "section-029"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1029,
+          "lineEnd": 1100,
+          "sha256": "e046abbff3161cc2b21f513af549f04995d315c396a93fc039e23c807063b29b"
+        },
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1139,
+          "lineEnd": 1194,
+          "sha256": "e046abbff3161cc2b21f513af549f04995d315c396a93fc039e23c807063b29b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ad134fcede771d87ae058dad7f7081f782aace81",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "M1 unrelated-root flood still reads the correlated session: ok",
+          "sourceFile": "test/test-ws-monitor-liveness.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:12.123Z"
+        },
+        {
+          "name": "M9 per-root slice truncation reports capped honestly: ok",
+          "sourceFile": "test/test-ws-monitor-liveness.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:12.123Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [
+        {
+          "id": "intra-root-enumeration-stop",
+          "severity": "Suggestion",
+          "state": "open",
+          "evidence": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1139-L1159",
+          "message": "Within-root correlation-first ordering only reorders the slice+1 name-sorted candidates that listTranscriptCandidates enumerates, so a path-correlated file beyond that stop in a large root is never collected (plan 2.3 bullet 3 intent partially defeated). AC10/AC11 binding fixtures (M1/M9) pass; reachability is a single/merged root with more than its slice of candidates where the target sorts late. Minimal correction: prioritize correlation during enumeration (pass keys into listTranscriptCandidates or collect correlated-path entries in a bounded pre-pass).",
+          "round": 1
+        }
+      ],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac11",
+        "ev-finding-intra-root",
+        "g2-commit-ad134fcede771d87ae058dad7f7081f782aace81"
+      ]
+    },
+    {
+      "id": "AC12",
+      "text": "Scan filtering and `resolveTranscriptSource` correlate on one shared window, so every file counted by the scan resolves to `available` when it matches.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1204-L1229",
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1361-L1379"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-005",
+        "section-009",
+        "section-012",
+        "section-016",
+        "section-021",
+        "section-029"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1204,
+          "lineEnd": 1229,
+          "sha256": "e046abbff3161cc2b21f513af549f04995d315c396a93fc039e23c807063b29b"
+        },
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1361,
+          "lineEnd": 1379,
+          "sha256": "e046abbff3161cc2b21f513af549f04995d315c396a93fc039e23c807063b29b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ad134fcede771d87ae058dad7f7081f782aace81",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "M2 workflow id between 8KB and 256KB resolves available: ok",
+          "sourceFile": "test/test-ws-monitor-liveness.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:12.185Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac12",
+        "g2-commit-ad134fcede771d87ae058dad7f7081f782aace81"
+      ]
+    },
+    {
+      "id": "AC13",
+      "text": "`resolveTranscriptSource` reports `scan-capped` only when the scan stopped before reading the matching file, keeping the documented reason vocabulary (`discovery-disabled`, `no-matching-session`, `scan-capped`).",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1365-L1370"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006",
+        "section-009",
+        "section-012",
+        "section-016",
+        "section-021",
+        "section-029"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1365,
+          "lineEnd": 1370,
+          "sha256": "e046abbff3161cc2b21f513af549f04995d315c396a93fc039e23c807063b29b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ad134fcede771d87ae058dad7f7081f782aace81",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "M2 workflow id between 8KB and 256KB resolves available: ok",
+          "sourceFile": "test/test-ws-monitor-liveness.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:12.238Z"
+        },
+        {
+          "name": "M3 scan-capped only when the matching file was not read: ok",
+          "sourceFile": "test/test-ws-monitor-liveness.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:12.238Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac13",
+        "g2-commit-ad134fcede771d87ae058dad7f7081f782aace81"
+      ]
+    },
+    {
+      "id": "AC14",
+      "text": "`worker-session-stall` fires when the correlated session is `available` and idle beyond `stallWindowMs` (600000 ms) while the workflow is active.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1562-L1585"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006",
+        "section-009",
+        "section-012",
+        "section-016",
+        "section-022",
+        "section-029"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1562,
+          "lineEnd": 1585,
+          "sha256": "e046abbff3161cc2b21f513af549f04995d315c396a93fc039e23c807063b29b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ad134fcede771d87ae058dad7f7081f782aace81",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "M4 worker-session-stall fires for an idle available session: ok",
+          "sourceFile": "test/test-ws-monitor-liveness.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:12.297Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac14",
+        "g2-commit-ad134fcede771d87ae058dad7f7081f782aace81"
+      ]
+    },
+    {
+      "id": "AC15",
+      "text": "`monitor_snapshot.cjs` suppresses `worker-session-stall` for a workflow whose state carries a turn-boundary pause marker and reports the pause instead.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1343-L1351",
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1511-L1511",
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1564-L1573"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-009",
+        "section-012",
+        "section-016",
+        "section-022",
+        "section-029"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1343,
+          "lineEnd": 1351,
+          "sha256": "e046abbff3161cc2b21f513af549f04995d315c396a93fc039e23c807063b29b"
+        },
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1511,
+          "lineEnd": 1511,
+          "sha256": "e046abbff3161cc2b21f513af549f04995d315c396a93fc039e23c807063b29b"
+        },
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1564,
+          "lineEnd": 1573,
+          "sha256": "e046abbff3161cc2b21f513af549f04995d315c396a93fc039e23c807063b29b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ad134fcede771d87ae058dad7f7081f782aace81",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "M5 pause marker suppresses stall and reports pause: ok",
+          "sourceFile": "test/test-ws-monitor-liveness.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:12.361Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac15",
+        "g2-commit-ad134fcede771d87ae058dad7f7081f782aace81"
+      ]
+    },
+    {
+      "id": "AC16",
+      "text": "`monitor_snapshot.cjs --watch` accepts `--until-terminal` as an alternative to `--iterations` and exits when the selected workflow reaches a non-active status.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1732-L1768",
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L316-L316"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006",
+        "section-009",
+        "section-012",
+        "section-016",
+        "section-022",
+        "section-029"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 316,
+          "lineEnd": 316,
+          "sha256": "e046abbff3161cc2b21f513af549f04995d315c396a93fc039e23c807063b29b"
+        },
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1732,
+          "lineEnd": 1768,
+          "sha256": "e046abbff3161cc2b21f513af549f04995d315c396a93fc039e23c807063b29b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ad134fcede771d87ae058dad7f7081f782aace81",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "M6 --until-terminal usage errors: ok",
+          "sourceFile": "test/test-ws-monitor-liveness.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:12.424Z"
+        },
+        {
+          "name": "M7 --watch --until-terminal exits on terminal workflow: ok",
+          "sourceFile": "test/test-ws-monitor-liveness.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:12.424Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac16",
+        "g2-commit-ad134fcede771d87ae058dad7f7081f782aace81"
+      ]
+    },
+    {
+      "id": "AC17",
+      "text": "`ws-monitor/SKILL.md` and `observer-instructions.md` document the pause-versus-stall distinction and the shared correlation window.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/SKILL.md:L116-L117",
+        ".agents/skills/ws-monitor/SKILL.md:L70-L70",
+        ".agents/skills/ws-shared/runtime/observer-instructions.md:L36-L49"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006",
+        "section-009",
+        "section-014",
+        "section-016",
+        "section-023",
+        "section-029"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/SKILL.md",
+          "lineStart": 70,
+          "lineEnd": 70,
+          "sha256": "be9f74f4990e93c5e77a745285b03e35680885d1013b5a54525f1b8c1254b7e7"
+        },
+        {
+          "path": ".agents/skills/ws-monitor/SKILL.md",
+          "lineStart": 116,
+          "lineEnd": 117,
+          "sha256": "be9f74f4990e93c5e77a745285b03e35680885d1013b5a54525f1b8c1254b7e7"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/observer-instructions.md",
+          "lineStart": 36,
+          "lineEnd": 49,
+          "sha256": "bbcb34947052d5bcb5f8a4bbb3ae294358cfc9c7525173594b4b49d51acb3d69"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ad134fcede771d87ae058dad7f7081f782aace81",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "M8 docs cover pause vs stall and shared correlation window: ok",
+          "sourceFile": "test/test-ws-monitor-liveness.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:12.491Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac17",
+        "g2-commit-ad134fcede771d87ae058dad7f7081f782aace81"
+      ]
+    },
+    {
+      "id": "AC18",
+      "text": "Regression tests cover the discovery budget, shared-window correlation, pause suppression, and the checkpoint/pause operations; `test/test-suites.json` registers them and `npm run test` exits 0.",
+      "status": "Implemented",
+      "evidence": [
+        "test/test-suites.json:L178-L180",
+        "test/test-suites.json:L29-L31",
+        "test/test-suites.json:L408-L410"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006",
+        "section-009",
+        "section-014",
+        "section-016",
+        "section-024"
+      ],
+      "files": [
+        {
+          "path": "test/test-suites.json",
+          "lineStart": 29,
+          "lineEnd": 31,
+          "sha256": "4e97c48c6b9dc01ba57180b460db6bdcc59699294eba38908b9cbb8f24e0626d"
+        },
+        {
+          "path": "test/test-suites.json",
+          "lineStart": 178,
+          "lineEnd": 180,
+          "sha256": "4e97c48c6b9dc01ba57180b460db6bdcc59699294eba38908b9cbb8f24e0626d"
+        },
+        {
+          "path": "test/test-suites.json",
+          "lineStart": 408,
+          "lineEnd": 410,
+          "sha256": "4e97c48c6b9dc01ba57180b460db6bdcc59699294eba38908b9cbb8f24e0626d"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ad134fcede771d87ae058dad7f7081f782aace81",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-liveness-checkpoints: ok",
+          "sourceFile": "test/test-liveness-checkpoints.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:12.552Z"
+        },
+        {
+          "name": "test-ws-monitor-liveness: ok",
+          "sourceFile": "test/test-ws-monitor-liveness.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:12.552Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac18",
+        "g2-commit-ad134fcede771d87ae058dad7f7081f782aace81"
+      ]
+    },
+    {
+      "id": "AC19",
+      "text": "`README.md` and `FEATURES.md` describe the new operations, pause semantics, and the `--until-terminal` flag.",
+      "status": "Implemented",
+      "evidence": [
+        "FEATURES.md:L204-L204",
+        "FEATURES.md:L226-L226",
+        "FEATURES.md:L56-L56",
+        "README.md:L34-L35"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006",
+        "section-009",
+        "section-014",
+        "section-016",
+        "section-025",
+        "section-029"
+      ],
+      "files": [
+        {
+          "path": "FEATURES.md",
+          "lineStart": 56,
+          "lineEnd": 56,
+          "sha256": "20798ab8184f2a64282c09cc8a28b1619f592340c4270afc0f3f39fab8eeead9"
+        },
+        {
+          "path": "FEATURES.md",
+          "lineStart": 204,
+          "lineEnd": 204,
+          "sha256": "20798ab8184f2a64282c09cc8a28b1619f592340c4270afc0f3f39fab8eeead9"
+        },
+        {
+          "path": "FEATURES.md",
+          "lineStart": 226,
+          "lineEnd": 226,
+          "sha256": "20798ab8184f2a64282c09cc8a28b1619f592340c4270afc0f3f39fab8eeead9"
+        },
+        {
+          "path": "README.md",
+          "lineStart": 34,
+          "lineEnd": 35,
+          "sha256": "c7b055eaaea6e8b0c26cfc017541957793a750664ad20fc4b0e14358ac9c9269"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "ad134fcede771d87ae058dad7f7081f782aace81",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "D2 README + FEATURES describe operations, pause semantics, --until-terminal: ok",
+          "sourceFile": "test/test-liveness-checkpoints.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:23:12.625Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [
+        {
+          "id": "release-bump-deferred",
+          "severity": "Suggestion",
+          "state": "open",
+          "evidence": "package.json:L3-L3",
+          "message": "Release obligation (plan 3.9 item 2) not yet applied: package.json / bin/skill-dependencies.json / site footer remain 0.4.65, equal to the merge-base. Bump once above the merge-base with the ship-scope changes before push/PR (Step 8 pre-ship board row 1). Not an AC19 content defect.",
+          "round": 1
+        }
+      ],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ev-ac19",
+        "ev-finding-release-bump",
+        "g2-commit-ad134fcede771d87ae058dad7f7081f782aace81"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Unrelated-root flood fixture (more than 200 unrelated files, 61 roots): pre-fix scan reports `filesScanned: 0` with `capped: true`; post-fix reports `filesScanned >= 1`.",
+      "tests": [
+        {
+          "name": "M1 unrelated-root flood still reads the correlated session: ok",
+          "sourceFile": "test/test-ws-monitor-liveness.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:22:49.803Z"
+        }
+      ],
+      "linkEventIds": [
+        "ev-ns1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Workflow id present only between the 8 KB and 256 KB tail: pre-fix `resolveTranscriptSource` returns `scan-capped` or `no-matching-session`; post-fix returns `available`.",
+      "tests": [
+        {
+          "name": "M2 workflow id between 8KB and 256KB resolves available: ok",
+          "sourceFile": "test/test-ws-monitor-liveness.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:22:49.853Z"
+        }
+      ],
+      "linkEventIds": [
+        "ev-ns2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Paused workflow with an idle correlated session: pre-fix emits `worker-session-stall`; post-fix reports the pause and emits no stall warning.",
+      "tests": [
+        {
+          "name": "M5 pause marker suppresses stall and reports pause: ok",
+          "sourceFile": "test/test-ws-monitor-liveness.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:22:49.911Z"
+        }
+      ],
+      "linkEventIds": [
+        "ev-ns3"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "`--until-terminal` combined with `--iterations`: usage error with non-zero exit and no scan.",
+      "tests": [
+        {
+          "name": "M6 --until-terminal usage errors: ok",
+          "sourceFile": "test/test-ws-monitor-liveness.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:22:49.973Z"
+        }
+      ],
+      "linkEventIds": [
+        "ev-ns4"
+      ]
+    },
+    {
+      "id": "NS5",
+      "text": "`checkpoint` / `pause-turn` with an out-of-range `--step`: non-zero exit with state unchanged.",
+      "tests": [
+        {
+          "name": "T6 out-of-range or malformed input leaves state unchanged: ok",
+          "sourceFile": "test/test-liveness-checkpoints.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:22:50.022Z"
+        }
+      ],
+      "linkEventIds": [
+        "ev-ns5"
+      ]
+    },
+    {
+      "id": "NS6",
+      "text": "`validate_state.cjs` on a malformed checkpoint record: non-zero exit.",
+      "tests": [
+        {
+          "name": "T7 validate_state rejects malformed checkpoint record: ok",
+          "sourceFile": "test/test-liveness-checkpoints.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-24T06:22:50.076Z"
+        }
+      ],
+      "linkEventIds": [
+        "ev-ns6"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 10,
+    "earnedUnits": 190,
+    "totalUnits": 190,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-24T07:10:29.023Z"
+  }
+}
