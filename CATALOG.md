@@ -293,6 +293,6 @@ Print a board after each row (same ✅ / ❌ / ⏭ convention as [`ws-ship-pr/PR
 
 Upstream-only verification helper. Reviews `develop`…`main` (Custom stack + repo prompt). Active CI: [`.github/workflows/agentic-code-review.yml`](.github/workflows/agentic-code-review.yml) — engine/model/variant from repo Variables (`AGENTIC_CODE_REVIEWERS_ENGINE`/`_MODEL`/`_VARIANT`, defaults `opencode`, `opencode-go/mimo-v2.6-flash`, `medium`).
 
-`npm run review:dry` mirrors the active CI recipe with `--dry-run` (no `--gh`/`--pr-id`, so no PR threads); downloads `run.sh` to a file first (`curl|bash` leaves `BASH_SOURCE` unbound under `set -u`). Requires network + `OPENCODE_API_KEY` at run time.
+`npm run review:dry` mirrors the active CI recipe with `--dry-run` (no `--gh`/`--pr-id`, so no PR threads); downloads `run.sh` to a temporary file first (`curl|bash` leaves `BASH_SOURCE` unbound under `set -u`). It reads the same engine/model/variant variables and requires the selected engine credential (`OPENCODE_API_KEY` or `CURSOR_API_KEY`) at run time.
 
 ---

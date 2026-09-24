@@ -30,6 +30,23 @@ assert.match(writeSpec, /Add to index\.PRD \(Recommended\)/, 'write-spec index.P
 const specIndex = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-index/SKILL.md'), 'utf8');
 assert.match(specIndex, /### 4\. `track`/, 'spec-index track mode');
 const site = fs.readFileSync(path.join(repoRoot, 'docs/index.html'), 'utf8');
+const siteStyles = fs.readFileSync(path.join(repoRoot, 'docs/assets/css/style.css'), 'utf8');
+assert.doesNotMatch(site, /id="dependency-graph"|href="#dependency-graph"/, 'landing page omits dependency graph section and links');
+assert.doesNotMatch(site, /id="roadmap"|href="#roadmap"/, 'landing page omits roadmap section and links');
+assert.doesNotMatch(site, /class="hero-announcement"/, 'landing page omits specialized subagents announcement');
+assert.doesNotMatch(site, /Verification advances only at a ledger-derived score/, 'landing page omits redundant verification sentence');
+assert.doesNotMatch(site, /id="to-top"/, 'landing page omits scroll-to-top control');
+assert.match(siteStyles, /#site-sidebar\s*\{\s*position: fixed;/, 'desktop site sidebar is fixed');
+const desktopContentRule = siteStyles.match(/#content\s*\{([^}]*)\}/)?.[1] || '';
+const desktopTocRule = siteStyles.match(/#page-toc\s*\{([^}]*)\}/)?.[1] || '';
+const tabletStyles = siteStyles.slice(siteStyles.lastIndexOf('@media (max-width: 1280px)'), siteStyles.lastIndexOf('@media (max-width: 1100px)'));
+const tabletContentRule = tabletStyles.match(/#content\s*\{([^}]*)\}/)?.[1] || '';
+const mobileStyles = siteStyles.slice(siteStyles.lastIndexOf('@media (max-width: 900px)'), siteStyles.lastIndexOf('@media (max-width: 768px)'));
+const mobileContentRule = mobileStyles.match(/#content\s*\{([^}]*)\}/)?.[1] || '';
+assert.match(desktopContentRule, /grid-column:\s*2;/, 'desktop content stays in the center grid column');
+assert.match(desktopTocRule, /grid-column:\s*3;/, 'desktop table of contents stays in the right grid column');
+assert.match(tabletContentRule, /grid-column:\s*2;/, 'tablet content stays clear of the fixed sidebar');
+assert.match(mobileContentRule, /grid-column:\s*auto;/, 'mobile content returns to document flow');
 for (const heading of [
   'Context budgets and progressive disclosure',
   'AC ledger and derived scoring',

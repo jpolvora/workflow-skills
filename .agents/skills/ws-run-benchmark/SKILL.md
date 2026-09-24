@@ -1,6 +1,6 @@
 ---
 name: ws-run-benchmark
-version: 0.4.64
+version: 0.4.65
 description: >-
   Upstream-only package-root fixture compare. Never during ws-spec-to-pr.
   Trigger only on explicit /ws-run-benchmark from the workflow-skills source tree.
