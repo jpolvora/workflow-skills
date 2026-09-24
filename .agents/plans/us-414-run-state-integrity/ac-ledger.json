@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "revision": 19,
+  "revision": 27,
   "workflowId": "us-414-run-state-integrity-20260924T170500Z",
   "slug": "us-414-run-state-integrity",
   "specPath": ".agents/plans/us-414-run-state-integrity/step-00-us-414-run-state-integrity.spec.md",
@@ -22,9 +22,9 @@
       "text": "A run whose configured `modelsPreset` is absent from `defaults.modelPresets` fails at run start with an error naming the unknown preset and the available presets; it never silently resolves to another preset's model.",
       "status": "Implemented",
       "evidence": [
-        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1272-L1308",
-        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1578-L1589",
-        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1606-L1612",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1274-L1310",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1580-L1591",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1608-L1614",
         ".agents/skills/ws-shared/runtime/setup.md:L71-L71"
       ],
       "tasks": [],
@@ -39,21 +39,21 @@
       "files": [
         {
           "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-          "lineStart": 1272,
-          "lineEnd": 1308,
-          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          "lineStart": 1274,
+          "lineEnd": 1310,
+          "sha256": "1a43c8665c3ef9c0077b5bd5ed103a1534db2f4725030f20ff6692e70b7b5ffd"
         },
         {
           "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-          "lineStart": 1578,
-          "lineEnd": 1589,
-          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          "lineStart": 1580,
+          "lineEnd": 1591,
+          "sha256": "1a43c8665c3ef9c0077b5bd5ed103a1534db2f4725030f20ff6692e70b7b5ffd"
         },
         {
           "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-          "lineStart": 1606,
-          "lineEnd": 1612,
-          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          "lineStart": 1608,
+          "lineEnd": 1614,
+          "sha256": "1a43c8665c3ef9c0077b5bd5ed103a1534db2f4725030f20ff6692e70b7b5ffd"
         },
         {
           "path": ".agents/skills/ws-shared/runtime/setup.md",
@@ -103,7 +103,9 @@
       },
       "linkEventIds": [
         "ev-ac1",
+        "ev-ac1-relink2",
         "ev-ac1t",
+        "ev-ledger-repair-drop-stale",
         "g2-commit-50455501b0fc3a43007ab0d01050119dac412926"
       ]
     },
@@ -112,9 +114,9 @@
       "text": "Telemetry records the resolved model id per step; steps never record a preset name in a `model` field.",
       "status": "Implemented",
       "evidence": [
-        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1310-L1317",
-        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1474-L1478",
-        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1805-L1806"
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1312-L1319",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1476-L1480",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1807-L1808"
       ],
       "tasks": [],
       "planSections": [
@@ -126,21 +128,21 @@
       "files": [
         {
           "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-          "lineStart": 1310,
-          "lineEnd": 1317,
-          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          "lineStart": 1312,
+          "lineEnd": 1319,
+          "sha256": "1a43c8665c3ef9c0077b5bd5ed103a1534db2f4725030f20ff6692e70b7b5ffd"
         },
         {
           "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-          "lineStart": 1474,
-          "lineEnd": 1478,
-          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          "lineStart": 1476,
+          "lineEnd": 1480,
+          "sha256": "1a43c8665c3ef9c0077b5bd5ed103a1534db2f4725030f20ff6692e70b7b5ffd"
         },
         {
           "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-          "lineStart": 1805,
-          "lineEnd": 1806,
-          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          "lineStart": 1807,
+          "lineEnd": 1808,
+          "sha256": "1a43c8665c3ef9c0077b5bd5ed103a1534db2f4725030f20ff6692e70b7b5ffd"
         }
       ],
       "commits": [
@@ -176,8 +178,10 @@
       },
       "linkEventIds": [
         "ev-ac2",
+        "ev-ac2-relink2",
         "ev-ac2b",
         "ev-ac2t",
+        "ev-ledger-repair-drop-stale",
         "g2-commit-50455501b0fc3a43007ab0d01050119dac412926"
       ]
     },
@@ -187,9 +191,9 @@
       "status": "Implemented",
       "evidence": [
         ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L135-L137",
-        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L2317-L2317",
-        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L2323-L2323",
-        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L819-L830",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L2319-L2319",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L2325-L2325",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L821-L832",
         ".agents/skills/ws-shared/runtime/workflow-state.schema.json:L14-L27",
         ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L159-L159",
         ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L177-L177"
@@ -211,21 +215,21 @@
         },
         {
           "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-          "lineStart": 819,
-          "lineEnd": 830,
-          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          "lineStart": 821,
+          "lineEnd": 832,
+          "sha256": "1a43c8665c3ef9c0077b5bd5ed103a1534db2f4725030f20ff6692e70b7b5ffd"
         },
         {
           "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-          "lineStart": 2317,
-          "lineEnd": 2317,
-          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          "lineStart": 2319,
+          "lineEnd": 2319,
+          "sha256": "1a43c8665c3ef9c0077b5bd5ed103a1534db2f4725030f20ff6692e70b7b5ffd"
         },
         {
           "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-          "lineStart": 2323,
-          "lineEnd": 2323,
-          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          "lineStart": 2325,
+          "lineEnd": 2325,
+          "sha256": "1a43c8665c3ef9c0077b5bd5ed103a1534db2f4725030f20ff6692e70b7b5ffd"
         },
         {
           "path": ".agents/skills/ws-shared/runtime/workflow-state.schema.json",
@@ -295,7 +299,9 @@
       },
       "linkEventIds": [
         "ev-ac3",
+        "ev-ac3-relink2",
         "ev-ac3-revfix",
+        "ev-ledger-repair-drop-stale",
         "g2-commit-50455501b0fc3a43007ab0d01050119dac412926"
       ]
     },
@@ -376,6 +382,7 @@
       },
       "linkEventIds": [
         "ev-ac4",
+        "ev-ledger-repair-drop-stale",
         "g2-commit-50455501b0fc3a43007ab0d01050119dac412926"
       ]
     },
@@ -384,9 +391,9 @@
       "text": "`skipReason: \"dag\"` is never recorded for a step whose DAG artifacts (`step-03-*.plan.exec.md`) were produced; skip reasons describe the step's actual fate.",
       "status": "Implemented",
       "evidence": [
-        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1586-L1588",
-        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1784-L1784",
-        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1926-L1926"
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1588-L1590",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1786-L1786",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1928-L1928"
       ],
       "tasks": [],
       "planSections": [
@@ -398,21 +405,21 @@
       "files": [
         {
           "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-          "lineStart": 1586,
-          "lineEnd": 1588,
-          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          "lineStart": 1588,
+          "lineEnd": 1590,
+          "sha256": "1a43c8665c3ef9c0077b5bd5ed103a1534db2f4725030f20ff6692e70b7b5ffd"
         },
         {
           "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-          "lineStart": 1784,
-          "lineEnd": 1784,
-          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          "lineStart": 1786,
+          "lineEnd": 1786,
+          "sha256": "1a43c8665c3ef9c0077b5bd5ed103a1534db2f4725030f20ff6692e70b7b5ffd"
         },
         {
           "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-          "lineStart": 1926,
-          "lineEnd": 1926,
-          "sha256": "35a49a51c999580e94d2cc8ce6284d72a2c21d1cf4b31a86db55cdc817aa9e4a"
+          "lineStart": 1928,
+          "lineEnd": 1928,
+          "sha256": "1a43c8665c3ef9c0077b5bd5ed103a1534db2f4725030f20ff6692e70b7b5ffd"
         }
       ],
       "commits": [
@@ -456,6 +463,8 @@
       },
       "linkEventIds": [
         "ev-ac5",
+        "ev-ac5-relink2",
+        "ev-ledger-repair-drop-stale",
         "g2-commit-50455501b0fc3a43007ab0d01050119dac412926"
       ]
     },
@@ -506,6 +515,7 @@
       },
       "linkEventIds": [
         "ev-ac6",
+        "ev-ledger-repair-drop-stale",
         "g2-commit-50455501b0fc3a43007ab0d01050119dac412926"
       ]
     },
@@ -514,7 +524,7 @@
       "text": "Existing suites (`npm run test`, `ws-check-harness`) stay green; new coverage pins the fail-closed preset error (AC1), the ship writeback (AC3), and the round-artifact-or-reason rule (AC4).",
       "status": "Implemented",
       "evidence": [
-        "test/test-run-state-integrity.js:L1-L196",
+        "test/test-run-state-integrity.js:L1-L203",
         "test/test-suites.json:L280-L285"
       ],
       "tasks": [],
@@ -528,8 +538,8 @@
         {
           "path": "test/test-run-state-integrity.js",
           "lineStart": 1,
-          "lineEnd": 196,
-          "sha256": "3e9be013f97c47376071866aab0076ae1156733c3a70f2478fd06f26dd710e4d"
+          "lineEnd": 203,
+          "sha256": "de72300f8d97396ad5d46ae3996d68eda99f0ce508a3c381012e12151acde5f6"
         },
         {
           "path": "test/test-suites.json",
@@ -571,6 +581,8 @@
       },
       "linkEventIds": [
         "ev-ac7",
+        "ev-ac7-relink2",
+        "ev-ledger-repair-drop-stale",
         "g2-commit-50455501b0fc3a43007ab0d01050119dac412926"
       ]
     }
@@ -631,36 +643,16 @@
   "invariantViolations": [],
   "scoreState": {
     "boundary": "pre-step6",
-    "score": 7,
-    "earnedUnits": 55,
+    "score": 10,
+    "earnedUnits": 70,
     "totalUnits": 70,
     "knownDefect": false,
-    "missingEvidence": true,
-    "deficiencies": [
-      "AC1: no linked files",
-      "AC2: no linked files",
-      "AC3: no linked files",
-      "AC5: no linked files",
-      "AC7: no linked files"
-    ],
-    "errors": [
-      "AC1: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-      "AC1: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-      "AC1: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-      "AC2: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-      "AC2: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-      "AC2: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-      "AC3: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-      "AC3: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-      "AC3: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-      "AC5: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-      "AC5: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-      "AC5: linked file hash changed: .agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
-      "AC7: linked file hash changed: test/test-run-state-integrity.js"
-    ],
+    "missingEvidence": false,
+    "deficiencies": [],
+    "errors": [],
     "invariantViolations": [],
-    "computedAt": "2026-09-24T21:32:51.088Z",
+    "computedAt": "2026-09-24T22:29:46.680Z",
     "writer": "ac_ledger.cjs link",
-    "ledgerHash": "50e51b52349548effa4d77963038727bc54f6c4e434d6967028b1dad795aae79"
+    "ledgerHash": "283be980c806c3dd4d1624c7a658c1a1edba94aab0319d659dc4287680c0b8ec"
   }
 }
