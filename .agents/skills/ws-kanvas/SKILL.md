@@ -40,7 +40,7 @@ node {skillsRoot}/ws-kanvas/scripts/server.cjs --port 4173
 | `--specs-dir DIR` | Specs root (default: `<cwd>/.agents/specs`) |
 | `--plans-dir DIR` | Plans root (default: `<cwd>/.agents/plans`) |
 | `--index FILE` | `index.PRD` path (default: `<specsDir>/index.PRD`) |
-| `--config FILE` | Consumer hub config; `plans.specsDir` / `plans.dir` resolve relative to the consumer root unless absolute |
+| `--config FILE` | Consumer hub config; `plans.specsDir` / `plans.dir` resolve relative to the consumer root unless absolute; the root is the config directory minus one hub segment (resolver-sourced name or any dot-directory), never the bare cwd |
 | `--port N` / `KANVAS_PORT` | Bind port (default `4173`) |
 
 Explicit flags win over `--config`, which wins over the `<cwd>` defaults. No hardcoded

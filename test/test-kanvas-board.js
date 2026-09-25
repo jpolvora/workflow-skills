@@ -266,6 +266,23 @@ try {
   const defaultRoots = resolveRoots({ config: path.join(consumer, '.ws', 'config.json') });
   assert(defaultRoots.specsDir === path.join(consumer, '.agents', 'specs'), 'AC11: omitted keys fall back to the consumer root, not the cwd');
   assert(defaultRoots.plansDir === path.join(consumer, '.agents', 'plans'), 'AC11: omitted plans dir falls back to the consumer root');
+  // Relocatable hub dir (.workflow) resolves to the consumer root, not the hub.
+  write(path.join(consumer, '.workflow', 'config.json'), JSON.stringify({ plans: {} }));
+  const relocRoots = resolveRoots({ config: path.join(consumer, '.workflow', 'config.json') });
+  assert(relocRoots.specsDir === path.join(consumer, '.agents', 'specs'), 'AC11: relocatable hub resolves to the consumer root');
+  // Self-described hub dir via pathTokens.sharedDir.
+  write(path.join(consumer, 'flow', 'config.json'), JSON.stringify({ plans: {}, pathTokens: { sharedDir: 'flow' } }));
+  const flowRoots = resolveRoots({ config: path.join(consumer, 'flow', 'config.json') });
+  assert(flowRoots.specsDir === path.join(consumer, '.agents', 'specs'), 'AC11: self-described hub resolves to the consumer root');
+  // Cross-cwd launch: root follows the config file, never the cwd.
+  const elsewhere = fs.mkdtempSync(path.join(os.tmpdir(), 'kanvas-elsewhere-'));
+  write(path.join(elsewhere, 'probe.cjs'), 'const { resolveRoots } = require(' + JSON.stringify(serverPath) + ');'
+    + ' const r = resolveRoots({ config: ' + JSON.stringify(path.join(consumer, '.ws', 'config.json')) + ' });'
+    + ' console.log(JSON.stringify({ specsDir: r.specsDir, plansDir: r.plansDir }));');
+  const cross = cp.spawnSync(process.execPath, [path.join(elsewhere, 'probe.cjs')], { cwd: elsewhere, encoding: 'utf8' });
+  const crossRoots = JSON.parse(cross.stdout);
+  assert(crossRoots.specsDir === path.join(consumer, '.agents', 'specs'), 'AC11: cross-cwd root follows the config file, never the cwd');
+  fs.rmSync(elsewhere, { recursive: true, force: true });
   fs.rmSync(consumer, { recursive: true, force: true });
 } finally {
   await new Promise((resolve) => server.close(resolve));
