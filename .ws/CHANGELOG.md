@@ -1,4 +1,8 @@
 # Changelog
+### [2026-09-25 02:35] Agent: ws-spec-multi worker (us-412-418-monitor-accuracy)
+- **Prompt**: Implement the monitor accuracy spec (upstream issues 412+418): step-membership artifact expectations, legacy terminal tolerance, transcript correlation windows, discovery budget.
+- **Done**: `monitor_snapshot.cjs` membership-first `expectedArtifacts` (`expectsStep`, watermark fallback only when step lists are absent); `completed`-status drift tolerated as `info` with refined-plan interview evidence; correlate-first global read order + recency-aware enumeration; shared `transcriptCorrelates` predicate for scan and resolve; new suite `test/test-ws-monitor-us412-418.js` + 2 evals; SKILL.md severity rows; release 0.4.71 + integrity + site.
+- **Result**: `npm run tests` 131/131; `test-harness-clean` 0 findings; `verify-integrity` OK (v0.4.71); verify score 10/10; red-proof shapes A/B/C 9/7/9 criticals pre-fix, 0 post-fix with live control intact.
 ### [2026-09-24 21:00] Agent: ws-spec-multi worker (us-415-416-script-ux-golden-path)
 - **Prompt**: Implement the workflow script UX and golden-path state commands spec (upstream issues 415+416): discoverable per-subcommand help, score deficiency detail, boundary-label errors, unambiguous phantom-finish exit, per-gate golden-path commands, ledger tamper-evidence.
 - **Done**: `ac_ledger.cjs` per-subcommand help + `deficiencies[]` in score/verify/report + `writer`/`ledgerHash` persist stamps; `workflow_state.cjs` per-operation help + phantom fail-closed finish + boundary/tamper errors naming the repair command; golden-path command table in `gates.md` with pointers in standard `STEP-DISPATCH.md` and lite `SKILL.md`; new suite `test/test-script-ux-golden-path.js`; release 0.4.70 + integrity + site/wiki.
