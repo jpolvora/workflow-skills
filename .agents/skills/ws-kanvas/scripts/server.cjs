@@ -30,7 +30,7 @@ function readConfigPaths(configFile) {
   }
   let config;
   try {
-    config = JSON.parse(raw);
+    config = JSON.parse(raw.replace(/^\uFEFF/, ''));
   } catch {
     return {};
   }

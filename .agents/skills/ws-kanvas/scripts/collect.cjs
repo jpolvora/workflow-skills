@@ -40,7 +40,7 @@ function resolveInside(root, ...parts) {
 
 /** Minimal frontmatter parser: returns { data, body } with flat `key: value` pairs. */
 function parseFrontmatter(text) {
-  const normalized = text.replace(/\r\n?/g, '\n');
+  const normalized = text.replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
   if (!normalized.startsWith('---')) return { data: {}, body: normalized };
   const end = normalized.indexOf('\n---', 3);
   if (end === -1) return { data: {}, body: normalized };
