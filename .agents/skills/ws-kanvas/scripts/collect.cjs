@@ -1,6 +1,16 @@
 #!/usr/bin/env node
 'use strict';
 
+/** Normalize a spec reference (slug, filename, prefixed or nested step path) to a bare slug. */
+function specRefToSlug(ref) {
+  return String(ref)
+    .split(/[\\/]/)
+    .pop()
+    .replace(/\.spec\.md$/i, '')
+    .replace(/^step-\d+-/i, '')
+    .replace(/^\d+-/, '');
+}
+
 /**
  * ws-kanvas collector: read-only board JSON builder over specs, plans, and index.PRD.
  *
@@ -149,29 +159,33 @@ function parseIndex(indexText) {
       }
     }
     // Table row: | n | `slug` | `[x]` done | phase | ... |
+    let altDialect = false;
     let m = line.match(/^\|\s*[^|]*\|\s*`([^`]+)`\s*\|\s*`?\[([ x~])\]`?/);
     // Live dialect with status first: | n | `[x]` done | `slug` | scope | ... |
     if (!m) {
       const alt = line.match(/^\|\s*[^|]*\|\s*`?\[([ x~])\]`?[^|]*\|\s*`([^`]+)`/);
-      if (alt) m = [alt[0], alt[2], alt[1]];
+      if (alt) { m = [alt[0], alt[2], alt[1]]; altDialect = true; }
     }
-    if (m && isValidSlug(m[1])) {
+    const tableSlug = m ? specRefToSlug(m[1]) : null;
+    if (tableSlug && isValidSlug(tableSlug)) {
       const cells = line.split('|').slice(1, -1).map((c) => c.trim());
-      const phase = cells.length >= 4 ? cells[3].replace(/`/g, '') : null;
-      rows.set(m[1], { indexStatus: m[2] === 'x' ? 'done' : 'todo', phase: phase || null });
+      const phaseCell = cells.length >= 4 ? cells[3].replace(/`/g, '').trim() : '';
+      // Template dialect: column 3 is Target Phase. Status-first dialect: column 3 is Scope.
+      const phase = phaseCell && (!altDialect || /^phase\b/i.test(phaseCell)) ? phaseCell : null;
+      rows.set(tableSlug, { indexStatus: m[2] === 'x' ? 'done' : 'todo', phase: phase || null });
       if (/done log/i.test(section)) {
         const evidenceCell = cells.length >= 4 ? cells[cells.length - 1] : '';
-        doneLog.set(m[1], evidenceCell || null);
+        doneLog.set(tableSlug, evidenceCell || null);
       }
-      if (/archiv/i.test(section) && /drop|supersede|abandon|cancel/i.test(line)) {
-        archived.add(m[1]);
+      if (/archiv/i.test(section) && /cancel|fail|drop|supersede|abandon/i.test(line)) {
+        archived.add(tableSlug);
       }
       continue;
     }
     // Checkbox list: - [x] Title (`spec: NNNN-slug.spec.md`)
     m = line.match(/^-\s*\[([ x~])\]\s+.*\(\s*`?spec:\s*`?([^)`]+)`?\)/);
     if (m) {
-      const slug = m[2].replace(/\.spec\.md$/, '').replace(/^\d+-/, '');
+      const slug = specRefToSlug(m[2]);
       if (isValidSlug(slug) && !rows.has(slug)) {
         rows.set(slug, { indexStatus: m[1] === 'x' ? 'done' : 'todo', phase: null });
       }
@@ -185,7 +199,7 @@ function parseIndex(indexText) {
     // Nested feature-map form: `- **spec:** `slug.spec.md`` inherits the parent checkbox.
     const nm = line.match(/^\s*-\s*\*\*spec:\*\*\s*`([^`]+)`/);
     if (nm) {
-      const slug = nm[1].replace(/\.spec\.md$/, '').replace(/^\d+-/, '');
+      const slug = specRefToSlug(nm[1]);
       if (isValidSlug(slug) && pendingCheck && !rows.has(slug)) {
         rows.set(slug, { indexStatus: pendingCheck, phase: null });
       }

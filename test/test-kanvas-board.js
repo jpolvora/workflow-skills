@@ -59,6 +59,7 @@ spec('alt-order', 'Alt order', 1);
 spec('nested-child', 'Nested child', 1);
 spec('dusty-arch', 'Dusty arch', 1);
 spec('orphan-child', 'Orphan child', 1);
+write(path.join(specsDir, 'nested', 'nested-path.spec.md'), '---\nslug: nested-path\ntitle: "Nested path"\n---\n\n## Acceptance Criteria\n\n- AC1: nested\n');
 spec('partial-card', 'Partial card', 1);
 write(path.join(specsDir, 'dup-first.spec.md'), '---\nslug: dupe\ntitle: "First wins"\n---\n\n## Acceptance Criteria\n\n- AC1: first\n');
 write(path.join(specsDir, 'dup-second.spec.md'), '---\nslug: dupe\ntitle: "Second loses"\n---\n\n## Acceptance Criteria\n\n- AC1: second\n- AC2: second\n');
@@ -81,10 +82,12 @@ write(indexPath, `# Fixture index
 | 4 | \`prod-card\` | \`[x]\` done | Phase 3 | Prod card |
 | 5 | \`legacy-ship\` | \`[x]\` done | Phase 1 | Legacy ship |
 | 6 | \`ghost-ship\` | \`[x]\` done | Phase 1 | Ghost ship |
-| 7 | \`[x]\` done | \`alt-order\` | Phase 2 | Alt order |
+| 7 | \`[x]\` done | \`alt-order\` | Payments | Alt order |
 
 - [ ] Nested feature
   - **spec:** \`nested-child.spec.md\`
+
+- [x] Nested path feature (\`spec: nested/nested-path.spec.md\`)
 
 - [x] Stale parent
 | 8 | \`table-filler\` | \`[ ]\` todo | Phase 9 | Filler |
@@ -98,6 +101,7 @@ write(indexPath, `# Fixture index
 | 2026-09-25 | \`prod-card\` | Prod card | https://example.com/pr/1
 | 2026-09-24 | \`legacy-ship\` | Legacy ship | Implemented
 | 2026-09-24 | \`alt-order\` | Alt order | https://example.com/pr/9
+| 2026-09-24 | \`nested-path\` | Nested path | https://example.com/pr/10
 
 ## Archive
 
@@ -113,7 +117,7 @@ write(path.join(plansDir, 'dead-card', 'dead-card.state.md'), '---\nstatus: canc
 write(path.join(plansDir, 'ghost-ship', 'step-08-ghost-ship.result.md'), '# result\nshipped\n');
 
 const board = collectBoard({ specsDir, plansDir, indexPath });
-assert(Array.isArray(board.cards) && board.cards.length === 16, `sixteen fixture cards (got ${board.cards.length})`);
+assert(Array.isArray(board.cards) && board.cards.length === 17, `seventeen fixture cards (got ${board.cards.length})`);
 const bySlug = Object.fromEntries(board.cards.map((c) => [c.slug, c]));
 assert(!bySlug['BAD_SLUG'], 'malformed slug file is skipped');
 assert(bySlug['backlog-only'].column === 'backlog', 'AC2: plan-less untracked spec lands in Backlog');
@@ -128,6 +132,7 @@ assert(bySlug['orphan-child'].indexStatus === 'untracked', 'stale parent checkbo
 assert(bySlug['dupe'].title === 'First wins' && bySlug['dupe'].acCount === 1, 'duplicate slugs collapse to the first file');
 assert(bySlug['partial-card'].indexStatus === 'todo', 'partial mark reads as todo');
 assert(bySlug['partial-card'].column === 'backlog', 'partial card without a run dir lands in Backlog');
+assert(bySlug['nested-path'].column === 'production', 'nested spec: path resolves to the bare slug');
 assert(bySlug['old-faithful'].column === 'abandoned', 'Archive dropped row lands in Abandoned without a plan dir');
 assert(bySlug['alt-order'].column === 'production', 'live status-first dialect lands in Production');
 assert(bySlug['nested-child'].column === 'backlog', 'nested feature-map form tracks as todo');
@@ -142,7 +147,7 @@ assert(bySlug['backlog-only'].links.plan === null, 'plan-less card has null plan
 assert(bySlug['dev-card'].links.spec.endsWith('.spec.md'), 'spec link points at the spec file');
 assert.deepStrictEqual(
   board.columns.map((c) => [c.id, c.count]),
-  [['backlog', 7], ['sprint', 1], ['development', 1], ['staging', 1], ['production', 3], ['abandoned', 3]],
+  [['backlog', 7], ['sprint', 1], ['development', 1], ['staging', 1], ['production', 4], ['abandoned', 3]],
   'all six columns with per-column counts',
 );
 
@@ -150,7 +155,7 @@ assert.deepStrictEqual(
 assert(/^\d{4}-\d{2}-\d{2}T/.test(board.generatedAt), 'generatedAt is an ISO timestamp');
 const snapshot = board.cards.map(({ links, ...rest }) => rest);
 assert.deepStrictEqual(snapshot, [
-  { slug: 'alt-order', title: 'Alt order', column: 'production', indexStatus: 'done', phase: 'Phase 2', acCount: 1, planStep: null, planStatus: null, evidence: 'https://example.com/pr/9' },
+  { slug: 'alt-order', title: 'Alt order', column: 'production', indexStatus: 'done', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: 'https://example.com/pr/9' },
   { slug: 'backlog-only', title: 'Backlog only', column: 'backlog', indexStatus: 'untracked', phase: null, acCount: 2, planStep: null, planStatus: null, evidence: null },
   { slug: 'bom-card', title: 'Bom card', column: 'backlog', indexStatus: 'untracked', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: null },
   { slug: 'dead-card', title: 'Dead card', column: 'abandoned', indexStatus: 'untracked', phase: null, acCount: 1, planStep: null, planStatus: 'cancelled', evidence: null },
@@ -160,6 +165,7 @@ assert.deepStrictEqual(snapshot, [
   { slug: 'ghost-ship', title: 'Ghost ship', column: 'backlog', indexStatus: 'done', phase: 'Phase 1', acCount: 1, planStep: null, planStatus: null, evidence: null },
   { slug: 'legacy-ship', title: 'Legacy ship', column: 'production', indexStatus: 'done', phase: 'Phase 1', acCount: 1, planStep: null, planStatus: null, evidence: null },
   { slug: 'nested-child', title: 'Nested child', column: 'backlog', indexStatus: 'todo', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: null },
+  { slug: 'nested-path', title: 'Nested path', column: 'production', indexStatus: 'done', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: 'https://example.com/pr/10' },
   { slug: 'old-faithful', title: 'Old faithful', column: 'abandoned', indexStatus: 'untracked', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: null },
   { slug: 'orphan-child', title: 'Orphan child', column: 'backlog', indexStatus: 'untracked', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: null },
   { slug: 'partial-card', title: 'Partial card', column: 'backlog', indexStatus: 'todo', phase: 'Phase 1', acCount: 1, planStep: null, planStatus: null, evidence: null },
@@ -229,7 +235,7 @@ try {
   const page = await get(port, '/');
   assert(page.status === 200 && page.body.includes('Kanvas board') && page.body.includes('api/board'), 'GET / serves the board page');
   const api = await get(port, '/api/board');
-  assert(api.status === 200 && JSON.parse(api.body).cards.length === 16, 'GET /api/board returns the fixture board');
+  assert(api.status === 200 && JSON.parse(api.body).cards.length === 17, 'GET /api/board returns the fixture board');
   const card = await get(port, '/api/card?slug=prod-card');
   assert(card.status === 200 && JSON.parse(card.body).card.column === 'production', 'AC4: card endpoint returns the popup payload');
   const missing = await get(port, '/api/card?slug=no-such-spec');
