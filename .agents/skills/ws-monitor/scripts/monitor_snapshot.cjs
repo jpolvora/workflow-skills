@@ -1801,8 +1801,15 @@ function snapshot(options) {
       workflow.stopwatch = null;
       continue;
     }
-    workflow.transcriptSource = resolveStateTranscriptSource(workflow.stateAgentTranscripts, context.repoRoot)
-      || resolveTranscriptSource(
+    // us-419 fix-pr: only an AVAILABLE state marker short-circuits host
+    // discovery. A transcript-unavailable marker stays informational (report
+    // line + watch message); live discovery still resolves, so a
+    // dispatch-time absent marker can never pin transcriptSource or
+    // suppress worker-session-stall when a correlated session exists.
+    const stateSource = resolveStateTranscriptSource(workflow.stateAgentTranscripts, context.repoRoot);
+    workflow.transcriptSource = (stateSource && stateSource.status === 'available')
+      ? stateSource
+      : resolveTranscriptSource(
       { slug: workflow.slug, workflowId: workflow.workflowId, sessionId: options.sessionId || null },
       transcript.files,
       discoveryEnabled,

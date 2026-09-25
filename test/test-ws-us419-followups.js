@@ -125,6 +125,43 @@ acImplemented: 0
   console.log('AC2 dispatch-time marker default: ok');
 }
 
+// AC2b (fix-pr: reviewer WARNING): a transcript-unavailable state marker
+// must not pin transcriptSource or suppress discovery. With discovery on
+// and a correlated session present, the snapshot still resolves available.
+{
+  const root = temp('ws-us419-ac2b-');
+  writeConfig(root, { discoverHostTranscripts: true });
+  const plansDir = path.join(root, '.agents', 'plans', 'us-419-pin');
+  write(
+    path.join(plansDir, 'wf-us419-pin.state.json'),
+    JSON.stringify({
+      stateVersion: 3, revision: 5, workflowId: 'wf-us419-pin',
+      slug: 'us-419-pin', workflowType: 'standard', status: 'active',
+      currentStep: 4, completedSteps: [0, 1, 2, 3], skippedSteps: [],
+      stepStatus: { 3: 'completed', 4: 'active' },
+      agentTranscripts: { status: 'transcript-unavailable', reason: 'no-matching-session', recordedAt: '2026-09-25T03:00:00.000Z' },
+    }),
+  );
+  for (const artifact of ['step-00-us-419-pin.spec.md', 'step-01-us-419-pin.plan.md']) {
+    write(path.join(plansDir, artifact), 'artifact\n');
+  }
+  const sessionDir = path.join(root, 'session-explicit');
+  write(path.join(sessionDir, 'session.jsonl'), 'wf-us419-pin us-419-pin worker activity\n');
+  const result = cp.spawnSync(
+    process.execPath,
+    [
+      monitorScript, '--repo-root', root, '--slug', 'us-419-pin',
+      '--discover-host-transcripts', '--transcript-root', sessionDir, '--json',
+    ],
+    { cwd: root, encoding: 'utf8', env: { ...process.env, XDG_DATA_HOME: path.join(root, 'xdg-none') } },
+  );
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  const report = JSON.parse(result.stdout);
+  const workflow = report.workflows.find((w) => w.slug === 'us-419-pin');
+  assert.ok(workflow, 'pinned workflow present in snapshot');
+  assert.equal(workflow.transcriptSource.status, 'available', `absent marker must not pin discovery: ${JSON.stringify(workflow.transcriptSource)}`);
+  console.log('AC2b absent marker never pins discovery: ok');
+}
 // AC3: plans-index stateSha256 matches right after a G2 commit and a baseline refresh.
 {
   const root = temp('ws-us419-ac3-');

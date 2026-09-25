@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "revision": 36,
+  "revision": 47,
   "workflowId": "us-419",
   "slug": "us-419",
   "specPath": ".agents/plans/us-419/step-00-us-419.spec.md",
@@ -37,13 +37,13 @@
           "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
           "lineStart": 1196,
           "lineEnd": 1254,
-          "sha256": "3a925e735c2c3ac9eba2f1ec71fd624fd2bb550cd23180aceb7e781db1faa2b9"
+          "sha256": "5f85210f0bd2b2986b1c9c34bfc19897cdbe7feb54edd1545747d81cbf90d375"
         },
         {
           "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
           "lineStart": 1277,
           "lineEnd": 1280,
-          "sha256": "3a925e735c2c3ac9eba2f1ec71fd624fd2bb550cd23180aceb7e781db1faa2b9"
+          "sha256": "5f85210f0bd2b2986b1c9c34bfc19897cdbe7feb54edd1545747d81cbf90d375"
         }
       ],
       "commits": [
@@ -72,6 +72,7 @@
       "linkEventIds": [
         "g2-commit-495fb5e260316862904eebb0d7d939632248c8ae",
         "us419-ac1",
+        "us419-fixpr2b-ac1",
         "us419r2-ac1"
       ]
     },
@@ -80,6 +81,7 @@
       "text": "A dispatched run carries an `agentTranscripts` marker — available paths when the host session path is known, otherwise the explicit absent marker with a valid reason (`discovery-disabled` | `no-matching-session` | `scan-capped`) — recorded at dispatch time, or the dispatch contract documents the exact manual call site. New coverage asserts a dispatched run carries a marker.",
       "status": "Implemented",
       "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1804-L1819",
         ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1055-L1071",
         ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1694-L1704",
         ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L71-L75"
@@ -92,6 +94,12 @@
         "section-008"
       ],
       "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1804,
+          "lineEnd": 1819,
+          "sha256": "5f85210f0bd2b2986b1c9c34bfc19897cdbe7feb54edd1545747d81cbf90d375"
+        },
         {
           "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
           "lineStart": 1055,
@@ -125,6 +133,14 @@
           "alias": null,
           "exitCode": 0,
           "timestamp": "2026-09-25T02:55:05.066Z"
+        },
+        {
+          "name": "AC2b absent marker never pins discovery",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T03:36:41.163Z"
         }
       ],
       "verdicts": [],
@@ -137,6 +153,7 @@
       "linkEventIds": [
         "g2-commit-495fb5e260316862904eebb0d7d939632248c8ae",
         "us419-ac2",
+        "us419-fixpr2-ac2",
         "us419r2-ac2"
       ]
     },
@@ -255,7 +272,8 @@
       "status": "Implemented",
       "evidence": [
         ".gitattributes:L25-L27",
-        "test/test-ws-us419-followups.js:L192-L201"
+        "test/test-ws-us419-followups.js:L192-L201",
+        "test/test-ws-us419-followups.js:L229-L241"
       ],
       "tasks": [],
       "planSections": [
@@ -274,7 +292,13 @@
           "path": "test/test-ws-us419-followups.js",
           "lineStart": 192,
           "lineEnd": 201,
-          "sha256": "4e73f6360507122e7cf4cb6f3b881c55561f0c77388cd727b119d75e5bce1eb3"
+          "sha256": "384e350d92169a528eb7ca80f570453658b1820c54c83a45e9d947fcc0ca096d"
+        },
+        {
+          "path": "test/test-ws-us419-followups.js",
+          "lineStart": 229,
+          "lineEnd": 241,
+          "sha256": "384e350d92169a528eb7ca80f570453658b1820c54c83a45e9d947fcc0ca096d"
         }
       ],
       "commits": [
@@ -304,6 +328,8 @@
         "g2-commit-495fb5e260316862904eebb0d7d939632248c8ae",
         "us419-ac5",
         "us419-fixpr1-ac5",
+        "us419-fixpr2b-ac5",
+        "us419-fixpr2c-ac5",
         "us419r2-ac5"
       ]
     },
@@ -360,7 +386,9 @@
       "text": "No behavior change to the adjudicated classes (discovery starvation honesty, stall-gate unavailability, checkpoint/pause behavior from PR #417, shared correlation window, `scan-capped` vocabulary); existing monitor/observer fixtures still pass.",
       "status": "Implemented",
       "evidence": [
-        "test/test-ws-us419-followups.js:L212-L221"
+        "test/test-ws-us419-followups.js:L128-L163",
+        "test/test-ws-us419-followups.js:L212-L221",
+        "test/test-ws-us419-followups.js:L253-L260"
       ],
       "tasks": [],
       "planSections": [
@@ -369,9 +397,21 @@
       "files": [
         {
           "path": "test/test-ws-us419-followups.js",
+          "lineStart": 128,
+          "lineEnd": 163,
+          "sha256": "384e350d92169a528eb7ca80f570453658b1820c54c83a45e9d947fcc0ca096d"
+        },
+        {
+          "path": "test/test-ws-us419-followups.js",
           "lineStart": 212,
           "lineEnd": 221,
-          "sha256": "4e73f6360507122e7cf4cb6f3b881c55561f0c77388cd727b119d75e5bce1eb3"
+          "sha256": "384e350d92169a528eb7ca80f570453658b1820c54c83a45e9d947fcc0ca096d"
+        },
+        {
+          "path": "test/test-ws-us419-followups.js",
+          "lineStart": 253,
+          "lineEnd": 260,
+          "sha256": "384e350d92169a528eb7ca80f570453658b1820c54c83a45e9d947fcc0ca096d"
         }
       ],
       "commits": [
@@ -381,6 +421,14 @@
         }
       ],
       "tests": [
+        {
+          "name": "AC2b absent marker never pins discovery",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T03:36:41.230Z"
+        },
         {
           "name": "AC7 adjudicated no-regression suites",
           "sourceFile": "test/test-ws-us419-followups.js",
@@ -400,6 +448,8 @@
       "linkEventIds": [
         "g2-commit-495fb5e260316862904eebb0d7d939632248c8ae",
         "us419-ac7",
+        "us419-fixpr2-ac7",
+        "us419-fixpr2b-ac7",
         "us419r2-ac7"
       ]
     }
@@ -603,8 +653,8 @@
     "deficiencies": [],
     "errors": [],
     "invariantViolations": [],
-    "computedAt": "2026-09-25T02:55:10.074Z",
+    "computedAt": "2026-09-25T03:37:52.824Z",
     "writer": "ac_ledger.cjs score",
-    "ledgerHash": "1a936c24f63903397fc45dea485d346a93cbd3fe8d3ef7aac74b0020adf8247b"
+    "ledgerHash": "5b02bfd341de94b5b77d80306a672c59abe565309935e9b7c4d0d130555238a0"
   }
 }
