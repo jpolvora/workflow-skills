@@ -19,24 +19,83 @@ const DEFAULT_PORT = 4173;
 const LOOPBACK = '127.0.0.1';
 const REF_PATH = path.join(__dirname, '..', 'refs', 'board.html');
 
+function resolverRoot() {
+  // Consumer root single-sourced from the shared resolver; the cwd when
+  // ws-shared is absent (skill installed standalone).
+  try {
+    const hub = hubModule();
+    if (hub) {
+      const ctx = hub.resolveConsumerContext({ repoRoot: process.cwd() });
+      if (ctx && typeof ctx.repoRoot === 'string' && ctx.repoRoot) return path.resolve(ctx.repoRoot);
+    }
+  } catch {
+    // Fall through to the cwd default below.
+  }
+  return path.resolve(process.cwd());
+}
+
+function hubModule() {
+  // Shared resolver single-sources hub semantics (relocatable sharedDir,
+  // WORKFLOW_SKILLS_SHARED_DIR). Null when the skill is installed
+  // standalone without ws-shared; callers degrade gracefully.
+  try {
+    return require('../../ws-shared/runtime/scripts/resolve_consumer_root.cjs');
+  } catch {
+    return null;
+  }
+}
+
+function hubSegmentName(parsedConfig) {
+  // Hub directory name, most specific first: the config self-description
+  // (pathTokens.sharedDir), then the shared resolver, else unknown.
+  const selfDescribed = parsedConfig && parsedConfig.pathTokens && parsedConfig.pathTokens.sharedDir;
+  if (typeof selfDescribed === 'string' && selfDescribed.trim()) {
+    return path.basename(path.resolve(selfDescribed.trim()));
+  }
+  try {
+    const hub = hubModule();
+    if (hub) return path.basename(hub.sharedDir(process.cwd()));
+  } catch {
+    // Fall through to unknown below.
+  }
+  return null;
+}
+
+function rootForConfig(configFile, parsedConfig, resolverRoot) {
+  // The config file selects WHICH config to read. The consumer root is its
+  // directory minus one hub segment: the resolver-sourced (or
+  // self-described) hub name, or any dot-directory. A config with no
+  // recognizable hub segment falls back to the resolver root when inside
+  // the repo, else to the config directory itself. Never the bare cwd.
+  const cfg = path.resolve(configFile);
+  let dir = path.dirname(cfg);
+  const seg = path.basename(dir);
+  const hubName = hubSegmentName(parsedConfig);
+  if ((hubName && seg === hubName) || seg.startsWith('.')) return path.dirname(dir);
+  const rel = path.relative(resolverRoot, cfg);
+  if (rel && !rel.startsWith('..') && !path.isAbsolute(rel)) return resolverRoot;
+  return dir;
+}
+
 function readConfigPaths(configFile) {
   // Consumer hub config: plans.specsDir / plans.dir resolve relative to the
-  // consumer root (the directory holding `.ws/`), unless absolute.
+  // consumer root, unless absolute. The root is always returned so omitted
+  // keys fall back to `<root>/.agents/specs` and `<root>/.agents/plans`.
   let raw;
   try {
     raw = fs.readFileSync(path.resolve(configFile), 'utf8');
   } catch {
-    return {};
+    return { root: rootForConfig(configFile, null, process.cwd()) };
   }
   let config;
   try {
     config = JSON.parse(raw.replace(/^\uFEFF/, ''));
   } catch {
-    return {};
+    return { root: rootForConfig(configFile, null, process.cwd()) };
   }
-  let root = path.dirname(path.resolve(configFile));
-  if (path.basename(root) === '.ws') root = path.dirname(root);
-  const out = {};
+  const repoRoot = resolverRoot();
+  const root = rootForConfig(configFile, config, repoRoot);
+  const out = { root };
   const specsDir = config?.plans?.specsDir;
   const plansDir = config?.plans?.dir;
   if (typeof specsDir === 'string' && specsDir.trim()) {
@@ -71,8 +130,9 @@ function parseArgs(argv) {
 
 function resolveRoots(args) {
   const fromConfig = args.config ? readConfigPaths(args.config) : {};
-  const specsDir = args.specsDir || fromConfig.specsDir;
-  const plansDir = args.plansDir || fromConfig.plansDir;
+  const root = fromConfig.root;
+  const specsDir = args.specsDir || fromConfig.specsDir || (root ? path.join(root, '.agents', 'specs') : undefined);
+  const plansDir = args.plansDir || fromConfig.plansDir || (root ? path.join(root, '.agents', 'plans') : undefined);
   return { specsDir, plansDir, index: args.index };
 }
 
@@ -131,7 +191,7 @@ function createServer(roots) {
   });
 }
 
-function start({ args = {}, onReady = null } = {}) {
+async function start({ args = {}, onReady = null } = {}) {
   const roots = resolveRoots(args);
   const portRaw = args.port || process.env.KANVAS_PORT || String(DEFAULT_PORT);
   const port = Number(portRaw);

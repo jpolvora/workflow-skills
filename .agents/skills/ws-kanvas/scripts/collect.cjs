@@ -1,6 +1,16 @@
 #!/usr/bin/env node
 'use strict';
 
+/** Normalize a spec reference (slug, filename, prefixed or nested step path) to a bare slug. */
+function specRefToSlug(ref) {
+  return String(ref)
+    .split(/[\\/]/)
+    .pop()
+    .replace(/\.spec\.md$/i, '')
+    .replace(/^step-\d+-/i, '')
+    .replace(/^\d+-/, '');
+}
+
 /**
  * ws-kanvas collector: read-only board JSON builder over specs, plans, and index.PRD.
  *
@@ -85,13 +95,15 @@ function toDisplayPath(cwd, file) {
 /** Discover specs of record: every `*.spec.md` under specsDir (recursive). */
 function discoverSpecs(specsDir, cwd) {
   const specs = [];
+  const seenSlugs = new Set();
   for (const file of listFilesRecursive(specsDir, '.spec.md')) {
     const text = readFileOrNull(file);
     if (text === null) continue;
     const { data } = parseFrontmatter(text);
     const stem = path.basename(file, '.spec.md').replace(/^\d+-/, '');
     const slug = typeof data.slug === 'string' && data.slug ? data.slug : stem;
-    if (!isValidSlug(slug)) continue;
+    if (!isValidSlug(slug) || seenSlugs.has(slug)) continue;
+    seenSlugs.add(slug);
     const acCount = (text.match(/^-\s+AC\d+\s*:/gm) || []).length;
     specs.push({
       slug,
@@ -119,43 +131,81 @@ function parseIndex(indexText) {
 
   const lines = indexText.split('\n');
   let section = '';
-  for (const line of lines) {
+  let pendingCheck = null;
+  for (const rawLine of lines) {
+    const line = rawLine.replace(/\r$/, '');
+    // Clear a remembered checkbox whenever the line is not a list bullet.
+    if (!line.trimStart().startsWith('-')) pendingCheck = null;
     const heading = line.match(/^##\s+(.+)$/);
     if (heading) {
       section = heading[1].toLowerCase();
       continue;
     }
-    // Done log row: | date | `slug` | title | PR / Commit | (no checkbox cell).
+    // Done log row: | date | `slug` | title | PR / Commit (no checkbox cell; trailing pipe optional).
     if (/done log/i.test(section)) {
-      const dm = line.match(/^\|\s*[^|]*\|\s*`([^`]+)`\s*\|\s*[^|]*\|\s*([^|]*)\|/);
-      if (dm && isValidSlug(dm[1])) {
+      const dm = line.match(/^\|\s*[^|]*\|\s*`([^`]+)`\s*\|\s*[^|]*\|\s*([^|]*?)\s*\|?\s*$/);
+      const dmSlug = dm ? specRefToSlug(dm[1]) : null;
+      if (dmSlug && isValidSlug(dmSlug)) {
         const cell = dm[2].trim();
-        doneLog.set(dm[1], cell && !/^implemented$/i.test(cell) ? cell : null);
+        doneLog.set(dmSlug, cell && !/^implemented$/i.test(cell) ? cell : null);
+        continue;
+      }
+    }
+    // Archive row: | `slug` | outcome | ... | (slug first cell, no checkbox).
+    if (/archiv/i.test(section) && line.startsWith('|')) {
+      const am = line.match(/^\|\s*`?([^`|\s]+)`?\s*\|\s*([^|]*)/);
+      const amSlug = am ? specRefToSlug(am[1]) : null;
+      if (amSlug && isValidSlug(amSlug) && /cancel|fail|drop|supersede|abandon/i.test(am[2])) {
+        archived.add(amSlug);
         continue;
       }
     }
     // Table row: | n | `slug` | `[x]` done | phase | ... |
-    let m = line.match(/^\|\s*[^|]*\|\s*`([^`]+)`\s*\|\s*`?\[([ x])\]`?/);
-    if (m && isValidSlug(m[1])) {
+    let altDialect = false;
+    let m = line.match(/^\|\s*[^|]*\|\s*`([^`]+)`\s*\|\s*`?\[([ x~])\]`?/);
+    // Live dialect with status first: | n | `[x]` done | `slug` | scope | ... |
+    if (!m) {
+      const alt = line.match(/^\|\s*[^|]*\|\s*`?\[([ x~])\]`?[^|]*\|\s*`([^`]+)`/);
+      if (alt) { m = [alt[0], alt[2], alt[1]]; altDialect = true; }
+    }
+    const tableSlug = m ? specRefToSlug(m[1]) : null;
+    if (tableSlug && isValidSlug(tableSlug)) {
       const cells = line.split('|').slice(1, -1).map((c) => c.trim());
-      const phase = cells.length >= 4 ? cells[3].replace(/`/g, '') : null;
-      rows.set(m[1], { indexStatus: m[2] === 'x' ? 'done' : 'todo', phase: phase || null });
+      const phaseCell = cells.length >= 4 ? cells[3].replace(/`/g, '').trim() : '';
+      // Template dialect: column 3 is Target Phase. Status-first dialect: column 3 is Scope.
+      const phase = phaseCell && (!altDialect || /^phase\b/i.test(phaseCell)) ? phaseCell : null;
+      rows.set(tableSlug, { indexStatus: m[2] === 'x' ? 'done' : 'todo', phase: phase || null });
       if (/done log/i.test(section)) {
         const evidenceCell = cells.length >= 4 ? cells[cells.length - 1] : '';
-        doneLog.set(m[1], evidenceCell || null);
+        doneLog.set(tableSlug, evidenceCell || null);
       }
-      if (/archiv/i.test(section) && /drop|supersede|abandon|cancel/i.test(line)) {
-        archived.add(m[1]);
+      if (/archiv/i.test(section) && /cancel|fail|drop|supersede|abandon/i.test(line)) {
+        archived.add(tableSlug);
       }
       continue;
     }
     // Checkbox list: - [x] Title (`spec: NNNN-slug.spec.md`)
-    m = line.match(/^-\s*\[([ x])\]\s+.*\(spec:\s*([^)]+)\)/);
+    m = line.match(/^-\s*\[([ x~])\]\s+.*\(\s*`?spec:\s*`?([^)`]+)`?\)/);
     if (m) {
-      const slug = m[2].replace(/\.spec\.md$/, '').replace(/^\d+-/, '');
+      const slug = specRefToSlug(m[2]);
       if (isValidSlug(slug) && !rows.has(slug)) {
         rows.set(slug, { indexStatus: m[1] === 'x' ? 'done' : 'todo', phase: null });
       }
+    }
+    // Bare checkbox bullet: remember state for a nested `- **spec:**` child line.
+    const bm = line.match(/^-\s*\[([ x~])\]/);
+    if (bm) {
+      pendingCheck = line.indexOf('(spec:') === -1 ? (bm[1] === 'x' ? 'done' : 'todo') : null;
+      continue;
+    }
+    // Nested feature-map form: `- **spec:** `slug.spec.md`` inherits the parent checkbox.
+    const nm = line.match(/^\s*-\s*\*\*spec:\*\*\s*`([^`]+)`/);
+    if (nm) {
+      const slug = specRefToSlug(nm[1]);
+      if (isValidSlug(slug) && pendingCheck && !rows.has(slug)) {
+        rows.set(slug, { indexStatus: pendingCheck, phase: null });
+      }
+      continue;
     }
   }
   return { rows, doneLog, archived };
@@ -199,11 +249,12 @@ function readPlanSignals(plansDir, slug, cwd) {
   return signals;
 }
 
-function placeColumn({ indexEntry, plan, archived }) {
+function placeColumn({ indexEntry, plan, archived, hasDoneLogRow }) {
   // First match wins, top-down per spec Description.
   if ((plan.planStatus && /^(cancelled|failed)$/i.test(plan.planStatus)) || archived) return 'abandoned';
-  if (indexEntry && indexEntry.indexStatus === 'done') return 'production';
-  if (plan.hasShipRecord) return 'staging';
+  // E1: Production needs the [x] mark AND a Done-log row for the slug (any era outcome cell).
+  if (indexEntry && indexEntry.indexStatus === 'done' && hasDoneLogRow) return 'production';
+  if (plan.hasShipRecord && (!indexEntry || indexEntry.indexStatus !== 'done')) return 'staging';
   if (plan.planStatus && /^(active|implemented)$/i.test(plan.planStatus)) return 'development';
   if (indexEntry && indexEntry.indexStatus === 'todo' && plan.planDir) return 'sprint';
   return 'backlog';
@@ -244,7 +295,7 @@ function collectBoard({ specsDir, plansDir, indexPath } = {}) {
   const cards = specs.map((spec) => {
     const indexEntry = rows.get(spec.slug) || null;
     const plan = readPlanSignals(resolvedPlans, spec.slug, cwd);
-    const column = placeColumn({ indexEntry, plan, archived: archived.has(spec.slug) });
+    const column = placeColumn({ indexEntry, plan, archived: archived.has(spec.slug), hasDoneLogRow: doneLog.has(spec.slug) });
     const doneEvidence = doneLog.get(spec.slug) || null;
     return {
       slug: spec.slug,

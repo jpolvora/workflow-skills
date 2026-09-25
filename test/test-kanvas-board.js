@@ -18,7 +18,7 @@ const require = createRequire(import.meta.url);
 const collectPath = path.join(repoRoot, '.agents/skills/ws-kanvas/scripts/collect.cjs');
 const serverPath = path.join(repoRoot, '.agents/skills/ws-kanvas/scripts/server.cjs');
 const { collectBoard, getCard, isValidSlug } = require(collectPath);
-const { createServer, resolveRoots, LOOPBACK } = require(serverPath);
+const { createServer, resolveRoots, LOOPBACK, start } = require(serverPath);
 
 let failures = 0;
 function assert(cond, msg) {
@@ -52,6 +52,17 @@ spec('sprint-card', 'Sprint card', 1);
 spec('dev-card', 'Dev card', 3);
 spec('staging-card', 'Staging card', 1);
 spec('prod-card', 'Prod card', 2);
+spec('legacy-ship', 'Legacy ship', 1);
+spec('ghost-ship', 'Ghost ship', 1);
+spec('old-faithful', 'Old faithful', 1);
+spec('alt-order', 'Alt order', 1);
+spec('nested-child', 'Nested child', 1);
+spec('dusty-arch', 'Dusty arch', 1);
+spec('orphan-child', 'Orphan child', 1);
+write(path.join(specsDir, 'nested', 'nested-path.spec.md'), '---\nslug: nested-path\ntitle: "Nested path"\n---\n\n## Acceptance Criteria\n\n- AC1: nested\n');
+spec('partial-card', 'Partial card', 1);
+write(path.join(specsDir, 'dup-first.spec.md'), '---\nslug: dupe\ntitle: "First wins"\n---\n\n## Acceptance Criteria\n\n- AC1: first\n');
+write(path.join(specsDir, 'dup-second.spec.md'), '---\nslug: dupe\ntitle: "Second loses"\n---\n\n## Acceptance Criteria\n\n- AC1: second\n- AC2: second\n');
 spec('dead-card', 'Dead card', 1);
 write(path.join(specsDir, 'BAD_SLUG.spec.md'), '---\nslug: BAD_SLUG\ntitle: Bad\n---\n');
 spec('bom-card', 'Bom card', 1);
@@ -65,24 +76,48 @@ write(indexPath, `# Fixture index
 
 - [ ] Sprint card (\`spec: sprint-card.spec.md\`)
 
-| 1 | \`sprint-card\` | \`[ ]\` todo | Phase 1 | Sprint card |
+
 | 2 | \`dev-card\` | \`[ ]\` todo | Phase 2 | Dev card |
 | 3 | \`staging-card\` | \`[ ]\` todo | Phase 2 | Staging card |
 | 4 | \`prod-card\` | \`[x]\` done | Phase 3 | Prod card |
+| 5 | \`legacy-ship\` | \`[x]\` done | Phase 1 | Legacy ship |
+| 6 | \`ghost-ship\` | \`[x]\` done | Phase 1 | Ghost ship |
+| 7 | \`[x]\` done | \`alt-order\` | Payments | Alt order |
+
+- [ ] Nested feature
+  - **spec:** \`nested-child.spec.md\`
+
+- [x] Nested path feature (\`spec: nested/nested-path.spec.md\`)
+
+- [x] Stale parent
+| 8 | \`table-filler\` | \`[ ]\` todo | Phase 9 | Filler |
+| 9 | \`partial-card\` | \`[~]\` partial | Phase 1 | Partial |
+  - **spec:** \`orphan-child.spec.md\`
 
 ## 10. Done log
 
 | Date | Slug | Title | PR / Commit |
 |------|------|-------|-------------|
-| 2026-09-25 | \`prod-card\` | Prod card | https://example.com/pr/1 |
+| 2026-09-25 | \`prod-card\` | Prod card | https://example.com/pr/1
+| 2026-09-24 | \`0130-legacy-ship.spec.md\` | Legacy ship | Implemented
+| 2026-09-24 | \`alt-order\` | Alt order | https://example.com/pr/9
+| 2026-09-24 | \`nested-path\` | Nested path | https://example.com/pr/10
+
+## Archive
+
+| Slug | Outcome | Last state | PR / Commit | Summary |
+|------|---------|------------|-------------|---------|
+| \`old-faithful\` | failed | active | none | Old |
+| \`dusty-arch.spec.md\` | dropped | active | none | Dusty |
 `);
 fs.mkdirSync(path.join(plansDir, 'sprint-card'), { recursive: true });
 write(path.join(plansDir, 'dev-card', 'dev-card.state.md'), '---\nstatus: active\ncurrentStep: 4\n---\n# state\n');
 write(path.join(plansDir, 'staging-card', 'step-08-staging-card.result.md'), '# result\nshipped\n');
 write(path.join(plansDir, 'dead-card', 'dead-card.state.md'), '---\nstatus: cancelled\n---\n# state\n');
+write(path.join(plansDir, 'ghost-ship', 'step-08-ghost-ship.result.md'), '# result\nshipped\n');
 
 const board = collectBoard({ specsDir, plansDir, indexPath });
-assert(Array.isArray(board.cards) && board.cards.length === 7, `seven fixture cards (got ${board.cards.length})`);
+assert(Array.isArray(board.cards) && board.cards.length === 17, `seventeen fixture cards (got ${board.cards.length})`);
 const bySlug = Object.fromEntries(board.cards.map((c) => [c.slug, c]));
 assert(!bySlug['BAD_SLUG'], 'malformed slug file is skipped');
 assert(bySlug['backlog-only'].column === 'backlog', 'AC2: plan-less untracked spec lands in Backlog');
@@ -90,6 +125,18 @@ assert(bySlug['sprint-card'].column === 'sprint', 'tracked todo + run dir lands 
 assert(bySlug['dev-card'].column === 'development', 'active state lands in Development');
 assert(bySlug['staging-card'].column === 'staging', 'step-08 without done mark lands in Staging');
 assert(bySlug['prod-card'].column === 'production', 'done mark + Done-log entry lands in Production');
+assert(bySlug['legacy-ship'].column === 'production', 'E1: done mark + legacy Implemented row stays in Production');
+assert(bySlug['ghost-ship'].column === 'backlog', 'E1: done mark without any Done-log row is not Production, even with a step-08 record (staging guard)');
+assert(bySlug['dusty-arch'].column === 'abandoned', 'Archive dropped alias lands in Abandoned');
+assert(bySlug['orphan-child'].indexStatus === 'untracked', 'stale parent checkbox does not leak across a table boundary');
+assert(bySlug['dupe'].title === 'First wins' && bySlug['dupe'].acCount === 1, 'duplicate slugs collapse to the first file');
+assert(bySlug['partial-card'].indexStatus === 'todo', 'partial mark reads as todo');
+assert(bySlug['partial-card'].column === 'backlog', 'partial card without a run dir lands in Backlog');
+assert(bySlug['nested-path'].column === 'production', 'nested spec: path resolves to the bare slug');
+assert(bySlug['old-faithful'].column === 'abandoned', 'Archive dropped row lands in Abandoned without a plan dir');
+assert(bySlug['alt-order'].column === 'production', 'live status-first dialect lands in Production');
+assert(bySlug['nested-child'].column === 'backlog', 'nested feature-map form tracks as todo');
+assert(bySlug['nested-child'].indexStatus === 'todo', 'nested feature-map inherits the parent checkbox');
 assert(bySlug['dead-card'].column === 'abandoned', 'cancelled state lands in Abandoned');
 assert(bySlug['dev-card'].planStep === 4 && bySlug['dev-card'].planStatus === 'active', 'plan step/status surface on card');
 assert(bySlug['prod-card'].evidence === 'https://example.com/pr/1', 'Done-log PR URL surfaces as evidence');
@@ -100,7 +147,7 @@ assert(bySlug['backlog-only'].links.plan === null, 'plan-less card has null plan
 assert(bySlug['dev-card'].links.spec.endsWith('.spec.md'), 'spec link points at the spec file');
 assert.deepStrictEqual(
   board.columns.map((c) => [c.id, c.count]),
-  [['backlog', 2], ['sprint', 1], ['development', 1], ['staging', 1], ['production', 1], ['abandoned', 1]],
+  [['backlog', 7], ['sprint', 1], ['development', 1], ['staging', 1], ['production', 4], ['abandoned', 3]],
   'all six columns with per-column counts',
 );
 
@@ -108,12 +155,22 @@ assert.deepStrictEqual(
 assert(/^\d{4}-\d{2}-\d{2}T/.test(board.generatedAt), 'generatedAt is an ISO timestamp');
 const snapshot = board.cards.map(({ links, ...rest }) => rest);
 assert.deepStrictEqual(snapshot, [
+  { slug: 'alt-order', title: 'Alt order', column: 'production', indexStatus: 'done', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: 'https://example.com/pr/9' },
   { slug: 'backlog-only', title: 'Backlog only', column: 'backlog', indexStatus: 'untracked', phase: null, acCount: 2, planStep: null, planStatus: null, evidence: null },
   { slug: 'bom-card', title: 'Bom card', column: 'backlog', indexStatus: 'untracked', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: null },
   { slug: 'dead-card', title: 'Dead card', column: 'abandoned', indexStatus: 'untracked', phase: null, acCount: 1, planStep: null, planStatus: 'cancelled', evidence: null },
   { slug: 'dev-card', title: 'Dev card', column: 'development', indexStatus: 'todo', phase: 'Phase 2', acCount: 3, planStep: 4, planStatus: 'active', evidence: null },
+  { slug: 'dupe', title: 'First wins', column: 'backlog', indexStatus: 'untracked', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: null },
+  { slug: 'dusty-arch', title: 'Dusty arch', column: 'abandoned', indexStatus: 'untracked', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: null },
+  { slug: 'ghost-ship', title: 'Ghost ship', column: 'backlog', indexStatus: 'done', phase: 'Phase 1', acCount: 1, planStep: null, planStatus: null, evidence: null },
+  { slug: 'legacy-ship', title: 'Legacy ship', column: 'production', indexStatus: 'done', phase: 'Phase 1', acCount: 1, planStep: null, planStatus: null, evidence: null },
+  { slug: 'nested-child', title: 'Nested child', column: 'backlog', indexStatus: 'todo', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: null },
+  { slug: 'nested-path', title: 'Nested path', column: 'production', indexStatus: 'done', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: 'https://example.com/pr/10' },
+  { slug: 'old-faithful', title: 'Old faithful', column: 'abandoned', indexStatus: 'untracked', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: null },
+  { slug: 'orphan-child', title: 'Orphan child', column: 'backlog', indexStatus: 'untracked', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: null },
+  { slug: 'partial-card', title: 'Partial card', column: 'backlog', indexStatus: 'todo', phase: 'Phase 1', acCount: 1, planStep: null, planStatus: null, evidence: null },
   { slug: 'prod-card', title: 'Prod card', column: 'production', indexStatus: 'done', phase: 'Phase 3', acCount: 2, planStep: null, planStatus: null, evidence: 'https://example.com/pr/1' },
-  { slug: 'sprint-card', title: 'Sprint card', column: 'sprint', indexStatus: 'todo', phase: 'Phase 1', acCount: 1, planStep: null, planStatus: null, evidence: null },
+  { slug: 'sprint-card', title: 'Sprint card', column: 'sprint', indexStatus: 'todo', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: null },
   { slug: 'staging-card', title: 'Staging card', column: 'staging', indexStatus: 'todo', phase: 'Phase 2', acCount: 1, planStep: null, planStatus: null, evidence: null },
 ], 'AC7 card snapshot');
 
@@ -148,6 +205,29 @@ for (const f of ['.agents/skills/ws-kanvas/SKILL.md', '.agents/skills/ws-kanvas/
   assert(packList.includes(f.replace(/\//g, path.sep)) || packList.includes(f), `pack includes ${f}`);
 }
 
+// Collector CLI contract: --json prints the board, --slug one card, --help usage, bad flags exit 2.
+{
+  const cliJson = cp.spawnSync(process.execPath, [collectPath, '--specs-dir', specsDir, '--plans-dir', plansDir, '--index', indexPath, '--json'], { encoding: 'utf8' });
+  assert(cliJson.status === 0 && JSON.parse(cliJson.stdout).cards.length === 17, 'collect --json prints the board');
+  const cliCard = cp.spawnSync(process.execPath, [collectPath, '--specs-dir', specsDir, '--plans-dir', plansDir, '--index', indexPath, '--slug', 'prod-card'], { encoding: 'utf8' });
+  assert(cliCard.status === 0 && JSON.parse(cliCard.stdout).card.slug === 'prod-card', 'collect --slug prints one card');
+  const cliMissing = cp.spawnSync(process.execPath, [collectPath, '--specs-dir', specsDir, '--plans-dir', plansDir, '--index', indexPath, '--slug', 'no-such-spec'], { encoding: 'utf8' });
+  assert(cliMissing.status === 0 && JSON.parse(cliMissing.stdout).error.code === 'not-found', 'collect --slug prints typed not-found');
+  const cliBad = cp.spawnSync(process.execPath, [collectPath, '--nope'], { encoding: 'utf8' });
+  assert(cliBad.status === 2 && /Unknown argument: --nope/.test(cliBad.stderr), 'unknown flag exits 2 with a diagnostic');
+  const cliHelp = cp.spawnSync(process.execPath, [collectPath, '--help'], { encoding: 'utf8' });
+  assert(cliHelp.status === 0 && /Usage: collect/.test(cliHelp.stdout), '--help exits 0 with usage');
+}
+
+// Invalid ports reject through the CLI handler path instead of throwing synchronously.
+await nodeAssert.rejects(start({ args: { port: 'abc' } }), /Invalid port/, 'start rejects on a bad port');
+{
+  const bad = cp.spawnSync(process.execPath, [serverPath, '--port', 'abc'], { encoding: 'utf8' });
+  assert(bad.status === 1, 'bad port exits 1');
+  assert(/kanvas: Invalid port: abc/.test(bad.stderr), 'bad port prints the single-line diagnostic');
+  assert(!/at\s+\S+:\d+/.test(bad.stderr), 'bad port prints no stack trace');
+}
+
 // Server behavior over the fixture tree.
 function get(port, route, method = 'GET') {
   return new Promise((resolve, reject) => {
@@ -169,7 +249,7 @@ try {
   const page = await get(port, '/');
   assert(page.status === 200 && page.body.includes('Kanvas board') && page.body.includes('api/board'), 'GET / serves the board page');
   const api = await get(port, '/api/board');
-  assert(api.status === 200 && JSON.parse(api.body).cards.length === 7, 'GET /api/board returns the fixture board');
+  assert(api.status === 200 && JSON.parse(api.body).cards.length === 17, 'GET /api/board returns the fixture board');
   const card = await get(port, '/api/card?slug=prod-card');
   assert(card.status === 200 && JSON.parse(card.body).card.column === 'production', 'AC4: card endpoint returns the popup payload');
   const missing = await get(port, '/api/card?slug=no-such-spec');
@@ -196,9 +276,57 @@ try {
   fs.writeFileSync(path.join(consumer, '.ws', 'config.json'), '\uFEFF' + JSON.stringify({ plans: { specsDir: 'custom-specs', dir: 'custom-plans' } }), 'utf8');
   const bomRoots = resolveRoots({ config: path.join(consumer, '.ws', 'config.json') });
   assert(bomRoots.specsDir === consumerRoots.specsDir, 'AC11: BOM-prefixed hub config still resolves');
+  write(path.join(consumer, '.ws', 'config.json'), JSON.stringify({ plans: {} }));
+  const defaultRoots = resolveRoots({ config: path.join(consumer, '.ws', 'config.json') });
+  assert(defaultRoots.specsDir === path.join(consumer, '.agents', 'specs'), 'AC11: omitted keys fall back to the consumer root, not the cwd');
+  assert(defaultRoots.plansDir === path.join(consumer, '.agents', 'plans'), 'AC11: omitted plans dir falls back to the consumer root');
+  // Relocatable hub dir (.workflow) resolves to the consumer root, not the hub.
+  write(path.join(consumer, '.workflow', 'config.json'), JSON.stringify({ plans: {} }));
+  const relocRoots = resolveRoots({ config: path.join(consumer, '.workflow', 'config.json') });
+  assert(relocRoots.specsDir === path.join(consumer, '.agents', 'specs'), 'AC11: relocatable hub resolves to the consumer root');
+  // Self-described hub dir via pathTokens.sharedDir.
+  write(path.join(consumer, 'flow', 'config.json'), JSON.stringify({ plans: {}, pathTokens: { sharedDir: 'flow' } }));
+  const flowRoots = resolveRoots({ config: path.join(consumer, 'flow', 'config.json') });
+  assert(flowRoots.specsDir === path.join(consumer, '.agents', 'specs'), 'AC11: self-described hub resolves to the consumer root');
+  // Cross-cwd launch: root follows the config file, never the cwd.
+  const elsewhere = fs.mkdtempSync(path.join(os.tmpdir(), 'kanvas-elsewhere-'));
+  write(path.join(elsewhere, 'probe.cjs'), 'const { resolveRoots } = require(' + JSON.stringify(serverPath) + ');'
+    + ' const r = resolveRoots({ config: ' + JSON.stringify(path.join(consumer, '.ws', 'config.json')) + ' });'
+    + ' console.log(JSON.stringify({ specsDir: r.specsDir, plansDir: r.plansDir }));');
+  const cross = cp.spawnSync(process.execPath, [path.join(elsewhere, 'probe.cjs')], { cwd: elsewhere, encoding: 'utf8' });
+  const crossRoots = JSON.parse(cross.stdout);
+  assert(crossRoots.specsDir === path.join(consumer, '.agents', 'specs'), 'AC11: cross-cwd root follows the config file, never the cwd');
+  fs.rmSync(elsewhere, { recursive: true, force: true });
   fs.rmSync(consumer, { recursive: true, force: true });
 } finally {
   await new Promise((resolve) => server.close(resolve));
+}
+
+// AC10 runtime clause: the packed skill tree installs and serves the board.
+{
+  const tarball = path.join(repoRoot, `workflow-skills-${pkg.version}.tgz`);
+  if (!fs.existsSync(tarball)) {
+    console.log(`SKIP installed-tree serve proof (no packed tarball; run via npm run tests): ${path.basename(tarball)}`);
+  } else {
+    const installRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'kanvas-install-'));
+    try {
+      const shell = process.platform === 'win32';
+      cp.execFileSync('npm', ['install', '--prefix', installRoot, tarball], { cwd: repoRoot, stdio: 'ignore', timeout: 240000, shell });
+      const installedServer = path.join(installRoot, 'node_modules', 'workflow-skills', '.agents', 'skills', 'ws-kanvas', 'scripts', 'server.cjs');
+      assert(fs.existsSync(installedServer), 'installed tree contains the kanvas server');
+      const { start: startInstalled } = require(installedServer);
+      const { server: instSrv, url: instUrl } = await startInstalled({ args: { port: '0', specsDir, plansDir } });
+      try {
+        const served = await get(Number(new URL(instUrl).port), '/api/board');
+
+        assert(served.status === 200 && JSON.parse(served.body).cards.length === 17, 'installed tree serves the fixture board');
+      } finally {
+        await new Promise((resolve) => instSrv.close(resolve));
+      }
+    } finally {
+      fs.rmSync(installRoot, { recursive: true, force: true });
+    }
+  }
 }
 
 fs.rmSync(root, { recursive: true, force: true });

@@ -31,7 +31,7 @@ From any installed tree (project-local or global), with consumer overrides:
 
 ```bash
 node {skillsRoot}/ws-kanvas/scripts/server.cjs --specs-dir {specsDir} --plans-dir {plansDir}
-node {skillsRoot}/ws-kanvas/scripts/server.cjs --config {consumerRoot}/.ws/config.json
+node {skillsRoot}/ws-kanvas/scripts/server.cjs --config {sharedDir}/config.json
 node {skillsRoot}/ws-kanvas/scripts/server.cjs --port 4173
 ```
 
@@ -40,7 +40,7 @@ node {skillsRoot}/ws-kanvas/scripts/server.cjs --port 4173
 | `--specs-dir DIR` | Specs root (default: `<cwd>/.agents/specs`) |
 | `--plans-dir DIR` | Plans root (default: `<cwd>/.agents/plans`) |
 | `--index FILE` | `index.PRD` path (default: `<specsDir>/index.PRD`) |
-| `--config FILE` | Consumer hub config; `plans.specsDir` / `plans.dir` resolve relative to the consumer root unless absolute |
+| `--config FILE` | Consumer hub config; `plans.specsDir` / `plans.dir` resolve relative to the consumer root unless absolute; the root is the config directory minus one hub segment (resolver-sourced name or any dot-directory), never the bare cwd |
 | `--port N` / `KANVAS_PORT` | Bind port (default `4173`) |
 
 Explicit flags win over `--config`, which wins over the `<cwd>` defaults. No hardcoded
@@ -62,9 +62,9 @@ inside the resolved roots (anything else → 400 before any filesystem read).
 ## Column rules (first match wins, top-down)
 
 1. **Abandoned** — plan state `status: cancelled`/`failed`, or the slug sits in the index Archive table
-   with a dropped/superseded outcome.
-2. **Production** — index Feature map / Next-specs row is `[x]` done (shipped: delivery commit or PR URL
-   in the Done log).
+   with a `cancelled`/`failed` outcome (`dropped`/`superseded` read the same).
+2. **Production** — index Feature map / Next-specs row is `[x]` done AND a Done-log row exists
+   for the slug (the delivery record; any era outcome cell, including legacy `Implemented`).
 3. **Staging** — a `step-08-*.result.md` ship record exists but the index row is not yet `[x]`.
 4. **Development** — a plan `*.state.md` exists with `status: active` (or `implemented`).
 5. **Sprint** — tracked in `index.PRD` as `[ ]` todo AND a `{plansDir}/{slug}/` run directory exists.
