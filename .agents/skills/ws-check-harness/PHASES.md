@@ -50,7 +50,7 @@ Run `node {skillsRoot}/ws-check-harness/scripts/detect_install_mode.cjs --json -
 
 Canonical contract: [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md) § Path tokens.
 
-1. If the cited string contains `{skillsRoot}` / `{sharedDir}` / `{plansDir}` / `{reviewsDir}` / `{memoryDir}` / `{us-dir}`, substitute from the map (nested: expand `{sharedDir}` after `{skillsRoot}` if needed).
+1. If the cited string contains `{skillsRoot}` / `{sharedDir}` / `{plansDir}` / `{specsDir}` / `{wikiDir}` / `{reviewsDir}` / `{memoryDir}` / `{us-dir}`, substitute from the map (nested: expand `{sharedDir}` after `{skillsRoot}` if needed).
 2. Result is **repo-root-relative**. Check existence from **repo root**, not from the citing file’s directory.
 3. If braces remain after known-token substitution, treat as **template** — do **not** flag broken.
 4. Undeclared shorthand `ws-shared/MEMORY.md` → **warning** (prefer `{memoryDir}/MEMORY.md`).
@@ -237,7 +237,7 @@ Run **all** scan phases (0–5c) before assembling the plan (6). Phase 7 only oc
 
 For each inventory file (§ Scope):
 
-1. Extract Markdown links `(...)` and inline mentions of paths (`.md`, `.mdc`, `.cjs`/`.js`/`.sh` scripts), including brace tokens (`{skillsRoot}`, `{sharedDir}`, `{plansDir}`, `{reviewsDir}`, `{memoryDir}`, `{us-dir}`).
+1. Extract Markdown links `(...)` and inline mentions of paths (`.md`, `.mdc`, `.cjs`/`.js`/`.sh` scripts), including brace tokens (`{skillsRoot}`, `{sharedDir}`, `{plansDir}`, `{specsDir}`, `{wikiDir}`, `{reviewsDir}`, `{memoryDir}`, `{us-dir}`).
 2. Normalize: strip anchors (`#`), query strings, `file://` prefixes.
 3. Classify each reference:
    - **Path token** — contains a declared brace token → expand via § Path token map (repo-root existence later)
@@ -482,7 +482,7 @@ node {skillsRoot}/ws-check-harness/scripts/check_hub_separation.cjs --json --rep
 - `check_shell_quoting.cjs`: exit 1 when skill-tree recipes contain nested-quote `python -c` / `node -e` payloads (both `"` and `'` / `["']` character classes). Severity **critical**. Correction: permanent script + explicit launcher; frontmatter fields → `{skillsRoot}/ws-shared/runtime/scripts/extract_frontmatter_field.cjs`.
 - `check_pipeline_handoff.cjs`: exit 1 when any of the eleven pipeline SKILL.md files omits the substring `state.handoffs`.
 - `check_harness_links.cjs`: exit 1 on broken internal links, author-machine absolute paths, declared tokens inside link targets, bare `ws-shared/` shorthand (outside rule text and link labels), or skills on disk without routing. Deterministic mirror of Phase 2/4; upstream release proof runs it via `node test/test-harness-clean.js`.
-- `check_unique_runtime.cjs`: exit 1 when any `.py` file exists under the skills scan root or `bin/` (unique Node 22 runtime). Severity **critical**. Correction: port the helper to `.cjs` (same CLI flags, `--json` shape, exit codes) and delete the `.py` copy; new `.py` files are forbidden.
+- `check_unique_runtime.cjs`: exit 1 when any `.py`/`.pyc`/`.pyo` file (including `__pycache__/` bytecode left by a helper run) exists under the skills scan root or `bin/` (unique Node 22 runtime). Severity **critical**. Correction: port the helper to `.cjs` (same CLI flags, `--json` shape, exit codes) and delete the Python copy; new `.py` files are forbidden.
 - `check_hub_separation.cjs`: exit 1 when the managed consumer hub (upstream SoT `.agents/skills/ws-shared/runtime/AGENTS.md`; installed `{skillsRoot}/ws-shared/runtime/AGENTS.md` or `{globalSkillsRoot}/ws-shared/runtime/AGENTS.md` in consumer mode) contains upstream-only instructional phrases, reintroduces upstream authoring section headings, or lacks the consumer identity banner. Resolves the effective runtime hub (project skills install, then global; explicit `WORKFLOW_SKILLS_SHARED_DIR` override first); `.ws/runtime` is never a resolution source and a missing hub fails closed in consumer mode. Severity **critical**. Correction: relocate instruction bodies to root `AGENTS.md` / `CATALOG.md` and keep one-line pointers. Consumer mode never requires root `AGENTS.md`.
 - Record `defaults.contextBudget` (config) against the JSON `completeDispatchBytes` field in the Phase 6 report. The scripts remain the fail-closed gates; qualitative Phase 5c.1 counts stay informational.
 

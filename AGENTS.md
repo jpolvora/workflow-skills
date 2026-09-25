@@ -37,7 +37,7 @@ The unique packaged skill/installer/test runtime is **Node 22**. No shipped skil
 | **Node only** | Packaged helpers under `.agents/skills/**/scripts/` and `bin/` are Node only (skill helpers are CommonJS `.cjs` so they `require()` shared helpers regardless of root `"type": "module"`). New `.py` files are forbidden. |
 | **Recipes use `node`** | Invoke skill helpers with an explicit launcher: `node` for `.cjs`/`.js`, `bash` only for thin host adapters that locate Node and `exec` a `.cjs` (no business logic in shell). Never `python`. |
 | **No Python dependency** | Python is not a consumer dependency of this package: installing or running skills requires Node ≥ 22 only. Consumer application code may use any language; that is out of scope for this rule. |
-| **Fail closed** | `ws-check-harness` reports **critical** when any `.py` exists under `.agents/skills/` or `bin/`. |
+| **Fail closed** | `ws-check-harness` reports **critical** when any `.py`/`.pyc`/`.pyo` file (including `__pycache__/` bytecode left by a helper run) exists under `.agents/skills/` or `bin/`. |
 
 ---
 

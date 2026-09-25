@@ -1,6 +1,6 @@
 ---
 name: ws-kanvas
-version: 0.4.73
+version: 0.4.74
 description: Packaged local kanban visualizer for spec and workflow state (Backlog, Sprint, Development, Staging, Production, Abandoned).
 disable-model-invocation: true
 invocation_names:

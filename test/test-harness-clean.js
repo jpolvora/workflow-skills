@@ -27,7 +27,7 @@ function run(cmd, args, { allowFailure = true } = {}) {
   const result = cp.spawnSync(cmd, args, {
     cwd: REPO_ROOT,
     encoding: 'utf8',
-    env: { ...process.env, PYTHONIOENCODING: 'utf-8' },
+    env: { ...process.env },
     timeout: 120000,
   });
   if (!allowFailure && result.status !== 0) {
