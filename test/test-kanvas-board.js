@@ -99,7 +99,7 @@ write(indexPath, `# Fixture index
 | Date | Slug | Title | PR / Commit |
 |------|------|-------|-------------|
 | 2026-09-25 | \`prod-card\` | Prod card | https://example.com/pr/1
-| 2026-09-24 | \`legacy-ship\` | Legacy ship | Implemented
+| 2026-09-24 | \`0130-legacy-ship.spec.md\` | Legacy ship | Implemented
 | 2026-09-24 | \`alt-order\` | Alt order | https://example.com/pr/9
 | 2026-09-24 | \`nested-path\` | Nested path | https://example.com/pr/10
 
@@ -108,7 +108,7 @@ write(indexPath, `# Fixture index
 | Slug | Outcome | Last state | PR / Commit | Summary |
 |------|---------|------------|-------------|---------|
 | \`old-faithful\` | failed | active | none | Old |
-| \`dusty-arch\` | dropped | active | none | Dusty |
+| \`dusty-arch.spec.md\` | dropped | active | none | Dusty |
 `);
 fs.mkdirSync(path.join(plansDir, 'sprint-card'), { recursive: true });
 write(path.join(plansDir, 'dev-card', 'dev-card.state.md'), '---\nstatus: active\ncurrentStep: 4\n---\n# state\n');
@@ -205,6 +205,20 @@ for (const f of ['.agents/skills/ws-kanvas/SKILL.md', '.agents/skills/ws-kanvas/
   assert(packList.includes(f.replace(/\//g, path.sep)) || packList.includes(f), `pack includes ${f}`);
 }
 
+// Collector CLI contract: --json prints the board, --slug one card, --help usage, bad flags exit 2.
+{
+  const cliJson = cp.spawnSync(process.execPath, [collectPath, '--specs-dir', specsDir, '--plans-dir', plansDir, '--index', indexPath, '--json'], { encoding: 'utf8' });
+  assert(cliJson.status === 0 && JSON.parse(cliJson.stdout).cards.length === 17, 'collect --json prints the board');
+  const cliCard = cp.spawnSync(process.execPath, [collectPath, '--specs-dir', specsDir, '--plans-dir', plansDir, '--index', indexPath, '--slug', 'prod-card'], { encoding: 'utf8' });
+  assert(cliCard.status === 0 && JSON.parse(cliCard.stdout).card.slug === 'prod-card', 'collect --slug prints one card');
+  const cliMissing = cp.spawnSync(process.execPath, [collectPath, '--specs-dir', specsDir, '--plans-dir', plansDir, '--index', indexPath, '--slug', 'no-such-spec'], { encoding: 'utf8' });
+  assert(cliMissing.status === 0 && JSON.parse(cliMissing.stdout).error.code === 'not-found', 'collect --slug prints typed not-found');
+  const cliBad = cp.spawnSync(process.execPath, [collectPath, '--nope'], { encoding: 'utf8' });
+  assert(cliBad.status === 2 && /Unknown argument: --nope/.test(cliBad.stderr), 'unknown flag exits 2 with a diagnostic');
+  const cliHelp = cp.spawnSync(process.execPath, [collectPath, '--help'], { encoding: 'utf8' });
+  assert(cliHelp.status === 0 && /Usage: collect/.test(cliHelp.stdout), '--help exits 0 with usage');
+}
+
 // Invalid ports reject through the CLI handler path instead of throwing synchronously.
 await nodeAssert.rejects(start({ args: { port: 'abc' } }), /Invalid port/, 'start rejects on a bad port');
 {
@@ -286,6 +300,33 @@ try {
   fs.rmSync(consumer, { recursive: true, force: true });
 } finally {
   await new Promise((resolve) => server.close(resolve));
+}
+
+// AC10 runtime clause: the packed skill tree installs and serves the board.
+{
+  const tarball = path.join(repoRoot, `workflow-skills-${pkg.version}.tgz`);
+  if (!fs.existsSync(tarball)) {
+    console.log(`SKIP installed-tree serve proof (no packed tarball; run via npm run tests): ${path.basename(tarball)}`);
+  } else {
+    const installRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'kanvas-install-'));
+    try {
+      const shell = process.platform === 'win32';
+      cp.execFileSync('npm', ['install', '--prefix', installRoot, tarball], { cwd: repoRoot, stdio: 'ignore', timeout: 240000, shell });
+      const installedServer = path.join(installRoot, 'node_modules', 'workflow-skills', '.agents', 'skills', 'ws-kanvas', 'scripts', 'server.cjs');
+      assert(fs.existsSync(installedServer), 'installed tree contains the kanvas server');
+      const { start: startInstalled } = require(installedServer);
+      const { server: instSrv, url: instUrl } = await startInstalled({ args: { port: '0', specsDir, plansDir } });
+      try {
+        const served = await get(Number(new URL(instUrl).port), '/api/board');
+
+        assert(served.status === 200 && JSON.parse(served.body).cards.length === 17, 'installed tree serves the fixture board');
+      } finally {
+        await new Promise((resolve) => instSrv.close(resolve));
+      }
+    } finally {
+      fs.rmSync(installRoot, { recursive: true, force: true });
+    }
+  }
 }
 
 fs.rmSync(root, { recursive: true, force: true });

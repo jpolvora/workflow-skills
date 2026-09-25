@@ -144,17 +144,19 @@ function parseIndex(indexText) {
     // Done log row: | date | `slug` | title | PR / Commit (no checkbox cell; trailing pipe optional).
     if (/done log/i.test(section)) {
       const dm = line.match(/^\|\s*[^|]*\|\s*`([^`]+)`\s*\|\s*[^|]*\|\s*([^|]*?)\s*\|?\s*$/);
-      if (dm && isValidSlug(dm[1])) {
+      const dmSlug = dm ? specRefToSlug(dm[1]) : null;
+      if (dmSlug && isValidSlug(dmSlug)) {
         const cell = dm[2].trim();
-        doneLog.set(dm[1], cell && !/^implemented$/i.test(cell) ? cell : null);
+        doneLog.set(dmSlug, cell && !/^implemented$/i.test(cell) ? cell : null);
         continue;
       }
     }
     // Archive row: | `slug` | outcome | ... | (slug first cell, no checkbox).
     if (/archiv/i.test(section) && line.startsWith('|')) {
-      const am = line.match(/^\|\s*`?([A-Za-z0-9-]+)`?\s*\|\s*([^|]*)/);
-      if (am && isValidSlug(am[1]) && /cancel|fail|drop|supersede|abandon/i.test(am[2])) {
-        archived.add(am[1]);
+      const am = line.match(/^\|\s*`?([^`|\s]+)`?\s*\|\s*([^|]*)/);
+      const amSlug = am ? specRefToSlug(am[1]) : null;
+      if (amSlug && isValidSlug(amSlug) && /cancel|fail|drop|supersede|abandon/i.test(am[2])) {
+        archived.add(amSlug);
         continue;
       }
     }
