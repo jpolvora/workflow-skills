@@ -55,6 +55,28 @@
         "Stays silent for a pending/skipped item and for an advanced item whose child state exists",
         "Does not duplicate stale-parent-row, which requires a child that already closed"
       ]
+    },
+    {
+      "id": 6,
+      "prompt": "/monitor - a fix-PR-only run (completedSteps [8, 9], empty plan dir), a terminal run with step-02 refined plan but no interview registry, and a sparse-steps run with a high currentStep",
+      "expected_output": "Agent reports zero critical missing-artifact findings on all three shapes; the interview drift is at most info citing the refined companion as evidence.",
+      "assertions": [
+        "Emits zero critical missing-artifact / missing-exec-artifact for the fix-PR-only, terminal-drift, and sparse-steps shapes",
+        "Reports the terminal interview-registry drift as info (never critical), citing the refined plan as interview evidence",
+        "Still emits critical missing-artifact for a genuinely live run past verification without artifacts",
+        "Does not modify any state file (read-only observation)"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "/monitor - an active workflow with --discover-host-transcripts plus an explicit transcript root on a host with a large nested session history, whose correlated session is idle beyond the stall window",
+      "expected_output": "Agent reads the correlated session within the tick (filesScanned >= 1), resolves transcriptSource available, and raises worker-session-stall.",
+      "assertions": [
+        "Reports filesScanned >= 1 and transcriptSource available for the correlated session despite the discovery flood",
+        "Never reports scan-capped / no-matching-session for a session the scan filter counted",
+        "Emits worker-session-stall for the idle correlated session on the active workflow",
+        "Does not modify any state file (read-only observation)"
+      ]
     }
   ]
 }

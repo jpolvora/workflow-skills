@@ -279,6 +279,22 @@ function correlationMatches(haystack, key) {
   return new RegExp(`(?:^|[^a-z0-9._-])${escaped}(?:$|[^a-z0-9._-])`).test(normalizeCorrelationKey(haystack));
 }
 
+// us-418 AC7: one shared session-correlation predicate for the scan filter
+// and resolveTranscriptSource. A supplied session id is an alternative key
+// (a session may not mention the slug); workflowId+slug keep their AND
+// semantics when both are set. Both sides run this over the same stored
+// tail, so a file the scan counted always resolves for the same keys.
+function transcriptCorrelates(file, tailText, correlation = {}) {
+  const { workflowId = null, slug = null, sessionId = null } = correlation || {};
+  const matchesSession = sessionId
+    ? (correlationMatches(file, sessionId) || correlationMatches(tailText, sessionId))
+    : false;
+  const matchesWf = Boolean(workflowId && (correlationMatches(file, workflowId) || correlationMatches(tailText, workflowId)));
+  const matchesSlug = Boolean(slug && (correlationMatches(file, slug) || correlationMatches(tailText, slug)));
+  const base = workflowId && slug ? (matchesWf && matchesSlug) : (matchesWf || matchesSlug);
+  return Boolean(matchesSession || base);
+}
+
 function guessTranscriptAdapter(file) {
   const lowered = normalizeCorrelationKey(file);
   for (const adapter of getHostAdapters()) {
@@ -458,6 +474,31 @@ function isCompleted(state, step) {
     .includes(step);
 }
 
+// us-418 AC1: artifact expectations follow step membership (the step actually
+// ran), not the currentStep high-watermark. The watermark survives only as a
+// fallback for legacy states that carry no step lists at all.
+function stepStatusOf(state, step) {
+  const stepStatus = state?.stepStatus;
+  if (!stepStatus || typeof stepStatus !== 'object' || Array.isArray(stepStatus)) return undefined;
+  return stepStatus[String(step)];
+}
+
+function stepListsPresent(state) {
+  if (Array.isArray(state?.completedSteps)) return true;
+  const stepStatus = state?.stepStatus;
+  return Boolean(stepStatus && typeof stepStatus === 'object' && !Array.isArray(stepStatus));
+}
+
+function stepShowsCompleted(state, step) {
+  if (isCompleted(state, step)) return true;
+  return String(stepStatusOf(state, step)) === 'completed';
+}
+
+function expectsStep(state, step, watermarkStep) {
+  if (stepListsPresent(state)) return stepShowsCompleted(state, step);
+  return Number(state?.currentStep) >= watermarkStep;
+}
+
 function expectedArtifacts(state, workflowDir, minVerifyScore, repoRoot = workflowDir) {
   const slug = state.slug || state.us || path.basename(workflowDir);
   const expected = [];
@@ -473,32 +514,32 @@ function expectedArtifacts(state, workflowDir, minVerifyScore, repoRoot = workfl
   // runs stop reporting standard-only interview/exec/verify artifacts as missing.
   // Unknown or legacy pipeline values fall through to the standard contract.
   if (state.workflowType === 'lite') {
-    if (Number(state.currentStep) >= 1 || isCompleted(state, 0)) add(`step-00-${slug}.spec.md`, 'Step 0 spec completed');
-    if (Number(state.currentStep) >= 2 || isCompleted(state, 1)) add(`step-01-${slug}.plan.md`, 'Step 1 plan completed');
-    if (Number(state.currentStep) >= 4 || isCompleted(state, 3)) add(`step-06-${slug}.review.md`, 'Step 3 review completed');
-    if (Number(state.currentStep) >= 5 || isCompleted(state, 4)) add(`step-08-${slug}.result.md`, 'Step 4 ship completed');
+    if (expectsStep(state, 0, 1)) add(`step-00-${slug}.spec.md`, 'Step 0 spec completed');
+    if (expectsStep(state, 1, 2)) add(`step-01-${slug}.plan.md`, 'Step 1 plan completed');
+    if (expectsStep(state, 3, 4)) add(`step-06-${slug}.review.md`, 'Step 3 review completed');
+    if (expectsStep(state, 4, 5)) add(`step-08-${slug}.result.md`, 'Step 4 ship completed');
     return expected;
   }
-  if (Number(state.currentStep) >= 1 || isCompleted(state, 0)) add(`step-00-${slug}.spec.md`, 'Step 0 completed');
-  if (Number(state.currentStep) >= 2 || isCompleted(state, 1)) add(`step-01-${slug}.plan.md`, 'Step 1 completed');
+  if (expectsStep(state, 0, 1)) add(`step-00-${slug}.spec.md`, 'Step 0 completed');
+  if (expectsStep(state, 1, 2)) add(`step-01-${slug}.plan.md`, 'Step 1 completed');
   const interviewRan = skippedReason(state, 2) !== 'interview-not-required';
-  if (interviewRan && (Number(state.currentStep) >= 3 || isCompleted(state, 2))) {
+  if (interviewRan && expectsStep(state, 2, 3)) {
     add(`step-02-${slug}.plan-interview.md`, 'Step 2 interview completed');
     add(`step-02-${slug}.plan.refined.md`, 'Step 2 interview completed');
   }
   // A dag-disabled Step 3 skip is the designed sequential shape (no stubs written):
   // grandfathered, never an exec-artifact signal. Only a true completion needs the file.
   const step3SkippedDagDisabled = skippedReason(state, 3) === 'dag-disabled';
-  if (!step3SkippedDagDisabled && (Number(state.currentStep) >= 4 || isCompleted(state, 3))) {
+  if (!step3SkippedDagDisabled && expectsStep(state, 3, 4)) {
     add(`step-03-${slug}.plan.exec.md`, 'Step 3 completed');
   }
-  if (Number(state.currentStep) >= 6 || isCompleted(state, 5)) add(`step-05-${slug}.plan.report.md`, 'Step 5 completed');
-  if (Number(state.currentStep) >= 7 || isCompleted(state, 6)) add(`step-06-${slug}.review.md`, 'Step 6 completed');
+  if (expectsStep(state, 5, 6)) add(`step-05-${slug}.plan.report.md`, 'Step 5 completed');
+  if (expectsStep(state, 6, 7)) add(`step-06-${slug}.review.md`, 'Step 6 completed');
   const testingSkipped = ['testing-disabled', 'no-test-surface'].includes(skippedReason(state, 7));
-  if (!testingSkipped && (Number(state.currentStep) >= 8 || isCompleted(state, 7))) {
+  if (!testingSkipped && expectsStep(state, 7, 8)) {
     add(`step-07-${slug}.testing.report.md`, 'Step 7 completed');
   }
-  if (Number(state.currentStep) >= 9 || isCompleted(state, 8)) add(`step-08-${slug}.result.md`, 'Step 8 completed');
+  if (expectsStep(state, 8, 9)) add(`step-08-${slug}.result.md`, 'Step 8 completed');
   return expected;
 }
 
@@ -626,10 +667,27 @@ function deriveTerminalStatus(state) {
 
 function classifyWorkflow(state, workflowDir, telemetry, minVerifyScore, repoRoot = workflowDir, config = null) {
   const findings = [];
-  const missing = expectedArtifacts(state, workflowDir, minVerifyScore, repoRoot).filter((item) => !item.present);
+  const expected = expectedArtifacts(state, workflowDir, minVerifyScore, repoRoot);
+  const presentNames = new Set(expected.filter((item) => item.present).map((item) => item.name));
+  // us-418 AC2/AC3: runs with `status: completed` and historical artifact-name
+  // drift are tolerated: missing files are `info`, never `critical`, so no
+  // defect issue is proposed for healthy terminal history. Any other status
+  // (including terminal-shaped runs still reporting `active`, which keep their
+  // terminal-run-active signal and their criticals) keeps `critical`.
+  const terminalTolerant = String(state?.status) === 'completed';
+  const missing = expected.filter((item) => !item.present);
   for (const artifact of missing) {
     const code = artifact.name.endsWith('.plan.exec.md') ? 'missing-exec-artifact' : 'missing-artifact';
-    addFinding(findings, 'critical', code, `${artifact.name} is missing (${artifact.reason})`, [artifact.path]);
+    if (!terminalTolerant) {
+      addFinding(findings, 'critical', code, `${artifact.name} is missing (${artifact.reason})`, [artifact.path]);
+      continue;
+    }
+    let note = 'terminal-run tolerance: historical artifact drift stays info on terminal runs';
+    if (artifact.name.includes('.plan-interview.md')) {
+      const refined = [...presentNames].find((name) => name.includes('.plan.refined.md'));
+      if (refined) note += ` companion evidence ${refined} present, accepted as interview evidence`;
+    }
+    addFinding(findings, 'info', code, `${artifact.name} is missing (${artifact.reason}; ${note})`, [artifact.path]);
   }
   if (Number(state.currentStep) > 5 && Number(state.verificationScore) < minVerifyScore) {
     addFinding(
@@ -1135,9 +1193,12 @@ function hasSubagentError(text) {
     .test(text.slice(lastFailure));
 }
 
-// us-412: bounded candidate enumeration for one root. Directory entries are
-// name-sorted for deterministic slices; enumeration stops at `slice + 1`
-// candidates so per-root truncation is detectable without walking a huge tree.
+// us-412: bounded candidate enumeration for one root. Enumeration stops at
+// `slice + 1` candidates so per-root truncation is detectable without walking
+// a huge tree.
+// us-418 AC6: directory entries visit newest-mtime first (name tiebreak, so
+// slices stay deterministic) so a per-root slice keeps the correlated recent
+// session instead of truncating it behind stale alphabetically-early files.
 function listTranscriptCandidates(directory, slice) {
   const candidates = [];
   const visit = (dir, depth) => {
@@ -1148,7 +1209,12 @@ function listTranscriptCandidates(directory, slice) {
     } catch {
       return;
     }
-    entries.sort((a, b) => String(a.name).localeCompare(String(b.name)));
+    entries.sort((a, b) => {
+      const mtimeOf = (entry) => {
+        try { return fs.statSync(path.join(dir, entry.name)).mtimeMs; } catch { return -1; }
+      };
+      return mtimeOf(b) - mtimeOf(a) || String(a.name).localeCompare(String(b.name));
+    });
     for (const entry of entries) {
       if (candidates.length > slice) return;
       const full = path.join(dir, entry.name);
@@ -1194,6 +1260,26 @@ function scanTranscriptRoots(context, roots, filter = {}) {
     files.push(...ordered.slice(0, slice));
   }
   if (files.length >= maxFiles) capped = true;
+  // us-418 AC6: correlate-first global read order. Per-root reservation bounds
+  // the file count, but the per-tick TIME budget is spent in read order:
+  // path-correlated candidates first, then newest mtime first (best-effort
+  // stat with a path tiebreak), so the correlated recent session is tail-read
+  // before ancient history can exhaust the tick. Deterministic.
+  const fileMtimeCache = new Map();
+  const mtimeOf = (file) => {
+    if (!fileMtimeCache.has(file)) {
+      let mtimeMs = -1;
+      try { mtimeMs = fs.statSync(file).mtimeMs; } catch { mtimeMs = -1; }
+      fileMtimeCache.set(file, mtimeMs);
+    }
+    return fileMtimeCache.get(file);
+  };
+  const pathCorrelated = (file) => keys.length > 0 && keys.some((key) => correlationMatches(file, key));
+  files.sort((a, b) => (
+    Number(pathCorrelated(b)) - Number(pathCorrelated(a))
+    || mtimeOf(b) - mtimeOf(a)
+    || String(a).localeCompare(String(b))
+  ));
   let filesScanned = 0;
   let bytesRead = 0;
   const scannedFiles = [];
@@ -1212,17 +1298,8 @@ function scanTranscriptRoots(context, roots, filter = {}) {
     const text = sanitized.length > TRANSCRIPT_LIMITS.maxBytesPerFile
       ? sanitized.slice(-TRANSCRIPT_LIMITS.maxBytesPerFile)
       : sanitized;
-    if (filter && (filter.workflowId || filter.slug || filter.sessionId)) {
-      // A supplied session id is an alternative correlation key (a session may
-      // not mention the slug); workflowId+slug keep their AND semantics.
-      const matchesSession = filter.sessionId
-        ? (correlationMatches(file, filter.sessionId) || correlationMatches(text, filter.sessionId))
-        : false;
-      const matchesWf = Boolean(filter.workflowId && (correlationMatches(file, filter.workflowId) || correlationMatches(text, filter.workflowId)));
-      const matchesSlug = Boolean(filter.slug && (correlationMatches(file, filter.slug) || correlationMatches(text, filter.slug)));
-      const base = filter.workflowId && filter.slug ? (matchesWf && matchesSlug) : (matchesWf || matchesSlug);
-      if (!(matchesSession || base)) continue;
-    }
+    if (filter && (filter.workflowId || filter.slug || filter.sessionId)
+      && !transcriptCorrelates(file, text, filter)) continue;
     filesScanned += 1;
     bytesRead += read.bytesRead;
     let mtimeMs = null;
@@ -1359,14 +1436,18 @@ function resolveTranscriptSource(workflow, scannedFiles, discoveryEnabled, repoR
   if (!discoveryEnabled) {
     return { status: 'transcript-unavailable', reason: 'discovery-disabled' };
   }
-  const keys = [workflow.slug, workflow.workflowId, workflow.sessionId]
-    .map(normalizeCorrelationKey)
-    .filter((key) => key && key !== 'ws-spec-multi');
+  const cleanKey = (value) => {
+    const key = normalizeCorrelationKey(value);
+    return key && key !== 'ws-spec-multi' ? value : null;
+  };
+  const correlation = {
+    slug: cleanKey(workflow.slug),
+    workflowId: cleanKey(workflow.workflowId),
+    sessionId: cleanKey(workflow.sessionId),
+  };
   const repoRootResolved = path.resolve(repoRoot);
-  const candidates = (scannedFiles || []).filter((item) => {
-    const haystack = normalizeCorrelationKey(item.file + String.fromCharCode(10) + item.tail);
-    return keys.some((key) => correlationMatches(haystack, key));
-  });
+  // us-418 AC7: same predicate over the same stored tail as the scan filter.
+  const candidates = (scannedFiles || []).filter((item) => transcriptCorrelates(item.file, item.tail, correlation));
   if (candidates.length === 0) {
     return {
       status: 'transcript-unavailable',
@@ -2041,6 +2122,8 @@ module.exports = {
   expandMuseSessionDirs,
   collapseHomePaths,
   correlationMatches,
+  transcriptCorrelates,
+  expectsStep,
   classifyLocation,
   resolveScmProvider,
   buildIssueProposal,

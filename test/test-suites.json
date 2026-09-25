@@ -412,6 +412,9 @@
       "test/test-ws-monitor-liveness.js"
     ],
     [
+      "test/test-ws-monitor-us412-418.js"
+    ],
+    [
       "test/test-ws-monitor-watch-profile.js"
     ],
     [
