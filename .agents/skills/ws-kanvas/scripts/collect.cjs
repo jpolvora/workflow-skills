@@ -140,7 +140,7 @@ function parseIndex(indexText) {
     // Archive row: | `slug` | outcome | ... | (slug first cell, no checkbox).
     if (/archiv/i.test(section) && line.startsWith('|')) {
       const am = line.match(/^\|\s*`?([A-Za-z0-9-]+)`?\s*\|\s*([^|]*)/);
-      if (am && isValidSlug(am[1]) && /drop|supersede|abandon|cancel/i.test(am[2])) {
+      if (am && isValidSlug(am[1]) && /cancel|fail|drop|supersede|abandon/i.test(am[2])) {
         archived.add(am[1]);
         continue;
       }
@@ -166,7 +166,7 @@ function parseIndex(indexText) {
       continue;
     }
     // Checkbox list: - [x] Title (`spec: NNNN-slug.spec.md`)
-    m = line.match(/^-\s*\[([ x])\]\s+.*\(spec:\s*([^)]+)\)/);
+    m = line.match(/^-\s*\[([ x])\]\s+.*\(\s*`?spec:\s*`?([^)`]+)`?\)/);
     if (m) {
       const slug = m[2].replace(/\.spec\.md$/, '').replace(/^\d+-/, '');
       if (isValidSlug(slug) && !rows.has(slug)) {
@@ -235,7 +235,7 @@ function placeColumn({ indexEntry, plan, archived, hasDoneLogRow }) {
   if ((plan.planStatus && /^(cancelled|failed)$/i.test(plan.planStatus)) || archived) return 'abandoned';
   // E1: Production needs the [x] mark AND a Done-log row for the slug (any era outcome cell).
   if (indexEntry && indexEntry.indexStatus === 'done' && hasDoneLogRow) return 'production';
-  if (plan.hasShipRecord) return 'staging';
+  if (plan.hasShipRecord && (!indexEntry || indexEntry.indexStatus !== 'done')) return 'staging';
   if (plan.planStatus && /^(active|implemented)$/i.test(plan.planStatus)) return 'development';
   if (indexEntry && indexEntry.indexStatus === 'todo' && plan.planDir) return 'sprint';
   return 'backlog';

@@ -62,7 +62,7 @@ inside the resolved roots (anything else → 400 before any filesystem read).
 ## Column rules (first match wins, top-down)
 
 1. **Abandoned** — plan state `status: cancelled`/`failed`, or the slug sits in the index Archive table
-   with a dropped/superseded outcome.
+   with a `cancelled`/`failed` outcome (`dropped`/`superseded` read the same).
 2. **Production** — index Feature map / Next-specs row is `[x]` done AND a Done-log row exists
    for the slug (the delivery record; any era outcome cell, including legacy `Implemented`).
 3. **Staging** — a `step-08-*.result.md` ship record exists but the index row is not yet `[x]`.
