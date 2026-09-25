@@ -1,1 +1,33 @@
-{"activeThreads":null,"baselineCommit":"824194e0","branch":"develop","commits":["6c6ecf7e","df808b53"],"completedSteps":[0,1,2,3,4,5,6,7],"currentStep":8,"flowMode":"standard","mergeCommit":null,"prNumber":null,"prUrl":null,"runId":"ms-20260924T184514Z-child","shipStatus":"unshipped","slug":"kanvas-board","specPath":".agents/specs/0130-kanvas-board.spec.md","status":"active","updatedAt":"2026-09-25T00:00:00Z","verificationScore":10,"workflowType":"standard"}
+{
+  "activeThreads": 0,
+  "baselineCommit": "824194e0",
+  "branch": "develop",
+  "commits": [
+    "6c6ecf7e",
+    "df808b53"
+  ],
+  "completedSteps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "currentStep": 8,
+  "flowMode": "standard",
+  "mergeCommit": "85b66476",
+  "prNumber": 425,
+  "prUrl": "https://github.com/jpolvora/workflow-skills/pull/425",
+  "runId": "ms-20260924T184514Z-child",
+  "shipStatus": "shipped",
+  "slug": "kanvas-board",
+  "specPath": ".agents/specs/0130-kanvas-board.spec.md",
+  "status": "completed",
+  "updatedAt": "2026-09-25T07:19:31.406Z",
+  "verificationScore": 10,
+  "workflowType": "standard",
+  "checksStatus": "green"
+}
