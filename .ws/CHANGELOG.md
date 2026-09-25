@@ -1,4 +1,9 @@
 # Changelog
+### [2026-09-25 11:30] Agent: Muse Code (Muse Spark)
+- **Prompt**: Ship develop to main after fixing the suite blocker (ws-ship-pr full ship + merge).
+- **Done**: Fixed test-install.js fixture pollution, verified full suite green (134/134), prepare board all green, focused review clean (0 Critical/Warning), pushed develop, created PR #426 (25 commits, release 0.4.74), all CI checks passed with zero review threads, merged via merge commit 9128411c, telemetry aggregate written (99 workflows, 91 completed).
+- **Result**: PR #426 MERGED. Note: stale GITHUB_TOKEN env var shadows valid keyring auth; unset it for gh calls.
+
 ### [2026-09-25 11:20] Agent: Muse Code (Muse Spark)
 - **Prompt**: Fix suite self-pollution blocking ship (test-install.js dirties test/.ws/.gitignore), then resume ws-ship-pr.
 - **Done**: test-install.js snapshots test/.ws/.gitignore exact bytes at load and restores them in a process.on(exit) hook (runs even on fail); recorded memory trap 2026-09-25-install-test-fixture-hygiene and compiled MEMORY.md.
