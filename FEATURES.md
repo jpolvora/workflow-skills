@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.4.60** · 56 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.4.60** · 57 skills (Workflows + Extra) + the `ws-shared` consumer hub.
 
 ### ws-shared hybrid configuration boundary
 
@@ -161,6 +161,7 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 | Canonical `*.spec.md` schema, section hierarchy, AC rules, specify-time closure (`Out of Scope`, Assumptions), authoring-mode **Definition of Ready**, **Validation & Observation Notes**, and **Negative & Failing Test Scenarios** | `ws-spec-format` |
 | Promote any spec into a workflow run (`{specsDir}` spec of record → `step-00` copy) | `ws-spec-provider-local` |
 | Dual board of specs versus plan workflows, with a manage menu | `ws-spec-list` |
+| Local kanban board (Backlog, Sprint, Development, Staging, Production, Abandoned) with card details popup; `npm run kanvas` | `ws-kanvas` |
 | Bulk-import open GitHub issues or ADO User Stories (assigned to PAT) into `{specsDir}` + full register + auto-track in `index.PRD` | `ws-spec-from-provider` |
 | Project feature index (`index.PRD`): init, sync against delivery evidence, promote from inbox, track an existing spec | `ws-spec-index` |
 | Harvest `{plansDir}` delivery facts into `index.PRD` Archive, then propose cleanup of shipped plan folders | `ws-spec-archive` |
@@ -274,7 +275,7 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 |---------|--------|
 | **Zero-dependency CLI** | `bin/cli.js` runs under plain Node; no runtime npm dependencies |
 | **npx install** | `npx --yes github:jpolvora/workflow-skills` — interactive or `--yes` non-interactive |
-| **Three packages** | `f` Full (all skills), `w` Workflows (46 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`, `ws-activity-report`, `ws-fable-domain`, `ws-plan-update`, `ws-run-benchmark`, `ws-benchmarks`) |
+| **Three packages** | `f` Full (all skills), `w` Workflows (47 skills), `e` Extra (`ws-write-a-skill`, `ws-show-harness`, `ws-preview`, `ws-activity-report`, `ws-fable-domain`, `ws-plan-update`, `ws-run-benchmark`, `ws-benchmarks`) |
 | **Global or project scope** | `--global` / `--project`; project-local skills override global copies; interactive `--global` install/update always prompts for host targets (`canonical` + `claude` / `codex` / `gemini`) with recorded/detected targets pre-selected |
 | **Dependency closure** | `skill-dependencies.json` drives install; uninstall cascades dependents and unused deps |
 | **SHA-256 integrity** | `bin/skill-integrity.json` covers every installable tree; install and update verify the source before copying and the consumer after, failing closed on mismatch. LF-canonical hashing keeps CRLF checkouts consistent |
@@ -413,6 +414,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-spec-index`](.agents/skills/ws-spec-index/SKILL.md) | W | `index.PRD` lifecycle: init, sync, promote, track |
 | [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) | W | Harvest plan history into `index.PRD` Archive; propose shipped-plan cleanup |
 | [`ws-spec-list`](.agents/skills/ws-spec-list/SKILL.md) | W | Dual board of specs versus plan workflows |
+| [`ws-kanvas`](.agents/skills/ws-kanvas/SKILL.md) | W | Local kanban board for spec and workflow state |
 | [`ws-spec-manager`](.agents/skills/ws-spec-manager/SKILL.md) | W | Unified router for spec create/list/update/sync/track/organize/archive/validate/import/run |
 | [`ws-spec-from-provider`](.agents/skills/ws-spec-from-provider/SKILL.md) | W | Bulk-import open GH issues / ADO User Stories → spec-write + register + auto-track |
 | [`ws-spec-update`](.agents/skills/ws-spec-update/SKILL.md) | W | Update spec bodies when code drifts |

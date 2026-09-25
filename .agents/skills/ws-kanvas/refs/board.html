@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kanvas board</title>
+<style>
+:root { color-scheme: light dark; }
+body { font-family: system-ui, sans-serif; margin: 0; padding: 16px; }
+header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; }
+header h1 { font-size: 20px; margin: 0; }
+header button { margin-left: auto; }
+#warnings { margin-bottom: 12px; }
+#warnings:empty { display: none; }
+.banner { border: 1px solid currentColor; border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; }
+#board { display: grid; grid-template-columns: repeat(6, minmax(180px, 1fr)); gap: 12px; }
+.column { border: 1px solid #888; border-radius: 8px; padding: 8px; min-height: 120px; }
+.column h2 { font-size: 14px; margin: 0 0 8px; }
+.card { border: 1px solid #888; border-radius: 6px; padding: 6px 8px; margin-bottom: 6px; cursor: pointer; background: transparent; width: 100%; text-align: left; font: inherit; }
+.card:hover { border-width: 2px; }
+.card .slug { font-size: 12px; opacity: 0.75; }
+#popup-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; }
+#popup-backdrop.open { display: flex; }
+#popup { background: Canvas; color: CanvasText; border: 1px solid #888; border-radius: 10px; padding: 20px; max-width: 560px; width: 90%; max-height: 85vh; overflow: auto; }
+#popup h2 { margin-top: 0; font-size: 18px; }
+#popup dl { display: grid; grid-template-columns: 140px 1fr; gap: 4px 12px; font-size: 14px; }
+#popup dt { font-weight: bold; }
+#popup dd { margin: 0; overflow-wrap: anywhere; }
+#popup .close { float: right; }
+#error { color: inherit; font-weight: bold; }
+@media (max-width: 1100px) { #board { grid-template-columns: repeat(3, minmax(180px, 1fr)); } }
+@media (max-width: 640px) { #board { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+<h1>Kanvas board</h1>
+<span id="meta"></span>
+<button id="refresh" type="button">Refresh</button>
+</header>
+<div id="warnings" role="alert"></div>
+<main id="board" aria-live="polite"></main>
+<div id="popup-backdrop">
+<div id="popup" role="dialog" aria-modal="true" aria-labelledby="popup-title">
+<button id="popup-close" class="close" type="button">Close</button>
+<h2 id="popup-title"></h2>
+<div id="popup-body"></div>
+</div>
+</div>
+<script>
+(function () {
+  'use strict';
+  var boardEl = document.getElementById('board');
+  var warningsEl = document.getElementById('warnings');
+  var metaEl = document.getElementById('meta');
+  var backdrop = document.getElementById('popup-backdrop');
+  var popupTitle = document.getElementById('popup-title');
+  var popupBody = document.getElementById('popup-body');
+
+  function esc(text) {
+    return String(text === null || text === undefined ? '' : text)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function row(term, value) {
+    return '<dt>' + esc(term) + '</dt><dd>' + value + '</dd>';
+  }
+
+  function linkList(links) {
+    if (!links) return esc('none');
+    var parts = [];
+    if (links.spec) parts.push('spec: ' + esc(links.spec));
+    if (links.plan) parts.push('plan: ' + esc(links.plan));
+    if (links.index) parts.push('index: ' + esc(links.index));
+    return parts.length ? parts.join('<br>') : esc('none');
+  }
+
+  function openPopup(card) {
+    popupTitle.textContent = card.title || card.slug;
+    popupBody.innerHTML = '<dl>' +
+      row('Slug', esc(card.slug)) +
+      row('Column', esc(card.column)) +
+      row('Index status', esc(card.indexStatus)) +
+      row('Phase', esc(card.phase === null ? 'none' : card.phase)) +
+      row('AC count', esc(card.acCount)) +
+      row('Plan step', esc(card.planStep === null ? 'none' : card.planStep)) +
+      row('Plan status', esc(card.planStatus === null ? 'none' : card.planStatus)) +
+      row('Evidence', esc(card.evidence === null ? 'none' : card.evidence)) +
+      row('Links', linkList(card.links)) +
+      '</dl>';
+    backdrop.classList.add('open');
+    document.getElementById('popup-close').focus();
+  }
+
+  function openNotFound(slug) {
+    popupTitle.textContent = 'Card not found';
+    popupBody.innerHTML = '<p id="error">No board card exists for slug "' + esc(slug) + '".</p>';
+    backdrop.classList.add('open');
+    document.getElementById('popup-close').focus();
+  }
+
+  function closePopup() {
+    backdrop.classList.remove('open');
+  }
+
+  function render(board) {
+    warningsEl.innerHTML = '';
+    (board.warnings || []).forEach(function (w) {
+      var div = document.createElement('div');
+      div.className = 'banner';
+      div.textContent = 'Warning (' + w.code + '): ' + w.detail;
+      warningsEl.appendChild(div);
+    });
+    boardEl.innerHTML = '';
+    var byColumn = {};
+    (board.cards || []).forEach(function (card) {
+      (byColumn[card.column] = byColumn[card.column] || []).push(card);
+    });
+    (board.columns || []).forEach(function (col) {
+      var section = document.createElement('section');
+      section.className = 'column';
+      var h = document.createElement('h2');
+      h.textContent = col.title + ' (' + col.count + ')';
+      section.appendChild(h);
+      (byColumn[col.id] || []).forEach(function (card) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'card';
+        btn.dataset.slug = card.slug;
+        btn.innerHTML = '<div></div><div class="slug"></div>';
+        btn.firstChild.textContent = card.title;
+        btn.lastChild.textContent = card.slug;
+        btn.addEventListener('click', function () { fetchCard(card.slug); });
+        section.appendChild(btn);
+      });
+      boardEl.appendChild(section);
+    });
+    metaEl.textContent = (board.cards || []).length + ' specs';
+  }
+
+  function fetchBoard() {
+    fetch('api/board').then(function (res) { return res.json(); }).then(render).catch(function () {
+      warningsEl.innerHTML = '<div class="banner">Warning (board-unreachable): the board endpoint did not respond.</div>';
+    });
+  }
+
+  function fetchCard(slug) {
+    fetch('api/card?slug=' + encodeURIComponent(slug)).then(function (res) {
+      return res.json().then(function (payload) { return { status: res.status, payload: payload }; });
+    }).then(function (result) {
+      if (result.payload && result.payload.card) openPopup(result.payload.card);
+      else openNotFound(slug);
+    }).catch(function () { openNotFound(slug); });
+  }
+
+  document.getElementById('refresh').addEventListener('click', fetchBoard);
+  document.getElementById('popup-close').addEventListener('click', closePopup);
+  backdrop.addEventListener('click', function (ev) { if (ev.target === backdrop) closePopup(); });
+  document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') closePopup(); });
+  fetchBoard();
+})();
+</script>
+</body>
+</html>
