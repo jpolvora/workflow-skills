@@ -1,4 +1,8 @@
 # Changelog
+### [2026-09-25 07:24] Agent: ws-spec-multi orchestrator (ms-20260924T184514Z)
+- **Prompt**: Implement the last 6 pending index entries; deferred pre-ship-doc-sync (parallel session); delivered 5/5 to merged PRs #421-425.
+- **Done**: Sequential workers + per-item base syncs with union conflict resolution; review-timeout gate on #422 (user-merged); run state closed 5/5 shipped; memory trap 2026-09-25-ws-spec-multi-batch-traps compiled.
+- **Result**: PRs #421, #422, #423, #424, #425 all MERGED with zero open threads; integrity green; tree clean.
 ### [2026-09-25 06:30] Agent: ws-spec-multi worker (kanvas-board)
 - **Prompt**: Implement the kanvas-board spec (packaged local kanban visualizer): new ws-kanvas skill with collector + loopback server + board page, six first-match columns, card popup; skill-dependencies entry, integrity regen, install test, consumer path overrides, npm run kanvas dogfood.
 - **Done**: `ws-kanvas` skill tree (`SKILL.md`, `scripts/collect.cjs`, `scripts/server.cjs`, `refs/board.html`); `kanvas` npm script; graph registration + runtime mirror; CATALOG/FEATURES rows; new suite `test/test-kanvas-board.js` (column fixtures, AC7 snapshot, HTTP behavior, BOM regressions) + suite entry; BOM tolerance in config reader and frontmatter (found via installed-tree proof); release 0.4.73 + integrity + site.
