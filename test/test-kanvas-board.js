@@ -59,6 +59,9 @@ spec('alt-order', 'Alt order', 1);
 spec('nested-child', 'Nested child', 1);
 spec('dusty-arch', 'Dusty arch', 1);
 spec('orphan-child', 'Orphan child', 1);
+spec('partial-card', 'Partial card', 1);
+write(path.join(specsDir, 'dup-first.spec.md'), '---\nslug: dupe\ntitle: "First wins"\n---\n\n## Acceptance Criteria\n\n- AC1: first\n');
+write(path.join(specsDir, 'dup-second.spec.md'), '---\nslug: dupe\ntitle: "Second loses"\n---\n\n## Acceptance Criteria\n\n- AC1: second\n- AC2: second\n');
 spec('dead-card', 'Dead card', 1);
 write(path.join(specsDir, 'BAD_SLUG.spec.md'), '---\nslug: BAD_SLUG\ntitle: Bad\n---\n');
 spec('bom-card', 'Bom card', 1);
@@ -85,6 +88,7 @@ write(indexPath, `# Fixture index
 
 - [x] Stale parent
 | 8 | \`table-filler\` | \`[ ]\` todo | Phase 9 | Filler |
+| 9 | \`partial-card\` | \`[~]\` partial | Phase 1 | Partial |
   - **spec:** \`orphan-child.spec.md\`
 
 ## 10. Done log
@@ -109,7 +113,7 @@ write(path.join(plansDir, 'dead-card', 'dead-card.state.md'), '---\nstatus: canc
 write(path.join(plansDir, 'ghost-ship', 'step-08-ghost-ship.result.md'), '# result\nshipped\n');
 
 const board = collectBoard({ specsDir, plansDir, indexPath });
-assert(Array.isArray(board.cards) && board.cards.length === 14, `fourteen fixture cards (got ${board.cards.length})`);
+assert(Array.isArray(board.cards) && board.cards.length === 16, `sixteen fixture cards (got ${board.cards.length})`);
 const bySlug = Object.fromEntries(board.cards.map((c) => [c.slug, c]));
 assert(!bySlug['BAD_SLUG'], 'malformed slug file is skipped');
 assert(bySlug['backlog-only'].column === 'backlog', 'AC2: plan-less untracked spec lands in Backlog');
@@ -121,6 +125,9 @@ assert(bySlug['legacy-ship'].column === 'production', 'E1: done mark + legacy Im
 assert(bySlug['ghost-ship'].column === 'backlog', 'E1: done mark without any Done-log row is not Production, even with a step-08 record (staging guard)');
 assert(bySlug['dusty-arch'].column === 'abandoned', 'Archive dropped alias lands in Abandoned');
 assert(bySlug['orphan-child'].indexStatus === 'untracked', 'stale parent checkbox does not leak across a table boundary');
+assert(bySlug['dupe'].title === 'First wins' && bySlug['dupe'].acCount === 1, 'duplicate slugs collapse to the first file');
+assert(bySlug['partial-card'].indexStatus === 'todo', 'partial mark reads as todo');
+assert(bySlug['partial-card'].column === 'backlog', 'partial card without a run dir lands in Backlog');
 assert(bySlug['old-faithful'].column === 'abandoned', 'Archive dropped row lands in Abandoned without a plan dir');
 assert(bySlug['alt-order'].column === 'production', 'live status-first dialect lands in Production');
 assert(bySlug['nested-child'].column === 'backlog', 'nested feature-map form tracks as todo');
@@ -135,7 +142,7 @@ assert(bySlug['backlog-only'].links.plan === null, 'plan-less card has null plan
 assert(bySlug['dev-card'].links.spec.endsWith('.spec.md'), 'spec link points at the spec file');
 assert.deepStrictEqual(
   board.columns.map((c) => [c.id, c.count]),
-  [['backlog', 5], ['sprint', 1], ['development', 1], ['staging', 1], ['production', 3], ['abandoned', 3]],
+  [['backlog', 7], ['sprint', 1], ['development', 1], ['staging', 1], ['production', 3], ['abandoned', 3]],
   'all six columns with per-column counts',
 );
 
@@ -148,12 +155,14 @@ assert.deepStrictEqual(snapshot, [
   { slug: 'bom-card', title: 'Bom card', column: 'backlog', indexStatus: 'untracked', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: null },
   { slug: 'dead-card', title: 'Dead card', column: 'abandoned', indexStatus: 'untracked', phase: null, acCount: 1, planStep: null, planStatus: 'cancelled', evidence: null },
   { slug: 'dev-card', title: 'Dev card', column: 'development', indexStatus: 'todo', phase: 'Phase 2', acCount: 3, planStep: 4, planStatus: 'active', evidence: null },
+  { slug: 'dupe', title: 'First wins', column: 'backlog', indexStatus: 'untracked', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: null },
   { slug: 'dusty-arch', title: 'Dusty arch', column: 'abandoned', indexStatus: 'untracked', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: null },
   { slug: 'ghost-ship', title: 'Ghost ship', column: 'backlog', indexStatus: 'done', phase: 'Phase 1', acCount: 1, planStep: null, planStatus: null, evidence: null },
   { slug: 'legacy-ship', title: 'Legacy ship', column: 'production', indexStatus: 'done', phase: 'Phase 1', acCount: 1, planStep: null, planStatus: null, evidence: null },
   { slug: 'nested-child', title: 'Nested child', column: 'backlog', indexStatus: 'todo', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: null },
   { slug: 'old-faithful', title: 'Old faithful', column: 'abandoned', indexStatus: 'untracked', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: null },
   { slug: 'orphan-child', title: 'Orphan child', column: 'backlog', indexStatus: 'untracked', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: null },
+  { slug: 'partial-card', title: 'Partial card', column: 'backlog', indexStatus: 'todo', phase: 'Phase 1', acCount: 1, planStep: null, planStatus: null, evidence: null },
   { slug: 'prod-card', title: 'Prod card', column: 'production', indexStatus: 'done', phase: 'Phase 3', acCount: 2, planStep: null, planStatus: null, evidence: 'https://example.com/pr/1' },
   { slug: 'sprint-card', title: 'Sprint card', column: 'sprint', indexStatus: 'todo', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: null },
   { slug: 'staging-card', title: 'Staging card', column: 'staging', indexStatus: 'todo', phase: 'Phase 2', acCount: 1, planStep: null, planStatus: null, evidence: null },
@@ -220,7 +229,7 @@ try {
   const page = await get(port, '/');
   assert(page.status === 200 && page.body.includes('Kanvas board') && page.body.includes('api/board'), 'GET / serves the board page');
   const api = await get(port, '/api/board');
-  assert(api.status === 200 && JSON.parse(api.body).cards.length === 14, 'GET /api/board returns the fixture board');
+  assert(api.status === 200 && JSON.parse(api.body).cards.length === 16, 'GET /api/board returns the fixture board');
   const card = await get(port, '/api/card?slug=prod-card');
   assert(card.status === 200 && JSON.parse(card.body).card.column === 'production', 'AC4: card endpoint returns the popup payload');
   const missing = await get(port, '/api/card?slug=no-such-spec');

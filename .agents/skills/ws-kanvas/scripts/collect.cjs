@@ -85,13 +85,15 @@ function toDisplayPath(cwd, file) {
 /** Discover specs of record: every `*.spec.md` under specsDir (recursive). */
 function discoverSpecs(specsDir, cwd) {
   const specs = [];
+  const seenSlugs = new Set();
   for (const file of listFilesRecursive(specsDir, '.spec.md')) {
     const text = readFileOrNull(file);
     if (text === null) continue;
     const { data } = parseFrontmatter(text);
     const stem = path.basename(file, '.spec.md').replace(/^\d+-/, '');
     const slug = typeof data.slug === 'string' && data.slug ? data.slug : stem;
-    if (!isValidSlug(slug)) continue;
+    if (!isValidSlug(slug) || seenSlugs.has(slug)) continue;
+    seenSlugs.add(slug);
     const acCount = (text.match(/^-\s+AC\d+\s*:/gm) || []).length;
     specs.push({
       slug,
@@ -147,10 +149,10 @@ function parseIndex(indexText) {
       }
     }
     // Table row: | n | `slug` | `[x]` done | phase | ... |
-    let m = line.match(/^\|\s*[^|]*\|\s*`([^`]+)`\s*\|\s*`?\[([ x])\]`?/);
+    let m = line.match(/^\|\s*[^|]*\|\s*`([^`]+)`\s*\|\s*`?\[([ x~])\]`?/);
     // Live dialect with status first: | n | `[x]` done | `slug` | scope | ... |
     if (!m) {
-      const alt = line.match(/^\|\s*[^|]*\|\s*`?\[([ x])\]`?[^|]*\|\s*`([^`]+)`/);
+      const alt = line.match(/^\|\s*[^|]*\|\s*`?\[([ x~])\]`?[^|]*\|\s*`([^`]+)`/);
       if (alt) m = [alt[0], alt[2], alt[1]];
     }
     if (m && isValidSlug(m[1])) {
@@ -167,7 +169,7 @@ function parseIndex(indexText) {
       continue;
     }
     // Checkbox list: - [x] Title (`spec: NNNN-slug.spec.md`)
-    m = line.match(/^-\s*\[([ x])\]\s+.*\(\s*`?spec:\s*`?([^)`]+)`?\)/);
+    m = line.match(/^-\s*\[([ x~])\]\s+.*\(\s*`?spec:\s*`?([^)`]+)`?\)/);
     if (m) {
       const slug = m[2].replace(/\.spec\.md$/, '').replace(/^\d+-/, '');
       if (isValidSlug(slug) && !rows.has(slug)) {
@@ -175,7 +177,7 @@ function parseIndex(indexText) {
       }
     }
     // Bare checkbox bullet: remember state for a nested `- **spec:**` child line.
-    const bm = line.match(/^-\s*\[([ x])\]/);
+    const bm = line.match(/^-\s*\[([ x~])\]/);
     if (bm) {
       pendingCheck = line.indexOf('(spec:') === -1 ? (bm[1] === 'x' ? 'done' : 'todo') : null;
       continue;
