@@ -1,4 +1,14 @@
 # Changelog
+### [2026-09-25 11:20] Agent: Muse Code (Muse Spark)
+- **Prompt**: Fix suite self-pollution blocking ship (test-install.js dirties test/.ws/.gitignore), then resume ws-ship-pr.
+- **Done**: test-install.js snapshots test/.ws/.gitignore exact bytes at load and restores them in a process.on(exit) hook (runs even on fail); recorded memory trap 2026-09-25-install-test-fixture-hygiene and compiled MEMORY.md.
+- **Result**: npm run test all 134 entries passed; test-harness-clean.js 0 findings; tree holds only intended files.
+
+### [2026-09-25 11:05] Agent: Muse Code (Muse Spark)
+- **Prompt**: Ship develop to main (full ship + merge via ws-ship-pr).
+- **Done**: Preflight green (head develop, base main, provider github, tree clean, 24 commits). Prepare board blocked: `npm run test` fails at 104/134 because entry #1 test-install.js rewrites test/.ws/.gitignore with CRLF, which entry #104 asserts clean (proven pre-existing suite self-pollution on Windows; solo rerun passes). Restored the polluted file; tree clean.
+- **Result**: STOP per prepare-board rule (rows 3 + 6 red). No push, no PR, no merge.
+
 ### [2026-09-25 10:45] Agent: Muse Code (Muse Spark)
 - **Prompt**: Workflow diagram for spec-to-pr and spec-to-pr-lite from init to end with all decision paths, related skills and connections; save to docs/flow.md and link from website.
 - **Done**: New docs/flow.md with 6 mermaid diagrams (shared entry/classifier, standard steps 0-4 and 5-9, lite 0-5, skill connection map, universal step boundary) plus step-to-skill and gate tables; Flow link added to 4 website nav spots (dot-nav, header, sidebar, TOC); site rebuilt without bump.
