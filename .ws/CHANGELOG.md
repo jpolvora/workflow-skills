@@ -1,4 +1,13 @@
 # Changelog
+### [2026-09-25 10:19] Agent: Muse Code (Muse Spark)
+- **Prompt**: Phase 2 for kanvas board enhancements: drag'n drop columns spec with status update on move.
+- **Done**: Wrote spec of record `.agents/specs/0131-kanvas-board-drag-drop.spec.md` (10 ACs, transition table over owning index/plan-state/archive writes, `POST /api/move`, atomicity + `409` matrix) plus gray-area companion `0131-kanvas-board-drag-drop.context.md`; authoring validation passes.
+- **Result**: `validate_spec.cjs --mode=authoring` exit 0 (10 ACs).
+
+### [2026-09-25 06:20] Agent: Cursor Grok 4.7
+- **Prompt**: Sync the living wiki from code since the Sync Baseline and advance the baseline commit hash.
+- **Done**: Folded specs 0125–0130 into delivery, diagnostics, providers, and a new kanvas page; validated the wiki; set Sync Baseline to `1f185d170839e7dafd7c7b0d4ff83ebc9d34dc13`.
+- **Result**: `validate_wiki.cjs --check` exit 0 (12 pages).
 ### [2026-09-25 06:14] Agent: opencode (deepseek-v4.1-flash)
 - **Prompt**: Fix open GitHub issues via spec-from-provider + ws-spec-multi (issues 412 and 418).
 - **Done**: Verified both open `ws-monitor` issues were already fixed and merged by PR #423 (`feat/us-412-418-monitor-accuracy`, in `monitor_snapshot.cjs` on `develop`/`main`); PR body lacked closing keywords so GitHub left them open. Closed #412 and #418 as completed with PR references; no duplicate pipeline run.

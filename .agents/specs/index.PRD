@@ -181,6 +181,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Observer-log follow-ups (us-412-413 run): intra-root enumeration edge, missing agentTranscripts marker, G2 plans-index hash staleness, compactOutputs no-op (`spec: 0129-us-419.spec.md`) — PR #424 MERGED
 - [ ] Pre-ship documentation-sync gate (configurable) (`spec: 0129-pre-ship-doc-sync.spec.md`)
 - [x] Kanvas board — packaged local kanban visualizer for spec and workflow state (`spec: 0130-kanvas-board.spec.md`) — [PR #425](https://github.com/jpolvora/workflow-skills/pull/425)
+- [ ] Kanvas board phase 2 — drag-and-drop columns with status update on move (`spec: 0131-kanvas-board-drag-drop.spec.md`)
+
 
 
 
@@ -430,6 +432,8 @@ All Next-specs closed.
 | 134 | `pre-ship-doc-sync` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Pre-ship documentation-sync gate (configurable) |
 
 | 135 | `kanvas-board` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Kanvas board — packaged local kanban visualizer for spec and workflow state |
+
+| 136 | `kanvas-board-drag-drop` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Kanvas board phase 2 — drag-and-drop columns with status update on move |
 
 ## 9. Inbox
 
