@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "revision": 16,
+  "revision": 36,
   "workflowId": "us-419",
   "slug": "us-419",
   "specPath": ".agents/plans/us-419/step-00-us-419.spec.md",
@@ -37,13 +37,13 @@
           "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
           "lineStart": 1196,
           "lineEnd": 1254,
-          "sha256": "9254a116c8f4bfb66683ea0590700d0d9f992fd1a7fce3199c2d4100d3495368"
+          "sha256": "3a925e735c2c3ac9eba2f1ec71fd624fd2bb550cd23180aceb7e781db1faa2b9"
         },
         {
           "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
           "lineStart": 1277,
           "lineEnd": 1280,
-          "sha256": "9254a116c8f4bfb66683ea0590700d0d9f992fd1a7fce3199c2d4100d3495368"
+          "sha256": "3a925e735c2c3ac9eba2f1ec71fd624fd2bb550cd23180aceb7e781db1faa2b9"
         }
       ],
       "commits": [
@@ -59,7 +59,7 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.239Z"
+          "timestamp": "2026-09-25T02:55:04.991Z"
         }
       ],
       "verdicts": [],
@@ -71,7 +71,8 @@
       },
       "linkEventIds": [
         "g2-commit-495fb5e260316862904eebb0d7d939632248c8ae",
-        "us419-ac1"
+        "us419-ac1",
+        "us419r2-ac1"
       ]
     },
     {
@@ -95,19 +96,19 @@
           "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
           "lineStart": 1055,
           "lineEnd": 1071,
-          "sha256": "337d39eb480db046b693b853efea4e60025fc2023e542562e41b46c128661b1c"
+          "sha256": "5fe53f552aa1e3cad2c3addba93a48e9d1f8fd986375c5d9bb78caab82f6f33a"
         },
         {
           "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
           "lineStart": 1694,
           "lineEnd": 1704,
-          "sha256": "337d39eb480db046b693b853efea4e60025fc2023e542562e41b46c128661b1c"
+          "sha256": "5fe53f552aa1e3cad2c3addba93a48e9d1f8fd986375c5d9bb78caab82f6f33a"
         },
         {
           "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
           "lineStart": 71,
           "lineEnd": 75,
-          "sha256": "2f5e65e4401d2a8db8d9ded7fcaa3a964e2bf936ac372090bc4f4bb2b1cb0c49"
+          "sha256": "a39a746200674ee508de7d18e9200eefc54cf93d8d5e15862f4ae1ec45cd46b9"
         }
       ],
       "commits": [
@@ -123,7 +124,7 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.300Z"
+          "timestamp": "2026-09-25T02:55:05.066Z"
         }
       ],
       "verdicts": [],
@@ -135,7 +136,8 @@
       },
       "linkEventIds": [
         "g2-commit-495fb5e260316862904eebb0d7d939632248c8ae",
-        "us419-ac2"
+        "us419-ac2",
+        "us419r2-ac2"
       ]
     },
     {
@@ -158,13 +160,13 @@
           "path": ".agents/skills/ws-spec-to-pr/scripts/commit_g2_code.cjs",
           "lineStart": 125,
           "lineEnd": 130,
-          "sha256": "7aa01e80e958c9becaa089c3e4e84e9141f990760f8e7362885b84134b4f923c"
+          "sha256": "7b7c87c9a8c8894a78c636f2ccc6120fd4ec02c07a97d5c38efbb5342f38e80f"
         },
         {
           "path": ".agents/skills/ws-spec-to-pr/scripts/refresh_baseline.cjs",
           "lineStart": 171,
           "lineEnd": 178,
-          "sha256": "73f3f5b918c7c9d0c985f45d636eb7687acd051c6f04f02c2cf20a42c2f94e27"
+          "sha256": "a629ac1becc14e3c733dad3c35440d76b160b1a8e5e98aa4fe179a165c59fe2a"
         }
       ],
       "commits": [
@@ -180,7 +182,7 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.358Z"
+          "timestamp": "2026-09-25T02:55:05.141Z"
         }
       ],
       "verdicts": [],
@@ -192,7 +194,8 @@
       },
       "linkEventIds": [
         "g2-commit-495fb5e260316862904eebb0d7d939632248c8ae",
-        "us419-ac3"
+        "us419-ac3",
+        "us419r2-ac3"
       ]
     },
     {
@@ -214,7 +217,7 @@
           "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
           "lineStart": 1073,
           "lineEnd": 1085,
-          "sha256": "337d39eb480db046b693b853efea4e60025fc2023e542562e41b46c128661b1c"
+          "sha256": "5fe53f552aa1e3cad2c3addba93a48e9d1f8fd986375c5d9bb78caab82f6f33a"
         }
       ],
       "commits": [
@@ -230,7 +233,7 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.413Z"
+          "timestamp": "2026-09-25T02:55:05.207Z"
         }
       ],
       "verdicts": [],
@@ -242,7 +245,8 @@
       },
       "linkEventIds": [
         "g2-commit-495fb5e260316862904eebb0d7d939632248c8ae",
-        "us419-ac4"
+        "us419-ac4",
+        "us419r2-ac4"
       ]
     },
     {
@@ -250,7 +254,8 @@
       "text": "(low, fix-if-cheap) `test/test-install.js` fixture writes leave `git status` clean (LF-stable writes or a `.gitattributes` rule for `test/.ws/**`).",
       "status": "Implemented",
       "evidence": [
-        ".gitattributes:L25-L27"
+        ".gitattributes:L25-L27",
+        "test/test-ws-us419-followups.js:L192-L201"
       ],
       "tasks": [],
       "planSections": [
@@ -263,7 +268,13 @@
           "path": ".gitattributes",
           "lineStart": 25,
           "lineEnd": 27,
-          "sha256": "eabe64749c8f38e54e8e001125edbb522e09f878daa765d324661f101b675bed"
+          "sha256": "1d839c1c1d72ee377ea7e531df11b53ea5b486d07887a36bfe3414989d8b38f3"
+        },
+        {
+          "path": "test/test-ws-us419-followups.js",
+          "lineStart": 192,
+          "lineEnd": 201,
+          "sha256": "4e73f6360507122e7cf4cb6f3b881c55561f0c77388cd727b119d75e5bce1eb3"
         }
       ],
       "commits": [
@@ -279,7 +290,7 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.467Z"
+          "timestamp": "2026-09-25T02:55:05.279Z"
         }
       ],
       "verdicts": [],
@@ -291,7 +302,9 @@
       },
       "linkEventIds": [
         "g2-commit-495fb5e260316862904eebb0d7d939632248c8ae",
-        "us419-ac5"
+        "us419-ac5",
+        "us419-fixpr1-ac5",
+        "us419r2-ac5"
       ]
     },
     {
@@ -310,7 +323,7 @@
           "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
           "lineStart": 273,
           "lineEnd": 274,
-          "sha256": "337d39eb480db046b693b853efea4e60025fc2023e542562e41b46c128661b1c"
+          "sha256": "5fe53f552aa1e3cad2c3addba93a48e9d1f8fd986375c5d9bb78caab82f6f33a"
         }
       ],
       "commits": [
@@ -326,7 +339,7 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.524Z"
+          "timestamp": "2026-09-25T02:55:05.342Z"
         }
       ],
       "verdicts": [],
@@ -338,7 +351,8 @@
       },
       "linkEventIds": [
         "g2-commit-495fb5e260316862904eebb0d7d939632248c8ae",
-        "us419-ac6"
+        "us419-ac6",
+        "us419r2-ac6"
       ]
     },
     {
@@ -357,7 +371,7 @@
           "path": "test/test-ws-us419-followups.js",
           "lineStart": 212,
           "lineEnd": 221,
-          "sha256": "0e5564dae56fbd79c11347d33dcac2afed10d2edad06964f689f1a509370646e"
+          "sha256": "4e73f6360507122e7cf4cb6f3b881c55561f0c77388cd727b119d75e5bce1eb3"
         }
       ],
       "commits": [
@@ -373,7 +387,7 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.589Z"
+          "timestamp": "2026-09-25T02:55:05.408Z"
         }
       ],
       "verdicts": [],
@@ -385,7 +399,8 @@
       },
       "linkEventIds": [
         "g2-commit-495fb5e260316862904eebb0d7d939632248c8ae",
-        "us419-ac7"
+        "us419-ac7",
+        "us419r2-ac7"
       ]
     }
   ],
@@ -400,7 +415,7 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.657Z"
+          "timestamp": "2026-09-25T02:55:05.464Z"
         },
         {
           "name": "AC2 dispatch-time marker default",
@@ -408,7 +423,7 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.658Z"
+          "timestamp": "2026-09-25T02:55:05.473Z"
         },
         {
           "name": "AC3 G2 index freshness",
@@ -416,7 +431,7 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.665Z"
+          "timestamp": "2026-09-25T02:55:05.474Z"
         },
         {
           "name": "AC4 compactOutputs second finish",
@@ -424,11 +439,12 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.665Z"
+          "timestamp": "2026-09-25T02:55:05.474Z"
         }
       ],
       "linkEventIds": [
-        "us419-neg14"
+        "us419-neg14",
+        "us419r2-neg14"
       ]
     },
     {
@@ -441,7 +457,7 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.666Z"
+          "timestamp": "2026-09-25T02:55:05.474Z"
         },
         {
           "name": "AC2 dispatch-time marker default",
@@ -449,7 +465,7 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.666Z"
+          "timestamp": "2026-09-25T02:55:05.474Z"
         },
         {
           "name": "AC3 G2 index freshness",
@@ -457,7 +473,7 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.666Z"
+          "timestamp": "2026-09-25T02:55:05.474Z"
         },
         {
           "name": "AC4 compactOutputs second finish",
@@ -465,11 +481,12 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.666Z"
+          "timestamp": "2026-09-25T02:55:05.474Z"
         }
       ],
       "linkEventIds": [
-        "us419-neg14"
+        "us419-neg14",
+        "us419r2-neg14"
       ]
     },
     {
@@ -482,7 +499,7 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.666Z"
+          "timestamp": "2026-09-25T02:55:05.475Z"
         },
         {
           "name": "AC2 dispatch-time marker default",
@@ -490,7 +507,7 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.666Z"
+          "timestamp": "2026-09-25T02:55:05.475Z"
         },
         {
           "name": "AC3 G2 index freshness",
@@ -498,7 +515,7 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.666Z"
+          "timestamp": "2026-09-25T02:55:05.475Z"
         },
         {
           "name": "AC4 compactOutputs second finish",
@@ -506,11 +523,12 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.666Z"
+          "timestamp": "2026-09-25T02:55:05.475Z"
         }
       ],
       "linkEventIds": [
-        "us419-neg14"
+        "us419-neg14",
+        "us419r2-neg14"
       ]
     },
     {
@@ -523,7 +541,7 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.666Z"
+          "timestamp": "2026-09-25T02:55:05.475Z"
         },
         {
           "name": "AC2 dispatch-time marker default",
@@ -531,7 +549,7 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.667Z"
+          "timestamp": "2026-09-25T02:55:05.476Z"
         },
         {
           "name": "AC3 G2 index freshness",
@@ -539,7 +557,7 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.667Z"
+          "timestamp": "2026-09-25T02:55:05.476Z"
         },
         {
           "name": "AC4 compactOutputs second finish",
@@ -547,11 +565,12 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.667Z"
+          "timestamp": "2026-09-25T02:55:05.476Z"
         }
       ],
       "linkEventIds": [
-        "us419-neg14"
+        "us419-neg14",
+        "us419r2-neg14"
       ]
     },
     {
@@ -564,11 +583,12 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:34:17.717Z"
+          "timestamp": "2026-09-25T02:55:05.541Z"
         }
       ],
       "linkEventIds": [
-        "us419-neg5"
+        "us419-neg5",
+        "us419r2-neg5"
       ]
     }
   ],
@@ -583,8 +603,8 @@
     "deficiencies": [],
     "errors": [],
     "invariantViolations": [],
-    "computedAt": "2026-09-25T02:35:05.713Z",
+    "computedAt": "2026-09-25T02:55:10.074Z",
     "writer": "ac_ledger.cjs score",
-    "ledgerHash": "332b70cd9767c52ee6c13dcc8f8634de98a184fe8fb98bca453f6e363aa1701b"
+    "ledgerHash": "1a936c24f63903397fc45dea485d346a93cbd3fe8d3ef7aac74b0020adf8247b"
   }
 }

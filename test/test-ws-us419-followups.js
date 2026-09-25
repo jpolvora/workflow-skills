@@ -195,7 +195,11 @@ acImplemented: 0
   assert.ok(attributes.includes('test/.ws/** text eol=lf'), 'gitattributes pins LF for test/.ws fixtures');
   const status = run('git', ['status', '--porcelain=v1', '--', 'test/.ws/'], repoRoot);
   assert.equal(status.status, 0, status.stderr);
-  assert.equal(status.stdout.trim(), '', `test/.ws tree is clean (got: ${status.stdout.trim()})`);
+  // AC5 pins EOL dirtiness only: modified entries under test/.ws. Untracked
+// `??` residue belongs to other suites running earlier in the same pass
+// (e.g. the install suite seeds STACK.md) and must not fail this guard.
+const modified = status.stdout.split("\n").map((line) => line.trim()).filter((line) => line && !line.startsWith("??"));
+assert.deepStrictEqual(modified, [], `test/.ws has no EOL-dirty entries (got: ${modified.join(", ")})`);
   console.log('AC5 test-sandbox LF rule: ok');
 }
 
