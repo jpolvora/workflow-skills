@@ -1,4 +1,36 @@
 # Changelog
+### [2026-09-25 11:20] Agent: Muse Code (Muse Spark)
+- **Prompt**: Fix suite self-pollution blocking ship (test-install.js dirties test/.ws/.gitignore), then resume ws-ship-pr.
+- **Done**: test-install.js snapshots test/.ws/.gitignore exact bytes at load and restores them in a process.on(exit) hook (runs even on fail); recorded memory trap 2026-09-25-install-test-fixture-hygiene and compiled MEMORY.md.
+- **Result**: npm run test all 134 entries passed; test-harness-clean.js 0 findings; tree holds only intended files.
+
+### [2026-09-25 11:05] Agent: Muse Code (Muse Spark)
+- **Prompt**: Ship develop to main (full ship + merge via ws-ship-pr).
+- **Done**: Preflight green (head develop, base main, provider github, tree clean, 24 commits). Prepare board blocked: `npm run test` fails at 104/134 because entry #1 test-install.js rewrites test/.ws/.gitignore with CRLF, which entry #104 asserts clean (proven pre-existing suite self-pollution on Windows; solo rerun passes). Restored the polluted file; tree clean.
+- **Result**: STOP per prepare-board rule (rows 3 + 6 red). No push, no PR, no merge.
+
+### [2026-09-25 10:45] Agent: Muse Code (Muse Spark)
+- **Prompt**: Workflow diagram for spec-to-pr and spec-to-pr-lite from init to end with all decision paths, related skills and connections; save to docs/flow.md and link from website.
+- **Done**: New docs/flow.md with 6 mermaid diagrams (shared entry/classifier, standard steps 0-4 and 5-9, lite 0-5, skill connection map, universal step boundary) plus step-to-skill and gate tables; Flow link added to 4 website nav spots (dot-nav, header, sidebar, TOC); site rebuilt without bump.
+- **Result**: build-site.js exit 0 + --check clean, 4/4 Flow links survive rebuild, test-harness-clean.js 0 findings, mermaid fences balanced with all edge ids resolving.
+
+### [2026-09-25 10:19] Agent: Muse Code (Muse Spark)
+- **Prompt**: Phase 2 for kanvas board enhancements: drag'n drop columns spec with status update on move.
+- **Done**: Wrote spec of record `.agents/specs/0131-kanvas-board-drag-drop.spec.md` (10 ACs, transition table over owning index/plan-state/archive writes, `POST /api/move`, atomicity + `409` matrix) plus gray-area companion `0131-kanvas-board-drag-drop.context.md`; authoring validation passes.
+- **Result**: `validate_spec.cjs --mode=authoring` exit 0 (10 ACs).
+
+### [2026-09-25 06:20] Agent: Cursor Grok 4.7
+- **Prompt**: Sync the living wiki from code since the Sync Baseline and advance the baseline commit hash.
+- **Done**: Folded specs 0125–0130 into delivery, diagnostics, providers, and a new kanvas page; validated the wiki; set Sync Baseline to `1f185d170839e7dafd7c7b0d4ff83ebc9d34dc13`.
+- **Result**: `validate_wiki.cjs --check` exit 0 (12 pages).
+### [2026-09-25 06:14] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: Fix open GitHub issues via spec-from-provider + ws-spec-multi (issues 412 and 418).
+- **Done**: Verified both open `ws-monitor` issues were already fixed and merged by PR #423 (`feat/us-412-418-monitor-accuracy`, in `monitor_snapshot.cjs` on `develop`/`main`); PR body lacked closing keywords so GitHub left them open. Closed #412 and #418 as completed with PR references; no duplicate pipeline run.
+- **Result**: 0 open issues remaining; no code change.
+### [2026-09-25 07:24] Agent: ws-spec-multi orchestrator (ms-20260924T184514Z)
+- **Prompt**: Implement the last 6 pending index entries; deferred pre-ship-doc-sync (parallel session); delivered 5/5 to merged PRs #421-425.
+- **Done**: Sequential workers + per-item base syncs with union conflict resolution; review-timeout gate on #422 (user-merged); run state closed 5/5 shipped; memory trap 2026-09-25-ws-spec-multi-batch-traps compiled.
+- **Result**: PRs #421, #422, #423, #424, #425 all MERGED with zero open threads; integrity green; tree clean.
 ### [2026-09-25 06:30] Agent: ws-spec-multi worker (kanvas-board)
 - **Prompt**: Implement the kanvas-board spec (packaged local kanban visualizer): new ws-kanvas skill with collector + loopback server + board page, six first-match columns, card popup; skill-dependencies entry, integrity regen, install test, consumer path overrides, npm run kanvas dogfood.
 - **Done**: `ws-kanvas` skill tree (`SKILL.md`, `scripts/collect.cjs`, `scripts/server.cjs`, `refs/board.html`); `kanvas` npm script; graph registration + runtime mirror; CATALOG/FEATURES rows; new suite `test/test-kanvas-board.js` (column fixtures, AC7 snapshot, HTTP behavior, BOM regressions) + suite entry; BOM tolerance in config reader and frontmatter (found via installed-tree proof); release 0.4.73 + integrity + site.

@@ -22,4 +22,5 @@ convergence to zero threads, merge, and `ws-spec-index sync kanvas-board`.
 
 ## Ship record
 
-- PR: (filled at ship) | Merge commit: (filled at merge) | Threads: 0 required.
+- PR: [425](https://github.com/jpolvora/workflow-skills/pull/425) (`feat/kanvas-board` into `main`).
+- Merge commit: 85b66476 (2026-09-25). Checks at merge: review SUCCESS, test SUCCESS; activeThreads 0 after 9 fix-pr rounds. Index sync applied (Feature map [x], Next-specs [x], Done-log PR #425 row).

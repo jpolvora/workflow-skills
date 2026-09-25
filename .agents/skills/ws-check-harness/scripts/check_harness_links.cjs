@@ -44,6 +44,7 @@ const TOKENS = {
   '{reviewsDir}': '.agents/codereviews',
   '{memoryDir}': '.',
   '{specsDir}': '.agents/specs',
+  '{wikiDir}': '.agents/specs/wiki',
 };
 const EXCLUDED_MD = /(^|[\\/])(CHANGELOG\.md|MEMORY\.md|memory[\\/]|evals[\\/]|ws-fix-pr[\\/]runs[\\/])/;
 const ROOT_DOCS = ['AGENTS.md', 'CATALOG.md', 'README.md', 'FEATURES.md', 'RESEARCH.md', 'STACK.md'];

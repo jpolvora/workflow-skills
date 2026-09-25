@@ -21,7 +21,7 @@ Otherwise — **correction plan** (mandatory before editing):
 **Coexistence:** [none | machine-global install: N skills, vX (drift: same/ahead/behind), ids outside package: …]
 **Scope:** [full | files: ...]
 **Files inspected:** N
-**Path token map:** `{skillsRoot}=…` `{sharedDir}=…` `{plansDir}=…` `{reviewsDir}=…` (from config `pathTokens` / `plans.dir` / defaults)
+**Path token map:** `{skillsRoot}=…` `{sharedDir}=…` `{plansDir}=…` `{specsDir}=…` `{wikiDir}=…` `{reviewsDir}=…` (from config `pathTokens` / `plans.dir` / defaults)
 **Status:** [awaiting approval to apply corrections | report only (dry-run)]
 
 ### Executive summary

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * Unique-runtime gate: fail when any Python helper ships under the skills
- * tree or bin/. Packaged skill/installer/test runtime is Node 22 only.
- * Exit 1 when hits are found (critical for harness Phase 5a).
+ * Unique-runtime gate: fail when any Python helper or bytecode ships under
+ * the skills tree or bin/. Packaged skill/installer/test runtime is Node 22
+ * only. Exit 1 when hits are found (critical for harness Phase 5a).
  *
  * Usage:
  *   node check_unique_runtime.cjs [--repo-root <path>] [--skills-root <rel>] [--json]
@@ -64,18 +64,28 @@ function argsOf(argv) {
   return options;
 }
 
-function collectPyFiles(dir, out) {
+// Node-only runtime: any Python source or bytecode left in a shipped package
+// tree is forbidden. `.pyc`/`.pyo` are the residue of a Python helper run
+// (typically under __pycache__/) even after the `.py` source is deleted.
+const BANNED_PYTHON_EXTENSIONS = new Map([
+  ['.py', 'python-helper-shipped'],
+  ['.pyc', 'python-bytecode-shipped'],
+  ['.pyo', 'python-bytecode-shipped'],
+]);
+
+function collectBannedFiles(dir, out) {
   out = out || [];
   if (!fs.existsSync(dir)) return out;
   for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
     if (SKIP_DIR_NAMES.has(ent.name)) continue;
     const abs = path.join(dir, ent.name);
     if (ent.isDirectory()) {
-      collectPyFiles(abs, out);
+      collectBannedFiles(abs, out);
       continue;
     }
     if (!ent.isFile()) continue;
-    if (path.extname(ent.name).toLowerCase() === '.py') out.push(abs);
+    const reason = BANNED_PYTHON_EXTENSIONS.get(path.extname(ent.name).toLowerCase());
+    if (reason) out.push({ abs, reason });
   }
   return out;
 }
@@ -131,11 +141,11 @@ function main() {
   const binAbs = path.resolve(repoRoot, 'bin');
 
   const hits = packageRoots(skillsAbs, repoRoot)
-    .reduce((acc, dir) => acc.concat(collectPyFiles(dir)), [])
-    .concat(collectPyFiles(binAbs));
-  const findings = hits.map((abs) => ({
-    file: path.relative(repoRoot, abs).replace(/\\/g, '/'),
-    reason: 'python-helper-shipped',
+    .reduce((acc, dir) => acc.concat(collectBannedFiles(dir)), [])
+    .concat(collectBannedFiles(binAbs));
+  const findings = hits.map((hit) => ({
+    file: path.relative(repoRoot, hit.abs).replace(/\\/g, '/'),
+    reason: hit.reason,
   }));
 
   const bannedRuntime = path.join(repoRoot, '.ws', 'runtime');
@@ -152,16 +162,16 @@ function main() {
     findingCount: findings.length,
     findings: findings,
     remediation:
-      'Unique skill script runtime is Node 22: port the helper to a .cjs script (same CLI flags, --json shape, and exit codes) and delete the .py copy. New .py files under .agents/skills/ or bin/ are forbidden (root AGENTS.md).',
+      'Unique skill script runtime is Node 22: port the helper to a .cjs script (same CLI flags, --json shape, and exit codes) and delete the Python copy. No .py/.pyc/.pyo file (or __pycache__/ bytecode) may ship under the skills tree or bin/ (root AGENTS.md).',
   };
 
   if (options.json) {
     console.log(JSON.stringify(payload, null, 2));
   } else if (findings.length === 0) {
-    console.log('check_unique_runtime: OK (no .py under ' + payload.skillsRoot + ' or bin/)');
+    console.log('check_unique_runtime: OK (no .py/.pyc under ' + payload.skillsRoot + ' or bin/)');
   } else {
     console.error(
-      'check_unique_runtime: ' + findings.length + ' Python helper(s) shipped (critical)',
+      'check_unique_runtime: ' + findings.length + ' Python artifact(s) shipped (critical)',
     );
     for (const f of findings) console.error('  ' + f.file + ' [' + f.reason + ']');
     console.error(payload.remediation);

@@ -37,6 +37,28 @@ const gate = path.join(
   );
 }
 
+// Node-only gate also fails on Python bytecode residue (a stale __pycache__
+// .pyc left after the .py source is deleted).
+{
+  const root = temp('ws-unique-runtime-bytecode-');
+  const pyc = path.join(
+    root,
+    '.agents/skills/ws-demo/scripts/__pycache__/legacy.cpython-313.pyc',
+  );
+  write(pyc, 'bytecode\n');
+  const res = run(gate, ['--json', '--repo-root', root]);
+  assert.strictEqual(res.status, 1, 'gate exits 1 on .pyc hits');
+  const payload = JSON.parse(res.stdout);
+  assert.ok(
+    payload.findings.some(
+      (f) =>
+        f.file === '.agents/skills/ws-demo/scripts/__pycache__/legacy.cpython-313.pyc' &&
+        f.reason === 'python-bytecode-shipped',
+    ),
+    'gate lists .pyc bytecode hit with python-bytecode-shipped',
+  );
+}
+
 // Package membership: unrelated skills sharing the resolved skills root do not
 // fail the package Node-only gate (a global root holds third-party skills too).
 {

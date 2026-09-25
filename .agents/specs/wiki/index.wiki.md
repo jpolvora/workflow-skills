@@ -17,7 +17,7 @@ Primary use cases from `index.PRD`: end-to-end Spec-to-PR (standard or lite), se
 
 ## Domain Catalog
 
-Living synthesis of specs 0001–0124 (delta since `174f2f44` covers ownership-scoped git writes, the human spec companion, and explicit `close-issue` after merge). Feature subpages use `{domain}/{feature}.md` with `## Feature` and `## How it works` required; `## Backend`, `## Frontend`, and `## Third-party services` are conditional.
+Living synthesis of specs 0001–0131. The delta since `9d1cdef6` covers unattended checkpoints, golden-path state commands, run-state integrity, monitor accuracy, observer-log follow-ups, the pre-ship doc-sync gate, provider `create-issue`, the kanvas board, and Python-bytecode fail-closed enforcement. Spec 0131 (kanvas drag-and-drop phase 2) is a spec of record still unimplemented; the kanvas page describes the shipped v1 behavior. Feature subpages use `{domain}/{feature}.md` with `## Feature` and `## How it works` required; `## Backend`, `## Frontend`, and `## Third-party services` are conditional.
 
 ## Domain: harness
 
@@ -35,6 +35,7 @@ Living synthesis of specs 0001–0124 (delta since `174f2f44` covers ownership-s
 ## Domain: specs
 
 - [Spec Lifecycle](specs/spec-lifecycle.md): Author, validate, organize, index, list, explain, translate to a human runbook, update, and archive specifications.
+- [Kanvas Board](specs/kanvas-board.md): Read-only local kanban of spec and workflow state in six columns.
 
 ## Domain: quality
 
@@ -55,7 +56,7 @@ Living synthesis of specs 0001–0124 (delta since `174f2f44` covers ownership-s
 
 ## Sync Baseline
 
-- Commit: `9d1cdef619c67f8685579ec13daad8c553880f00`
-- Synced: 2026-09-22
+- Commit: `f63a065361c37a6833d73bf72d7728f6f464ed60`
+- Synced: 2026-09-25
 
 Next wiki update: diff this commit against `HEAD` (`git diff --name-status <commit>..HEAD`) and sweep only the changed specs and code areas. A full-tree sweep is only needed when this block is missing or the commit is unreachable. Contract: `ws-wiki` SKILL.md § Incremental baseline.

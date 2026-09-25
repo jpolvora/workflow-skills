@@ -32,6 +32,30 @@ const useLocal = process.argv.includes('--local');
 const rootSkillsDir = path.resolve(__dirname, '../.agents/skills');
 const testSkillsDir = path.resolve(__dirname, '.agents/skills');
 
+// Fixture hygiene (us-419 AC5): project-scope phases spawn the CLI with
+// cwd=test/, so the installer byte-copies the CRLF worktree hub.gitignore
+// template over the LF-pinned test/.ws/.gitignore fixture. Snapshot exact
+// bytes and restore on exit (even on failure) so later suite entries see a
+// clean tree.
+const wsGitignorePath = path.join(__dirname, '.ws', '.gitignore');
+let wsGitignoreBytes = null;
+try {
+  wsGitignoreBytes = fs.readFileSync(wsGitignorePath);
+} catch {
+  wsGitignoreBytes = null;
+}
+process.on('exit', () => {
+  try {
+    if (wsGitignoreBytes === null) {
+      fs.rmSync(wsGitignorePath, { force: true });
+    } else {
+      fs.writeFileSync(wsGitignorePath, wsGitignoreBytes);
+    }
+  } catch {
+    // Best-effort hygiene; never fail the run.
+  }
+});
+
 const ignoredPatterns = [
   /__pycache__/,
   /[\\/]runs([\\/]|$)/,
