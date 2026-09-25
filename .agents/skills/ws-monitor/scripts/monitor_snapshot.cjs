@@ -1199,10 +1199,26 @@ function hasSubagentError(text) {
 // us-418 AC6: directory entries visit newest-mtime first (name tiebreak, so
 // slices stay deterministic) so a per-root slice keeps the correlated recent
 // session instead of truncating it behind stale alphabetically-early files.
-function listTranscriptCandidates(directory, slice) {
-  const candidates = [];
+// us-419 AC1: correlate on the path during enumeration. A path-correlated file
+// that sorts after the per-root slice was previously never collected even
+// though correlation would have ranked it first. Path-correlated candidates
+// fill a dedicated bucket while the normal bucket keeps the `slice + 1` cap;
+// the walk continues past a full normal slice only under the hard
+// CORRELATED_ENUMERATION_EXTRA visit bound. Callers without keys keep the
+// exact previous walk and order.
+const CORRELATED_ENUMERATION_EXTRA = 64;
+function listTranscriptCandidates(directory, slice, keys = []) {
+  const normalizedKeys = Array.isArray(keys) ? keys.map(normalizeCorrelationKey).filter(Boolean) : [];
+  const correlates = (full) => normalizedKeys.length > 0
+    && normalizedKeys.some((key) => correlationMatches(full, key));
+  const correlated = [];
+  const others = [];
+  let extraVisits = 0;
+  const budgetSpent = () => others.length > slice && extraVisits >= CORRELATED_ENUMERATION_EXTRA;
   const visit = (dir, depth) => {
-    if (depth > 6 || candidates.length > slice) return;
+    if (depth > 6) return;
+    if (normalizedKeys.length === 0 && others.length > slice) return;
+    if (budgetSpent()) return;
     let entries;
     try {
       entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -1216,15 +1232,25 @@ function listTranscriptCandidates(directory, slice) {
       return mtimeOf(b) - mtimeOf(a) || String(a.name).localeCompare(String(b.name));
     });
     for (const entry of entries) {
-      if (candidates.length > slice) return;
+      if (budgetSpent()) return;
+      if (normalizedKeys.length === 0 && others.length > slice) return;
       const full = path.join(dir, entry.name);
-      if (entry.isDirectory()) visit(full, depth + 1);
-      else if (/-(wal|shm)$/i.test(entry.name)) continue; // SQLite sidecars: co-copied with the primary, never read standalone
-      else if (/\.(jsonl|log|txt|md|db|sqlite3?|vscdb)$/i.test(entry.name)) candidates.push(full);
+      if (entry.isDirectory()) {
+        visit(full, depth + 1);
+        continue;
+      }
+      if (/-(wal|shm)$/i.test(entry.name)) continue; // SQLite sidecars: co-copied with the primary, never read standalone
+      if (!/\.(jsonl|log|txt|md|db|sqlite3?|vscdb)$/i.test(entry.name)) continue;
+      if (others.length > slice) extraVisits += 1;
+      if (correlates(full)) {
+        if (correlated.length <= slice) correlated.push(full);
+      } else if (others.length <= slice) {
+        others.push(full);
+      }
     }
   };
   visit(directory, 0);
-  return candidates;
+  return [...correlated, ...others];
 }
 
 function scanTranscriptRoots(context, roots, filter = {}) {
@@ -1250,7 +1276,7 @@ function scanTranscriptRoots(context, roots, filter = {}) {
       break;
     }
     const slice = Math.max(1, Math.floor(remaining / remainingRoots));
-    const candidates = listTranscriptCandidates(rootList[index], slice);
+    const candidates = listTranscriptCandidates(rootList[index], slice, keys);
     const correlated = keys.length
       ? candidates.filter((file) => keys.some((key) => correlationMatches(file, key)))
       : [];

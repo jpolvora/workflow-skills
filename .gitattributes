@@ -22,3 +22,6 @@ test/test-step-baton-config.js text eol=lf
 test/test-step-baton-monitor.js text eol=lf
 test/test-step-baton-specmemo.js text eol=lf
 test/test-step-coordinator.js text eol=lf
+# us-419 AC5: test-sandbox hub fixtures are LF-rewritten by test-install;
+# pin LF so EOL-only rewrites never surface as worktree dirtiness.
+test/.ws/** text eol=lf
