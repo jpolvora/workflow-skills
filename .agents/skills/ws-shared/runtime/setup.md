@@ -68,7 +68,7 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
    - **Preset parameter override:** `preset=<name>` (aliases: `--preset=<name>`, `--preset <name>`) overrides `defaults.modelsPreset` for this workflow run.
      - Precedence: invocation `preset=<name>` > `config.json` `defaults.modelsPreset`.
      - Persist `modelsPreset: {resolvedPreset}` in state frontmatter and `{workflow-id}.state.json`.
-     - Graceful fallback: if `<name>` is not defined in `config.json` `defaults.modelPresets`, log a warning in telemetry and Init banner, and fall back to `defaults.modelsPreset` (or preset `default`).
+     - Fail-closed preset (us-414 AC1): if `<name>` — or the configured `defaults.modelsPreset` — is not defined in `config.json` `defaults.modelPresets`, bootstrap aborts with `unknown modelsPreset "<name>" (available: ...)`; the run never silently resolves to another preset's model. No warning-only path, no cross-preset fallback.
    - **Combined Switches:** These switches can be used individually or combined in any configuration (e.g. `full` + `auto` + `dry-run` to run a fully automated dry-run simulation of the entire workflow for testing).
    - Map: `skip-testing` → `skipTesting: true`; `skip-tests` → `skipTests: true`; `skip-gates` → `skipQualityGates: true`; `score-and-refine` / `analyze-second-pass` / `score-refine` / `scoreAndRefine` → `scoreAndRefine: true`.
    - When `skipQualityGates` is true (flag or `config.json` → `invariants.skipQualityGates`), quality gates are bypassed (classifier enforcement, fable quality visibility except `auditVerdictsBlockShip` + REFUTED, pre-advance CI, telemetry soft gates). Build, test, security, SCM, and HS-1..HS-4 still run.

@@ -131,9 +131,9 @@ assert(
   'preset option overrides baseDefaults.modelsPreset for step 4',
 );
 assert(
-  resolvePhaseModel(baseDefaults, { step: 0, pipeline: 'standard', sessionModel: session, preset: 'nonexistent-preset' }) ===
+  resolvePhaseModel(baseDefaults, { step: 0, pipeline: 'standard', sessionModel: session, preset: 'nonexistent-preset' }) !==
     'cursor-grok-4.6-high',
-  'unknown preset falls back to baseDefaults.modelsPreset',
+  'us-414: unknown preset never resolves to another preset model (fail-closed)',
 );
 assert(
   resolvePhaseModel(baseDefaults, { step: 4, pipeline: 'standard', sessionModel: session }) === 'composer-2.5',
@@ -579,12 +579,14 @@ const presetDispatchUnknown = spawnSync(
   ],
   { encoding: 'utf8' },
 );
-assert(presetDispatchUnknown.status === 0, `unknown preset dispatch exits 0: ${presetDispatchUnknown.stderr}`);
+assert(presetDispatchUnknown.status !== 0, `us-414: unknown preset dispatch fails closed: ${presetDispatchUnknown.stdout}`);
+assert(/unknown-xyz/.test(presetDispatchUnknown.stderr), 'us-414: unknown preset error names the requested preset');
+assert(/cheap/.test(presetDispatchUnknown.stderr), 'us-414: unknown preset error names the available presets');
 const eventsAfterUnknown = fs.readFileSync(presetJsonl, 'utf8').trim().split(/\r?\n/).map((l) => JSON.parse(l));
 const lastUnknownEvent = eventsAfterUnknown[eventsAfterUnknown.length - 1];
 assert(
-  lastUnknownEvent.presetWarning && /unknown-xyz/.test(lastUnknownEvent.presetWarning),
-  'telemetry records presetWarning for unknown preset',
+  !lastUnknownEvent.presetWarning,
+  'us-414: failed unknown-preset dispatch appends no warning event',
 );
 presetStateJson = JSON.parse(fs.readFileSync(path.join(presetDir, 'preset.state.json'), 'utf8'));
 assert(presetStateJson.modelsPreset === 'cheap', 'unknown preset does not overwrite state.modelsPreset');

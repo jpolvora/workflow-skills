@@ -280,6 +280,9 @@
       "test/test-script-ux-golden-path.js"
     ],
     [
+      "test/test-run-state-integrity.js"
+    ],
+    [
       "test/test-state-observability.js"
     ],
     [
