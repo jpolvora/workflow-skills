@@ -66,6 +66,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://jpolvora.github.io/workflow-skills/wiki/specs/kanvas-board.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://jpolvora.github.io/workflow-skills/wiki/specs/spec-lifecycle.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
