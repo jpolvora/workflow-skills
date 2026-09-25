@@ -1,7 +1,7 @@
 ---
 name: ws-monitor
 description: Read-only live observer for active Spec-to-PR and multi-spec workflow runs, memory vault status, telemetry, artifacts, and multi-host transcripts.
-version: 0.4.70
+version: 0.4.71
 disable-model-invocation: true
 invocation_names:
   - monitor
@@ -171,10 +171,10 @@ Transcripts provide secondary evidence to diagnose why a subagent or orchestrato
 
 | Signal | Classification | Meaning |
 |--------|----------------|---------|
-| Missing mandatory Step 2 interview/refined artifact | Critical | The plan contract is incomplete before downstream work |
+| Missing mandatory Step 2 interview/refined artifact | Critical, info when `status: completed` | The plan contract is incomplete before downstream work; artifact expectations follow step membership (completedSteps / stepStatus completed, watermark fallback only when step lists are absent), and `completed` runs tolerate historical drift as info — a present refined plan counts as interview evidence (us-418) |
 | `currentStep` past Step 5 with a score below `minVerifyScore` | Critical | The workflow has advanced while verification is below the gate |
 | Completed mutating step with empty `filesTouched` | Warning | The subagent handoff did not reach telemetry (silent only with an explicit no-op declaration on the finish event, or a skip reason) |
-| Missing exec artifact on a truly completed Step 3 (`missing-exec-artifact`) | Critical | Step 3 finished `completed` but `step-03-*.plan.exec.md` is absent; a `dag-disabled` skip is the designed sequential shape (no stubs written) and stays silent as grandfathered |
+| Missing exec artifact on a truly completed Step 3 (`missing-exec-artifact`) | Critical, info when `status: completed` | Step 3 finished `completed` but `step-03-*.plan.exec.md` is absent; a `dag-disabled` skip is the designed sequential shape (no stubs written) and stays silent as grandfathered; the expectation follows step-3 membership (us-418), and `completed` runs tolerate the drift as info |
 | Expected artifacts on a `lite` pipeline run | Critical only for the lite contract | Lite Steps 0-5 (spec, plan, implement, review, ship, fix-pr) expect only the shared-name `step-00` spec, `step-01` plan, `step-06` review, and `step-08` result (us-385); standard-only interview/exec/verify artifacts stay silent, and unknown or legacy pipeline values keep the standard contract |
 | `packageVersion: "unknown"` | Warning | Runtime provenance is unavailable |
 | `ENOENT`-family failure adjacent to dispatch-context construction in a transcript | Critical | A path or hybrid installation resolution failed |
