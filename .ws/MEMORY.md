@@ -15,6 +15,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **DO NOT**: Derive severity tolerance from terminalShape() when the spec names a status; shape-derived terminal handling must never soften findings.
 - **INSTEAD DO**: Gate tolerance on the literal `status === 'completed'` and keep every other status critical; shape-derived terminal handling stays informational (terminal-run-active) only.
 
+### [2026-09-25] CRLF worktree edits and replacement-string interpolation
+- **Layer**: `Tests / DevOps`
+- **Module**: `repo tooling (Windows checkout, `core.autocrlf=true`)`
+- **Severity**: `Medium`
+- **PathPattern**: `(.agents/skills|bin|test)/**`
+- **Scenario / Context**: This repo's blobs are LF but the Windows worktree checks out CRLF, so exact-match edits with `\n`-only anchors miss. Separately, Node `String.replace(old, new)` with a plain-string replacement interprets `$` patterns (`$&`, `$'`, `` $` ``) inside the NEW text and silently corrupts inserted code (this run: a `'\\$&'` escape idiom absorbed the following line into a string literal; `node --check` still passed and only the live test caught it).
+- **DO NOT**: Feed `\n`-only anchors to an exact-match editor against a CRLF worktree file and assume a miss means the code moved; use `String.replace(match, newText)` with a plain-string replacement when the new text contains `$` (regex escapes, template literals, `$&` idioms).
+- **INSTEAD DO**: Normalize (`readFileSync(...).replace(/\r\n/g, '\n')`) in a Node edit script, apply the replacement, and write back LF (blobs are LF, so diffs stay surgical under `autocrlf=true`); pass a replacer function (`() => newText`) or `split(anchor).join(newText)` whenever the inserted code contains `$`; re-run the touched area's live test after every scripted edit because syntax checks do not catch replacement interpolation.
+
 ### [2026-09-24] ws-monitor watch profile: session-id correlation + Windows JSON reads
 - **Layer**: `Tests`
 - **Module**: `ws-monitor`
