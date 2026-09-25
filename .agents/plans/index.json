@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 17,
-  "generatedAt": "2026-09-24T20:54:17Z",
+  "revision": 18,
+  "generatedAt": "2026-09-25T02:30:00Z",
   "workflows": [
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
@@ -871,6 +871,17 @@
       "currentStep": 9,
       "updatedAt": "2026-09-12T17:32:10Z",
       "runPath": ".agents/plans/ws-wiki-from-code/ws-wiki-from-code-20260912T171926Z.state.json"
+    },
+    {
+      "workflowId": "us-412-418-monitor-accuracy",
+      "slug": "us-412-418-monitor-accuracy",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/us-412-418-monitor-accuracy/us-412-418-monitor-accuracy.state.md",
+      "stateSha256": "209e27f10ef880d3734ee952699ac4c3f4f4b7e3bee51c49a39939120c0700a7",
+      "status": "completed",
+      "currentStep": 8,
+      "updatedAt": "2026-09-25T02:30:00.000Z",
+      "runPath": ".agents/plans/us-412-418-monitor-accuracy/us-412-418-monitor-accuracy.state.json"
     }
   ]
 }
