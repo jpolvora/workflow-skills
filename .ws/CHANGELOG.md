@@ -1,4 +1,8 @@
 # Changelog
+### [2026-09-25 06:14] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: Fix open GitHub issues via spec-from-provider + ws-spec-multi (issues 412 and 418).
+- **Done**: Verified both open `ws-monitor` issues were already fixed and merged by PR #423 (`feat/us-412-418-monitor-accuracy`, in `monitor_snapshot.cjs` on `develop`/`main`); PR body lacked closing keywords so GitHub left them open. Closed #412 and #418 as completed with PR references; no duplicate pipeline run.
+- **Result**: 0 open issues remaining; no code change.
 ### [2026-09-25 07:24] Agent: ws-spec-multi orchestrator (ms-20260924T184514Z)
 - **Prompt**: Implement the last 6 pending index entries; deferred pre-ship-doc-sync (parallel session); delivered 5/5 to merged PRs #421-425.
 - **Done**: Sequential workers + per-item base syncs with union conflict resolution; review-timeout gate on #422 (user-merged); run state closed 5/5 shipped; memory trap 2026-09-25-ws-spec-multi-batch-traps compiled.
