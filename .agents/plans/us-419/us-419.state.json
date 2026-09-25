@@ -611,10 +611,12 @@
     4,
     5,
     6,
-    7
+    7,
+    8
   ],
   "currentModel": "composer-2.5",
-  "currentStep": 8,
+  "currentStep": 9,
+  "endedAt": "2026-09-25T02:41:44Z",
   "flowMode": "standard",
   "gitRemote": "origin",
   "handoffs": {
@@ -754,11 +756,31 @@
       "summary": "Finished step 7",
       "workflowId": "us-419",
       "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-419/step-08-us-419.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-419",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "us-419",
+      "workflowType": "standard"
     }
   },
-  "nextAction": "Finish step 8",
-  "revision": 13,
+  "nextAction": "Run step 9",
+  "revision": 14,
   "runId": "ms-20260924T184514Z",
+  "shipStatus": "pending",
   "skippedSteps": [
     {
       "evidence": "",
@@ -776,7 +798,7 @@
   "startedAt": "2026-09-25T03:00:00.000Z",
   "statePath": ".agents/plans/us-419/us-419.state.md",
   "stateVersion": 3,
-  "status": "active",
+  "status": "completed",
   "stepDispatches": [
     {
       "agentType": "generic:task",
@@ -824,7 +846,7 @@
     "5": "completed",
     "6": "completed",
     "7": "completed",
-    "8": "active"
+    "8": "completed"
   },
   "telemetry": {
     "steps": [
@@ -972,9 +994,29 @@
         "model": "composer-2.5",
         "promptTokens": 0,
         "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-25T02:41:34Z",
+        "elapsedSec": 10,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-419/step-08-us-419.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-25T02:41:44Z",
+        "label": "Ship",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
       }
     ],
-    "totalElapsedSec": 17,
+    "totalElapsedSec": 27,
     "totalTokens": 0
   },
   "updatedAt": "2026-09-25T03:00:00.000Z",
@@ -986,6 +1028,7 @@
       ".agents/plans/us-419/step-05-us-419.plan.report.md",
       ".agents/plans/us-419/step-06-us-419.review.md",
       ".agents/plans/us-419/step-07-us-419.testing.report.md",
+      ".agents/plans/us-419/step-08-us-419.result.md",
       "test/test-ws-us419-followups.js"
     ],
     "deleted": [],

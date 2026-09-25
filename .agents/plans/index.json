@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 21,
-  "generatedAt": "2026-09-25T02:30:00Z",
+  "revision": 14,
+  "generatedAt": "2026-09-25T02:41:44Z",
   "workflows": [
     {
       "workflowId": "agents-skills-as-sot-20260808T072631Z",
@@ -752,6 +752,17 @@
       "runPath": ".agents/plans/us-412-413-liveness-checkpoints/us-412-413-liveness-checkpoints-20260924T043148Z.state.json"
     },
     {
+      "workflowId": "us-412-418-monitor-accuracy",
+      "slug": "us-412-418-monitor-accuracy",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/us-412-418-monitor-accuracy/us-412-418-monitor-accuracy.state.md",
+      "stateSha256": "8eb6566f9b6b60a4857e4ddf4c98e3b1e8d0659be7de8abccffefc4c24e65388",
+      "status": "completed",
+      "currentStep": 8,
+      "updatedAt": "2026-09-25T02:30:00.000Z",
+      "runPath": ".agents/plans/us-412-418-monitor-accuracy/us-412-418-monitor-accuracy.state.json"
+    },
+    {
       "workflowId": "us-414-run-state-integrity-20260924T170500Z",
       "slug": "us-414-run-state-integrity",
       "pipeline": "standard",
@@ -772,6 +783,17 @@
       "currentStep": 9,
       "updatedAt": "2026-09-24T20:54:10Z",
       "runPath": ".agents/plans/us-415-416-script-ux-golden-path/us-415-416-script-ux-golden-path-20260924T190500Z.state.json"
+    },
+    {
+      "workflowId": "us-419",
+      "slug": "us-419",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/us-419/us-419.state.md",
+      "stateSha256": "eaf3ea8548fbba84c7cdf373a138d0cae127cea29b5728575454a26d9dcd3d79",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-25T02:41:44Z",
+      "runPath": ".agents/plans/us-419/us-419.state.json"
     },
     {
       "workflowId": "us-global-vs-project-skill-installation",
@@ -882,17 +904,6 @@
       "currentStep": 9,
       "updatedAt": "2026-09-12T17:32:10Z",
       "runPath": ".agents/plans/ws-wiki-from-code/ws-wiki-from-code-20260912T171926Z.state.json"
-    },
-    {
-      "workflowId": "us-412-418-monitor-accuracy",
-      "slug": "us-412-418-monitor-accuracy",
-      "pipeline": "standard",
-      "statePath": ".agents/plans/us-412-418-monitor-accuracy/us-412-418-monitor-accuracy.state.md",
-      "stateSha256": "8eb6566f9b6b60a4857e4ddf4c98e3b1e8d0659be7de8abccffefc4c24e65388",
-      "status": "completed",
-      "currentStep": 8,
-      "updatedAt": "2026-09-25T02:30:00.000Z",
-      "runPath": ".agents/plans/us-412-418-monitor-accuracy/us-412-418-monitor-accuracy.state.json"
     }
   ]
 }
