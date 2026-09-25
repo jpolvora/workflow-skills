@@ -52,6 +52,8 @@ spec('sprint-card', 'Sprint card', 1);
 spec('dev-card', 'Dev card', 3);
 spec('staging-card', 'Staging card', 1);
 spec('prod-card', 'Prod card', 2);
+spec('legacy-ship', 'Legacy ship', 1);
+spec('ghost-ship', 'Ghost ship', 1);
 spec('dead-card', 'Dead card', 1);
 write(path.join(specsDir, 'BAD_SLUG.spec.md'), '---\nslug: BAD_SLUG\ntitle: Bad\n---\n');
 spec('bom-card', 'Bom card', 1);
@@ -69,12 +71,15 @@ write(indexPath, `# Fixture index
 | 2 | \`dev-card\` | \`[ ]\` todo | Phase 2 | Dev card |
 | 3 | \`staging-card\` | \`[ ]\` todo | Phase 2 | Staging card |
 | 4 | \`prod-card\` | \`[x]\` done | Phase 3 | Prod card |
+| 5 | \`legacy-ship\` | \`[x]\` done | Phase 1 | Legacy ship |
+| 6 | \`ghost-ship\` | \`[x]\` done | Phase 1 | Ghost ship |
 
 ## 10. Done log
 
 | Date | Slug | Title | PR / Commit |
 |------|------|-------|-------------|
-| 2026-09-25 | \`prod-card\` | Prod card | https://example.com/pr/1 |
+| 2026-09-25 | \`prod-card\` | Prod card | https://example.com/pr/1
+| 2026-09-24 | \`legacy-ship\` | Legacy ship | Implemented
 `);
 fs.mkdirSync(path.join(plansDir, 'sprint-card'), { recursive: true });
 write(path.join(plansDir, 'dev-card', 'dev-card.state.md'), '---\nstatus: active\ncurrentStep: 4\n---\n# state\n');
@@ -82,7 +87,7 @@ write(path.join(plansDir, 'staging-card', 'step-08-staging-card.result.md'), '# 
 write(path.join(plansDir, 'dead-card', 'dead-card.state.md'), '---\nstatus: cancelled\n---\n# state\n');
 
 const board = collectBoard({ specsDir, plansDir, indexPath });
-assert(Array.isArray(board.cards) && board.cards.length === 7, `seven fixture cards (got ${board.cards.length})`);
+assert(Array.isArray(board.cards) && board.cards.length === 9, `nine fixture cards (got ${board.cards.length})`);
 const bySlug = Object.fromEntries(board.cards.map((c) => [c.slug, c]));
 assert(!bySlug['BAD_SLUG'], 'malformed slug file is skipped');
 assert(bySlug['backlog-only'].column === 'backlog', 'AC2: plan-less untracked spec lands in Backlog');
@@ -90,6 +95,8 @@ assert(bySlug['sprint-card'].column === 'sprint', 'tracked todo + run dir lands 
 assert(bySlug['dev-card'].column === 'development', 'active state lands in Development');
 assert(bySlug['staging-card'].column === 'staging', 'step-08 without done mark lands in Staging');
 assert(bySlug['prod-card'].column === 'production', 'done mark + Done-log entry lands in Production');
+assert(bySlug['legacy-ship'].column === 'production', 'E1: done mark + legacy Implemented row stays in Production');
+assert(bySlug['ghost-ship'].column === 'backlog', 'E1: done mark without any Done-log row is not Production');
 assert(bySlug['dead-card'].column === 'abandoned', 'cancelled state lands in Abandoned');
 assert(bySlug['dev-card'].planStep === 4 && bySlug['dev-card'].planStatus === 'active', 'plan step/status surface on card');
 assert(bySlug['prod-card'].evidence === 'https://example.com/pr/1', 'Done-log PR URL surfaces as evidence');
@@ -100,7 +107,7 @@ assert(bySlug['backlog-only'].links.plan === null, 'plan-less card has null plan
 assert(bySlug['dev-card'].links.spec.endsWith('.spec.md'), 'spec link points at the spec file');
 assert.deepStrictEqual(
   board.columns.map((c) => [c.id, c.count]),
-  [['backlog', 2], ['sprint', 1], ['development', 1], ['staging', 1], ['production', 1], ['abandoned', 1]],
+  [['backlog', 3], ['sprint', 1], ['development', 1], ['staging', 1], ['production', 2], ['abandoned', 1]],
   'all six columns with per-column counts',
 );
 
@@ -112,6 +119,8 @@ assert.deepStrictEqual(snapshot, [
   { slug: 'bom-card', title: 'Bom card', column: 'backlog', indexStatus: 'untracked', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: null },
   { slug: 'dead-card', title: 'Dead card', column: 'abandoned', indexStatus: 'untracked', phase: null, acCount: 1, planStep: null, planStatus: 'cancelled', evidence: null },
   { slug: 'dev-card', title: 'Dev card', column: 'development', indexStatus: 'todo', phase: 'Phase 2', acCount: 3, planStep: 4, planStatus: 'active', evidence: null },
+  { slug: 'ghost-ship', title: 'Ghost ship', column: 'backlog', indexStatus: 'done', phase: 'Phase 1', acCount: 1, planStep: null, planStatus: null, evidence: null },
+  { slug: 'legacy-ship', title: 'Legacy ship', column: 'production', indexStatus: 'done', phase: 'Phase 1', acCount: 1, planStep: null, planStatus: null, evidence: null },
   { slug: 'prod-card', title: 'Prod card', column: 'production', indexStatus: 'done', phase: 'Phase 3', acCount: 2, planStep: null, planStatus: null, evidence: 'https://example.com/pr/1' },
   { slug: 'sprint-card', title: 'Sprint card', column: 'sprint', indexStatus: 'todo', phase: 'Phase 1', acCount: 1, planStep: null, planStatus: null, evidence: null },
   { slug: 'staging-card', title: 'Staging card', column: 'staging', indexStatus: 'todo', phase: 'Phase 2', acCount: 1, planStep: null, planStatus: null, evidence: null },
@@ -169,7 +178,7 @@ try {
   const page = await get(port, '/');
   assert(page.status === 200 && page.body.includes('Kanvas board') && page.body.includes('api/board'), 'GET / serves the board page');
   const api = await get(port, '/api/board');
-  assert(api.status === 200 && JSON.parse(api.body).cards.length === 7, 'GET /api/board returns the fixture board');
+  assert(api.status === 200 && JSON.parse(api.body).cards.length === 9, 'GET /api/board returns the fixture board');
   const card = await get(port, '/api/card?slug=prod-card');
   assert(card.status === 200 && JSON.parse(card.body).card.column === 'production', 'AC4: card endpoint returns the popup payload');
   const missing = await get(port, '/api/card?slug=no-such-spec');
@@ -196,6 +205,10 @@ try {
   fs.writeFileSync(path.join(consumer, '.ws', 'config.json'), '\uFEFF' + JSON.stringify({ plans: { specsDir: 'custom-specs', dir: 'custom-plans' } }), 'utf8');
   const bomRoots = resolveRoots({ config: path.join(consumer, '.ws', 'config.json') });
   assert(bomRoots.specsDir === consumerRoots.specsDir, 'AC11: BOM-prefixed hub config still resolves');
+  write(path.join(consumer, '.ws', 'config.json'), JSON.stringify({ plans: {} }));
+  const defaultRoots = resolveRoots({ config: path.join(consumer, '.ws', 'config.json') });
+  assert(defaultRoots.specsDir === path.join(consumer, '.agents', 'specs'), 'AC11: omitted keys fall back to the consumer root, not the cwd');
+  assert(defaultRoots.plansDir === path.join(consumer, '.agents', 'plans'), 'AC11: omitted plans dir falls back to the consumer root');
   fs.rmSync(consumer, { recursive: true, force: true });
 } finally {
   await new Promise((resolve) => server.close(resolve));

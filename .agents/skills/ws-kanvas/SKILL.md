@@ -31,7 +31,7 @@ From any installed tree (project-local or global), with consumer overrides:
 
 ```bash
 node {skillsRoot}/ws-kanvas/scripts/server.cjs --specs-dir {specsDir} --plans-dir {plansDir}
-node {skillsRoot}/ws-kanvas/scripts/server.cjs --config {consumerRoot}/.ws/config.json
+node {skillsRoot}/ws-kanvas/scripts/server.cjs --config {sharedDir}/config.json
 node {skillsRoot}/ws-kanvas/scripts/server.cjs --port 4173
 ```
 
@@ -63,8 +63,8 @@ inside the resolved roots (anything else → 400 before any filesystem read).
 
 1. **Abandoned** — plan state `status: cancelled`/`failed`, or the slug sits in the index Archive table
    with a dropped/superseded outcome.
-2. **Production** — index Feature map / Next-specs row is `[x]` done (shipped: delivery commit or PR URL
-   in the Done log).
+2. **Production** — index Feature map / Next-specs row is `[x]` done AND a Done-log row exists
+   for the slug (the delivery record; any era outcome cell, including legacy `Implemented`).
 3. **Staging** — a `step-08-*.result.md` ship record exists but the index row is not yet `[x]`.
 4. **Development** — a plan `*.state.md` exists with `status: active` (or `implemented`).
 5. **Sprint** — tracked in `index.PRD` as `[ ]` todo AND a `{plansDir}/{slug}/` run directory exists.

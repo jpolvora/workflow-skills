@@ -22,21 +22,23 @@ const REF_PATH = path.join(__dirname, '..', 'refs', 'board.html');
 function readConfigPaths(configFile) {
   // Consumer hub config: plans.specsDir / plans.dir resolve relative to the
   // consumer root (the directory holding `.ws/`), unless absolute.
+  // The consumer root is always returned so omitted keys fall back to
+  // `<root>/.agents/specs` and `<root>/.agents/plans` instead of the cwd.
+  let root = path.dirname(path.resolve(configFile));
+  if (path.basename(root) === '.ws') root = path.dirname(root);
   let raw;
   try {
     raw = fs.readFileSync(path.resolve(configFile), 'utf8');
   } catch {
-    return {};
+    return { root };
   }
   let config;
   try {
     config = JSON.parse(raw.replace(/^\uFEFF/, ''));
   } catch {
-    return {};
+    return { root };
   }
-  let root = path.dirname(path.resolve(configFile));
-  if (path.basename(root) === '.ws') root = path.dirname(root);
-  const out = {};
+  const out = { root };
   const specsDir = config?.plans?.specsDir;
   const plansDir = config?.plans?.dir;
   if (typeof specsDir === 'string' && specsDir.trim()) {
@@ -71,8 +73,9 @@ function parseArgs(argv) {
 
 function resolveRoots(args) {
   const fromConfig = args.config ? readConfigPaths(args.config) : {};
-  const specsDir = args.specsDir || fromConfig.specsDir;
-  const plansDir = args.plansDir || fromConfig.plansDir;
+  const root = fromConfig.root;
+  const specsDir = args.specsDir || fromConfig.specsDir || (root ? path.join(root, '.agents', 'specs') : undefined);
+  const plansDir = args.plansDir || fromConfig.plansDir || (root ? path.join(root, '.agents', 'plans') : undefined);
   return { specsDir, plansDir, index: args.index };
 }
 

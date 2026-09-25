@@ -119,15 +119,16 @@ function parseIndex(indexText) {
 
   const lines = indexText.split('\n');
   let section = '';
-  for (const line of lines) {
+  for (const rawLine of lines) {
+    const line = rawLine.replace(/\r$/, '');
     const heading = line.match(/^##\s+(.+)$/);
     if (heading) {
       section = heading[1].toLowerCase();
       continue;
     }
-    // Done log row: | date | `slug` | title | PR / Commit | (no checkbox cell).
+    // Done log row: | date | `slug` | title | PR / Commit (no checkbox cell; trailing pipe optional).
     if (/done log/i.test(section)) {
-      const dm = line.match(/^\|\s*[^|]*\|\s*`([^`]+)`\s*\|\s*[^|]*\|\s*([^|]*)\|/);
+      const dm = line.match(/^\|\s*[^|]*\|\s*`([^`]+)`\s*\|\s*[^|]*\|\s*([^|]*?)\s*\|?\s*$/);
       if (dm && isValidSlug(dm[1])) {
         const cell = dm[2].trim();
         doneLog.set(dm[1], cell && !/^implemented$/i.test(cell) ? cell : null);
@@ -199,10 +200,11 @@ function readPlanSignals(plansDir, slug, cwd) {
   return signals;
 }
 
-function placeColumn({ indexEntry, plan, archived }) {
+function placeColumn({ indexEntry, plan, archived, hasDoneLogRow }) {
   // First match wins, top-down per spec Description.
   if ((plan.planStatus && /^(cancelled|failed)$/i.test(plan.planStatus)) || archived) return 'abandoned';
-  if (indexEntry && indexEntry.indexStatus === 'done') return 'production';
+  // E1: Production needs the [x] mark AND a Done-log row for the slug (any era outcome cell).
+  if (indexEntry && indexEntry.indexStatus === 'done' && hasDoneLogRow) return 'production';
   if (plan.hasShipRecord) return 'staging';
   if (plan.planStatus && /^(active|implemented)$/i.test(plan.planStatus)) return 'development';
   if (indexEntry && indexEntry.indexStatus === 'todo' && plan.planDir) return 'sprint';
@@ -244,7 +246,7 @@ function collectBoard({ specsDir, plansDir, indexPath } = {}) {
   const cards = specs.map((spec) => {
     const indexEntry = rows.get(spec.slug) || null;
     const plan = readPlanSignals(resolvedPlans, spec.slug, cwd);
-    const column = placeColumn({ indexEntry, plan, archived: archived.has(spec.slug) });
+    const column = placeColumn({ indexEntry, plan, archived: archived.has(spec.slug), hasDoneLogRow: doneLog.has(spec.slug) });
     const doneEvidence = doneLog.get(spec.slug) || null;
     return {
       slug: spec.slug,
