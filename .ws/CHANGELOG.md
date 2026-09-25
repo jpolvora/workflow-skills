@@ -1,4 +1,9 @@
 # Changelog
+### [2026-09-25 10:45] Agent: Muse Code (Muse Spark)
+- **Prompt**: Workflow diagram for spec-to-pr and spec-to-pr-lite from init to end with all decision paths, related skills and connections; save to docs/flow.md and link from website.
+- **Done**: New docs/flow.md with 6 mermaid diagrams (shared entry/classifier, standard steps 0-4 and 5-9, lite 0-5, skill connection map, universal step boundary) plus step-to-skill and gate tables; Flow link added to 4 website nav spots (dot-nav, header, sidebar, TOC); site rebuilt without bump.
+- **Result**: build-site.js exit 0 + --check clean, 4/4 Flow links survive rebuild, test-harness-clean.js 0 findings, mermaid fences balanced with all edge ids resolving.
+
 ### [2026-09-25 10:19] Agent: Muse Code (Muse Spark)
 - **Prompt**: Phase 2 for kanvas board enhancements: drag'n drop columns spec with status update on move.
 - **Done**: Wrote spec of record `.agents/specs/0131-kanvas-board-drag-drop.spec.md` (10 ACs, transition table over owning index/plan-state/archive writes, `POST /api/move`, atomicity + `409` matrix) plus gray-area companion `0131-kanvas-board-drag-drop.context.md`; authoring validation passes.
