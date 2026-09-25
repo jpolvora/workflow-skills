@@ -119,11 +119,13 @@ function parseIndex(indexText) {
 
   const lines = indexText.split('\n');
   let section = '';
+  let pendingCheck = null;
   for (const rawLine of lines) {
     const line = rawLine.replace(/\r$/, '');
     const heading = line.match(/^##\s+(.+)$/);
     if (heading) {
       section = heading[1].toLowerCase();
+    if (!line.trimStart().startsWith('-')) pendingCheck = null;
       continue;
     }
     // Done log row: | date | `slug` | title | PR / Commit (no checkbox cell; trailing pipe optional).
@@ -135,8 +137,21 @@ function parseIndex(indexText) {
         continue;
       }
     }
+    // Archive row: | `slug` | outcome | ... | (slug first cell, no checkbox).
+    if (/archiv/i.test(section) && line.startsWith('|')) {
+      const am = line.match(/^\|\s*`?([A-Za-z0-9-]+)`?\s*\|\s*([^|]*)/);
+      if (am && isValidSlug(am[1]) && /drop|supersede|abandon|cancel/i.test(am[2])) {
+        archived.add(am[1]);
+        continue;
+      }
+    }
     // Table row: | n | `slug` | `[x]` done | phase | ... |
     let m = line.match(/^\|\s*[^|]*\|\s*`([^`]+)`\s*\|\s*`?\[([ x])\]`?/);
+    // Live dialect with status first: | n | `[x]` done | `slug` | scope | ... |
+    if (!m) {
+      const alt = line.match(/^\|\s*[^|]*\|\s*`?\[([ x])\]`?[^|]*\|\s*`([^`]+)`/);
+      if (alt) m = [alt[0], alt[2], alt[1]];
+    }
     if (m && isValidSlug(m[1])) {
       const cells = line.split('|').slice(1, -1).map((c) => c.trim());
       const phase = cells.length >= 4 ? cells[3].replace(/`/g, '') : null;
@@ -157,6 +172,21 @@ function parseIndex(indexText) {
       if (isValidSlug(slug) && !rows.has(slug)) {
         rows.set(slug, { indexStatus: m[1] === 'x' ? 'done' : 'todo', phase: null });
       }
+    }
+    // Bare checkbox bullet: remember state for a nested `- **spec:**` child line.
+    const bm = line.match(/^-\s*\[([ x])\]/);
+    if (bm) {
+      pendingCheck = line.indexOf('(spec:') === -1 ? (bm[1] === 'x' ? 'done' : 'todo') : null;
+      continue;
+    }
+    // Nested feature-map form: `- **spec:** `slug.spec.md`` inherits the parent checkbox.
+    const nm = line.match(/^\s*-\s*\*\*spec:\*\*\s*`([^`]+)`/);
+    if (nm) {
+      const slug = nm[1].replace(/\.spec\.md$/, '').replace(/^\d+-/, '');
+      if (isValidSlug(slug) && pendingCheck && !rows.has(slug)) {
+        rows.set(slug, { indexStatus: pendingCheck, phase: null });
+      }
+      continue;
     }
   }
   return { rows, doneLog, archived };
