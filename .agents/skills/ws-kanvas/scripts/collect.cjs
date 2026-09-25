@@ -122,10 +122,11 @@ function parseIndex(indexText) {
   let pendingCheck = null;
   for (const rawLine of lines) {
     const line = rawLine.replace(/\r$/, '');
+    // Clear a remembered checkbox whenever the line is not a list bullet.
+    if (!line.trimStart().startsWith('-')) pendingCheck = null;
     const heading = line.match(/^##\s+(.+)$/);
     if (heading) {
       section = heading[1].toLowerCase();
-    if (!line.trimStart().startsWith('-')) pendingCheck = null;
       continue;
     }
     // Done log row: | date | `slug` | title | PR / Commit (no checkbox cell; trailing pipe optional).
