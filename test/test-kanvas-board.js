@@ -54,6 +54,11 @@ spec('staging-card', 'Staging card', 1);
 spec('prod-card', 'Prod card', 2);
 spec('dead-card', 'Dead card', 1);
 write(path.join(specsDir, 'BAD_SLUG.spec.md'), '---\nslug: BAD_SLUG\ntitle: Bad\n---\n');
+spec('bom-card', 'Bom card', 1);
+{
+  const bomFile = path.join(specsDir, 'bom-card.spec.md');
+  fs.writeFileSync(bomFile, '\uFEFF' + fs.readFileSync(bomFile, 'utf8'), 'utf8');
+}
 write(indexPath, `# Fixture index
 
 ## 8. Next specs
@@ -77,7 +82,7 @@ write(path.join(plansDir, 'staging-card', 'step-08-staging-card.result.md'), '# 
 write(path.join(plansDir, 'dead-card', 'dead-card.state.md'), '---\nstatus: cancelled\n---\n# state\n');
 
 const board = collectBoard({ specsDir, plansDir, indexPath });
-assert(Array.isArray(board.cards) && board.cards.length === 6, `six fixture cards (got ${board.cards.length})`);
+assert(Array.isArray(board.cards) && board.cards.length === 7, `seven fixture cards (got ${board.cards.length})`);
 const bySlug = Object.fromEntries(board.cards.map((c) => [c.slug, c]));
 assert(!bySlug['BAD_SLUG'], 'malformed slug file is skipped');
 assert(bySlug['backlog-only'].column === 'backlog', 'AC2: plan-less untracked spec lands in Backlog');
@@ -95,7 +100,7 @@ assert(bySlug['backlog-only'].links.plan === null, 'plan-less card has null plan
 assert(bySlug['dev-card'].links.spec.endsWith('.spec.md'), 'spec link points at the spec file');
 assert.deepStrictEqual(
   board.columns.map((c) => [c.id, c.count]),
-  [['backlog', 1], ['sprint', 1], ['development', 1], ['staging', 1], ['production', 1], ['abandoned', 1]],
+  [['backlog', 2], ['sprint', 1], ['development', 1], ['staging', 1], ['production', 1], ['abandoned', 1]],
   'all six columns with per-column counts',
 );
 
@@ -104,6 +109,7 @@ assert(/^\d{4}-\d{2}-\d{2}T/.test(board.generatedAt), 'generatedAt is an ISO tim
 const snapshot = board.cards.map(({ links, ...rest }) => rest);
 assert.deepStrictEqual(snapshot, [
   { slug: 'backlog-only', title: 'Backlog only', column: 'backlog', indexStatus: 'untracked', phase: null, acCount: 2, planStep: null, planStatus: null, evidence: null },
+  { slug: 'bom-card', title: 'Bom card', column: 'backlog', indexStatus: 'untracked', phase: null, acCount: 1, planStep: null, planStatus: null, evidence: null },
   { slug: 'dead-card', title: 'Dead card', column: 'abandoned', indexStatus: 'untracked', phase: null, acCount: 1, planStep: null, planStatus: 'cancelled', evidence: null },
   { slug: 'dev-card', title: 'Dev card', column: 'development', indexStatus: 'todo', phase: 'Phase 2', acCount: 3, planStep: 4, planStatus: 'active', evidence: null },
   { slug: 'prod-card', title: 'Prod card', column: 'production', indexStatus: 'done', phase: 'Phase 3', acCount: 2, planStep: null, planStatus: null, evidence: 'https://example.com/pr/1' },
@@ -163,7 +169,7 @@ try {
   const page = await get(port, '/');
   assert(page.status === 200 && page.body.includes('Kanvas board') && page.body.includes('api/board'), 'GET / serves the board page');
   const api = await get(port, '/api/board');
-  assert(api.status === 200 && JSON.parse(api.body).cards.length === 6, 'GET /api/board returns the fixture board');
+  assert(api.status === 200 && JSON.parse(api.body).cards.length === 7, 'GET /api/board returns the fixture board');
   const card = await get(port, '/api/card?slug=prod-card');
   assert(card.status === 200 && JSON.parse(card.body).card.column === 'production', 'AC4: card endpoint returns the popup payload');
   const missing = await get(port, '/api/card?slug=no-such-spec');
@@ -187,6 +193,9 @@ try {
   const consumerRoots = resolveRoots({ config: path.join(consumer, '.ws', 'config.json') });
   const consumerBoard = collectBoard({ specsDir: consumerRoots.specsDir, plansDir: consumerRoots.plansDir });
   assert(consumerBoard.cards.length === 1 && consumerBoard.cards[0].slug === 'hello-world', 'AC11: config-resolved custom dirs render the board');
+  fs.writeFileSync(path.join(consumer, '.ws', 'config.json'), '\uFEFF' + JSON.stringify({ plans: { specsDir: 'custom-specs', dir: 'custom-plans' } }), 'utf8');
+  const bomRoots = resolveRoots({ config: path.join(consumer, '.ws', 'config.json') });
+  assert(bomRoots.specsDir === consumerRoots.specsDir, 'AC11: BOM-prefixed hub config still resolves');
   fs.rmSync(consumer, { recursive: true, force: true });
 } finally {
   await new Promise((resolve) => server.close(resolve));
