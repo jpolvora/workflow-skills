@@ -95,6 +95,32 @@ acImplemented: 0
     { workflowId: 'wf-us419-trace', slug: 'us-419' },
   );
   assert.ok(scanned.filesScanned >= 1, `merged root with the correlated target last scans it (filesScanned=${scanned.filesScanned})`);
+  // Correlated-heavy root (fix-pr: reviewer WARNING): 100 subdirs each with
+  // a correlated `us-419/session.jsonl` must not be fully traversed every
+  // tick. Count readdir calls: the entry-counted bound stops after ~64
+  // entries past a full bucket instead of visiting all 100 subdirs.
+  const heavy = path.join(root, 'heavy');
+  fs.mkdirSync(heavy, { recursive: true });
+  for (let d = 0; d < 100; d += 1) {
+    const sub = path.join(heavy, `d-${String(d).padStart(3, '0')}`, 'us-419');
+    fs.mkdirSync(sub, { recursive: true });
+    write(path.join(sub, 'session.jsonl'), 'wf-us419-trace us-419 worker activity\n');
+    fs.utimesSync(sub, new Date(now - ((d + 1) * 60000)), new Date(now - ((d + 1) * 60000)));
+  }
+  const realReaddir = fs.readdirSync;
+  let readdirs = 0;
+  fs.readdirSync = (...args) => { readdirs += 1; return realReaddir(...args); };
+  let heavyGot;
+  try {
+    heavyGot = listTranscriptCandidates(heavy, 2, keys);
+  } finally {
+    fs.readdirSync = realReaddir;
+  }
+  assert.ok(heavyGot.length > 0 && heavyGot.length <= 6, `bounded buckets returned (got ${heavyGot.length})`);
+  assert.ok(heavyGot.every((f) => f.includes('us-419')), 'correlated-first fill');
+  // Unbounded pre-fix traversal visits all 100 subdirs (201 readdirs); the
+  // entry-counted bound stops far short of that.
+  assert.ok(readdirs <= 60, `traversal bounded (readdirs=${readdirs}, subdirs=100)`);
   console.log('AC1 intra-root enumeration reaches the correlated target: ok');
 }
 

@@ -1203,8 +1203,9 @@ function hasSubagentError(text) {
 // that sorts after the per-root slice was previously never collected even
 // though correlation would have ranked it first. Path-correlated candidates
 // fill a dedicated bucket while the normal bucket keeps the `slice + 1` cap;
-// the walk continues past a full normal slice only under the hard
-// CORRELATED_ENUMERATION_EXTRA visit bound. Callers without keys keep the
+// the walk continues past a full bucket only under the hard
+// CORRELATED_ENUMERATION_EXTRA total-entry bound (every visited entry counts,
+// so correlated-heavy roots stop too). Callers without keys keep the
 // exact previous walk and order.
 const CORRELATED_ENUMERATION_EXTRA = 64;
 function listTranscriptCandidates(directory, slice, keys = []) {
@@ -1214,7 +1215,12 @@ function listTranscriptCandidates(directory, slice, keys = []) {
   const correlated = [];
   const others = [];
   let extraVisits = 0;
-  const budgetSpent = () => others.length > slice && extraVisits >= CORRELATED_ENUMERATION_EXTRA;
+  // us-419 fix-pr: stop on total entries visited once a bucket is full,
+  // not only on matching files — a correlated-heavy root never fills
+  // `others`, and counting files alone would leave its traversal unbounded.
+  const bucketsFull = () => others.length > slice || correlated.length > slice;
+  const budgetSpent = () => normalizedKeys.length > 0 && bucketsFull()
+    && extraVisits >= CORRELATED_ENUMERATION_EXTRA;
   const visit = (dir, depth) => {
     if (depth > 6) return;
     if (normalizedKeys.length === 0 && others.length > slice) return;
@@ -1234,6 +1240,9 @@ function listTranscriptCandidates(directory, slice, keys = []) {
     for (const entry of entries) {
       if (budgetSpent()) return;
       if (normalizedKeys.length === 0 && others.length > slice) return;
+      // Count every visited entry (files and directories) once a bucket is
+      // full, so correlated-heavy roots stop instead of traversing every tick.
+      if (normalizedKeys.length > 0 && bucketsFull()) extraVisits += 1;
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) {
         visit(full, depth + 1);
@@ -1241,7 +1250,6 @@ function listTranscriptCandidates(directory, slice, keys = []) {
       }
       if (/-(wal|shm)$/i.test(entry.name)) continue; // SQLite sidecars: co-copied with the primary, never read standalone
       if (!/\.(jsonl|log|txt|md|db|sqlite3?|vscdb)$/i.test(entry.name)) continue;
-      if (others.length > slice) extraVisits += 1;
       if (correlates(full)) {
         if (correlated.length <= slice) correlated.push(full);
       } else if (others.length <= slice) {

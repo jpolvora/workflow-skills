@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "revision": 47,
+  "revision": 56,
   "workflowId": "us-419",
   "slug": "us-419",
   "specPath": ".agents/plans/us-419/step-00-us-419.spec.md",
@@ -23,7 +23,9 @@
       "status": "Implemented",
       "evidence": [
         ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1196-L1254",
-        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1277-L1280"
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1196-L1261",
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1277-L1280",
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1285-L1288"
       ],
       "tasks": [],
       "planSections": [
@@ -37,13 +39,25 @@
           "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
           "lineStart": 1196,
           "lineEnd": 1254,
-          "sha256": "5f85210f0bd2b2986b1c9c34bfc19897cdbe7feb54edd1545747d81cbf90d375"
+          "sha256": "746551528add9a311fad87f2df97717aca9b400017f334dd18f090a4de3aadb3"
+        },
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1196,
+          "lineEnd": 1261,
+          "sha256": "746551528add9a311fad87f2df97717aca9b400017f334dd18f090a4de3aadb3"
         },
         {
           "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
           "lineStart": 1277,
           "lineEnd": 1280,
-          "sha256": "5f85210f0bd2b2986b1c9c34bfc19897cdbe7feb54edd1545747d81cbf90d375"
+          "sha256": "746551528add9a311fad87f2df97717aca9b400017f334dd18f090a4de3aadb3"
+        },
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1285,
+          "lineEnd": 1288,
+          "sha256": "746551528add9a311fad87f2df97717aca9b400017f334dd18f090a4de3aadb3"
         }
       ],
       "commits": [
@@ -59,7 +73,7 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T02:55:04.991Z"
+          "timestamp": "2026-09-25T04:09:30.085Z"
         }
       ],
       "verdicts": [],
@@ -73,6 +87,8 @@
         "g2-commit-495fb5e260316862904eebb0d7d939632248c8ae",
         "us419-ac1",
         "us419-fixpr2b-ac1",
+        "us419-fixpr3-ac1",
+        "us419-fixpr3b-ac1",
         "us419r2-ac1"
       ]
     },
@@ -82,6 +98,7 @@
       "status": "Implemented",
       "evidence": [
         ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1804-L1819",
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1812-L1827",
         ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1055-L1071",
         ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1694-L1704",
         ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L71-L75"
@@ -98,7 +115,13 @@
           "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
           "lineStart": 1804,
           "lineEnd": 1819,
-          "sha256": "5f85210f0bd2b2986b1c9c34bfc19897cdbe7feb54edd1545747d81cbf90d375"
+          "sha256": "746551528add9a311fad87f2df97717aca9b400017f334dd18f090a4de3aadb3"
+        },
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1812,
+          "lineEnd": 1827,
+          "sha256": "746551528add9a311fad87f2df97717aca9b400017f334dd18f090a4de3aadb3"
         },
         {
           "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
@@ -140,7 +163,7 @@
           "phase": "observed",
           "alias": null,
           "exitCode": 0,
-          "timestamp": "2026-09-25T03:36:41.163Z"
+          "timestamp": "2026-09-25T04:09:30.152Z"
         }
       ],
       "verdicts": [],
@@ -154,6 +177,8 @@
         "g2-commit-495fb5e260316862904eebb0d7d939632248c8ae",
         "us419-ac2",
         "us419-fixpr2-ac2",
+        "us419-fixpr3-ac2",
+        "us419-fixpr3b-ac2",
         "us419r2-ac2"
       ]
     },
@@ -273,7 +298,8 @@
       "evidence": [
         ".gitattributes:L25-L27",
         "test/test-ws-us419-followups.js:L192-L201",
-        "test/test-ws-us419-followups.js:L229-L241"
+        "test/test-ws-us419-followups.js:L229-L241",
+        "test/test-ws-us419-followups.js:L255-L267"
       ],
       "tasks": [],
       "planSections": [
@@ -292,13 +318,19 @@
           "path": "test/test-ws-us419-followups.js",
           "lineStart": 192,
           "lineEnd": 201,
-          "sha256": "384e350d92169a528eb7ca80f570453658b1820c54c83a45e9d947fcc0ca096d"
+          "sha256": "7cdf812ab82b3c007c5a780c582e66222ebf236a369aacdb641ea0bab2e7a258"
         },
         {
           "path": "test/test-ws-us419-followups.js",
           "lineStart": 229,
           "lineEnd": 241,
-          "sha256": "384e350d92169a528eb7ca80f570453658b1820c54c83a45e9d947fcc0ca096d"
+          "sha256": "7cdf812ab82b3c007c5a780c582e66222ebf236a369aacdb641ea0bab2e7a258"
+        },
+        {
+          "path": "test/test-ws-us419-followups.js",
+          "lineStart": 255,
+          "lineEnd": 267,
+          "sha256": "7cdf812ab82b3c007c5a780c582e66222ebf236a369aacdb641ea0bab2e7a258"
         }
       ],
       "commits": [
@@ -330,6 +362,8 @@
         "us419-fixpr1-ac5",
         "us419-fixpr2b-ac5",
         "us419-fixpr2c-ac5",
+        "us419-fixpr3-ac5",
+        "us419-fixpr3b-ac5",
         "us419r2-ac5"
       ]
     },
@@ -388,7 +422,9 @@
       "evidence": [
         "test/test-ws-us419-followups.js:L128-L163",
         "test/test-ws-us419-followups.js:L212-L221",
-        "test/test-ws-us419-followups.js:L253-L260"
+        "test/test-ws-us419-followups.js:L253-L260",
+        "test/test-ws-us419-followups.js:L279-L286",
+        "test/test-ws-us419-followups.js:L67-L124"
       ],
       "tasks": [],
       "planSections": [
@@ -397,21 +433,33 @@
       "files": [
         {
           "path": "test/test-ws-us419-followups.js",
+          "lineStart": 67,
+          "lineEnd": 124,
+          "sha256": "7cdf812ab82b3c007c5a780c582e66222ebf236a369aacdb641ea0bab2e7a258"
+        },
+        {
+          "path": "test/test-ws-us419-followups.js",
           "lineStart": 128,
           "lineEnd": 163,
-          "sha256": "384e350d92169a528eb7ca80f570453658b1820c54c83a45e9d947fcc0ca096d"
+          "sha256": "7cdf812ab82b3c007c5a780c582e66222ebf236a369aacdb641ea0bab2e7a258"
         },
         {
           "path": "test/test-ws-us419-followups.js",
           "lineStart": 212,
           "lineEnd": 221,
-          "sha256": "384e350d92169a528eb7ca80f570453658b1820c54c83a45e9d947fcc0ca096d"
+          "sha256": "7cdf812ab82b3c007c5a780c582e66222ebf236a369aacdb641ea0bab2e7a258"
         },
         {
           "path": "test/test-ws-us419-followups.js",
           "lineStart": 253,
           "lineEnd": 260,
-          "sha256": "384e350d92169a528eb7ca80f570453658b1820c54c83a45e9d947fcc0ca096d"
+          "sha256": "7cdf812ab82b3c007c5a780c582e66222ebf236a369aacdb641ea0bab2e7a258"
+        },
+        {
+          "path": "test/test-ws-us419-followups.js",
+          "lineStart": 279,
+          "lineEnd": 286,
+          "sha256": "7cdf812ab82b3c007c5a780c582e66222ebf236a369aacdb641ea0bab2e7a258"
         }
       ],
       "commits": [
@@ -450,6 +498,8 @@
         "us419-ac7",
         "us419-fixpr2-ac7",
         "us419-fixpr2b-ac7",
+        "us419-fixpr3-ac7",
+        "us419-fixpr3b-ac7",
         "us419r2-ac7"
       ]
     }
@@ -653,8 +703,8 @@
     "deficiencies": [],
     "errors": [],
     "invariantViolations": [],
-    "computedAt": "2026-09-25T03:37:52.824Z",
+    "computedAt": "2026-09-25T04:09:34.975Z",
     "writer": "ac_ledger.cjs score",
-    "ledgerHash": "5b02bfd341de94b5b77d80306a672c59abe565309935e9b7c4d0d130555238a0"
+    "ledgerHash": "b30e071c8a4a51616c64d5577afab4152b55c53c430aab5c613140e080264c5a"
   }
 }
