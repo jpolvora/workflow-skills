@@ -1,6 +1,6 @@
 {
   "name": "workflow-skills",
-  "version": "0.4.72",
+  "version": "0.4.73",
   "description": "Spec-driven delivery skills for coding agents: spec as contract of record through a reviewed pull request",
   "license": "MIT",
   "author": "Jone Polvora",
@@ -32,6 +32,7 @@
     "verify-integrity": "node bin/generate-skill-integrity.js --check",
     "benchmark": "node scripts/harness-benchmark/cli.cjs",
     "benchmark:static": "node scripts/harness-benchmark/cli.cjs run --mode static",
+    "kanvas": "node .agents/skills/ws-kanvas/scripts/server.cjs",
     "config:gui": "powershell -NoProfile -ExecutionPolicy Bypass -File .agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
     "review:dry": "node bin/review-dry-run.cjs"
   },
