@@ -77,6 +77,16 @@
         "Emits worker-session-stall for the idle correlated session on the active workflow",
         "Does not modify any state file (read-only observation)"
       ]
+    },
+    {
+      "id": 8,
+      "prompt": "/monitor - a single merged transcript root where the path-correlated session (us-419) sorts last by mtime behind unrelated history (us-419 intra-root enumeration edge)",
+      "expected_output": "Agent still reads the correlated session (filesScanned >= 1) because enumeration correlates on the path under a hard bound instead of stopping at the per-root slice.",
+      "assertions": [
+        "Reports filesScanned >= 1 for the correlated session despite it sorting after the per-root slice",
+        "Keeps capped honest when the enumeration bound truncates",
+        "Does not modify any state file (read-only observation)"
+      ]
     }
   ]
 }

@@ -48,7 +48,7 @@ const HUB_SCRIPTS_DIR = (() => {
 })();
 const { spawnSync } = require('child_process');
 const { resolveConsumerContext, resolveConfiguredPath, toRepoRelative } = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
-const { syncStateDualWrite } = require(path.join(HUB_SCRIPTS_DIR, 'workflow_state.cjs'));
+const { syncStateDualWrite, plansIndexPath, refreshPlansIndexForState } = require(path.join(HUB_SCRIPTS_DIR, 'workflow_state.cjs'));
 
 function parseArgs(argv) {
   const options = { ac: [] };
@@ -123,6 +123,10 @@ function main() {
   state.commits = Array.isArray(state.commits) ? state.commits : [];
   if (!state.commits.some((item) => item.sha === sha)) state.commits.push({ sha, step: Number(options.step) });
   syncStateDualWrite(statePath, state);
+  // us-419 AC3: refresh the plans index in the same window so stateSha256
+  // matches the state right after the G2 commit, before any later write.
+  fs.mkdirSync(path.dirname(plansIndexPath(context)), { recursive: true });
+  refreshPlansIndexForState(context, state, { stateFile: statePath });
   const ledgerRel = options.ledger || path.join(path.dirname(statePath), 'ac-ledger.json');
   const ledgerPath = path.resolve(repoRoot, ledgerRel);
   let linkedAcs = [];

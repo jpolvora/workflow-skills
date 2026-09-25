@@ -1,0 +1,710 @@
+{
+  "schemaVersion": 1,
+  "revision": 56,
+  "workflowId": "us-419",
+  "slug": "us-419",
+  "specPath": ".agents/plans/us-419/step-00-us-419.spec.md",
+  "planIndexPath": ".agents/plans/us-419/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "`monitor_snapshot.cjs` collects path-correlated transcript candidates beyond the name-sorted per-root slice (correlate on the path during enumeration, bounded), then fills the slice with name-sorted others; `capped` stays honest when the bound truncates. New eval fixture (merged root, correlated target sorts last) proves `filesScanned >= 1` when the correlated file exists.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1196-L1254",
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1196-L1261",
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1277-L1280",
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1285-L1288"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001",
+        "section-002",
+        "section-003",
+        "section-008"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1196,
+          "lineEnd": 1254,
+          "sha256": "746551528add9a311fad87f2df97717aca9b400017f334dd18f090a4de3aadb3"
+        },
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1196,
+          "lineEnd": 1261,
+          "sha256": "746551528add9a311fad87f2df97717aca9b400017f334dd18f090a4de3aadb3"
+        },
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1277,
+          "lineEnd": 1280,
+          "sha256": "746551528add9a311fad87f2df97717aca9b400017f334dd18f090a4de3aadb3"
+        },
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1285,
+          "lineEnd": 1288,
+          "sha256": "746551528add9a311fad87f2df97717aca9b400017f334dd18f090a4de3aadb3"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "495fb5e260316862904eebb0d7d939632248c8ae",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC1 intra-root enumeration reaches the correlated target",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T04:09:30.085Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-495fb5e260316862904eebb0d7d939632248c8ae",
+        "us419-ac1",
+        "us419-fixpr2b-ac1",
+        "us419-fixpr3-ac1",
+        "us419-fixpr3b-ac1",
+        "us419r2-ac1"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "A dispatched run carries an `agentTranscripts` marker — available paths when the host session path is known, otherwise the explicit absent marker with a valid reason (`discovery-disabled` | `no-matching-session` | `scan-capped`) — recorded at dispatch time, or the dispatch contract documents the exact manual call site. New coverage asserts a dispatched run carries a marker.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1804-L1819",
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1812-L1827",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1055-L1071",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1694-L1704",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L71-L75"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001",
+        "section-002",
+        "section-004",
+        "section-008"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1804,
+          "lineEnd": 1819,
+          "sha256": "746551528add9a311fad87f2df97717aca9b400017f334dd18f090a4de3aadb3"
+        },
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1812,
+          "lineEnd": 1827,
+          "sha256": "746551528add9a311fad87f2df97717aca9b400017f334dd18f090a4de3aadb3"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1055,
+          "lineEnd": 1071,
+          "sha256": "5fe53f552aa1e3cad2c3addba93a48e9d1f8fd986375c5d9bb78caab82f6f33a"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1694,
+          "lineEnd": 1704,
+          "sha256": "5fe53f552aa1e3cad2c3addba93a48e9d1f8fd986375c5d9bb78caab82f6f33a"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+          "lineStart": 71,
+          "lineEnd": 75,
+          "sha256": "a39a746200674ee508de7d18e9200eefc54cf93d8d5e15862f4ae1ec45cd46b9"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "495fb5e260316862904eebb0d7d939632248c8ae",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC2 dispatch-time marker default",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.066Z"
+        },
+        {
+          "name": "AC2b absent marker never pins discovery",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T04:09:30.152Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-495fb5e260316862904eebb0d7d939632248c8ae",
+        "us419-ac2",
+        "us419-fixpr2-ac2",
+        "us419-fixpr3-ac2",
+        "us419-fixpr3b-ac2",
+        "us419r2-ac2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "`commit_g2_code.cjs` and `refresh_baseline.cjs` call `refreshPlansIndexForState` immediately after `syncStateDualWrite`, so `{plansDir}/index.json` `stateSha256` matches the state right after a G2 commit, before any subsequent state write. New regression asserts the hash match in that window.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/commit_g2_code.cjs:L125-L130",
+        ".agents/skills/ws-spec-to-pr/scripts/refresh_baseline.cjs:L171-L178"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001",
+        "section-002",
+        "section-005",
+        "section-008"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/commit_g2_code.cjs",
+          "lineStart": 125,
+          "lineEnd": 130,
+          "sha256": "7b7c87c9a8c8894a78c636f2ccc6120fd4ec02c07a97d5c38efbb5342f38e80f"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/refresh_baseline.cjs",
+          "lineStart": 171,
+          "lineEnd": 178,
+          "sha256": "a629ac1becc14e3c733dad3c35440d76b160b1a8e5e98aa4fe179a165c59fe2a"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "495fb5e260316862904eebb0d7d939632248c8ae",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC3 G2 index freshness",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.141Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-495fb5e260316862904eebb0d7d939632248c8ae",
+        "us419-ac3",
+        "us419r2-ac3"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "`workflow_state.cjs` `compactOutputs` handling matches the literal `## Step outputs (compact)` heading (escaped regex or `indexOf`/slice), so a second `finish` updates the section. New unit assertion proves a second `finish` updates the section.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1073-L1085"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001",
+        "section-002",
+        "section-006",
+        "section-008"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1073,
+          "lineEnd": 1085,
+          "sha256": "5fe53f552aa1e3cad2c3addba93a48e9d1f8fd986375c5d9bb78caab82f6f33a"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "495fb5e260316862904eebb0d7d939632248c8ae",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC4 compactOutputs second finish",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.207Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-495fb5e260316862904eebb0d7d939632248c8ae",
+        "us419-ac4",
+        "us419r2-ac4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "(low, fix-if-cheap) `test/test-install.js` fixture writes leave `git status` clean (LF-stable writes or a `.gitattributes` rule for `test/.ws/**`).",
+      "status": "Implemented",
+      "evidence": [
+        ".gitattributes:L25-L27",
+        "test/test-ws-us419-followups.js:L192-L201",
+        "test/test-ws-us419-followups.js:L229-L241",
+        "test/test-ws-us419-followups.js:L255-L267"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001",
+        "section-002",
+        "section-007"
+      ],
+      "files": [
+        {
+          "path": ".gitattributes",
+          "lineStart": 25,
+          "lineEnd": 27,
+          "sha256": "1d839c1c1d72ee377ea7e531df11b53ea5b486d07887a36bfe3414989d8b38f3"
+        },
+        {
+          "path": "test/test-ws-us419-followups.js",
+          "lineStart": 192,
+          "lineEnd": 201,
+          "sha256": "7cdf812ab82b3c007c5a780c582e66222ebf236a369aacdb641ea0bab2e7a258"
+        },
+        {
+          "path": "test/test-ws-us419-followups.js",
+          "lineStart": 229,
+          "lineEnd": 241,
+          "sha256": "7cdf812ab82b3c007c5a780c582e66222ebf236a369aacdb641ea0bab2e7a258"
+        },
+        {
+          "path": "test/test-ws-us419-followups.js",
+          "lineStart": 255,
+          "lineEnd": 267,
+          "sha256": "7cdf812ab82b3c007c5a780c582e66222ebf236a369aacdb641ea0bab2e7a258"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "495fb5e260316862904eebb0d7d939632248c8ae",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC5 test-sandbox LF rule",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.279Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-495fb5e260316862904eebb0d7d939632248c8ae",
+        "us419-ac5",
+        "us419-fixpr1-ac5",
+        "us419-fixpr2b-ac5",
+        "us419-fixpr2c-ac5",
+        "us419-fixpr3-ac5",
+        "us419-fixpr3b-ac5",
+        "us419r2-ac5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "(low, fix-if-cheap) gate-history entries record exact write-time timestamps instead of rounded/estimated values.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L273-L274"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 273,
+          "lineEnd": 274,
+          "sha256": "5fe53f552aa1e3cad2c3addba93a48e9d1f8fd986375c5d9bb78caab82f6f33a"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "495fb5e260316862904eebb0d7d939632248c8ae",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC6 exact write-time timestamps",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.342Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-495fb5e260316862904eebb0d7d939632248c8ae",
+        "us419-ac6",
+        "us419r2-ac6"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "No behavior change to the adjudicated classes (discovery starvation honesty, stall-gate unavailability, checkpoint/pause behavior from PR #417, shared correlation window, `scan-capped` vocabulary); existing monitor/observer fixtures still pass.",
+      "status": "Implemented",
+      "evidence": [
+        "test/test-ws-us419-followups.js:L128-L163",
+        "test/test-ws-us419-followups.js:L212-L221",
+        "test/test-ws-us419-followups.js:L253-L260",
+        "test/test-ws-us419-followups.js:L279-L286",
+        "test/test-ws-us419-followups.js:L67-L124"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-009"
+      ],
+      "files": [
+        {
+          "path": "test/test-ws-us419-followups.js",
+          "lineStart": 67,
+          "lineEnd": 124,
+          "sha256": "7cdf812ab82b3c007c5a780c582e66222ebf236a369aacdb641ea0bab2e7a258"
+        },
+        {
+          "path": "test/test-ws-us419-followups.js",
+          "lineStart": 128,
+          "lineEnd": 163,
+          "sha256": "7cdf812ab82b3c007c5a780c582e66222ebf236a369aacdb641ea0bab2e7a258"
+        },
+        {
+          "path": "test/test-ws-us419-followups.js",
+          "lineStart": 212,
+          "lineEnd": 221,
+          "sha256": "7cdf812ab82b3c007c5a780c582e66222ebf236a369aacdb641ea0bab2e7a258"
+        },
+        {
+          "path": "test/test-ws-us419-followups.js",
+          "lineStart": 253,
+          "lineEnd": 260,
+          "sha256": "7cdf812ab82b3c007c5a780c582e66222ebf236a369aacdb641ea0bab2e7a258"
+        },
+        {
+          "path": "test/test-ws-us419-followups.js",
+          "lineStart": 279,
+          "lineEnd": 286,
+          "sha256": "7cdf812ab82b3c007c5a780c582e66222ebf236a369aacdb641ea0bab2e7a258"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "495fb5e260316862904eebb0d7d939632248c8ae",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC2b absent marker never pins discovery",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T03:36:41.230Z"
+        },
+        {
+          "name": "AC7 adjudicated no-regression suites",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.408Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-495fb5e260316862904eebb0d7d939632248c8ae",
+        "us419-ac7",
+        "us419-fixpr2-ac7",
+        "us419-fixpr2b-ac7",
+        "us419-fixpr3-ac7",
+        "us419-fixpr3b-ac7",
+        "us419r2-ac7"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Red: merged root with the correlated target sorting last yields `filesScanned: 0` + `scan-capped` (pre-AC1 behavior).",
+      "tests": [
+        {
+          "name": "AC1 intra-root enumeration reaches the correlated target",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.464Z"
+        },
+        {
+          "name": "AC2 dispatch-time marker default",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.473Z"
+        },
+        {
+          "name": "AC3 G2 index freshness",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.474Z"
+        },
+        {
+          "name": "AC4 compactOutputs second finish",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.474Z"
+        }
+      ],
+      "linkEventIds": [
+        "us419-neg14",
+        "us419r2-neg14"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Red: a freshly dispatched run has `agentTranscripts: null` with no absent-marker reason (pre-AC2 behavior).",
+      "tests": [
+        {
+          "name": "AC1 intra-root enumeration reaches the correlated target",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.474Z"
+        },
+        {
+          "name": "AC2 dispatch-time marker default",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.474Z"
+        },
+        {
+          "name": "AC3 G2 index freshness",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.474Z"
+        },
+        {
+          "name": "AC4 compactOutputs second finish",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.474Z"
+        }
+      ],
+      "linkEventIds": [
+        "us419-neg14",
+        "us419r2-neg14"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Red: `{plansDir}/index.json` `stateSha256` mismatches the state file immediately after a G2 delivery commit (pre-AC3 behavior).",
+      "tests": [
+        {
+          "name": "AC1 intra-root enumeration reaches the correlated target",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.475Z"
+        },
+        {
+          "name": "AC2 dispatch-time marker default",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.475Z"
+        },
+        {
+          "name": "AC3 G2 index freshness",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.475Z"
+        },
+        {
+          "name": "AC4 compactOutputs second finish",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.475Z"
+        }
+      ],
+      "linkEventIds": [
+        "us419-neg14",
+        "us419r2-neg14"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "Red: a second `finish` leaves `## Step outputs (compact)` frozen at `- Step 0: pending` (pre-AC4 behavior).",
+      "tests": [
+        {
+          "name": "AC1 intra-root enumeration reaches the correlated target",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.475Z"
+        },
+        {
+          "name": "AC2 dispatch-time marker default",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.476Z"
+        },
+        {
+          "name": "AC3 G2 index freshness",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.476Z"
+        },
+        {
+          "name": "AC4 compactOutputs second finish",
+          "sourceFile": "test/test-ws-us419-followups.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.476Z"
+        }
+      ],
+      "linkEventIds": [
+        "us419-neg14",
+        "us419r2-neg14"
+      ]
+    },
+    {
+      "id": "NS5",
+      "text": "Red: `validate_spec.cjs --mode=authoring` fails while any closure table or DoR row is placeholder-only.",
+      "tests": [
+        {
+          "name": "--mode=authoring",
+          "sourceFile": "test/test-validate-spec.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-25T02:55:05.541Z"
+        }
+      ],
+      "linkEventIds": [
+        "us419-neg5",
+        "us419r2-neg5"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "pre-step6",
+    "score": 10,
+    "earnedUnits": 70,
+    "totalUnits": 70,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "deficiencies": [],
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-25T04:09:34.975Z",
+    "writer": "ac_ledger.cjs score",
+    "ledgerHash": "b30e071c8a4a51616c64d5577afab4152b55c53c430aab5c613140e080264c5a"
+  }
+}
