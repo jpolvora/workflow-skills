@@ -18,7 +18,7 @@ const require = createRequire(import.meta.url);
 const collectPath = path.join(repoRoot, '.agents/skills/ws-kanvas/scripts/collect.cjs');
 const serverPath = path.join(repoRoot, '.agents/skills/ws-kanvas/scripts/server.cjs');
 const { collectBoard, getCard, isValidSlug } = require(collectPath);
-const { createServer, resolveRoots, LOOPBACK } = require(serverPath);
+const { createServer, resolveRoots, LOOPBACK, start } = require(serverPath);
 
 let failures = 0;
 function assert(cond, msg) {
@@ -181,6 +181,15 @@ const pack = cp.spawnSync('npm', ['pack', '--dry-run'], { cwd: repoRoot, encodin
 const packList = (pack.stdout || '') + (pack.stderr || '');
 for (const f of ['.agents/skills/ws-kanvas/SKILL.md', '.agents/skills/ws-kanvas/scripts/collect.cjs', '.agents/skills/ws-kanvas/scripts/server.cjs', '.agents/skills/ws-kanvas/refs/board.html']) {
   assert(packList.includes(f.replace(/\//g, path.sep)) || packList.includes(f), `pack includes ${f}`);
+}
+
+// Invalid ports reject through the CLI handler path instead of throwing synchronously.
+await nodeAssert.rejects(start({ args: { port: 'abc' } }), /Invalid port/, 'start rejects on a bad port');
+{
+  const bad = cp.spawnSync(process.execPath, [serverPath, '--port', 'abc'], { encoding: 'utf8' });
+  assert(bad.status === 1, 'bad port exits 1');
+  assert(/kanvas: Invalid port: abc/.test(bad.stderr), 'bad port prints the single-line diagnostic');
+  assert(!/at\s+\S+:\d+/.test(bad.stderr), 'bad port prints no stack trace');
 }
 
 // Server behavior over the fixture tree.

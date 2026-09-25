@@ -134,7 +134,7 @@ function createServer(roots) {
   });
 }
 
-function start({ args = {}, onReady = null } = {}) {
+async function start({ args = {}, onReady = null } = {}) {
   const roots = resolveRoots(args);
   const portRaw = args.port || process.env.KANVAS_PORT || String(DEFAULT_PORT);
   const port = Number(portRaw);
