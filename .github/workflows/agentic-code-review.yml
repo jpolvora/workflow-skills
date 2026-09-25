@@ -36,7 +36,7 @@ concurrency:
 
 env:
   REVIEW_ENGINE: ${{ vars.AGENTIC_CODE_REVIEWERS_ENGINE || 'opencode' }}
-  REVIEW_MODEL: ${{ vars.AGENTIC_CODE_REVIEWERS_MODEL || 'opencode-go/`deepseek-v4.1-flash' }}
+  REVIEW_MODEL: ${{ vars.AGENTIC_CODE_REVIEWERS_MODEL || 'opencode-go/deepseek-v4.1-flash' }}
   REVIEW_VARIANT: ${{ vars.AGENTIC_CODE_REVIEWERS_VARIANT || 'low' }}
 
 jobs:

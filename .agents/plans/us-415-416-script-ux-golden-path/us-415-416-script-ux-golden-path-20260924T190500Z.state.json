@@ -349,7 +349,8 @@
         ],
         "evidence": [
           ".agents/plans/us-415-416-script-ux-golden-path/step-05-us-415-416-script-ux-golden-path.plan.report.md:L1-L14",
-          ".agents/plans/us-415-416-script-ux-golden-path/step-05-us-415-416-script-ux-golden-path.plan.report.md:L22-L35"
+          ".agents/plans/us-415-416-script-ux-golden-path/step-05-us-415-416-script-ux-golden-path.plan.report.md:L22-L35",
+          ".agents/plans/us-415-416-script-ux-golden-path/step-08-us-415-416-script-ux-golden-path.result.md:L1-L14"
         ],
         "files": [
           {
@@ -363,12 +364,19 @@
             "lineStart": 22,
             "path": ".agents/plans/us-415-416-script-ux-golden-path/step-05-us-415-416-script-ux-golden-path.plan.report.md",
             "sha256": "6a30c2341e5c85f9c5b7bb646ab6c825fb87b8452c28218a1c6c25f72e947966"
+          },
+          {
+            "lineEnd": 14,
+            "lineStart": 1,
+            "path": ".agents/plans/us-415-416-script-ux-golden-path/step-08-us-415-416-script-ux-golden-path.result.md",
+            "sha256": "32579d4ad06ae0baf4df7412798c4080538984d359dbed4b9f76008d8fa46398"
           }
         ],
         "findings": [],
         "id": "AC8",
         "linkEventIds": [
           "ev-ac8",
+          "ev-ac8-close",
           "ev-ac8-restamp",
           "ev-ac8-restamp2",
           "g2-commit-c9bf1ffea4ab29fefe8660f31b6367ccb955c9bf"
@@ -559,17 +567,17 @@
       }
     ],
     "planIndexPath": ".agents/plans/us-415-416-script-ux-golden-path/.runtime/plan.index.json",
-    "revision": 28,
+    "revision": 30,
     "schemaVersion": 1,
     "scoreState": {
       "boundary": "step5",
-      "computedAt": "2026-09-24T19:12:17.865Z",
+      "computedAt": "2026-09-24T19:14:02.947Z",
       "deficiencies": [],
       "earnedUnits": 100,
       "errors": [],
       "invariantViolations": [],
       "knownDefect": false,
-      "ledgerHash": "9e9302f3fa6a22073f0fcb601b626cb013fdb66cc78147016436fc24759d2fc2",
+      "ledgerHash": "e31057d1373ad3006a8194f5a02fba4fe6414220836a4c8a60aae09f70c5e380",
       "missingEvidence": false,
       "score": 10,
       "totalUnits": 100,
@@ -594,7 +602,8 @@
     5,
     6,
     7,
-    8
+    8,
+    9
   ],
   "currentModel": "composer-2.5",
   "currentStep": 9,
@@ -774,11 +783,28 @@
       "summary": "Finished step 8",
       "workflowId": "us-415-416-script-ux-golden-path-20260924T190500Z",
       "workflowType": "standard"
+    },
+    "9": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-415-416-script-ux-golden-path",
+      "status": "completed",
+      "step": 9,
+      "summary": "Finished step 9",
+      "workflowId": "us-415-416-script-ux-golden-path-20260924T190500Z",
+      "workflowType": "standard"
     }
   },
   "nextAction": "Run step 9",
-  "revision": 15,
-  "shipStatus": "pending",
+  "revision": 17,
+  "shipStatus": "merged",
   "skippedSteps": [
     {
       "evidence": "",
@@ -831,6 +857,12 @@
       "dispatchedAt": "2026-09-24T19:05:33Z",
       "model": "composer-2.5",
       "step": 7
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-24T20:54:10Z",
+      "model": "composer-2.5",
+      "step": 9
     }
   ],
   "stepStatus": {
@@ -842,7 +874,8 @@
     "5": "completed",
     "6": "completed",
     "7": "completed",
-    "8": "completed"
+    "8": "completed",
+    "9": "completed"
   },
   "telemetry": {
     "steps": [
@@ -1030,9 +1063,27 @@
         "model": "composer-2.5",
         "promptTokens": 0,
         "subagentId": null
+      },
+      {
+        "N": 9,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-24T20:54:10Z",
+        "elapsedSec": 7,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-24T20:54:17Z",
+        "label": "Fix PR",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
       }
     ],
-    "totalElapsedSec": 828,
+    "totalElapsedSec": 835,
     "totalTokens": 0
   },
   "verificationScore": 10,
