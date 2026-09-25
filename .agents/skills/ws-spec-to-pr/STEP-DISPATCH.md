@@ -68,6 +68,10 @@ Fill 4–8 `*` bullets from that analysis. Do **not** copy a canned list from a 
   forbid product, state, config, commit, and PR writes).
 - At most one watcher per run; the watcher never blocks step advancement and
   default-off runs dispatch zero watchers.
+- Transcript marker call site (us-419 AC2): every `update_state.cjs dispatch`
+  records `state.agentTranscripts` once (available paths from
+  `--transcript-paths <csv>` when the host session path is known, else the
+  explicit absent marker); an existing marker is never overwritten.
 
 ### Post-mutating transition (after step N completes)
 

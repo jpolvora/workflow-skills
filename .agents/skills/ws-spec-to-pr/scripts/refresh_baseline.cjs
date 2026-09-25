@@ -61,7 +61,8 @@ const HUB_SCRIPTS_DIR = (() => {
   return packaged;
 })();
 const { spawnSync } = require('child_process');
-const { syncStateDualWrite } = require(path.join(HUB_SCRIPTS_DIR, 'workflow_state.cjs'));
+const { resolveConsumerContext } = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
+const { syncStateDualWrite, plansIndexPath, refreshPlansIndexForState } = require(path.join(HUB_SCRIPTS_DIR, 'workflow_state.cjs'));
 
 function parseArgs(argv) {
   const options = { remote: 'origin', fetch: true, json: false };
@@ -169,6 +170,11 @@ function main() {
   state.baselineSourceRef = baseRef;
   state.revision = Number.isInteger(state.revision) ? state.revision + 1 : 1;
   syncStateDualWrite(statePath, state);
+  // us-419 AC3: refresh the plans index in the same window so stateSha256
+  // matches the state right after the baseline refresh, before any later write.
+  const context = resolveConsumerContext({ repoRoot, scriptFile: __filename });
+  fs.mkdirSync(path.dirname(plansIndexPath(context)), { recursive: true });
+  refreshPlansIndexForState(context, state, { stateFile: statePath });
   return {
     code: 0,
     payload: {

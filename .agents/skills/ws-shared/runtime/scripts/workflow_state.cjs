@@ -1052,11 +1052,30 @@ function applyFinishTelemetry(state, labels, step, payload) {
   state.telemetry = telemetry;
 }
 
+// us-419 AC2: dispatch-time default for the state-recorded transcript marker
+// (contract in observer-instructions.md; validated shape matches
+// observer.cjs buildAgentTranscripts and workflow-state.schema.json).
+function defaultAgentTranscriptsMarker(options, context, recordedAt) {
+  const raw = options.transcriptPaths;
+  const values = Array.isArray(raw) ? raw : (raw === undefined || raw === null ? [] : [raw]);
+  const paths = [...new Set(
+    values.flatMap((item) => String(item).split(',')).map((item) => item.trim()).filter(Boolean),
+  )];
+  if (paths.length > 0) return { status: 'available', paths, recordedAt };
+  const discoveryEnabled = Boolean(context.config?.monitor?.discoverHostTranscripts);
+  return {
+    status: 'transcript-unavailable',
+    reason: discoveryEnabled ? 'no-matching-session' : 'discovery-disabled',
+    recordedAt,
+  };
+}
+
 function compactOutputs(body, step, output) {
   const heading = '## Step outputs (compact)';
   const line = `- Step ${step}: ${String(output.summary || output.status || 'completed').replace(/\s+/g, ' ').slice(0, 240)}`;
   if (!body.includes(heading)) return `${body.replace(/\s*$/, '\n\n')}${heading}\n\n${line}\n`;
-  const expression = new RegExp(`(${heading}\\n\\n)([\\s\\S]*?)(?=\\n## |$)`);
+  const escapedHeading = heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const expression = new RegExp(`(${escapedHeading}\\n\\n)([\\s\\S]*?)(?=\\n## |$)`);
   return body.replace(expression, (_, prefix, content) => {
     const rows = content.trim().split('\n').filter((item) => item && !item.startsWith(`- Step ${step}:`));
     rows.push(line);
@@ -1674,6 +1693,15 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     }
     state.currentStep = step;
     state.stepStatus[String(step)] = 'active';
+    // us-419 AC2: every dispatched run carries an agentTranscripts marker.
+    // Recorded once at dispatch time; an existing marker (manual `record` or
+    // an earlier dispatch) is never overwritten. --transcript-paths carries
+    // the known host session path; without it the absent marker names the
+    // reason available at this point (no scan has run yet, so scan-capped
+    // cannot apply at dispatch time).
+    if (state.agentTranscripts === undefined || state.agentTranscripts === null) {
+      state.agentTranscripts = defaultAgentTranscriptsMarker(options, context, timestamp);
+    }
     const dispatch = { step, dispatchedAt: timestamp };
     if (options.substep && String(options.substep).trim()) {
       dispatch.substep = String(options.substep).trim();
@@ -2309,8 +2337,9 @@ function validateSnapshot({ stateFile, indexFile, context, maxStep, preAdvance, 
 function updateHelpText(operation) {
   switch (operation) {
     case 'dispatch':
-      return 'Usage: update_state.cjs dispatch <state> --step N [--model <id>] [--agent-type <type>] [--subagent-id <id>] [--step-output <json>]\n'
+      return 'Usage: update_state.cjs dispatch <state> --step N [--model <id>] [--agent-type <type>] [--subagent-id <id>] [--step-output <json>] [--transcript-paths <csv>]\n'
         + 'Open step execution (records dispatch telemetry, advances currentStep). <state> is the .state.md path or workflow id.\n'
+        + 'Dispatch also records the state.agentTranscripts marker once (available paths from --transcript-paths, else the explicit absent marker).\n'
         + 'Example: node update_state.cjs dispatch .agents/plans/slug/wf.state.md --step 4\n';
     case 'finish':
       return 'Usage: update_state.cjs finish <state> --step N [--status completed|failed|skipped] [--reason "<text>"]\n'
