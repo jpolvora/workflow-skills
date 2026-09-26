@@ -533,8 +533,9 @@ function resolveFilesTouched(ledger, context, options = {}) {
 }
 
 function isAliasDefect(result, filesTouched) {
-  if (!result || isSkipped(result) || Number(result.exitCode) === 0) return false;
+  if (!result || Number(result.exitCode) === 0) return false;
   if (result.productFailure === true) return true;
+  if (isSkipped(result)) return false;
   const paths = Array.isArray(result.failingPaths) ? result.failingPaths : [];
   if (paths.length > 0) {
     return paths.some((p) => pathMatchesTouched(p, filesTouched));
@@ -630,6 +631,19 @@ function verify(options, context, persistScore) {
   if (!options.ledger) throw new Error('verify requires --ledger');
   const file = path.resolve(context.repoRoot, options.ledger);
   const ledger = readJson(file);
+  if (options.filesTouched && !persistScore) {
+    throw new Error('--files-touched is only valid for link or score (which persists it); verify/report are read-only');
+  }
+  if (options.filesTouched && persistScore) {
+    const added = [];
+    for (const item of (Array.isArray(options.filesTouched) ? options.filesTouched : [options.filesTouched])) {
+      for (const p of String(item).split(/[;,]/)) {
+        const norm = toRepoPath(p.trim(), context.repoRoot);
+        if (norm) added.push(norm);
+      }
+    }
+    ledger.filesTouched = [...new Set([...(ledger.filesTouched || []), ...added])].sort();
+  }
   const result = scoreLedger(ledger, options.boundary || 'step5', context, options);
   if (persistScore) {
     ledger.revision += 1;
@@ -641,6 +655,9 @@ function verify(options, context, persistScore) {
 
 function report(options, context) {
   if (!options.ledger || !options.output) throw new Error('report requires --ledger and --output');
+  if (options.filesTouched) {
+    throw new Error('--files-touched is only valid for link or score (which persists it); verify/report are read-only');
+  }
   const ledger = readJson(path.resolve(context.repoRoot, options.ledger));
   const score = scoreLedger(ledger, options.boundary || 'ship', context, options);
   const lines = [

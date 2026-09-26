@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "cee25ff2eba80088e3e4c279244a7f3de5f0a860e7a07e9c49a605ae99798e2c",
+  "fullPackageDigest": "0ad93b0a832add0973de0a5cb06c83cd9be68c79fee74b00f42ea1fdda71b079",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -556,7 +556,7 @@
         "protocols/delivery-result.md": "c55d864d0d8eece086cc7863661574a9761fb8b947f2a7968b9648ebc4145173",
         "protocols/progress-board.md": "70b39d7711dbb8c3d8868b37e125a9630c63e4e22dff7923c51af9f5ab89ba58",
         "protocols/state-hygiene.md": "75c0a80323bf1be621ac2894abb6f826749378b0d26b7fe596305511f9f6d304",
-        "scripts/ac_ledger.cjs": "4922a5eeb8c939bedbc52e6cf31aef40f2a699245e4523b65201469a9ffa4ad4",
+        "scripts/ac_ledger.cjs": "fa24ba5c688e9a78a0029d289114a80f5e453eec5441c29c3f718e7e6273516c",
         "scripts/ado-workitem-to-spec.cjs": "6cd06147f60a2aee095b94502ccc4d9f95c0da65071946432c828f4d4e81c3b5",
         "scripts/build_dispatch_context.cjs": "e6ca4853d04a67474c1ca0780bef2bfca7bfec1d6a980688bee1fbdb8fe7b732",
         "scripts/check_memory_conflict.cjs": "403a507a26b1394b41e0c84abab1c9a4a12b02c15992754daf5368d451c83c22",
@@ -578,7 +578,7 @@
         "scripts/write_verification_manifest.cjs": "d2c2420752e063b604e438ce5a4b4398fb456ba4e5be71f45b00e20523b7c89d",
         "ws-spec-to-pr-run-test.md": "417b103bc5ea94cd83dbaaa71aa973cbf23e29f73d7ca567667b2870be914560"
       },
-      "skillDigest": "7bf93840e77dcb940a668bafe8f70acc1ac93b1ef2c22034727376dacfb98d0a"
+      "skillDigest": "2becdb6c6aafeddb2d952ba20598927d81b48118cc12d44028469b64dc712568"
     },
     "ws-spec-to-pr-lite": {
       "files": {

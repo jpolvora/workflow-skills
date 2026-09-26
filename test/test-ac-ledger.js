@@ -449,6 +449,43 @@ const postLinkLedger = JSON.parse(fs.readFileSync(path.join(us430Root, 'ac-ledge
 assert.ok(postLinkLedger.filesTouched.includes('extra/touched-file.js'), 'filesTouched persisted into ledger');
 const scoreWithoutOption = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
 assert.strictEqual(scoreWithoutOption.score, postLinkLedger.scoreState.score, 'score matches persisted scoreState');
+
+// Case 9: productFailure: true with skipReason: baseline-dirty still triggers knownDefect
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-prod-fail-with-skip', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendFormat',
+    command: 'npm run lint',
+    exitCode: 1,
+    skipReason: 'baseline-dirty',
+    productFailure: true,
+  }),
+]).status, 0);
+let prodFailWithSkipScore = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(prodFailWithSkipScore.knownDefect, true, 'productFailure: true outranks skipReason');
+
+// Reset to clean passing format for subsequent checks
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-clean-reset', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendFormat',
+    command: 'npm run lint',
+    exitCode: 0,
+  }),
+]).status, 0);
+
+// Case 10: score persists filesTouched, verify/report reject filesTouched
+assert.strictEqual(us430Invoke([
+  'score', '--ledger', 'ac-ledger.json', '--boundary', 'step5', '--files-touched', 'extra/score-touched.js',
+]).status, 0);
+const postScoreLedger = JSON.parse(fs.readFileSync(path.join(us430Root, 'ac-ledger.json'), 'utf8'));
+assert.ok(postScoreLedger.filesTouched.includes('extra/score-touched.js'), 'score persists filesTouched');
+
+const verifyWithTouched = us430Invoke(['verify', '--ledger', 'ac-ledger.json', '--files-touched', 'extra/foo.js']);
+assert.notStrictEqual(verifyWithTouched.status, 0, 'verify rejects --files-touched');
+
+const reportWithTouched = us430Invoke(['report', '--ledger', 'ac-ledger.json', '--output', 'report.md', '--files-touched', 'extra/foo.js']);
+assert.notStrictEqual(reportWithTouched.status, 0, 'report rejects --files-touched');
 // V1:implement-scoring-aliases: ws-implement-tasks documents scoring aliases
 const implementSkill = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-implement-tasks/SKILL.md'), 'utf8');
 assert.ok(implementSkill.includes('backendFormat') && implementSkill.includes('backendBuild') && implementSkill.includes('backendTest') && implementSkill.includes('frontendTest'), 'V1:implement-scoring-aliases: scoring aliases documented');
