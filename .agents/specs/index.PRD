@@ -189,6 +189,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] skillLoader host capability and unified skill-load procedure (`spec: 0136-skill-loader-host-capability.spec.md`) — `0373a45d` on develop
 - [x] Subagent Task Dispatch CLI Command and Asynchronous API (`spec: 0137-subagent-task-dispatch.spec.md`) — `38ef12c1` on develop
 - [x] Workflow parallel-writer compatibility audit and enforcement (`spec: 0138-workflow-parallel-writer-compat.spec.md`) — `5857094c` on develop
+- [ ] Improve agentic code reviewers prompt — simplify and align upstream vs local needs (`spec: 0139-improve-agentic-reviewers-prompt.spec.md`)
+
 
 
 
@@ -462,6 +464,8 @@ All Next-specs closed.
 | 142 | `subagent-task-dispatch` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Subagent Task Dispatch CLI Command and Asynchronous API (`38ef12c1` on develop) |
 
 | 143 | `workflow-parallel-writer-compat` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Workflow parallel-writer compatibility audit and enforcement (`5857094c` on develop) |
+
+| 144 | `improve-agentic-reviewers-prompt` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Improve agentic code reviewers prompt — simplify and align upstream vs local needs |
 
 ## 9. Inbox
 
