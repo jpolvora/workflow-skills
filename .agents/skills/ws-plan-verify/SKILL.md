@@ -1,7 +1,7 @@
 ---
 name: ws-plan-verify
 description: Spec compliance scorer (0–10). Pipeline advances only at score ≥ `defaults.minVerifyScore` (default 9); below bar runs scoreAndRefine. Trigger for check-implementation or orch Step 5.
-version: 0.4.76
+version: 0.4.77
 disable-model-invocation: true
 invocation_names:
   - plan-verify
@@ -47,7 +47,7 @@ Workflow (ws-spec-to-pr Step 5): orchestrator passes `specPath`, `planDir`, opti
    - Done when: every planned feature/AC, spec negative scenario, and stack invariant audit has observed evidence.
 
  3. **Score**: Link observed evidence to `{us-dir}/ac-ledger.json` and derive the score via CLI:
-    - Link verification aliases (`node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs link --ledger {us-dir}/ac-ledger.json --event-id <id> --alias-result '{"alias":"...","command":"...","exitCode":0}'`). For skipped aliases (e.g. dirty baseline), set `"skipReason":"baseline-dirty"`. For change-class justification with no applicable surface (e.g. docs-only, no backend), set `"skipReason":"not-applicable"` — never use it to skip `backendTest` on code-touching work. Non-zero real alias exits still set `knownDefect`.
+    - Link verification aliases (`node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs link --ledger {us-dir}/ac-ledger.json --event-id <id> --alias-result '{"alias":"...","command":"...","exitCode":0}'`). Do not link a non-zero `backendFormat` or build alias as a scoring defect until failing paths are enumerated. If none of those paths intersect workflow `files_touched`, link `skipReason: baseline-dirty` alongside the real `exitCode` (or pass `failingPaths: [...]`); `knownDefect` stays false for that alias. For change-class justification with no applicable surface (e.g. docs-only, no backend), set `"skipReason":"not-applicable"` — never use it to skip `backendTest` on code-touching work. A format alias sets `knownDefect` only when it has no `skipReason` and at least one failing path is inside `files_touched`, or when marking an explicit `productFailure: true`; for format aliases a bare non-zero `exitCode` with no enumerated failing paths does not trigger `knownDefect`. Build and test aliases (`*Build`, `*Test`) fail closed: a non-zero `backendBuild`/`backendTest`/`frontendTest` without `skipReason` or `productFailure` always sets `knownDefect`.
    - Link AC status, files, and tests (`node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs link --ledger {us-dir}/ac-ledger.json --event-id <id> --ac AC1 --status Implemented --file "path:L1-L20" --test '{"name":"...","sourceFile":"...","phase":"observed","exitCode":0}'`).
    - Link Negative & Failing Scenarios (`node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs link --ledger {us-dir}/ac-ledger.json --event-id <id> --negative NS1 --test '{...}'`).
    - Link Stack Invariant Violations (`node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs link --ledger {us-dir}/ac-ledger.json --event-id <id> --invariant-violation '{"rule":"...","severity":"Critical|Warning","evidence":"path:Lstart-Lend","message":"..."}'`). Any Critical invariant violation caps the score at 7/10 (`knownDefect`).

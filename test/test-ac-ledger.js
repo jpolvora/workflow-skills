@@ -315,4 +315,346 @@ commitLedger = JSON.parse(fs.readFileSync(path.join(commitTestRoot, 'ac-ledger.j
 const ac1AfterReplay = commitLedger.acceptanceCriteria.find((row) => row.id === 'AC1');
 assert.ok(!ac1AfterReplay.commits.some((c) => c.sha === '5555555'), 'duplicate event-id replay skipped new payload');
 
+// us-430: Alias defect evaluation and failingPaths / productFailure handling
+const us430Root = temp('ws-ac-ledger-us430-');
+write(path.join(us430Root, '.ws/config.json'), JSON.stringify({
+  verification: {
+    backendFormat: 'npm run lint',
+    backendTest: 'npm run test',
+  },
+  plans: { dir: '.agents/plans' },
+  fable: { auditVerdictsBlockShip: 'refuted' },
+}));
+write(path.join(us430Root, 'us430.spec.md'), '## Acceptance Criteria\n- AC1: First behavior.\n');
+write(path.join(us430Root, 'impl.js'), 'export const value = 1;\n');
+write(path.join(us430Root, 'us430.test.js'), 'test("first behavior", () => {});\n');
+write(path.join(us430Root, 'plan.index.json'), JSON.stringify({
+  acceptanceCriteria: [
+    { id: 'AC1', taskIds: ['T1'], planSectionIds: ['S1'], expectedTestNames: ['first behavior'] },
+  ],
+}));
+function us430Invoke(args) {
+  return run(ledgerScript, [...args, '--repo-root', us430Root]);
+}
+assert.strictEqual(us430Invoke(['init', '--spec', 'us430.spec.md', '--plan-index', 'plan.index.json', '--output', 'ac-ledger.json', '--workflow-id', 'wf', '--slug', 'us430']).status, 0);
+
+// Link AC1 with file impl.js:L1-L1 and planned test
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'link-ac1', '--ac', 'AC1',
+  '--status', 'Implemented', '--file', 'impl.js:L1-L1',
+  '--test', JSON.stringify({ name: 'first behavior', sourceFile: 'us430.test.js', phase: 'planned', alias: null, exitCode: null }),
+]).status, 0);
+
+// Link passing backendTest
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-test-pass', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({ alias: 'backendTest', command: 'npm run test', exitCode: 0 }),
+]).status, 0);
+
+// Case 1: External format failure with skipReason: baseline-dirty -> knownDefect: false, score: 10 (V1:format-baseline-dirty-cleared, V7:first-verify-score-ten)
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-external-skip', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendFormat',
+    command: 'npm run lint',
+    exitCode: 2,
+    skipReason: 'baseline-dirty',
+    failingPaths: ['external/dirty.js'],
+  }),
+]).status, 0);
+let us430Scored = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(us430Scored.knownDefect, false, 'external format failure with skipReason does not set knownDefect');
+assert.strictEqual(us430Scored.score, 10, 'score is 10 when external format is skipped');
+
+// Case 2 (Negative 1): External format failure WITHOUT skipReason, failingPaths outside files_touched -> knownDefect: false (V3:format-bare-exit-not-defect)
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-external-no-skip', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendFormat',
+    command: 'npm run lint',
+    exitCode: 2,
+    failingPaths: ['external/dirty.js', 'other/unrelated.js'],
+  }),
+]).status, 0);
+us430Scored = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(us430Scored.knownDefect, false, 'external format failure without skipReason does not set knownDefect if outside files_touched');
+
+// Case 3 (Negative 2): Format failure WITHOUT skipReason, failingPaths intersecting files_touched -> knownDefect: true, score <= 8 (V2:format-touched-defect)
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-internal', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendFormat',
+    command: 'npm run lint',
+    exitCode: 2,
+    failingPaths: ['impl.js'],
+  }),
+]).status, 0);
+us430Scored = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(us430Scored.knownDefect, true, 'format failure touching files_touched sets knownDefect');
+assert.ok(us430Scored.score <= 8, 'score capped at 8 on internal defect');
+
+// Case 4: Non-zero exit with productFailure: true -> knownDefect: true even if failingPaths is empty (V4:product-failure-flag, V5:ac-ledger-fail-closed-touched)
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-prod-fail', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendFormat',
+    command: 'npm run lint',
+    exitCode: 1,
+    productFailure: true,
+  }),
+]).status, 0);
+us430Scored = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(us430Scored.knownDefect, true, 'productFailure: true sets knownDefect');
+
+// Case 5: Bare non-zero exit without productFailure and no matching failingPaths -> knownDefect: false
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-bare-nonzero', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendFormat',
+    command: 'npm run lint',
+    exitCode: 1,
+    failingPaths: [],
+  }),
+]).status, 0);
+us430Scored = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(us430Scored.knownDefect, false, 'bare non-zero exit without productFailure or matching paths does not set knownDefect');
+
+// Case 6: Full test alias exiting 0 clears defect even if an earlier filtered run failed (V3:full-test-pass-clears-defect)
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-test-pass-full', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendTest',
+    command: 'npm run test',
+    exitCode: 0,
+    productFailure: false,
+    failingPaths: [],
+  }),
+]).status, 0);
+us430Scored = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(us430Scored.knownDefect, false, 'passing full test alias keeps knownDefect false');
+assert.strictEqual(us430Scored.score, 10, 'score recovers to 10 with passing test alias and non-defect format');
+
+// Case 7: Schema validation with failingPaths, productFailure, and filesTouched (V5:schema-validation)
+const us430Ledger = JSON.parse(fs.readFileSync(path.join(us430Root, 'ac-ledger.json'), 'utf8'));
+us430Ledger.filesTouched = ['impl.js'];
+const us430SchemaErrors = validateNode(us430Ledger, ledgerSchema, 'ac-ledger.json');
+assert.strictEqual(us430SchemaErrors.length, 0, us430SchemaErrors.join('; '));
+
+// Case 8: --files-touched persistence in link and score determinism
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'link-persist-touched', '--ac', 'AC1',
+  '--files-touched', 'extra/touched-file.js',
+]).status, 0);
+const postLinkLedger = JSON.parse(fs.readFileSync(path.join(us430Root, 'ac-ledger.json'), 'utf8'));
+assert.ok(postLinkLedger.filesTouched.includes('extra/touched-file.js'), 'filesTouched persisted into ledger');
+const scoreWithoutOption = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(scoreWithoutOption.score, postLinkLedger.scoreState.score, 'score matches persisted scoreState');
+
+// Case 9: productFailure: true with skipReason: baseline-dirty still triggers knownDefect
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-prod-fail-with-skip', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendFormat',
+    command: 'npm run lint',
+    exitCode: 1,
+    skipReason: 'baseline-dirty',
+    productFailure: true,
+  }),
+]).status, 0);
+let prodFailWithSkipScore = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(prodFailWithSkipScore.knownDefect, true, 'productFailure: true outranks skipReason');
+
+// Reset to clean passing format for subsequent checks
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-clean-reset', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendFormat',
+    command: 'npm run lint',
+    exitCode: 0,
+  }),
+]).status, 0);
+
+// Case 10: score persists filesTouched, verify/report reject filesTouched
+assert.strictEqual(us430Invoke([
+  'score', '--ledger', 'ac-ledger.json', '--boundary', 'step5', '--files-touched', 'extra/score-touched.js',
+]).status, 0);
+const postScoreLedger = JSON.parse(fs.readFileSync(path.join(us430Root, 'ac-ledger.json'), 'utf8'));
+assert.ok(postScoreLedger.filesTouched.includes('extra/score-touched.js'), 'score persists filesTouched');
+
+const verifyWithTouched = us430Invoke(['verify', '--ledger', 'ac-ledger.json', '--files-touched', 'extra/foo.js']);
+assert.notStrictEqual(verifyWithTouched.status, 0, 'verify rejects --files-touched');
+
+const reportWithTouched = us430Invoke(['report', '--ledger', 'ac-ledger.json', '--output', 'report.md', '--files-touched', 'extra/foo.js']);
+assert.notStrictEqual(reportWithTouched.status, 0, 'report rejects --files-touched');
+
+const reportWithFileTouched = us430Invoke(['report', '--ledger', 'ac-ledger.json', '--output', 'report.md', '--file-touched', 'extra/foo.js']);
+assert.notStrictEqual(reportWithFileTouched.status, 0, 'report rejects --file-touched');
+
+// Case 11: Suffix collision protection: external/impl.js does NOT match touched impl.js
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-suffix-collision', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendFormat',
+    command: 'npm run lint',
+    exitCode: 2,
+    failingPaths: ['external/impl.js'],
+  }),
+]).status, 0);
+let suffixScore = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(suffixScore.knownDefect, false, 'external/impl.js does not match touched impl.js');
+assert.strictEqual(suffixScore.score, 10, 'score is not capped when failing file merely shares basename');
+
+// Case 12: CLI fallback flags --failing-paths and --failing-path populate failingPaths
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-cli-failing-paths', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendFormat',
+    command: 'npm run lint',
+    exitCode: 2,
+  }),
+  '--failing-paths', 'external/separate.js',
+]).status, 0);
+let cliPathsScore = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(cliPathsScore.knownDefect, false, 'CLI --failing-paths outside touched does not trigger knownDefect');
+
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-cli-failing-internal', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendFormat',
+    command: 'npm run lint',
+    exitCode: 2,
+  }),
+  '--failing-paths', 'impl.js',
+]).status, 0);
+cliPathsScore = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(cliPathsScore.knownDefect, true, 'CLI --failing-paths matching touched triggers knownDefect');
+
+// Reset to clean passing format for subsequent checks
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-clean-final', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendFormat',
+    command: 'npm run lint',
+    exitCode: 0,
+  }),
+]).status, 0);
+
+// Case 13: bare --product-failure flag sets productFailure: true
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-cli-bare-prod-fail', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendFormat',
+    command: 'npm run lint',
+    exitCode: 2,
+  }),
+  '--product-failure',
+]).status, 0);
+let bareProdFailScore = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(bareProdFailScore.knownDefect, true, 'bare --product-failure flag triggers knownDefect');
+
+// Clean reset after Case 13
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-clean-post-13', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendFormat',
+    command: 'npm run lint',
+    exitCode: 0,
+  }),
+]).status, 0);
+
+// Case 14: Non-zero test alias without enumerated paths fails closed -> knownDefect: true
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-test-bare-fail', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendTest',
+    command: 'npm run test',
+    exitCode: 1,
+    failingPaths: [],
+  }),
+]).status, 0);
+let bareTestFailScore = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(bareTestFailScore.knownDefect, true, 'non-zero test alias without failingPaths fails closed');
+
+// Reset backendTest to clean passing
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-test-clean-post-14', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendTest',
+    command: 'npm run test',
+    exitCode: 0,
+    failingPaths: [],
+  }),
+]).status, 0);
+
+// Case 15: State-manifest touched path discovery without --files-touched or --file
+const planDir = path.join(us430Root, '.agents/plans/us430');
+fs.mkdirSync(planDir, { recursive: true });
+write(path.join(planDir, 'us430.state.json'), JSON.stringify({
+  workflowManifest: { created: [], modified: ['src/impl.js'], deleted: [] },
+}));
+write(path.join(us430Root, 'src/impl.js'), 'export const value = 1;\n');
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-state-discovery', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({ alias: 'backendFormat', command: 'npm run lint', exitCode: 2, failingPaths: ['src/impl.js'] }),
+]).status, 0);
+const stateScored = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(stateScored.knownDefect, true, 'state-manifest touched path triggers knownDefect');
+assert.ok(stateScored.score <= 8, 'discovered touched path caps score');
+
+// Reset backendFormat to clean passing
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-clean-post-15', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({ alias: 'backendFormat', command: 'npm run lint', exitCode: 0 }),
+]).status, 0);
+
+// Case 16: Non-zero build alias without enumerated paths fails closed -> knownDefect: true
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-build-bare-fail', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendBuild',
+    command: 'npm run build',
+    exitCode: 1,
+    failingPaths: [],
+  }),
+]).status, 0);
+let bareBuildFailScore = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(bareBuildFailScore.knownDefect, true, 'non-zero build alias without failingPaths fails closed');
+
+// Reset backendBuild to clean passing
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-build-clean-post-16', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendBuild',
+    command: 'npm run build',
+    exitCode: 0,
+    failingPaths: [],
+  }),
+]).status, 0);
+
+// V1:implement-scoring-aliases: ws-implement-tasks documents scoring aliases
+const implementSkill = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-implement-tasks/SKILL.md'), 'utf8');
+assert.ok(implementSkill.includes('backendFormat') && implementSkill.includes('backendBuild') && implementSkill.includes('backendTest') && implementSkill.includes('frontendTest'), 'V1:implement-scoring-aliases: scoring aliases documented');
+
+// V2:format-surgical-repair: ws-implement-tasks documents surgical format repair
+assert.ok(implementSkill.includes('format only files this step created or modified') || implementSkill.includes('format only created/modified paths'), 'V2:format-surgical-repair: surgical format repair documented');
+
+// V4:verify-baseline-dirty-link: ws-plan-verify documents baseline-dirty and failingPaths inspection
+const verifySkill = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-plan-verify/SKILL.md'), 'utf8');
+assert.ok(verifySkill.includes('skipReason: baseline-dirty') && verifySkill.includes('failing paths are enumerated'), 'V4:verify-baseline-dirty-link: verification linking contract documented');
+
+// V6:interview-spec-rewrite: ws-plan-interview documents spec synchronization
+const interviewSkill = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-plan-interview/SKILL.md'), 'utf8');
+assert.ok(interviewSkill.includes('ImplementedDifferently') && interviewSkill.includes('spec of record'), 'V6:interview-spec-rewrite: spec sync documented');
+
+// V8:node-only-runtime: No python files in skill trees
+const pythonFiles = [];
+function findPythonFiles(dir) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (entry.isDirectory()) findPythonFiles(path.join(dir, entry.name));
+    else if (/\.(py|pyc|pyo)$/i.test(entry.name)) pythonFiles.push(path.join(dir, entry.name));
+  }
+}
+findPythonFiles(path.join(repoRoot, '.agents/skills'));
+assert.strictEqual(pythonFiles.length, 0, `V8:node-only-runtime: python files found: ${pythonFiles.join(', ')}`);
+
 console.log('test-ac-ledger: ok');

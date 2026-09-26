@@ -1387,6 +1387,7 @@ function Populate-Sections {
 
                 Add-SectionHeader -ParentPanel $page -YOffset $y -Title 'Tracking Files' -Subtitle 'Completion-walk sources for ws-task-lifecycle.'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'tracking' -Key 'featuresMdEnabled' -LabelText 'Include Features File in Completion Walk' -Type 'bool' -DefaultVal $true
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'tracking' -Key 'autoTrackSpecWrite' -LabelText 'Auto-Track New Specs to index.PRD' -Type 'bool' -DefaultVal $true
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'tracking' -Key 'canonicalFiles' -LabelText 'Canonical Tracking Files' -Type 'array' -DefaultVal @('FEATURES.md', 'PLAN.md', 'PRODUCT.PRD')
 
                 Add-SectionHeader -ParentPanel $page -YOffset $y -Title 'Step 8 Delivery Artifacts' -Subtitle 'Which reports ride the delivery commit.'

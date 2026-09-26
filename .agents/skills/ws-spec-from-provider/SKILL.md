@@ -1,7 +1,7 @@
 ---
 name: ws-spec-from-provider
 description: Bulk-import open GitHub issues or ADO User Stories into local specs (spec-write + register). Trigger when importing tracker backlog to {specsDir} for ws-spec-list / ws-spec-multi.
-version: 0.4.76
+version: 0.4.77
 disable-model-invocation: true
 invocation_names:
   - spec-from-provider
@@ -73,7 +73,7 @@ Bulk-import remote work items into the local specs pipeline: agentic `{specsDir}
 5. **Import each id** — For every id in `to_import`, in order:
 
    1. Snapshot + base converter via the active provider `fetch-to-spec` phase 1–2 recipes ([`ws-spec-provider-github/INTENTS.md`](../ws-spec-provider-github/INTENTS.md) / [`ws-spec-provider-azure-devops/INTENTS.md`](../ws-spec-provider-azure-devops/INTENTS.md)).
-   2. Load [`ws-spec-write`](../ws-spec-write/SKILL.md) and **agentically reformulate** the snapshot into the path from `resolve_spec_path.cjs --slug us-{id}` (`source: github` \| `azure-devops`). Visual attachment ingest is inherited from provider `fetch-to-spec` via the shared ingest helper — **do not** add a second downloader in this skill. Skip the standalone `index.PRD` gate (this skill owns the call).
+   2. Load [`ws-spec-write`](../ws-spec-write/SKILL.md) and **agentically reformulate** the snapshot into the path from `resolve_spec_path.cjs --slug us-{id}` (`source: github` \| `azure-devops`). Visual attachment ingest is inherited from provider `fetch-to-spec` via the shared ingest helper — **do not** add a second downloader in this skill. Skip the standalone `index.PRD` auto-track (this skill owns the call).
    3. Full register:
 
       ```bash

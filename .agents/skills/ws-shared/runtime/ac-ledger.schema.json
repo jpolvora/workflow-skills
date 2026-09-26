@@ -28,9 +28,22 @@
           "skipReason": {
             "type": "string",
             "enum": ["not-applicable", "baseline-dirty", "comment-key"]
+          },
+          "failingPaths": {
+            "type": "array",
+            "items": { "type": "string" },
+            "uniqueItems": true
+          },
+          "productFailure": {
+            "type": "boolean"
           }
         }
       }
+    },
+    "filesTouched": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
     },
     "testingSkip": {
       "type": ["object", "null"],

@@ -1,7 +1,7 @@
 ---
 name: ws-preview
 description: Run the consumer-configured local pipeline review dry-run command without publishing PR threads.
-version: 0.4.76
+version: 0.4.77
 disable-model-invocation: true
 invocation_names:
   - ws-preview

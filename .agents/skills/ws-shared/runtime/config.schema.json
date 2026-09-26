@@ -532,6 +532,11 @@
           "default": true,
           "description": "When true (default if omitted), the features file participates in the default Completion walk (auto-detected: repo-root FEATURES.md when it exists, else {specsDir}/index.PRD). When false, skip the features file entirely."
         },
+        "autoTrackSpecWrite": {
+          "type": "boolean",
+          "default": true,
+          "description": "When true (default if omitted), standalone /spec-write auto-tracks the new spec as pending on {specsDir}/index.PRD via ws-spec-index track (no user-gate). When false, skip tracking. A missing index.PRD always skips."
+        },
         "canonicalFiles": {
           "type": "array",
           "items": { "type": "string", "minLength": 1 },

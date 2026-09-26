@@ -1,7 +1,7 @@
 ---
 name: ws-spec-write
 description: Local spec authoring & reformulation — drafts and enhances structured *.spec.md feature specifications under {specsDir} from free-text requirements or remote tracker issues.
-version: 0.4.76
+version: 0.4.77
 disable-model-invocation: true
 invocation_names:
   - spec-write
@@ -20,7 +20,7 @@ invocation_names:
 
 **Format:** load [ws-spec-format](../ws-spec-format/SKILL.md) and follow it. Set `source: local` (free-text) or keep tracker origin `source: github` | `source: azure-devops`. New writes must pass `node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs --mode=authoring`.
 
-**Specs family:** Role = draft / reformulate under `{specsDir}` only. Router / vocabulary: [`../ws-shared/runtime/autoload.md`](../ws-shared/runtime/autoload.md). Next: format → `ws-spec-format`; standalone → `index.PRD` user-gate (`ws-spec-index` `track`); start workflow → `ws-spec-provider-local` register; browse → `ws-spec-list`.
+**Specs family:** Role = draft / reformulate under `{specsDir}` only. Router / vocabulary: [`../ws-shared/runtime/autoload.md`](../ws-shared/runtime/autoload.md). Next: format → `ws-spec-format`; standalone → `index.PRD` auto-track (`ws-spec-index` `track`); start workflow → `ws-spec-provider-local` register; browse → `ws-spec-list`.
 
 ## Invocation
 
@@ -100,7 +100,7 @@ When writing a spec derived from a remote tracker issue or raw human description
    node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs --mode=authoring "{SPEC_PATH}"
    ```
 
-   Fix the spec and re-run until PASS. Do not register, hand off as done, or present the standalone `index.PRD` gate while validation fails.
+   Fix the spec and re-run until PASS. Do not register, hand off as done, or auto-track to the standalone `index.PRD` while validation fails.
    - Done when: authoring validation exits 0.
 
 7. **Optional register** — Only if `--register` or the orchestrator explicitly requests a workflow plan copy **and** authoring validation passed. Delegate to `ws-spec-provider-local`:
@@ -113,12 +113,13 @@ When writing a spec derived from a remote tracker issue or raw human description
    That script keeps the `{specsDir}` spec of record normalized and writes `{us-dir}/step-00-{slug}.spec.md` (plan folder and filename stay unprefixed). Use `--force` only when overwriting an existing plan copy that differs. Standalone `/spec-write` skips this step by default.
    - Done when: command succeeded, or this step was skipped.
 
-8. **Standalone `index.PRD` gate** — When the **user** invoked `/spec-write` or `/ws-spec-write` (not orch Step 0), after authoring validation passes, present `user-gate` (recommended first):
-   1. **Add to index.PRD (Recommended)** — track `{slug}` on the spec board
-   2. **Skip tracking**
-   Cancel / dismiss → HS-1 STOP (never infer yes). `autoMode`: take option 1. Orch Step 0 / provider fetch that called this skill: **skip this gate**.
-   On Add: load [`ws-spec-index`](../ws-spec-index/SKILL.md) and run `track {slug}`. That edits `{specsDir}/index.PRD` only (Feature map `[ ]` + Next-specs row). It is **not** `ws-spec-provider-local` `--register` and must not create `{plansDir}` artifacts.
-   - Done when: the gate is resolved (tracked, skipped, or already present), or this step was skipped because orch owns the call.
+8. **Standalone `index.PRD` auto-track** — When the **user** invoked `/spec-write` or `/ws-spec-write` (not orch Step 0), after authoring validation passes, track `{slug}` on the spec board as pending. No `user-gate` — never prompt, never STOP on this step:
+   - Read `tracking.autoTrackSpecWrite` from the project `.ws/config.json` (single canonical key — never an alias). Only explicit `false` disables; omitted, missing config, or any other value → enabled.
+   - When disabled → skip with `skipped: "auto-track disabled"` and continue to handoff.
+   - When enabled but `{specsDir}/index.PRD` is missing → skip with `skipped: "index.PRD missing"` and name `ws-spec-index init` as the fix.
+   - Else load [`ws-spec-index`](../ws-spec-index/SKILL.md) and run `track {slug}`. That edits `{specsDir}/index.PRD` only (Feature map `[ ]` pending + Next-specs row). It is **not** `ws-spec-provider-local` `--register` and must not create `{plansDir}` artifacts. `skipped: "already tracked"` → continue.
+   - Orch Step 0 / provider fetch that called this skill: **skip this step** (orch owns tracking via the lifecycle rule).
+   - Done when: tracked, already present, or skipped with a stated reason — or this step was skipped because orch owns the call.
 
 9. **Handoff** — Return `SPEC_PATH`. Mention the `{us-dir}/step-00-` path only if `--register` ran. Mention whether `index.PRD` was updated. For workflow mode after register, orchestrator records `specPath` at the `step-00-` file and `specSource: {source}`.
    - Done when: caller has the spec-of-record path (and plan path only when registered).
@@ -137,7 +138,7 @@ When writing a spec derived from a remote tracker issue or raw human description
 - Close Out of Scope + Assumptions + Definition of Ready + observation notes; map present dimensions to ACs or one `N/A because` row.
 - Invoke `validate_spec.cjs --mode=authoring` and do not finish while it is non-zero.
 - Write only the requested spec path (and lazy `context.md` when a gray area exists) and return its repo-relative location.
-- After a standalone user invoke, stop at the `index.PRD` user-gate; on Add, `track` via `ws-spec-index` only.
+- After a standalone user invoke, auto-track to `index.PRD` via `ws-spec-index` `track` only (no `user-gate`; skip when `tracking.autoTrackSpecWrite` is explicit `false` or the index is missing).
 - Do not register a workflow `step-00` or advance orch state unless the caller assigns `--register` / Step 0.
 - Handoff: recorded under `state.handoffs` — see [`PROTOCOLS.md`](../ws-spec-to-pr/PROTOCOLS.md) § Base Prompt Prefix.
 

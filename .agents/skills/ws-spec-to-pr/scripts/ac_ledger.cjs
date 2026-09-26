@@ -58,10 +58,23 @@ function sha256(value) {
   return crypto.createHash('sha256').update(value).digest('hex');
 }
 
+function normalizePath(p) {
+  return String(p || '').replace(/\\/g, '/').replace(/^\.\//, '').trim();
+}
+
+function toRepoPath(p, repoRoot) {
+  if (!p) return '';
+  const s = String(p).trim();
+  if (path.isAbsolute(s)) {
+    return normalizePath(path.relative(repoRoot || process.cwd(), s));
+  }
+  return normalizePath(s);
+}
+
 function parseArgs(argv) {
   const positional = [];
   const options = {};
-  const repeatable = new Set(['ac', 'negative', 'file', 'test', 'commit', 'verdict', 'finding', 'aliasResult', 'invariantViolation']);
+  const repeatable = new Set(['ac', 'negative', 'file', 'test', 'commit', 'verdict', 'finding', 'aliasResult', 'invariantViolation', 'failingPath', 'failingPaths', 'filesTouched', 'fileTouched']);
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
     if (token === '--help' || token === '-h') {
@@ -73,6 +86,10 @@ function parseArgs(argv) {
       const key = token.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase());
       const value = argv[++index];
       if (repeatable.has(key)) (options[key] ||= []).push(value);
+      else if (key === 'productFailure' && (value === undefined || value.startsWith('--'))) {
+        if (value !== undefined) index -= 1;
+        options[key] = 'true';
+      }
       else options[key] = value;
     }
   }
@@ -349,6 +366,28 @@ function link(options, context) {
       exitCode: Number(result.exitCode),
     };
     if (result.skipReason) normalized.skipReason = result.skipReason;
+    let rawFailingPaths = result.failingPaths;
+    if (typeof rawFailingPaths === 'string') {
+      rawFailingPaths = rawFailingPaths.split(/[;,]/).map((s) => s.trim()).filter(Boolean);
+    }
+    const optPaths = options.failingPath || options.failingPaths;
+    if ((!rawFailingPaths || rawFailingPaths.length === 0) && optPaths) {
+      rawFailingPaths = Array.isArray(optPaths) ? optPaths : [optPaths];
+    }
+    if (Array.isArray(rawFailingPaths) && rawFailingPaths.length > 0) {
+      const flat = [];
+      for (const item of rawFailingPaths) {
+        for (const p of String(item).split(/[;,]/)) {
+          if (p.trim()) flat.push(p.trim());
+        }
+      }
+      normalized.failingPaths = [...new Set(flat.map((p) => toRepoPath(p, context.repoRoot)).filter(Boolean))].sort();
+    }
+    if (result.productFailure !== undefined) {
+      normalized.productFailure = Boolean(result.productFailure === true || result.productFailure === 'true');
+    } else if (options.productFailure !== undefined) {
+      normalized.productFailure = Boolean(options.productFailure === true || options.productFailure === 'true');
+    }
     ledger.aliasResults = [...ledger.aliasResults.filter((entry) => entry.alias !== normalized.alias), normalized].sort((a, b) => a.alias.localeCompare(b.alias));
   }
   if (options.testSurfaceSkip) {
@@ -385,12 +424,24 @@ function link(options, context) {
       ].sort((a, b) => a.rule.localeCompare(b.rule) || a.evidence.localeCompare(b.evidence));
     }
   }
+  const optTouched = options.filesTouched || options.fileTouched;
+  if (optTouched) {
+    const added = [];
+    const list = Array.isArray(optTouched) ? optTouched : [optTouched];
+    for (const item of list) {
+      for (const p of String(item).split(/[;,]/)) {
+        const norm = toRepoPath(p.trim(), context.repoRoot);
+        if (norm) added.push(norm);
+      }
+    }
+    ledger.filesTouched = [...new Set([...(ledger.filesTouched || []), ...added])].sort();
+  }
   ledger.revision += 1;
   const requestedBoundary = options.scoreBoundary || options.boundary;
   const hasCommit = (ledger.acceptanceCriteria || []).some((row) => (row.commits || []).length > 0);
   const linkBoundary = requestedBoundary || (hasCommit ? 'pre-step6' : 'step5');
   try {
-    const linkScore = scoreLedger(ledger, linkBoundary, context);
+    const linkScore = scoreLedger(ledger, linkBoundary, context, options);
     ledger.scoreState = { ...linkScore, boundary: linkBoundary, computedAt: new Date().toISOString(), writer: 'ac_ledger.cjs link', ledgerHash: ledgerContentHash(ledger) };
   } catch {
     ledger.scoreState = null;
@@ -424,7 +475,84 @@ function ledgerContentHash(ledger) {
   return sha256(JSON.stringify(canonicalize(rest)));
 }
 
-function scoreLedger(ledger, boundary, context) {
+function pathMatchesTouched(failingPath, touchedSet) {
+  const normF = normalizePath(failingPath);
+  if (!normF) return false;
+  for (const touched of touchedSet) {
+    const normT = normalizePath(touched);
+    if (!normT) continue;
+    if (normF === normT) return true;
+    if (normF.startsWith(normT.endsWith('/') ? normT : `${normT}/`)) return true;
+  }
+  return false;
+}
+
+function resolveFilesTouched(ledger, context, options = {}) {
+  const touched = new Set();
+  const repoRoot = context.repoRoot || process.cwd();
+  const addPath = (p) => {
+    if (!p) return;
+    const norm = toRepoPath(p, repoRoot);
+    if (norm) touched.add(norm);
+  };
+
+  for (const row of ledger.acceptanceCriteria || []) {
+    for (const f of row.files || []) {
+      if (f && f.path) addPath(f.path);
+    }
+  }
+  if (Array.isArray(ledger.filesTouched)) {
+    for (const p of ledger.filesTouched) {
+      if (p) addPath(p);
+    }
+  }
+  const optTouched = options.filesTouched || options.fileTouched;
+  if (optTouched) {
+    const list = Array.isArray(optTouched) ? optTouched : [optTouched];
+    for (const item of list) {
+      for (const p of String(item).split(/[;,]/)) {
+        if (p.trim()) addPath(p.trim());
+      }
+    }
+  }
+  try {
+    const candidateDirs = [];
+    if (ledger.specPath) candidateDirs.push(path.dirname(path.resolve(repoRoot, ledger.specPath)));
+    if (ledger.slug) {
+      const plansDir = context.config?.plans?.dir || '.agents/plans';
+      candidateDirs.push(path.resolve(repoRoot, plansDir, ledger.slug));
+    }
+    for (const dir of candidateDirs) {
+      if (!fs.existsSync(dir)) continue;
+      const stateFiles = fs.readdirSync(dir).filter((f) => f.endsWith('.state.json'));
+      for (const stateFile of stateFiles) {
+        try {
+          const stateData = JSON.parse(fs.readFileSync(path.join(dir, stateFile), 'utf8'));
+          const manifest = stateData.workflowManifest || {};
+          for (const p of [...(manifest.created || []), ...(manifest.modified || []), ...(manifest.deleted || [])]) {
+            if (p) addPath(p);
+          }
+        } catch {
+          // Ignore invalid state json
+        }
+      }
+    }
+  } catch {
+    // Best-effort state discovery
+  }
+  return touched;
+}
+
+function isAliasDefect(result, filesTouched) {
+  if (!result || Number(result.exitCode) === 0) return false;
+  if (result.productFailure === true) return true;
+  if (isSkipped(result)) return false;
+  const paths = Array.isArray(result.failingPaths) ? result.failingPaths : [];
+  if (paths.length === 0) return /(?:Test|Build)$/i.test(result.alias || '');
+  return paths.some((p) => pathMatchesTouched(p, filesTouched));
+}
+
+function scoreLedger(ledger, boundary, context, options = {}) {
   if (!BOUNDARIES.has(boundary)) throw new Error(`boundary must be one of: ${[...BOUNDARIES].join(', ')}`);
   const errors = [];
   verifyFileHashes(ledger, context, errors);
@@ -433,6 +561,7 @@ function scoreLedger(ledger, boundary, context) {
   let knownDefect = ledger.declaredGaps.length > 0;
   let missingEvidence = false;
   const deficiencies = [];
+  const filesTouched = resolveFilesTouched(ledger, context, options);
   const configuredAliases = Object.entries(context.config?.verification || {})
     .filter(([key, value]) => /(?:Build|Test|Format)$/.test(key) && !/^_/.test(key) && typeof value === 'string' && value.trim() && !/^<.*>$/.test(value.trim()))
     .map(([key]) => key)
@@ -440,7 +569,7 @@ function scoreLedger(ledger, boundary, context) {
   for (const alias of configuredAliases) {
     const observed = ledger.aliasResults.find((item) => item.alias === alias);
     if (!observed) errors.push(`configured verification alias lacks observed result: ${alias}`);
-    else if (!isSkipped(observed) && observed.exitCode !== 0) knownDefect = true;
+    else if (isAliasDefect(observed, filesTouched)) knownDefect = true;
   }
   const validTestingSkip = ledger.testingSkip
     && fs.existsSync(path.resolve(context.repoRoot, ledger.testingSkip.evidence))
@@ -475,7 +604,7 @@ function scoreLedger(ledger, boundary, context) {
     if (row.findings.some((finding) => finding.state === 'open' && ['Critical', 'Warning'].includes(finding.severity))) knownDefect = true;
     if (boundary === 'pre-step6' && !row.commits.length) errors.push(`${row.id}: product commit linkage required before step 6`);
   }
-  if (ledger.aliasResults.some((result) => !isSkipped(result) && result.exitCode !== 0)) knownDefect = true;
+  if (ledger.aliasResults.some((result) => isAliasDefect(result, filesTouched))) knownDefect = true;
   for (const row of ledger.negativeScenarios || []) {
     const covered = (row.tests || []).some((test) => test.phase === 'observed' && Number(test.exitCode) === 0);
     if (!covered) {
@@ -511,7 +640,21 @@ function verify(options, context, persistScore) {
   if (!options.ledger) throw new Error('verify requires --ledger');
   const file = path.resolve(context.repoRoot, options.ledger);
   const ledger = readJson(file);
-  const result = scoreLedger(ledger, options.boundary || 'step5', context);
+  const optTouched = options.filesTouched || options.fileTouched;
+  if (optTouched && !persistScore) {
+    throw new Error('--files-touched is only valid for link or score (which persists it); verify/report are read-only');
+  }
+  if (optTouched && persistScore) {
+    const added = [];
+    for (const item of (Array.isArray(optTouched) ? optTouched : [optTouched])) {
+      for (const p of String(item).split(/[;,]/)) {
+        const norm = toRepoPath(p.trim(), context.repoRoot);
+        if (norm) added.push(norm);
+      }
+    }
+    ledger.filesTouched = [...new Set([...(ledger.filesTouched || []), ...added])].sort();
+  }
+  const result = scoreLedger(ledger, options.boundary || 'step5', context, options);
   if (persistScore) {
     ledger.revision += 1;
     ledger.scoreState = { ...result, computedAt: new Date().toISOString(), writer: 'ac_ledger.cjs score', ledgerHash: ledgerContentHash(ledger) };
@@ -522,8 +665,11 @@ function verify(options, context, persistScore) {
 
 function report(options, context) {
   if (!options.ledger || !options.output) throw new Error('report requires --ledger and --output');
+  if (options.filesTouched || options.fileTouched) {
+    throw new Error('--files-touched is only valid for link or score (which persists it); verify/report are read-only');
+  }
   const ledger = readJson(path.resolve(context.repoRoot, options.ledger));
-  const score = scoreLedger(ledger, options.boundary || 'ship', context);
+  const score = scoreLedger(ledger, options.boundary || 'ship', context, options);
   const lines = [
     '# Acceptance criteria ledger report',
     '',
@@ -600,9 +746,12 @@ function ledgerHelpText(command) {
         + '  [--test <name=N,sourceFile=F,phase=planned|observed,exitCode=C> ...] [--commit <sha=S,step=N> ...]\n'
         + '  [--verdict ...] [--finding ...] [--sabotage-exit N] [--gap <text>] [--plan-index <index>]\n'
         + '  [--alias-result ...] [--test-surface-skip ...] [--invariant-violation ...] [--score-boundary <label>]\n'
+        + '  [--files-touched <path> ...] [--failing-paths <path> ...] [--product-failure [true|false]]\n'
         + 'Attach evidence to AC rows. Requires --ledger and --event-id plus at least one target (--ac,\n'
         + '--negative, --alias-result, --test-surface-skip, --gap, or --plan-index). --file ranges use the\n'
         + 'path:Lstart-Lend shape. --plan-index backfills taskIds, planSectionIds, and expected test names.\n'
+        + '--files-touched persists modified paths for defect scoping. --failing-paths / --product-failure\n'
+        + 'provide CLI fallbacks for alias results.\n'
         + 'Persist: link recomputes scoreState (--score-boundary wins; else pre-step6 when commits exist,\n'
         + 'else step5), so re-score only when the next gate expects a different boundary.\n'
         + 'Example: node ac_ledger.cjs link --ledger ac-ledger.json --event-id impl-ac1 --ac AC1 --status Implemented --file impl.js:L1-L10 --commit sha=<sha>,step=4\n';
@@ -617,9 +766,10 @@ function ledgerHelpText(command) {
         + 'missingEvidence, per-row deficiencies[], and errors[].\n'
         + 'Example: node ac_ledger.cjs verify --ledger ac-ledger.json --boundary pre-step6\n';
     case 'score':
-      return 'Usage: ac_ledger.cjs score --ledger <ledger> [--boundary step5|pre-step6|ship]\n'
-        + 'Derive the score AND persist scoreState (boundary defaults to step5). Use the boundary the next\n'
-        + 'gate expects: pre-step6 before step 6, step5 before steps 7-8, ship before step 9.\n'
+      return 'Usage: ac_ledger.cjs score --ledger <ledger> [--boundary step5|pre-step6|ship] [--files-touched <path> ...]\n'
+        + 'Derive the score AND persist scoreState (boundary defaults to step5). Optionally persist\n'
+        + '--files-touched for defect scoping. Use the boundary the next gate expects: pre-step6 before step 6,\n'
+        + 'step5 before steps 7-8, ship before step 9.\n'
         + 'Example: node ac_ledger.cjs score --ledger ac-ledger.json --boundary pre-step6\n';
     case 'report':
       return 'Usage: ac_ledger.cjs report --ledger <ledger> --output <report> [--boundary ship]\n'

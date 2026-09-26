@@ -333,8 +333,9 @@
   },
 
   "tracking": {
-    "_comment": "ws-task-lifecycle Completion walk. featuresMdEnabled default true when omitted; set false to disable the features file entirely. Absent or empty canonicalFiles → auto-detected features file (repo-root FEATURES.md when it exists, else {specsDir}/index.PRD), PLAN.md, PRODUCT.PRD.",
+    "_comment": "ws-task-lifecycle Completion walk. featuresMdEnabled default true when omitted; set false to disable the features file entirely. autoTrackSpecWrite default true when omitted; standalone spec-write auto-tracks to index.PRD (no gate); false skips. Absent or empty canonicalFiles → auto-detected features file (repo-root FEATURES.md when it exists, else {specsDir}/index.PRD), PLAN.md, PRODUCT.PRD.",
     "featuresMdEnabled": true,
+    "autoTrackSpecWrite": true,
     "canonicalFiles": []
   },
 
