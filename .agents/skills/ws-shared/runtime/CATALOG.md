@@ -79,6 +79,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-goal-loop` | `.agents/skills/ws-goal-loop/SKILL.md` | Convergence loop primitive |
 | `ws-spec-index` | `.agents/skills/ws-spec-index/SKILL.md` | Project spec index init/sync/promote |
 | `ws-spec-list` | `.agents/skills/ws-spec-list/SKILL.md` | Dual board: specs vs plans + menu |
+| `ws-kanvas` | `.agents/skills/ws-kanvas/SKILL.md` | Local kanban board for spec and workflow state |
 | `ws-spec-from-provider` | `.agents/skills/ws-spec-from-provider/SKILL.md` | Bulk-import GH/ADO issues → specs |
 | `ws-activity-report` | `.agents/skills/ws-activity-report/SKILL.md` | Timesheet entries for delivery (Extra) |
 | `ws-pre-daily` | `.agents/skills/ws-pre-daily/SKILL.md` | 36-hour standup briefing |
@@ -130,6 +131,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Batch spec delivery | `ws-spec-multi` |
 | Project spec index init/sync/promote | `ws-spec-index` |
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
+| View specs as a local kanban board | `ws-kanvas` |
 | Bulk-import GH issues / ADO US → local specs | `ws-spec-from-provider` |
 | Session autoload set (which skills load every prompt) | [`{skillsRoot}/ws-shared/runtime/autoload.md`](autoload.md) § Always-applied (a consumer root `AGENTS.md` may override membership) |
 | Specs keywords / which skill to invoke | [`{skillsRoot}/ws-shared/runtime/autoload.md`](autoload.md) § Specs skill router |

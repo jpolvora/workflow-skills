@@ -131,9 +131,44 @@ function testUnrelatedSkillNotScanned() {
   }
 }
 
+function testGlobalHubTwinExcluded() {
+  console.log('\n--- testGlobalHubTwinExcluded ---');
+  const fixture = mkTmp('ws-dup-hubtwin-');
+  const globalRoot = mkTmp('ws-dup-hubtwinroot-');
+  fs.writeFileSync(path.join(fixture, 'AGENTS.md'), '# hub\n', 'utf8');
+  const hubRuntime = path.join(globalRoot, 'ws-shared', 'runtime');
+  fs.mkdirSync(hubRuntime, { recursive: true });
+  fs.writeFileSync(
+    path.join(hubRuntime, 'hub-layout.json'),
+    JSON.stringify({ categories: { generatedLocal: { paths: ['AGENTS.md', 'autoload.md'] } } }),
+    'utf8',
+  );
+  // Path-adjusted twins: the generated hub-root copy beside the managed
+  // runtime copy, sharing one normative block (issue #427 finding 2).
+  fs.writeFileSync(path.join(hubRuntime, 'autoload.md'), `# Autoload\n\nSee [tools](tools.md).\n\n${DUPLICATE_BLOCK}\n`, 'utf8');
+  fs.writeFileSync(path.join(globalRoot, 'ws-shared', 'autoload.md'), `# Autoload\n\nSee [tools](runtime/tools.md).\n\n${DUPLICATE_BLOCK}\n`, 'utf8');
+
+  const result = cp.spawnSync(process.execPath, [CHECKER, '--json', '--repo-root', fixture], {
+    cwd: fixture,
+    encoding: 'utf8',
+    env: { ...process.env, WORKFLOW_SKILLS_GLOBAL_DIR: globalRoot },
+  });
+  let report = null;
+  try {
+    report = JSON.parse(result.stdout);
+  } catch {
+    report = null;
+  }
+  assert(report !== null, `global hub-twin run emits JSON (stderr: ${result.stderr || ''})`);
+  if (!report) return;
+  assert(result.status === 0, 'generated ws-shared/autoload.md twin of runtime/autoload.md exits 0');
+  assert((report.duplicates || []).length === 0, 'no duplicate reported for the generated hub twin pair');
+}
+
 function main() {
   testGlobalOnlyDoesNotThrow();
   testUnrelatedSkillNotScanned();
+  testGlobalHubTwinExcluded();
   cleanup();
   if (failures > 0) {
     console.error(`\n${failures} failure(s)`);

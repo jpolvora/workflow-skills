@@ -2,7 +2,7 @@
 name: ws-check-harness
 description: Meta-harness integrity auditor — detects install mode/scope (upstream, project-local, global, hybrid) and scans routing, links, portability, integrity digests, instruction duplication, role clarity, and skill composition topology.
 disable-model-invocation: true
-version: 0.4.74
+version: 0.4.75
 invocation_names:
   - check-harness
   - ws-check-harness

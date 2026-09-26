@@ -1,4 +1,13 @@
 # Changelog
+### [2026-09-25 20:13] Agent: Muse Code (Muse Spark)
+- **Prompt**: Fix gh issues (open: #427 ws-check-harness findings v0.4.74 — unrouted ws-kanvas, duplicated autoload.md, pointer shorthand, ws-tdah README link).
+- **Done**: Routed ws-kanvas in runtime/CATALOG.md (Layer 5 + task router, mirroring root CATALOG); check_duplicates.cjs now excludes generated skills-hub copies (global ws-shared/autoload.md twin); installer refreshes stale generated global ws-shared/AGENTS.md to a canonical tokens-only pointer (no fresh seed; marker-less files keep legacy-migration contract); ws-tdah README links the repo URL instead of ../../../README.md. Regression tests: doc-sync routing + README-link invariants, duplicates hub-twin fixture, installer 2b refresh/idempotency/migration; integrity regenerated (v0.4.74).
+- **Result**: Focused suites green (duplicates, doc-sync, links, hub-separation, install-mode, shared-layout, wiki, full test-install.js --local with Git Bash first on PATH); test-harness-clean.js 0 findings; consumer-mode global-install E2E audit shows all 4 defects gone (unrouted/shorthand empty, duplicates exit 0). Memory traps recorded (local + vault). No push/PR (pre-ship needs version bump).
+### [2026-09-25 11:30] Agent: Muse Code (Muse Spark)
+- **Prompt**: Ship develop to main after fixing the suite blocker (ws-ship-pr full ship + merge).
+- **Done**: Fixed test-install.js fixture pollution, verified full suite green (134/134), prepare board all green, focused review clean (0 Critical/Warning), pushed develop, created PR #426 (25 commits, release 0.4.74), all CI checks passed with zero review threads, merged via merge commit 9128411c, telemetry aggregate written (99 workflows, 91 completed).
+- **Result**: PR #426 MERGED. Note: stale GITHUB_TOKEN env var shadows valid keyring auth; unset it for gh calls.
+
 ### [2026-09-25 11:20] Agent: Muse Code (Muse Spark)
 - **Prompt**: Fix suite self-pollution blocking ship (test-install.js dirties test/.ws/.gitignore), then resume ws-ship-pr.
 - **Done**: test-install.js snapshots test/.ws/.gitignore exact bytes at load and restores them in a process.on(exit) hook (runs even on fail); recorded memory trap 2026-09-25-install-test-fixture-hygiene and compiled MEMORY.md.
