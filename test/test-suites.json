@@ -120,6 +120,9 @@
       "test/test-check-skill-load.js"
     ],
     [
+      "test/test-subagent-dispatch.js"
+    ],
+    [
       "test/test-harness-clean.js"
     ],
     [
@@ -267,6 +270,9 @@
     ],
     [
       "test/test-check-skill-load.js"
+    ],
+    [
+      "test/test-subagent-dispatch.js"
     ],
     [
       "test/test-harness-clean.js"

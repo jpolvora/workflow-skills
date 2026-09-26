@@ -129,6 +129,7 @@ npx --yes github:jpolvora/workflow-skills uninstall --skills ws-tdah --global --
 | Audit installed digests | `npx --yes github:jpolvora/workflow-skills integrity` |
 | Rebuild telemetry aggregate | `npx --yes github:jpolvora/workflow-skills telemetry aggregate` |
 | Render telemetry report | `npx --yes github:jpolvora/workflow-skills telemetry report` |
+| Dispatch subagent task | `npx --yes github:jpolvora/workflow-skills dispatch --subagent <name> --task "<directive>" [--payload '{"k":"v"}'] [--json]` (runs `defaults.hostAdapter.cliTemplate`; exit 1 when no runner) |
 | Installed version | `npx --yes github:jpolvora/workflow-skills --version` |
 | Help | `npx --yes github:jpolvora/workflow-skills --help` |
 

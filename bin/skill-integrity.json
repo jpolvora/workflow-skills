@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "ec08f5d27e5cebc7cac4db370dd086d5507ea11a105d49941c07dcb188d0bba2",
+  "fullPackageDigest": "8a425b62808404c2fdbdd60fb72c7d4b75bb4ce54b4358bdc43bc9f5bd12b959",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -36,6 +36,7 @@
       "runtime/scripts/bootstrap_runtime.cjs": "f09759b68dbd8d70b978d5ea4990a30d69f86114507682fdcb842a3463054819",
       "runtime/scripts/cli_spawn.cjs": "64038af34cadb7588664015d5ca1a8319ab25436a786585be452ddf502f4943f",
       "runtime/scripts/compile_host_subagents.cjs": "0dda22723abe39d55c85147b6c09da603e4f0b368a5032f180f8548488803abc",
+      "runtime/scripts/dispatch_subagent_task.cjs": "e42bc41dd74184ab3df0e4545f82d9122b40fac7b6f92c34e652c878e8422e68",
       "runtime/scripts/extract_frontmatter_field.cjs": "41513cc12a7b7a1af7313b4111b86ca318c6d522351650945295e29c3e1b6a63",
       "runtime/scripts/http_retry.cjs": "5a78b6bc9137a081fc4b5293c1ac60d447d13c29faa8c2a1a3aa779340af7600",
       "runtime/scripts/ingest_visual_attachments.cjs": "707096a3ce9adffc8d836a40f51b6e6d0ecb7e67f54672ac701571da8490deb9",
@@ -64,13 +65,13 @@
       "templates/STACK.md.example": "829b7d3fce62b8167905fc1d921ee744db1d7e8ef895b0e7eb969f089973bebd",
       "templates/config.json.example": "7a59bb731f14bfd98b37b42b3f26af1f15cf3c48c11c3dcb8e57fc1d6b69543d"
     },
-    "skillDigest": "dc05a0e4b3040dd79694317671ae77d2ea6427e4b7bec01ee80a662f8222c52e"
+    "skillDigest": "546d4940f1b05b1400a96f31106c04755d00e1e7adc019cc5b1d624f1a45f45a"
   },
   "package": {
     "files": {
       "bin/build-site.js": "7bcdddbbbf22b7fe82ef327cbe078dd7d88a8cc6d1021b73370bb657d8d1e1b2",
       "bin/build-wiki-site.js": "e8263272e9985e70ba776036ac09fc85f4c6acfd13c4d62f7f9860c475cc5e5a",
-      "bin/cli.js": "c549660705a20113382e96a1aa70fc9566e7510c8698a105b30faac4ccd97281",
+      "bin/cli.js": "2bcd383dd46c567ba68bab33e3f031d97eb15e7b1b275175b916c0c66682b302",
       "bin/consumer-migration.js": "0e362e974e8c8fadb2246ece236b101eed27ea25384bb9ced830f85fea61646f",
       "bin/generate-skill-evals.js": "6483310e462475b010c7076958866e737471fde1c11bd047eb43b9a22152320e",
       "bin/generate-skill-integrity.js": "732c80b1251153e5078d59c3d23c615afa756a52c7670a20a7363970bebb72c2",
@@ -82,7 +83,7 @@
       "bin/skill-integrity-lib.js": "ddec34895dc8227c384b5a5d68f0e90032b2de7255e4a63a161784d559ed6cc8",
       "bin/validate-evals.cjs": "f95d4ccdc70335fa1c5857bd56a9367daf16ba6404f9dac5117bd51a1251a15e"
     },
-    "packageDigest": "b17f9af48e917f33104f1b93f3bf24a2f8393ee83ec77b88cafc3208fce433ab"
+    "packageDigest": "e1966d75b23de57eb9308a0313c9372ad11cf4dbbfc1f1e440476723fe9095cc"
   },
   "packageVersion": "0.4.77",
   "skills": {

@@ -1788,6 +1788,8 @@ function printHelp() {
       Regenerate {plansDir}/telemetry/aggregate.json from workflow state files
   npx --yes github:jpolvora/workflow-skills telemetry report
       Render a read-only Markdown summary with run and median telemetry
+  npx --yes github:jpolvora/workflow-skills dispatch --subagent <name> --task "<directive>" [--payload '{"k":"v"}'] [--json]
+      Dispatch one subagent task through defaults.hostAdapter.cliTemplate (exit 1 when no runner)
   npx --yes github:jpolvora/workflow-skills --help
 
 Curl shim (same argv; requires Node.js):
@@ -2350,6 +2352,24 @@ async function main() {
     }
     console.error(`Error: Unknown telemetry subcommand '${sub}'. Use: telemetry aggregate|report`);
     process.exit(1);
+  }
+
+  if (command === 'dispatch') {
+    const scriptPath = path.join(packageSkillsDir, 'ws-shared', 'runtime', 'scripts', 'dispatch_subagent_task.cjs');
+    if (!fs.existsSync(scriptPath)) {
+      console.error(`Error: dispatch script not found at ${scriptPath}`);
+      process.exit(1);
+    }
+    const result = spawnSync(process.execPath, [scriptPath, ...args.slice(1)], {
+      stdio: 'inherit',
+      cwd: targetDir,
+      env: process.env,
+    });
+    if (result.error) {
+      console.error(`Error: failed to run dispatch: ${result.error.message}`);
+      process.exit(1);
+    }
+    process.exit(result.status ?? 1);
   }
 
   if (command === 'install') {
