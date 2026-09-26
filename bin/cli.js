@@ -1297,11 +1297,16 @@ function ensureSharedHubInstalled(mode = 'install') {
     if (!fs.existsSync(sourcePath)) continue;
     for (const base of new Set([destManaged, destShared])) {
       const destinationPath = path.join(base, destinationName);
+      const isConsumerProjectHub = !isGlobalScope && base === destShared;
       if (CONSUMER_OWNED_HUB_FILES.has(destinationName) && fs.existsSync(destinationPath)) {
         continue;
       }
-      // G1 (us-429): preserve consumer .gitignore edits but append missing managed rules.
-      if (destinationName === '.gitignore' && fs.existsSync(destinationPath)) {
+      // G1 (us-429): merge only on the project consumer hub; managed tree stays packaged bytes.
+      if (
+        isConsumerProjectHub &&
+        destinationName === '.gitignore' &&
+        fs.existsSync(destinationPath)
+      ) {
         const managed = fs.readFileSync(sourcePath, 'utf8')
           .split(/\r?\n/)
           .map((line) => line.trim())

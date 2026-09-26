@@ -915,8 +915,11 @@ function main() {
     written = true;
   }
 
+  const hubUnderRepo =
+    path.relative(repoRoot, ctx.sharedDir) === '' ||
+    !path.relative(repoRoot, ctx.sharedDir).startsWith('..');
   let hubSeed = null;
-  if (!args.dryRun && ctx.executionScope !== 'global' && !args.section) {
+  if (!args.dryRun && hubUnderRepo && !args.section) {
     try {
       const { seedConsumerHub } = require('./seed_consumer_hub.cjs');
       hubSeed = seedConsumerHub({ repoRoot, dryRun: false });

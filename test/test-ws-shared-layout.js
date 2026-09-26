@@ -80,6 +80,22 @@ try {
     path.join(sourceShared, 'templates', 'config.json.example'),
     path.join(globalShared, 'templates', 'config.json.example'),
   );
+  copy(
+    path.join(sourceShared, 'templates', 'STACK.md.example'),
+    path.join(globalShared, 'templates', 'STACK.md.example'),
+  );
+  copy(
+    path.join(sourceShared, 'templates', 'hub.gitignore'),
+    path.join(globalShared, 'templates', 'hub.gitignore'),
+  );
+  copy(
+    path.join(sourceShared, 'runtime', 'autoload.md'),
+    path.join(globalShared, 'runtime', 'autoload.md'),
+  );
+  copy(
+    path.join(sourceShared, 'runtime', 'scripts', 'resolve_hub_root.cjs'),
+    path.join(globalShared, 'runtime', 'scripts', 'resolve_hub_root.cjs'),
+  );
 
   const resolver = cp.spawnSync(
     process.execPath,
@@ -146,10 +162,13 @@ try {
   assert(localResult.configPath === localConfig, 'resolver reports the project config path');
 
   const globalConfigureDir = path.join(globalRoot, 'ws-configure-project', 'scripts');
-  copy(
-    path.join(repoRoot, '.agents', 'skills', 'ws-configure-project', 'scripts', 'auto_configure.cjs'),
-    path.join(globalConfigureDir, 'auto_configure.cjs'),
-  );
+  const configureScripts = ['auto_configure.cjs', 'seed_consumer_hub.cjs', 'configure_autoload.cjs'];
+  for (const name of configureScripts) {
+    copy(
+      path.join(repoRoot, '.agents', 'skills', 'ws-configure-project', 'scripts', name),
+      path.join(globalConfigureDir, name),
+    );
+  }
   fs.writeFileSync(
     path.join(configureConsumerRoot, 'package.json'),
     JSON.stringify({ name: 'global-hybrid-consumer', scripts: { test: 'node --test' } }),
@@ -171,12 +190,14 @@ try {
   const configureResult = JSON.parse(configure.stdout);
   assert(configureResult.executionScope === 'global', 'global configure reports global scope');
   assert(
-    configureResult.copiedPaths.length === 1 &&
-      configureResult.copiedPaths[0].endsWith('.ws/config.json'),
-    'global configure reports only consumer config materialization',
+    configureResult.copiedPaths.some((p) => p.endsWith('.ws/config.json')),
+    'global configure materializes consumer config.json',
   );
+  assert(configureResult.hubSeed && configureResult.hubSeed.created.length >= 1, 'global configure seeds consumer hub files');
   const consumerShared = path.join(configureConsumerRoot, '.ws');
   assert(fs.existsSync(path.join(consumerShared, 'config.json')), 'global configure writes consumer config');
+  assert(fs.existsSync(path.join(consumerShared, 'AGENTS.md')), 'global configure seeds consumer AGENTS.md');
+  assert(fs.existsSync(path.join(consumerShared, 'autoload.md')), 'global configure seeds consumer autoload.md');
   assert(!fs.existsSync(path.join(consumerShared, 'runtime')), 'global configure does not copy runtime');
   assert(!fs.existsSync(path.join(consumerShared, 'templates')), 'global configure does not copy templates');
   assert(!fs.existsSync(path.join(consumerShared, 'MEMORY.md')), 'global configure does not create memory history');
