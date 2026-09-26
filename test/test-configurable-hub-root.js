@@ -8,6 +8,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import cp from 'node:child_process';
+import crypto from 'node:crypto';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 
@@ -19,10 +20,13 @@ const {
   resolveConsumerContext,
   requireProjectConfig,
 } = require('../.agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs');
+const { seedConsumerHub } = require('../.agents/skills/ws-configure-project/scripts/seed_consumer_hub.cjs');
 
 const CONFIGURE = path.join(REPO_ROOT, '.agents/skills/ws-configure-project/scripts/configure_autoload.cjs');
+const AUTO_CONFIGURE = path.join(REPO_ROOT, '.agents/skills/ws-configure-project/scripts/auto_configure.cjs');
 const SEED = path.join(REPO_ROOT, '.agents/skills/ws-patterns-generator/scripts/seed_generated_skill.cjs');
 const CLI = path.join(REPO_ROOT, 'bin/cli.js');
+const SELF_LEARNING = path.join(REPO_ROOT, '.agents/skills/ws-self-learning/scripts/self_learning.cjs');
 const RUNTIME_AUTOLOAD = path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/autoload.md');
 const BIN_GRAPH = path.join(REPO_ROOT, 'bin/skill-dependencies.json');
 
@@ -45,6 +49,37 @@ function writeBootstrapConfig(root, sharedDir) {
 }
 function runNode(args, options = {}) {
   return cp.spawnSync(process.execPath, args, { encoding: 'utf8', ...options });
+}
+
+function sha256File(filePath) {
+  return crypto.createHash('sha256').update(fs.readFileSync(filePath)).digest('hex');
+}
+
+function seedMinimalWsShared(root) {
+  const managed = path.join(root, '.agents', 'skills', 'ws-shared');
+  fs.mkdirSync(path.join(managed, 'templates'), { recursive: true });
+  fs.mkdirSync(path.join(managed, 'runtime'), { recursive: true });
+  fs.copyFileSync(
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/templates/config.json.example'),
+    path.join(managed, 'templates', 'config.json.example'),
+  );
+  fs.copyFileSync(
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/templates/STACK.md.example'),
+    path.join(managed, 'templates', 'STACK.md.example'),
+  );
+  fs.copyFileSync(
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/templates/hub.gitignore'),
+    path.join(managed, 'templates', 'hub.gitignore'),
+  );
+  fs.copyFileSync(
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/config.schema.json'),
+    path.join(managed, 'runtime', 'config.schema.json'),
+  );
+  fs.copyFileSync(
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/hub-layout.json'),
+    path.join(managed, 'runtime', 'hub-layout.json'),
+  );
+  fs.copyFileSync(RUNTIME_AUTOLOAD, path.join(managed, 'runtime', 'autoload.md'));
 }
 
 // Generator first-run simulation: append the ws-project-patterns row as a
@@ -303,29 +338,85 @@ function plantPatternsRow(autoload) {
   const root = makeFixture('ws-hub-auto-');
   try {
     writeBootstrapConfig(root, 'config/hub');
-    const managed = path.join(root, '.agents', 'skills', 'ws-shared');
-    fs.mkdirSync(path.join(managed, 'templates'), { recursive: true });
-    fs.mkdirSync(path.join(managed, 'runtime'), { recursive: true });
-    fs.copyFileSync(
-      path.join(REPO_ROOT, '.agents/skills/ws-shared/templates/config.json.example'),
-      path.join(managed, 'templates', 'config.json.example'),
-    );
-    fs.copyFileSync(
-      path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/config.schema.json'),
-      path.join(managed, 'runtime', 'config.schema.json'),
-    );
-    fs.copyFileSync(
-      path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/hub-layout.json'),
-      path.join(managed, 'runtime', 'hub-layout.json'),
-    );
-    const run = runNode(
-      [path.join(REPO_ROOT, '.agents/skills/ws-configure-project/scripts/auto_configure.cjs'), '--repo-root', root, '--json'],
-      { timeout: 300000 },
-    );
+    seedMinimalWsShared(root);
+    const run = runNode([AUTO_CONFIGURE, '--repo-root', root, '--json'], { timeout: 300000 });
     assert(run.status === 0, `auto_configure exits 0 (got ${run.status}: ${run.stderr || ''})`);
     const cfg = JSON.parse(fs.readFileSync(path.join(root, '.ws', 'config.json'), 'utf8'));
     assert(cfg.rules && cfg.rules.harness === 'config/hub/AGENTS.md', 'auto: rules.harness gap scoped to the configured hub');
     assert(cfg.rules && cfg.rules.stackFile === 'config/hub/STACK.md', 'auto: rules.stackFile gap scoped to the configured hub');
+    const hub = path.join(root, 'config', 'hub');
+    for (const name of ['AGENTS.md', 'autoload.md', 'STACK.md', '.gitignore']) {
+      assert(fs.existsSync(path.join(hub, name)), `auto seed: ${name} under configured hub`);
+    }
+    assert(!fs.existsSync(path.join(hub, 'runtime')), 'auto seed: no runtime/ under hub');
+    assert(!fs.existsSync(path.join(hub, 'templates')), 'auto seed: no templates/ under hub');
+    assert(fs.existsSync(path.join(root, cfg.rules.harness)), 'auto: rules.harness resolves on disk');
+    assert(fs.existsSync(path.join(root, cfg.rules.stackFile)), 'auto: rules.stackFile resolves on disk');
+  } finally {
+    rmFixture(root);
+  }
+}
+
+// --- us-429: missing-only hub seed, preserve bytes, idempotent second run ----
+{
+  const root = makeFixture('ws-hub-seed-');
+  try {
+    writeBootstrapConfig(root, '.ws');
+    seedMinimalWsShared(root);
+    fs.mkdirSync(path.join(root, '.ws'), { recursive: true });
+    const customStack = '# Custom stack marker us-429\n';
+    fs.writeFileSync(path.join(root, '.ws', 'STACK.md'), customStack, 'utf8');
+    const cfgPath = path.join(root, '.ws', 'config.json');
+    const customCfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
+    customCfg.project = { ...(customCfg.project || {}), name: 'preserve-config-us-429' };
+    fs.writeFileSync(cfgPath, JSON.stringify(customCfg, null, 2), 'utf8');
+    const cfgBefore = fs.readFileSync(cfgPath);
+    const stackBefore = fs.readFileSync(path.join(root, '.ws', 'STACK.md'));
+    seedConsumerHub({ repoRoot: root });
+    assert(fs.readFileSync(cfgPath).equals(cfgBefore), 'seed preserves consumer config.json bytes (AC5)');
+    assert(fs.readFileSync(path.join(root, '.ws', 'STACK.md')).equals(stackBefore), 'seed preserves STACK.md bytes (AC5/NS1)');
+
+    let run = runNode([AUTO_CONFIGURE, '--repo-root', root, '--json'], { timeout: 300000 });
+    assert(run.status === 0, `auto_configure after preseed exits 0 (got ${run.status}: ${run.stderr || ''})`);
+    for (const name of ['AGENTS.md', 'autoload.md', 'STACK.md', '.gitignore', 'config.json']) {
+      assert(fs.existsSync(path.join(root, '.ws', name)), `fresh hub has ${name}`);
+    }
+    assert(fs.readFileSync(path.join(root, '.ws', 'STACK.md')).equals(stackBefore), 'auto_configure preserves STACK.md bytes (AC5/NS1)');
+
+    const hubFiles = ['AGENTS.md', 'autoload.md', 'STACK.md', '.gitignore', 'config.json'];
+    const hashes1 = Object.fromEntries(hubFiles.map((n) => [n, sha256File(path.join(root, '.ws', n))]));
+
+    run = runNode([AUTO_CONFIGURE, '--repo-root', root, '--json'], { timeout: 300000 });
+    assert(run.status === 0, `second auto_configure exits 0 (got ${run.status})`);
+    const out = JSON.parse(run.stdout || '{}');
+    assert(out.hubSeed && out.hubSeed.created.length === 0, 'second run creates no hub files (AC6)');
+    for (const n of hubFiles) {
+      assert(sha256File(path.join(root, '.ws', n)) === hashes1[n], `second run unchanged ${n} (AC6/NS3)`);
+    }
+
+    const templateGitignore = fs.readFileSync(
+      path.join(REPO_ROOT, '.agents/skills/ws-shared/templates/hub.gitignore'),
+      'utf8',
+    );
+    assert(
+      fs.readFileSync(path.join(root, '.ws', '.gitignore'), 'utf8') === templateGitignore,
+      'hub .gitignore matches templates/hub.gitignore when seeded (AC7)',
+    );
+
+    run = runNode([SELF_LEARNING, '--compile', '--repo-root', root], { cwd: root });
+    assert(run.status === 0, `memory compile exits 0 (got ${run.status})`);
+    assert(fs.existsSync(path.join(root, 'MEMORY.md')), 'MEMORY.md at repo root after first compile (AC3)');
+    assert(fs.existsSync(path.join(root, 'memory')), 'memory/ at repo root after first compile (AC3)');
+    assert(!fs.existsSync(path.join(root, '.ws', 'MEMORY.md')), 'no hub-local MEMORY from configure seed (AC3)');
+
+    writeBootstrapConfig(root, '../escape');
+    let threw = false;
+    try {
+      seedConsumerHub({ repoRoot: root });
+    } catch (err) {
+      threw = err && (err.code === 'HUB_TRAVERSAL' || err.code === 'HUB_ABSOLUTE' || err.code === 'HUB_ESCAPE');
+    }
+    assert(threw, 'sharedDir escape fails closed (NS2/NS4)');
   } finally {
     rmFixture(root);
   }

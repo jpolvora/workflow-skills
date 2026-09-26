@@ -803,5 +803,15 @@ function main() {
 }
 
 if (require.main === module) main();
-module.exports = { checkAutoload, ensureAutoloadMd, writeRootAgents, hubRootFor, hubRelPosixFor, tryHubRootFor, expectedGeneratedRowPath };
+module.exports = {
+  checkAutoload,
+  ensureAutoloadMd,
+  writeRootAgents,
+  hubRootFor,
+  hubRelPosixFor,
+  tryHubRootFor,
+  expectedGeneratedRowPath,
+  renderConsumerAutoload,
+  localHubPointerMd,
+};
 

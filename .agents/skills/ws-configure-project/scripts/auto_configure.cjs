@@ -915,6 +915,21 @@ function main() {
     written = true;
   }
 
+  let hubSeed = null;
+  if (!args.dryRun && ctx.executionScope !== 'global' && !args.section) {
+    try {
+      const { seedConsumerHub } = require('./seed_consumer_hub.cjs');
+      hubSeed = seedConsumerHub({ repoRoot, dryRun: false });
+    } catch (err) {
+      const code = err && err.code ? String(err.code) : '';
+      if (code.startsWith('HUB_') || code === 'SEED_AUTOLOAD_MISSING' || code === 'SEED_MANAGED_IN_HUB') {
+        console.error(`ERROR: hub seed: ${err.message}`);
+        process.exit(2);
+      }
+      throw err;
+    }
+  }
+
   let compiledSubagents = null;
   if (!args.dryRun && config?.defaults?.specializedSubagents?.enabled === true) {
     const compilerScript = path.join(ctx.runtimeSource, 'scripts', 'compile_host_subagents.cjs');
@@ -970,6 +985,7 @@ function main() {
     skipped: details.filter((d) => d.action === 'skipped').length,
     unresolved: details.filter((d) => d.action === 'unresolved').map((d) => d.path),
     copiedPaths: createdFromExample && !args.dryRun ? [toRepoRelative(repoRoot, configPath, { allowOutside: true })] : [],
+    hubSeed,
     sourceControl: buildSourceControlReport(layout),
     compiledSubagents,
   };

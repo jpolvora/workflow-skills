@@ -63,6 +63,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const packageRoot = path.resolve(__dirname, '..');
+const requireFromPackage = createRequire(import.meta.url);
+const { seedConsumerHub } = requireFromPackage(
+  path.join(packageRoot, '.agents/skills/ws-configure-project/scripts/seed_consumer_hub.cjs'),
+);
 const packageSkillsDir = path.join(packageRoot, '.agents', 'skills');
 const skillGraphPath = fs.existsSync(path.join(packageRoot, 'bin', 'skill-dependencies.json'))
   ? path.join(packageRoot, 'bin', 'skill-dependencies.json')
@@ -1296,6 +1300,10 @@ function ensureSharedHubInstalled(mode = 'install') {
       if (CONSUMER_OWNED_HUB_FILES.has(destinationName) && fs.existsSync(destinationPath)) {
         continue;
       }
+      // G1 (us-429): hub .gitignore is missing-only; seed_consumer_hub.cjs owns the consumer copy.
+      if (destinationName === '.gitignore' && fs.existsSync(destinationPath)) {
+        continue;
+      }
       fs.copyFileSync(sourcePath, destinationPath);
     }
   }
@@ -1313,6 +1321,19 @@ function ensureSharedHubInstalled(mode = 'install') {
 
   // Never overwrite consumer config.json / STACK.md / MEMORY.md / CHANGELOG.md from upstream
   ensureSharedConsumerArtifacts(mode);
+  try {
+    const seedResult = seedConsumerHub({
+      repoRoot: path.resolve(targetDir),
+      isGlobalScope,
+      globalHubPointerMd: isGlobalScope ? globalHubPointerMd : undefined,
+    });
+    for (const relPath of seedResult.created) {
+      console.log(`    Seeded ${relPath}`);
+    }
+  } catch (err) {
+    console.error(`Error: hub seed failed: ${err.code || 'SEED_ERROR'}: ${err.message}`);
+    process.exit(1);
+  }
   const autoloadPath = path.join(destShared, 'autoload.md');
   const autoloadSource = packageHubPath('runtime', 'autoload.md');
   const existingAutoload = fs.existsSync(autoloadPath) ? fs.readFileSync(autoloadPath, 'utf8') : null;
@@ -1354,9 +1375,6 @@ function ensureSharedHubInstalled(mode = 'install') {
         console.log(`    Refreshed ${hubDisplay()}AGENTS.md pointer to the managed hub`);
       }
     }
-  } else if (!fs.existsSync(hubPointerPath)) {
-    fs.writeFileSync(hubPointerPath, localHubPointerMd());
-    console.log(`    Seeded thin local ${hubDisplay()}AGENTS.md pointer to the managed hub`);
   } else if (isGeneratedHubEntrypoint(hubPointerPath)) {
     const currentPointer = fs.readFileSync(hubPointerPath, 'utf8');
     const expectedPointer = localHubPointerMd();

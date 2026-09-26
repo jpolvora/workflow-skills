@@ -286,8 +286,8 @@ try {
     'migration does not retain alias source',
   );
   assert(
-    fs.readFileSync(path.join(newShared, '.gitignore'), 'utf8').includes('config.json.bak'),
-    'update refreshes managed .gitignore from template alias',
+    fs.readFileSync(path.join(newShared, '.gitignore'), 'utf8') === '# stale gitignore\n',
+    'update preserves existing consumer .gitignore (missing-only alias, us-429 G1)',
   );
 
   // Legacy pre-0.4.46 rendered autoload links are migrated on update.
