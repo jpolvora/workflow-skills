@@ -75,8 +75,6 @@ function resolveRuntimeAutoloadSource(ctx, repoRoot, globalSkillsRoot) {
  * @param {object} options
  * @param {string} [options.repoRoot]
  * @param {boolean} [options.dryRun]
- * @param {boolean} [options.isGlobalScope]
- * @param {() => string} [options.globalHubPointerMd]
  * @param {string|null} [options.globalSkillsRoot]
  */
 function seedConsumerHub(options = {}) {
@@ -149,9 +147,7 @@ function seedConsumerHub(options = {}) {
   if (fs.existsSync(agentsPath)) {
     skipped.push(rel(agentsPath));
   } else {
-    const content = options.isGlobalScope && typeof options.globalHubPointerMd === 'function'
-      ? options.globalHubPointerMd()
-      : localHubPointerMd(hubRelPosix);
+    const content = localHubPointerMd(hubRelPosix);
     if (!dryRun) fs.writeFileSync(agentsPath, content, 'utf8');
     created.push(rel(agentsPath));
   }

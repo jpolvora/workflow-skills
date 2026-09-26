@@ -1314,7 +1314,9 @@ function ensureSharedHubInstalled(mode = 'install') {
         const present = new Set(
           fs.readFileSync(destinationPath, 'utf8').split(/\r?\n/).map((line) => line.trim()),
         );
-        const missing = managed.filter((line) => !present.has(line));
+        const missing = managed.filter(
+          (rule) => !present.has(rule) && !present.has(`!${rule}`),
+        );
         if (missing.length) {
           fs.appendFileSync(
             destinationPath,
