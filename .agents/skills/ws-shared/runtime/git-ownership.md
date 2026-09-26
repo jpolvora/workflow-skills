@@ -78,3 +78,83 @@ Local git ownership only: same-worktree / same-repo concurrent writers. Out of
 scope: multi-machine orchestration, automatic conflict resolution, branch
 protection or merge policy, retroactive repair, new provider intents, and
 worktree-isolation redesign.
+
+## 5. Workflow compatibility matrix
+
+Authoritative enumeration of every installed `ws-*` skill by concurrency
+class. Every orchestrator follows this table; a skill absent from it fails
+`test-git-ownership-contract.js` (add the row when shipping a new skill).
+
+- `git-mutating`: runs or directs git write verbs (stage, commit, push,
+  branch, checkout, merge, rebase, mv, apply, tag, worktree). Rule: commit
+  only own paths (§1), never undo foreign work (§2), advance the baseline
+  instead of resetting (§3).
+- `shared-artifact-writing`: writes multi-writer artifacts (`index.PRD`,
+  `*.spec.md` boards, wiki pages, `MEMORY.md` / `memory/`, changelog,
+  shared plans roots). Rule: update only owned rows/sections, preserve
+  foreign edits, keep re-runs idempotent.
+- `read-only`: neither of the above. Owned outputs (`{plansDir}/{slug}/`
+  run files, per-round review reports, generated analyses) and product
+  code written as the session's own `files_touched` stay in this class.
+  Rule: read shared state freely; never write outside owned outputs.
+
+| Skill | Classes | Notes |
+|-------|---------|-------|
+| `ws-activity-report` | read-only | reads git log; report is an owned output |
+| `ws-benchmarks` | read-only | benchmark reports are owned outputs |
+| `ws-changelog` | shared-artifact-writing | appends changelog entries; exact-block dedupe |
+| `ws-check-harness` | read-only | gates read the tree; detection strings are not call sites |
+| `ws-check-workflows` | read-only | gates read the tree; detection strings are not call sites |
+| `ws-classify-complexity` | read-only | classify file is an owned output |
+| `ws-cleanup` | shared-artifact-writing | deletes disposable artifacts under shared plans roots; no git verbs |
+| `ws-code-review` | read-only | reads diffs; review is an owned output |
+| `ws-configure-project` | read-only | setup-time hub writes; git use is read-only detection |
+| `ws-doctor` | read-only | diagnostics read the tree |
+| `ws-fable-domain` | read-only | investigation only |
+| `ws-fable-judge` | read-only | audit report is an owned output |
+| `ws-fable-method` | read-only | investigation loop; edits are the session's own work |
+| `ws-fix-pr` | git-mutating | batch fix commits + push; path-scoped staging |
+| `ws-goal-fix-pr` | git-mutating | convergence loop over fix-pr batches |
+| `ws-goal-loop` | read-only | convergence primitive; no direct writes |
+| `ws-implement-tasks` | read-only | product code written is the session's own `files_touched` |
+| `ws-kanvas` | read-only | reads specs; board output is owned |
+| `ws-megabrain` | read-only | dispatches readers; no git or shared writes |
+| `ws-monitor` | read-only | read-only snapshots |
+| `ws-patterns-generator` | read-only | generated patterns are owned outputs |
+| `ws-plan-interview` | read-only | interview is an owned output |
+| `ws-plan-to-tasks` | read-only | task files are owned outputs |
+| `ws-plan-update` | read-only | deltas are owned outputs |
+| `ws-plan-verify` | read-only | verification is an owned output |
+| `ws-plan-write` | read-only | plan is an owned output |
+| `ws-pre-daily` | read-only | reads git history; digest is an owned output |
+| `ws-preview` | read-only | dry-run only |
+| `ws-run-benchmark` | read-only | benchmark runs; results are owned outputs |
+| `ws-secrets-leak-review` | read-only | reads staged diffs; never mutates |
+| `ws-self-learning` | shared-artifact-writing | `memory/*.md` sources + generated `MEMORY.md` |
+| `ws-senior-developer` | read-only | review discipline; no direct writes |
+| `ws-shared` | git-mutating | canonical git recipes live here (setup/gates/tools) |
+| `ws-ship-pr` | git-mutating | push + PR creation; no unowned staging |
+| `ws-show-harness` | read-only | displays harness state |
+| `ws-spec-archive` | shared-artifact-writing | moves plan artifacts; Archive table rows are owned |
+| `ws-spec-explain` | read-only | reads specs |
+| `ws-spec-format` | read-only | validates specs |
+| `ws-spec-from-provider` | shared-artifact-writing | writes specs fetched from providers |
+| `ws-spec-index` | shared-artifact-writing | `index.PRD` owned-row track/sync; append-only moves |
+| `ws-spec-list` | read-only | lists and resumes; no artifact writes |
+| `ws-spec-manager` | shared-artifact-writing | bulk spec operations |
+| `ws-spec-memo` | shared-artifact-writing | vault import writes local memory; config is setup-owned |
+| `ws-spec-multi` | git-mutating, shared-artifact-writing | base-branch sync + run state; children own their commits |
+| `ws-spec-organizer` | git-mutating, shared-artifact-writing | `git mv` filing + `index.PRD` ref rewrites |
+| `ws-spec-provider-azure-devops` | shared-artifact-writing | writes specs + workflow copies + attachments |
+| `ws-spec-provider-github` | shared-artifact-writing | writes specs + workflow copies + attachments |
+| `ws-spec-provider-local` | shared-artifact-writing | registers specs + workflow copies |
+| `ws-spec-to-pr` | git-mutating | commits, branches, tags, worktrees, baseline rebase |
+| `ws-spec-to-pr-lite` | git-mutating | product commits, branches, tags |
+| `ws-spec-translate-to-human` | read-only | companion output is owned |
+| `ws-spec-update` | shared-artifact-writing | edits specs of record |
+| `ws-spec-write` | shared-artifact-writing | writes specs of record |
+| `ws-task-lifecycle` | read-only | lifecycle tracking; no artifact writes |
+| `ws-tdah` | read-only | reply shape; no writes |
+| `ws-testing` | git-mutating | sabotage uses `git apply` transiently, always reverted |
+| `ws-wiki` | shared-artifact-writing | wiki pages + watermarks; section-scoped sync |
+| `ws-write-a-skill` | read-only | authors new skills; no shared writes itself |

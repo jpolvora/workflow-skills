@@ -10,7 +10,7 @@ Path tokens: expand via [`tools.md`](tools.md) before tool calls (`{skillsRoot}`
 
 **Required when root autoload is enabled (`defaults.autoload: true`).** Optional skills live under `## Optional skills` below and are never autoloaded.
 
-When root `AGENTS.md` points here, load each listed `SKILL.md` every prompt (unless the user opted out for that skill). Paths are project-local defaults; hybrid installs may resolve the same id under `{globalSkillsRoot}` when missing locally.
+When root `AGENTS.md` points here, load each listed skill every prompt via `{skillLoader}` ([canonical skill-load procedure](host-capability-tokens.md); already-loaded check first, never re-read) unless the user opted out for that skill. Paths are project-local defaults; hybrid installs may resolve the same id under `{globalSkillsRoot}` when missing locally.
 
 | Skill | Path | Trigger |
 |-------|------|---------|
@@ -45,7 +45,7 @@ Load only when the task needs them. Do not load every prompt.
 
 ## External companion skills (optional)
 
-These ids are **not** members of this package (`skill-dependencies.json` → `externalSkills`). They ship from the spec-memo package. Do **not** `Read` a missing `SKILL.md` at session start. Skip when absent; load when present under `{skillsRoot}` or `{globalSkillsRoot}` (local wins). Setup/bridge for vault flags remains packaged `ws-spec-memo`.
+These ids are **not** members of this package (`skill-dependencies.json` → `externalSkills`). They ship from the spec-memo package. Do **not** load a missing skill body at session start. Skip when absent; load via `{skillLoader}` ([canonical skill-load procedure](host-capability-tokens.md)) when present under `{skillsRoot}` or `{globalSkillsRoot}` (local wins). Setup/bridge for vault flags remains packaged `ws-spec-memo`.
 
 | Skill | Resolve when present | Trigger |
 |-------|----------------------|---------|

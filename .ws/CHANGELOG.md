@@ -1,5 +1,25 @@
 # Changelog
 
+### [2026-09-26 19:13] Agent: agent
+- **Prompt**: use muse spark 1.2 contributor as default CI reviewer and dry-run local model
+- **Done**: Set opencode-go/muse-spark-1.2-contributor as default model in .github/workflows/agentic-code-review.yml fallback + repo Variable, bin/review-dry-run.cjs DEFAULT_MODEL, and synced test/CATALOG/.ws config comment
+- **Result**: Canonical id verified via opencode models; test-review-dry-run.js green
+
+### [2026-09-26 11:21] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: /ws-configure-project (refresh stack fingerprint)
+- **Done**: config.json already complete (no required gaps). Ran stack_fingerprint.cjs: detected drift (stored `5da7b34f` -> computed `5ea0bf6d`) and rewrote `.ws/STACK.md` frontmatter via `write`; config untouched. Autoload --check OK (effective true, dual-hub override OK). specMemo preflight: CLI available, hybrid vault doctor unhealthy (`fetch failed`).
+- **Result**: `.ws/STACK.md` fingerprint matches `package.json`; `check` exit 0 (`skipDetection: true`). One-line diff.
+
+### [2026-09-26 11:00] Agent: Muse Code
+- **Prompt**: /ws-spec-index sync
+- **Done**: Synced index.PRD to shipped reality: us-429 Feature map plus Next-specs row 137 to done with PR #431 MERGED (status completed, shipStatus merged, commits verified); us-430 PR #432 suffix plus Done-log row (shipStatus pr-open). 7 pending rows left untouched (no E1 evidence).
+- **Result**: updated [us-429, us-430]; skipped 7 without ship evidence, files unedited for those.
+
+### [2026-09-26 10:45] Agent: Muse Code
+- **Prompt**: update spec-write skill to auto-track to index.PRD when it exists and is enabled in config, no confirm gate
+- **Done**: Replaced ws-spec-write Step 8 gate with auto-track (no user-gate); added tracking.autoTrackSpecWrite (default true, explicit false skips; missing index skips with init hint); synced schema, example, GUI editor row, auto_configure fallback, ws-spec-index edge in both dep manifests, AGENTS.md S5, autoload mirrors, REFERENCE.md, from-provider note, FEATURES.md, test-doc-sync assertions; rebuilt site dep pills; regenerated integrity. Full suite 134/134 green; harness-clean 0 findings. Note: concurrent session committed this work inside 515ebf74 together with us-430 review fixes.
+- **Result**: Standalone spec-write now tracks new specs as pending on index.PRD with no prompt.
+
 ### [2026-09-26 10:30] Agent: Muse Code
 - **Prompt**: spec-write skillLoader host capability plus unified skill-load procedure
 - **Done**: Drafted `.agents/specs/0136-skill-loader-host-capability.spec.md` (source local, 10 ACs: token registration, probe declare, pre-map precedence, cache-query-first load with SKILL.md fallback, already-loaded check, full sweep inventory, single normative doc, harness gate, degrade paths, telemetry) and tracked it on index.PRD row 141.

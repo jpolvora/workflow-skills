@@ -558,6 +558,7 @@ function buildWanted(repoRoot, example, schema) {
   wantFallback('plans.worktreesDir');
   wantFallback('plans.useWorktrees');
   wantFallback('plans.enforceSpecPrefixOrdering');
+  wantFallback('plans.statusSubfolders');
   wantFallback('reviews.dir');
 
   // -- rules (concrete installer paths) --
@@ -568,7 +569,7 @@ function buildWanted(repoRoot, example, schema) {
   // -- defaults (schema defaults first, then example concretes) --
   for (const k of ['autoMode', 'dryRun', 'skipTesting', 'skipMutationTesting', 'skipTests', 'fullMode',
     'scoreAndRefine', 'minVerifyScore', 'autoload', 'autoloadTaskLifecycle', 'enableDag',
-    'verboseMode', 'enableOptionalProofOfWork', 'enableAutomaticEvidenceCollectForProofOfWork',
+    'verboseMode', 'branchStrategy', 'enableOptionalProofOfWork', 'enableAutomaticEvidenceCollectForProofOfWork',
     'projectRootFolderToSave', 'contextBudget', 'parallelVerifyReview', 'gateGranularity',
     'plannerModel', 'executionModel', 'reviewerModel', 'testingModel']) {
     wantFallback(`defaults.${k}`);

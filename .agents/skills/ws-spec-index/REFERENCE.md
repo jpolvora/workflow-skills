@@ -29,6 +29,16 @@ Mark `[x]` or update spec `status` only when **both** conditions hold:
 
 If no mapping exists: return `updated: []` and `skipped: "No matching index row for slug"`. Do **not** edit files.
 
+## Status-Subfolder Completion Transition
+
+When E1 is satisfied **and** `config.json` → `plans.statusSubfolders` is explicit `true`, `sync` additionally files the spec of record into `completed/`:
+
+```bash
+node {skillsRoot}/ws-spec-organizer/scripts/organize_specs.cjs --slug {slug} --status completed --apply
+```
+
+The helper moves the `*.spec.md` plus companion `*.context.md` and `*.assets/` sidecars, rewrites `index.PRD` `spec:` references to the subfolder-relative path, and fails closed on dirty overlapping paths. When `plans.statusSubfolders` is omitted or `false`, specs stay in place (flat boards are never restructured by `sync`). Record the move in `updated[]` (e.g. `moved: pending/{file} → completed/{file}`); if the helper reports no renames (already filed), proceed with the checkbox/Done-log update only.
+
 ## Minimum Index Contract & Accepted Dialects
 
 Consumer repositories may evolve their `index.PRD` layout. `ws-spec-index` operations must respect living documents and accept common Markdown table/list variations:

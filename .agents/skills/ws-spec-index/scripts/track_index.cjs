@@ -9,6 +9,9 @@
 
 const fs = require('fs');
 const path = require('path');
+const { acquireFileLock } = require(path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts', 'file_lock.cjs'));
+
+const STATUS_SUBFOLDERS = ['pending', 'completed', 'archived'];
 
 function parseArgs(argv) {
   const out = { specsDir: null, slug: null };
@@ -31,27 +34,36 @@ function readTitle(specPath) {
 
 function alreadyTracked(indexText, slug) {
   const esc = slug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  // Exact slug cell or `spec: [NNNN-]slug.spec.md` — not a substring of another slug.
+  // Exact slug cell or `spec: [sub/dir/][NNNN-]slug.spec.md` — not a
+  // substring of another slug.
   const re = new RegExp(
-    '(?:`spec:\\s*(?:\\d{4}-)?' + esc + '\\.spec\\.md`|\\|\\s*`' + esc + '`\\s*\\|)',
+    '(?:`spec:\\s*(?:[A-Za-z0-9._-]+/)*(?:\\d{4}-)?' + esc + '\\.spec\\.md`|\\|\\s*`' + esc + '`\\s*\\|)',
     'i',
   );
   return re.test(indexText);
 }
 
 function findSpecFile(specsDir, slug) {
-  const exact = resolveUnder(specsDir, slug + '.spec.md');
-  if (exact && fs.existsSync(exact)) return exact;
-  let names;
-  try {
-    names = fs.readdirSync(specsDir);
-  } catch {
-    return null;
-  }
   const esc = slug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const re = new RegExp('^\\d{4}-' + esc + '\\.spec\\.md$');
-  const hit = names.find((name) => re.test(name));
-  return hit ? resolveUnder(specsDir, hit) : null;
+  const prefixedRe = new RegExp('^\\d{4}-' + esc + '\\.spec\\.md$');
+  const locations = ['', ...STATUS_SUBFOLDERS];
+  for (const location of locations) {
+    const dir = location ? path.join(specsDir, location) : specsDir;
+    const exact = resolveUnder(dir, slug + '.spec.md');
+    if (exact && fs.existsSync(exact)) return exact;
+    let names;
+    try {
+      names = fs.readdirSync(dir);
+    } catch {
+      continue;
+    }
+    const hit = names.find((name) => prefixedRe.test(name));
+    if (hit) {
+      const resolved = resolveUnder(dir, hit);
+      if (resolved && fs.existsSync(resolved)) return resolved;
+    }
+  }
+  return null;
 }
 
 function lastPhaseLabel(indexText) {
@@ -142,15 +154,27 @@ function track({ specsDir, slug }) {
     return { status: 'skipped', reason: 'spec missing', slug };
   }
   const title = readTitle(specPath) || slug;
-  let indexText = fs.readFileSync(indexPath, 'utf8');
-  const isCrlf = /\r\n/.test(indexText);
-  if (alreadyTracked(indexText, slug)) {
+  const firstRead = fs.readFileSync(indexPath, 'utf8');
+  let isCrlf = /\r\n/.test(firstRead);
+  if (alreadyTracked(firstRead, slug)) {
     return { status: 'skipped', reason: 'already tracked', slug, title };
   }
 
-  const specFileName = path.basename(specPath);
+  // Bullet links the specsDir-relative path so subfolder specs resolve.
+  const specRel = path.relative(path.resolve(specsDir), specPath).split(path.sep).join('/');
+  // Fresh-read before write: a concurrent writer may have appended rows since
+  // the first read. Re-check on fresh text so this write preserves foreign
+  // rows and mints a collision-free row number.
+  // Serialize the read-modify-write across processes (parallel writers).
+  const release = acquireFileLock(indexPath, { prefix: 'ws-index' });
+  try {
+  let indexText = fs.readFileSync(indexPath, 'utf8');
+  isCrlf = indexText.indexOf(String.fromCharCode(13)) !== -1;
+  if (alreadyTracked(indexText, slug)) {
+    return { status: 'skipped', reason: 'already tracked', slug, title };
+  }
   const bullet =
-    '- [ ] ' + escapeInlineMarkdown(title) + ' (`spec: ' + specFileName + '`)';
+    '- [ ] ' + escapeInlineMarkdown(title) + ' (`spec: ' + specRel + '`)';
   const phaseRe = /^###\s+Phase[^\n]*$/gm;
   const phases = [...indexText.matchAll(phaseRe)];
   if (phases.length) {
@@ -210,6 +234,9 @@ function track({ specsDir, slug }) {
 
   fs.writeFileSync(indexPath, indexText, 'utf8');
   return { status: 'tracked', slug, title, row: n };
+  } finally {
+    release();
+  }
 }
 
 function main() {

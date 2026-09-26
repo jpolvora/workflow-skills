@@ -1,7 +1,7 @@
 ---
 name: ws-spec-index
 description: Project PRD index manager — initializes, synchronizes, and promotes feature specifications within the project index (index.PRD).
-version: 0.4.77
+version: 0.4.78
 invocation_names:
   - spec-index
   - ws-spec-index
@@ -44,6 +44,7 @@ Manage project spec index (`index.PRD`) and linked `*.spec.md` feature specifica
 - Match backtick `*.spec.md` filename or `slug` anywhere in Feature map bullets (`- [ ]`) and Next-specs table.
 - If E1 satisfied: update status checkboxes to `[x]`, move completed rows to Done log, optionally set spec frontmatter `status: completed`.
 - Never auto-write `Verified:`. Idempotent (re-applying `[x]` is safe).
+- **Parallel writers:** touch only owned rows (your slug's bullet, Next-specs row, Done-log row); foreign rows stay byte-identical. `track` re-reads before writing so concurrent appends are preserved. See [`git-ownership.md`](../ws-shared/runtime/git-ownership.md) §5 (`shared-artifact-writing`).
 - If unmapped or no evidence: return `updated: []` and `skipped: <reason>` without editing files.
 - **Done when:** index / spec status updated per E1 or skipped cleanly.
 

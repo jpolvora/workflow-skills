@@ -158,6 +158,12 @@
           "default": true,
           "description": "Seed/schema default true (config.json.example and ws-configure-project writes). Runtime: effective only when the JSON value is explicit true; omitted or false → silent. The executing model reasons about this run and prints a Starting step N (label) bullet preview before any tool call. Do not ship canned preview text."
         },
+        "branchStrategy": {
+          "type": "string",
+          "enum": ["stay", "from-current", "from-base", "prompt"],
+          "default": "stay",
+          "description": "Default branch strategy for the workflow bootstrap feature-branch gate (§5b). stay: use the current branch without gating (invalid on detached HEAD). from-current / from-base: create feat/{slug} without gating. prompt: always show the three-choice branch gate. Omitted or invalid values resolve to stay at runtime."
+        },
         "enableOptionalProofOfWork": {
           "type": "boolean",
           "default": false,
@@ -489,6 +495,11 @@
           "type": "boolean",
           "default": false,
           "description": "When true, new spec-of-record writes and organizer apply NNNN-{slug}.spec.md with a four-digit sequence under {specsDir}. When false (default), writers use {slug}.spec.md."
+        },
+        "statusSubfolders": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, new spec-of-record writes resolve under {specsDir}/pending/ and ws-spec-organizer may file specs into pending/, completed/, or archived/ by status. When false (default), boards stay flat under {specsDir}/."
         }
       }
     },

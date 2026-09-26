@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-09-26] Fix-PR review defects: detection terminals, append EOL, hub path, dependency edges
+- **Layer**: `tests`
+- **Module**: `ws-check-harness/scripts/check_git_ownership.cjs, ws-changelog/scripts/append_changelog.cjs, bin/skill-dependencies.json`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/**/scripts/*.cjs, bin/skill-dependencies.json`
+- **Scenario / Context**: An agentic code review on a release PR raised 7 threads against shipped code: (1) `BROAD_STAGING` regexes used `(?:\s|$)` terminals, so `git add .;` / `git add . &&` escaped detection and `git add --all` was not covered at all; (2) `appendChangelog` read the file, split on `/\r?\n/`, and rejoined with `\n`, silently rewriting a CRLF consumer changelog to LF; (3) the legacy changelog fallback hardcoded `.ws` instead of the relocatable hub root; (4) a skill invoked another skill's script without a dependency-graph edge in `skill-dependencies.json`.
+- **DO NOT**: Ship a detection regex whose only terminal is whitespace/EOL; rewrite a consumer file by splitting and rejoining with a fixed EOL; hardcode the `.ws` hub path when `pathTokens.sharedDir` can relocate; call another skill's script without adding the dependency edge.
+- **INSTEAD DO**: Accept EOL and shell separators (`;`, `&`, `|`) as regex terminals and cover equivalent flags (`--all`); preserve the target file's dominant EOL on append (build LF, convert back); resolve hub paths through `context.sharedDir` / `resolve_hub_root.cjs`; add the edge to BOTH `bin/skill-dependencies.json` and `.agents/skills/ws-shared/runtime/skill-dependencies.json`, then regenerate integrity and rebuild the site.
+
 ### [2026-09-25] Monitor severity contract: status-literal beats shape-derived
 - **Layer**: `domain`
 - **Module**: `ws-monitor`

@@ -1,7 +1,7 @@
 {
   "$comment": "Static pre-map of common host shapes to capability-token tool names. Keys are neutral host-shape names (never host product IDs in skill prose); values map capability tokens to known tool/function name variants, first entry preferred. Host-declared tools (--declare) override this map; the map is the fallback for tokens the host does not declare. Keep entries additive; unknown hosts resolve to generic.",
   "version": 1,
-  "tokens": ["readFile", "writeFile", "editFile", "shellExec", "dispatchAgent", "askQuestion", "browserVerify"],
+  "tokens": ["readFile", "writeFile", "editFile", "shellExec", "dispatchAgent", "askQuestion", "browserVerify", "skillLoader"],
   "shapes": {
     "muse-spark-like": {
       "readFile": ["read_file"],
@@ -10,7 +10,8 @@
       "shellExec": ["powershell"],
       "dispatchAgent": ["subagent_spawn", "subagent_wait", "subagent_read_result"],
       "askQuestion": ["request_user_input"],
-      "browserVerify": []
+      "browserVerify": [],
+      "skillLoader": []
     },
     "opencode-like": {
       "readFile": ["read"],
@@ -19,7 +20,8 @@
       "shellExec": ["bash", "execute"],
       "dispatchAgent": ["task", "dispatch"],
       "askQuestion": ["question"],
-      "browserVerify": []
+      "browserVerify": [],
+      "skillLoader": []
     },
     "cursor-like": {
       "readFile": ["read_file"],
@@ -28,7 +30,8 @@
       "shellExec": ["run_terminal_cmd", "shell"],
       "dispatchAgent": ["spawn_agent", "task"],
       "askQuestion": ["ask_question"],
-      "browserVerify": ["browser"]
+      "browserVerify": ["browser"],
+      "skillLoader": []
     },
     "generic": {
       "readFile": [],
@@ -37,7 +40,8 @@
       "shellExec": ["shell"],
       "dispatchAgent": [],
       "askQuestion": [],
-      "browserVerify": []
+      "browserVerify": [],
+      "skillLoader": []
     }
   }
 }

@@ -39,6 +39,7 @@ supersedesRunId: null
 | `baseBranch` | Base branch recorded at run start (e.g. `develop` or `main`), used for worker sync and PR targets |
 | `totalItems` | **Frozen** queue length written once at Phase 2 from the selection; the only source of the reported `shipped/total` denominator. Never recomputed from the mutable table |
 | `supersedesRunId` | Optional machine-readable id of the prior run this run supersedes (e.g. `ms-20260919T231639Z`). When set, the superseding run retires that run before its first worker dispatch via `scripts/retire_superseded_run.cjs`; absent → no supersede relationship |
+| `branchPolicy` | Optional run label: `stay-on-develop` declares every child stays on the run branch; per-spec ship follows the `ws-ship-pr` shared-head rule |
 | Item `status` | `pending` · `in_progress` · `shipped` · `skipped` · `failed` |
 | `flowMode` | `lite` (dispatches `ws-spec-to-pr-lite`) · `standard` (dispatches full `ws-spec-to-pr`) |
 | `slug` | Basename of spec without `.spec.md` (stable id) |

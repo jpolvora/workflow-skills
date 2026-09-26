@@ -143,6 +143,8 @@
     "_comment_enableDag": "When true, break execution plan into multiple parallel tasks. When false (default), execute tasks sequentially one by one in serial order.",
     "verboseMode": true,
     "_comment_verboseMode": "Seeded true by ws-configure-project / config.json.example. Runtime: explicit true prints a reasoned start-of-step preview; omitted or false → silent. Preview text is not canned in skills.",
+    "branchStrategy": "stay",
+    "_comment_branchStrategy": "Default branch strategy for the workflow bootstrap feature-branch gate: stay (default, no gate on attached HEAD) | from-current | from-base | prompt (always gate). Detached HEAD rejects stay.",
     "enableOptionalProofOfWork": false,
     "_comment_enableOptionalProofOfWork": "When true, the orchestrator presents one opt-in gate after the workflow reaches its finished state asking whether to start the evidence-collector workflow. Omitted or false (default): no gate; steps, gates, commits, telemetry, and artifacts match current behavior exactly.",
     "enableAutomaticEvidenceCollectForProofOfWork": false,
@@ -292,7 +294,9 @@
     "worktreesDir": ".agents/plans/{slug}/worktrees",
     "useWorktrees": false,
     "_comment_enforceSpecPrefixOrdering": "When true, new spec-of-record writes and organizer apply NNNN-{slug}.spec.md under {specsDir}. Omitted, non-boolean, or missing config safely resolves to false. ws-spec-write persists this exact key when it is absent (seed true if the board already uses NNNN- files).",
-    "enforceSpecPrefixOrdering": false
+    "enforceSpecPrefixOrdering": false,
+    "_comment_statusSubfolders": "When true, new specs resolve under {specsDir}/pending/ and the organizer files specs into pending/, completed/, archived/ by status. Default false keeps flat boards.",
+    "statusSubfolders": false
   },
 
   "reviews": {

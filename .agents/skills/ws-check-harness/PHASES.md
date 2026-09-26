@@ -175,7 +175,7 @@ When **`ws-write-a-skill`** is installed (shipped Extra or global), include in t
 
 If **no** path exists, **skip** this subsection — do not invent criteria nor duplicate the skill's content in the harness.
 
-**Canonical reference:** load `ws-write-a-skill/SKILL.md` and, on demand, `GLOSSARY.md` in the same directory. Apply the skill's vocabulary (predictability, sprawl, duplication, sediment, premature completion, completion criterion, progressive disclosure, leading word, no-op) as a review lens — **do not** copy paragraphs into the report.
+**Canonical reference:** load `ws-write-a-skill` via `{skillLoader}` ([canonical skill-load procedure](../ws-shared/runtime/host-capability-tokens.md)) and, on demand, `GLOSSARY.md` in the same directory. Apply the skill's vocabulary (predictability, sprawl, duplication, sediment, premature completion, completion criterion, progressive disclosure, leading word, no-op) as a review lens — **do not** copy paragraphs into the report.
 
 **Review scope:** each `SKILL.md` listed in the Phase 4 inventory (priority: workflow pipeline skills first, then auto-load skills, then others).
 
@@ -475,6 +475,8 @@ node {skillsRoot}/ws-check-harness/scripts/check_pipeline_handoff.cjs --json --r
 node {skillsRoot}/ws-check-harness/scripts/check_harness_links.cjs --json --repo-root {repoRoot}
 node {skillsRoot}/ws-check-harness/scripts/check_unique_runtime.cjs --json --repo-root {repoRoot}
 node {skillsRoot}/ws-check-harness/scripts/check_hub_separation.cjs --json --repo-root {repoRoot}
+node {skillsRoot}/ws-check-harness/scripts/check_skill_load.cjs --json --repo-root {repoRoot}
+node {skillsRoot}/ws-check-harness/scripts/check_git_ownership.cjs --json --repo-root {repoRoot}
 ```
 
 - `check_duplicates.cjs`: exit 1 when any normative block (≥ 6 lines) repeats across tracked files outside the allowlist.
@@ -484,6 +486,8 @@ node {skillsRoot}/ws-check-harness/scripts/check_hub_separation.cjs --json --rep
 - `check_harness_links.cjs`: exit 1 on broken internal links, author-machine absolute paths, declared tokens inside link targets, bare `ws-shared/` shorthand (outside rule text and link labels), or skills on disk without routing. Deterministic mirror of Phase 2/4; upstream release proof runs it via `node test/test-harness-clean.js`.
 - `check_unique_runtime.cjs`: exit 1 when any `.py`/`.pyc`/`.pyo` file (including `__pycache__/` bytecode left by a helper run) exists under the skills scan root or `bin/` (unique Node 22 runtime). Severity **critical**. Correction: port the helper to `.cjs` (same CLI flags, `--json` shape, exit codes) and delete the Python copy; new `.py` files are forbidden.
 - `check_hub_separation.cjs`: exit 1 when the managed consumer hub (upstream SoT `.agents/skills/ws-shared/runtime/AGENTS.md`; installed `{skillsRoot}/ws-shared/runtime/AGENTS.md` or `{globalSkillsRoot}/ws-shared/runtime/AGENTS.md` in consumer mode) contains upstream-only instructional phrases, reintroduces upstream authoring section headings, or lacks the consumer identity banner. Resolves the effective runtime hub (project skills install, then global; explicit `WORKFLOW_SKILLS_SHARED_DIR` override first); `.ws/runtime` is never a resolution source and a missing hub fails closed in consumer mode. Severity **critical**. Correction: relocate instruction bodies to root `AGENTS.md` / `CATALOG.md` and keep one-line pointers. Consumer mode never requires root `AGENTS.md`.
+- `check_skill_load.cjs`: exit 1 when a shipped skill body (`ws-*/**/*.md`) restates a raw skill-load recipe instead of delegating to `{skillLoader}` (patterns F1 raw Read recipe, F2/F3 `{skillsRoot}` path recipes — see the script header for exact matchers). Exempt: the canonical procedure home, Markdown cross-links, `do not load` prohibitions, and `{skillLoader}` delegations. Severity **critical**. Correction: delegate to the canonical skill-load procedure by link.
+- `check_git_ownership.cjs`: exit 1 when any fenced command block under `.agents/skills/**/*.md` or any `.cjs`/`.js` under skill `scripts/` (and `bin/`) stages broadly (`git add -A`, `git add .`, bare `git add -u`, directory-wide adds) or authorizes a destructive whole-tree verb (`git reset --hard`, `git checkout -- .`, `git restore .`, `git clean -fd`, whole-tree `git stash`, force-push). Narrative prose documenting the forbidden list is exempt. Severity **critical**. Correction: stage explicit `files_touched` paths; advance the baseline instead of resetting.
 - Record `defaults.contextBudget` (config) against the JSON `completeDispatchBytes` field in the Phase 6 report. The scripts remain the fail-closed gates; qualitative Phase 5c.1 counts stay informational.
 
 On `--json`, keep the stdout payloads in the scan evidence. Skip neither script in upstream Install mode.
@@ -492,7 +496,7 @@ On `--json`, keep the stdout payloads in the scan evidence. Skip neither script 
 
 Run **after** Phase 5 and **only** if `ws-write-a-skill` is installed (detection: § 3 → *Skill writing quality*).
 
-1. Load `ws-write-a-skill/SKILL.md` (+ `GLOSSARY.md` if needed).
+1. Load `ws-write-a-skill` via `{skillLoader}` ([canonical skill-load procedure](../ws-shared/runtime/host-capability-tokens.md); + `GLOSSARY.md` if needed).
 2. For each skill in the § 3 / Phase 4 inventory (pipeline `ws-*` + providers first), audit against **failure modes** and **information hierarchy** from the reference.
 3. Record findings:
    - **Upstream / Consumer managed skills** (orch, providers, pipeline, shipped harness): severity `suggestion` under **Upstream debt (informational)** — do **not** add to consumer correction-plan problem count unless the user asked to optimize those skills.

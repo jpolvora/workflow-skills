@@ -1,6 +1,6 @@
 ---
 name: ws-wiki
-version: 0.4.77
+version: 0.4.78
 disable-model-invocation: true
 description: Living project feature wiki and domain knowledge base manager — initializes, synchronizes, and validates living feature documentation, business rules, and technical architecture.
 invocation_names:
@@ -59,6 +59,7 @@ Read the first `Commit:` value under that heading before scanning code. When the
 3. **Fall back to full sweep/from-code** when the block is missing, the SHA is unreachable (history rewrite, shallow clone, fresh repository), or the delta is dominated by a repository-wide restructure.
 4. **Advance the watermark** only after a run processed the complete `<sha>..HEAD` change set (bounded sweep, full sweep, from-code merge, or an equivalent multi-page update): set `Commit` to the current full `HEAD` SHA and `Synced` to today's date. Targeted flows (`sync [slug]`, `update [target]`) leave the watermark unchanged; `--dry-run` never advances it.
 5. `init` seeds the block when absent. Keep the exact heading and field names so the next run can parse it; `validate` ignores the block.
+6. **Parallel writers:** update only owned pages/sections (your `{domain}/{feature}.md` page, your index bullet, your baseline advance); concurrent foreign edits stay byte-identical, and re-running `sync_wiki_index.cjs` over unchanged content is idempotent (owned-link replace, never duplicate bullets). See [`git-ownership.md`](../ws-shared/runtime/git-ownership.md) §5 (`shared-artifact-writing`).
 
 ## Verbosity (prose style)
 

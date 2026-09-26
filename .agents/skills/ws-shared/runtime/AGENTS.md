@@ -58,6 +58,8 @@
 
 ## Skill loading (mandatory)
 
+Loads via `{skillLoader}` ([canonical procedure](host-capability-tokens.md)).
+
 | Skill | Path | Trigger |
 |-------|------|---------|
 | `ws-senior-developer` | [`../ws-senior-developer/SKILL.md`](../../ws-senior-developer/SKILL.md) | Every prompt or `rules.seniorDeveloper` — delivery gate and surgical diffs |

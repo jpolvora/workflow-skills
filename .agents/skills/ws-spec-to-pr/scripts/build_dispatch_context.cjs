@@ -216,7 +216,7 @@ function main() {
     '# Portable workflow dispatch',
     '',
     'Follow the target skill contract, the injected acceptance-criteria slices, and every hard stop below.',
-    'Enhancing-skill contracts and MEMORY slice are inlined; do not re-Read those SKILL.md files.',
+    'Enhancing-skill contracts and MEMORY slice are inlined; do not reload those skill bodies (already loaded).',
     'Still Read product files and the target `## Subagent contract` if not inlined.',
     'Write only the paths assigned to this dispatch. Return structured step-output evidence.',
     '',

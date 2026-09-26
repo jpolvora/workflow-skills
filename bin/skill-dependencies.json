@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.4.77",
+  "packageVersion": "0.4.78",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -183,6 +183,9 @@
     ],
     "ws-spec-provider-local": [
       "ws-spec-format",
+      "ws-spec-organizer"
+    ],
+    "ws-spec-index": [
       "ws-spec-organizer"
     ],
     "ws-fix-pr": [

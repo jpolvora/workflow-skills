@@ -67,7 +67,7 @@ Agent hosts often list the **same** `ws-*` id twice: this package’s SoT and a 
 
 **Rules:**
 
-1. **Default invoke:** If `{globalSkillsRoot}/ws-<id>/SKILL.md` exists, `Read` **that** path (not the in-tree duplicate) unless rule 2 applies. Do not `Read` both copies.
+1. **Default invoke:** If `{globalSkillsRoot}/ws-<id>/SKILL.md` exists, load **that** copy via `{skillLoader}` ([canonical skill-load procedure](.agents/skills/ws-shared/runtime/host-capability-tokens.md); bound loader, else the global path through `{readFile}`) — not the in-tree duplicate — unless rule 2 applies. Never load both copies.
 2. **Author / test / review `ws-<id>`:** `Read` and edit **only** `$PWD/.agents/skills/ws-<id>/`. Ignore the global duplicate for that id. Verify with this repo’s tests (`npm run test`, `ws-check-harness`) — never by writing the global tree.
 3. **Never write, uninstall, or “fix”** `{globalSkillsRoot}/ws-*` from a session whose cwd is this package root. That tree is a managed consumer install for other projects; `update` overwrites it.
 4. **`{skillsRoot}` in this repo** still expands to **local** `.agents/skills` (authoring, integrity, harness audits). Do not retarget `pathTokens.skillsRoot` at `{globalSkillsRoot}`. When invoking under rule 1, run that skill’s scripts from `{globalSkillsRoot}` so `SKILL.md` and scripts stay the same version.
@@ -166,7 +166,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 - State: `workflowType` `standard` | `lite` (no cross-resume)
 - Handoffs: step context is stored in `{workflow-id}.state.json` under `state.handoffs`; generated consumer-root `autoload.md` rewrites hub and skill links for its root-relative location.
 - Shared pipeline skills stay orch-agnostic
-- **Product commits:** standard after Step 5 when score ≥ `defaults.minVerifyScore` (default 9) (before Step 6 review) then after Step 6 review-fix if files changed; lite after Step 2 (before Step 3 review) then after review-fix if files changed. Stage only workflow `files_touched` (never `{plansDir}` until Step 8 close / lite Step 4 close). **`status: completed`** at close (implementation done), before push/PR; `shipStatus` tracks shipping. Review uses `git diff {base}...HEAD`. No push before ship phase. Pre-ship required step at Step 8 / lite Step 4, before push/PR: `ws-wiki sync [slug]` (when the project keeps a wiki) alongside `ws-spec-index sync {slug}` and the changelog entry — the wiki must reflect shipped code before the PR opens. Dual-write sync: G2 delivery commits and state updates synchronize `.state.json` and `.state.md` atomically (`syncStateDualWrite`) with `gitTrackedSet` caching.
+- **Product commits:** standard after Step 5 when score ≥ `defaults.minVerifyScore` (default 9) (before Step 6 review) then after Step 6 review-fix if files changed; lite after Step 2 (before Step 3 review) then after review-fix if files changed. Stage only workflow `files_touched` (never `{plansDir}` until Step 8 close / lite Step 4 close). **`status: completed`** at close (implementation done), before push/PR; `shipStatus` tracks shipping. Review uses `git diff {base}...HEAD`. No push before ship phase. Pre-ship required step at Step 8 / lite Step 4, before push/PR: `ws-wiki sync [slug]` (when the project keeps a wiki) alongside `ws-spec-index sync {slug}` and the changelog entry — the wiki must reflect shipped code before the PR opens. Dual-write sync: G2 delivery commits and state updates synchronize `.state.json` and `.state.md` atomically (`syncStateDualWrite`) with `gitTrackedSet` caching. Parallel writers on one worktree: own-path commits only, never reset/clean/stash foreign work, baseline advances forward — [`git-ownership.md`](.agents/skills/ws-shared/runtime/git-ownership.md) (§5 matrix, Phase 5a enforced).
 - **Dispatch:** [`ws-spec-to-pr/STEP-DISPATCH.md`](.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–9). Lite keeps its own Steps 0–5 table; do not use STEP-DISPATCH as lite step numbers.
 - **Step baton:** one run may execute different steps in different CLI processes via the deterministic `step_coordinator.cjs` (`defaults.stepRunners` / `defaults.runners` / `defaults.stepBaton`); state-file baton with revision-serialized claim/release/expiry, `baton_*`/`runner_*` telemetry, read-only monitor fields; gates surface at the coordinator while workers stay non-interactive.
 
@@ -201,7 +201,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 
 ## Upstream session contract (this repo only)
 
-**Not packaged.** Inline here so this repo does not `Read` live `ws-*` SKILL.md for session autoload (those files are the SoT being authored). Compact snapshot of packaged behavior **0.4.33** (`ws-tdah`, `ws-senior-developer`, `ws-fable-method`, `ws-self-learning`, `ws-changelog`, `ws-spec-write`, `ws-spec-format`). When those contracts change and dogfood should follow, update **this section** in the same PR.
+**Not packaged.** Inline here so this repo does not load live `ws-*` skill bodies for session autoload (those files are the SoT being authored; loads would still follow the [canonical skill-load procedure](.agents/skills/ws-shared/runtime/host-capability-tokens.md)). Compact snapshot of packaged behavior **0.4.33** (`ws-tdah`, `ws-senior-developer`, `ws-fable-method`, `ws-self-learning`, `ws-changelog`, `ws-spec-write`, `ws-spec-format`). When those contracts change and dogfood should follow, update **this section** in the same PR.
 
 Do **not** recreate `.agents/dev-harness/` or any extra `SKILL.md` for this contract. A folder under `.agents/skills/` would be hashed and shipped. Summarize here; invoke live scripts by path; load a live body only when **authoring or testing that skill**. Orchestrators, providers, `ws-check-harness`: task router, one skill at a time.
 
@@ -286,7 +286,7 @@ MEMORY = anti-regression (input + output). Changelog = append-only history, not 
 
 Entry shape: `### [YYYY-MM-DD] [Topic]` plus Layer, Module, Severity, PathPattern, Scenario / Context, DO NOT, INSTEAD DO.
 
-Then changelog (`config.json` → `rules.changelogFile`, else repo-root `CHANGELOG.md`, legacy `{sharedDir}/CHANGELOG.md` fallback when only it holds entries), insert under `# Changelog`:
+Then changelog (`config.json` → `rules.changelogFile`, else repo-root `CHANGELOG.md`, legacy `{sharedDir}/CHANGELOG.md` fallback when only it holds entries) via the helper (same template, exact-duplicate re-runs skipped): `node .agents/skills/ws-changelog/scripts/append_changelog.cjs --prompt "…" --done "…" --result "…"`. Entry shape inserted under `# Changelog`:
 
 ```markdown
 ### [YYYY-MM-DD HH:MM] Agent: {agent/runtime}
@@ -338,7 +338,7 @@ Keep `{specsDir}/index.PRD` reflecting workflow reality for every `{slug}` run (
 
 ## Skill loading (mandatory)
 
-**Session start:** this file is the hub. Apply § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only) before acting on the first prompt. When `defaults.autoload` is `true` (currently true), also load the § Always-applied live bodies listed in the table below. Do **not** `Read` any other live `ws-*` body (e.g. `ws-fable-method`, `ws-changelog`, `ws-spec-write`, `ws-spec-format`) for session autoload. Do not `Read` a separate harness skill.
+**Session start:** this file is the hub. Apply § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only) before acting on the first prompt. When `defaults.autoload` is `true` (currently true), also load the § Always-applied live bodies listed in the table below. Do **not** load any other live `ws-*` body (e.g. `ws-fable-method`, `ws-changelog`, `ws-spec-write`, `ws-spec-format`) for session autoload. Do not load a separate harness skill. Load mechanics for every skill below follow `{skillLoader}` ([canonical skill-load procedure](.agents/skills/ws-shared/runtime/host-capability-tokens.md)); this section only decides **which** skill loads **when**.
 
 [`ws-shared/runtime/autoload.md`](.agents/skills/ws-shared/runtime/autoload.md) still owns **specs vocabulary**, **specs skill router**, and **hub contracts** (SCM parity, verify score). Load those sections when the user mentions specs / plans / Spec-to-PR / SCM intents / verify score without naming a skill. In this repo, follow `autoload.md` § Always-applied **only while `defaults.autoload` is `true`** (currently true) and resolve those live bodies `{skillsRoot}` first (documented session-autoload exception to § [Global vs local `ws-*` (this repo only — mandatory)](#global-vs-local-ws--this-repo-only--mandatory) rule 1), `{globalSkillsRoot}` fallback.
 
@@ -370,7 +370,7 @@ Only the sets above load unconditionally. Everything else is **pull, not push** 
 | A skill names a companion file (`PHASES.md`, `STEP-DISPATCH.md`, `FORMAT.md`, `scm-provider-contract.md`, …) | Read it **when that skill says to**, not upfront. |
 | No route matches | Ask via `user-gate` (or `find-skills` / `using-superpowers` to discover) instead of loading the catalog. |
 
-**Anti-patterns:** loading [`CATALOG.md`](CATALOG.md) rows as a batch · reading every `ws-spec-*` body to decide which applies · loading both `ws-spec-provider-github` and `ws-spec-provider-azure-devops` SKILL.md to compare intents (use `scm-provider-contract.md`) · loading `ws-check-harness` / `ws-check-workflows` before a change exists to audit · re-reading a skill already loaded this session · `Read`ing both copies of a duplicate `ws-*` id · editing `{globalSkillsRoot}/ws-*` from this package root.
+**Anti-patterns:** loading [`CATALOG.md`](CATALOG.md) rows as a batch · reading every `ws-spec-*` body to decide which applies · loading both `ws-spec-provider-github` and `ws-spec-provider-azure-devops` SKILL.md to compare intents (use `scm-provider-contract.md`) · loading `ws-check-harness` / `ws-check-workflows` before a change exists to audit · re-reading a skill already loaded this session · loading both copies of a duplicate `ws-*` id · editing `{globalSkillsRoot}/ws-*` from this package root.
 
 ### Dual-hub precedence (root override)
 

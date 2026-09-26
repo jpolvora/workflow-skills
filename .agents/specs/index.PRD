@@ -182,12 +182,14 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] Pre-ship documentation-sync gate (configurable) (`spec: 0129-pre-ship-doc-sync.spec.md`)
 - [x] Kanvas board — packaged local kanban visualizer for spec and workflow state (`spec: 0130-kanvas-board.spec.md`) — [PR #425](https://github.com/jpolvora/workflow-skills/pull/425)
 - [ ] Kanvas board phase 2 — drag-and-drop columns with status update on move (`spec: 0131-kanvas-board-drag-drop.spec.md`)
-- [ ] ws-configure-project should initialize .ws/ local project directory with basic minimal required files (`spec: 0132-us-429.spec.md`)
-- [x] Score 10 on first verify: run format and full test aliases in implement, and do not cap on baseline-dirty (`spec: 0133-us-430.spec.md`)
-- [ ] Organize specifications into status subfolders (pending, completed, archived) (`spec: 0135-spec-organizer-status-subfolders.spec.md`)
-- [ ] Configurable default branch strategy: stay on current branch by default in workflows (`spec: 0134-default-stay-on-current-branch.spec.md`)
-- [ ] skillLoader host capability and unified skill-load procedure (`spec: 0136-skill-loader-host-capability.spec.md`)
-- [ ] Subagent Task Dispatch CLI Command and Asynchronous API (`spec: 0137-subagent-task-dispatch.spec.md`)
+- [x] ws-configure-project should initialize .ws/ local project directory with basic minimal required files (`spec: 0132-us-429.spec.md`) — [PR #431](https://github.com/jpolvora/workflow-skills/pull/431) MERGED
+- [x] Score 10 on first verify: run format and full test aliases in implement, and do not cap on baseline-dirty (`spec: 0133-us-430.spec.md`) — [PR #432](https://github.com/jpolvora/workflow-skills/pull/432)
+- [x] Organize specifications into status subfolders (pending, completed, archived) (`spec: 0135-spec-organizer-status-subfolders.spec.md`) — `4d0365eb` on develop
+- [x] Configurable default branch strategy: stay on current branch by default in workflows (`spec: 0134-default-stay-on-current-branch.spec.md`) — `9185b6d6` on develop
+- [x] skillLoader host capability and unified skill-load procedure (`spec: 0136-skill-loader-host-capability.spec.md`) — `0373a45d` on develop
+- [x] Subagent Task Dispatch CLI Command and Asynchronous API (`spec: 0137-subagent-task-dispatch.spec.md`) — `38ef12c1` on develop
+- [x] Workflow parallel-writer compatibility audit and enforcement (`spec: 0138-workflow-parallel-writer-compat.spec.md`) — `5857094c` on develop
+
 
 
 
@@ -447,17 +449,19 @@ All Next-specs closed.
 
 | 136 | `kanvas-board-drag-drop` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Kanvas board phase 2 — drag-and-drop columns with status update on move |
 
-| 137 | `us-429` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-configure-project should initialize .ws/ local project directory with basic minimal required files |
+| 137 | `us-429` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-configure-project should initialize .ws/ local project directory with basic minimal required files |
 
 | 138 | `us-430` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Score 10 on first verify: run format and full test aliases in implement, and do not cap on baseline-dirty |
 
-| 139 | `spec-organizer-status-subfolders` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Organize specifications into status subfolders (pending, completed, archived) |
+| 139 | `spec-organizer-status-subfolders` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Organize specifications into status subfolders (pending, completed, archived) (`4d0365eb` on develop) |
 
-| 140 | `default-stay-on-current-branch` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Configurable default branch strategy: stay on current branch by default in workflows |
+| 140 | `default-stay-on-current-branch` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Configurable default branch strategy: stay on current branch by default in workflows (`9185b6d6` on develop) |
 
-| 141 | `skill-loader-host-capability` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | skillLoader host capability and unified skill-load procedure |
+| 141 | `skill-loader-host-capability` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | skillLoader host capability and unified skill-load procedure (`0373a45d` on develop) |
 
-| 142 | `subagent-task-dispatch` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Subagent Task Dispatch CLI Command and Asynchronous API |
+| 142 | `subagent-task-dispatch` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Subagent Task Dispatch CLI Command and Asynchronous API (`38ef12c1` on develop) |
+
+| 143 | `workflow-parallel-writer-compat` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Workflow parallel-writer compatibility audit and enforcement (`5857094c` on develop) |
 
 ## 9. Inbox
 
@@ -596,6 +600,13 @@ All Next-specs closed.
 | 2026-09-24 | `us-412-413-liveness-checkpoints` | Unattended autoMode runs: mid-step checkpoints, turn-boundary pause state, and monitor stall detection | commit 72c13dea (delivery) |
 | 2026-09-25 | `us-419` | Observer-log follow-ups: intra-root enumeration edge, agentTranscripts marker, G2 plans-index freshness, compactOutputs no-op | commit a5993986 (delivery) |
 | 2026-09-25 | `kanvas-board` | Kanvas board: packaged local kanban visualizer skill ws-kanvas | [PR #425](https://github.com/jpolvora/workflow-skills/pull/425) |
+| 2026-09-26 | `us-429` | ws-configure-project should initialize .ws/ local project directory with basic minimal required files | [PR #431](https://github.com/jpolvora/workflow-skills/pull/431) MERGED |
+| 2026-09-26 | `us-430` | Score 10 on first verify: run format and full test aliases in implement, and do not cap on baseline-dirty | [PR #432](https://github.com/jpolvora/workflow-skills/pull/432) |
+| 2026-09-26 | `default-stay-on-current-branch` | Configurable default branch strategy: stay on current branch by default in workflows | commit 9185b6d6 (delivery) |
+| 2026-09-26 | `spec-organizer-status-subfolders` | Organize specifications into status subfolders (pending, completed, archived) | commit 4d0365eb (delivery) |
+| 2026-09-26 | `skill-loader-host-capability` | skillLoader host capability and unified skill-load procedure | commit 0373a45d (delivery) |
+| 2026-09-26 | `subagent-task-dispatch` | Subagent Task Dispatch CLI Command and Asynchronous API | commit 38ef12c1 (delivery) |
+| 2026-09-26 | `workflow-parallel-writer-compat` | Workflow parallel-writer compatibility audit and enforcement | commit 5857094c (delivery) |
 
 ## 11. Maintenance checklist
 

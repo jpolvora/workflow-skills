@@ -34,25 +34,33 @@ const testSkillsDir = path.resolve(__dirname, '.agents/skills');
 
 // Fixture hygiene (us-419 AC5): project-scope phases spawn the CLI with
 // cwd=test/, so the installer byte-copies the CRLF worktree hub.gitignore
-// template over the LF-pinned test/.ws/.gitignore fixture. Snapshot exact
-// bytes and restore on exit (even on failure) so later suite entries see a
-// clean tree.
-const wsGitignorePath = path.join(__dirname, '.ws', '.gitignore');
-let wsGitignoreBytes = null;
-try {
-  wsGitignoreBytes = fs.readFileSync(wsGitignorePath);
-} catch {
-  wsGitignoreBytes = null;
+// template over the LF-pinned test/.ws/.gitignore fixture and gap-fills
+// test/.ws/config.json from the packed example. Snapshot exact bytes and
+// restore on exit (even on failure) so later suite entries see a clean tree.
+const wsFixturePaths = [
+  path.join(__dirname, '.ws', '.gitignore'),
+  path.join(__dirname, '.ws', 'config.json'),
+];
+const wsFixtureBytes = new Map();
+for (const fixturePath of wsFixturePaths) {
+  try {
+    wsFixtureBytes.set(fixturePath, fs.readFileSync(fixturePath));
+  } catch {
+    wsFixtureBytes.set(fixturePath, null);
+  }
 }
 process.on('exit', () => {
-  try {
-    if (wsGitignoreBytes === null) {
-      fs.rmSync(wsGitignorePath, { force: true });
-    } else {
-      fs.writeFileSync(wsGitignorePath, wsGitignoreBytes);
+  for (const fixturePath of wsFixturePaths) {
+    try {
+      const snapshot = wsFixtureBytes.get(fixturePath);
+      if (snapshot === null || snapshot === undefined) {
+        fs.rmSync(fixturePath, { force: true });
+      } else {
+        fs.writeFileSync(fixturePath, snapshot);
+      }
+    } catch {
+      // Best-effort hygiene; never fail the run.
     }
-  } catch {
-    // Best-effort hygiene; never fail the run.
   }
 });
 

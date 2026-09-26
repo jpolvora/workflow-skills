@@ -117,6 +117,18 @@
       "test/test-check-harness-links.js"
     ],
     [
+      "test/test-check-skill-load.js"
+    ],
+    [
+      "test/test-subagent-dispatch.js"
+    ],
+    [
+      "test/test-shared-artifact-writers.js"
+    ],
+    [
+      "test/test-parallel-writer-e2e.js"
+    ],
+    [
       "test/test-harness-clean.js"
     ],
     [
@@ -263,6 +275,18 @@
       "test/test-check-harness-links.js"
     ],
     [
+      "test/test-check-skill-load.js"
+    ],
+    [
+      "test/test-subagent-dispatch.js"
+    ],
+    [
+      "test/test-shared-artifact-writers.js"
+    ],
+    [
+      "test/test-parallel-writer-e2e.js"
+    ],
+    [
       "test/test-harness-clean.js"
     ]
   ],
@@ -392,6 +416,9 @@
     ],
     [
       "test/test-spec-prefix-ordering.js"
+    ],
+    [
+      "test/test-spec-organizer.js"
     ],
     [
       "test/test-ws-spec-manager.js"

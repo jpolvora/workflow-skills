@@ -1,5 +1,5 @@
 /**
- * Tests for us-348 host capability detection & cache (AC1-AC5 + negatives).
+ * Tests for us-348 host capability detection & cache (AC1-AC5 + negatives), plus 0136 skillLoader.
  * Run: node test/test-host-capabilities.js
  */
 import fs from 'fs';
@@ -17,7 +17,7 @@ const PROBE = path.join(RUNTIME, 'scripts', 'probe_host_capabilities.cjs');
 const TOOLS_MD = path.join(RUNTIME, 'tools.md');
 const HOST_DISPATCH = path.join(RUNTIME, 'host-dispatch.md');
 
-const TOKENS = ['readFile', 'writeFile', 'editFile', 'shellExec', 'dispatchAgent', 'askQuestion', 'browserVerify'];
+const TOKENS = ['readFile', 'writeFile', 'editFile', 'shellExec', 'dispatchAgent', 'askQuestion', 'browserVerify', 'skillLoader'];
 
 let failures = 0;
 
@@ -316,6 +316,103 @@ function main() {
   assert(
     toolsMd.includes('`capabilities` map of the'),
     'REG tools.md names the capabilities map of the cached entry',
+  );
+
+  // ---- 0136 skillLoader ----
+  // AC1: unknown-host minimal set resolves skillLoader to none without failing startup.
+  const rMin = probe(['--key', 'mystery-min::m1', '--host-shape', 'no-such-shape'], cache);
+  assert(rMin.status === 0, '0136-AC1 unknown host exits 0');
+  const pMin = JSON.parse(rMin.stdout.trim());
+  assert(pMin.capabilities.skillLoader === 'none', '0136-AC1 minimal set resolves skillLoader to none');
+  const storedMin = JSON.parse(fs.readFileSync(cache, 'utf8'))['mystery-min::m1'];
+  assert(storedMin.knownShape === false, '0136-AC1 unknown shape records knownShape false');
+
+  // AC2: --declare skillLoader persists under capabilities+declared for the current key only.
+  probe(['--key', 'keep::m1', '--host-shape', shapeA], cache);
+  const beforeKeep = JSON.parse(fs.readFileSync(cache, 'utf8'))['keep::m1'];
+  const rDecl = probe(
+    ['--key', 'loader::m1', '--host-shape', shapeA, '--declare', 'skillLoader=native_loader'],
+    cache,
+  );
+  assert(rDecl.status === 0, '0136-AC2 declare exits 0');
+  const storedDecl = JSON.parse(fs.readFileSync(cache, 'utf8'))['loader::m1'];
+  assert(storedDecl.capabilities.skillLoader === 'native_loader', '0136-AC2 declared skillLoader in capabilities');
+  assert(storedDecl.declared.skillLoader === 'native_loader', '0136-AC2 declared skillLoader in declared map');
+  assert(
+    JSON.stringify(JSON.parse(fs.readFileSync(cache, 'utf8'))['keep::m1']) === JSON.stringify(beforeKeep),
+    '0136-AC2 other keys preserved',
+  );
+  // Prior declaration survives a --refresh that omits re-declare.
+  const rKeep = probe(['--key', 'loader::m1', '--refresh', '--host-shape', shapeA], cache);
+  assert(
+    JSON.parse(rKeep.stdout.trim()).capabilities.skillLoader === 'native_loader',
+    '0136-AC2 refresh keeps the persisted skillLoader declaration',
+  );
+
+  // AC3: declared-over-pre-map-over-minimal precedence for the new token.
+  const customMap = path.join(tmp, 'custom-map.json');
+  fs.writeFileSync(
+    customMap,
+    JSON.stringify({ version: 1, tokens: TOKENS, shapes: { custom: { skillLoader: ['map_loader'] } } }),
+    'utf8',
+  );
+  const rMap = cp.spawnSync(
+    process.execPath,
+    [PROBE, '--cache', cache, '--key', 'prec::m1', '--host-shape', 'custom', '--map', customMap, '--json'],
+    { cwd: REPO_ROOT, encoding: 'utf-8' },
+  );
+  assert(
+    JSON.parse(rMap.stdout.trim()).capabilities.skillLoader === 'map_loader',
+    '0136-AC3 pre-map skillLoader variant resolves when nothing declared',
+  );
+  const rOver = cp.spawnSync(
+    process.execPath,
+    [PROBE, '--cache', cache, '--key', 'prec::m1', '--host-shape', 'custom', '--map', customMap, '--declare', 'skillLoader=decl_loader', '--json'],
+    { cwd: REPO_ROOT, encoding: 'utf-8' },
+  );
+  assert(
+    JSON.parse(rOver.stdout.trim()).capabilities.skillLoader === 'decl_loader',
+    '0136-AC3 declared skillLoader outranks the pre-map',
+  );
+
+  // AC9: missing cache behaves as a miss that probes once, exit 0.
+  const missingCache = path.join(tmp, 'no-such-dir', 'host-capabilities.json');
+  const rMiss = probe(['--key', 'fresh::m1', '--host-shape', shapeA], missingCache);
+  assert(rMiss.status === 0, '0136-AC9 missing cache exits 0');
+  assert(JSON.parse(rMiss.stdout.trim()).cached === false, '0136-AC9 missing cache probes (miss)');
+  assert(fs.existsSync(missingCache), '0136-AC9 probe recreates the cache file');
+
+  // AC10: bind resolution logged with the skillLoader value.
+  assert(
+    /host-capability-bind.*capabilities\.skillLoader/s.test(dispatch),
+    '0136-AC10 host-dispatch.md bind line carries capabilities.skillLoader',
+  );
+  assert(
+    /host-capability-bind.*capabilities\.skillLoader/s.test(toolsMd),
+    '0136-AC10 tools.md bind line carries capabilities.skillLoader',
+  );
+
+  // AC4/AC5/AC7: single canonical home; others delegate by link.
+  assert(/## Skill-load procedure \(canonical\)/.test(tokensDoc), '0136-AC7 canonical procedure lives in host-capability-tokens.md');
+  assert(/already-loaded/i.test(tokensDoc), '0136-AC5 canonical procedure covers already-loaded');
+  assert(/skill-load \| \{id\} \|/.test(tokensDoc), '0136-AC5 canonical procedure emits the skill-load record');
+  assert(!/## Skill-load procedure \(canonical\)/.test(toolsMd), '0136-AC7 tools.md does not restate the procedure');
+  assert(!/## Skill-load procedure \(canonical\)/.test(dispatch), '0136-AC7 host-dispatch.md does not restate the procedure');
+  assert(/canonical skill-load procedure/.test(toolsMd), '0136-AC7 tools.md delegates by named reference');
+
+  // NEG: a binding alias (not a token) in --declare leaves capabilities unchanged.
+  const rAlias = probe(
+    ['--key', 'alias::m1', '--host-shape', shapeA, '--declare', 'subagentTool=some_tool'],
+    cache,
+  );
+  const pAlias = JSON.parse(rAlias.stdout.trim());
+  assert(
+    !('subagentTool' in (JSON.parse(fs.readFileSync(cache, 'utf8'))['alias::m1'].declared || {})),
+    '0136-NEG binding alias is not persisted as a declared token',
+  );
+  assert(
+    pAlias.capabilities.skillLoader === 'none',
+    '0136-NEG load path falls back when only an alias was declared',
   );
 
   fs.rmSync(tmp, { recursive: true, force: true });

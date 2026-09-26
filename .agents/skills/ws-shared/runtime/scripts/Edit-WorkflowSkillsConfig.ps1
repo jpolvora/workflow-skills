@@ -1309,6 +1309,7 @@ function Populate-Sections {
                 Add-SectionHeader -ParentPanel $page -YOffset $y -Title 'Execution & Gates' -Subtitle 'Autonomy, scoring gates, budgets, and run modes.'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'enableDag' -LabelText 'Enable DAG Parallel Tasks (defaults.enableDag)' -Type 'bool' -DefaultVal $false
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'verboseMode' -LabelText 'Verbose Step Preview (defaults.verboseMode)' -Type 'bool' -DefaultVal $true
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'branchStrategy' -LabelText 'Default Branch Strategy (stay | from-current | from-base | prompt)' -Type 'enum' -Options @('stay', 'from-current', 'from-base', 'prompt') -DefaultVal 'stay'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'enableOptionalProofOfWork' -LabelText 'Optional Proof-of-Work Step (defaults.enableOptionalProofOfWork)' -Type 'bool' -DefaultVal $false
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'enableAutomaticEvidenceCollectForProofOfWork' -LabelText 'Auto-Collect Proof-of-Work Evidence' -Type 'bool' -DefaultVal $false
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'projectRootFolderToSave' -LabelText 'Proof-of-Work Output Folder' -Type 'string' -DefaultVal '{projectRoot}/.proofOfWork/{slug}'
@@ -1381,6 +1382,7 @@ function Populate-Sections {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'plans' -Key 'worktreesDir' -LabelText 'Worktrees Directory Template' -Type 'string' -DefaultVal '.agents/plans/{slug}/worktrees'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'plans' -Key 'useWorktrees' -LabelText 'Use Git Worktrees for Step 4' -Type 'bool' -DefaultVal $false
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'plans' -Key 'enforceSpecPrefixOrdering' -LabelText 'Enforce NNNN- Spec Prefix Ordering' -Type 'bool' -DefaultVal $false
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'plans' -Key 'statusSubfolders' -LabelText 'File Specs into pending/completed/archived Subfolders' -Type 'bool' -DefaultVal $false
 
                 Add-SectionHeader -ParentPanel $page -YOffset $y -Title 'Code Reviews' -Subtitle 'Local review report output directory.'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'reviews' -Key 'dir' -LabelText 'Code Reviews Directory' -Type 'path-folder' -DefaultVal '.agents/codereviews'
