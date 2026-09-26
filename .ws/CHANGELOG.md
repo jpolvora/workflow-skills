@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-26 10:45] Agent: Muse Code
+- **Prompt**: update spec-write skill to auto-track to index.PRD when it exists and is enabled in config, no confirm gate
+- **Done**: Replaced ws-spec-write Step 8 gate with auto-track (no user-gate); added tracking.autoTrackSpecWrite (default true, explicit false skips; missing index skips with init hint); synced schema, example, GUI editor row, auto_configure fallback, ws-spec-index edge in both dep manifests, AGENTS.md S5, autoload mirrors, REFERENCE.md, from-provider note, FEATURES.md, test-doc-sync assertions; rebuilt site dep pills; regenerated integrity. Full suite 134/134 green; harness-clean 0 findings. Note: concurrent session committed this work inside 515ebf74 together with us-430 review fixes.
+- **Result**: Standalone spec-write now tracks new specs as pending on index.PRD with no prompt.
+
 ### [2026-09-26 10:30] Agent: Muse Code
 - **Prompt**: spec-write skillLoader host capability plus unified skill-load procedure
 - **Done**: Drafted `.agents/specs/0136-skill-loader-host-capability.spec.md` (source local, 10 ACs: token registration, probe declare, pre-map precedence, cache-query-first load with SKILL.md fallback, already-loaded check, full sweep inventory, single normative doc, harness gate, degrade paths, telemetry) and tracked it on index.PRD row 141.
