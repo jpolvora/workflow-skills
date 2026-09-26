@@ -135,10 +135,10 @@ function tokenizeTemplate(template) {
 }
 
 function substituteTokens(argv, { prompt, cwd, slug }) {
-  return argv.map((part) => part
-    .split('{prompt}').join(prompt)
-    .split('{cwd}').join(cwd)
-    .split('{slug}').join(slug));
+  const values = { prompt, cwd, slug };
+  // Single pass: replacement output (the JSON envelope) is never re-scanned, so
+  // literal {slug}/{cwd} inside the caller's task or payload survive intact.
+  return argv.map((part) => part.replace(/\{(prompt|cwd|slug)\}/g, (_, key) => values[key]));
 }
 
 function runTemplate(template, envelope, { cwd, timeoutMs }) {

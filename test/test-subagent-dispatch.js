@@ -97,6 +97,19 @@ console.log('3. CLI dispatch through a fixture runner');
   assert.deepStrictEqual(JSON.parse(rDefault.stdout).payload, {});
 }
 
+// PR #433: literal {slug}/{cwd} inside the task survive token substitution.
+console.log('3b. task brace tokens are not re-substituted');
+{
+  const dir = mkTmp('ws-dispatch-brace-');
+  const echo = writeEchoRunner(dir);
+  writeConsumer(dir, `node "${echo}" --prompt "{prompt}"`);
+  const task = 'regenerate the {slug} spec under {cwd}';
+  const r = runCli(['--subagent', 'reviewer', '--task', task, '--json', '--repo-root', dir], dir);
+  assert.strictEqual(r.status, 0, `brace-token dispatch exits 0 (${r.stderr || r.stdout})`);
+  const out = JSON.parse(r.stdout);
+  assert.strictEqual(JSON.parse(out.output).task, task, 'literal {slug}/{cwd} preserved in the prompt envelope');
+}
+
 // AC8: errors as JSON on stdout in --json mode.
 console.log('4. CLI JSON error envelope');
 {
