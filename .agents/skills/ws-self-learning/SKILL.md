@@ -22,6 +22,7 @@ Consumer-owned memory routing is configured via `config.json` (`enableMemoryFile
 - **Local markdown files (`enableMemoryFiles: true`)**: entries in `{memoryDir}/memory/YYYY-MM-DD-[slug].md`, compiled index in `{memoryDir}/MEMORY.md`. Effective dir is `resolveEffectiveMemoryPaths` (configured wins with entries, else legacy `{sharedDir}` with entries, else configured). Scripts create missing dirs on write; `--compile` always `mkdir -p`s the entries dir. Teams that do not track generated memory should gitignore `{memoryDir}/MEMORY.md` + `{memoryDir}/memory/`.
 - **Spec-memo vault (`enableSpecMemoIntegration: true`)**: records queried/persisted via **`/ws-memo`** (`bootstrap`, `search`, `upsert --kind trap`) or `{specMemo.cli}`. Setup/disable → `ws-spec-memo`.
 - Both can be enabled (dual-mode) or both disabled. Routing map: [`ws-spec-memo/references/INTEGRATION.md`](../ws-spec-memo/references/INTEGRATION.md).
+- **Parallel writers:** entry files are owned (write only your `YYYY-MM-DD-[slug].md`); `MEMORY.md` is generated — never hand-edit it, re-run `--compile` instead. Compiles over unchanged sources are byte-identical (idempotent); foreign entry files are preserved and included. See [`git-ownership.md`](../ws-shared/runtime/git-ownership.md) §5 (`shared-artifact-writing`).
 
 ## When to run
 

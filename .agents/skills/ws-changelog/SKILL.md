@@ -37,8 +37,13 @@ Resolve the target file from `.ws/config.json` (bootstrap, fixed) (`resolveChang
 ## Process
 
 1. **Analyze context** — What was the prompt? What did the agent (you) actually do? What was the final result?
-2. **Update the resolved ws-changelog file** — Append a new entry using the template below. Create the file (and parent dirs) if it does not exist.
+2. **Update the resolved ws-changelog file** — Append a new entry with the helper (never hand-edit past entries):
+   ```bash
+   node {skillsRoot}/ws-changelog/scripts/append_changelog.cjs --prompt "<intent>" --done "<work>" --result "<outcome>" [--agent <id>]
+   ```
+   The helper resolves the changelog path (Path resolution above), inserts the template block under `# Changelog`, and skips exact-duplicate blocks so re-runs are idempotent. Create the file (and parent dirs) if it does not exist.
    - Done when: the resolved changelog path contains a new top entry with Prompt / Done / Result for this task.
+   - Parallel writers: entries are owned blocks — only ever prepend your own entry; a concurrent foreign entry stays byte-identical. See [`git-ownership.md`](../ws-shared/runtime/git-ownership.md) §5 (`shared-artifact-writing`).
 
 ## CHANGELOG.md Template
 

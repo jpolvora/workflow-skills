@@ -278,6 +278,7 @@ The Workflows package includes [`ws-senior-developer`](.agents/skills/ws-senior-
 - **Pack hygiene:** published tarball and install copies skip `__pycache__` / `*.pyc` and consumer-owned `shared/` data.
 - **Cross-platform:** Node `fs` APIs (Windows / macOS / Linux). UTF-8 via `LANG`/`LC_ALL` and Node stdio.
 - **Script runtimes:** **Node 22+** is the only interpreter required to install or run this package. Packaged skill scripts are Node only (`.cjs`); Python is not required to install or run skills. See [`tools.md`](.agents/skills/ws-shared/runtime/tools.md) § Script launchers.
+- **Parallel writers:** concurrent sessions on one worktree stay compatible — every workflow commits only its own paths, never resets/cleans/stashes foreign work, and advances the git baseline forward instead of resetting. Skill classes live in the compatibility matrix ([`git-ownership.md`](.agents/skills/ws-shared/runtime/git-ownership.md) §5); `ws-check-harness` Phase 5a enforces the contract tree-wide (`check_git_ownership.cjs`).
 
 ### Verify the package
 

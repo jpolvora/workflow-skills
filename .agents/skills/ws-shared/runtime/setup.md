@@ -166,7 +166,7 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
 
    **Banner sync:** after 5b completes, re-print the init banner `branch` / `baseBranch` rows (step 3 table) or a short **Feature branch gate result** table so displayed values match state.
 
-6. **Baseline**: `git status --porcelain` → `preExistingDirty[]`; `git rev-parse HEAD` → `baselineCommit` plus the source ref it came from (`baselineSourceRef`, e.g. `origin/{baseBranch}` after fetch, else the local `{baseBranch}` tip). Refresh mid-run only forward via [`git-ownership.md`](git-ownership.md) § 3 — never reset back to this value.
+6. **Baseline**: `git status --porcelain` → `preExistingDirty[]`; `git rev-parse HEAD` → `baselineCommit` plus the source ref it came from (`baselineSourceRef`, e.g. `origin/{baseBranch}` after fetch, else the local `{baseBranch}` tip). Run the concurrency preflight right after recording the baseline: `node {skillsRoot}/ws-spec-to-pr/scripts/concurrency_preflight.cjs --state {us-dir}/{workflow-id}.state.json` — warn-only, never blocks; when it reports other active workflows, record their id/branch in state and consider `plans.useWorktrees`. Refresh mid-run only forward via [`git-ownership.md`](git-ownership.md) § 3 — never reset back to this value.
 7. **LOC baseline**: `Shell` capture → `telemetry.loc.baseline`. Store ISO → `telemetry.workflowStartedAt`.
 8. **Checkpoint**: tag `uswf/{workflow-id}/before-step-0`.
 9. **Progress Board** render.

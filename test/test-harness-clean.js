@@ -127,6 +127,7 @@ runGate('Phase 5a check_unique_runtime.cjs', 'check_unique_runtime.cjs', ['--jso
 runGate('Phase 2/4 links, paths, shorthand, routing', 'check_harness_links.cjs', ['--json', '--repo-root', REPO_ROOT]);
 runGate('Phase 5a check_hub_separation.cjs', 'check_hub_separation.cjs', ['--json', '--repo-root', REPO_ROOT]);
 runGate('Phase 5a check_skill_load.cjs', 'check_skill_load.cjs', ['--json', '--repo-root', REPO_ROOT]);
+runGate('Phase 5a check_git_ownership.cjs', 'check_git_ownership.cjs', ['--json', '--repo-root', REPO_ROOT]);
 testPackageHygiene();
 
 const failed = checks.filter((check) => !check.passed);

@@ -153,14 +153,22 @@ function track({ specsDir, slug }) {
     return { status: 'skipped', reason: 'spec missing', slug };
   }
   const title = readTitle(specPath) || slug;
-  let indexText = fs.readFileSync(indexPath, 'utf8');
-  const isCrlf = /\r\n/.test(indexText);
-  if (alreadyTracked(indexText, slug)) {
+  const firstRead = fs.readFileSync(indexPath, 'utf8');
+  let isCrlf = /\r\n/.test(firstRead);
+  if (alreadyTracked(firstRead, slug)) {
     return { status: 'skipped', reason: 'already tracked', slug, title };
   }
 
   // Bullet links the specsDir-relative path so subfolder specs resolve.
   const specRel = path.relative(path.resolve(specsDir), specPath).split(path.sep).join('/');
+  // Fresh-read before write: a concurrent writer may have appended rows since
+  // the first read. Re-check on fresh text so this write preserves foreign
+  // rows and mints a collision-free row number.
+  let indexText = fs.readFileSync(indexPath, 'utf8');
+  isCrlf = indexText.indexOf(String.fromCharCode(13)) !== -1;
+  if (alreadyTracked(indexText, slug)) {
+    return { status: 'skipped', reason: 'already tracked', slug, title };
+  }
   const bullet =
     '- [ ] ' + escapeInlineMarkdown(title) + ' (`spec: ' + specRel + '`)';
   const phaseRe = /^###\s+Phase[^\n]*$/gm;

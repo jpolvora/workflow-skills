@@ -123,6 +123,12 @@
       "test/test-subagent-dispatch.js"
     ],
     [
+      "test/test-shared-artifact-writers.js"
+    ],
+    [
+      "test/test-parallel-writer-e2e.js"
+    ],
+    [
       "test/test-harness-clean.js"
     ],
     [
@@ -273,6 +279,12 @@
     ],
     [
       "test/test-subagent-dispatch.js"
+    ],
+    [
+      "test/test-shared-artifact-writers.js"
+    ],
+    [
+      "test/test-parallel-writer-e2e.js"
     ],
     [
       "test/test-harness-clean.js"

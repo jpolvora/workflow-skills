@@ -66,6 +66,7 @@ Evaluate the target `*.spec.md` file:
   - Create or sync the spec feature branch (`git checkout -b feature/{slug}` or `git checkout feature/{slug} && git merge {baseBranch}`) from the updated `baseBranch`.
   - This guarantees every feature branch starts from an up-to-date base containing all PRs merged by previous specs in the batch or external commits.
   - On merge/rebase conflict: pause with Phase 5 `user-gate` (Resume after resolving, Skip, Abort).
+  - **Baseline advancement (base moves mid-batch):** refresh each in-flight child's `baselineCommit` to the new tip and re-integrate forward — never reset back: `node {skillsRoot}/ws-spec-to-pr/scripts/refresh_baseline.cjs --state {plansDir}/{slug}/{child-workflow-id}.state.json --base-ref origin/{baseBranch}`, then `git fetch` + `git rebase {newTip}` (merge-forward where rebase is disallowed). Overlap on foreign paths → STOP per [`git-ownership.md`](../ws-shared/runtime/git-ownership.md).
 - Transition the **existing** row for `{specPath}` (fallback `{slug}`) to `status: in_progress`, `flowMode: {lite|standard}` — a keyed in-place update, never a new appended row. Before writing, run the fail-closed duplicate guard (no duplicate `#`, no duplicate `slug`/`specPath`); on conflict, do not write and surface it. Set the row `updatedAt` and run frontmatter `updatedAt` to the current UTC timestamp. The item count stays at `totalItems`.
 - **Required child artifact set (dispatch contract):** the dispatched worker is a
   full child orchestrator (`ws-spec-to-pr` / `ws-spec-to-pr-lite`) and MUST persist
