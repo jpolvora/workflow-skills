@@ -61,8 +61,9 @@ function testGateThreeChoicesAndHs1() {
     'testGateThreeChoicesAndHs1: setup.md has three primary choices',
   );
   assert(
-    /Option \*\*2\*\* when `\{currentBranch\}` is in the protected set/.test(setup) &&
-      /Option \*\*1\*\* otherwise/.test(setup),
+    /Option \*\*3\*\* when the \*\*configured\*\* `defaults\.branchStrategy` is `stay`/.test(setup) &&
+      /Else option \*\*2\*\* when `\{currentBranch\}` is in the protected set/.test(setup) &&
+      /Else option \*\*1\*\*\./.test(setup),
     'testGateThreeChoicesAndHs1: recommended-option rule documented',
   );
   assert(
@@ -346,7 +347,7 @@ function testProtectedStayWarning() {
     'testProtectedStayWarning: stay on protected branch includes ship PR head warning',
   );
   assert(
-    /Option \*\*2\*\* when `\{currentBranch\}` is in the protected set/.test(setup),
+    /Else option \*\*2\*\* when `\{currentBranch\}` is in the protected set/.test(setup),
     'testProtectedStayWarning: recommend option 2 when HEAD is protected',
   );
 }
