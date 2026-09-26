@@ -185,6 +185,9 @@
       "ws-spec-format",
       "ws-spec-organizer"
     ],
+    "ws-spec-index": [
+      "ws-spec-organizer"
+    ],
     "ws-fix-pr": [
       "ws-self-learning"
     ],

@@ -44,12 +44,14 @@ function fencedBlocks(markdown) {
   return blocks;
 }
 
-// Broad staging forms: `git add -A`, `git add .`, bare `git add -u`
-// (without the allowed `--` path separator), and directory-wide adds.
+// Broad staging forms: `git add -A`, `git add --all`, `git add .`, bare
+// `git add -u` (without the allowed `--` path separator), and directory-wide
+// adds. Terminals accept end-of-string, whitespace, or a shell separator.
 const BROAD_STAGING = [
-  /git add -A/,
-  /git add \.(?:\s|$)/,
-  /git add -u(?! --)(?:\s|$)/,
+  /git add -A(?:\s|$|;|&|\|)/,
+  /git add --all(?:\s|$|;|&|\|)/,
+  /git add \.(?:\s|$|;|&|\|)/,
+  /git add -u(?!\s*--)(?:\s|$|;|&|\|)/,
   /git add (?!-|-- )[\w~][^\s`]*\//,
 ];
 
@@ -77,6 +79,33 @@ for (const pattern of BROAD_STAGING) {
 for (const pattern of DESTRUCTIVE) {
   assert.ok(!pattern.test(recipeText), `destructive verb in a recipe block: ${pattern}`);
   assert.ok(!pattern.test(scriptText), `destructive verb in a helper source: ${pattern}`);
+}
+
+// Regression (PR #433 review): the broad-staging detectors must catch the
+// whole-tree forms even when terminated by a shell separator or EOL, and add
+// `git add --all`, while leaving path-scoped forms allowed.
+const BROAD_SAMPLES = [
+  'git add -A',
+  'git add -A;',
+  'git add --all',
+  'git add .',
+  'git add .;',
+  'git add . && git commit',
+  'git add -u',
+  'git add -u || true',
+  'git add src/',
+];
+for (const sample of BROAD_SAMPLES) {
+  assert.ok(
+    BROAD_STAGING.some((pattern) => pattern.test(sample)),
+    `detects whole-tree staging: ${sample}`,
+  );
+}
+for (const allowed of ['git add -u -- deleted.txt', 'git add -- own.txt']) {
+  assert.ok(
+    !BROAD_STAGING.some((pattern) => pattern.test(allowed)),
+    `path-scoped form stays allowed: ${allowed}`,
+  );
 }
 
 // The retired stash-all bootstrap recipe must be gone.

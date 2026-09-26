@@ -95,7 +95,9 @@ function resolveChangelogFile(context) {
     configuredHasEntries = /^### \[/m.test(fs.readFileSync(configuredAbs, 'utf8'));
   }
   if (!configuredHasEntries) {
-    const legacyAbs = path.join(context.repoRoot, '.ws', 'CHANGELOG.md');
+    // Legacy fallback lives under the resolved hub root (relocatable via
+    // pathTokens.sharedDir), never a hardcoded '.ws'.
+    const legacyAbs = path.join(context.sharedDir, 'CHANGELOG.md');
     if (fs.existsSync(legacyAbs) && /^### \[/m.test(fs.readFileSync(legacyAbs, 'utf8'))) {
       return legacyAbs;
     }
@@ -134,19 +136,23 @@ function appendChangelog(options) {
   if (new RegExp(escaped.replace(/\n/g, '\\r?\\n')).test(existing)) {
     return { ok: true, skipped: 'duplicate-block', file: toRepoRelative(context.repoRoot, file) };
   }
-  let next;
+  // Preserve the file's dominant line ending: a CRLF worktree file must not be
+  // rewritten to LF on append. Build with LF, then re-emit the original EOL.
+  const eol = existing.includes('\r\n') ? '\r\n' : '\n';
+  let nextLf;
   if (!existing) {
-    next = `# Changelog\n\n${block}\n`;
+    nextLf = `# Changelog\n\n${block}\n`;
   } else {
     const lines = existing.split(/\r?\n/);
     const headerIndex = lines.findIndex((line) => /^# Changelog\s*$/.test(line));
     if (headerIndex === -1) {
-      next = `# Changelog\n\n${block}\n\n${existing.trimEnd()}\n`;
+      nextLf = `# Changelog\n\n${block}\n\n${lines.join('\n').trimEnd()}\n`;
     } else {
       lines.splice(headerIndex + 1, 0, '', block);
-      next = `${lines.join('\n').trimEnd()}\n`;
+      nextLf = `${lines.join('\n').trimEnd()}\n`;
     }
   }
+  const next = eol === '\n' ? nextLf : nextLf.replace(/\n/g, eol);
   // Atomic write so a concurrent reader never sees a torn file.
   const tempFile = `${file}.tmp-${process.pid}-${Date.now()}`;
   fs.writeFileSync(tempFile, next, 'utf8');

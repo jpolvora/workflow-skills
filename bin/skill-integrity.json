@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "38241b6d9621267c3ee51b2b28c80df5f43915081395edd8041c3c89fbc0b2c4",
+  "fullPackageDigest": "f11774a5677a5a5db0c671c976d4d7129e86f46fb246c0b4b74fbc201e91037a",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -51,7 +51,7 @@
       "runtime/scripts/validate_json_schema.cjs": "c6901a6ad2ed4fde4e5a6fcd85ebaa8b4c31f5707924f2928d25392d502dbbd9",
       "runtime/scripts/workflow_state.cjs": "337d39eb480db046b693b853efea4e60025fc2023e542562e41b46c128661b1c",
       "runtime/setup.md": "8011275346a12883f557e8e6799c43dd0d207fa6423d9a888dcd9f8fb1b39404",
-      "runtime/skill-dependencies.json": "752a9a86488117879ea98adc83e38273b4074a9526148cea011652d1b05dd8de",
+      "runtime/skill-dependencies.json": "cfe2f0deea34587b2174eeafaa957ce7a0ac6d9a682484560062df2ae64582cb",
       "runtime/stacks/abp-angular.md": "fc728fb3d39373b91f7bb4e0a719a24abc995a643fd55c856603a2a1f7bfd742",
       "runtime/stacks/nextjs-react.md": "a852fc0db314c4b99c0d1e7e0a16978bd30df732480536aebe82982a72e09bad",
       "runtime/stacks/php-laravel.md": "635b0ac523c0235dc6e22345266982aa66705bcc5c51ca659482272f2021b761",
@@ -65,7 +65,7 @@
       "templates/STACK.md.example": "829b7d3fce62b8167905fc1d921ee744db1d7e8ef895b0e7eb969f089973bebd",
       "templates/config.json.example": "7a59bb731f14bfd98b37b42b3f26af1f15cf3c48c11c3dcb8e57fc1d6b69543d"
     },
-    "skillDigest": "fe80a159fab4001c44f5e056a51e3e274bd43d973f9564ede040fd1806f165af"
+    "skillDigest": "0861411d2f2ff570dc5dcd9bc33f52a86697942c9c835d2b265dafcee412587f"
   },
   "package": {
     "files": {
@@ -78,12 +78,12 @@
       "bin/generate-telemetry-aggregate.cjs": "57fa865c30651ae60e90c37f1f10a29665508f0de3080252a84627b7740d3f8e",
       "bin/install-rules.js": "73066b5ca2547493ad53b5862f25aac468e7652f9b6019240d396bec5f57e269",
       "bin/review-dry-run.cjs": "341e78957ea71e3265297fa8cb2ab591a1f6f3cc3e75aa674c183be5081c8de4",
-      "bin/skill-dependencies.json": "752a9a86488117879ea98adc83e38273b4074a9526148cea011652d1b05dd8de",
+      "bin/skill-dependencies.json": "cfe2f0deea34587b2174eeafaa957ce7a0ac6d9a682484560062df2ae64582cb",
       "bin/skill-frontmatter.js": "ed6fec8e9617568631c287341b92fd269e9f3ebe58fb2c3f3d2437ad4b21d1d3",
       "bin/skill-integrity-lib.js": "ddec34895dc8227c384b5a5d68f0e90032b2de7255e4a63a161784d559ed6cc8",
       "bin/validate-evals.cjs": "f95d4ccdc70335fa1c5857bd56a9367daf16ba6404f9dac5117bd51a1251a15e"
     },
-    "packageDigest": "3b481c67aafd16a4e2de6bc48706ebfebb7c1df9779e83d1ac3eb1b08938c8f7"
+    "packageDigest": "4a1522686c64d8bcf109caba2e62b5571cc6b46e4b6e514131e70026ef64a6fc"
   },
   "packageVersion": "0.4.78",
   "skills": {
@@ -110,9 +110,9 @@
       "files": {
         "SKILL.md": "a7cf704b05aaea1281a978739bd2571880f2d0547d0f3b6f21577c95f833ce5b",
         "evals/evals.json": "4facea2c6981974d41a949d7a55af5838bed174bbcac61a5b6d69b0fc3fd1c52",
-        "scripts/append_changelog.cjs": "40cced739725da8b87e5a548a9c56d6e4473e96c658d44f8576539a750ae240b"
+        "scripts/append_changelog.cjs": "229b49e825f183a599fa06ceba5cf6e1b3f7c7af988100cd910bb1e4fe9a33d5"
       },
-      "skillDigest": "9676a3214297db9a3a2fd5ac5facd4fb97547039d178379fdb6896a61ecf199e"
+      "skillDigest": "bdb8fca183ad1c3214299bcaca753a1de70e655d157558915d56405d8575fbad"
     },
     "ws-check-harness": {
       "files": {
@@ -121,7 +121,7 @@
         "SKILL.md": "457f6a0802bf52180857d461679a723b0983eaf44399a82dc37e95f1189a2886",
         "evals/evals.json": "35bcc6ef297fa47efe448093357610e39775a8ed751d0ae4cdc143bd0c803147",
         "scripts/check_duplicates.cjs": "96326dbe6166a54666afe0820f704587e9eaec607fd1180f844a7cd2aaf6bcf9",
-        "scripts/check_git_ownership.cjs": "3fda3814f94a0ae9da44ef93964e64a6be8b9534b8187a759737b8ff917527b2",
+        "scripts/check_git_ownership.cjs": "9a6fe8a7171e651be4206eb4fbf234c6fae78684814b18227b1aaf9b1435e7ab",
         "scripts/check_harness_links.cjs": "a87e7286023336669e430ff8f9f8a76defcf15781ce7049a8b501ad307d3e520",
         "scripts/check_hub_separation.cjs": "6a1d35156f8123f32f4e57a1d66337f2e9e8dbafed09463d79f4f54e6c8255ae",
         "scripts/check_pipeline_handoff.cjs": "7afa6126aabf74b7370ea34e663a711223cf611ea78944d1353cc13b0e5c84b0",
@@ -131,7 +131,7 @@
         "scripts/detect_install_mode.cjs": "5995a4b275917183c0d799e34696ddf62a005953940c9e817418638385579a05",
         "scripts/measure_harness.cjs": "8722d70ac030340f7287edf9217f34a68f4200f50c1fe739019df35e8fa18d2c"
       },
-      "skillDigest": "216893813d12e997d596f7d4b9cae37a233ab9f67650f36acffa5809d39a5b9d"
+      "skillDigest": "72c88a0a0f3ff60d67089b4dbad51aaca8deb9d4ed9e227a93e0f4185faaeee5"
     },
     "ws-check-workflows": {
       "files": {

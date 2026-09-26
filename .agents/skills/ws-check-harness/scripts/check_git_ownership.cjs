@@ -23,10 +23,14 @@
 const fs = require('fs');
 const path = require('path');
 
+// Whole-tree staging detectors. Terminals accept end-of-string, whitespace, or
+// a shell separator (`;`, `&`, `|`) so `git add .;` / `git add . &&` are caught,
+// not only `git add . `. `git add -u -- <deleted-paths>` stays allowed (scoped).
 const BROAD_STAGING = [
-  { id: 'broad:git-add-A', re: /git add -A/ },
-  { id: 'broad:git-add-dot', re: /git add \.(?:\s|$)/ },
-  { id: 'broad:git-add-u', re: /git add -u(?! --)(?:\s|$)/ },
+  { id: 'broad:git-add-A', re: /git add -A(?:\s|$|;|&|\|)/ },
+  { id: 'broad:git-add-all', re: /git add --all(?:\s|$|;|&|\|)/ },
+  { id: 'broad:git-add-dot', re: /git add \.(?:\s|$|;|&|\|)/ },
+  { id: 'broad:git-add-u', re: /git add -u(?!\s*--)(?:\s|$|;|&|\|)/ },
   { id: 'broad:dir-add', re: /git add (?!-|-- )[\w~][^\s`]*\// },
 ];
 
