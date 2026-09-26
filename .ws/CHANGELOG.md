@@ -1,4 +1,9 @@
 # Changelog
+### [2026-09-26 00:40] Agent: Grok 4.7
+- **Prompt**: /ws-spec-from-provider
+- **Done**: Imported GitHub issue 429 into `.agents/specs/0132-us-429.spec.md` (agentic reformulation plus context companion), registered `.agents/plans/us-429/step-00-us-429.spec.md`, and tracked `us-429` in `index.PRD`.
+- **Result**: 1 imported, 0 skipped, 0 failed. Tracked. Auth required unsetting a stale `GITHUB_TOKEN` so `gh` used the keyring account.
+
 ### [2026-09-25 20:13] Agent: Muse Code (Muse Spark)
 - **Prompt**: Fix gh issues (open: #427 ws-check-harness findings v0.4.74 — unrouted ws-kanvas, duplicated autoload.md, pointer shorthand, ws-tdah README link).
 - **Done**: Routed ws-kanvas in runtime/CATALOG.md (Layer 5 + task router, mirroring root CATALOG); check_duplicates.cjs now excludes generated skills-hub copies (global ws-shared/autoload.md twin); installer refreshes stale generated global ws-shared/AGENTS.md to a canonical tokens-only pointer (no fresh seed; marker-less files keep legacy-migration contract); ws-tdah README links the repo URL instead of ../../../README.md. Regression tests: doc-sync routing + README-link invariants, duplicates hub-twin fixture, installer 2b refresh/idempotency/migration; integrity regenerated (v0.4.74).

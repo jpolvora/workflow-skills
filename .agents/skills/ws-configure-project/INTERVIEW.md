@@ -188,7 +188,7 @@ Write semantics: merge-write the trimmed string; empty string or omit key both m
 
 ## Auto
 
-`/ws-configure-project --auto` runs `node {skillsRoot}/ws-configure-project/scripts/auto_configure.cjs --repo-root {repoRoot} --json` without user-gates. It fills only gaps, preserves existing consumer-owned bytes, and returns `executionScope`, `runtimeSource`, `templateSource`, `layoutManifest`, `copiedPaths`, and a source-control matrix derived from `{skillsRoot}/ws-shared/runtime/hub-layout.json`. Global execution writes only project configuration and accepted pointer/autoload outputs; it does not copy managed runtime/templates or global memory/history. Exit `1` means required gaps remain; exit `2` is a setup or usage failure.
+`/ws-configure-project --auto` runs `node {skillsRoot}/ws-configure-project/scripts/auto_configure.cjs --repo-root {repoRoot} --json` without user-gates. It fills only gaps, preserves existing consumer-owned bytes, runs missing-only hub seed (`AGENTS.md`, `autoload.md`, `STACK.md`, `.gitignore` under the effective hub via `seed_consumer_hub.cjs`; never copies `runtime/` or `templates/` into the hub; does not invent installer metadata), and returns `executionScope`, `runtimeSource`, `templateSource`, `layoutManifest`, `copiedPaths`, `hubSeed`, and a source-control matrix derived from `{skillsRoot}/ws-shared/runtime/hub-layout.json`. Global execution writes only project configuration and accepted pointer/autoload outputs; it does not copy managed runtime/templates or global memory/history. Exit `1` means required gaps remain; exit `2` is a setup or usage failure.
 
 ## Security & Pre-Commit Hook
 

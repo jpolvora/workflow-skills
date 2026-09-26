@@ -1,6 +1,6 @@
 ---
 name: ws-configure-project
-version: 0.4.75
+version: 0.4.76
 description: Project configuration wizard — detects project settings and interviews config.json sections (including preview.dryRunCommand and optional specMemo).
 invocation_names:
   - configure-project
@@ -54,8 +54,11 @@ Fill or refresh consumer `config.json` via detect → suggest → user-gate. Por
 4. **Interview** — For each gap (or `--section` only): user-gate with ≥2 options, **recommended = detected suggestion** first; include **Keep current** / **Skip**. Write accepted values into `config.json` after each section (default). Batch-write only when the user picks that option at a user-gate. Never write credentials into `config.json`; track it only when it contains non-secret project settings. Autoload enablement gate: see step 6 (Recommended = No / `false`).
    - Done when: all required gaps resolved or explicitly skipped; optional sections offered once then skippable.
 
-**Step 4b. Auto mode** — When `--auto` is explicit, run `node {skillsRoot}/ws-configure-project/scripts/auto_configure.cjs --repo-root {repoRoot} --json` after resolving the execution scope. It fills only missing, empty-required, or placeholder values, preserves existing consumer files, skips framework memory seeding for global execution, and reports `runtimeSource`, `templateSource`, `layoutManifest`, `copiedPaths`, and the manifest-derived source-control matrix.
+**Step 4b. Auto mode** — When `--auto` is explicit, run `node {skillsRoot}/ws-configure-project/scripts/auto_configure.cjs --repo-root {repoRoot} --json` after resolving the execution scope. It fills only missing, empty-required, or placeholder values, preserves existing consumer files, skips framework memory seeding for global execution, runs missing-only hub seed (`AGENTS.md`, `autoload.md`, `STACK.md`, `.gitignore` under the effective hub via `seed_consumer_hub.cjs`; never copies `runtime/` or `templates/` into the hub), and reports `runtimeSource`, `templateSource`, `layoutManifest`, `copiedPaths`, `hubSeed`, and the manifest-derived source-control matrix.
    - Done when: the command exits 0 for the requested scope, or reports unresolved required gaps with exit 1; never continue after exit 2.
+
+**Step 4c. Hub seed (interactive)** — After `config.json` is on disk and before stack-companion checks, when the run is not `--section`-only, run `node {skillsRoot}/ws-configure-project/scripts/seed_consumer_hub.cjs --repo-root {repoRoot}`. It targets the consumer project hub in both project-local and global-hybrid runs and resolves seeds from the local, else global, skills install. It creates only missing hub `AGENTS.md`, `autoload.md`, `STACK.md`, and `.gitignore`. It does not copy `runtime/` or `templates/` into the hub and does not invent installer metadata. Non-zero exit → STOP.
+   - Done when: those four files exist under the effective hub, or the command exited 2 because the hub root is unusable.
 
 5. **Stack companion & Framework Traps** — Default `rules.stackFile` = `{sharedDir}/STACK.md` (default `.ws/STACK.md`; installer-seeded; consumer-owned). Prefer that path. Do **not** require or create a repo-root stack file. Skip when `--section autoload`, `--section specMemo`, or `--section preview`.
    - If shared `STACK.md` exists but config points at a missing root file: suggest set `rules.stackFile` → `{sharedDir}/STACK.md` (**Recommended**) / Keep current / Skip.

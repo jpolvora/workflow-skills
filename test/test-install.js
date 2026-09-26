@@ -756,7 +756,7 @@ child.on('close', async (code) => {
       }
     }
   }
-  for (const seed of ['AGENTS.md', 'autoload.md', 'config.json', 'STACK.md', 'installed-skills.json']) {
+  for (const seed of ['AGENTS.md', 'autoload.md', 'config.json', 'STACK.md', '.gitignore', 'installed-skills.json']) {
     if (!fs.existsSync(path.join(testWsDir, seed))) {
       console.error(`❌ Mismatch: Missing consumer hub file in target: .ws/${seed}`);
       mismatch = true;

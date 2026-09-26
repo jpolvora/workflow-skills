@@ -1,0 +1,156 @@
+---
+id: 429
+slug: us-429
+title: ws-configure-project should initialize .ws/ local project directory with basic minimal required files
+source: github
+specDate: 2026-09-26
+issueState: open
+issueUrl: "https://github.com/jpolvora/workflow-skills/issues/429"
+labels:
+  - enhancement
+step: 0
+workflowId: us-429
+status: completed
+startedAt: "2026-09-26T04:40:44.480Z"
+endedAt: "2026-09-26T04:40:44.480Z"
+acRefs: []
+---
+# Specification — Seed the consumer hub with the minimal required files
+
+**State:** open
+**Labels:** enhancement
+
+## Description
+
+`ws-configure-project` and first-run install bootstrap must leave a consumer hub usable without a hand-copy from `{globalSkillsRoot}/ws-shared`. Today a fresh hub can contain only the bootstrap `config.json` at `.ws/config.json`, while `rules.harness` and `rules.stackFile` point at files that are not on disk, and the hub `.gitignore` is missing.
+
+The layout contract is `{skillsRoot}/ws-shared/runtime/hub-layout.json`. The hub root is relocatable through `pathTokens.sharedDir` (default `.ws`). Bootstrap discovery stays fixed at `.ws/config.json`. Managed `runtime/` and `templates/` stay under the skills install (`{skillsRoot}/ws-shared/`, else `{globalSkillsRoot}/ws-shared/`). The consumer hub must not receive copies of those trees.
+
+Seed only what the current categories require, and only when the destination is missing:
+
+- Consumer-owned: `STACK.md` from `templates/STACK.md.example` under the effective hub root.
+- Generated-local pointers: hub `AGENTS.md` and `autoload.md` from the packaged seeds, with links rewritten for that hub root.
+- Hub `.gitignore` from `templates/hub.gitignore` (manifest alias).
+- `MEMORY.md`, `memory/`, and `CHANGELOG.md` at the paths in `rules.memoryDir` and `rules.changelogFile` (defaults: repository root), created on first use. Do not force those files under the hub root when the configured paths are elsewhere.
+- Installer metadata (`installed-skills.json`, `skill-integrity-local.json`) remains installer-written. Configure-project must not invent those files when no install has run.
+
+Existing consumer-owned bytes (`config.json`, a maintained `STACK.md`) are preserved. A second run adds only missing seeds and does not rewrite files that already exist.
+
+## Acceptance Criteria
+
+- AC1: On a fresh consumer repository, `ws-configure-project` (and install bootstrap when it creates the hub) creates the effective hub root and leaves `config.json` (bootstrap path `.ws/config.json`), hub `AGENTS.md`, hub `autoload.md`, hub `STACK.md`, and hub `.gitignore` present.
+- AC2: After that run, `rules.harness` and `rules.stackFile` from the written `config.json` resolve to files that exist.
+- AC3: `MEMORY.md`, `memory/`, and `CHANGELOG.md` exist at `rules.memoryDir` / `rules.changelogFile` after first use of those features. When those keys keep the repository-root defaults, the files are not required under the hub root.
+- AC4: The hub root does not contain `runtime/` or `templates/` copies. Those trees remain under the skills install.
+- AC5: An existing non-empty `config.json` and an existing maintained `STACK.md` are byte-preserved across the seed run.
+- AC6: A second run with the same inputs does not change existing seeded files and does not create duplicate paths.
+- AC7: Seed destinations follow `hub-layout.json` categories (`consumerOwned`, `generatedLocal`, `managed`, `installerMetadata`) and the `templates/hub.gitignore` → `.gitignore` alias.
+- AC8: `ws-check-harness` does not report the hub root incomplete solely because `AGENTS.md`, `autoload.md`, `STACK.md`, or `.gitignore` were not seeded.
+
+## Out of Scope
+
+| Item | Reason |
+|------|--------|
+| Copy managed `runtime/` or `templates/` into the consumer hub | Current hub contract keeps those trees in the skills install |
+| Rewrite installer metadata | `installed-skills.json` and `skill-integrity-local.json` stay installer-written |
+| Move bootstrap `config.json` or change hub relocation rules | Discovery stays at `.ws/config.json`; `pathTokens.sharedDir` rules stay as they are |
+| Fill wizard answers inside `config.json` | Existing configure-project interview owns those keys |
+
+## Assumptions & Open Questions
+
+| Assumption | Chosen default | Rationale |
+|------------|----------------|-----------|
+| Issue text lists hub-local `runtime/`, `templates/`, `MEMORY.md`, `CHANGELOG.md`, and installer metadata | Seed only missing hub pointers, `STACK.md`, and `.gitignore`; memory and changelog follow `rules.*` | Matches `hub-layout.json` and the skills-install runtime contract recorded in `0132-us-429.context.md` |
+| Auth, tenancy, i18n, and UI dimensions | N/A because this change only writes local hub files | No network, tenant, locale, or rendered UI surface |
+| Stack invariants | Apply `typescript-node.md` path containment and awaited promises in seed scripts | Project stack is the Node 22 skill package |
+
+## Definition of Ready (DoR)
+
+| Check | Status |
+|-------|--------|
+| Scope bounded to hub seed paths and configure/install call sites | Ready |
+| Acceptance criteria are atomic and observable on disk | Ready |
+| Failure modes named in Negative scenarios | Ready |
+| Observation commands named below | Ready |
+| Open product fork | Resolved in the companion context file: implement the current hub contract, keep the issue's older file list as human context only |
+| Stack invariants | Hub path joins stay contained under the resolved hub root (no `..` escape). Async seed steps await or return their promises. |
+
+## Validation & Observation Notes
+
+Telemetry:
+
+- `node .agents/skills/ws-spec-format/scripts/validate_spec.cjs --mode=authoring .agents/specs/0132-us-429.spec.md` exits 0.
+- A fixture consumer repo after configure/install contains the AC1 files and lacks hub `runtime/` and `templates/`.
+- A second configure run produces an empty diff on those seeded files.
+- `ws-check-harness` on that fixture does not emit an incomplete-hub finding for the seeded set.
+
+### Negative & Failing Test Scenarios
+
+- Negative 1: A maintained `STACK.md` and a filled `config.json` exist. The seed run must not replace their contents.
+- Negative 2: A `pathTokens.sharedDir` value that escapes the repository (absolute path, `..`, or symlink escape) must fail closed and must not write outside the repo.
+- Negative 3: Re-running the seed must not duplicate `.gitignore`, `AGENTS.md`, or `autoload.md`, and must not refresh managed trees into the hub.
+- Negative 4 (stack): A seed helper that builds a hub path from unsanitized input must be rejected by the containment check before any write (path traversal invariant).
+
+## Original Issue Context
+
+Title: ws-configure-project should initialize .ws/ local project directory with basic minimal required files
+
+URL: https://github.com/jpolvora/workflow-skills/issues/429
+
+## Summary
+
+`ws-configure-project` fills `config.json`, but it does not initialize the consumer hub root (`.ws/`) with the minimal set of required files. A fresh install leaves `.ws/` containing **only** `config.json`, so the hub is incomplete until the user manually copies files from the global template (`$HOME/.agents/skills/ws-shared`).
+
+## Problem
+
+After bootstrap, `.ws/` (the configured hub root, `pathTokens.sharedDir`) has just `config.json`, while the rest of the consumer-owned / generated-local hub content is missing. Observed missing items:
+
+- Generated-local: `AGENTS.md` (`rules.harness`), `autoload.md`, `MEMORY.md`, `CHANGELOG.md`, `memory/`
+- Consumer-owned: `STACK.md` (`rules.stackFile`)
+- Installer metadata: `installed-skills.json`, `skill-integrity-local.json`
+- `.gitignore` (hub-scoped ignores)
+- Managed: `runtime/`, `templates/`
+
+Consequences:
+
+1. `rules.harness` → `.ws/AGENTS.md` and `rules.stackFile` → `.ws/STACK.md` point at files that do not exist, so harness/stack resolution silently falls back or fails.
+2. The user must hand-copy from the global template to make the hub usable (the exact "manual fix" we want to eliminate).
+3. `.gitignore` for the hub root is absent, so generated/ignored hub files are not scoped until the user adds it.
+
+## Expected behavior
+
+`ws-configure-project` (and/or the installer bootstrap on first run) should **seed the hub root with a minimal, sane default set** instead of leaving it with `config.json` alone:
+
+- Create the hub root and copy the minimal required files from the packaged template when missing.
+- Seed generated-local files from `templates/` (`AGENTS.md` pointer, `autoload.md`, `MEMORY.md`, `CHANGELOG.md`, `memory/`).
+- Seed consumer-owned `STACK.md` from `templates/STACK.md.example`.
+- Seed the hub `.gitignore` from `hub.gitignore`.
+- Write/refresh managed `runtime/` + `templates/` per `runtime/hub-layout.json`.
+- Never overwrite existing consumer-owned content (`config.json`, maintained `STACK.md`).
+- Be idempotent: re-runs only add what is missing.
+
+## Acceptance criteria
+
+- [ ] On a fresh consumer repo, running `ws-configure-project` (or install bootstrap) leaves `.ws/` with at least: `config.json`, `AGENTS.md`, `autoload.md`, `STACK.md`, `MEMORY.md`, `CHANGELOG.md`, `memory/`, `.gitignore`, `installed-skills.json`, plus `runtime/` and `templates/`.
+- [ ] `rules.harness` and `rules.stackFile` resolve to files that exist after init.
+- [ ] Existing `config.json` / maintained `STACK.md` are preserved (no clobber).
+- [ ] Re-running is idempotent (no duplicate/overwrite churn).
+- [ ] Behavior follows `runtime/hub-layout.json` categories (consumerOwned vs generatedLocal vs managed vs installerMetadata).
+- [ ] `ws-check-harness` no longer reports the hub root as incomplete.
+
+## Notes
+
+- Hub root is relocatable via `pathTokens.sharedDir` (default `.ws`); bootstrap config stays fixed at `.ws/config.json`.
+- Layout contract: `runtime/hub-layout.json`.
+
+### Prior Work Sweep
+
+No open pull request is tied to issue 429. Keyword search returned merged pulls about hub layout (including #374, #371, #368, #384). Those are related history, not an in-flight implementation of this issue. `git log` on `ws-configure-project/SKILL.md` and `hub-layout.json` shows later hub-contract commits; none close issue 429.
+
+### Design Intent
+
+This is a new seed behavior, not a restore of a removed code path. The current hub contract (managed trees stay in the skills install; memory and changelog follow `rules.*`) is the intended layout. The issue's request to copy `runtime/` and `templates/` into `.ws/` conflicts with that contract and is deferred in the companion context file.
+
+## Notes
+
+Lookup: no MEMORY hit for hub seeding. Stack file is the Node skills package. No visual attachments on the issue.

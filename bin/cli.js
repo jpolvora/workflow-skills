@@ -63,6 +63,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const packageRoot = path.resolve(__dirname, '..');
+const requireFromPackage = createRequire(import.meta.url);
+const { seedConsumerHub } = requireFromPackage(
+  path.join(packageRoot, '.agents/skills/ws-configure-project/scripts/seed_consumer_hub.cjs'),
+);
 const packageSkillsDir = path.join(packageRoot, '.agents', 'skills');
 const skillGraphPath = fs.existsSync(path.join(packageRoot, 'bin', 'skill-dependencies.json'))
   ? path.join(packageRoot, 'bin', 'skill-dependencies.json')
@@ -223,18 +227,9 @@ function packageHubPath(categoryName, relativePath) {
  * missing-file edge. Portable tokens only — no absolute paths.
  */
 function localHubPointerMd() {
-  // Rendered for the configured hub (spec 0115): the bootstrap config stays
-  // fixed at `$PWD/.ws/config.json` (hub discovery point); all other hub
-  // content lives under the configured hub.
-  const hubRel = consumerHubRelPosix();
-  return `# Shared — Workflow Config & Consumer Data Hub (local pointer)
-
-This is the project-local entrypoint for the consumer hub (\`${hubRel}/\`). Managed hub content (runtime contracts, schemas, scripts, templates) resolves from the project skills install (\`{skillsRoot}/ws-shared/\`) when present, otherwise from \`{globalSkillsRoot}/ws-shared/\`. This folder keeps project-local config only. Project consumer data lives in this folder (\`STACK.md\`, \`installed-skills.json\`); the bootstrap \`config.json\` stays fixed at \`.ws/config.json\` (hub discovery point). MEMORY/changelog live at their configured locations (defaults: repo-root \`MEMORY.md\` + \`memory/\`, repo-root \`CHANGELOG.md\`).
-
-- Full hub contract: \`{skillsRoot}/ws-shared/runtime/AGENTS.md\` (global fallback \`{globalSkillsRoot}/ws-shared/runtime/AGENTS.md\`).
-- Config always resolves project-local first: \`$PWD/.ws/config.json\` overrides the global hub.
-- \`rules.harness\` default (\`${hubRel}/AGENTS.md\`) resolves to this file; follow the canonical runtime link above. Run installer \`update\` to refresh this pointer.
-`;
+  return requireFromPackage(
+    path.join(packageRoot, '.agents/skills/ws-configure-project/scripts/configure_autoload.cjs'),
+  ).localHubPointerMd(consumerHubRelPosix());
 }
 
 /**
@@ -1293,7 +1288,32 @@ function ensureSharedHubInstalled(mode = 'install') {
     if (!fs.existsSync(sourcePath)) continue;
     for (const base of new Set([destManaged, destShared])) {
       const destinationPath = path.join(base, destinationName);
+      const isConsumerProjectHub = !isGlobalScope && base === destShared;
       if (CONSUMER_OWNED_HUB_FILES.has(destinationName) && fs.existsSync(destinationPath)) {
+        continue;
+      }
+      // G1 (us-429): merge only on the project consumer hub; managed tree stays packaged bytes.
+      if (
+        isConsumerProjectHub &&
+        destinationName === '.gitignore' &&
+        fs.existsSync(destinationPath)
+      ) {
+        const managed = fs.readFileSync(sourcePath, 'utf8')
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter((line) => line && !line.startsWith('#'));
+        const present = new Set(
+          fs.readFileSync(destinationPath, 'utf8').split(/\r?\n/).map((line) => line.trim()),
+        );
+        const missing = managed.filter(
+          (rule) => !present.has(rule) && !present.has(`!${rule}`),
+        );
+        if (missing.length) {
+          fs.appendFileSync(
+            destinationPath,
+            `\n# managed hub ignores (auto-generated)\n${missing.join('\n')}\n`,
+          );
+        }
         continue;
       }
       fs.copyFileSync(sourcePath, destinationPath);
@@ -1313,6 +1333,17 @@ function ensureSharedHubInstalled(mode = 'install') {
 
   // Never overwrite consumer config.json / STACK.md / MEMORY.md / CHANGELOG.md from upstream
   ensureSharedConsumerArtifacts(mode);
+  if (!isGlobalScope) {
+    try {
+      const seedResult = seedConsumerHub({ repoRoot: path.resolve(targetDir) });
+      for (const relPath of seedResult.created) {
+        console.log(`    Seeded ${relPath}`);
+      }
+    } catch (err) {
+      console.error(`Error: hub seed failed: ${err.code || 'SEED_ERROR'}: ${err.message}`);
+      process.exit(1);
+    }
+  }
   const autoloadPath = path.join(destShared, 'autoload.md');
   const autoloadSource = packageHubPath('runtime', 'autoload.md');
   const existingAutoload = fs.existsSync(autoloadPath) ? fs.readFileSync(autoloadPath, 'utf8') : null;
@@ -1354,9 +1385,6 @@ function ensureSharedHubInstalled(mode = 'install') {
         console.log(`    Refreshed ${hubDisplay()}AGENTS.md pointer to the managed hub`);
       }
     }
-  } else if (!fs.existsSync(hubPointerPath)) {
-    fs.writeFileSync(hubPointerPath, localHubPointerMd());
-    console.log(`    Seeded thin local ${hubDisplay()}AGENTS.md pointer to the managed hub`);
   } else if (isGeneratedHubEntrypoint(hubPointerPath)) {
     const currentPointer = fs.readFileSync(hubPointerPath, 'utf8');
     const expectedPointer = localHubPointerMd();
