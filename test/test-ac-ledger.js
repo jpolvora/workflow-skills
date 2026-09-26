@@ -562,6 +562,30 @@ assert.strictEqual(us430Invoke([
   }),
 ]).status, 0);
 
+// Case 14: Non-zero test alias without enumerated paths fails closed -> knownDefect: true
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-test-bare-fail', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendTest',
+    command: 'npm run test',
+    exitCode: 1,
+    failingPaths: [],
+  }),
+]).status, 0);
+let bareTestFailScore = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(bareTestFailScore.knownDefect, true, 'non-zero test alias without failingPaths fails closed');
+
+// Reset backendTest to clean passing
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-test-clean-post-14', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendTest',
+    command: 'npm run test',
+    exitCode: 0,
+    failingPaths: [],
+  }),
+]).status, 0);
+
 // V1:implement-scoring-aliases: ws-implement-tasks documents scoring aliases
 const implementSkill = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-implement-tasks/SKILL.md'), 'utf8');
 assert.ok(implementSkill.includes('backendFormat') && implementSkill.includes('backendBuild') && implementSkill.includes('backendTest') && implementSkill.includes('frontendTest'), 'V1:implement-scoring-aliases: scoring aliases documented');
