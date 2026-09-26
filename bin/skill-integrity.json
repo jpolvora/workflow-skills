@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "df29ab97de98a7586d69fed31a9de4957e7d4827d3890a457a7a42d59814291d",
+  "fullPackageDigest": "98906790b7083ae22d89802cb9a47475de8d4ad282bfa141aa045d3785421058",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -167,14 +167,14 @@
     "ws-configure-project": {
       "files": {
         "INTERVIEW.md": "e2a64b9eeed7d6a2a3c5189c84fe6c166b4e7ba0c18fe92f5450cf3ced5f0517",
-        "SKILL.md": "0b85f7ca80065cf83030d446ecbd05ee4cf4b27089d27095d19d3125ed78f123",
+        "SKILL.md": "88cc18251565fc46bc6ae615060919f182219519c7bfd994af63141cd2d80182",
         "evals/evals.json": "83dd416a37714e0e12270cdcc022185e8a8385d520a7991061370a1eb277e87e",
         "scripts/auto_configure.cjs": "b0d370ff7dc5c13621a9c1e388a1b7d7af10ad6c0ad46c02eeaede063d6a8271",
         "scripts/configure_autoload.cjs": "3776d42af17199ecf502a8f663693264e60c0736f2c840a5db695559a51cf7ea",
-        "scripts/seed_consumer_hub.cjs": "af4d48106d55ff44cc38fc5fd0908606f26033d7226d485a38bf4d2759d8affa",
+        "scripts/seed_consumer_hub.cjs": "16617a03903946074573b4936189c320a3aa041a853db874fa6219c842df8bc9",
         "scripts/stack_fingerprint.cjs": "dd52aa341353c066d0cd9642ed9e46c17dd826ad3bf8d735dad8de93341dee35"
       },
-      "skillDigest": "59b03f985f5eaf8e9cfa684a547915625ec29310d063dce67491e028f5171d23"
+      "skillDigest": "58d8fcef3fc03624fd1e816a0fe14e3552ef484d5686eaa8022c111d6d601004"
     },
     "ws-doctor": {
       "files": {

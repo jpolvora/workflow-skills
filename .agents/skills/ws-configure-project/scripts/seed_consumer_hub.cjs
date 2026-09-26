@@ -86,11 +86,22 @@ function seedConsumerHub(options = {}) {
   const created = [];
   const skipped = [];
 
+  const rel = (abs) => toRepoRelative(repoRoot, abs, { allowOutside: false });
+
+  // Refuse managed trees before any create (Negative 4 / AC4). Install quarantine
+  // may remove them first; configure must not seed and then fail.
+  for (const banned of ['runtime', 'templates']) {
+    const stale = path.join(hubRoot, banned);
+    if (fs.existsSync(stale)) {
+      const err = new Error(`refusing seed: hub must not contain ${banned}/ (${rel(stale)})`);
+      err.code = 'SEED_MANAGED_IN_HUB';
+      throw err;
+    }
+  }
+
   if (!dryRun) {
     fs.mkdirSync(hubRoot, { recursive: true });
   }
-
-  const rel = (abs) => toRepoRelative(repoRoot, abs, { allowOutside: false });
 
   const stackPath = path.join(hubRoot, 'STACK.md');
   if (fs.existsSync(stackPath)) {
@@ -140,15 +151,6 @@ function seedConsumerHub(options = {}) {
     created.push(rel(autoloadPath));
   }
 
-  for (const banned of ['runtime', 'templates']) {
-    const stale = path.join(hubRoot, banned);
-    if (fs.existsSync(stale)) {
-      const err = new Error(`refusing seed: hub must not contain ${banned}/ (${rel(stale)})`);
-      err.code = 'SEED_MANAGED_IN_HUB';
-      throw err;
-    }
-  }
-
   return {
     hubRoot: rel(hubRoot),
     hubRelPosix,
@@ -157,5 +159,33 @@ function seedConsumerHub(options = {}) {
     dryRun,
   };
 }
+
+function main() {
+  const args = process.argv.slice(2);
+  let repoRoot = process.cwd();
+  let dryRun = false;
+  for (let i = 0; i < args.length; i += 1) {
+    if (args[i] === '--repo-root') repoRoot = args[++i];
+    else if (args[i] === '--dry-run') dryRun = true;
+    else if (args[i] === '--json') { /* default */ }
+    else {
+      console.error(`ERROR: unknown argument ${args[i]}`);
+      process.exit(2);
+    }
+  }
+  try {
+    const result = seedConsumerHub({ repoRoot, dryRun });
+    console.log(JSON.stringify(result));
+  } catch (err) {
+    const code = err && err.code ? String(err.code) : '';
+    if (code.startsWith('HUB_') || code === 'SEED_AUTOLOAD_MISSING' || code === 'SEED_MANAGED_IN_HUB') {
+      console.error(`ERROR: hub seed: ${err.message}`);
+      process.exit(2);
+    }
+    throw err;
+  }
+}
+
+if (require.main === module) main();
 
 module.exports = { seedConsumerHub };

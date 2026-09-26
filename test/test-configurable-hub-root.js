@@ -422,6 +422,27 @@ function plantPatternsRow(autoload) {
   }
 }
 
+// --- us-429 review: managed hub dirs refuse before any seed write ------------
+{
+  const root = makeFixture('ws-hub-managed-');
+  try {
+    writeBootstrapConfig(root, '.ws');
+    seedMinimalWsShared(root);
+    fs.mkdirSync(path.join(root, '.ws', 'runtime'), { recursive: true });
+    let threw = false;
+    try {
+      seedConsumerHub({ repoRoot: root });
+    } catch (err) {
+      threw = err && err.code === 'SEED_MANAGED_IN_HUB';
+    }
+    assert(threw, 'hub runtime/ refuses seed (AC4)');
+    assert(!fs.existsSync(path.join(root, '.ws', 'STACK.md')), 'refused seed does not create STACK.md');
+    assert(!fs.existsSync(path.join(root, '.ws', 'AGENTS.md')), 'refused seed does not create AGENTS.md');
+  } finally {
+    rmFixture(root);
+  }
+}
+
 // --- AC6: global-hybrid run renders hub-relative generator rows --------------
 {
   const root = makeFixture('ws-hub-global-');
