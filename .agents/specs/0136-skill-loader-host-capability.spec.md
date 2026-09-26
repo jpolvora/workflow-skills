@@ -4,6 +4,7 @@ slug: skill-loader-host-capability
 title: "skillLoader host capability and unified skill-load procedure"
 source: local
 specDate: 2026-09-26
+status: completed
 ---
 
 # Specification — skillLoader host capability and unified skill-load procedure
