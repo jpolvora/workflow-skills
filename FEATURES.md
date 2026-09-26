@@ -208,7 +208,7 @@ Meta-skills that keep the suite itself honest.
 | `ws-preview` | Consumer-configured local pipeline review dry-run (`preview.dryRunCommand`) without publishing PR threads |
 | `ws-write-a-skill` | Authoring and progressive-disclosure tuning protocol for new skills |
 
-Harness dispatches use bounded `## Subagent contract` sections plus indexed plan slices. The fixed preamble is capped at 18 KB, matched MEMORY at 4 KB, and total dispatch context at `defaults.contextBudget` (32 KB by default). `measure_harness.cjs` reports the reduction against the measured baseline (each skill id is resolved locally then under `{globalSkillsRoot}` so hybrid consumers are not ENOENT), while `check_duplicates.cjs` rejects duplicated normative blocks. Phase 5a also runs `check_shell_quoting.cjs` to block nested-quote `python -c` / `node -e` one-liners.
+Harness dispatches use bounded `## Subagent contract` sections plus indexed plan slices. The fixed preamble is capped at 18 KB, matched MEMORY at 4 KB, and total dispatch context at `defaults.contextBudget` (32 KB by default). `measure_harness.cjs` reports the reduction against the measured baseline (each skill id is resolved locally then under `{globalSkillsRoot}` so hybrid consumers are not ENOENT), while `check_duplicates.cjs` rejects duplicated normative blocks. Phase 5a also runs `check_shell_quoting.cjs` to block nested-quote `python -c` / `node -e` one-liners, and `check_skill_load.cjs` to keep skill bodies on the canonical `{skillLoader}` load procedure (bound native loader, else `{skillsRoot}/ws-<id>/SKILL.md` fallback with already-loaded tracking).
 
 Diagnostics can be persisted under `plans.diagnosticsDir`. `workflow-skills telemetry report` renders per-run audit counts and median elapsed times by pipeline and step.
 
@@ -256,8 +256,8 @@ Project settings live in consumer-owned `.ws/config.json` (seeded from `template
 | `issueTrackers` | GitHub and Azure DevOps credentials, CLI, converter scripts |
 | `verification` | Build, test, format, migration, and mutation commands plus `mutationThreshold` |
 | `dagThresholds` | Complexity limits that decide sequential versus parallel DAG |
-| `defaults` | Execution mode, test globs, 32 KB context budget, `minVerifyScore` (1–10, default 9), optional parallel verify/review, `gateGranularity` (`step` by default or `phase`), adaptive convergence policy, delivery artifacts, `modelsPreset` / `modelPresets` bundles, optional `stepModels` map, `reviewJury` / `providerCompat` / `contextHygiene`, step-baton maps (`stepRunners` / `runners` / `stepBaton`), and legacy per-phase model identifiers |
-| `plans` / `reviews` / `preview` | Artifact roots, `plans.enforceSpecPrefixOrdering` (default false), diagnostics root, and `preview.dryRunCommand` (consumer local dry-run for `/ws-preview`; set via `--section preview`) |
+| `defaults` | Execution mode, test globs, 32 KB context budget, `minVerifyScore` (1–10, default 9), optional parallel verify/review, `gateGranularity` (`step` by default or `phase`), adaptive convergence policy, delivery artifacts, `modelsPreset` / `modelPresets` bundles, optional `stepModels` map, `reviewJury` / `providerCompat` / `contextHygiene`, step-baton maps (`stepRunners` / `runners` / `stepBaton`), `branchStrategy` (`stay` default, `from-current`, `from-base`, `prompt`), and legacy per-phase model identifiers |
+| `plans` / `reviews` / `preview` | Artifact roots, `plans.enforceSpecPrefixOrdering` (default false), `plans.statusSubfolders` (default false; `pending/` / `completed/` / `archived/` filing), diagnostics root, and `preview.dryRunCommand` (consumer local dry-run for `/ws-preview`; set via `--section preview`) |
 | `rules` | Guardrail paths: harness, senior developer (and karpathy alias), stack file, changelog file, memory dir |
 | `invariants` | Project-level architectural assertions plus `skipQualityGates` |
 | `fable` | Master toggle plus `autoAudit`, `autoDetectDomain`, `auditVerdictsBlockShip` |

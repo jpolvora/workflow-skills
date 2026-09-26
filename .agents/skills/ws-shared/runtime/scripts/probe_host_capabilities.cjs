@@ -27,7 +27,7 @@ const fs = require('fs');
 const path = require('path');
 const { resolveConsumerContext } = require('./resolve_consumer_root.cjs');
 
-const TOKENS = ['readFile', 'writeFile', 'editFile', 'shellExec', 'dispatchAgent', 'askQuestion', 'browserVerify'];
+const TOKENS = ['readFile', 'writeFile', 'editFile', 'shellExec', 'dispatchAgent', 'askQuestion', 'browserVerify', 'skillLoader'];
 
 const MINIMAL = {
   readFile: 'none',
@@ -37,6 +37,7 @@ const MINIMAL = {
   dispatchAgent: 'none',
   askQuestion: 'none',
   browserVerify: 'none',
+  skillLoader: 'none',
 };
 
 function parseArgs(argv) {

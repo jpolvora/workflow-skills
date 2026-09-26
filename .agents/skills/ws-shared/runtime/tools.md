@@ -101,12 +101,12 @@ Config override: `defaults.hostAdapter.mode` (`auto` default; `native-tool` | `c
 ### Capability tokens & cache-query-first tool choice
 
 Skill bodies name portable capability tokens instead of shell equivalents: `{readFile}`,
-`{writeFile}`, `{editFile}`, `{shellExec}`, `{dispatchAgent}`, `{askQuestion}`, `{browserVerify}`.
+`{writeFile}`, `{editFile}`, `{shellExec}`, `{dispatchAgent}`, `{askQuestion}`, `{browserVerify}`, `{skillLoader}`.
 Vocabulary, ordering, and effective-resolution precedence live in
 [`host-capability-tokens.md`](host-capability-tokens.md) — query the `capabilities` map of the
 cached host-capabilities entry for the current `hostId::orchestratorModel` key (the probe also
 mirrors the dispatch aliases under `binding`) before choosing how to act, and prefer the bound
-native tool over shelling out for the same operation. Keep the entry schema in
+native tool over shelling out for the same operation. Loading another skill body follows the canonical skill-load procedure in [`host-capability-tokens.md`](host-capability-tokens.md) (`{skillLoader}` bound loader, else `{skillsRoot}/ws-<id>/SKILL.md` fallback) — never restate its steps here. Keep the entry schema in
 [`host-dispatch.md`](host-dispatch.md) §4 in sync (`capabilities`, `hostShape`, `knownShape`).
 
 ### Host-tool binding & dispatch tiers (single contract)
@@ -120,7 +120,7 @@ Workflows never name concrete session tools. At bootstrap (before the first `use
 | `backgroundTaskTool` | Background CLI runner entry, or `none` |
 | `browserTool` | Browser verification tool, or `none` |
 
-**Resolution order (first match wins):** `defaults.hostAdapter.mode` non-`auto` tier force → disk-cache hit in `{sharedDir}/host-capabilities.json` for the current `hostId::orchestratorModel` key (`hostId` = session-reported neutral host identifier; `orchestratorModel` = bootstrap `currentModel` id with version) → one active probe asking the session to map each alias to its concrete tool or `none`. Normalize common spelling variants to one alias; unknown tools bind `none` without failure. Reuse the binding for the whole workflow (no per-step re-probe unless toolset change, explicit rebind, or key change). Cache misses upsert only the current key (preserving others) in the consumer-local gitignored `host-capabilities.json`; missing/unreadable cache behaves as a miss. Log `host-capability-bind | {json} | {hit|probe} | ISO` to step telemetry JSONL during Step 0 and persist as `state.hostBinding`.
+**Resolution order (first match wins):** `defaults.hostAdapter.mode` non-`auto` tier force → disk-cache hit in `{sharedDir}/host-capabilities.json` for the current `hostId::orchestratorModel` key (`hostId` = session-reported neutral host identifier; `orchestratorModel` = bootstrap `currentModel` id with version) → one active probe asking the session to map each alias to its concrete tool or `none`. Normalize common spelling variants to one alias; unknown tools bind `none` without failure. Reuse the binding for the whole workflow (no per-step re-probe unless toolset change, explicit rebind, or key change). Cache misses upsert only the current key (preserving others) in the consumer-local gitignored `host-capabilities.json`; missing/unreadable cache behaves as a miss. Log `host-capability-bind | {json} | {hit|probe} | ISO` (where `{json}` includes `capabilities.skillLoader`) to step telemetry JSONL during Step 0 and persist as `state.hostBinding`.
 
 Legacy neutral flags are derived readouts of this binding (not a separate discovery pass): `hasStructuredChoiceTool` ⟺ `askQuestionTool` bound; `hasSubagentTool` ⟺ `subagentTool` bound; `hasBrowserTool` ⟺ `browserTool` bound.
 

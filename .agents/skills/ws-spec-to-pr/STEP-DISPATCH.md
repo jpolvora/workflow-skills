@@ -40,7 +40,7 @@ Starting step {N} ({Label}):
 
 Fill 4–8 `*` bullets from that analysis. Do **not** copy a canned list from a skill, script, or prior step. After printing the preview, then immediately continue with tool calls in the same response; never end the turn after the preview. Omitted or `false` → do not print this block. Schema/seed default is `true` only when `ws-configure-project` writes the key. When using `dispatch-agent`, append the VerboseMode addendum in [`PROTOCOLS.md`](PROTOCOLS.md) § Base Prompt Prefix.
 
-> **Dispatch context (mandatory before each `dispatch-agent`):** build the prompt with `node {skillsRoot}/ws-spec-to-pr/scripts/build_dispatch_context.cjs --skill <SKILL.md> --step {N} --slug {slug} [--ac ACn ...] --output {us-dir}/.runtime/step-{N}-dispatch-prompt.md`. Prefix contract: enhancing-skill contracts and MEMORY slice are inlined; do not re-Read those SKILL.md files. Still Read product files and the target `## Subagent contract` if not inlined.
+> **Dispatch context (mandatory before each `dispatch-agent`):** build the prompt with `node {skillsRoot}/ws-spec-to-pr/scripts/build_dispatch_context.cjs --skill <SKILL.md> --step {N} --slug {slug} [--ac ACn ...] --output {us-dir}/.runtime/step-{N}-dispatch-prompt.md`. Prefix contract: enhancing-skill contracts and MEMORY slice are inlined; do not reload those skill bodies (already loaded per the canonical skill-load procedure). Still Read product files and the target `## Subagent contract` if not inlined.
 
 | Step | Action | Artifact |
 |------|--------|----------|

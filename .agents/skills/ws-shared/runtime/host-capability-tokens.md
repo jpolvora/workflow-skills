@@ -27,6 +27,7 @@ approval proceeds to mapping work — this document is that approval record.
 | `{dispatchAgent}` | Spawn a subagent for step work | `dispatch-agent` |
 | `{askQuestion}` | Structured-choice user gate | `user-gate` |
 | `{browserVerify}` | Browser UI verification | `browser-mcp` |
+| `{skillLoader}` | Load skill bodies natively | skill-load procedure below |
 
 ## Cache-query-first ordering
 
@@ -56,3 +57,29 @@ no per-step re-probing. Re-probe only when one of these holds: explicit `--refre
 toolset change, explicit rebind, or a different session key. Stale entries that hide newly
 available tools are worse than re-probing, so any of those four conditions discards the entry and
 probes once.
+
+## Skill-load procedure (canonical)
+
+This section is the single normative home for loading skill bodies. Every other
+skill, hub, or harness doc delegates here by link instead of restating steps.
+`{skillLoader}` lives in `capabilities` only (never in `binding` aliases):
+loading is not dispatch.
+
+1. **Query first:** read the cached host-capabilities entry for the current
+   `hostId::orchestratorModel` key (miss → probe once via
+   `probe_host_capabilities.cjs`, then re-read). Use `capabilities.skillLoader`.
+2. **Already-loaded check:** before loading, check whether the skill is already
+   loaded this session — through the bound loader's already-loaded query when
+   it exposes one, else through session already-read tracking. Never re-read a
+   skill loaded this session.
+3. **Bound path:** when `skillLoader` names a host-native skill loader tool,
+   load through it.
+4. **Fallback path:** when `skillLoader` resolves to `none`, read
+   `{skillsRoot}/ws-<id>/SKILL.md` through `{readFile}` (local-first, then the
+   `{globalSkillsRoot}` fallback). Refuse skill ids containing traversal
+   (`../`) fail-closed; reads stay inside the package roots.
+5. **Record:** emit `skill-load | {id} | {loaded|read} | ISO` to step telemetry
+   so duplicate loads are auditable.
+
+Neither path names host products. The resolved value is logged per run on the
+`host-capability-bind` telemetry line (see `host-dispatch.md` §2).

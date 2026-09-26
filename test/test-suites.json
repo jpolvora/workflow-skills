@@ -117,6 +117,9 @@
       "test/test-check-harness-links.js"
     ],
     [
+      "test/test-check-skill-load.js"
+    ],
+    [
       "test/test-harness-clean.js"
     ],
     [
@@ -261,6 +264,9 @@
     ],
     [
       "test/test-check-harness-links.js"
+    ],
+    [
+      "test/test-check-skill-load.js"
     ],
     [
       "test/test-harness-clean.js"

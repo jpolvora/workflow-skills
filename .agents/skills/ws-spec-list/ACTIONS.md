@@ -92,7 +92,7 @@ Finish / Cancel / Archive / Remove: `user-gate` with **Confirm (Recommended)** /
 ### Orch handoff
 
 ```text
-Continue (plan) → Read state → load {skillsRoot}/ws-spec-to-pr[/lite]/SKILL.md → resume at currentStep
+Continue (plan) → Read state → load ws-spec-to-pr[/lite] via {skillLoader} (canonical skill-load procedure) → resume at currentStep
 Start (spec)    → load orch entry with {specsDir} path (or ws-spec-write when no body yet)
 Start (plan)    → load orch; prefer linked {specsDir} path over inventing a new spec
 ```
