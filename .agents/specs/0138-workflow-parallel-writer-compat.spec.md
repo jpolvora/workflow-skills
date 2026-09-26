@@ -4,6 +4,7 @@ slug: workflow-parallel-writer-compat
 title: "Workflow parallel-writer compatibility audit and enforcement"
 source: local
 specDate: 2026-09-26
+status: completed
 ---
 
 # Specification — Workflow parallel-writer compatibility audit and enforcement
