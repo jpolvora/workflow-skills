@@ -64,7 +64,7 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
    - Write to `.ws/STACK.md` (or the resolved `rules.stackFile` when it already lives under `.ws/`). Do **not** create a repo-root stack file.
    - If auto-detection is incomplete or ambiguous (multiple possible stacks), present findings to the user and ask for clarification on uncertain items.
    - Log: `stack companion bootstrapped: {stackFile}`.
-2. **Parse flags & parameters**: `auto`, `dry-run`, `skip-testing`, `skip-tests`, `skip-gates`, `full`, `strict`, `score-and-refine` (aliases: `analyze-second-pass`, `score-refine`, `scoreAndRefine`).
+2. **Parse flags & parameters**: `auto`, `dry-run`, `skip-testing`, `skip-tests`, `skip-gates`, `full`, `strict`, `score-and-refine` (aliases: `analyze-second-pass`, `score-refine`, `scoreAndRefine`), `prompt-branch` (alias: `--prompt-branch`).
    - **Preset parameter override:** `preset=<name>` (aliases: `--preset=<name>`, `--preset <name>`) overrides `defaults.modelsPreset` for this workflow run.
      - Precedence: invocation `preset=<name>` > `config.json` `defaults.modelsPreset`.
      - Persist `modelsPreset: {resolvedPreset}` in state frontmatter and `{workflow-id}.state.json`.
@@ -76,6 +76,7 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
    - Do **not** accept `--model` or `--model-chain` (removed). If the raw invocation still contains them, ignore and note once in the init banner: `model flags ignored — use Pause → switch model in IDE/agent host → Resume`.
    - Do **not** store or apply `modelChain`.
    - `strict` → full US verification at Step 5 (standard orch only).
+   - `prompt-branch` / `--prompt-branch` → force the §5b three-choice branch gate for this run even when `defaults.branchStrategy` resolves to a non-interactive strategy. Ignored in `autoMode` (no `user-gate` ever).
 2a. **Gate contract**: Load [`gates.md`](gates.md) — universal step controls, close implementation + ship gates at standard Step 8 / lite Step 4, separate fix-PR at standard Step 9 / lite Step 5. Config/SCM: [`config-resolution.md`](config-resolution.md).
 2b. **Mode hint (new workflow only):** If user did not pass density flags and invoked full `ws-spec-to-pr` without `--full`/`auto`, optionally offer once: **Full pipeline** (rec) / **Use lite instead** (`/ws-spec-to-pr-lite`) — see gates.md Mode selection. Skip when already on lite.
 3. **Log parsed args and switch states**: Write a banner to step output showing all switches and their resolved values:
@@ -109,7 +110,9 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
 
    **Resolve `{baseBranch}`** (before the gate): read `config.json` → `project.baseBranch` when set; else `Shell` `node {skillsRoot}/ws-ship-pr/scripts/detect-base-branch.cjs`. Gate copy uses `{baseBranch}` — never treat `master` as the sole hardcoded base example.
 
-   **Resolve `{currentBranch}`:** `git rev-parse --abbrev-ref HEAD`. Detached HEAD (`HEAD`): **stay is invalid**; require create-from-current (names a branch at HEAD) or create-from-base.
+   **Resolve `{currentBranch}`:** `git rev-parse --abbrev-ref HEAD`. Detached HEAD (`HEAD`): **stay is invalid**; fail closed and require create-from-current (names a branch at HEAD), create-from-base, or check out an existing branch — never persist the literal `HEAD` as `state.branch`.
+
+   **Resolve `{branchStrategy}`** (before the gate): read `config.json` → `defaults.branchStrategy` when set; omitted, empty, or any value outside `stay` | `from-current` | `from-base` | `prompt` resolves to **`stay`**. When the invocation carries `prompt-branch` / `--prompt-branch` (normal mode only), the effective strategy for this run is `prompt` regardless of config.
 
    **Protected set** (exact branch names): `main`, `master`, `develop`, `config.project.baseBranch`, `config.project.workingBranch` (omit empty/unset config values).
 
@@ -120,15 +123,18 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
    Dismiss → Cancel (HS-1).
    Never `git reset`, never `git branch -D`, never overwrite an existing feature branch. Re-run the same local + `ls-remote` check on a user-entered alternate name before any `git checkout -b {name}`. If `git ls-remote --heads {gitRemote} feat/{slug}` fails for auth/network (non-zero exit, not a missing ref), STOP and `user-gate`: **Retry** / **Proceed with local check only** (dismiss → Cancel (HS-1)). Never infer "branch absent" from a failed `ls-remote`.
 
-   **`autoMode`:** no `user-gate`. If `{currentBranch}` is `HEAD` (detached): do **not** stay — if `feat/{slug}` exists locally or `ls-remote` shows it, check it out (`checkout-existing`; fetch first when the name is remote-only, per the table below); else create `feat/{slug}` from HEAD (`git checkout -b feat/{slug}`). If `git ls-remote --heads {gitRemote} feat/{slug}` fails for auth/network (non-zero exit, not a missing ref), fall back to **local check only**: create `feat/{slug}` from HEAD only when `git branch --list feat/{slug}` is empty, and log `branch-gate | auto | local-check-only | {branch} | ISO`; never infer "branch absent" from a failed `ls-remote`. Never persist the literal `HEAD` as `state.branch`. Otherwise **stay** on current HEAD (no git mutation), `branchStrategy: stay`. Set `state.branch` = final branch name, `branchStrategy` = `from-current` | `checkout-existing` | `stay`, `baseBranch` = resolved value. Log in `## Gate history`: `branch-gate | auto | stay|from-current|checkout-existing|local-check-only | {branch} | ISO`.
+   **`autoMode`:** no `user-gate` (a `prompt-branch` flag is ignored; effective `prompt` behaves as `stay` with a `default-stay` log line). If `{currentBranch}` is `HEAD` (detached): do **not** stay — if `feat/{slug}` exists locally or `ls-remote` shows it, check it out (`checkout-existing`; fetch first when the name is remote-only, per the table below); else create `feat/{slug}` from HEAD (`git checkout -b feat/{slug}`). If `git ls-remote --heads {gitRemote} feat/{slug}` fails for auth/network (non-zero exit, not a missing ref), fall back to **local check only**: create `feat/{slug}` from HEAD only when `git branch --list feat/{slug}` is empty, and log `branch-gate | auto | local-check-only | {branch} | ISO`; never infer "branch absent" from a failed `ls-remote`. Never persist the literal `HEAD` as `state.branch`. Otherwise apply the resolved `{branchStrategy}` without gating: `stay` keeps current HEAD (no git mutation); `from-current` / `from-base` run the same git actions as gate options 1 / 2 below (including the `feat/{slug}` existence check and the dirty-tree rule). Set `state.branch` = final branch name, `branchStrategy` = `from-current` | `from-base` | `checkout-existing` | `stay`, `baseBranch` = resolved value. Log in `## Gate history`: `branch-gate | auto | stay|from-current|from-base|checkout-existing|local-check-only | {branch} | ISO`.
 
    **Child slug on existing parent branch:** when the workflow slug is a child bug/task id and HEAD is already on a parent feature branch (e.g. `feat/{parent}`), that does not waive Steps 1–3 for the **child slug** — run the full planning chain unless the user explicitly overrides.
 
    **`dryRun`:** prefix `[DRY-RUN]`; show the gate choices (or auto default) and the git commands that **would** run; **no ref mutation** (do not run `git checkout -b`, `git checkout`, or `git fetch`).
 
-   **Normal mode — primary `user-gate`** (portable alias `user-gate`; native structured choice when available; markdown fallback; log `user-gate-fallback | feature-branch | ISO` when fallback used). Mark **exactly one** Recommended:
-   - Option **2** when `{currentBranch}` is in the protected set.
-   - Option **1** otherwise.
+   **Normal mode — non-interactive strategies:** when the effective `{branchStrategy}` is `stay`, `from-current`, or `from-base`, apply it **without** presenting the gate. `stay` on an attached HEAD records `branchStrategy: stay` with `state.branch` = `{currentBranch}` (no git mutation) and logs `branch-gate | default-stay | stay | {branch} | ISO` in `## Gate history`. `from-current` / `from-base` run the same git actions as gate options 1 / 2 below (including the `feat/{slug}` existence check and the dirty-tree rule). Detached HEAD rejects `stay` (fail closed per Resolve above).
+
+   **Normal mode — primary `user-gate`** (effective `{branchStrategy}` is `prompt`; portable alias `user-gate`; native structured choice when available; markdown fallback; log `user-gate-fallback | feature-branch | ISO` when fallback used). Mark **exactly one** Recommended:
+   - Option **3** when the **configured** `defaults.branchStrategy` is `stay` (prompt forced by `--prompt-branch`).
+   - Else option **2** when `{currentBranch}` is in the protected set.
+   - Else option **1**.
    Cancel / dismiss → **HS-1** (STOP, re-present; never infer yes).
 
    ```text
@@ -136,7 +142,7 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
 
    1. Create feature branch from current HEAD (Recommended when HEAD is already the intended starting point)
    2. Create feature branch from {baseBranch} (Recommended when HEAD is a protected/long-lived branch)
-   3. Stay on {currentBranch} (already on the branch I want)
+   3. Stay on {currentBranch} (already on the branch I want; Recommended when the configured branch strategy is stay)
    ```
 
    When `{currentBranch}` is in the protected set, option 3 copy **must** include the AC11 warning: ship will use `{currentBranch}` as the PR head.
