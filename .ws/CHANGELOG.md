@@ -1,4 +1,10 @@
 # Changelog
+
+### [2026-09-26 09:26] Agent: Antigravity
+- **Prompt**: /ws-spec-to-pr-lite @[l:\source\workflow-skills\.agents\specs\0133-us-430.spec.md]
+- **Done**: Prevented false knownDefect capping from verification aliases outside files_touched. Implemented path-aware alias failure classification in `ac_ledger.cjs` (checks failingPaths, files_touched, productFailure, and skipReason: baseline-dirty). Added failingPaths and productFailure to `ac-ledger.schema.json`. Updated `ws-implement-tasks/SKILL.md` to validate all scoring aliases and perform surgical format repair. Updated `ws-plan-verify/SKILL.md` to document path enumeration and baseline-dirty linking. Updated `ws-plan-interview/SKILL.md` to synchronize overridden AC sentences in spec files. Added unit and integration tests in `test/test-ac-ledger.js` covering AC1–AC7 and NS1–NS5. Verified test suite (134/134 passed).
+- **Result**: Perfect score 10/10 derived at step5 boundary. Review clean with 0 findings.
+
 ### [2026-09-26 02:10] Agent: Grok 4.7
 - **Prompt**: /ws-spec-from-provider (use keyring)
 - **Done**: Imported GitHub issue 430 into `.agents/specs/0133-us-430.spec.md`, registered `.agents/plans/us-430/step-00-us-430.spec.md`, and tracked `us-430` in `index.PRD`. Skipped 429 because the spec and plan copy already exist.
