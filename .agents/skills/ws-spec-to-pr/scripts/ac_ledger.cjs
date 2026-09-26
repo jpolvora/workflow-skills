@@ -74,7 +74,7 @@ function toRepoPath(p, repoRoot) {
 function parseArgs(argv) {
   const positional = [];
   const options = {};
-  const repeatable = new Set(['ac', 'negative', 'file', 'test', 'commit', 'verdict', 'finding', 'aliasResult', 'invariantViolation', 'failingPath', 'filesTouched']);
+  const repeatable = new Set(['ac', 'negative', 'file', 'test', 'commit', 'verdict', 'finding', 'aliasResult', 'invariantViolation', 'failingPath', 'failingPaths', 'filesTouched', 'fileTouched']);
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
     if (token === '--help' || token === '-h') {
@@ -366,11 +366,18 @@ function link(options, context) {
     if (typeof rawFailingPaths === 'string') {
       rawFailingPaths = rawFailingPaths.split(/[;,]/).map((s) => s.trim()).filter(Boolean);
     }
-    if ((!rawFailingPaths || rawFailingPaths.length === 0) && options.failingPath && options.failingPath.length > 0) {
-      rawFailingPaths = options.failingPath;
+    const optPaths = options.failingPath || options.failingPaths;
+    if ((!rawFailingPaths || rawFailingPaths.length === 0) && optPaths) {
+      rawFailingPaths = Array.isArray(optPaths) ? optPaths : [optPaths];
     }
     if (Array.isArray(rawFailingPaths) && rawFailingPaths.length > 0) {
-      normalized.failingPaths = [...new Set(rawFailingPaths.map((p) => toRepoPath(p, context.repoRoot)).filter(Boolean))].sort();
+      const flat = [];
+      for (const item of rawFailingPaths) {
+        for (const p of String(item).split(/[;,]/)) {
+          if (p.trim()) flat.push(p.trim());
+        }
+      }
+      normalized.failingPaths = [...new Set(flat.map((p) => toRepoPath(p, context.repoRoot)).filter(Boolean))].sort();
     }
     if (result.productFailure !== undefined) {
       normalized.productFailure = Boolean(result.productFailure === true || result.productFailure === 'true');
@@ -413,7 +420,7 @@ function link(options, context) {
       ].sort((a, b) => a.rule.localeCompare(b.rule) || a.evidence.localeCompare(b.evidence));
     }
   }
-  const optTouched = options.filesTouched;
+  const optTouched = options.filesTouched || options.fileTouched;
   if (optTouched) {
     const added = [];
     const list = Array.isArray(optTouched) ? optTouched : [optTouched];
@@ -471,7 +478,7 @@ function pathMatchesTouched(failingPath, touchedSet) {
     const normT = normalizePath(touched);
     if (!normT) continue;
     if (normF === normT) return true;
-    if (normF.endsWith('/' + normT) || normT.endsWith('/' + normF)) return true;
+    if (normF.startsWith(normT.endsWith('/') ? normT : `${normT}/`)) return true;
   }
   return false;
 }
@@ -495,7 +502,7 @@ function resolveFilesTouched(ledger, context, options = {}) {
       if (p) addPath(p);
     }
   }
-  const optTouched = options.filesTouched;
+  const optTouched = options.filesTouched || options.fileTouched;
   if (optTouched) {
     const list = Array.isArray(optTouched) ? optTouched : [optTouched];
     for (const item of list) {
@@ -631,12 +638,13 @@ function verify(options, context, persistScore) {
   if (!options.ledger) throw new Error('verify requires --ledger');
   const file = path.resolve(context.repoRoot, options.ledger);
   const ledger = readJson(file);
-  if (options.filesTouched && !persistScore) {
+  const optTouched = options.filesTouched || options.fileTouched;
+  if (optTouched && !persistScore) {
     throw new Error('--files-touched is only valid for link or score (which persists it); verify/report are read-only');
   }
-  if (options.filesTouched && persistScore) {
+  if (optTouched && persistScore) {
     const added = [];
-    for (const item of (Array.isArray(options.filesTouched) ? options.filesTouched : [options.filesTouched])) {
+    for (const item of (Array.isArray(optTouched) ? optTouched : [optTouched])) {
       for (const p of String(item).split(/[;,]/)) {
         const norm = toRepoPath(p.trim(), context.repoRoot);
         if (norm) added.push(norm);
@@ -736,9 +744,12 @@ function ledgerHelpText(command) {
         + '  [--test <name=N,sourceFile=F,phase=planned|observed,exitCode=C> ...] [--commit <sha=S,step=N> ...]\n'
         + '  [--verdict ...] [--finding ...] [--sabotage-exit N] [--gap <text>] [--plan-index <index>]\n'
         + '  [--alias-result ...] [--test-surface-skip ...] [--invariant-violation ...] [--score-boundary <label>]\n'
+        + '  [--files-touched <path> ...] [--failing-paths <path> ...] [--product-failure [true|false]]\n'
         + 'Attach evidence to AC rows. Requires --ledger and --event-id plus at least one target (--ac,\n'
         + '--negative, --alias-result, --test-surface-skip, --gap, or --plan-index). --file ranges use the\n'
         + 'path:Lstart-Lend shape. --plan-index backfills taskIds, planSectionIds, and expected test names.\n'
+        + '--files-touched persists modified paths for defect scoping. --failing-paths / --product-failure\n'
+        + 'provide CLI fallbacks for alias results.\n'
         + 'Persist: link recomputes scoreState (--score-boundary wins; else pre-step6 when commits exist,\n'
         + 'else step5), so re-score only when the next gate expects a different boundary.\n'
         + 'Example: node ac_ledger.cjs link --ledger ac-ledger.json --event-id impl-ac1 --ac AC1 --status Implemented --file impl.js:L1-L10 --commit sha=<sha>,step=4\n';
@@ -753,9 +764,10 @@ function ledgerHelpText(command) {
         + 'missingEvidence, per-row deficiencies[], and errors[].\n'
         + 'Example: node ac_ledger.cjs verify --ledger ac-ledger.json --boundary pre-step6\n';
     case 'score':
-      return 'Usage: ac_ledger.cjs score --ledger <ledger> [--boundary step5|pre-step6|ship]\n'
-        + 'Derive the score AND persist scoreState (boundary defaults to step5). Use the boundary the next\n'
-        + 'gate expects: pre-step6 before step 6, step5 before steps 7-8, ship before step 9.\n'
+      return 'Usage: ac_ledger.cjs score --ledger <ledger> [--boundary step5|pre-step6|ship] [--files-touched <path> ...]\n'
+        + 'Derive the score AND persist scoreState (boundary defaults to step5). Optionally persist\n'
+        + '--files-touched for defect scoping. Use the boundary the next gate expects: pre-step6 before step 6,\n'
+        + 'step5 before steps 7-8, ship before step 9.\n'
         + 'Example: node ac_ledger.cjs score --ledger ac-ledger.json --boundary pre-step6\n';
     case 'report':
       return 'Usage: ac_ledger.cjs report --ledger <ledger> --output <report> [--boundary ship]\n'

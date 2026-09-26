@@ -486,6 +486,56 @@ assert.notStrictEqual(verifyWithTouched.status, 0, 'verify rejects --files-touch
 
 const reportWithTouched = us430Invoke(['report', '--ledger', 'ac-ledger.json', '--output', 'report.md', '--files-touched', 'extra/foo.js']);
 assert.notStrictEqual(reportWithTouched.status, 0, 'report rejects --files-touched');
+
+// Case 11: Suffix collision protection: external/impl.js does NOT match touched impl.js
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-suffix-collision', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendFormat',
+    command: 'npm run lint',
+    exitCode: 2,
+    failingPaths: ['external/impl.js'],
+  }),
+]).status, 0);
+let suffixScore = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(suffixScore.knownDefect, false, 'external/impl.js does not match touched impl.js');
+assert.strictEqual(suffixScore.score, 10, 'score is not capped when failing file merely shares basename');
+
+// Case 12: CLI fallback flags --failing-paths and --failing-path populate failingPaths
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-cli-failing-paths', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendFormat',
+    command: 'npm run lint',
+    exitCode: 2,
+  }),
+  '--failing-paths', 'external/separate.js',
+]).status, 0);
+let cliPathsScore = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(cliPathsScore.knownDefect, false, 'CLI --failing-paths outside touched does not trigger knownDefect');
+
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-cli-failing-internal', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendFormat',
+    command: 'npm run lint',
+    exitCode: 2,
+  }),
+  '--failing-paths', 'impl.js',
+]).status, 0);
+cliPathsScore = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(cliPathsScore.knownDefect, true, 'CLI --failing-paths matching touched triggers knownDefect');
+
+// Reset to clean passing format for subsequent checks
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-clean-final', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendFormat',
+    command: 'npm run lint',
+    exitCode: 0,
+  }),
+]).status, 0);
+
 // V1:implement-scoring-aliases: ws-implement-tasks documents scoring aliases
 const implementSkill = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-implement-tasks/SKILL.md'), 'utf8');
 assert.ok(implementSkill.includes('backendFormat') && implementSkill.includes('backendBuild') && implementSkill.includes('backendTest') && implementSkill.includes('frontendTest'), 'V1:implement-scoring-aliases: scoring aliases documented');
