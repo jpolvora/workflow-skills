@@ -86,6 +86,10 @@ function parseArgs(argv) {
       const key = token.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase());
       const value = argv[++index];
       if (repeatable.has(key)) (options[key] ||= []).push(value);
+      else if (key === 'productFailure' && (value === undefined || value.startsWith('--'))) {
+        if (value !== undefined) index -= 1;
+        options[key] = 'true';
+      }
       else options[key] = value;
     }
   }
@@ -663,7 +667,7 @@ function verify(options, context, persistScore) {
 
 function report(options, context) {
   if (!options.ledger || !options.output) throw new Error('report requires --ledger and --output');
-  if (options.filesTouched) {
+  if (options.filesTouched || options.fileTouched) {
     throw new Error('--files-touched is only valid for link or score (which persists it); verify/report are read-only');
   }
   const ledger = readJson(path.resolve(context.repoRoot, options.ledger));

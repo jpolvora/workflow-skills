@@ -487,6 +487,9 @@ assert.notStrictEqual(verifyWithTouched.status, 0, 'verify rejects --files-touch
 const reportWithTouched = us430Invoke(['report', '--ledger', 'ac-ledger.json', '--output', 'report.md', '--files-touched', 'extra/foo.js']);
 assert.notStrictEqual(reportWithTouched.status, 0, 'report rejects --files-touched');
 
+const reportWithFileTouched = us430Invoke(['report', '--ledger', 'ac-ledger.json', '--output', 'report.md', '--file-touched', 'extra/foo.js']);
+assert.notStrictEqual(reportWithFileTouched.status, 0, 'report rejects --file-touched');
+
 // Case 11: Suffix collision protection: external/impl.js does NOT match touched impl.js
 assert.strictEqual(us430Invoke([
   'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-suffix-collision', '--ac', 'AC1',
@@ -529,6 +532,29 @@ assert.strictEqual(cliPathsScore.knownDefect, true, 'CLI --failing-paths matchin
 // Reset to clean passing format for subsequent checks
 assert.strictEqual(us430Invoke([
   'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-clean-final', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendFormat',
+    command: 'npm run lint',
+    exitCode: 0,
+  }),
+]).status, 0);
+
+// Case 13: bare --product-failure flag sets productFailure: true
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-cli-bare-prod-fail', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendFormat',
+    command: 'npm run lint',
+    exitCode: 2,
+  }),
+  '--product-failure',
+]).status, 0);
+let bareProdFailScore = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(bareProdFailScore.knownDefect, true, 'bare --product-failure flag triggers knownDefect');
+
+// Clean reset after Case 13
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-clean-post-13', '--ac', 'AC1',
   '--alias-result', JSON.stringify({
     alias: 'backendFormat',
     command: 'npm run lint',
