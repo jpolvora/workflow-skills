@@ -182,6 +182,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] Pre-ship documentation-sync gate (configurable) (`spec: 0129-pre-ship-doc-sync.spec.md`)
 - [x] Kanvas board — packaged local kanban visualizer for spec and workflow state (`spec: 0130-kanvas-board.spec.md`) — [PR #425](https://github.com/jpolvora/workflow-skills/pull/425)
 - [ ] Kanvas board phase 2 — drag-and-drop columns with status update on move (`spec: 0131-kanvas-board-drag-drop.spec.md`)
+- [ ] ws-configure-project should initialize .ws/ local project directory with basic minimal required files (`spec: 0132-us-429.spec.md`)
+
 
 
 
@@ -434,6 +436,8 @@ All Next-specs closed.
 | 135 | `kanvas-board` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Kanvas board — packaged local kanban visualizer for spec and workflow state |
 
 | 136 | `kanvas-board-drag-drop` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Kanvas board phase 2 — drag-and-drop columns with status update on move |
+
+| 137 | `us-429` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-configure-project should initialize .ws/ local project directory with basic minimal required files |
 
 ## 9. Inbox
 
