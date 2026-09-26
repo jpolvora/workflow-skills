@@ -4,6 +4,7 @@ slug: spec-organizer-status-subfolders
 title: "Organize specifications into status subfolders (pending, completed, archived)"
 source: local
 specDate: 2026-09-26
+status: completed
 ---
 
 # Specification — Organize specifications into status subfolders (pending, completed, archived)

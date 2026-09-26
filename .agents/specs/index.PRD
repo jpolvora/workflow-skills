@@ -184,7 +184,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] Kanvas board phase 2 — drag-and-drop columns with status update on move (`spec: 0131-kanvas-board-drag-drop.spec.md`)
 - [x] ws-configure-project should initialize .ws/ local project directory with basic minimal required files (`spec: 0132-us-429.spec.md`) — [PR #431](https://github.com/jpolvora/workflow-skills/pull/431) MERGED
 - [x] Score 10 on first verify: run format and full test aliases in implement, and do not cap on baseline-dirty (`spec: 0133-us-430.spec.md`) — [PR #432](https://github.com/jpolvora/workflow-skills/pull/432)
-- [ ] Organize specifications into status subfolders (pending, completed, archived) (`spec: 0135-spec-organizer-status-subfolders.spec.md`)
+- [x] Organize specifications into status subfolders (pending, completed, archived) (`spec: 0135-spec-organizer-status-subfolders.spec.md`) — `4d0365eb` on develop
 - [x] Configurable default branch strategy: stay on current branch by default in workflows (`spec: 0134-default-stay-on-current-branch.spec.md`) — `9185b6d6` on develop
 - [ ] skillLoader host capability and unified skill-load procedure (`spec: 0136-skill-loader-host-capability.spec.md`)
 - [ ] Subagent Task Dispatch CLI Command and Asynchronous API (`spec: 0137-subagent-task-dispatch.spec.md`)
@@ -453,7 +453,7 @@ All Next-specs closed.
 
 | 138 | `us-430` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Score 10 on first verify: run format and full test aliases in implement, and do not cap on baseline-dirty |
 
-| 139 | `spec-organizer-status-subfolders` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Organize specifications into status subfolders (pending, completed, archived) |
+| 139 | `spec-organizer-status-subfolders` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Organize specifications into status subfolders (pending, completed, archived) (`4d0365eb` on develop) |
 
 | 140 | `default-stay-on-current-branch` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Configurable default branch strategy: stay on current branch by default in workflows (`9185b6d6` on develop) |
 
@@ -603,6 +603,7 @@ All Next-specs closed.
 | 2026-09-26 | `us-429` | ws-configure-project should initialize .ws/ local project directory with basic minimal required files | [PR #431](https://github.com/jpolvora/workflow-skills/pull/431) MERGED |
 | 2026-09-26 | `us-430` | Score 10 on first verify: run format and full test aliases in implement, and do not cap on baseline-dirty | [PR #432](https://github.com/jpolvora/workflow-skills/pull/432) |
 | 2026-09-26 | `default-stay-on-current-branch` | Configurable default branch strategy: stay on current branch by default in workflows | commit 9185b6d6 (delivery) |
+| 2026-09-26 | `spec-organizer-status-subfolders` | Organize specifications into status subfolders (pending, completed, archived) | commit 4d0365eb (delivery) |
 
 ## 11. Maintenance checklist
 
