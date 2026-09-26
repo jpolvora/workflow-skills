@@ -188,6 +188,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] Configurable default branch strategy: stay on current branch by default in workflows (`spec: 0134-default-stay-on-current-branch.spec.md`)
 - [ ] skillLoader host capability and unified skill-load procedure (`spec: 0136-skill-loader-host-capability.spec.md`)
 - [ ] Subagent Task Dispatch CLI Command and Asynchronous API (`spec: 0137-subagent-task-dispatch.spec.md`)
+- [ ] Workflow parallel-writer compatibility audit and enforcement (`spec: 0138-workflow-parallel-writer-compat.spec.md`)
+
 
 
 
@@ -458,6 +460,8 @@ All Next-specs closed.
 | 141 | `skill-loader-host-capability` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | skillLoader host capability and unified skill-load procedure |
 
 | 142 | `subagent-task-dispatch` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Subagent Task Dispatch CLI Command and Asynchronous API |
+
+| 143 | `workflow-parallel-writer-compat` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Workflow parallel-writer compatibility audit and enforcement |
 
 ## 9. Inbox
 
