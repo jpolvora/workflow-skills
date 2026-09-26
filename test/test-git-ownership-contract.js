@@ -52,15 +52,15 @@ const BROAD_STAGING = [
   /git add --all(?:\s|$|;|&|\|)/,
   /git add \.\.?(?:\/|[\s;|&]|$)/,
   /git add -u(?!\s*--)(?:\s|$|;|&|\|)/,
-  /git add (?!-|-- )[\w~][^\s`]*\//,
+  /git add (?!-|-- )[\w~][^\s`]*\/(?:\s|$|;|&|\|)/,
 ];
 
 const DESTRUCTIVE = [
   /git reset --hard/,
-  /git checkout -- \./,
+  /git checkout -- \.(?:\s|$|;|&|\|)/,
   /git restore \.(?:\s|$)/,
   /git clean -fd/,
-  /git stash(?:\s|$)/,
+  /git stash(?!\s+(?:list|show)\b)(?:\s|$)/,
   /git push (?:--force|-f)\b/,
 ];
 
@@ -104,10 +104,23 @@ for (const sample of BROAD_SAMPLES) {
     `detects whole-tree staging: ${sample}`,
   );
 }
-for (const allowed of ['git add -u -- deleted.txt', 'git add -- own.txt', 'git add .gitignore']) {
+for (const allowed of ['git add -u -- deleted.txt', 'git add -- own.txt', 'git add .gitignore', 'git add src/Program.cs', 'git add src/app.js']) {
   assert.ok(
     !BROAD_STAGING.some((pattern) => pattern.test(allowed)),
     `path-scoped form stays allowed: ${allowed}`,
+  );
+}
+// Regression (PR #433): destructive matchers must not over-reach on read-only forms.
+for (const sample of ['git stash', 'git stash push', 'git stash pop', 'git reset --hard', 'git clean -fd']) {
+  assert.ok(
+    DESTRUCTIVE.some((pattern) => pattern.test(sample)),
+    `detects destructive verb: ${sample}`,
+  );
+}
+for (const allowed of ['git stash list', 'git stash show', 'git status', 'git restore --staged src/app.js']) {
+  assert.ok(
+    !DESTRUCTIVE.some((pattern) => pattern.test(allowed)),
+    `read-only/allowed form stays allowed: ${allowed}`,
   );
 }
 

@@ -25,21 +25,24 @@ const path = require('path');
 
 // Whole-tree staging detectors. Terminals accept end-of-string, whitespace, or
 // a shell separator (`;`, `&`, `|`) so `git add .;` / `git add . &&` are caught,
-// not only `git add . `. `git add -u -- <deleted-paths>` stays allowed (scoped).
+// not only `git add . `. `git add -u -- <deleted-paths>` stays allowed (scoped),
+// and a directory-wide add is only a bare directory token ending at a boundary
+// (never a scoped file path such as `git add src/Program.cs`).
 const BROAD_STAGING = [
   { id: 'broad:git-add-A', re: /git add -A(?:\s|$|;|&|\|)/ },
   { id: 'broad:git-add-all', re: /git add --all(?:\s|$|;|&|\|)/ },
   { id: 'broad:git-add-dot', re: /git add \.\.?(?:\/|[\s;|&]|$)/ },
   { id: 'broad:git-add-u', re: /git add -u(?!\s*--)(?:\s|$|;|&|\|)/ },
-  { id: 'broad:dir-add', re: /git add (?!-|-- )[\w~][^\s`]*\// },
+  { id: 'broad:dir-add', re: /git add (?!-|-- )[\w~][^\s`]*\/(?:\s|$|;|&|\|)/ },
 ];
 
 const DESTRUCTIVE = [
   { id: 'destructive:reset-hard', re: /git reset --hard/ },
-  { id: 'destructive:checkout-dot', re: /git checkout -- \./ },
+  { id: 'destructive:checkout-dot', re: /git checkout -- \.(?:\s|$|;|&|\|)/ },
   { id: 'destructive:restore-dot', re: /git restore \.(?:\s|$)/ },
   { id: 'destructive:clean-fd', re: /git clean -fd/ },
-  { id: 'destructive:stash', re: /git stash(?:\s|$)/ },
+  // Bare `git stash` (save/push/pop) is whole-tree; `list`/`show` are read-only.
+  { id: 'destructive:stash', re: /git stash(?!\s+(?:list|show)\b)(?:\s|$)/ },
   { id: 'destructive:force-push', re: /git push (?:--force|-f)\b/ },
 ];
 
