@@ -227,18 +227,9 @@ function packageHubPath(categoryName, relativePath) {
  * missing-file edge. Portable tokens only — no absolute paths.
  */
 function localHubPointerMd() {
-  // Rendered for the configured hub (spec 0115): the bootstrap config stays
-  // fixed at `$PWD/.ws/config.json` (hub discovery point); all other hub
-  // content lives under the configured hub.
-  const hubRel = consumerHubRelPosix();
-  return `# Shared — Workflow Config & Consumer Data Hub (local pointer)
-
-This is the project-local entrypoint for the consumer hub (\`${hubRel}/\`). Managed hub content (runtime contracts, schemas, scripts, templates) resolves from the project skills install (\`{skillsRoot}/ws-shared/\`) when present, otherwise from \`{globalSkillsRoot}/ws-shared/\`. This folder keeps project-local config only. Project consumer data lives in this folder (\`STACK.md\`, \`installed-skills.json\`); the bootstrap \`config.json\` stays fixed at \`.ws/config.json\` (hub discovery point). MEMORY/changelog live at their configured locations (defaults: repo-root \`MEMORY.md\` + \`memory/\`, repo-root \`CHANGELOG.md\`).
-
-- Full hub contract: \`{skillsRoot}/ws-shared/runtime/AGENTS.md\` (global fallback \`{globalSkillsRoot}/ws-shared/runtime/AGENTS.md\`).
-- Config always resolves project-local first: \`$PWD/.ws/config.json\` overrides the global hub.
-- \`rules.harness\` default (\`${hubRel}/AGENTS.md\`) resolves to this file; follow the canonical runtime link above. Run installer \`update\` to refresh this pointer.
-`;
+  return requireFromPackage(
+    path.join(packageRoot, '.agents/skills/ws-configure-project/scripts/configure_autoload.cjs'),
+  ).localHubPointerMd(consumerHubRelPosix());
 }
 
 /**
@@ -1320,7 +1311,7 @@ function ensureSharedHubInstalled(mode = 'install') {
         if (missing.length) {
           fs.appendFileSync(
             destinationPath,
-            `\n# managed hub ignores (us-429)\n${missing.join('\n')}\n`,
+            `\n# managed hub ignores (auto-generated)\n${missing.join('\n')}\n`,
           );
         }
         continue;
