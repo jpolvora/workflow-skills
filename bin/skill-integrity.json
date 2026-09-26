@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "f443d1fc4cfc1dd4bf68fb47cf97816aca909098f0b5dbf40eb50776f7c32c5b",
+  "fullPackageDigest": "38241b6d9621267c3ee51b2b28c80df5f43915081395edd8041c3c89fbc0b2c4",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -36,7 +36,7 @@
       "runtime/scripts/bootstrap_runtime.cjs": "f09759b68dbd8d70b978d5ea4990a30d69f86114507682fdcb842a3463054819",
       "runtime/scripts/cli_spawn.cjs": "64038af34cadb7588664015d5ca1a8319ab25436a786585be452ddf502f4943f",
       "runtime/scripts/compile_host_subagents.cjs": "0dda22723abe39d55c85147b6c09da603e4f0b368a5032f180f8548488803abc",
-      "runtime/scripts/dispatch_subagent_task.cjs": "e42bc41dd74184ab3df0e4545f82d9122b40fac7b6f92c34e652c878e8422e68",
+      "runtime/scripts/dispatch_subagent_task.cjs": "7e21e914bb8a57d1e58e6064121db06f2d66c0c4942709affa986c5a2009498c",
       "runtime/scripts/extract_frontmatter_field.cjs": "41513cc12a7b7a1af7313b4111b86ca318c6d522351650945295e29c3e1b6a63",
       "runtime/scripts/http_retry.cjs": "5a78b6bc9137a081fc4b5293c1ac60d447d13c29faa8c2a1a3aa779340af7600",
       "runtime/scripts/ingest_visual_attachments.cjs": "707096a3ce9adffc8d836a40f51b6e6d0ecb7e67f54672ac701571da8490deb9",
@@ -65,7 +65,7 @@
       "templates/STACK.md.example": "829b7d3fce62b8167905fc1d921ee744db1d7e8ef895b0e7eb969f089973bebd",
       "templates/config.json.example": "7a59bb731f14bfd98b37b42b3f26af1f15cf3c48c11c3dcb8e57fc1d6b69543d"
     },
-    "skillDigest": "c0bec7836815873f10e9ffa44763c8082171887f667026cd3f470d55e7222798"
+    "skillDigest": "fe80a159fab4001c44f5e056a51e3e274bd43d973f9564ede040fd1806f165af"
   },
   "package": {
     "files": {

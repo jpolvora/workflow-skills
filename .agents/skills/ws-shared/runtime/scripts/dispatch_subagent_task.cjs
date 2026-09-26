@@ -30,7 +30,9 @@ const { spawn } = require('child_process');
 // holds only local config variable files (config.json, STACK.md, memory,
 // changelog) and is not a managed-runtime source.
 const HUB_SCRIPTS_DIR = (() => {
-  const packaged = path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts');
+  // This script already lives in the packaged runtime scripts dir, so the
+  // same-installation copy is __dirname (do not re-append ws-shared/runtime/scripts).
+  const packaged = path.resolve(__dirname);
   const candidates = [];
   const explicitShared = process.env.WORKFLOW_SKILLS_SHARED_DIR;
   if (explicitShared && String(explicitShared).trim()) {
