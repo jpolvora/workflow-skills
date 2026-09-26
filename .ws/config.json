@@ -229,7 +229,8 @@
     "worktreesDir": ".agents/plans/{slug}/worktrees",
     "useWorktrees": false,
     "_comment_enforceSpecPrefixOrdering": "When true, new spec-of-record writes and organizer apply NNNN-{slug}.spec.md under {specsDir}. Omitted, non-boolean, or missing config safely resolves to false until ws-spec-write persists this key. Seeded true here because this board already uses NNNN- filenames.",
-    "enforceSpecPrefixOrdering": true
+    "enforceSpecPrefixOrdering": true,
+    "statusSubfolders": true
   },
   "reviews": {
     "_comment": "Optional local review artifact root (fix-pr / ws-goal-fix-pr round reports).",

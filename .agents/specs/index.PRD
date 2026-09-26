@@ -39,157 +39,157 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 ## 7. Feature map by phase
 
 ### Phase 1: Core Foundation & Provider Abstractions
-- [x] Provider skills for spec-to-pr (GitHub, Azure DevOps, local specs) (`spec: 0001-spec-provider-skills.spec.md`)
-- [x] Promote shared skills to first-class installable packages (`spec: 0002-promote-shared-skills.spec.md`)
+- [x] Provider skills for spec-to-pr (GitHub, Azure DevOps, local specs) (`spec: completed/0001-spec-provider-skills.spec.md`)
+- [x] Promote shared skills to first-class installable packages (`spec: completed/0002-promote-shared-skills.spec.md`)
 - [x] Skill install checksum integrity (SHA-256 digests + install gate) (`spec: skill-install-checksums/step-00-skill-install-checksums.spec.md`)
 - [x] Fix skill integrity mismatch (source digests vs `bin/skill-integrity.json`) (`spec: us-90/step-00-us-90.spec.md`)
 - [x] check-workflows consumer dependency closure (`spec: us-95/step-00-us-95.spec.md`)
 - [x] Immediate UTF-8 stdio reconfiguration (`spec: immediate-utf8-stdio-reconfiguration/step-00-immediate-utf8-stdio-reconfiguration.spec.md`)
 
 ### Phase 2: System Quality & Integration
-- [x] Consolidated GitHub Issues Fix: #106, #109, and #110 (`spec: 0003-consolidated-gh-issues.spec.md`)
-- [x] Opt-in Integration of fable-* Skills with spec-to-pr Workflows (`spec: 0004-fable-skills-integration.spec.md`)
+- [x] Consolidated GitHub Issues Fix: #106, #109, and #110 (`spec: completed/0003-consolidated-gh-issues.spec.md`)
+- [x] Opt-in Integration of fable-* Skills with spec-to-pr Workflows (`spec: completed/0004-fable-skills-integration.spec.md`)
 
 ### Phase 3: Continuous Verification & Advanced Quality Gates
-- [x] Continuous AI Verification & Quality Gates Engine (`spec: 0005-continuous-ai-verification-quality-gates.spec.md`)
-- [x] GraphQL Thread Resolution & Verification in `ws-goal-fix-pr` (`spec: 0006-us-168-resolve-review-thread.spec.md`)
-- [x] Source-of-Truth Refactoring to `src/` & Hybrid Global Mode (`spec: 0007-src-sot-and-hybrid-global-install.spec.md`)
-- [x] Mandatory Workflow Git Cleanup & Protected Branch Safeguards (`spec: 0008-workflow-cleanup-and-branch-protection.spec.md`)
-- [x] Skill Authoring Guidelines & Global Config Gate Rules (`spec: 0011-skill-authoring-and-config-gate-rules.spec.md`)
-- [x] Dual-Board Spec & Plan Management via `ws-spec-list` (`spec: 0009-ws-spec-list-and-board-management.spec.md`)
-- [x] Remove Consumer Requirement for packaged `.agents/AGENTS.md`; consumer hub is `ws-shared/` (optional root `AGENTS.md` via autoload) (`spec: 0010-remove-consumer-agents-md-requirement.spec.md`)
-- [x] Shared `autoload.md` + configure-project root `AGENTS.md` generation (`spec: 0013-shared-autoload-md.spec.md`)
-- [x] Always-applied skills overlap audit & thin complementarity edits (`spec: 0012-autoload-skills-overlap-audit.spec.md`)
-- [x] Fix broken `../ws-shared/` links in classify THRESHOLDS.md (`spec: 0014-us-183.spec.md`)
-- [x] Opt-in mutation testing gate in Spec-to-PR Step 7 (`spec: 0015-workflow-mutation-testing-gate.spec.md`)
-- [x] Configurable delivery-commit artifacts (`defaults.deliveryCommitArtifacts`) (`spec: 0016-configurable-delivery-commit-artifacts.spec.md`)
-- [x] Configurable consumer autoload flag (`defaults.autoload` + harness enforce) (`spec: 0017-configurable-consumer-autoload.spec.md`)
-- [x] Project Patterns Memory Skills (`ws-patterns-backend` & `ws-patterns-frontend`) (`spec: 0018-project-patterns-memory-skills.spec.md`)
+- [x] Continuous AI Verification & Quality Gates Engine (`spec: completed/0005-continuous-ai-verification-quality-gates.spec.md`)
+- [x] GraphQL Thread Resolution & Verification in `ws-goal-fix-pr` (`spec: completed/0006-us-168-resolve-review-thread.spec.md`)
+- [x] Source-of-Truth Refactoring to `src/` & Hybrid Global Mode (`spec: completed/0007-src-sot-and-hybrid-global-install.spec.md`)
+- [x] Mandatory Workflow Git Cleanup & Protected Branch Safeguards (`spec: completed/0008-workflow-cleanup-and-branch-protection.spec.md`)
+- [x] Skill Authoring Guidelines & Global Config Gate Rules (`spec: completed/0011-skill-authoring-and-config-gate-rules.spec.md`)
+- [x] Dual-Board Spec & Plan Management via `ws-spec-list` (`spec: completed/0009-ws-spec-list-and-board-management.spec.md`)
+- [x] Remove Consumer Requirement for packaged `.agents/AGENTS.md`; consumer hub is `ws-shared/` (optional root `AGENTS.md` via autoload) (`spec: completed/0010-remove-consumer-agents-md-requirement.spec.md`)
+- [x] Shared `autoload.md` + configure-project root `AGENTS.md` generation (`spec: completed/0013-shared-autoload-md.spec.md`)
+- [x] Always-applied skills overlap audit & thin complementarity edits (`spec: completed/0012-autoload-skills-overlap-audit.spec.md`)
+- [x] Fix broken `../ws-shared/` links in classify THRESHOLDS.md (`spec: completed/0014-us-183.spec.md`)
+- [x] Opt-in mutation testing gate in Spec-to-PR Step 7 (`spec: completed/0015-workflow-mutation-testing-gate.spec.md`)
+- [x] Configurable delivery-commit artifacts (`defaults.deliveryCommitArtifacts`) (`spec: completed/0016-configurable-delivery-commit-artifacts.spec.md`)
+- [x] Configurable consumer autoload flag (`defaults.autoload` + harness enforce) (`spec: completed/0017-configurable-consumer-autoload.spec.md`)
+- [x] Project Patterns Memory Skills (`ws-patterns-backend` & `ws-patterns-frontend`) (`spec: completed/0018-project-patterns-memory-skills.spec.md`)
 
 ### Phase 4: Runtime diagnostics, audit, timing, and bootstrap
-- [x] `ws-doctor` read-only skills diagnostic inspector (`spec: 0020-ws-doctor.spec.md`)
-- [x] `defaults.enableAuditing` runtime workflow audit wrapper (`spec: 0019-enable-auditing.spec.md`)
-- [x] Refine `ws-activity-report` human vs agent duration (`spec: 0021-refine-ws-activity-report-human-timing.spec.md`)
-- [x] `defaults.testingModel` test executor for standard Step 7 (`spec: 0023-testing-executor-model.spec.md`)
-- [x] Feature-branch strategy gate at workflow bootstrap (`spec: 0022-workflow-bootstrap-feature-branch.spec.md`)
+- [x] `ws-doctor` read-only skills diagnostic inspector (`spec: completed/0020-ws-doctor.spec.md`)
+- [x] `defaults.enableAuditing` runtime workflow audit wrapper (`spec: completed/0019-enable-auditing.spec.md`)
+- [x] Refine `ws-activity-report` human vs agent duration (`spec: completed/0021-refine-ws-activity-report-human-timing.spec.md`)
+- [x] `defaults.testingModel` test executor for standard Step 7 (`spec: completed/0023-testing-executor-model.spec.md`)
+- [x] Feature-branch strategy gate at workflow bootstrap (`spec: completed/0022-workflow-bootstrap-feature-branch.spec.md`)
 - [x] Phase-specific subagent LLM model preferences (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`) (`plan: auto-mode-model-preferences/step-00-auto-mode-model-preferences.spec.md`)
-- [x] `defaults.enableDag` sequential-by-default task execution (`spec: 0024-add-enable-dag-config.spec.md`)
-- [x] `update_state.py` nested `telemetry.loc` + `completedSteps` union (`spec: 0025-us-202.spec.md`)
-- [x] Fix `ws-doctor` GitHub issues #204 and #205 (`spec: 0026-ws-doctor-204-205.spec.md`)
-- [x] en-us patterns user-gate prompts + autoload consult-vs-load wording (`spec: 0030-us-209.spec.md`)
-- [x] `ws-preview` Extra pipeline-review dry-run skill (`spec: 0031-us-210.spec.md`)
-- [x] Hybrid/global consumer-root resolver for helper scripts (`spec: 0032-us-211.spec.md`)
-- [x] Commit workflow product files before code-review (`spec: 0029-commit-before-code-review.spec.md`)
+- [x] `defaults.enableDag` sequential-by-default task execution (`spec: completed/0024-add-enable-dag-config.spec.md`)
+- [x] `update_state.py` nested `telemetry.loc` + `completedSteps` union (`spec: pending/0025-us-202.spec.md`)
+- [x] Fix `ws-doctor` GitHub issues #204 and #205 (`spec: completed/0026-ws-doctor-204-205.spec.md`)
+- [x] en-us patterns user-gate prompts + autoload consult-vs-load wording (`spec: pending/0030-us-209.spec.md`)
+- [x] `ws-preview` Extra pipeline-review dry-run skill (`spec: pending/0031-us-210.spec.md`)
+- [x] Hybrid/global consumer-root resolver for helper scripts (`spec: pending/0032-us-211.spec.md`)
+- [x] Commit workflow product files before code-review (`spec: completed/0029-commit-before-code-review.spec.md`)
 - [x] DeepSeek Harness-inspired P1: state versioning + resume/goal guards (`plan: deepseek-harness-improvements`)
-- [x] Enforce pattern/MEMORY consults in subagents (`spec: 0033-us-217.spec.md`)
-- [x] Port `ws-pre-daily` Extra skill to upstream (`spec: 0034-us-220.spec.md`)
-- [x] Harness efficiency, verifiability, and observability upgrade (`spec: 0036-harness-efficiency-and-verifiability.spec.md`)
-- [x] Config: model presets and per-step / substep model preferences (`spec: 0039-models-preset-and-per-step.spec.md`)
-- [x] Skill catalog cleanup: Extra demotion and patterns merge (`spec: 0027-skill-catalog-cleanup.spec.md`)
-- [x] Hermes Agent Inspirations: ws-spec-to-pr Ecosystem Enhancements (`spec: 0035-hermes-spec-to-pr-enhancements.spec.md`) — PR #278 MERGED
-- [x] Runtime audit suggestions for performance, correctness, and reusable tooling (`spec: 0028-audit-performance-correctness-and-reusable-scripts.spec.md`)
-- [x] `ws-fix-pr` proactive same-category discovery before resolve (`spec: 0038-fix-pr-proactive-class-sweep.spec.md`)
-- [x] Harness spec-run benchmark with snapshot compare (`spec: 0041-harness-spec-benchmark.spec.md`)
-- [x] Regroup packaged skill ids as `ws-{family}-{verb}` (`spec: 0037-skill-family-naming.spec.md`) — delivered via release 0.3.56, PR #266 MERGED
-- [x] Specify-time closure pack for score-10 spec delivery (`spec: 0040-specify-closure-pack.spec.md`)
-- [x] Unique Node runtime for all workflow-skills helper scripts (`spec: 0042-unique-skill-script-runtime.spec.md`) — PR #370 MERGED
-- [x] ~~Cooperative session leases~~ **retired 0.3.38** — historical spec only (`spec: 0043-workflow-session-leases.spec.md`; use worktrees for parallel work)
-- [x] Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, .runtime allowlist (`spec: 0044-us-235.spec.md`)
-- [x] Coordinated Prompt-to-Spec-to-Execution Lifecycle: 3-Phase Task Orchestrator & Canonical Tracking Skill (`spec: 0045-us-236.spec.md`)
-- [x] fix-pr: plan substep (reviewer model) then execute (fix model) per batch (`spec: 0047-fix-pr-batch-plan-exec.spec.md`)
-- [x] Configurable memory backends: enableMemoryFiles and enableSpecMemoIntegration dual routing (`spec: 0049-configurable-memory-backends.spec.md`)
-- [x] Research-driven spec-to-pr pipeline quality and integration (`spec: 0050-research-driven-pipeline-quality.spec.md`)
-- [x] Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol (`spec: 0051-spec-dor-tdd-refinement-hardening.spec.md`)
-- [x] Close implementation before opening the PR (`spec: 0054-close-implementation-before-pr.spec.md`)
-- [x] Optional chronological spec filename prefixes and ws-spec-organizer (`spec: 0053-spec-prefix-ordering.spec.md`)
-- [x] ws-doctor --json stdout contract and self-describing ESM entrypoint (`spec: 0055-ws-doctor-json-esm.spec.md`)
-- [x] Agent-agnostic host detection, subagent fallback, and interactive gate execution (`spec: 0056-host-agent-environment-adapter.spec.md`)
-- [x] Revamped Modern Technical Website for Workflow Skills (`spec: 0057-modern-website-revamp.spec.md`) — PR #268 MERGED
-- [x] Installer Multi-Host Global Targets and Symlink Strategy (`spec: 0058-installer-multi-host-global-targets.spec.md`) — PR #269 MERGED
-- [x] Active host tool capability binding with auto-gate hard bypass (`spec: 0059-host-capability-binding-v2.spec.md`)
-- [x] Download tracker images and attachments during fetch-to-spec (GitHub and Azure DevOps parity) (`spec: 0060-provider-fetch-visual-attachments.spec.md`) — PR #271 MERGED
-- [x] ws-spec-to-pr: orquestrador implementou sem plano/refino — autoMode não deve pular Steps 1–3 (`spec: 0062-us-275.spec.md`) — PR #276 MERGED
-- [x] ws-megabrain: senior product-manager router with specialist personas (`spec: 0063-ws-megabrain.spec.md`) — PR #277 MERGED
-- [x] Parametrized min verify score (`spec: 0046-parametrized-min-verify-score.spec.md`) — `defaults.minVerifyScore` live in config + scripts
-- [x] Hand off ws-spec-memo runtime ops to spec-memo ws-memo (`spec: 0048-us-243.spec.md`) — PR #244 MERGED
-- [x] Remove retired ws-patterns references from hub templates/seeds (`spec: 0052-us-250.spec.md`) — PR #251 MERGED
-- [x] Prune retired skill ids on update + hybrid harness fallback (`spec: 0061-us-272.spec.md`) — PR #273 MERGED
+- [x] Enforce pattern/MEMORY consults in subagents (`spec: completed/0033-us-217.spec.md`)
+- [x] Port `ws-pre-daily` Extra skill to upstream (`spec: pending/0034-us-220.spec.md`)
+- [x] Harness efficiency, verifiability, and observability upgrade (`spec: completed/0036-harness-efficiency-and-verifiability.spec.md`)
+- [x] Config: model presets and per-step / substep model preferences (`spec: completed/0039-models-preset-and-per-step.spec.md`)
+- [x] Skill catalog cleanup: Extra demotion and patterns merge (`spec: completed/0027-skill-catalog-cleanup.spec.md`)
+- [x] Hermes Agent Inspirations: ws-spec-to-pr Ecosystem Enhancements (`spec: completed/0035-hermes-spec-to-pr-enhancements.spec.md`) — PR #278 MERGED
+- [x] Runtime audit suggestions for performance, correctness, and reusable tooling (`spec: completed/0028-audit-performance-correctness-and-reusable-scripts.spec.md`)
+- [x] `ws-fix-pr` proactive same-category discovery before resolve (`spec: completed/0038-fix-pr-proactive-class-sweep.spec.md`)
+- [x] Harness spec-run benchmark with snapshot compare (`spec: completed/0041-harness-spec-benchmark.spec.md`)
+- [x] Regroup packaged skill ids as `ws-{family}-{verb}` (`spec: completed/0037-skill-family-naming.spec.md`) — delivered via release 0.3.56, PR #266 MERGED
+- [x] Specify-time closure pack for score-10 spec delivery (`spec: completed/0040-specify-closure-pack.spec.md`)
+- [x] Unique Node runtime for all workflow-skills helper scripts (`spec: completed/0042-unique-skill-script-runtime.spec.md`) — PR #370 MERGED
+- [x] ~~Cooperative session leases~~ **retired 0.3.38** — historical spec only (`spec: archived/0043-workflow-session-leases.spec.md`; use worktrees for parallel work)
+- [x] Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, .runtime allowlist (`spec: pending/0044-us-235.spec.md`)
+- [x] Coordinated Prompt-to-Spec-to-Execution Lifecycle: 3-Phase Task Orchestrator & Canonical Tracking Skill (`spec: pending/0045-us-236.spec.md`)
+- [x] fix-pr: plan substep (reviewer model) then execute (fix model) per batch (`spec: completed/0047-fix-pr-batch-plan-exec.spec.md`)
+- [x] Configurable memory backends: enableMemoryFiles and enableSpecMemoIntegration dual routing (`spec: completed/0049-configurable-memory-backends.spec.md`)
+- [x] Research-driven spec-to-pr pipeline quality and integration (`spec: completed/0050-research-driven-pipeline-quality.spec.md`)
+- [x] Harness: Spec Creation Hardening with Definition of Ready, Validation Notes, and TDD Execution Protocol (`spec: completed/0051-spec-dor-tdd-refinement-hardening.spec.md`)
+- [x] Close implementation before opening the PR (`spec: completed/0054-close-implementation-before-pr.spec.md`)
+- [x] Optional chronological spec filename prefixes and ws-spec-organizer (`spec: completed/0053-spec-prefix-ordering.spec.md`)
+- [x] ws-doctor --json stdout contract and self-describing ESM entrypoint (`spec: completed/0055-ws-doctor-json-esm.spec.md`)
+- [x] Agent-agnostic host detection, subagent fallback, and interactive gate execution (`spec: completed/0056-host-agent-environment-adapter.spec.md`)
+- [x] Revamped Modern Technical Website for Workflow Skills (`spec: completed/0057-modern-website-revamp.spec.md`) — PR #268 MERGED
+- [x] Installer Multi-Host Global Targets and Symlink Strategy (`spec: completed/0058-installer-multi-host-global-targets.spec.md`) — PR #269 MERGED
+- [x] Active host tool capability binding with auto-gate hard bypass (`spec: completed/0059-host-capability-binding-v2.spec.md`)
+- [x] Download tracker images and attachments during fetch-to-spec (GitHub and Azure DevOps parity) (`spec: completed/0060-provider-fetch-visual-attachments.spec.md`) — PR #271 MERGED
+- [x] ws-spec-to-pr: orquestrador implementou sem plano/refino — autoMode não deve pular Steps 1–3 (`spec: pending/0062-us-275.spec.md`) — PR #276 MERGED
+- [x] ws-megabrain: senior product-manager router with specialist personas (`spec: completed/0063-ws-megabrain.spec.md`) — PR #277 MERGED
+- [x] Parametrized min verify score (`spec: completed/0046-parametrized-min-verify-score.spec.md`) — `defaults.minVerifyScore` live in config + scripts
+- [x] Hand off ws-spec-memo runtime ops to spec-memo ws-memo (`spec: pending/0048-us-243.spec.md`) — PR #244 MERGED
+- [x] Remove retired ws-patterns references from hub templates/seeds (`spec: pending/0052-us-250.spec.md`) — PR #251 MERGED
+- [x] Prune retired skill ids on update + hybrid harness fallback (`spec: pending/0061-us-272.spec.md`) — PR #273 MERGED
 - [x] Native gate advance options continue same-turn across all step boundaries, markdown fallback yields (issue #280, prompt-driven fix, no spec) — PR #281 MERGED
-- [x] ws-benchmarks: benchmark commands and evolution report manager (`spec: 0064-ws-benchmarks-skill.spec.md`) — PR #282 MERGED
-- [x] ws-spec-manager: unified specification router and lifecycle manager (`spec: 0065-ws-spec-manager-skill.spec.md`) — PR #282 MERGED
-- [x] Separate consumer ws-shared hub from upstream root AGENTS.md (`spec: 0066-ws-shared-hub-agents-separation.spec.md`) — PR #371 MERGED
-- [x] Reviewer-Aligned Implementation Gates & Pre-PR Defect Prevention (`spec: 0067-reviewer-aligned-implementation-gates.spec.md`)
-- [x] Align hub routing with unpackaged spec-memo companions (not vendor ws-memo) (`spec: 0069-us-288.spec.md`) — PR #289 MERGED
-- [x] Plan Directory Artifacts Consolidation & Minimal Runtime Footprint (`spec: 0068-plan-artifacts-consolidation.spec.md`) — PR #286 MERGED
-- [x] Separate ws-shared Runtime, Templates, and Consumer Configuration for Hybrid Installs (`spec: 0070-ws-shared-hybrid-config-layout.spec.md`) — PR #290 MERGED
-- [x] Optional Compiler and Host Projection for Specialized Workflow Subagents (`spec: 0071-specialized-subagents-compiler.spec.md`) — PR #292 MERGED
-- [x] PowerShell Windows Forms Config Editor for Workflow Skills (`spec: 0072-powershell-config-editor.spec.md`) — PR #305 MERGED
-- [x] Stamp finished step artifacts with the step result, not the overall workflow status (`spec: 0073-us-311.spec.md`) — PR #312 MERGED
-- [x] workflow_state.cjs drops earlier values for repeated file-list flags (`spec: 0074-us-310.spec.md`) — PR #313 MERGED
-- [x] ws-wiki: living project feature wiki and domain knowledge base manager (`spec: 0075-ws-wiki.spec.md`) — PR #319
-- [x] ws-wiki first-time sequential spec sweep (`spec: 0076-ws-wiki-spec-sweep.spec.md`) — PR #372 MERGED
-- [x] Dedicated GitHub Pages wiki site generated from {wikiDir} (`spec: 0077-website-wiki-page.spec.md`)
-- [x] ws-wiki Phase 2 verify and Phase 3 plan/apply (`spec: 0078-ws-wiki-code-verify.spec.md`)
-- [x] ws-wiki from-code genesis and progressive-disclosure split (`spec: 0079-ws-wiki-from-code.spec.md`)
-- [x] ws-fix-pr surgical commit without full-tree stash (`spec: 0082-ws-fix-pr-surgical-commit.spec.md`)
-- [x] Declarative Antigravity and Gemini Skills Configuration via skills.json (`spec: 0083-installer-antigravity-gemini-skills-json.spec.md`)
-- [x] Pipeline skill guardrails: dedup shared contracts and add blast-radius guardrails (`spec: 0084-pipeline-skill-guardrails.spec.md`)
-- [x] Merge ws-karpathy-guidelines into ws-senior-developer (`spec: 0085-merge-karpathy-into-senior-developer.spec.md`)
-- [x] ws-tdah wait-what grounded re-pitch (`spec: 0086-ws-tdah-wait-what-repitch.spec.md`)
-- [x] ws-wiki Sync Baseline incremental watermark (`spec: 0087-ws-wiki-sync-baseline.spec.md`)
-- [x] ws-check-harness install-mode detection and upstream clean-audit invariant (`spec: 0088-ws-check-harness-install-mode-clean-audit.spec.md`)
-- [x] Optional ws-preview dry-run gate in ws-ship-pr before Create PR (`spec: 0089-ws-preview-before-ship-gate.spec.md`)
-- [x] Muse Code harness adaptation for ws-spec-to-pr workflows on muse-spark agents (`spec: 0090-muse-code-harness-adaptation.spec.md`)
-- [x] Revamp website visual and template with docs-style layout (`spec: 0091-website-visual-revamp.spec.md`)
-- [x] ws-spec-to-pr: parameter override for modelsPreset on workflow invocation (`spec: 0092-models-preset-override.spec.md`)
-- [x] Step-Level Baton Handoffs for Multi-CLI Workflow Runs (`spec: 0094-step-baton-multi-agent-runs.spec.md`)
-- [x] ws-wiki: verbosity/prose-style option + richer conditional page template (`spec: 0080-us-324.spec.md`)
-- [x] Fix stale autoload keyword-map prose for scm-provider-contract path (`spec: 0081-us-328.spec.md`)
-- [x] change website cta / main slug/slogan (`spec: 0093-us-344.spec.md`)
-- [x] ws-goal-fix-pr as orchestrator with per-round subagent dispatch (`spec: 0095-us-347.spec.md`)
-- [x] ws-spec-to-pr orchestrator could dispatch and observer/watcher for errors during execution (`spec: 0105-us-365.spec.md`) — PR #373 MERGED
-- [x] enhance host capabilities - detect tools & cache it (`spec: 0104-us-348.spec.md`)
-- [x] change/update/move ws-shared folder location to {projectRoot}/.ws (`spec: 0103-us-351.spec.md`)
-- [x] Add config.json key for ws-ship-pr enable/disable subagent dispatch loop for fix (default inline loop) (`spec: 0102-us-352.spec.md`)
-- [x] Harden Step 9 goal-fix loop against batch-handoff wedge and preview-only no-op (`spec: 0098-us-353.spec.md`)
-- [x] Worker turns ending prematurely mid-step force orch re-dispatch (preview no-op + ping termination) (`spec: 0097-us-354.spec.md`)
-- [x] (ws-monitor ms-20260919T043606Z) Step 3 completed without exec artifact; Step 4 completed with empty filesTouched (live us-354 run) (`spec: 0101-us-355.spec.md`)
-- [x] (ws-monitor) Discover and check transcripts/sessions for known agent hosts (Cursor, OpenCode, Antigravity, Muse) (`spec: 0100-us-356.spec.md`)
-- [x] Add AGENTS.md rule: check the skill dependency graph when editing a skill so callers and callees stay in sync (`spec: 0099-us-358.spec.md`)
-- [x] .ws resolution vs ws-shared folders cleanup (`spec: 0106-ws-shared-resolution-cleanup.spec.md`) — PR #374 MERGED
-- [x] ws-monitor transcript signals fire false positives on healthy runs (hybrid-path-resolution, model-fallback, subagent-error) (`spec: 0107-us-369.spec.md`) — PR #379 MERGED
-- [x] Harness & Skills Hardening from Code Review of Recent PRs (`spec: 0108-code-review-findings-fixes.spec.md`)
-- [x] Harness Hardening Round 2 — Open Findings from the 20-Commit Read-Only Review (`spec: 0109-code-review-round-2-fixes.spec.md`)
-- [x] create a skill generator for the consumer project (`spec: 0110-us-378.spec.md`)
-- [x] enhance ps1 config gui (`spec: 0112-us-381.spec.md`) — PR #387 MERGED
-- [x] increase test coverage to near 100% (`spec: 0113-us-380.spec.md`) — PR #390 MERGED
-- [x] Integrate ws-self-learning with the patterns track and store the generated ws-project-patterns body under the shared hub (`spec: 0114-patterns-generator-shared-hub-output.spec.md`)
-- [x] Relocatable shared hub root across the harness (installer, configurator, generator, layout) (`spec: 0115-configurable-hub-root.spec.md`) — PR #391 MERGED
-- [x] ws-monitor reports critical missing-artifact false positives on ws-spec-to-pr-lite runs (`spec: 0116-us-385.spec.md`) — PR #392 MERGED
-- [x] create an optional step proof-of-work (`spec: 0117-us-386.spec.md`) — PR #394 MERGED
-- [x] ws-spec-multi appends a duplicate queue row for an item, causing double processing (`spec: 0118-us-393.spec.md`) — PR #396 MERGED
-- [x] Test suite run mutates the repository's own hub config and leaves a backup file (`spec: 0119-us-389.spec.md`) — PR #397 MERGED
-- [x] ws-spec-multi standard workers do not persist {plansDir}/{slug} state, step artifacts, or telemetry (`spec: 0120-us-388.spec.md`) — PR #400 MERGED
-- [x] (ws-monitor) Terminal-state workflows stay active; batch queue keeps stale/superseded rows (`spec: 0121-us-395.spec.md`) — PR #399 MERGED
-- [x] Allow parallel work by other agents - commit only own work in session, do not undo/stash/unstash files (`spec: 0122-us-401.spec.md`) — PR #403 MERGED
-- [x] add new skill for enhancing refinement ws-spec-translate-to-human (`spec: 0123-us-402.spec.md`) — PR #404 MERGED
-- [x] Ship phase leaves source issue open when baseBranch is not the repo default branch (`spec: 0124-us-405.spec.md`) — PR #406 MERGED
-- [x] Unattended autoMode runs: mid-step checkpoints, turn-boundary pause state, and monitor stall detection (`spec: 0125-us-412-413-liveness-checkpoints.spec.md`) — commit 72c13dea
-- [x] Workflow script UX and golden-path state commands: discoverable help, score diagnostics, boundary errors, exit codes, per-gate commands, tamper-evidence (`spec: 0126-us-415-416-script-ux-golden-path.spec.md`) — PR #421 MERGED
-- [x] Run-state and telemetry integrity: fail-closed preset resolution, ship writeback, Step 9 round artifacts, truthful skip semantics (`spec: 0127-us-414-run-state-integrity.spec.md`) — PR #422 MERGED
-- [x] Monitor accuracy: step-membership artifact expectations, legacy terminal tolerance, transcript correlation windows, discovery budget (`spec: 0128-us-412-418-monitor-accuracy.spec.md`) — [PR #423](https://github.com/jpolvora/workflow-skills/pull/423) MERGED
-- [x] Observer-log follow-ups (us-412-413 run): intra-root enumeration edge, missing agentTranscripts marker, G2 plans-index hash staleness, compactOutputs no-op (`spec: 0129-us-419.spec.md`) — PR #424 MERGED
-- [ ] Pre-ship documentation-sync gate (configurable) (`spec: 0129-pre-ship-doc-sync.spec.md`)
-- [x] Kanvas board — packaged local kanban visualizer for spec and workflow state (`spec: 0130-kanvas-board.spec.md`) — [PR #425](https://github.com/jpolvora/workflow-skills/pull/425)
-- [ ] Kanvas board phase 2 — drag-and-drop columns with status update on move (`spec: 0131-kanvas-board-drag-drop.spec.md`)
-- [x] ws-configure-project should initialize .ws/ local project directory with basic minimal required files (`spec: 0132-us-429.spec.md`) — [PR #431](https://github.com/jpolvora/workflow-skills/pull/431) MERGED
-- [x] Score 10 on first verify: run format and full test aliases in implement, and do not cap on baseline-dirty (`spec: 0133-us-430.spec.md`) — [PR #432](https://github.com/jpolvora/workflow-skills/pull/432)
-- [x] Organize specifications into status subfolders (pending, completed, archived) (`spec: 0135-spec-organizer-status-subfolders.spec.md`) — `4d0365eb` on develop
-- [x] Configurable default branch strategy: stay on current branch by default in workflows (`spec: 0134-default-stay-on-current-branch.spec.md`) — `9185b6d6` on develop
-- [x] skillLoader host capability and unified skill-load procedure (`spec: 0136-skill-loader-host-capability.spec.md`) — `0373a45d` on develop
-- [x] Subagent Task Dispatch CLI Command and Asynchronous API (`spec: 0137-subagent-task-dispatch.spec.md`) — `38ef12c1` on develop
-- [x] Workflow parallel-writer compatibility audit and enforcement (`spec: 0138-workflow-parallel-writer-compat.spec.md`) — `5857094c` on develop
-- [ ] Improve agentic code reviewers prompt — simplify and align upstream vs local needs (`spec: 0139-improve-agentic-reviewers-prompt.spec.md`)
+- [x] ws-benchmarks: benchmark commands and evolution report manager (`spec: completed/0064-ws-benchmarks-skill.spec.md`) — PR #282 MERGED
+- [x] ws-spec-manager: unified specification router and lifecycle manager (`spec: completed/0065-ws-spec-manager-skill.spec.md`) — PR #282 MERGED
+- [x] Separate consumer ws-shared hub from upstream root AGENTS.md (`spec: completed/0066-ws-shared-hub-agents-separation.spec.md`) — PR #371 MERGED
+- [x] Reviewer-Aligned Implementation Gates & Pre-PR Defect Prevention (`spec: completed/0067-reviewer-aligned-implementation-gates.spec.md`)
+- [x] Align hub routing with unpackaged spec-memo companions (not vendor ws-memo) (`spec: completed/0069-us-288.spec.md`) — PR #289 MERGED
+- [x] Plan Directory Artifacts Consolidation & Minimal Runtime Footprint (`spec: completed/0068-plan-artifacts-consolidation.spec.md`) — PR #286 MERGED
+- [x] Separate ws-shared Runtime, Templates, and Consumer Configuration for Hybrid Installs (`spec: completed/0070-ws-shared-hybrid-config-layout.spec.md`) — PR #290 MERGED
+- [x] Optional Compiler and Host Projection for Specialized Workflow Subagents (`spec: completed/0071-specialized-subagents-compiler.spec.md`) — PR #292 MERGED
+- [x] PowerShell Windows Forms Config Editor for Workflow Skills (`spec: completed/0072-powershell-config-editor.spec.md`) — PR #305 MERGED
+- [x] Stamp finished step artifacts with the step result, not the overall workflow status (`spec: completed/0073-us-311.spec.md`) — PR #312 MERGED
+- [x] workflow_state.cjs drops earlier values for repeated file-list flags (`spec: completed/0074-us-310.spec.md`) — PR #313 MERGED
+- [x] ws-wiki: living project feature wiki and domain knowledge base manager (`spec: pending/0075-ws-wiki.spec.md`) — PR #319
+- [x] ws-wiki first-time sequential spec sweep (`spec: completed/0076-ws-wiki-spec-sweep.spec.md`) — PR #372 MERGED
+- [x] Dedicated GitHub Pages wiki site generated from {wikiDir} (`spec: completed/0077-website-wiki-page.spec.md`)
+- [x] ws-wiki Phase 2 verify and Phase 3 plan/apply (`spec: completed/0078-ws-wiki-code-verify.spec.md`)
+- [x] ws-wiki from-code genesis and progressive-disclosure split (`spec: completed/0079-ws-wiki-from-code.spec.md`)
+- [x] ws-fix-pr surgical commit without full-tree stash (`spec: completed/0082-ws-fix-pr-surgical-commit.spec.md`)
+- [x] Declarative Antigravity and Gemini Skills Configuration via skills.json (`spec: completed/0083-installer-antigravity-gemini-skills-json.spec.md`)
+- [x] Pipeline skill guardrails: dedup shared contracts and add blast-radius guardrails (`spec: completed/0084-pipeline-skill-guardrails.spec.md`)
+- [x] Merge ws-karpathy-guidelines into ws-senior-developer (`spec: completed/0085-merge-karpathy-into-senior-developer.spec.md`)
+- [x] ws-tdah wait-what grounded re-pitch (`spec: completed/0086-ws-tdah-wait-what-repitch.spec.md`)
+- [x] ws-wiki Sync Baseline incremental watermark (`spec: completed/0087-ws-wiki-sync-baseline.spec.md`)
+- [x] ws-check-harness install-mode detection and upstream clean-audit invariant (`spec: completed/0088-ws-check-harness-install-mode-clean-audit.spec.md`)
+- [x] Optional ws-preview dry-run gate in ws-ship-pr before Create PR (`spec: completed/0089-ws-preview-before-ship-gate.spec.md`)
+- [x] Muse Code harness adaptation for ws-spec-to-pr workflows on muse-spark agents (`spec: completed/0090-muse-code-harness-adaptation.spec.md`)
+- [x] Revamp website visual and template with docs-style layout (`spec: completed/0091-website-visual-revamp.spec.md`)
+- [x] ws-spec-to-pr: parameter override for modelsPreset on workflow invocation (`spec: completed/0092-models-preset-override.spec.md`)
+- [x] Step-Level Baton Handoffs for Multi-CLI Workflow Runs (`spec: completed/0094-step-baton-multi-agent-runs.spec.md`)
+- [x] ws-wiki: verbosity/prose-style option + richer conditional page template (`spec: completed/0080-us-324.spec.md`)
+- [x] Fix stale autoload keyword-map prose for scm-provider-contract path (`spec: completed/0081-us-328.spec.md`)
+- [x] change website cta / main slug/slogan (`spec: completed/0093-us-344.spec.md`)
+- [x] ws-goal-fix-pr as orchestrator with per-round subagent dispatch (`spec: pending/0095-us-347.spec.md`)
+- [x] ws-spec-to-pr orchestrator could dispatch and observer/watcher for errors during execution (`spec: completed/0105-us-365.spec.md`) — PR #373 MERGED
+- [x] enhance host capabilities - detect tools & cache it (`spec: pending/0104-us-348.spec.md`)
+- [x] change/update/move ws-shared folder location to {projectRoot}/.ws (`spec: pending/0103-us-351.spec.md`)
+- [x] Add config.json key for ws-ship-pr enable/disable subagent dispatch loop for fix (default inline loop) (`spec: pending/0102-us-352.spec.md`)
+- [x] Harden Step 9 goal-fix loop against batch-handoff wedge and preview-only no-op (`spec: pending/0098-us-353.spec.md`)
+- [x] Worker turns ending prematurely mid-step force orch re-dispatch (preview no-op + ping termination) (`spec: pending/0097-us-354.spec.md`)
+- [x] (ws-monitor ms-20260919T043606Z) Step 3 completed without exec artifact; Step 4 completed with empty filesTouched (live us-354 run) (`spec: pending/0101-us-355.spec.md`)
+- [x] (ws-monitor) Discover and check transcripts/sessions for known agent hosts (Cursor, OpenCode, Antigravity, Muse) (`spec: pending/0100-us-356.spec.md`)
+- [x] Add AGENTS.md rule: check the skill dependency graph when editing a skill so callers and callees stay in sync (`spec: pending/0099-us-358.spec.md`)
+- [x] .ws resolution vs ws-shared folders cleanup (`spec: completed/0106-ws-shared-resolution-cleanup.spec.md`) — PR #374 MERGED
+- [x] ws-monitor transcript signals fire false positives on healthy runs (hybrid-path-resolution, model-fallback, subagent-error) (`spec: completed/0107-us-369.spec.md`) — PR #379 MERGED
+- [x] Harness & Skills Hardening from Code Review of Recent PRs (`spec: completed/0108-code-review-findings-fixes.spec.md`)
+- [x] Harness Hardening Round 2 — Open Findings from the 20-Commit Read-Only Review (`spec: completed/0109-code-review-round-2-fixes.spec.md`)
+- [x] create a skill generator for the consumer project (`spec: completed/0110-us-378.spec.md`)
+- [x] enhance ps1 config gui (`spec: completed/0112-us-381.spec.md`) — PR #387 MERGED
+- [x] increase test coverage to near 100% (`spec: completed/0113-us-380.spec.md`) — PR #390 MERGED
+- [x] Integrate ws-self-learning with the patterns track and store the generated ws-project-patterns body under the shared hub (`spec: completed/0114-patterns-generator-shared-hub-output.spec.md`)
+- [x] Relocatable shared hub root across the harness (installer, configurator, generator, layout) (`spec: completed/0115-configurable-hub-root.spec.md`) — PR #391 MERGED
+- [x] ws-monitor reports critical missing-artifact false positives on ws-spec-to-pr-lite runs (`spec: completed/0116-us-385.spec.md`) — PR #392 MERGED
+- [x] create an optional step proof-of-work (`spec: completed/0117-us-386.spec.md`) — PR #394 MERGED
+- [x] ws-spec-multi appends a duplicate queue row for an item, causing double processing (`spec: completed/0118-us-393.spec.md`) — PR #396 MERGED
+- [x] Test suite run mutates the repository's own hub config and leaves a backup file (`spec: completed/0119-us-389.spec.md`) — PR #397 MERGED
+- [x] ws-spec-multi standard workers do not persist {plansDir}/{slug} state, step artifacts, or telemetry (`spec: completed/0120-us-388.spec.md`) — PR #400 MERGED
+- [x] (ws-monitor) Terminal-state workflows stay active; batch queue keeps stale/superseded rows (`spec: completed/0121-us-395.spec.md`) — PR #399 MERGED
+- [x] Allow parallel work by other agents - commit only own work in session, do not undo/stash/unstash files (`spec: pending/0122-us-401.spec.md`) — PR #403 MERGED
+- [x] add new skill for enhancing refinement ws-spec-translate-to-human (`spec: pending/0123-us-402.spec.md`) — PR #404 MERGED
+- [x] Ship phase leaves source issue open when baseBranch is not the repo default branch (`spec: pending/0124-us-405.spec.md`) — PR #406 MERGED
+- [x] Unattended autoMode runs: mid-step checkpoints, turn-boundary pause state, and monitor stall detection (`spec: pending/0125-us-412-413-liveness-checkpoints.spec.md`) — commit 72c13dea
+- [x] Workflow script UX and golden-path state commands: discoverable help, score diagnostics, boundary errors, exit codes, per-gate commands, tamper-evidence (`spec: pending/0126-us-415-416-script-ux-golden-path.spec.md`) — PR #421 MERGED
+- [x] Run-state and telemetry integrity: fail-closed preset resolution, ship writeback, Step 9 round artifacts, truthful skip semantics (`spec: pending/0127-us-414-run-state-integrity.spec.md`) — PR #422 MERGED
+- [x] Monitor accuracy: step-membership artifact expectations, legacy terminal tolerance, transcript correlation windows, discovery budget (`spec: pending/0128-us-412-418-monitor-accuracy.spec.md`) — [PR #423](https://github.com/jpolvora/workflow-skills/pull/423) MERGED
+- [x] Observer-log follow-ups (us-412-413 run): intra-root enumeration edge, missing agentTranscripts marker, G2 plans-index hash staleness, compactOutputs no-op (`spec: pending/0129-us-419.spec.md`) — PR #424 MERGED
+- [ ] Pre-ship documentation-sync gate (configurable) (`spec: pending/0129-pre-ship-doc-sync.spec.md`)
+- [x] Kanvas board — packaged local kanban visualizer for spec and workflow state (`spec: completed/0130-kanvas-board.spec.md`) — [PR #425](https://github.com/jpolvora/workflow-skills/pull/425)
+- [ ] Kanvas board phase 2 — drag-and-drop columns with status update on move (`spec: pending/0131-kanvas-board-drag-drop.spec.md`)
+- [x] ws-configure-project should initialize .ws/ local project directory with basic minimal required files (`spec: pending/0132-us-429.spec.md`) — [PR #431](https://github.com/jpolvora/workflow-skills/pull/431) MERGED
+- [x] Score 10 on first verify: run format and full test aliases in implement, and do not cap on baseline-dirty (`spec: pending/0133-us-430.spec.md`) — [PR #432](https://github.com/jpolvora/workflow-skills/pull/432)
+- [x] Organize specifications into status subfolders (pending, completed, archived) (`spec: completed/0135-spec-organizer-status-subfolders.spec.md`) — `4d0365eb` on develop
+- [x] Configurable default branch strategy: stay on current branch by default in workflows (`spec: completed/0134-default-stay-on-current-branch.spec.md`) — `9185b6d6` on develop
+- [x] skillLoader host capability and unified skill-load procedure (`spec: completed/0136-skill-loader-host-capability.spec.md`) — `0373a45d` on develop
+- [x] Subagent Task Dispatch CLI Command and Asynchronous API (`spec: completed/0137-subagent-task-dispatch.spec.md`) — `38ef12c1` on develop
+- [x] Workflow parallel-writer compatibility audit and enforcement (`spec: completed/0138-workflow-parallel-writer-compat.spec.md`) — `5857094c` on develop
+- [ ] Improve agentic code reviewers prompt — simplify and align upstream vs local needs (`spec: pending/0139-improve-agentic-reviewers-prompt.spec.md`)
 
 
 
