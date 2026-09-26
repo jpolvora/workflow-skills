@@ -43,6 +43,7 @@ const {
   resolveConsumerContext,
   toRepoRelative,
 } = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
+const { acquireFileLock } = require(path.join(HUB_SCRIPTS_DIR, 'file_lock.cjs'));
 
 const STATUS_SUBFOLDERS = ['pending', 'completed', 'archived'];
 
@@ -533,14 +534,20 @@ function applyRenames({ repoRoot, specsDir, indexPrdPath, renames }) {
   }
 
   if (indexRel) {
-    let indexPrdContent = fs.readFileSync(indexPrdPath, 'utf8');
-    for (const rename of renames) {
-      if (rename.type === 'spec') {
-        const regex = new RegExp(`(\`spec:\\s*)${escapeRegExp(rename.from)}(\`)`, 'g');
-        indexPrdContent = indexPrdContent.replace(regex, `$1${rename.to}$2`);
+    // Serialize the index.PRD read-modify-write across processes.
+    const release = acquireFileLock(indexPrdPath, { prefix: 'ws-index' });
+    try {
+      let indexPrdContent = fs.readFileSync(indexPrdPath, 'utf8');
+      for (const rename of renames) {
+        if (rename.type === 'spec') {
+          const regex = new RegExp(`(\`spec:\\s*)${escapeRegExp(rename.from)}(\`)`, 'g');
+          indexPrdContent = indexPrdContent.replace(regex, `$1${rename.to}$2`);
+        }
       }
+      fs.writeFileSync(indexPrdPath, indexPrdContent, 'utf8');
+    } finally {
+      release();
     }
-    fs.writeFileSync(indexPrdPath, indexPrdContent, 'utf8');
   }
 }
 

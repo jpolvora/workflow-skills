@@ -9,6 +9,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { acquireFileLock } = require(path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'scripts', 'file_lock.cjs'));
 
 const STATUS_SUBFOLDERS = ['pending', 'completed', 'archived'];
 
@@ -164,6 +165,9 @@ function track({ specsDir, slug }) {
   // Fresh-read before write: a concurrent writer may have appended rows since
   // the first read. Re-check on fresh text so this write preserves foreign
   // rows and mints a collision-free row number.
+  // Serialize the read-modify-write across processes (parallel writers).
+  const release = acquireFileLock(indexPath, { prefix: 'ws-index' });
+  try {
   let indexText = fs.readFileSync(indexPath, 'utf8');
   isCrlf = indexText.indexOf(String.fromCharCode(13)) !== -1;
   if (alreadyTracked(indexText, slug)) {
@@ -230,6 +234,9 @@ function track({ specsDir, slug }) {
 
   fs.writeFileSync(indexPath, indexText, 'utf8');
   return { status: 'tracked', slug, title, row: n };
+  } finally {
+    release();
+  }
 }
 
 function main() {

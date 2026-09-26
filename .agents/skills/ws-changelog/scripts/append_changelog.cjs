@@ -13,8 +13,6 @@
 //   [--agent <id>] [--date <YYYY-MM-DD HH:MM>] [--repo-root <dir>] [--json]
 
 const fs = require('fs');
-const os = require('os');
-const crypto = require('crypto');
 const path = require('path');
 // Managed runtime loads from its skills installation: the project-local
 // skills tree ({skillsRoot}/ws-shared) or the global skills tree
@@ -52,6 +50,7 @@ const HUB_SCRIPTS_DIR = (() => {
   return packaged;
 })();
 const { resolveConsumerContext, toRepoRelative } = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
+const { withFileLock } = require(path.join(HUB_SCRIPTS_DIR, 'file_lock.cjs'));
 
 function parseArgs(argv) {
   const options = { agent: null, date: null, repoRoot: null, json: false };
@@ -111,12 +110,6 @@ function oneLine(value) {
   return String(value).replace(/[\r\n]+/g, ' ').trim();
 }
 
-// Synchronous short backoff for the CAS retry (Atomics.wait blocks the main
-// thread for the given milliseconds without a busy loop).
-function sleepSync(ms) {
-  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
-}
-
 // Build the next changelog text: insert the entry under `# Changelog`,
 // preserving the file's dominant EOL (a CRLF worktree file must stay CRLF).
 function renderChangelog(existing, block) {
@@ -135,37 +128,6 @@ function renderChangelog(existing, block) {
     }
   }
   return eol === '\n' ? nextLf : nextLf.replace(/\n/g, eol);
-}
-
-const LOCK_STALE_MS = 10000;
-
-// Run `fn` while holding an exclusive `<file>.lock` (O_EXCL create). Bounded
-// spin with backoff; steals a stale lock left by a crashed writer.
-function withFileLock(lockPath, fn) {
-  for (let attempt = 0; attempt < 200; attempt += 1) {
-    let fd;
-    try {
-      fd = fs.openSync(lockPath, 'wx');
-    } catch (error) {
-      if (error.code !== 'EEXIST') throw error;
-      try {
-        if (Date.now() - fs.statSync(lockPath).mtimeMs > LOCK_STALE_MS) {
-          fs.rmSync(lockPath, { force: true });
-          continue;
-        }
-      } catch { /* lock vanished between attempts; retry */ }
-      sleepSync(2 + Math.min(attempt, 50));
-      continue;
-    }
-    try {
-      fs.writeSync(fd, `${process.pid}\n`);
-      return fn();
-    } finally {
-      try { fs.closeSync(fd); } catch { /* ignore */ }
-      try { fs.rmSync(lockPath, { force: true }); } catch { /* ignore */ }
-    }
-  }
-  throw new Error('timed out acquiring changelog lock');
 }
 
 function appendChangelog(options) {
@@ -192,14 +154,10 @@ function appendChangelog(options) {
   const escaped = body.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const dedupeRe = new RegExp(escaped.replace(/\n/g, '\\r?\\n'));
 
-  // Serialize the read-modify-write across processes with an exclusive lock
-  // file, then publish atomically (temp + rename) so a concurrent append is
-  // never clobbered and no reader sees a torn file. The lock lives in the OS
-  // temp dir (keyed on the absolute target path) so it never pollutes the
-  // worktree.
-  const lockKey = crypto.createHash('sha1').update(file).digest('hex').slice(0, 16);
-  const lockPath = path.join(os.tmpdir(), `ws-changelog-${lockKey}.lock`);
-  return withFileLock(lockPath, () => {
+  // Serialize the read-modify-write across processes via the shared lock helper
+  // and publish atomically (temp + rename) so a concurrent append is never
+  // clobbered and no reader sees a torn file.
+  return withFileLock(file, () => {
     const existing = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '';
     if (dedupeRe.test(existing)) {
       return { ok: true, skipped: 'duplicate-block', file: toRepoRelative(context.repoRoot, file) };
@@ -209,7 +167,7 @@ function appendChangelog(options) {
     fs.writeFileSync(tempFile, next, 'utf8');
     fs.renameSync(tempFile, file);
     return { ok: true, file: toRepoRelative(context.repoRoot, file) };
-  });
+  }, { prefix: 'ws-changelog' });
 }
 
 if (require.main === module) {

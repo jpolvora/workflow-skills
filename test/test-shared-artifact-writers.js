@@ -188,6 +188,43 @@ console.log('5. changelog concurrent appends preserve every entry');
   }
 }
 
+// 6. spec-index: concurrent `track` invocations must not clobber each other
+// (PR #433 review — shared lock on the index.PRD read-modify-write).
+console.log('6. spec-index concurrent track preserves every entry');
+{
+  const dir = mkTmp('ws-writers-index-concurrent-');
+  const specs = path.join(dir, '.agents', 'specs');
+  fs.mkdirSync(specs, { recursive: true });
+  writeConsumer(dir, { plans: { dir: '.agents/plans', specsDir: '.agents/specs' } });
+  fs.writeFileSync(
+    path.join(specs, 'index.PRD'),
+    '# Spec Index\n\n## 7. Feature map by phase\n\n### Phase 1: Core\n- [x] Setup (`spec: 0001-setup.spec.md`)\n\n## 8. Next specs\n\n| # | Spec | Status | Target Phase | Notes |\n|---|------|--------|--------------|-------|\n| 1 | `setup` | `[x]` done | Phase 1 | Initial |\n',
+    'utf8',
+  );
+  const ids = ['s1', 's2', 's3', 's4'];
+  for (const id of ids) {
+    fs.writeFileSync(path.join(specs, `${id}.spec.md`), `---\nslug: ${id}\ntitle: ${id}\n---\n`, 'utf8');
+  }
+  const writers = ids.map((id) => new Promise((resolve) => {
+    const child = cp.spawn(process.execPath, [TRACK, '--specs-dir', specs, '--slug', id], { cwd: dir, encoding: 'utf8' });
+    let out = '';
+    child.stdout.on('data', (chunk) => { out += chunk; });
+    child.on('close', (code) => resolve({ id, code, out }));
+  }));
+  const results = await Promise.all(writers);
+  for (const r of results) {
+    assert.strictEqual(r.code, 0, `track ${r.id} exits 0: ${r.out}`);
+    assert.strictEqual(JSON.parse(r.out).status, 'tracked', `track ${r.id} reports tracked`);
+  }
+  const content = fs.readFileSync(path.join(specs, 'index.PRD'), 'utf8');
+  for (const id of ids) {
+    assert.ok(content.includes(`\`${id}\``), `concurrent track row ${id} preserved`);
+    assert.ok(content.includes(`\`spec: ${id}.spec.md\``), `concurrent track bullet ${id} preserved`);
+  }
+  const rowNumbers = [...content.matchAll(/^\| (\d+) \|/gm)].map((m) => m[1]);
+  assert.strictEqual(new Set(rowNumbers).size, rowNumbers.length, 'row numbers unique after concurrent track');
+}
+
 for (const dir of tmpRoots) {
   try {
     fs.rmSync(dir, { recursive: true, force: true });

@@ -142,6 +142,9 @@ function resolveSpecPath(options) {
   }
 
   const cleanSlug = String(options.slug).replace(/^\d{4}-/, '');
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(cleanSlug)) {
+    throw new Error(`invalid slug "${options.slug}" (letters, digits, dot, underscore, hyphen only)`);
+  }
   // Search root plus known status subfolders; each hit is a path relative
   // to specsDir using forward slashes (e.g. "pending/0001-foo.spec.md").
   const locations = ['', ...STATUS_SUBFOLDERS];
@@ -192,6 +195,16 @@ function resolveSpecPath(options) {
   const contextRel = finalRel.replace(/\.spec\.md$/, '.context.md');
   const contextAbs = path.resolve(specsDir, ...contextRel.split('/'));
   const contextRepoRel = toRepoRelative(context.repoRoot, contextAbs);
+
+  // Containment: a resolved path must stay inside specsDir (defense in depth
+  // against a crafted slug even though isSafeSlug already rejects traversal).
+  const specsRoot = path.resolve(specsDir);
+  for (const [label, abs] of [['spec path', specAbs], ['context path', contextAbs]]) {
+    const rel = path.relative(specsRoot, abs);
+    if (!rel || rel.startsWith('..') || path.isAbsolute(rel)) {
+      throw new Error(`${label} escapes specsDir: ${toRepoRelative(context.repoRoot, abs)}`);
+    }
+  }
 
   return {
     slug: cleanSlug,

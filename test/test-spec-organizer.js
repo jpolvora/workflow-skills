@@ -86,6 +86,19 @@ console.log('2. Testing resolve_spec_path subfolder search');
   assert.strictEqual(resCtx.stdout.trim(), '.agents/specs/pending/0003-auth.context.md');
 }
 
+// 2b. resolve_spec_path rejects hostile (traversal) slugs (PR #433 review)
+console.log('2b. Testing resolve_spec_path hostile-slug guard');
+{
+  const proj = createTempProject({ enforce: true });
+  for (const bad of ['../../pwned', 'a/b', '..', '.hidden']) {
+    const res = spawnSync(process.execPath, [RESOLVE_SCRIPT, '--slug', bad, '--repo-root', proj.tmp], { encoding: 'utf8' });
+    assert.notStrictEqual(res.status, 0, `rejects hostile slug ${bad}`);
+  }
+  const okRes = spawnSync(process.execPath, [RESOLVE_SCRIPT, '--slug', '0001-good', '--repo-root', proj.tmp], { encoding: 'utf8' });
+  assert.strictEqual(okRes.status, 0, `accepts valid slug (${okRes.stderr || ''})`);
+  assert.ok(okRes.stdout.trim().startsWith('.agents/specs/'), 'resolved path stays under specsDir');
+}
+
 // 3. New specs under pending/ + explicit --status (AC3)
 console.log('3. Testing new-spec status resolution');
 {

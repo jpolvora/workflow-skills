@@ -51,7 +51,7 @@ const BROAD_STAGING = [
   /git add -A(?:\s|$|;|&|\|)/,
   /git add --all(?:\s|$|;|&|\|)/,
   /git add \.\.?(?:\/|[\s;|&]|$)/,
-  /git add -u(?!\s*--)(?:\s|$|;|&|\|)/,
+  /git add -u(?!\s+--\s+[^\s;|&])(?:\s|$|;|&|\|)/,
   /git add (?!-|-- )[\w~][^\s`]*\/(?:\s|$|;|&|\|)/,
 ];
 
@@ -96,6 +96,7 @@ const BROAD_SAMPLES = [
   'git add ./*',
   'git add -u',
   'git add -u || true',
+  'git add -u --',
   'git add src/',
 ];
 for (const sample of BROAD_SAMPLES) {

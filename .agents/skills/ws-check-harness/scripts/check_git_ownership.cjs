@@ -32,7 +32,7 @@ const BROAD_STAGING = [
   { id: 'broad:git-add-A', re: /git add -A(?:\s|$|;|&|\|)/ },
   { id: 'broad:git-add-all', re: /git add --all(?:\s|$|;|&|\|)/ },
   { id: 'broad:git-add-dot', re: /git add \.\.?(?:\/|[\s;|&]|$)/ },
-  { id: 'broad:git-add-u', re: /git add -u(?!\s*--)(?:\s|$|;|&|\|)/ },
+  { id: 'broad:git-add-u', re: /git add -u(?!\s+--\s+[^\s;|&])(?:\s|$|;|&|\|)/ },
   { id: 'broad:dir-add', re: /git add (?!-|-- )[\w~][^\s`]*\/(?:\s|$|;|&|\|)/ },
 ];
 
