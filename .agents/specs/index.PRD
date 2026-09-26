@@ -182,8 +182,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] Pre-ship documentation-sync gate (configurable) (`spec: 0129-pre-ship-doc-sync.spec.md`)
 - [x] Kanvas board — packaged local kanban visualizer for spec and workflow state (`spec: 0130-kanvas-board.spec.md`) — [PR #425](https://github.com/jpolvora/workflow-skills/pull/425)
 - [ ] Kanvas board phase 2 — drag-and-drop columns with status update on move (`spec: 0131-kanvas-board-drag-drop.spec.md`)
-- [ ] ws-configure-project should initialize .ws/ local project directory with basic minimal required files (`spec: 0132-us-429.spec.md`)
-- [x] Score 10 on first verify: run format and full test aliases in implement, and do not cap on baseline-dirty (`spec: 0133-us-430.spec.md`)
+- [x] ws-configure-project should initialize .ws/ local project directory with basic minimal required files (`spec: 0132-us-429.spec.md`) — [PR #431](https://github.com/jpolvora/workflow-skills/pull/431) MERGED
+- [x] Score 10 on first verify: run format and full test aliases in implement, and do not cap on baseline-dirty (`spec: 0133-us-430.spec.md`) — [PR #432](https://github.com/jpolvora/workflow-skills/pull/432)
 - [ ] Organize specifications into status subfolders (pending, completed, archived) (`spec: 0135-spec-organizer-status-subfolders.spec.md`)
 - [ ] Configurable default branch strategy: stay on current branch by default in workflows (`spec: 0134-default-stay-on-current-branch.spec.md`)
 - [ ] skillLoader host capability and unified skill-load procedure (`spec: 0136-skill-loader-host-capability.spec.md`)
@@ -449,7 +449,7 @@ All Next-specs closed.
 
 | 136 | `kanvas-board-drag-drop` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Kanvas board phase 2 — drag-and-drop columns with status update on move |
 
-| 137 | `us-429` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-configure-project should initialize .ws/ local project directory with basic minimal required files |
+| 137 | `us-429` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-configure-project should initialize .ws/ local project directory with basic minimal required files |
 
 | 138 | `us-430` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Score 10 on first verify: run format and full test aliases in implement, and do not cap on baseline-dirty |
 
@@ -600,6 +600,8 @@ All Next-specs closed.
 | 2026-09-24 | `us-412-413-liveness-checkpoints` | Unattended autoMode runs: mid-step checkpoints, turn-boundary pause state, and monitor stall detection | commit 72c13dea (delivery) |
 | 2026-09-25 | `us-419` | Observer-log follow-ups: intra-root enumeration edge, agentTranscripts marker, G2 plans-index freshness, compactOutputs no-op | commit a5993986 (delivery) |
 | 2026-09-25 | `kanvas-board` | Kanvas board: packaged local kanban visualizer skill ws-kanvas | [PR #425](https://github.com/jpolvora/workflow-skills/pull/425) |
+| 2026-09-26 | `us-429` | ws-configure-project should initialize .ws/ local project directory with basic minimal required files | [PR #431](https://github.com/jpolvora/workflow-skills/pull/431) MERGED |
+| 2026-09-26 | `us-430` | Score 10 on first verify: run format and full test aliases in implement, and do not cap on baseline-dirty | [PR #432](https://github.com/jpolvora/workflow-skills/pull/432) |
 
 ## 11. Maintenance checklist
 

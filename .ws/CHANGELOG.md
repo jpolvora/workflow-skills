@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-26 11:00] Agent: Muse Code
+- **Prompt**: /ws-spec-index sync
+- **Done**: Synced index.PRD to shipped reality: us-429 Feature map plus Next-specs row 137 to done with PR #431 MERGED (status completed, shipStatus merged, commits verified); us-430 PR #432 suffix plus Done-log row (shipStatus pr-open). 7 pending rows left untouched (no E1 evidence).
+- **Result**: updated [us-429, us-430]; skipped 7 without ship evidence, files unedited for those.
+
 ### [2026-09-26 10:45] Agent: Muse Code
 - **Prompt**: update spec-write skill to auto-track to index.PRD when it exists and is enabled in config, no confirm gate
 - **Done**: Replaced ws-spec-write Step 8 gate with auto-track (no user-gate); added tracking.autoTrackSpecWrite (default true, explicit false skips; missing index skips with init hint); synced schema, example, GUI editor row, auto_configure fallback, ws-spec-index edge in both dep manifests, AGENTS.md S5, autoload mirrors, REFERENCE.md, from-provider note, FEATURES.md, test-doc-sync assertions; rebuilt site dep pills; regenerated integrity. Full suite 134/134 green; harness-clean 0 findings. Note: concurrent session committed this work inside 515ebf74 together with us-430 review fixes.
