@@ -50,7 +50,7 @@ function fencedBlocks(markdown) {
 const BROAD_STAGING = [
   /git add -A(?:\s|$|;|&|\|)/,
   /git add --all(?:\s|$|;|&|\|)/,
-  /git add \.(?:\s|$|;|&|\|)/,
+  /git add \.\.?(?:\/|[\s;|&]|$)/,
   /git add -u(?!\s*--)(?:\s|$|;|&|\|)/,
   /git add (?!-|-- )[\w~][^\s`]*\//,
 ];
@@ -91,6 +91,9 @@ const BROAD_SAMPLES = [
   'git add .',
   'git add .;',
   'git add . && git commit',
+  'git add ./',
+  'git add ..',
+  'git add ./*',
   'git add -u',
   'git add -u || true',
   'git add src/',
@@ -101,7 +104,7 @@ for (const sample of BROAD_SAMPLES) {
     `detects whole-tree staging: ${sample}`,
   );
 }
-for (const allowed of ['git add -u -- deleted.txt', 'git add -- own.txt']) {
+for (const allowed of ['git add -u -- deleted.txt', 'git add -- own.txt', 'git add .gitignore']) {
   assert.ok(
     !BROAD_STAGING.some((pattern) => pattern.test(allowed)),
     `path-scoped form stays allowed: ${allowed}`,

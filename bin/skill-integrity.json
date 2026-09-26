@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "400289a8f6c50a6c1b783848953669f5f2282a4b4d349c8a43e686608b7826d2",
+  "fullPackageDigest": "2ab52a87db00e8ce4cc1f28e3981877cac4a1ee5fe6b36d31f6569d8b2e0e1bc",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -121,17 +121,17 @@
         "SKILL.md": "457f6a0802bf52180857d461679a723b0983eaf44399a82dc37e95f1189a2886",
         "evals/evals.json": "35bcc6ef297fa47efe448093357610e39775a8ed751d0ae4cdc143bd0c803147",
         "scripts/check_duplicates.cjs": "96326dbe6166a54666afe0820f704587e9eaec607fd1180f844a7cd2aaf6bcf9",
-        "scripts/check_git_ownership.cjs": "25a461306f66d218f69f6611e3af17399ff7d8d07a23da267b78a52ff435df53",
+        "scripts/check_git_ownership.cjs": "883515951bfa7915278f90bb1ffdc4c6ddb58b7edcadfb737f8658aa9a26f5d3",
         "scripts/check_harness_links.cjs": "a87e7286023336669e430ff8f9f8a76defcf15781ce7049a8b501ad307d3e520",
         "scripts/check_hub_separation.cjs": "6a1d35156f8123f32f4e57a1d66337f2e9e8dbafed09463d79f4f54e6c8255ae",
         "scripts/check_pipeline_handoff.cjs": "7afa6126aabf74b7370ea34e663a711223cf611ea78944d1353cc13b0e5c84b0",
         "scripts/check_shell_quoting.cjs": "f838b2b2b526d182f2ba1801198acd161d21cf4e17c238a0e05f5b820114d756",
-        "scripts/check_skill_load.cjs": "fb308417c32d3ad8f07e0a58519782462926d90a77448b4dec7ae2cf7dfdd15f",
+        "scripts/check_skill_load.cjs": "4f9150eeb7fe3a6da045ffa43d4d7de2c60ab473d62c5cfe6ce945b8226999ec",
         "scripts/check_unique_runtime.cjs": "92eaa8d591ce61b03a412bbf78545d1297e85e16b235a3761836df3eac765093",
         "scripts/detect_install_mode.cjs": "5995a4b275917183c0d799e34696ddf62a005953940c9e817418638385579a05",
         "scripts/measure_harness.cjs": "8722d70ac030340f7287edf9217f34a68f4200f50c1fe739019df35e8fa18d2c"
       },
-      "skillDigest": "c1a20843e1d9ba75a9445934be9b2fd257833950d0a6f393575c26faec3adc18"
+      "skillDigest": "eb07392a0265eba7be781e662be4e15b4fceee10d6b344ef40ce6c68db629572"
     },
     "ws-check-workflows": {
       "files": {

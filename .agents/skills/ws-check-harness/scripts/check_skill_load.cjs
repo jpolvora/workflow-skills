@@ -119,6 +119,8 @@ function withoutLinkTargets(line) {
 function checkLine(line) {
   const findings = [];
   const bare = withoutLinkTargets(line);
+  // Documented pass: a `do not load` prohibition is not a load recipe.
+  if (/do not load/i.test(bare)) return findings;
   if (bare.includes('`Read`') && bare.includes('SKILL.md')) {
     findings.push('F1');
   }

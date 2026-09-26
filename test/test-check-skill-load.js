@@ -108,6 +108,19 @@ function check(fixture, extraEnv = {}) {
   assert(report && report.ok === true && report.findings.length === 0, 'migrated body reports zero findings');
 }
 
+// Pass: a `do not load` prohibition that names a raw path/SKILL.md is not a recipe.
+{
+  const fixture = mkTmp('ws-chk-load-prohibit-');
+  writeSkillBody(
+    fixture,
+    'ws-demo',
+    '# ws-demo\n\nDo not load {skillsRoot}/ws-other/SKILL.md directly; use {skillLoader} instead.\n',
+  );
+  const { result, report } = check(fixture);
+  assert(result.status === 0, `do-not-load prohibition with raw path passes (${result.stderr || ''})`);
+  assert(report && report.findings.length === 0, 'prohibition yields no findings');
+}
+
 // Pass: a `Read` of MEMORY plus a SKILL.md cross-link on one table row is not a recipe.
 {
   const fixture = mkTmp('ws-chk-load-table-');
