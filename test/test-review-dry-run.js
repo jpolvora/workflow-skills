@@ -11,7 +11,7 @@ const pkg = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf
 
 const defaults = resolveReviewerConfig({ OPENCODE_API_KEY: 'test' });
 assert.equal(defaults.engine, 'opencode');
-assert.equal(defaults.model, 'opencode-go/mimo-v2.6-flash');
+assert.equal(defaults.model, 'opencode-go/muse-spark-1.2-contributor');
 assert.equal(defaults.variant, 'medium');
 
 const cursor = resolveReviewerConfig({

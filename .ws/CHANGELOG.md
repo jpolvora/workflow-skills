@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-09-26 19:13] Agent: agent
+- **Prompt**: use muse spark 1.2 contributor as default CI reviewer and dry-run local model
+- **Done**: Set opencode-go/muse-spark-1.2-contributor as default model in .github/workflows/agentic-code-review.yml fallback + repo Variable, bin/review-dry-run.cjs DEFAULT_MODEL, and synced test/CATALOG/.ws config comment
+- **Result**: Canonical id verified via opencode models; test-review-dry-run.js green
+
+### [2026-09-26 11:21] Agent: opencode (deepseek-v4.1-flash)
+- **Prompt**: /ws-configure-project (refresh stack fingerprint)
+- **Done**: config.json already complete (no required gaps). Ran stack_fingerprint.cjs: detected drift (stored `5da7b34f` -> computed `5ea0bf6d`) and rewrote `.ws/STACK.md` frontmatter via `write`; config untouched. Autoload --check OK (effective true, dual-hub override OK). specMemo preflight: CLI available, hybrid vault doctor unhealthy (`fetch failed`).
+- **Result**: `.ws/STACK.md` fingerprint matches `package.json`; `check` exit 0 (`skipDetection: true`). One-line diff.
+
 ### [2026-09-26 11:00] Agent: Muse Code
 - **Prompt**: /ws-spec-index sync
 - **Done**: Synced index.PRD to shipped reality: us-429 Feature map plus Next-specs row 137 to done with PR #431 MERGED (status completed, shipStatus merged, commits verified); us-430 PR #432 suffix plus Done-log row (shipStatus pr-open). 7 pending rows left untouched (no E1 evidence).

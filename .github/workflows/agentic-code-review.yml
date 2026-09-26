@@ -8,7 +8,7 @@ name: Agentic Code Review
 # Variables) or via gh client, and the next PR picks them up:
 #
 #   gh variable set AGENTIC_CODE_REVIEWERS_ENGINE --repo jpolvora/workflow-skills --body "opencode"
-#   gh variable set AGENTIC_CODE_REVIEWERS_MODEL  --repo jpolvora/workflow-skills --body "opencode-go/mimo-v2.6-flash"
+#   gh variable set AGENTIC_CODE_REVIEWERS_MODEL  --repo jpolvora/workflow-skills --body "opencode-go/muse-spark-1.2-contributor"
 #   gh variable set AGENTIC_CODE_REVIEWERS_VARIANT --repo jpolvora/workflow-skills --body "medium"
 #
 # Engine examples: "opencode" (uses OPENCODE_API_KEY secret) or "cursor-sdk"
@@ -36,7 +36,7 @@ concurrency:
 
 env:
   REVIEW_ENGINE: ${{ vars.AGENTIC_CODE_REVIEWERS_ENGINE || 'opencode' }}
-  REVIEW_MODEL: ${{ vars.AGENTIC_CODE_REVIEWERS_MODEL || 'opencode-go/deepseek-v4.1-flash' }}
+  REVIEW_MODEL: ${{ vars.AGENTIC_CODE_REVIEWERS_MODEL || 'opencode-go/muse-spark-1.2-contributor' }}
   REVIEW_VARIANT: ${{ vars.AGENTIC_CODE_REVIEWERS_VARIANT || 'low' }}
 
 jobs:
@@ -130,7 +130,7 @@ jobs:
             --pr-id "${{ steps.pr.outputs.number }}" \
             --stack Custom \
             --custom-prompt .github/agentic-code-reviewers-prompt.md \
-            --score-min 3 \
+            --score-min 5 \
             --include-patterns "**/*.md,**/*.mdc,**/*.yml,**/*.yaml,**/*.json,**/*.sh,**/*.ps1,**/*.psm1,**/*.psd1,**/*.cmd,**/*.js,**/*.ts,**/*.css,**/*.html,**/*.cjs,**/*.py,**/*.prd" \
             --source-branch "refs/heads/${{ steps.pr.outputs.head_ref }}" \
             --target-branch "refs/heads/${{ steps.pr.outputs.base_ref }}"

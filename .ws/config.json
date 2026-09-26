@@ -132,7 +132,7 @@
     "minVerifyScore": 9,
     "autoload": true,
     "_comment_autoload": "When true, consumer intends repo-root AGENTS.md to autoload Always-applied skills from {sharedDir}/autoload.md. Omitted/missing/false → effective false; harness fails closed only when true.",
-    "enableDag": false,
+    "enableDag": true,
     "_comment_enableDag": "When true, break plan into parallel tasks executed by subagents. When false (default), execute tasks sequentially one by one in serial order.",
     "verboseMode": true,
     "_comment_verboseMode": "Seeded true by ws-configure-project. Runtime: explicit true prints a reasoned start-of-step preview; omitted or false → silent.",
@@ -146,9 +146,9 @@
       "includeTestingReport": false
     },
     "_comment_models": "Resolve order when --model is blank: stepModels[role|N] → active preset steps[role|N] → top-level phase key → preset phase key → session. Token \"current\" uses session currentModel (no fallthrough). Empty string falls through. Unknown modelsPreset → preset \"default\" if present, else legacy four keys. Fix-PR roles bypass numeric Step 9: fixPrPlan → reviewerModel; fixPrExec → executionModel. Lite ignores testingModel and all role keys, including fixPrPlan/fixPrExec, while preserving inline plan-before-edit order. Presets are lean phase-key bundles without a steps map; put per-step or per-role overrides in top-level stepModels. The default preset is all current (session-only safe fallback). Switch modelsPreset to a named bundle (cursor, deepseek, opencode, cheap, muse-spark) for host-specific models.",
-    "modelsPreset": "cursor",
+    "modelsPreset": "muse",
     "modelPresets": {
-      "muse-spark": {
+      "muse": {
         "plannerModel": "muse-spark-1.3-contributor",
         "executionModel": "muse-spark-1.2-contributor",
         "testingModel": "muse-spark-1.2-contributor",
@@ -237,7 +237,7 @@
   },
   "preview": {
     "_comment": "Optional. /ws-preview runs preview.dryRunCommand from the consumer repo root — no packaged reviewer backend. Prefer /ws-configure-project --section preview (infers from AGENTS.md, README, MEMORY, rules.*, package.json scripts, and local skills) or set the string below. Empty → /ws-preview stops until configured.",
-    "_comment_dryRunCommand": "Local dry-run mirror of .github/workflows/agentic-code-review.yml via `npm run review:dry` (engine/model/variant read from repo Variables AGENTIC_CODE_REVIEWERS_ENGINE/_MODEL/_VARIANT with same defaults opencode / opencode-go/mimo-v2.6-flash / medium; same stack / prompt / threshold / patterns, --dry-run, --target-branch refs/heads/main, no --gh/--pr-id, so no PR threads are published). Requires network and the selected engine credential (OPENCODE_API_KEY or CURSOR_API_KEY) at run time.",
+    "_comment_dryRunCommand": "Local dry-run mirror of .github/workflows/agentic-code-review.yml via `npm run review:dry` (engine/model/variant read from repo Variables AGENTIC_CODE_REVIEWERS_ENGINE/_MODEL/_VARIANT with same defaults opencode / opencode-go/muse-spark-1.2-contributor / medium; same stack / prompt / threshold / patterns, --dry-run, --target-branch refs/heads/main, no --gh/--pr-id, so no PR threads are published). Requires network and the selected engine credential (OPENCODE_API_KEY or CURSOR_API_KEY) at run time.",
     "dryRunCommand": "npm run review:dry",
     "_comment_localReviewCommand": "Examples: cursor-reviewer --dry-run | node scripts/cursor-reviewer/cli.cjs --dry-run",
     "localReviewCommand": "",

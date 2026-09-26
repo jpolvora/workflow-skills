@@ -7,7 +7,7 @@ const { spawnSync } = require('child_process');
 
 const REVIEWER_URL = 'https://raw.githubusercontent.com/jpolvora/agentic-code-reviewers/release/run.sh';
 const DEFAULT_ENGINE = 'opencode';
-const DEFAULT_MODEL = 'opencode-go/mimo-v2.6-flash';
+const DEFAULT_MODEL = 'opencode-go/muse-spark-1.2-contributor';
 const DEFAULT_VARIANT = 'medium';
 const DEFAULT_TIMEOUT_MS = '1200000';
 const EXTRA_EXCLUDES = '.agents/plans/**,.agents/specs/**';
