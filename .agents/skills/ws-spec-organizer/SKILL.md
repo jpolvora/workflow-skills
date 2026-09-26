@@ -26,7 +26,8 @@ In `config.json`:
 {
   "plans": {
     "specsDir": ".agents/specs",
-    "enforceSpecPrefixOrdering": false
+    "enforceSpecPrefixOrdering": false,
+    "statusSubfolders": false
   }
 }
 ```
@@ -35,6 +36,11 @@ In `config.json`:
   - `false`: Writers output `{specsDir}/{slug}.spec.md`.
   - `true`: Writers output `{specsDir}/NNNN-{slug}.spec.md` where `NNNN` is `max(existing 4-digit prefixes) + 1` (e.g. `0001`).
   - Omitted, non-boolean, or missing config: `resolve_spec_path.cjs` still treats the flag as `false` (fail-safe). Writers (`ws-spec-write`) **persist** this exact key under `plans` when it is absent so the convention is explicit. Do not invent a second key name.
+- `plans.statusSubfolders` (boolean, default: `false`):
+  - `false`: Boards stay flat; existing paths under `pending/`, `completed/`, or `archived/` still resolve, and new specs resolve to `{specsDir}/[NNNN-]{slug}.spec.md`.
+  - `true`: New specs resolve to `{specsDir}/pending/[NNNN-]{slug}.spec.md`; boards may be filed into `pending/`, `completed/`, `archived/` via `--by-status`.
+  - Sequence prefixes stay globally unique: `NNNN` is `max(prefixes across root and all status subfolders) + 1`.
+  - No automatic migration: enabling the flag never moves existing files; run `organize_specs.cjs --by-status --apply` explicitly.
 
 **Invariants:**
 - Frontmatter `slug` is always unprefixed (`slug: {slug}`).
@@ -47,16 +53,20 @@ In `config.json`:
 ### 1. Resolve spec-of-record path
 
 ```bash
-node {skillsRoot}/ws-spec-organizer/scripts/resolve_spec_path.cjs --slug <slug> [--repo-root <dir>] [--context] [--json]
+node {skillsRoot}/ws-spec-organizer/scripts/resolve_spec_path.cjs --slug <slug> [--repo-root <dir>] [--status pending|completed|archived] [--context] [--json]
 ```
 
-Outputs the repo-relative POSIX path to the spec of record.
+Outputs the repo-relative POSIX path to the spec of record. Searches `{specsDir}/` root plus `pending/`, `completed/`, `archived/`; an existing spec anywhere wins. `--status` forces the target subfolder for a new spec (default `pending` when `plans.statusSubfolders` is `true`); duplicate slugs across locations exit 2.
 
 ### 2. Organize existing board specs
 
 ```bash
 node {skillsRoot}/ws-spec-organizer/scripts/organize_specs.cjs [--repo-root <dir>] [--dry-run | --apply] [--json]
+node {skillsRoot}/ws-spec-organizer/scripts/organize_specs.cjs --by-status [--dry-run | --apply] [--json]
+node {skillsRoot}/ws-spec-organizer/scripts/organize_specs.cjs --slug <slug> --status <status> [--dry-run | --apply] [--json]
 ```
 
 - `--dry-run` (default): inspect proposed renames and index updates without modifying the filesystem.
 - `--apply`: execute safe `git mv` (or `fs.renameSync` for untracked files), assigning chronological `0001`… prefixes by `specDate` → git first-add date → file mtime, and update `index.PRD` `spec:` references.
+- `--by-status`: file every spec into `pending/`, `completed/`, or `archived/` by frontmatter `status:` (synonyms accepted) → frontmatter `issueState:` (`closed` → completed, `open` → pending) → `index.PRD` Done log / `[x]` checkboxes / Archive table. Moves the `*.spec.md` plus companion `*.context.md` and `*.assets/` sidecars, keeping file names; rewrites `index.PRD` `spec:` references to subfolder-relative paths. Fails closed on dirty overlapping paths or target collisions.
+- `--slug <slug> --status <status>`: file one spec (used by `ws-spec-index sync` completion transitions).

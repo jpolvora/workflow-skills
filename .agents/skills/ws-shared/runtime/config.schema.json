@@ -495,6 +495,11 @@
           "type": "boolean",
           "default": false,
           "description": "When true, new spec-of-record writes and organizer apply NNNN-{slug}.spec.md with a four-digit sequence under {specsDir}. When false (default), writers use {slug}.spec.md."
+        },
+        "statusSubfolders": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, new spec-of-record writes resolve under {specsDir}/pending/ and ws-spec-organizer may file specs into pending/, completed/, or archived/ by status. When false (default), boards stay flat under {specsDir}/."
         }
       }
     },

@@ -294,7 +294,9 @@
     "worktreesDir": ".agents/plans/{slug}/worktrees",
     "useWorktrees": false,
     "_comment_enforceSpecPrefixOrdering": "When true, new spec-of-record writes and organizer apply NNNN-{slug}.spec.md under {specsDir}. Omitted, non-boolean, or missing config safely resolves to false. ws-spec-write persists this exact key when it is absent (seed true if the board already uses NNNN- files).",
-    "enforceSpecPrefixOrdering": false
+    "enforceSpecPrefixOrdering": false,
+    "_comment_statusSubfolders": "When true, new specs resolve under {specsDir}/pending/ and the organizer files specs into pending/, completed/, archived/ by status. Default false keeps flat boards.",
+    "statusSubfolders": false
   },
 
   "reviews": {

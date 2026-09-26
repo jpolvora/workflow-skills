@@ -394,6 +394,9 @@
       "test/test-spec-prefix-ordering.js"
     ],
     [
+      "test/test-spec-organizer.js"
+    ],
+    [
       "test/test-ws-spec-manager.js"
     ],
     [

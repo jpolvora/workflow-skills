@@ -10,6 +10,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const STATUS_SUBFOLDERS = ['pending', 'completed', 'archived'];
+
 function parseArgs(argv) {
   const out = { specsDir: null, slug: null };
   for (let i = 2; i < argv.length; i++) {
@@ -31,27 +33,36 @@ function readTitle(specPath) {
 
 function alreadyTracked(indexText, slug) {
   const esc = slug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  // Exact slug cell or `spec: [NNNN-]slug.spec.md` — not a substring of another slug.
+  // Exact slug cell or `spec: [sub/dir/][NNNN-]slug.spec.md` — not a
+  // substring of another slug.
   const re = new RegExp(
-    '(?:`spec:\\s*(?:\\d{4}-)?' + esc + '\\.spec\\.md`|\\|\\s*`' + esc + '`\\s*\\|)',
+    '(?:`spec:\\s*(?:[A-Za-z0-9._-]+/)*(?:\\d{4}-)?' + esc + '\\.spec\\.md`|\\|\\s*`' + esc + '`\\s*\\|)',
     'i',
   );
   return re.test(indexText);
 }
 
 function findSpecFile(specsDir, slug) {
-  const exact = resolveUnder(specsDir, slug + '.spec.md');
-  if (exact && fs.existsSync(exact)) return exact;
-  let names;
-  try {
-    names = fs.readdirSync(specsDir);
-  } catch {
-    return null;
-  }
   const esc = slug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const re = new RegExp('^\\d{4}-' + esc + '\\.spec\\.md$');
-  const hit = names.find((name) => re.test(name));
-  return hit ? resolveUnder(specsDir, hit) : null;
+  const prefixedRe = new RegExp('^\\d{4}-' + esc + '\\.spec\\.md$');
+  const locations = ['', ...STATUS_SUBFOLDERS];
+  for (const location of locations) {
+    const dir = location ? path.join(specsDir, location) : specsDir;
+    const exact = resolveUnder(dir, slug + '.spec.md');
+    if (exact && fs.existsSync(exact)) return exact;
+    let names;
+    try {
+      names = fs.readdirSync(dir);
+    } catch {
+      continue;
+    }
+    const hit = names.find((name) => prefixedRe.test(name));
+    if (hit) {
+      const resolved = resolveUnder(dir, hit);
+      if (resolved && fs.existsSync(resolved)) return resolved;
+    }
+  }
+  return null;
 }
 
 function lastPhaseLabel(indexText) {
@@ -148,9 +159,10 @@ function track({ specsDir, slug }) {
     return { status: 'skipped', reason: 'already tracked', slug, title };
   }
 
-  const specFileName = path.basename(specPath);
+  // Bullet links the specsDir-relative path so subfolder specs resolve.
+  const specRel = path.relative(path.resolve(specsDir), specPath).split(path.sep).join('/');
   const bullet =
-    '- [ ] ' + escapeInlineMarkdown(title) + ' (`spec: ' + specFileName + '`)';
+    '- [ ] ' + escapeInlineMarkdown(title) + ' (`spec: ' + specRel + '`)';
   const phaseRe = /^###\s+Phase[^\n]*$/gm;
   const phases = [...indexText.matchAll(phaseRe)];
   if (phases.length) {

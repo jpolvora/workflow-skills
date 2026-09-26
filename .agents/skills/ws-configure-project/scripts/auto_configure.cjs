@@ -558,6 +558,7 @@ function buildWanted(repoRoot, example, schema) {
   wantFallback('plans.worktreesDir');
   wantFallback('plans.useWorktrees');
   wantFallback('plans.enforceSpecPrefixOrdering');
+  wantFallback('plans.statusSubfolders');
   wantFallback('reviews.dir');
 
   // -- rules (concrete installer paths) --
