@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "a3aa8765d3157700ac0f7eed93625ec8695326a544902fbb2b90c0b626c3c56e",
+  "fullPackageDigest": "3881db1237b54f964c6a857df99d1e3cf5d13a6027175046fe59f3cc4ae59dee",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -70,7 +70,7 @@
     "files": {
       "bin/build-site.js": "7bcdddbbbf22b7fe82ef327cbe078dd7d88a8cc6d1021b73370bb657d8d1e1b2",
       "bin/build-wiki-site.js": "e8263272e9985e70ba776036ac09fc85f4c6acfd13c4d62f7f9860c475cc5e5a",
-      "bin/cli.js": "82413a4c8057940fa024c165c16fc9d7416ef061dbb918ca8ccb6f42f569832a",
+      "bin/cli.js": "71df0fac5c610001a66a8f29927863fc9ca5128f1363e84eb8eff67a1591c087",
       "bin/consumer-migration.js": "0e362e974e8c8fadb2246ece236b101eed27ea25384bb9ced830f85fea61646f",
       "bin/generate-skill-evals.js": "6483310e462475b010c7076958866e737471fde1c11bd047eb43b9a22152320e",
       "bin/generate-skill-integrity.js": "732c80b1251153e5078d59c3d23c615afa756a52c7670a20a7363970bebb72c2",
@@ -82,7 +82,7 @@
       "bin/skill-integrity-lib.js": "ddec34895dc8227c384b5a5d68f0e90032b2de7255e4a63a161784d559ed6cc8",
       "bin/validate-evals.cjs": "f95d4ccdc70335fa1c5857bd56a9367daf16ba6404f9dac5117bd51a1251a15e"
     },
-    "packageDigest": "5a2c3459b3ac854c5e4e3c99b9462682ca396e6f35d22fbdcab1586eee5737eb"
+    "packageDigest": "1071a78f2320a35e8672861575e8a33852d8594b8db7789c16e9c19117cdee1d"
   },
   "packageVersion": "0.4.75",
   "skills": {
@@ -171,10 +171,10 @@
         "evals/evals.json": "83dd416a37714e0e12270cdcc022185e8a8385d520a7991061370a1eb277e87e",
         "scripts/auto_configure.cjs": "b0d370ff7dc5c13621a9c1e388a1b7d7af10ad6c0ad46c02eeaede063d6a8271",
         "scripts/configure_autoload.cjs": "3776d42af17199ecf502a8f663693264e60c0736f2c840a5db695559a51cf7ea",
-        "scripts/seed_consumer_hub.cjs": "dd63f736486c2c4fffcf1cd31303b6b977a55c18437bd23e3a7752317d7a5fbe",
+        "scripts/seed_consumer_hub.cjs": "b485d32c5d3da9f001e8cf87b75d94b28300f596beecc1e87ab3e6be0b3950b7",
         "scripts/stack_fingerprint.cjs": "dd52aa341353c066d0cd9642ed9e46c17dd826ad3bf8d735dad8de93341dee35"
       },
-      "skillDigest": "5f3e511719d1de1b957c2d7cad8615889a7e8a35670502f122641c7e3f3c80e1"
+      "skillDigest": "4a63dab4e97a06cf24bdbd0b53220accf95937c79c77b4ad1f3267cf843f01cd"
     },
     "ws-doctor": {
       "files": {

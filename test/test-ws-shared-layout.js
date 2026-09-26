@@ -285,9 +285,11 @@ try {
     !fs.existsSync(path.join(legacyShared, 'templates', 'hub.gitignore')),
     'migration does not retain alias source',
   );
+  const updatedIgnore = fs.readFileSync(path.join(newShared, '.gitignore'), 'utf8');
+  assert(updatedIgnore.startsWith('# stale gitignore\n'), 'update preserves consumer .gitignore prefix (us-429 G1)');
   assert(
-    fs.readFileSync(path.join(newShared, '.gitignore'), 'utf8') === '# stale gitignore\n',
-    'update preserves existing consumer .gitignore (missing-only alias, us-429 G1)',
+    updatedIgnore.includes('host-capabilities.json'),
+    'update appends missing managed hub ignore rules without overwriting consumer edits',
   );
 
   // Legacy pre-0.4.46 rendered autoload links are migrated on update.

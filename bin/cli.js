@@ -1300,8 +1300,22 @@ function ensureSharedHubInstalled(mode = 'install') {
       if (CONSUMER_OWNED_HUB_FILES.has(destinationName) && fs.existsSync(destinationPath)) {
         continue;
       }
-      // G1 (us-429): hub .gitignore is missing-only; seed_consumer_hub.cjs owns the consumer copy.
+      // G1 (us-429): preserve consumer .gitignore edits but append missing managed rules.
       if (destinationName === '.gitignore' && fs.existsSync(destinationPath)) {
+        const managed = fs.readFileSync(sourcePath, 'utf8')
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter((line) => line && !line.startsWith('#'));
+        const present = new Set(
+          fs.readFileSync(destinationPath, 'utf8').split(/\r?\n/).map((line) => line.trim()),
+        );
+        const missing = managed.filter((line) => !present.has(line));
+        if (missing.length) {
+          fs.appendFileSync(
+            destinationPath,
+            `\n# managed hub ignores (us-429)\n${missing.join('\n')}\n`,
+          );
+        }
         continue;
       }
       fs.copyFileSync(sourcePath, destinationPath);
@@ -1321,18 +1335,16 @@ function ensureSharedHubInstalled(mode = 'install') {
 
   // Never overwrite consumer config.json / STACK.md / MEMORY.md / CHANGELOG.md from upstream
   ensureSharedConsumerArtifacts(mode);
-  try {
-    const seedResult = seedConsumerHub({
-      repoRoot: path.resolve(targetDir),
-      isGlobalScope,
-      globalHubPointerMd: isGlobalScope ? globalHubPointerMd : undefined,
-    });
-    for (const relPath of seedResult.created) {
-      console.log(`    Seeded ${relPath}`);
+  if (!isGlobalScope) {
+    try {
+      const seedResult = seedConsumerHub({ repoRoot: path.resolve(targetDir) });
+      for (const relPath of seedResult.created) {
+        console.log(`    Seeded ${relPath}`);
+      }
+    } catch (err) {
+      console.error(`Error: hub seed failed: ${err.code || 'SEED_ERROR'}: ${err.message}`);
+      process.exit(1);
     }
-  } catch (err) {
-    console.error(`Error: hub seed failed: ${err.code || 'SEED_ERROR'}: ${err.message}`);
-    process.exit(1);
   }
   const autoloadPath = path.join(destShared, 'autoload.md');
   const autoloadSource = packageHubPath('runtime', 'autoload.md');

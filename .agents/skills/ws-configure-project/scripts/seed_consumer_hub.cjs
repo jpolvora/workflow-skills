@@ -108,6 +108,17 @@ function seedConsumerHub(options = {}) {
     }
   }
 
+  const autoloadPath = path.join(hubRoot, 'autoload.md');
+  const needsAutoload = !fs.existsSync(autoloadPath);
+  const autoloadSource = needsAutoload
+    ? resolveRuntimeAutoloadSource(ctx, repoRoot, options.globalSkillsRoot || null)
+    : null;
+  if (needsAutoload && !fs.existsSync(autoloadSource)) {
+    const err = new Error(`missing autoload seed ${autoloadSource} (install hub runtime)`);
+    err.code = 'SEED_AUTOLOAD_MISSING';
+    throw err;
+  }
+
   if (!dryRun) {
     fs.mkdirSync(hubRoot, { recursive: true });
   }
@@ -145,17 +156,10 @@ function seedConsumerHub(options = {}) {
     created.push(rel(agentsPath));
   }
 
-  const autoloadPath = path.join(hubRoot, 'autoload.md');
-  if (fs.existsSync(autoloadPath)) {
+  if (!needsAutoload) {
     skipped.push(rel(autoloadPath));
   } else {
-    const source = resolveRuntimeAutoloadSource(ctx, repoRoot, options.globalSkillsRoot || null);
-    if (!fs.existsSync(source)) {
-      const err = new Error(`missing autoload seed ${source} (install hub runtime)`);
-      err.code = 'SEED_AUTOLOAD_MISSING';
-      throw err;
-    }
-    const rendered = renderConsumerAutoload(fs.readFileSync(source, 'utf8'), { repoRoot });
+    const rendered = renderConsumerAutoload(fs.readFileSync(autoloadSource, 'utf8'), { repoRoot });
     if (!dryRun) fs.writeFileSync(autoloadPath, rendered, 'utf8');
     created.push(rel(autoloadPath));
   }
