@@ -91,7 +91,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | When the user / task means… | Load | Does **not** do |
 |-----------------------------|------|-----------------|
 | Manage / route / index / handle all spec operations (unified front door) | [`ws-spec-manager`](../.agents/skills/ws-spec-manager/SKILL.md) | Central router and interactive menu; delegates to specialized `ws-spec-*` skills |
-| Draft a new local spec or reformulate tracker issue | [`ws-spec-write`](../.agents/skills/ws-spec-write/SKILL.md) | Does not create `{plansDir}` / `step-00`; does not run orch. Standalone: `user-gate` then `ws-spec-index` `track` |
+| Draft a new local spec or reformulate tracker issue | [`ws-spec-write`](../.agents/skills/ws-spec-write/SKILL.md) | Does not create `{plansDir}` / `step-00`; does not run orch. Standalone: auto-track via `ws-spec-index` `track` (no gate) |
 | Validate / reshape / review `*.spec.md` format & ACs | [`ws-spec-format`](../.agents/skills/ws-spec-format/SKILL.md) | Does not invent product requirements; format SoT is [`FORMAT.md`](../.agents/skills/ws-spec-format/FORMAT.md) |
 | Register any `*.spec.md` → `{specsDir}` spec of record + workflow `step-00`; configure `{specsDir}`; local `fetch-to-spec` | [`ws-spec-provider-local`](../.agents/skills/ws-spec-provider-local/SKILL.md) | Not for free-text draft (use spec-write first); PR ops delegate to `providers.scm` |
 | List / pick / manage specs vs plan workflows (two boards) | [`ws-spec-list`](../.agents/skills/ws-spec-list/SKILL.md) | Does not edit `index.PRD` content (that is spec-index); does not implement pipeline steps |

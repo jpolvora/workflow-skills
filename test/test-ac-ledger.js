@@ -586,6 +586,51 @@ assert.strictEqual(us430Invoke([
   }),
 ]).status, 0);
 
+// Case 15: State-manifest touched path discovery without --files-touched or --file
+const planDir = path.join(us430Root, '.agents/plans/us430');
+fs.mkdirSync(planDir, { recursive: true });
+write(path.join(planDir, 'us430.state.json'), JSON.stringify({
+  workflowManifest: { created: [], modified: ['src/impl.js'], deleted: [] },
+}));
+write(path.join(us430Root, 'src/impl.js'), 'export const value = 1;\n');
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-state-discovery', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({ alias: 'backendFormat', command: 'npm run lint', exitCode: 2, failingPaths: ['src/impl.js'] }),
+]).status, 0);
+const stateScored = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(stateScored.knownDefect, true, 'state-manifest touched path triggers knownDefect');
+assert.ok(stateScored.score <= 8, 'discovered touched path caps score');
+
+// Reset backendFormat to clean passing
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-format-clean-post-15', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({ alias: 'backendFormat', command: 'npm run lint', exitCode: 0 }),
+]).status, 0);
+
+// Case 16: Non-zero build alias without enumerated paths fails closed -> knownDefect: true
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-build-bare-fail', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendBuild',
+    command: 'npm run build',
+    exitCode: 1,
+    failingPaths: [],
+  }),
+]).status, 0);
+let bareBuildFailScore = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(bareBuildFailScore.knownDefect, true, 'non-zero build alias without failingPaths fails closed');
+
+// Reset backendBuild to clean passing
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'alias-build-clean-post-16', '--ac', 'AC1',
+  '--alias-result', JSON.stringify({
+    alias: 'backendBuild',
+    command: 'npm run build',
+    exitCode: 0,
+    failingPaths: [],
+  }),
+]).status, 0);
+
 // V1:implement-scoring-aliases: ws-implement-tasks documents scoring aliases
 const implementSkill = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-implement-tasks/SKILL.md'), 'utf8');
 assert.ok(implementSkill.includes('backendFormat') && implementSkill.includes('backendBuild') && implementSkill.includes('backendTest') && implementSkill.includes('frontendTest'), 'V1:implement-scoring-aliases: scoring aliases documented');

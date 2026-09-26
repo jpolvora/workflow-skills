@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-26 10:30] Agent: Muse Code
+- **Prompt**: spec-write skillLoader host capability plus unified skill-load procedure
+- **Done**: Drafted `.agents/specs/0136-skill-loader-host-capability.spec.md` (source local, 10 ACs: token registration, probe declare, pre-map precedence, cache-query-first load with SKILL.md fallback, already-loaded check, full sweep inventory, single normative doc, harness gate, degrade paths, telemetry) and tracked it on index.PRD row 141.
+- **Result**: Authoring validation PASS (10 ACs). No register, no plan artifacts.
+
 ### [2026-09-26 09:26] Agent: Antigravity
 - **Prompt**: /ws-spec-to-pr-lite @[l:\source\workflow-skills\.agents\specs\0133-us-430.spec.md]
 - **Done**: Prevented false knownDefect capping from verification aliases outside files_touched. Implemented path-aware alias failure classification in `ac_ledger.cjs` (checks failingPaths, files_touched, productFailure, and skipReason: baseline-dirty). Added failingPaths and productFailure to `ac-ledger.schema.json`. Updated `ws-implement-tasks/SKILL.md` to validate all scoring aliases and perform surgical format repair. Updated `ws-plan-verify/SKILL.md` to document path enumeration and baseline-dirty linking. Updated `ws-plan-interview/SKILL.md` to synchronize overridden AC sentences in spec files. Added unit and integration tests in `test/test-ac-ledger.js` covering AC1–AC7 and NS1–NS5. Verified test suite (134/134 passed).

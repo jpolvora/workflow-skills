@@ -649,6 +649,7 @@ function buildWanted(repoRoot, example, schema) {
   for (const k of ['maxImplementationSteps', 'maxExpectedFiles', 'maxLayers']) wantFallback(`dagThresholds.${k}`);
   wantFallback('invariants.skipQualityGates');
   wantFallback('tracking.featuresMdEnabled');
+  wantFallback('tracking.autoTrackSpecWrite');
   for (const k of ['enabled', 'autoAudit', 'autoDetectDomain', 'auditVerdictsBlockShip']) wantFallback(`fable.${k}`);
   wantFallback('domain.tenancyField');
 

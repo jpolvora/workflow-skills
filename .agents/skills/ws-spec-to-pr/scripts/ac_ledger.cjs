@@ -548,7 +548,7 @@ function isAliasDefect(result, filesTouched) {
   if (result.productFailure === true) return true;
   if (isSkipped(result)) return false;
   const paths = Array.isArray(result.failingPaths) ? result.failingPaths : [];
-  if (paths.length === 0) return /Test$/i.test(result.alias || '');
+  if (paths.length === 0) return /(?:Test|Build)$/i.test(result.alias || '');
   return paths.some((p) => pathMatchesTouched(p, filesTouched));
 }
 

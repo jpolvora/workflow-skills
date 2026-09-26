@@ -267,6 +267,7 @@
   "tracking": {
     "_comment": "Upstream package keeps FEATURES.md inventory. Set featuresMdEnabled false in consumer hubs that do not use FEATURES.md.",
     "featuresMdEnabled": true,
+    "autoTrackSpecWrite": true,
     "canonicalFiles": [
       
     ]

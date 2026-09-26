@@ -167,6 +167,7 @@
     ],
     "ws-spec-write": [
       "ws-spec-format",
+      "ws-spec-index",
       "ws-spec-provider-local",
       "ws-spec-organizer"
     ],
