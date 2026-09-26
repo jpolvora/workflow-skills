@@ -56,11 +56,11 @@ const BROAD_STAGING = [
 ];
 
 const DESTRUCTIVE = [
-  /git reset --hard/,
+  /git reset --hard(?:\s|$|;|&|\|)/,
   /git checkout -- \.(?:\s|$|;|&|\|)/,
-  /git restore \.(?:\s|$)/,
-  /git clean -fd/,
-  /git stash(?!\s+(?:list|show)\b)(?:\s|$)/,
+  /git restore \.(?:\s|$|;|&|\|)/,
+  /git clean -fd[a-z]*(?:\s|$|;|&|\|)/,
+  /git stash(?!\s+(?:list|show)\b)(?:\s|$|;|&|\|)/,
   /git push (?:--force|-f)\b/,
 ];
 
@@ -112,13 +112,16 @@ for (const allowed of ['git add -u -- deleted.txt', 'git add -- own.txt', 'git a
   );
 }
 // Regression (PR #433): destructive matchers must not over-reach on read-only forms.
-for (const sample of ['git stash', 'git stash push', 'git stash pop', 'git reset --hard', 'git clean -fd']) {
+// Regression (PR #433 rounds 3+): separator-chained whole-tree forms and
+// combined short flags must also match — a bare `;`/`&&`/`|` terminal or an
+// extra flag letter (e.g. `git clean -fdx`) must not escape the gate.
+for (const sample of ['git stash', 'git stash push', 'git stash pop', 'git reset --hard', 'git clean -fd', 'git stash;', 'git stash push --all && git restore .', 'git reset --hard;', 'git restore .;', 'git restore . && echo ok', 'git clean -fd && echo done', 'git clean -fdx', 'git clean -fdx;']) {
   assert.ok(
     DESTRUCTIVE.some((pattern) => pattern.test(sample)),
     `detects destructive verb: ${sample}`,
   );
 }
-for (const allowed of ['git stash list', 'git stash show', 'git status', 'git restore --staged src/app.js']) {
+for (const allowed of ['git stash list', 'git stash show', 'git status', 'git restore --staged src/app.js', 'git restore .gitignore']) {
   assert.ok(
     !DESTRUCTIVE.some((pattern) => pattern.test(allowed)),
     `read-only/allowed form stays allowed: ${allowed}`,

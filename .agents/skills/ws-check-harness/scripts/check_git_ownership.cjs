@@ -37,12 +37,12 @@ const BROAD_STAGING = [
 ];
 
 const DESTRUCTIVE = [
-  { id: 'destructive:reset-hard', re: /git reset --hard/ },
+  { id: 'destructive:reset-hard', re: /git reset --hard(?:\s|$|;|&|\|)/ },
   { id: 'destructive:checkout-dot', re: /git checkout -- \.(?:\s|$|;|&|\|)/ },
-  { id: 'destructive:restore-dot', re: /git restore \.(?:\s|$)/ },
-  { id: 'destructive:clean-fd', re: /git clean -fd/ },
+  { id: 'destructive:restore-dot', re: /git restore \.(?:\s|$|;|&|\|)/ },
+  { id: 'destructive:clean-fd', re: /git clean -fd[a-z]*(?:\s|$|;|&|\|)/ },
   // Bare `git stash` (save/push/pop) is whole-tree; `list`/`show` are read-only.
-  { id: 'destructive:stash', re: /git stash(?!\s+(?:list|show)\b)(?:\s|$)/ },
+  { id: 'destructive:stash', re: /git stash(?!\s+(?:list|show)\b)(?:\s|$|;|&|\|)/ },
   { id: 'destructive:force-push', re: /git push (?:--force|-f)\b/ },
 ];
 
