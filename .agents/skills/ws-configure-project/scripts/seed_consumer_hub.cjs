@@ -54,12 +54,21 @@ const { resolveConsumerContext, toRepoRelative } = require(path.join(
 ));
 
 function resolveRuntimeAutoloadSource(ctx, repoRoot, globalSkillsRoot) {
-  const local = path.join(repoRoot, '.agents', 'skills', 'ws-shared', 'runtime', 'autoload.md');
-  if (fs.existsSync(local)) return local;
-  const groot = globalSkillsRoot || path.join(require('os').homedir(), '.agents', 'skills');
-  const globalPath = path.join(groot, 'ws-shared', 'runtime', 'autoload.md');
-  if (fs.existsSync(globalPath)) return globalPath;
-  return path.join(ctx.runtimeSource, 'autoload.md');
+  const candidates = [
+    path.join(repoRoot, '.agents', 'skills', 'ws-shared', 'runtime', 'autoload.md'),
+    path.join(
+      globalSkillsRoot || path.join(require('os').homedir(), '.agents', 'skills'),
+      'ws-shared',
+      'runtime',
+      'autoload.md',
+    ),
+    path.join(ctx.runtimeSource, 'autoload.md'),
+    path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'autoload.md'),
+  ];
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate)) return candidate;
+  }
+  return candidates[0];
 }
 
 /**
