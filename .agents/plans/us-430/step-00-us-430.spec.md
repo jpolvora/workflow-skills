@@ -8,7 +8,7 @@ issueState: open
 issueUrl: "https://github.com/jpolvora/workflow-skills/issues/430"
 labels: []
 step: 0
-workflowId: us-430
+workflowId: us-430-20260926T123545Z
 status: completed
 startedAt: "2026-09-26T06:10:17.682Z"
 endedAt: "2026-09-26T06:10:17.682Z"
