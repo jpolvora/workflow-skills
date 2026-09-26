@@ -4,6 +4,7 @@ slug: default-stay-on-current-branch
 title: "Configurable default branch strategy: stay on current branch by default in workflows"
 source: local
 specDate: 2026-09-26
+status: completed
 ---
 
 # Specification — Configurable default branch strategy: stay on current branch by default in workflows
