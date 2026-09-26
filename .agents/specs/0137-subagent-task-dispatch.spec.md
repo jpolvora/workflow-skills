@@ -4,6 +4,7 @@ slug: subagent-task-dispatch
 title: "Subagent Task Dispatch CLI Command and Asynchronous API"
 source: local
 specDate: 2026-09-26
+status: completed
 ---
 
 # Specification — Subagent Task Dispatch CLI Command and Asynchronous API

@@ -187,7 +187,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Organize specifications into status subfolders (pending, completed, archived) (`spec: 0135-spec-organizer-status-subfolders.spec.md`) — `4d0365eb` on develop
 - [x] Configurable default branch strategy: stay on current branch by default in workflows (`spec: 0134-default-stay-on-current-branch.spec.md`) — `9185b6d6` on develop
 - [x] skillLoader host capability and unified skill-load procedure (`spec: 0136-skill-loader-host-capability.spec.md`) — `0373a45d` on develop
-- [ ] Subagent Task Dispatch CLI Command and Asynchronous API (`spec: 0137-subagent-task-dispatch.spec.md`)
+- [x] Subagent Task Dispatch CLI Command and Asynchronous API (`spec: 0137-subagent-task-dispatch.spec.md`) — `38ef12c1` on develop
 - [ ] Workflow parallel-writer compatibility audit and enforcement (`spec: 0138-workflow-parallel-writer-compat.spec.md`)
 
 
@@ -459,7 +459,7 @@ All Next-specs closed.
 
 | 141 | `skill-loader-host-capability` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | skillLoader host capability and unified skill-load procedure (`0373a45d` on develop) |
 
-| 142 | `subagent-task-dispatch` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Subagent Task Dispatch CLI Command and Asynchronous API |
+| 142 | `subagent-task-dispatch` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Subagent Task Dispatch CLI Command and Asynchronous API (`38ef12c1` on develop) |
 
 | 143 | `workflow-parallel-writer-compat` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Workflow parallel-writer compatibility audit and enforcement |
 
@@ -605,6 +605,7 @@ All Next-specs closed.
 | 2026-09-26 | `default-stay-on-current-branch` | Configurable default branch strategy: stay on current branch by default in workflows | commit 9185b6d6 (delivery) |
 | 2026-09-26 | `spec-organizer-status-subfolders` | Organize specifications into status subfolders (pending, completed, archived) | commit 4d0365eb (delivery) |
 | 2026-09-26 | `skill-loader-host-capability` | skillLoader host capability and unified skill-load procedure | commit 0373a45d (delivery) |
+| 2026-09-26 | `subagent-task-dispatch` | Subagent Task Dispatch CLI Command and Asynchronous API | commit 38ef12c1 (delivery) |
 
 ## 11. Maintenance checklist
 
