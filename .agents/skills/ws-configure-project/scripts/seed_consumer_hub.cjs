@@ -48,21 +48,19 @@ const HUB_SCRIPTS_DIR = (() => {
   return packaged;
 })();
 
-const { resolveConsumerContext, toRepoRelative } = require(path.join(
-  HUB_SCRIPTS_DIR,
-  'resolve_consumer_root.cjs',
-));
+const {
+  resolveConsumerContext,
+  toRepoRelative,
+  resolveGlobalSkillsRoot,
+} = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
 
 function resolveRuntimeAutoloadSource(ctx, repoRoot, globalSkillsRoot) {
+  const resolvedGlobal =
+    globalSkillsRoot || ctx.globalSkillsRoot || resolveGlobalSkillsRoot();
   const candidates = [
     path.join(repoRoot, '.agents', 'skills', 'ws-shared', 'runtime', 'autoload.md'),
-    path.join(
-      globalSkillsRoot || path.join(require('os').homedir(), '.agents', 'skills'),
-      'ws-shared',
-      'runtime',
-      'autoload.md',
-    ),
     path.join(ctx.runtimeSource, 'autoload.md'),
+    path.join(resolvedGlobal, 'ws-shared', 'runtime', 'autoload.md'),
     path.resolve(__dirname, '..', '..', 'ws-shared', 'runtime', 'autoload.md'),
   ];
   for (const candidate of candidates) {
