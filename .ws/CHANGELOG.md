@@ -1,4 +1,14 @@
 # Changelog
+### [2026-09-26 02:10] Agent: Grok 4.7
+- **Prompt**: /ws-spec-from-provider (use keyring)
+- **Done**: Imported GitHub issue 430 into `.agents/specs/0133-us-430.spec.md`, registered `.agents/plans/us-430/step-00-us-430.spec.md`, and tracked `us-430` in `index.PRD`. Skipped 429 because the spec and plan copy already exist.
+- **Result**: 1 imported, 1 skipped, 0 failed. Tracked. `gh` used the keyring account after unsetting `GITHUB_TOKEN`.
+
+### [2026-09-26 02:07] Agent: Grok 4.7
+- **Prompt**: check config.json cursor preset canonical names and fix it
+- **Done**: Replaced non-canonical `defaults.modelPresets.cursor` slugs with `grok-4.7-low` for planner and reviewer. `composer-2.5` left as-is. No `-fast` slugs.
+- **Result**: `.ws/config.json` cursor preset uses the host `-low` Grok slug.
+
 ### [2026-09-26 00:40] Agent: Grok 4.7
 - **Prompt**: /ws-spec-from-provider
 - **Done**: Imported GitHub issue 429 into `.agents/specs/0132-us-429.spec.md` (agentic reformulation plus context companion), registered `.agents/plans/us-429/step-00-us-429.spec.md`, and tracked `us-429` in `index.PRD`.

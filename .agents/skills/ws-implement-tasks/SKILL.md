@@ -54,8 +54,8 @@ Workflow (ws-spec-to-pr Step 4 build; Step 5 `scoreAndRefine` second pass; Step 
 6. **Stack Invariant Scan** — Run deterministic static check `node {skillsRoot}/ws-shared/runtime/scripts/scan_stack_invariants.cjs` against modified files and the project stack rule pack (`{skillsRoot}/ws-shared/runtime/stacks/`); honor that pack's rules before declaring the task done.
    - Done when: scan exits 0 with zero Critical violations.
 
-7. **Validate** — Run build and unit tests for modified layers from `config.json.verification`.
-   - Done when: applicable verification commands exit 0 (or failures are listed in step-output with `status: failed`).
+7. **Validate** — Before the step handoff, run every configured `config.json` `verification` alias that Step 5 scores (`backendFormat`, `backendBuild`, `backendTest`, `frontendTest` when non-empty), not only a filtered test for modified classes. A filtered test invocation is extra evidence and does not satisfy `backendTest` or `frontendTest`. For `backendFormat`, run the configured verify command. If it fails, format only files this step created or modified, then re-run. Remaining failures that exist strictly outside workflow `files_touched` are recorded in `step-output` and do not fail the implement step. For test aliases, if a full command fails only in an untouched setup file and a re-run passes with no product edit, report it as an environment flake instead of a failed feature.
+   - Done when: applicable full verification commands exit 0 (or residual failures are listed in step-output with `status: failed`, or external format drifts are documented).
 
 8. **Report** — Return the modified/created file lists and test output details.
    - Done when: the step-output below is populated.

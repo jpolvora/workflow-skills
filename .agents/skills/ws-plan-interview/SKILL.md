@@ -62,8 +62,8 @@ Workflow (ws-spec-to-pr Step 2): dispatched when the orchestrator does not skip 
    - **Interactive (not auto):** standalone → prompt via `user-gate`; workflow → `status: needs_user` per the Grilling Protocol (one question, recommended option first). After escalation cap, apply defaults (`assumed-default`).
    - Done when: no blocking gap remains unresolved and unescalated, or autoMode / cap defaults closed the remainder.
 
-4. **Confirm shared understanding** — Workflow: treat as confirmed when the orchestrator already auto-confirmed via "End refinement and advance" (do not re-prompt); otherwise return `shared_understanding: pending`. Standalone: prompt the user to confirm.
-   - Done when: `shared_understanding` is `confirmed`, or `pending` was returned to the orchestrator.
+4. **Confirm shared understanding & spec sync** — Workflow: treat as confirmed when the orchestrator already auto-confirmed via "End refinement and advance" (do not re-prompt); otherwise return `shared_understanding: pending`. Standalone: prompt the user to confirm. When a closed decision contradicts or overrides a one-line acceptance criterion, update that sentence in the spec of record (`{specsDir}/*.spec.md`) and in `{us-dir}/step-00-*.spec.md` in the same step, then re-register before Step 5 runs, ensuring the criterion is not scored `ImplementedDifferently` solely because pre-interview wording remained.
+   - Done when: `shared_understanding` is `confirmed` (or `pending` returned), and any overridden AC sentences are synchronized across the spec of record and `step-00`.
 
 **Fast exit:** when `softSkipEligible` and Step 1 finds `blocking_open == 0`, skip escalation and set `shared_understanding: confirmed`, but still run Resolve (project-context sweep) for any registered **non-blocking** gaps before applying defaults. Do not skip the sweep solely because no blocking gaps remain.
 
@@ -71,6 +71,7 @@ Workflow (ws-spec-to-pr Step 2): dispatched when the orchestrator does not skip 
 
 - `step-02-{slug}.plan-interview.md` with frontmatter identifying Step 2 and an `## Interview registry` table (include `resolutionSource` / evidence columns when available). This artifact is mandatory even when autoMode resolves every gap.
 - `step-02-{slug}.plan.refined.md` with frontmatter `status: "plan refined ok"` and the resolved plan content. It is additive to the interview artifact and may include a concise registry reference.
+- Synchronized `{specsDir}/*.spec.md` and `{us-dir}/step-00-*.spec.md` when closed decisions override acceptance criteria sentences.
 
 ### step-output (workflow mode)
 
