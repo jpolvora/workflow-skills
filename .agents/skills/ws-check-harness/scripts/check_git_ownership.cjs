@@ -87,14 +87,15 @@ function walkFiles(root, accept) {
 }
 
 // Yield {line, text} for fenced-block content lines only (info string and
-// fences excluded), tracking 1-based line numbers.
+// fences excluded), tracking 1-based line numbers. Fences may be indented under
+// list items, so the opener/closer match allows leading whitespace.
 function fencedLines(markdown) {
   const out = [];
   const lines = String(markdown).split(/\r?\n/);
   let inFence = false;
   for (let i = 0; i < lines.length; i += 1) {
     const line = lines[i];
-    if (/^```/.test(line)) {
+    if (/^\s*```/.test(line)) {
       inFence = !inFence;
       continue;
     }

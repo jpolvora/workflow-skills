@@ -13,6 +13,8 @@
 //   [--agent <id>] [--date <YYYY-MM-DD HH:MM>] [--repo-root <dir>] [--json]
 
 const fs = require('fs');
+const os = require('os');
+const crypto = require('crypto');
 const path = require('path');
 // Managed runtime loads from its skills installation: the project-local
 // skills tree ({skillsRoot}/ws-shared) or the global skills tree
@@ -109,6 +111,63 @@ function oneLine(value) {
   return String(value).replace(/[\r\n]+/g, ' ').trim();
 }
 
+// Synchronous short backoff for the CAS retry (Atomics.wait blocks the main
+// thread for the given milliseconds without a busy loop).
+function sleepSync(ms) {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}
+
+// Build the next changelog text: insert the entry under `# Changelog`,
+// preserving the file's dominant EOL (a CRLF worktree file must stay CRLF).
+function renderChangelog(existing, block) {
+  const eol = existing.includes('\r\n') ? '\r\n' : '\n';
+  let nextLf;
+  if (!existing) {
+    nextLf = `# Changelog\n\n${block}\n`;
+  } else {
+    const lines = existing.split(/\r?\n/);
+    const headerIndex = lines.findIndex((line) => /^# Changelog\s*$/.test(line));
+    if (headerIndex === -1) {
+      nextLf = `# Changelog\n\n${block}\n\n${lines.join('\n').trimEnd()}\n`;
+    } else {
+      lines.splice(headerIndex + 1, 0, '', block);
+      nextLf = `${lines.join('\n').trimEnd()}\n`;
+    }
+  }
+  return eol === '\n' ? nextLf : nextLf.replace(/\n/g, eol);
+}
+
+const LOCK_STALE_MS = 10000;
+
+// Run `fn` while holding an exclusive `<file>.lock` (O_EXCL create). Bounded
+// spin with backoff; steals a stale lock left by a crashed writer.
+function withFileLock(lockPath, fn) {
+  for (let attempt = 0; attempt < 200; attempt += 1) {
+    let fd;
+    try {
+      fd = fs.openSync(lockPath, 'wx');
+    } catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+      try {
+        if (Date.now() - fs.statSync(lockPath).mtimeMs > LOCK_STALE_MS) {
+          fs.rmSync(lockPath, { force: true });
+          continue;
+        }
+      } catch { /* lock vanished between attempts; retry */ }
+      sleepSync(2 + Math.min(attempt, 50));
+      continue;
+    }
+    try {
+      fs.writeSync(fd, `${process.pid}\n`);
+      return fn();
+    } finally {
+      try { fs.closeSync(fd); } catch { /* ignore */ }
+      try { fs.rmSync(lockPath, { force: true }); } catch { /* ignore */ }
+    }
+  }
+  throw new Error('timed out acquiring changelog lock');
+}
+
 function appendChangelog(options) {
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: __filename });
   const file = resolveChangelogFile(context);
@@ -128,36 +187,29 @@ function appendChangelog(options) {
     `- **Result**: ${oneLine(options.result)}`,
   ].join('\n');
 
-  let existing = '';
-  if (fs.existsSync(file)) existing = fs.readFileSync(file, 'utf8');
   // Exact-block dedupe: the same Prompt/Done/Result body already recorded.
   const body = block.split('\n').slice(1).join('\n');
   const escaped = body.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  if (new RegExp(escaped.replace(/\n/g, '\\r?\\n')).test(existing)) {
-    return { ok: true, skipped: 'duplicate-block', file: toRepoRelative(context.repoRoot, file) };
-  }
-  // Preserve the file's dominant line ending: a CRLF worktree file must not be
-  // rewritten to LF on append. Build with LF, then re-emit the original EOL.
-  const eol = existing.includes('\r\n') ? '\r\n' : '\n';
-  let nextLf;
-  if (!existing) {
-    nextLf = `# Changelog\n\n${block}\n`;
-  } else {
-    const lines = existing.split(/\r?\n/);
-    const headerIndex = lines.findIndex((line) => /^# Changelog\s*$/.test(line));
-    if (headerIndex === -1) {
-      nextLf = `# Changelog\n\n${block}\n\n${lines.join('\n').trimEnd()}\n`;
-    } else {
-      lines.splice(headerIndex + 1, 0, '', block);
-      nextLf = `${lines.join('\n').trimEnd()}\n`;
+  const dedupeRe = new RegExp(escaped.replace(/\n/g, '\\r?\\n'));
+
+  // Serialize the read-modify-write across processes with an exclusive lock
+  // file, then publish atomically (temp + rename) so a concurrent append is
+  // never clobbered and no reader sees a torn file. The lock lives in the OS
+  // temp dir (keyed on the absolute target path) so it never pollutes the
+  // worktree.
+  const lockKey = crypto.createHash('sha1').update(file).digest('hex').slice(0, 16);
+  const lockPath = path.join(os.tmpdir(), `ws-changelog-${lockKey}.lock`);
+  return withFileLock(lockPath, () => {
+    const existing = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '';
+    if (dedupeRe.test(existing)) {
+      return { ok: true, skipped: 'duplicate-block', file: toRepoRelative(context.repoRoot, file) };
     }
-  }
-  const next = eol === '\n' ? nextLf : nextLf.replace(/\n/g, eol);
-  // Atomic write so a concurrent reader never sees a torn file.
-  const tempFile = `${file}.tmp-${process.pid}-${Date.now()}`;
-  fs.writeFileSync(tempFile, next, 'utf8');
-  fs.renameSync(tempFile, file);
-  return { ok: true, file: toRepoRelative(context.repoRoot, file) };
+    const next = renderChangelog(existing, block);
+    const tempFile = `${file}.tmp-${process.pid}-${Date.now()}`;
+    fs.writeFileSync(tempFile, next, 'utf8');
+    fs.renameSync(tempFile, file);
+    return { ok: true, file: toRepoRelative(context.repoRoot, file) };
+  });
 }
 
 if (require.main === module) {
@@ -166,7 +218,10 @@ if (require.main === module) {
     const result = appendChangelog(options);
     if (options.json) process.stdout.write(`${JSON.stringify(result)}\n`);
     else if (result.skipped) process.stdout.write(`changelog: skipped (${result.skipped})\n`);
-    else process.stdout.write(`changelog: appended to ${result.file}\n`);
+    else if (result.ok === false) {
+      process.stderr.write(`ERROR: ${result.error}\n`);
+      process.exitCode = 1;
+    } else process.stdout.write(`changelog: appended to ${result.file}\n`);
   } catch (error) {
     process.stderr.write(`ERROR: ${error.message}\n`);
     process.exit(error.message.startsWith('unknown argument') || error.message.startsWith('missing required') ? 2 : 1);

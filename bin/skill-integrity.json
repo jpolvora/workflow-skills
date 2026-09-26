@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "f11774a5677a5a5db0c671c976d4d7129e86f46fb246c0b4b74fbc201e91037a",
+  "fullPackageDigest": "400289a8f6c50a6c1b783848953669f5f2282a4b4d349c8a43e686608b7826d2",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -110,9 +110,9 @@
       "files": {
         "SKILL.md": "a7cf704b05aaea1281a978739bd2571880f2d0547d0f3b6f21577c95f833ce5b",
         "evals/evals.json": "4facea2c6981974d41a949d7a55af5838bed174bbcac61a5b6d69b0fc3fd1c52",
-        "scripts/append_changelog.cjs": "229b49e825f183a599fa06ceba5cf6e1b3f7c7af988100cd910bb1e4fe9a33d5"
+        "scripts/append_changelog.cjs": "486b4a2ad613e3efb357e6729b30b5f75fe55b8243f67f4d0bf593500464e1b1"
       },
-      "skillDigest": "bdb8fca183ad1c3214299bcaca753a1de70e655d157558915d56405d8575fbad"
+      "skillDigest": "f61f0d36ae98351fbbed6efe79029bac521e5cc29625049d6bff240f843b9bc3"
     },
     "ws-check-harness": {
       "files": {
@@ -121,7 +121,7 @@
         "SKILL.md": "457f6a0802bf52180857d461679a723b0983eaf44399a82dc37e95f1189a2886",
         "evals/evals.json": "35bcc6ef297fa47efe448093357610e39775a8ed751d0ae4cdc143bd0c803147",
         "scripts/check_duplicates.cjs": "96326dbe6166a54666afe0820f704587e9eaec607fd1180f844a7cd2aaf6bcf9",
-        "scripts/check_git_ownership.cjs": "9a6fe8a7171e651be4206eb4fbf234c6fae78684814b18227b1aaf9b1435e7ab",
+        "scripts/check_git_ownership.cjs": "25a461306f66d218f69f6611e3af17399ff7d8d07a23da267b78a52ff435df53",
         "scripts/check_harness_links.cjs": "a87e7286023336669e430ff8f9f8a76defcf15781ce7049a8b501ad307d3e520",
         "scripts/check_hub_separation.cjs": "6a1d35156f8123f32f4e57a1d66337f2e9e8dbafed09463d79f4f54e6c8255ae",
         "scripts/check_pipeline_handoff.cjs": "7afa6126aabf74b7370ea34e663a711223cf611ea78944d1353cc13b0e5c84b0",
@@ -131,7 +131,7 @@
         "scripts/detect_install_mode.cjs": "5995a4b275917183c0d799e34696ddf62a005953940c9e817418638385579a05",
         "scripts/measure_harness.cjs": "8722d70ac030340f7287edf9217f34a68f4200f50c1fe739019df35e8fa18d2c"
       },
-      "skillDigest": "72c88a0a0f3ff60d67089b4dbad51aaca8deb9d4ed9e227a93e0f4185faaeee5"
+      "skillDigest": "c1a20843e1d9ba75a9445934be9b2fd257833950d0a6f393575c26faec3adc18"
     },
     "ws-check-workflows": {
       "files": {

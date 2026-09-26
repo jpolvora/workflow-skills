@@ -108,6 +108,23 @@ for (const allowed of ['git add -u -- deleted.txt', 'git add -- own.txt']) {
   );
 }
 
+// Regression (PR #433): the fence scanner must see indented fenced blocks,
+// which is how most shipped skill recipes are nested under list items.
+{
+  const checker = path.join(repoRoot, '.agents', 'skills', 'ws-check-harness', 'scripts', 'check_git_ownership.cjs');
+  const scanDir = temp('ws-git-ownership-indent-');
+  const skillDir = path.join(scanDir, '.agents', 'skills', 'ws-demo');
+  fs.mkdirSync(path.join(skillDir, 'scripts'), { recursive: true });
+  fs.writeFileSync(
+    path.join(skillDir, 'SKILL.md'),
+    '1. Step:\n\n   ```bash\n   git add . && git commit -m x\n   ```\n',
+    'utf8',
+  );
+  const scan = cp.spawnSync(process.execPath, [checker, '--repo-root', scanDir, '--json'], { encoding: 'utf8' });
+  const payload = JSON.parse(scan.stdout);
+  assert.ok(payload.findings.length >= 1, 'indented fenced recipe is scanned for broad staging');
+}
+
 // The retired stash-all bootstrap recipe must be gone.
 const setup = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/runtime/setup.md'), 'utf8');
 assert.ok(!/Stash then continue/.test(setup), 'stash-all gate option removed');

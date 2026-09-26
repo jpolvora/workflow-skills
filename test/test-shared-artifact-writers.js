@@ -159,6 +159,35 @@ console.log('4. changelog append preserves foreign entries');
   assert.strictEqual(fs.readFileSync(file, 'utf8'), content, 'duplicate append writes nothing');
 }
 
+// 5. changelog: concurrent parallel writers must not clobber each other
+// (PR #433 review — read-modify-write compare-and-swap retry).
+console.log('5. changelog concurrent appends preserve every entry');
+{
+  const dir = mkTmp('ws-writers-changelog-concurrent-');
+  writeConsumer(dir, { rules: { changelogFile: 'CHANGELOG.md' } });
+  const file = path.join(dir, 'CHANGELOG.md');
+  const ids = ['w1', 'w2', 'w3', 'w4'];
+  const writers = ids.map((id) => new Promise((resolve) => {
+    const child = cp.spawn(process.execPath, [
+      CHANGELOG, '--repo-root', dir, '--prompt', `p-${id}`, '--done', `built-${id}`,
+      '--result', `r-${id}`, '--agent', id, '--date', '2026-09-26 10:00', '--json',
+    ], { cwd: dir, encoding: 'utf8' });
+    let out = '';
+    child.stdout.on('data', (chunk) => { out += chunk; });
+    child.on('close', (code) => resolve({ id, code, out }));
+  }));
+  const results = await Promise.all(writers);
+  for (const r of results) {
+    assert.strictEqual(r.code, 0, `writer ${r.id} exits 0: ${r.out}`);
+    assert.strictEqual(JSON.parse(r.out).ok, true, `writer ${r.id} reports ok`);
+  }
+  const content = fs.readFileSync(file, 'utf8');
+  assert.ok(content.includes('# Changelog'), 'header intact after concurrent appends');
+  for (const id of ids) {
+    assert.ok(content.includes(`built-${id}`), `concurrent entry ${id} preserved`);
+  }
+}
+
 for (const dir of tmpRoots) {
   try {
     fs.rmSync(dir, { recursive: true, force: true });
