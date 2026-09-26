@@ -413,6 +413,18 @@ function link(options, context) {
       ].sort((a, b) => a.rule.localeCompare(b.rule) || a.evidence.localeCompare(b.evidence));
     }
   }
+  const optTouched = options.filesTouched;
+  if (optTouched) {
+    const added = [];
+    const list = Array.isArray(optTouched) ? optTouched : [optTouched];
+    for (const item of list) {
+      for (const p of String(item).split(/[;,]/)) {
+        const norm = toRepoPath(p.trim(), context.repoRoot);
+        if (norm) added.push(norm);
+      }
+    }
+    ledger.filesTouched = [...new Set([...(ledger.filesTouched || []), ...added])].sort();
+  }
   ledger.revision += 1;
   const requestedBoundary = options.scoreBoundary || options.boundary;
   const hasCommit = (ledger.acceptanceCriteria || []).some((row) => (row.commits || []).length > 0);

@@ -438,6 +438,17 @@ assert.strictEqual(us430Scored.score, 10, 'score recovers to 10 with passing tes
 const us430Ledger = JSON.parse(fs.readFileSync(path.join(us430Root, 'ac-ledger.json'), 'utf8'));
 us430Ledger.filesTouched = ['impl.js'];
 const us430SchemaErrors = validateNode(us430Ledger, ledgerSchema, 'ac-ledger.json');
+assert.strictEqual(us430SchemaErrors.length, 0, us430SchemaErrors.join('; '));
+
+// Case 8: --files-touched persistence in link and score determinism
+assert.strictEqual(us430Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'link-persist-touched', '--ac', 'AC1',
+  '--files-touched', 'extra/touched-file.js',
+]).status, 0);
+const postLinkLedger = JSON.parse(fs.readFileSync(path.join(us430Root, 'ac-ledger.json'), 'utf8'));
+assert.ok(postLinkLedger.filesTouched.includes('extra/touched-file.js'), 'filesTouched persisted into ledger');
+const scoreWithoutOption = JSON.parse(us430Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'step5']).stdout);
+assert.strictEqual(scoreWithoutOption.score, postLinkLedger.scoreState.score, 'score matches persisted scoreState');
 // V1:implement-scoring-aliases: ws-implement-tasks documents scoring aliases
 const implementSkill = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-implement-tasks/SKILL.md'), 'utf8');
 assert.ok(implementSkill.includes('backendFormat') && implementSkill.includes('backendBuild') && implementSkill.includes('backendTest') && implementSkill.includes('frontendTest'), 'V1:implement-scoring-aliases: scoring aliases documented');
