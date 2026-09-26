@@ -15,14 +15,23 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **DO NOT**: Derive severity tolerance from terminalShape() when the spec names a status; shape-derived terminal handling must never soften findings.
 - **INSTEAD DO**: Gate tolerance on the literal `status === 'completed'` and keep every other status critical; shape-derived terminal handling stays informational (terminal-run-active) only.
 
+### [2026-09-25] Memory trap files hold exactly one trap entry; the compiler merges multi-entry files
+- **Layer**: `tests`
+- **Module**: `ws-self-learning (self_learning.cjs), memory authoring`
+- **Severity**: `High`
+- **PathPattern**: `.ws/memory/*.md`
+- **Scenario / Context**: `parseEntry` takes the FIRST `### [date]` heading as the title while `parseFields` walks the whole file with later labels overwriting earlier ones, and `compile` emits one block per file. A file with two traps compiles to title-of-first + body-of-last; the first trap's DO NOT/INSTEAD DO is silently dropped and the second is mislabeled (shipped once in PR #428 round 1, caught by review).
+- **DO NOT**: Append a second `### [date]` trap to an existing memory file, or assume one file can carry a batch of traps.
+- **INSTEAD DO**: Write one file per trap (one `###` heading each), then recompile and grep the compiled `MEMORY.md` for every new title plus its body before committing.
+
 ### [2026-09-25] Installer suite needs Git Bash first on PATH (WSL bash breaks secrets-hook phase)
-- **Layer**: `infrastructure`
-- **Module**: `installer (bin/cli.js), ws-shared hub layout`
-- **Severity**: `Medium`
-- **PathPattern**: `bin/cli.js`
-- **Scenario / Context**: In global scope `consumerHubDir() === managedHubDir()`, so `migrateLegacyFlatHub` processes `ws-shared/AGENTS.md`: generated entrypoints (markers) are preserved for refresh, but marker-less authored files are treated as the retired flat hub document and removed once `runtime/AGENTS.md` exists. Only project-scope `.ws/AGENTS.md` follows the preserve-authored contract.
-- **DO NOT**: Assert a global update preserves a consumer-authored `ws-shared/AGENTS.md`, or promise that contract in comments.
-- **INSTEAD DO**: Expect marker-less global entrypoints to be legacy-migrated away (`Removed obsolete flat`); assert refresh only for generated entrypoints and idempotency of the canonical pointer.
+- **Layer**: `tests`
+- **Module**: `test/test-install.js (secrets pre-commit hook phase)`
+- **Severity**: `High`
+- **PathPattern**: `test/test-install.js`
+- **Scenario / Context**: `node test/test-install.js --local` spawns `bash` for the secrets-hook phase. On Windows boxes where `C:\Windows\System32\bash.exe` (WSL) shadows Git Bash, the hook resolves neither `node` nor repo tooling (`command -v node` misses `node.exe` under WSL), warns `node not on PATH`, exits 0, and the fail-fast suite exits 1 before later phases run.
+- **DO NOT**: Run the installer suite with WSL `bash.exe` first on PATH and treat the hook-phase exit 1 as a product regression.
+- **INSTEAD DO**: Prepend `C:\Program Files\Git\bin` to PATH for the suite run so `bash` is Git Bash (resolves `node`/`rg` via `.exe`), then re-run.
 
 ### [2026-09-25] Install-test phases must snapshot LF-pinned repo fixtures; install tests run only via npm-run env
 - **Layer**: `Tests`
@@ -32,6 +41,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **Scenario / Context**: Suite entry #1 `test-install.js` spawns the CLI with cwd=test/ for project-scope phases, so the installer byte-copies the CRLF worktree `hub.gitignore` template over the LF-pinned `test/.ws/.gitignore` fixture (`.gitattributes` pins `test/.ws/** text eol=lf`). Entry #104 `test-ws-us419-followups.js` AC5 then fails on the EOL-dirty file. Separately, standalone `node test/test-install.js --local` fails the secrets-hook phase (`node not on PATH` under git-bash) because only `npm run` puts the node binary dir on PATH.
 - **DO NOT**: Let install-test phases mutate repo fixtures without restoring exact bytes; run `test-install.js` standalone and treat hook/PATH failures as product bugs.
 - **INSTEAD DO**: Snapshot exact fixture bytes at file top and restore in a `process.on('exit')` hook (runs even on `fail()`); always run install tests via `npm run test(s)`; verify with `git status --porcelain` that only intended files are dirty.
+
+### [2026-09-25] Global hub-root AGENTS.md authored files are legacy-migrated, not preserved
+- **Layer**: `infrastructure`
+- **Module**: `installer (bin/cli.js), ws-shared hub layout`
+- **Severity**: `Medium`
+- **PathPattern**: `bin/cli.js`
+- **Scenario / Context**: In global scope `consumerHubDir() === managedHubDir()`, so `migrateLegacyFlatHub` processes `ws-shared/AGENTS.md`: generated entrypoints (markers) are preserved for refresh, but marker-less authored files are treated as the retired flat hub document and removed once `runtime/AGENTS.md` exists. Only project-scope `.ws/AGENTS.md` follows the preserve-authored contract.
+- **DO NOT**: Assert a global update preserves a consumer-authored `ws-shared/AGENTS.md`, or promise that contract in comments.
+- **INSTEAD DO**: Expect marker-less global entrypoints to be legacy-migrated away (`Removed obsolete flat`); assert refresh only for generated entrypoints and idempotency of the canonical pointer.
 
 ### [2026-09-25] CRLF worktree edits and replacement-string interpolation
 - **Layer**: `Tests / DevOps`
