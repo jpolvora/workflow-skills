@@ -6,11 +6,11 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "f3b2530d473382da4a17205025633765dfdb8024f0880cefce05c1cee6801579",
+  "fullPackageDigest": "4edb25122e10aa237d01d2fdbe6fc6ee7e5701607beae7f44a05deff51c57853",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
-      "runtime/AGENTS.md": "06259ed2f6accb17bff16e0b41da17f4f06ee0a6a8c356d353adea7f819ef222",
+      "runtime/AGENTS.md": "42a10f701528eda3c0050f1beae3087c5d9b8006d57b02b89025a80cccadb411",
       "runtime/CATALOG.md": "dce13bd9d72d1b6f318d8259e90dd042fbd824e930106957f65d4e25a92673bf",
       "runtime/CROSS-PLATFORM.md": "19fbaa74276b4f31a1f6c8bf60e0ddf175b8ba8da8b3fe39e61d8841867ff704",
       "runtime/ac-ledger.schema.json": "e8c3c57067f5c45dfbd11dc0c47698fd56ad503ad1f75f8c2150b1ebce80292c",
@@ -65,7 +65,7 @@
       "templates/STACK.md.example": "829b7d3fce62b8167905fc1d921ee744db1d7e8ef895b0e7eb969f089973bebd",
       "templates/config.json.example": "7a59bb731f14bfd98b37b42b3f26af1f15cf3c48c11c3dcb8e57fc1d6b69543d"
     },
-    "skillDigest": "af4d48a3e7e4220074beb286071fa32fd21573205ae26e0553b7d2c4e398f0e7"
+    "skillDigest": "791b5a7edf8041a83f38ad5e1e9394eeda993dbd8718af2b6a91be5871fff877"
   },
   "package": {
     "files": {

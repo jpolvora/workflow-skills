@@ -58,7 +58,7 @@
 
 ## Skill loading (mandatory)
 
-Load mechanics follow `{skillLoader}` ([canonical skill-load procedure](host-capability-tokens.md)); this section only decides **which** skill loads **when**.
+Loads via `{skillLoader}` ([canonical procedure](host-capability-tokens.md)).
 
 | Skill | Path | Trigger |
 |-------|------|---------|
