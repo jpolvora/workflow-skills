@@ -237,6 +237,23 @@ This is the project-local entrypoint for the consumer hub (\`${hubRel}/\`). Mana
 `;
 }
 
+/**
+ * Canonical entrypoint for the global consumer hub (global scope only).
+ * Repairs stale generated pointers left by retired installers; never seeded
+ * fresh (the package ships no ws-shared/AGENTS.md). Portable tokens only —
+ * no bare ws-shared/ shorthand, no relative links.
+ */
+function globalHubPointerMd() {
+  return `# Shared — Workflow Config & Consumer Data Hub (global pointer)
+
+This is the entrypoint for the global consumer hub (\`{globalSkillsRoot}/ws-shared/\`). Managed hub content (runtime contracts, schemas, scripts, templates) resolves from \`{globalSkillsRoot}/ws-shared/runtime/\` and \`{globalSkillsRoot}/ws-shared/templates/\`. Project consumer data lives in the project hub (\`.ws/\`); the bootstrap \`config.json\` stays fixed at \`$PWD/.ws/config.json\`.
+
+- Full hub contract: \`{globalSkillsRoot}/ws-shared/runtime/AGENTS.md\` (resolve skill bodies via \`resolveSkillMdPath\` / \`resolveConsumerContext\` in \`{globalSkillsRoot}/ws-shared/runtime/scripts/resolve_consumer_root.cjs\`).
+- Config always resolves project-local first: \`$PWD/.ws/config.json\` overrides the global hub.
+- \`rules.harness\` default (\`{globalSkillsRoot}/ws-shared/AGENTS.md\`) resolves to this file; follow the canonical runtime link above. Run installer \`update\` to refresh this pointer.
+`;
+}
+
 /** Hub-root autoload link prefixes (managed runtime lives in the skills install). */
 function hubUpPrefix() {
   // Relative climb from the configured hub to the repository root: `../` for
@@ -1324,8 +1341,19 @@ function ensureSharedHubInstalled(mode = 'install') {
   // consumer-authored files are left untouched. Never writes repo-root files.
   const hubPointerPath = path.join(destShared, 'AGENTS.md');
   if (isGlobalScope) {
-    // Global hub keeps its managed AGENTS.md from the package copy; the
-    // project-worded local pointer is never seeded here.
+    // The package ships no ws-shared/AGENTS.md, so fresh global installs have
+    // none and the project-worded local pointer is never seeded here. Only a
+    // stale generated entrypoint left by a retired installer is refreshed to
+    // the canonical global pointer. (Authored files without generated markers
+    // are legacy-migrated away earlier in this flow, not preserved.)
+    if (fs.existsSync(hubPointerPath) && isGeneratedHubEntrypoint(hubPointerPath)) {
+      const currentPointer = fs.readFileSync(hubPointerPath, 'utf8');
+      const expectedPointer = globalHubPointerMd();
+      if (currentPointer !== expectedPointer) {
+        fs.writeFileSync(hubPointerPath, expectedPointer);
+        console.log(`    Refreshed ${hubDisplay()}AGENTS.md pointer to the managed hub`);
+      }
+    }
   } else if (!fs.existsSync(hubPointerPath)) {
     fs.writeFileSync(hubPointerPath, localHubPointerMd());
     console.log(`    Seeded thin local ${hubDisplay()}AGENTS.md pointer to the managed hub`);

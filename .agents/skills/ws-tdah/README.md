@@ -34,5 +34,5 @@ See [`EXAMPLES.md`](EXAMPLES.md) (compression, anti-sycophancy, and `/wait-what`
 ## See also
 
 - [`SKILL.md`](./SKILL.md) — agent contract
-- [Repository README](../../../README.md) — install / overview
+- [Repository README](https://github.com/jpolvora/workflow-skills) — install / overview
 

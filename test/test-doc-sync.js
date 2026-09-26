@@ -7,6 +7,10 @@ const skills = fs.readdirSync(path.join(repoRoot, '.agents/skills'), { withFileT
   .filter((entry) => entry.isDirectory() && entry.name !== 'ws-shared' && fs.existsSync(path.join(repoRoot, '.agents/skills', entry.name, 'SKILL.md')))
   .map((entry) => entry.name);
 for (const skill of skills) assert.match(catalog, new RegExp(`\\\`${skill}\\\``), `catalog includes ${skill}`);
+const runtimeCatalog = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/runtime/CATALOG.md'), 'utf8');
+const runtimeHub = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/runtime/AGENTS.md'), 'utf8');
+const runtimeHubText = `${runtimeCatalog}\n${runtimeHub}`;
+for (const skill of skills) assert.ok(runtimeHubText.includes(`\`${skill}\``), `runtime hub routes ${skill}`);
 const configPath = path.join(repoRoot, '.ws/config.json');
 const config = fs.existsSync(configPath)
   ? JSON.parse(fs.readFileSync(configPath, 'utf8'))
@@ -77,5 +81,36 @@ for (const bare of ['](tools.md)', '](AGENTS.md)', '](scm-provider-contract.md)'
 assert.ok(!mirrorAutoload.includes('](runtime/'), 'mirror autoload never links a .ws/runtime copy');
 for (const target of ['runtime/tools.md', 'runtime/AGENTS.md', 'runtime/scm-provider-contract.md', 'runtime/gates.md']) {
   assert.ok(fs.existsSync(path.join(repoRoot, '.agents/skills/ws-shared', target)), `mirror link target exists in skills-tree runtime: ${target}`);
+}
+// Shipped skill docs must not link the package README through a SoT-depth
+// relative path: after install it resolves to the consumer root, or nowhere
+// on a global install. Link the repository URL instead.
+// ws-spec-index/INDEX-TEMPLATE.md is the deliberate exception — its links are
+// evaluated after the template is copied into the consumer {specsDir}, so
+// they intentionally target the consumer root.
+const readmeLinkOffenders = [];
+const walkSkillDocs = (dir) => {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (entry.name === 'runs' || entry.name === 'node_modules') continue;
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      walkSkillDocs(full);
+    } else if (entry.name.endsWith('.md')) {
+      const text = fs.readFileSync(full, 'utf8');
+      for (const match of text.matchAll(/\]\(([^)\s]+)\)/g)) {
+        const target = match[1].split('#')[0].split('?')[0];
+        if (target.includes('../') && /(^|[\\/])README\.md$/.test(target)) {
+          readmeLinkOffenders.push(full);
+          break;
+        }
+      }
+    }
+  }
+};
+walkSkillDocs(path.join(repoRoot, '.agents/skills'));
+const allowedReadmeLinks = new Set(['.agents/skills/ws-spec-index/INDEX-TEMPLATE.md']);
+for (const offender of readmeLinkOffenders) {
+  const rel = path.relative(repoRoot, offender).split(path.sep).join('/');
+  assert.ok(allowedReadmeLinks.has(rel), `skill doc links package README via relative path: ${rel}`);
 }
 console.log('test-doc-sync: ok');

@@ -2529,6 +2529,65 @@ child.on('close', async (code) => {
     }
     ok('global skill update succeeds');
 
+    // 2b. Stale generated global hub entrypoint refreshes to the canonical
+    // pointer (issue #427 finding 3). Authored files without generated markers
+    // keep the pre-existing legacy-migration contract (removed once
+    // runtime/AGENTS.md exists), not the project-hub preserve contract.
+    {
+      const stalePointer = [
+        '# Shared — Workflow Config & Consumer Data Hub (local pointer)',
+        '',
+        'This is the project-local pointer for global-hybrid installs. Managed hub runtime is resolved from the project-local `runtime/` when present, otherwise from `{globalSkillsRoot}/ws-shared/runtime/`.',
+        '',
+        '- Full hub contract: `runtime/AGENTS.md` (resolve skill bodies via `resolveSkillMdPath` / `resolveConsumerContext` in `ws-shared/runtime/scripts/resolve_consumer_root.cjs`).',
+        '- Config always resolves project-local first: `$PWD/.agents/skills/ws-shared/config.json` overrides the global hub.',
+        '',
+      ].join('\n');
+      const hubPointer = path.join(globalTestDir, 'ws-shared', 'AGENTS.md');
+      fs.writeFileSync(hubPointer, stalePointer);
+      const refresh = cp.spawnSync(
+        process.execPath,
+        [cliPath, 'update', '--global'],
+        { cwd: projectTestDir, encoding: 'utf8', env: globalEnv, timeout: 60000 },
+      );
+      if (refresh.status !== 0) {
+        console.error(`${refresh.stdout || ''}${refresh.stderr || ''}`);
+        fail('global update with stale hub pointer exited non-zero');
+      }
+      const refreshed = fs.readFileSync(hubPointer, 'utf8');
+      if (!refreshed.includes('(global pointer)')) {
+        fail('stale generated global AGENTS.md was not refreshed to the canonical pointer');
+      }
+      if (/(?<![\w./{(-])ws-shared\//.test(refreshed)) {
+        fail('refreshed global AGENTS.md still carries bare ws-shared/ shorthand');
+      }
+      const refreshAgain = cp.spawnSync(
+        process.execPath,
+        [cliPath, 'update', '--global'],
+        { cwd: projectTestDir, encoding: 'utf8', env: globalEnv, timeout: 60000 },
+      );
+      if (refreshAgain.status !== 0) {
+        fail('second global update exited non-zero');
+      }
+      if (fs.readFileSync(hubPointer, 'utf8') !== refreshed) {
+        fail('global hub pointer refresh is not idempotent');
+      }
+      const authored = '# My global hub notes\n\nConsumer-authored entrypoint.\n';
+      fs.writeFileSync(hubPointer, authored);
+      const authoredUpd = cp.spawnSync(
+        process.execPath,
+        [cliPath, 'update', '--global'],
+        { cwd: projectTestDir, encoding: 'utf8', env: globalEnv, timeout: 60000 },
+      );
+      if (authoredUpd.status !== 0) {
+        fail('global update with consumer-authored hub pointer exited non-zero');
+      }
+      if (fs.existsSync(hubPointer)) {
+        fail('global update must legacy-migrate a marker-less ws-shared/AGENTS.md once runtime/AGENTS.md exists');
+      }
+      ok('stale generated global AGENTS.md refreshes to the canonical pointer; marker-less entrypoint legacy-migrated');
+    }
+
     // 3. Local project install (override coexistence)
     const pInst = cp.spawnSync(
       process.execPath,

@@ -122,6 +122,13 @@ function shippedMarkdown(context) {
   const skillsBase = context.skillsRoot && path.isAbsolute(String(context.skillsRoot))
     ? String(context.skillsRoot)
     : path.join(context.repoRoot, '.agents', 'skills');
+  // Global installs generate hub-root copies (ws-shared/autoload.md,
+  // ws-shared/AGENTS.md) beside the managed runtime/ twin. Those generated
+  // files are not shipped normative content, so exclude them the same way as
+  // the generated hub files under the consumer sharedDir.
+  const skillsHubGenerated = new Set(
+    [...generatedHubMarkdown].map((entry) => displayPath(context.repoRoot, path.join(skillsBase, 'ws-shared', String(entry)))),
+  );
   const stack = packageRoots(skillsBase, context.repoRoot);
   if (!hubOutside && fs.existsSync(context.sharedDir)) stack.push(context.sharedDir);
   while (stack.length) {
@@ -132,6 +139,7 @@ function shippedMarkdown(context) {
       if (entry.isDirectory()) {
         if (!hubMemoryRe || !hubMemoryRe.test(relative)) stack.push(full);
       } else if (entry.name.endsWith('.md')) {
+        if (skillsHubGenerated.has(relative)) continue;
         if (hubPrefix && relative.startsWith(hubPrefix)) {
           const hubRelative = relative.slice(hubPrefix.length);
           if (generatedHubMarkdown.has(hubRelative)) continue;
