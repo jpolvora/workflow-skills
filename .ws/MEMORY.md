@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-09-27] Step finish on gitignored disposable artifacts must use stamped fallback
+- **Layer**: `harness`
+- **Module**: `ws-spec-to-pr / commit_g2_code`
+- **Severity**: `Medium`
+- **PathPattern**: `docs/**;**/commit_g2_code.cjs`
+- **Scenario / Context**: A site-rebuilt HTML file showed `M` in `git status` (CRLF worktree line-ending churn, byte-identical after normalization) and was listed in Step 4 `files_touched`; `commit_g2_code.cjs` staged it via `git add`, normalization collapsed it to HEAD-identical, and the G2 commit silently contained 12 files instead of 13. A Step 6 reviewer flagged the mismatch as INFO-002.
+- **DO NOT**: Assume every `files_touched` path lands in the G2 commit, or treat CRLF-worktree `M` flags as content changes.
+- **INSTEAD DO**: After every G2-code commit, diff `git show <sha> --stat` against the declared `files_touched` set; line-ending phantoms that vanish on `git add` are correct exclusions — note them in the step handoff so reviewers do not chase them.
+
 ### [2026-09-27] Status-folder migrations require reference sweeps
 - **Layer**: `Tests and documentation`
 - **Module**: `Spec fixtures, repository links, and harness checks`
