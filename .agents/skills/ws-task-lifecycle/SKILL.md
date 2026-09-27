@@ -26,16 +26,16 @@ Expand `{specsDir}` from `plans.specsDir` and `{sharedDir}` from config before R
    - Done when: the file was read, or a skip note records it is absent.
 2. If repo-root `PLAN.md` exists, Read it.
    - Done when: the file was read, or a skip note records it is absent.
-3. If the prompt is a product change and no matching `{specsDir}/{slug}.spec.md` exists, invoke `ws-spec-write`. Do not draft a full spec body in this file.
+3. If the prompt is a product change and no matching `{specsDir}/{slug}.spec.md` exists, invoke `ws-spec-write` via `{skillLoader}` ([canonical skill-load procedure](../ws-shared/runtime/host-capability-tokens.md)). Do not draft a full spec body in this file.
    - Done when: a slice spec exists under `{specsDir}`, or the prompt is not a product change.
-4. When `{specsDir}/index.PRD` exists and the slug has no Feature map / Next-specs row, invoke [`ws-spec-index`](../ws-spec-index/SKILL.md) `track {slug}` (standalone Add path). Skip with a note when the row already exists or the index is absent.
+4. When `{specsDir}/index.PRD` exists and the slug has no Feature map / Next-specs row, invoke `ws-spec-index` via `{skillLoader}` ([canonical skill-load procedure](../ws-shared/runtime/host-capability-tokens.md)) `track {slug}` (standalone Add path). Skip with a note when the row already exists or the index is absent.
    - Done when: the slug is on the board, already-tracked skip note, or index-absent skip note.
 5. After the slice spec exists and **before** product-file edits, set the matching `index.PRD` checkbox from `[ ]` to `[~]` when that index exists.
    - Done when: the checkbox is `[~]`, or `index.PRD` is absent (skip note).
 
 ## Phase 2 — Implementation
 
-1. Load [`ws-senior-developer`](../ws-senior-developer/SKILL.md) before the first product-file edit.
+1. Load `ws-senior-developer` via `{skillLoader}` ([canonical skill-load procedure](../ws-shared/runtime/host-capability-tokens.md)) before the first product-file edit.
    - Done when: delivery-gate, surgical diff hygiene, and Code review proof rules are in session.
 2. If `verification.backendTest` is a non-empty string, run that alias. If it is empty, record a skip note and do not fail this phase for a missing test alias.
    - Done when: the alias exited, or a skip note exists.
@@ -56,7 +56,7 @@ If `tracking.canonicalFiles` is absent or `[]`, use that default list (with the 
 
 Skip a path that is not on disk. Each skip produces one skip note that names the missing path. Skipping one file does not skip later steps that still apply. Do not create empty tracking files.
 
-Then invoke [`ws-changelog`](../ws-changelog/SKILL.md), then [`ws-self-learning`](../ws-self-learning/SKILL.md).
+Then invoke `ws-changelog` then `ws-self-learning` via `{skillLoader}` ([canonical skill-load procedure](../ws-shared/runtime/host-capability-tokens.md)).
 
 - Done when: existing tracking files in the walk are updated (or skip-noted), changelog ran, and self-learning ran.
 

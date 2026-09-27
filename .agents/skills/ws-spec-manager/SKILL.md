@@ -61,6 +61,8 @@ Displays an interactive structured `user-gate` with 11 distinct actions.
 /spec run <slug>                            Classify & execute pipeline (ws-classify-complexity)
 ```
 
+Load each target `ws-spec-*` skill via `{skillLoader}` ([canonical skill-load procedure](../ws-shared/runtime/host-capability-tokens.md)); the mapping names *which* skill, never *how* to load it.
+
 ---
 
 ## Steps
@@ -93,7 +95,7 @@ Displays an interactive structured `user-gate` with 11 distinct actions.
 - **Done when:** User selects exactly one action, or skill terminates on cancel.
 
 ### 4. Dispatch & Delegate
-Execute the specialized skill mapped from Step 2 or Step 3:
+Execute the specialized skill mapped from Step 2 or Step 3. Load the mapped skill via `{skillLoader}` ([canonical skill-load procedure](../ws-shared/runtime/host-capability-tokens.md)):
 
 - **Action 1: Create Spec**
   - Prompt user for feature description if omitted.
