@@ -612,7 +612,7 @@ if (useLocal) {
     fs.rmSync(localPkg, { recursive: true, force: true });
   }
   console.log('Installing local package pack in test environment...');
-  const installResult = cp.spawnSync('npm', ['install', '--force', tgzPath], {
+  const installResult = cp.spawnSync('npm', ['install', '--force', '--no-audit', '--no-fund', '--prefer-offline', tgzPath], {
     cwd: __dirname,
     shell: true,
     stdio: 'inherit'
