@@ -4,7 +4,7 @@ slug: us-412-413-liveness-checkpoints
 title: "Unattended autoMode runs: mid-step checkpoints, turn-boundary pause state, and monitor stall detection"
 source: github
 specDate: 2026-09-24
-issueState: open
+issueState: closed
 issueUrl: "https://github.com/jpolvora/workflow-skills/issues/413"
 ---
 

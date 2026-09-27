@@ -4,7 +4,7 @@ slug: us-412-418-monitor-accuracy
 title: "Monitor accuracy: step-membership artifact expectations, legacy terminal tolerance, transcript correlation windows, discovery budget"
 source: github
 specDate: 2026-09-24
-issueState: open
+issueState: closed
 issueUrl: "https://github.com/jpolvora/workflow-skills/issues/418"
 ---
 

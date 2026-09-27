@@ -4,7 +4,7 @@ slug: ws-wiki
 title: "ws-wiki: living project feature wiki and domain knowledge base manager"
 source: local
 specDate: 2026-09-12
-status: draft
+status: completed
 ---
 
 # Specification — ws-wiki: living project feature wiki and domain knowledge base manager

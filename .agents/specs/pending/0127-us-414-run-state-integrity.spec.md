@@ -4,7 +4,7 @@ slug: us-414-run-state-integrity
 title: "Run-state and telemetry integrity: fail-closed preset resolution, ship writeback, Step 9 round artifacts, truthful skip semantics"
 source: github
 specDate: 2026-09-24
-issueState: open
+issueState: closed
 issueUrl: "https://github.com/jpolvora/workflow-skills/issues/414"
 ---
 

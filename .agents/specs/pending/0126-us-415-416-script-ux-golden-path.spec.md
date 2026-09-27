@@ -4,7 +4,7 @@ slug: us-415-416-script-ux-golden-path
 title: "Workflow script UX and golden-path state commands: discoverable help, score diagnostics, boundary errors, exit codes, per-gate commands, tamper-evidence"
 source: github
 specDate: 2026-09-24
-issueState: open
+issueState: closed
 issueUrl: "https://github.com/jpolvora/workflow-skills/issues/416"
 ---
 
