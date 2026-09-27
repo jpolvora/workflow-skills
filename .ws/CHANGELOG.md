@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-27 02:27] Agent: agent
+- **Prompt**: Reduce token usage in spec-to-pr workflows via prose compaction and deduplication (0142)
+- **Done**: Compacted ws-spec-to-pr SKILL/STEP-DISPATCH/PROTOCOLS + lite SKILL (96892 to 62173 B, 38 pct); byte-budget assertions in test-context-budget.js; verify 10/10; full suite 137/137 green
+- **Result**: status completed; G2 ffae2209; v0.5.3; review clean 9/10
+
 ### [2026-09-26 22:49] Agent: agent
 - **Prompt**: Check WORKER-TURN-RULES.md against autoMode unattended orchestration
 - **Done**: Scoped worker-turn rules to dispatched workers and kept the orchestrator unattended through Steps 0-9

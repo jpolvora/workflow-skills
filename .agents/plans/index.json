@@ -2,6 +2,17 @@
   "schemaVersion": 1,
   "workflows": [
     {
+      "workflowId": "reduce-spec-to-pr-tokens-20260927T043013Z",
+      "slug": "reduce-spec-to-pr-tokens",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/reduce-spec-to-pr-tokens/reduce-spec-to-pr-tokens-20260927T043013Z.state.md",
+      "stateSha256": "6bdec7cbe3af89810bb18109ec851efd0fad7e37dea351183112d3ffc232667f",
+      "status": "active",
+      "currentStep": 8,
+      "updatedAt": "2026-09-27T06:22:41Z",
+      "runPath": ".agents/plans/reduce-spec-to-pr-tokens/reduce-spec-to-pr-tokens-20260927T043013Z.state.json"
+    },
+    {
       "workflowId": "restore-automode-continuous-orchestration-20260927T023632Z",
       "slug": "restore-automode-continuous-orchestration",
       "pipeline": "standard",
@@ -24,6 +35,6 @@
       "runPath": ".agents/plans/simplify-skill-versioning/simplify-skill-versioning-20260927T015020Z.state.json"
     }
   ],
-  "revision": 21,
-  "generatedAt": "2026-09-27T03:08:41Z"
+  "revision": 18,
+  "generatedAt": "2026-09-27T06:22:41Z"
 }
