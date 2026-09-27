@@ -194,6 +194,12 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Restore autoMode continuous orchestration (host-turn chaining through ship and fix-pr) (`spec: completed/0141-restore-automode-continuous-orchestration.spec.md`) — `3eb03641` on develop
 - [x] Reduce token usage in spec-to-pr-* workflows via prose compaction and deduplication (`spec: completed/0142-reduce-spec-to-pr-tokens.spec.md`) - `9db3f991` on develop
 - [ ] Separate Multi-CLI Step Baton into a Dedicated ws-spec-to-pr-distributed Workflow (`spec: pending/0143-ws-spec-to-pr-distributed.spec.md`)
+- [ ] skillLoader: adopt token-centered skill loading at inline body-load sites (`spec: pending/0144-us-440.spec.md`)
+- [ ] (Spec) Create a new skill ws-spec-to-issue (`spec: pending/0145-us-439.spec.md`)
+- [ ] features to be emphasized in website and detailed in wiki (`spec: pending/0146-us-436.spec.md`)
+
+
+
 
 
 
@@ -481,6 +487,12 @@ All Next-specs closed.
 | 147 | `reduce-spec-to-pr-tokens` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Reduce token usage in spec-to-pr-* workflows via prose compaction and deduplication |
 
 | 148 | `ws-spec-to-pr-distributed` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Separate Multi-CLI Step Baton into a Dedicated ws-spec-to-pr-distributed Workflow |
+
+| 149 | `us-440` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | skillLoader: adopt token-centered skill loading at inline body-load sites |
+
+| 150 | `us-439` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | [Spec] Create a new skill ws-spec-to-issue |
+
+| 151 | `us-436` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | features to be emphasized in website and detailed in wiki |
 
 ## 9. Inbox
 

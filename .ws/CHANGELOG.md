@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-27 08:55] Agent: agent
+- **Prompt**: fetch gh issues into specs (ws-spec-from-provider)
+- **Done**: Imported open GitHub issues #440, #439, #436 into .agents/specs/pending as agentic specs (0144/0145/0146); skipped #438 (already imported as 0143-ws-spec-to-pr-distributed); registered step-00 workflow copies and tracked all three in index.PRD
+- **Result**: 3 imported, 1 skipped, 0 failed; specs pass authoring validation, step-00 registered, index.PRD rows 149-151
+
 ### [2026-09-27 02:27] Agent: agent
 - **Prompt**: Reduce token usage in spec-to-pr workflows via prose compaction and deduplication (0142)
 - **Done**: Compacted ws-spec-to-pr SKILL/STEP-DISPATCH/PROTOCOLS + lite SKILL (96892 to 62173 B, 38 pct); byte-budget assertions in test-context-budget.js; verify 10/10; full suite 137/137 green
