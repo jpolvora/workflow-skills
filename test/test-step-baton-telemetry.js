@@ -65,7 +65,7 @@ try {
   write(path.join(usDir, 'plan.index.json'), '{}\n');
 
   const result = cp.spawnSync(process.execPath, [
-    path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs'),
+    path.join(repoRoot, '.agents/skills/ws-spec-to-pr-distributed/scripts/step_coordinator.cjs'),
     '--state', stateFile, '--repo-root', root,
   ], { encoding: 'utf8', timeout: 120000 });
   if (result.status !== 0) throw new Error(`telemetry run should exit 0, got ${result.status}: ${result.stderr || result.stdout}`);

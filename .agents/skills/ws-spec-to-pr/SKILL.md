@@ -90,7 +90,7 @@ See [`gates.md`](../ws-shared/runtime/gates.md) § Quality gate bypass. Active v
 
 ## Step-level baton runs (multi-CLI)
 
-One run may execute different steps in different CLI processes via the deterministic coordinator (`scripts/step_coordinator.cjs`, plain Node, no LLM): run `node {skillsRoot}/ws-spec-to-pr/scripts/step_coordinator.cjs --state {us-dir}/{workflow-id}.state.json` after configuring `defaults.stepRunners` / `defaults.runners` / `defaults.stepBaton`. Worker spawn vocabulary and the baton contract live in [`host-dispatch.md`](../ws-shared/runtime/host-dispatch.md) §7; gates surface at the coordinator per [`gates.md`](../ws-shared/runtime/gates.md) § Coordinator gate surfacing.
+Distributed multi-CLI execution is owned by the opt-in [`ws-spec-to-pr-distributed`](../ws-spec-to-pr-distributed/SKILL.md) workflow; this orchestrator stays single-host and ignores its baton run config.
 
 ## Invocation
 

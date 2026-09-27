@@ -193,7 +193,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Centralize skill package versioning and bind versions to integrity checksums (`spec: completed/0140-simplify-skill-versioning.spec.md`)
 - [x] Restore autoMode continuous orchestration (host-turn chaining through ship and fix-pr) (`spec: completed/0141-restore-automode-continuous-orchestration.spec.md`) — `3eb03641` on develop
 - [x] Reduce token usage in spec-to-pr-* workflows via prose compaction and deduplication (`spec: completed/0142-reduce-spec-to-pr-tokens.spec.md`) - `9db3f991` on develop
-- [ ] Separate Multi-CLI Step Baton into a Dedicated ws-spec-to-pr-distributed Workflow (`spec: pending/0143-ws-spec-to-pr-distributed.spec.md`)
+- [x] Separate Multi-CLI Step Baton into a Dedicated ws-spec-to-pr-distributed Workflow (`spec: pending/0143-ws-spec-to-pr-distributed.spec.md`) - `e79c96dc` (implementation)
 - [ ] skillLoader: adopt token-centered skill loading at inline body-load sites (`spec: pending/0144-us-440.spec.md`)
 - [ ] (Spec) Create a new skill ws-spec-to-issue (`spec: pending/0145-us-439.spec.md`)
 - [ ] features to be emphasized in website and detailed in wiki (`spec: pending/0146-us-436.spec.md`)
@@ -486,7 +486,7 @@ All Next-specs closed.
 
 | 147 | `reduce-spec-to-pr-tokens` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Reduce token usage in spec-to-pr-* workflows via prose compaction and deduplication |
 
-| 148 | `ws-spec-to-pr-distributed` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Separate Multi-CLI Step Baton into a Dedicated ws-spec-to-pr-distributed Workflow |
+| 148 | `ws-spec-to-pr-distributed` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Separate Multi-CLI Step Baton into a Dedicated ws-spec-to-pr-distributed Workflow (`e79c96dc` implementation) |
 
 | 149 | `us-440` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | skillLoader: adopt token-centered skill loading at inline body-load sites |
 
@@ -642,6 +642,7 @@ All Next-specs closed.
 | 2026-09-27 | `restore-automode-continuous-orchestration` | Restore autoMode continuous orchestration (host-turn chaining through ship and fix-pr) | [PR #437](https://github.com/jpolvora/workflow-skills/pull/437) MERGED |
 | 2026-09-27 | `improve-agentic-reviewers-prompt` | Improve agentic code reviewers prompt — simplify and align upstream vs local needs | [PR #434](https://github.com/jpolvora/workflow-skills/pull/434) MERGED |
 | 2026-09-27 | `reduce-spec-to-pr-tokens` | Reduce token usage in spec-to-pr-* workflows via prose compaction and deduplication | Implemented |
+| 2026-09-27 | `ws-spec-to-pr-distributed` | Separate Multi-CLI Step Baton into a Dedicated ws-spec-to-pr-distributed Workflow | Implemented (`e79c96dc`) |
 
 ## 11. Maintenance checklist
 

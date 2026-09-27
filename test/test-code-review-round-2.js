@@ -19,7 +19,7 @@ const repoRoot = path.resolve(__dirname, '..');
 const require = createRequire(import.meta.url);
 const nodeOs = require('os');
 
-const coordinator = require('../.agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs');
+const coordinator = require('../.agents/skills/ws-spec-to-pr-distributed/scripts/step_coordinator.cjs');
 const memConflict = require('../.agents/skills/ws-spec-to-pr/scripts/check_memory_conflict.cjs');
 const cleanupGit = require('../.agents/skills/ws-spec-to-pr/scripts/cleanup_workflow_git.cjs');
 const monitor = require('../.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs');

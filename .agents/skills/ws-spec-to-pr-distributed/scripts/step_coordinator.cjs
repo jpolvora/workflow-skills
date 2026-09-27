@@ -68,7 +68,10 @@ const {
   computeLeaseUntil,
   createError,
 } = require(path.join(HUB_SCRIPTS_DIR, 'step_baton.cjs'));
-const guard = require('./worker_turn_guard.cjs');
+// The worker-turn guard is owned by the standard orchestrator's worker contract
+// (ws-spec-to-pr/scripts/worker_turn_guard.cjs); the distributed coordinator
+// reuses it unchanged. Resolve through the skills root so the edge is explicit.
+const guard = require(path.join(__dirname, '..', '..', 'ws-spec-to-pr', 'scripts', 'worker_turn_guard.cjs'));
 
 const EXIT_OK = 0;
 const EXIT_BLOCKED = 2;

@@ -156,6 +156,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 |----------|------|------|
 | `ws-spec-to-pr` | `.agents/skills/ws-spec-to-pr/SKILL.md` | Spec → plan → interview → implement → check → product commit → review → review-fix commit → test → ship → fix-pr (FSM F0–F6, steps 0–9) |
 | `ws-spec-to-pr-lite` | `.agents/skills/ws-spec-to-pr-lite/SKILL.md` | Fast sequential spec → plan → implement → product commit → review → review-fix commit → ship → fix-pr (steps 0–5) |
+| `ws-spec-to-pr-distributed` | `.agents/skills/ws-spec-to-pr-distributed/SKILL.md` | Opt-in multi-CLI distributed run over the same 0–9 step set (state-file baton + `step_coordinator.cjs`); explicitly invoked only |
 
 ### Dual-mode
 
@@ -168,7 +169,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 - Shared pipeline skills stay orch-agnostic
 - **Product commits:** standard after Step 5 when score ≥ `defaults.minVerifyScore` (default 9) (before Step 6 review) then after Step 6 review-fix if files changed; lite after Step 2 (before Step 3 review) then after review-fix if files changed. Stage only workflow `files_touched` (never `{plansDir}` until Step 8 close / lite Step 4 close). **`status: completed`** at close (implementation done), before push/PR; `shipStatus` tracks shipping. Review uses `git diff {base}...HEAD`. No push before ship phase. Pre-ship doc-sync trio gate at Step 8 / lite Step 4, before push/PR (`defaults.requirePreShipDocSync`, default true; absent/invalid → true): `ws-wiki sync [slug]` (when the project keeps a wiki; otherwise warn-skip) alongside `ws-spec-index sync {slug}` and the changelog entry — the wiki must reflect shipped code before the PR opens, and the flag governs whether the trio blocks the ship phase. Dual-write sync: G2 delivery commits and state updates synchronize `.state.json` and `.state.md` atomically (`syncStateDualWrite`) with `gitTrackedSet` caching. Parallel writers on one worktree: own-path commits only, never reset/clean/stash foreign work, baseline advances forward — [`git-ownership.md`](.agents/skills/ws-shared/runtime/git-ownership.md) (§5 matrix, Phase 5a enforced).
 - **Dispatch:** [`ws-spec-to-pr/STEP-DISPATCH.md`](.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md) is **standard-only** (steps 0–9). Lite keeps its own Steps 0–5 table; do not use STEP-DISPATCH as lite step numbers.
-- **Step baton:** one run may execute different steps in different CLI processes via the deterministic `step_coordinator.cjs` (`defaults.stepRunners` / `defaults.runners` / `defaults.stepBaton`); state-file baton with revision-serialized claim/release/expiry, `baton_*`/`runner_*` telemetry, read-only monitor fields; gates surface at the coordinator while workers stay non-interactive.
+- **Step baton:** one run may execute different steps in different CLI processes via the opt-in **`ws-spec-to-pr-distributed`** workflow (state-file baton, `step_coordinator.cjs`, `defaults.stepRunners` / `defaults.runners` / `defaults.stepBaton`); `ws-spec-to-pr` stays single-host and ignores those keys. Gate surfacing for a distributed run is owned by that skill.
 
 ### Pipeline skills (owned here)
 

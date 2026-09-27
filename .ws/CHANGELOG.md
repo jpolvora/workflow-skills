@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-27 12:08] Agent: agent
+- **Prompt**: Extract the multi-CLI step baton out of ws-spec-to-pr into a dedicated ws-spec-to-pr-distributed workflow (issue #438).
+- **Done**: Added ws-spec-to-pr-distributed skill (body + coordinator + references + evals), registered both dependency manifests, re-homed coordinator prose out of shared runtime, slimmed ws-spec-to-pr, added a fail-closed workflow registry to ws-check-workflows, re-pointed baton suites, synced docs/site/wiki/router, bumped version to 0.5.4.
+- **Result**: 138/138 tests pass; harness 0 findings; integrity verified; verify score 10/10; coverage 82.4% lines; regression sabotage passed.
+
 ### [2026-09-27 08:55] Agent: agent
 - **Prompt**: fetch gh issues into specs (ws-spec-from-provider)
 - **Done**: Imported open GitHub issues #440, #439, #436 into .agents/specs/pending as agentic specs (0144/0145/0146); skipped #438 (already imported as 0143-ws-spec-to-pr-distributed); registered step-00 workflow copies and tracked all three in index.PRD

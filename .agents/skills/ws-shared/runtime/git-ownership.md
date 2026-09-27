@@ -149,6 +149,7 @@ class. Every orchestrator follows this table; a skill absent from it fails
 | `ws-spec-provider-github` | shared-artifact-writing | writes specs + workflow copies + attachments |
 | `ws-spec-provider-local` | shared-artifact-writing | registers specs + workflow copies |
 | `ws-spec-to-pr` | git-mutating | commits, branches, tags, worktrees, baseline rebase |
+| `ws-spec-to-pr-distributed` | git-mutating | distributed orchestrator; each step's own commit/push is path-scoped per §1-§3 |
 | `ws-spec-to-pr-lite` | git-mutating | product commits, branches, tags |
 | `ws-spec-translate-to-human` | read-only | companion output is owned |
 | `ws-spec-update` | shared-artifact-writing | edits specs of record |

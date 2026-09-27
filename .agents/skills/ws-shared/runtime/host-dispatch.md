@@ -66,7 +66,7 @@ Legacy neutral flags (`hasStructuredChoiceTool` / `hasSubagentTool` / `hasBrowse
   ```text
   {cli} run --prompt "{prompt}" --working-dir "{cwd}"
   ```
-- **Step baton vocabulary:** coordinator worker templates add `{step}` to `{prompt}`, `{cwd}`, `{slug}`; `{prompt}` resolves to a dispatch-prompt file path (see §7).
+- **Step baton vocabulary:** the distributed multi-CLI workflow ([`ws-spec-to-pr-distributed`](../../ws-spec-to-pr-distributed/SKILL.md)) adds `{step}` to `{prompt}`, `{cwd}`, `{slug}` for coordinator worker templates; `{prompt}` resolves to a dispatch-prompt file path. See that skill's [`references/coordinator.md`](../../ws-spec-to-pr-distributed/references/coordinator.md).
 
 ### Tier 3 — Inline Isolated Execution (Clean Context Pointer Mode)
 
@@ -193,10 +193,4 @@ When creating or modifying workflow skills:
 
 ## 7. Step-level baton runs (multi-CLI coordinator)
 
-A deterministic coordinator process (`ws-spec-to-pr/scripts/step_coordinator.cjs`, plain Node, no LLM) may drive one run (`workflowId`) across several CLI processes on the same machine and repository. The coordinator is a durable driver around the Tier 2 one-shot mechanism (§3 Tier 2), not a new dispatch tier: unmapped steps keep Tier 1/2/3 plus `stepModels`, and lite inline execution keeps its clean-context-pointer boundary.
-
-- **Turn signal:** the workflow state file only. The baton holder for `currentStep` (`state.baton`, plus the terse `state.handoffs` entry per step) is the only runner allowed to act.
-- **Liveness probe contract (never-ping-mid-batch):** the parent never sends a message into a running worker turn — an injected status ping can become the turn's terminal output and kill progressing work. The sanctioned progress signal is a read-only poll of the workflow state file (revision, `currentStep`, step handoffs, e.g. the coordinator `pollIntervalSeconds` external-advancement detection): it injects no message and cannot terminate the probed turn.
-- **Worker spawn vocabulary:** runner command templates substitute `{prompt}`, `{cwd}`, `{slug}`, `{step}`. Effective resolution: `{prompt}` is the coordinator-written dispatch-prompt file path (`{us-dir}/.runtime/step-{N}-dispatch-prompt.md`), `{cwd}` the repo root, `{slug}` the run slug, `{step}` the step number. Templates are tokenized to argv and spawned without a shell.
-- **Worker contract:** one-shot per turn with the Tier 2 sparse-pointer payload plus a baton envelope (`step`, `holder`, `leaseUntil`, `attempt`); the worker calls `finish` for its step before exit and never polls, idles, or emits gates. The worker's FIRST response carries BOTH the verbose preview AND at least 2 tool calls (zero tool calls = failed delivery); a continuation worker recovering an interrupted turn reuses the intact worktree progress (read `git status` first, then verify, commit, resolve, push, report) instead of rebuilding context from scratch.
-- **Gates:** all Transition Gates and `user-gate` prompts surface at the coordinator (pause-and-prompt, or index 0 in `autoMode`); see [`gates.md`](gates.md) § Coordinator gate surfacing.
+The multi-CLI step-baton capability is owned by the distributed workflow ([`ws-spec-to-pr-distributed`](../../ws-spec-to-pr-distributed/SKILL.md)); its coordinator, spawn vocabulary, liveness contract, and gates now live in that skill's [`references/coordinator.md`](../../ws-spec-to-pr-distributed/references/coordinator.md). The shared runtime keeps no coordinator prose beyond this cross-reference.
