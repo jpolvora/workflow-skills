@@ -449,7 +449,7 @@ assert.match(fs.readFileSync(FORMAT_DOC, 'utf8'), /## Visual References/);
 assert.match(fs.readFileSync(path.join(REPO, '.agents/skills/ws-cleanup/references/PATTERNS.md'), 'utf8'), /\.assets\//);
 assert.match(fs.readFileSync(path.join(REPO, 'FEATURES.md'), 'utf8'), /Visual References|\.assets/);
 
-const compatSpec = path.join(REPO, '.agents/plans/provider-fetch-visual-attachments/step-00-provider-fetch-visual-attachments.spec.md');
+const compatSpec = path.join(REPO, '.agents/specs/completed/0060-provider-fetch-visual-attachments.spec.md');
 const compat = spawnSync(process.execPath, [VALIDATE_SCRIPT, '--mode=compat', compatSpec], { encoding: 'utf8', cwd: REPO });
 assert.strictEqual(compat.status, 0, 'compat validate without Visual References heading requirement');
 
