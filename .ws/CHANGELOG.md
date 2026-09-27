@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-27 15:29] Agent: agent
+- **Prompt**: Emphasize four shipped capability clusters (proof of work; translate to human; unattended autoMode + ws-spec-multi; spec organizer/subfolder sync/cleanup) on the public site and detail them in the living wiki (issue #436).
+- **Done**: Added four marker-delimited feature cards to bin/build-site.js, regenerated docs/index.html + docs/wiki; tightened proof-of-work/cleanup wiki prose; added FEATURES.md 1.7; bumped version 0.5.6 -> 0.5.7 and regenerated integrity.
+- **Result**: PASS: npm run test 139/139; harness-clean 0 findings; ws-check-harness 0 findings; validate_wiki PASS; build-site --check exit 0; generate/verify-integrity exit 0.
+
 ### [2026-09-27 14:53] Agent: agent
 - **Prompt**: Issue #439: add packaged skill ws-spec-to-issue (free text -> anonymized tracker item).
 - **Done**: Added ws-spec-to-issue skill (body + run_spec_to_issue.cjs helper + evals): resolves the active tracker, reformulates a free-text idea into a spec-shaped payload via ws-spec-write, anonymizes it, and creates a GitHub issue / ADO User Story through the provider create-issue intent with no local spec and no git mutation. Registered both dependency manifests + git-ownership matrix row, routed in AGENTS.md/.ws/AGENTS.md/README/FEATURES/CATALOG/SPEC-MANAGEMENT/autoload/docs/llms.txt, added contract tests, bumped version to 0.5.6.
