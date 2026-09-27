@@ -148,6 +148,7 @@ class. Every orchestrator follows this table; a skill absent from it fails
 | `ws-spec-provider-azure-devops` | shared-artifact-writing | writes specs + workflow copies + attachments |
 | `ws-spec-provider-github` | shared-artifact-writing | writes specs + workflow copies + attachments |
 | `ws-spec-provider-local` | shared-artifact-writing | registers specs + workflow copies |
+| `ws-spec-to-issue` | read-only | creates a remote tracker item; no local artifact and no git verbs |
 | `ws-spec-to-pr` | git-mutating | commits, branches, tags, worktrees, baseline rebase |
 | `ws-spec-to-pr-distributed` | git-mutating | distributed orchestrator; each step's own commit/push is path-scoped per §1-§3 |
 | `ws-spec-to-pr-lite` | git-mutating | product commits, branches, tags |

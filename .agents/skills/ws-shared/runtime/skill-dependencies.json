@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.5.5",
+  "packageVersion": "0.5.6",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -79,6 +79,7 @@
         "ws-spec-list",
         "ws-kanvas",
         "ws-spec-from-provider",
+        "ws-spec-to-issue",
         "ws-spec-update",
         "ws-task-lifecycle",
         "ws-senior-developer",
@@ -279,6 +280,13 @@
       "ws-spec-index",
       "ws-configure-project"
     ],
+    "ws-spec-to-issue": [
+      "ws-spec-write",
+      "ws-spec-format",
+      "ws-spec-provider-github",
+      "ws-spec-provider-azure-devops",
+      "ws-configure-project"
+    ],
     "ws-activity-report": [],
     "ws-pre-daily": [
       "ws-configure-project"
@@ -329,6 +337,7 @@
       "ws-spec-archive",
       "ws-spec-format",
       "ws-spec-from-provider",
+      "ws-spec-to-issue",
       "ws-classify-complexity",
       "ws-configure-project"
     ],

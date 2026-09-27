@@ -48,6 +48,9 @@
       "test/test-ws-task-lifecycle.js"
     ],
     [
+      "test/test-ws-spec-to-issue.js"
+    ],
+    [
       "test/test-delivery-commit-artifacts.js"
     ],
     [
@@ -210,6 +213,9 @@
     ],
     [
       "test/test-ws-task-lifecycle.js"
+    ],
+    [
+      "test/test-ws-spec-to-issue.js"
     ],
     [
       "test/test-delivery-commit-artifacts.js"

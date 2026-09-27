@@ -6,7 +6,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 
 ## Skill catalog (layers)
 
-> **Scope:** 48 workflow + 8 Extra; see [`bin/skill-dependencies.json`](bin/skill-dependencies.json). Routes: [`.ws/AGENTS.md`](.ws/AGENTS.md).
+> **Scope:** 49 workflow + 8 Extra; see [`bin/skill-dependencies.json`](bin/skill-dependencies.json). Routes: [`.ws/AGENTS.md`](.ws/AGENTS.md).
 >
 > **Index only.** Load skills per root `AGENTS.md` § Progressive disclosure.
 
@@ -79,6 +79,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | `ws-spec-list` | `.agents/skills/ws-spec-list/SKILL.md` | Dual board: specs vs plans + menu |
 | `ws-kanvas` | `.agents/skills/ws-kanvas/SKILL.md` | Local kanban board for spec and workflow state |
 | `ws-spec-from-provider` | `.agents/skills/ws-spec-from-provider/SKILL.md` | Bulk-import GH/ADO issues → specs |
+| `ws-spec-to-issue` | `.agents/skills/ws-spec-to-issue/SKILL.md` | Free text → anonymized tracker item |
 | `ws-activity-report` | `.agents/skills/ws-activity-report/SKILL.md` | Timesheet entries for delivery (Extra) |
 | `ws-pre-daily` | `.agents/skills/ws-pre-daily/SKILL.md` | 36-hour standup briefing |
 | `ws-megabrain` | `.agents/skills/ws-megabrain/SKILL.md` | Vibe-coding implementer + specialists |
@@ -132,6 +133,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
 | View specs as a local kanban board | `ws-kanvas` |
 | Bulk-import GH issues / ADO US → local specs | `ws-spec-from-provider` |
+| Idea → tracker item | `ws-spec-to-issue` |
 | Session autoload set (which skills load every prompt) | This repo: § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only). Consumers: [`{skillsRoot}/ws-shared/runtime/autoload.md`](.agents/skills/ws-shared/runtime/autoload.md) § Always-applied |
 | Specs keywords / which skill to invoke | [`{skillsRoot}/ws-shared/runtime/autoload.md`](.agents/skills/ws-shared/runtime/autoload.md) § Specs skill router |
 | Dev commands (deps, tests, local install, integrity, site) | § [Development commands](#development-commands-this-repo) |
