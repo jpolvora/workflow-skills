@@ -1,0 +1,778 @@
+{
+  "schemaVersion": 1,
+  "revision": 26,
+  "workflowId": "simplify-skill-versioning-20260927T015020Z",
+  "slug": "simplify-skill-versioning",
+  "specPath": ".agents/plans/simplify-skill-versioning/step-00-simplify-skill-versioning.spec.md",
+  "planIndexPath": ".agents/plans/simplify-skill-versioning/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    },
+    {
+      "alias": "verifyIntegrity",
+      "commandHash": "b964195e87fceab283886ed88e48c9ea139202e5ffc38f7ced3938d07dceeb4c",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "`.agents/skills/ws-shared/version.json` exists as the single authored semantic-version source, contains a valid `version` property with exactly one `major.minor.patch` value, and is classified as managed hub content rather than consumer-owned data.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/version.json:L1-L4"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-013"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/version.json",
+          "lineStart": 1,
+          "lineEnd": 4,
+          "sha256": "93c8d3ccc2dc3075a66446c30e260ed0f2173644f326607db3afc1aa522e79ef"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "canonical semver",
+          "sourceFile": "test/test-skill-frontmatter.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T02:06:01.296Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "bulk-AC1",
+        "g2-commit-34f49a75"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "A normal build reads the canonical value from `version.json`; a release bump changes that file once and synchronizes npm-required `package.json.version`, `bin/skill-dependencies.json.packageVersion`, `.agents/skills/ws-shared/runtime/skill-dependencies.json.packageVersion`, generated site footer/version surfaces, and any package-version provenance that currently derives from the release version.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/canonical-version.js:L70-L95"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-005",
+        "section-013"
+      ],
+      "files": [
+        {
+          "path": "bin/canonical-version.js",
+          "lineStart": 70,
+          "lineEnd": 95,
+          "sha256": "b3bf25ca7db24e74bff0a47bacd90a8c9c026b041b32f4473f4bcded359b0c65"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "bumpCanonicalPatch",
+          "sourceFile": "test/test-skill-frontmatter.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T02:06:01.350Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "bulk-AC2",
+        "g2-commit-34f49a75"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "Release/build logic never inserts, rewrites, or requires `version:` in a packaged `.agents/skills/ws-*/SKILL.md`. Every packaged primary skill frontmatter remains valid without that field, and a new skill can be added without editing existing skill bodies for a release bump.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/build-site.js:L35-L45"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-005",
+        "section-008",
+        "section-013",
+        "section-016"
+      ],
+      "files": [
+        {
+          "path": "bin/build-site.js",
+          "lineStart": 35,
+          "lineEnd": 45,
+          "sha256": "0e5ad2d3a1857a026c8c591b851646acb6136e7513e3708d137ed4858c8ce8b6"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "SKILL.md has no version frontmatter",
+          "sourceFile": "test/test-ws-spec-manager.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T02:06:01.405Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "bulk-AC3",
+        "g2-commit-34f49a75"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "The integrity generator reads the canonical version and includes it in the deterministic input used to calculate every `skills[skillId].skillDigest` and the aggregate `fullPackageDigest`. The manifest records the effective version needed to explain or verify that binding.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/skill-integrity-lib.js:L110-L121"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-006",
+        "section-013"
+      ],
+      "files": [
+        {
+          "path": "bin/skill-integrity-lib.js",
+          "lineStart": 110,
+          "lineEnd": 121,
+          "sha256": "4475fdf7152bf4d8b0fdb64dbe18514d070ff29b264f79e6f5daf1ef0eda5152"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "integrity manifest covers installable skills",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T02:06:01.470Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "bulk-AC4",
+        "g2-commit-34f49a75"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "With identical managed file bytes and identical `version.json`, repeated integrity generation is byte-stable across supported platforms and EOL styles. Changing only `version.json` changes every packaged skill digest and the aggregate digest; changing one managed skill file changes that skill digest and the appropriate aggregate digest.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/skill-integrity-lib.js:L110-L121"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-013"
+      ],
+      "files": [
+        {
+          "path": "bin/skill-integrity-lib.js",
+          "lineStart": 110,
+          "lineEnd": 121,
+          "sha256": "4475fdf7152bf4d8b0fdb64dbe18514d070ff29b264f79e6f5daf1ef0eda5152"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "integrity manifest covers installable skills",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T02:06:01.527Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "bulk-AC5",
+        "g2-commit-34f49a75"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "`npm run verify-integrity` and the equivalent direct generator check fail closed with an actionable diagnostic when `version.json` is missing, malformed, contains multiple version values, disagrees with generated package/dependency metadata, or leaves `bin/skill-integrity.json` stale.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/generate-skill-integrity.js:L30-L45"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-006",
+        "section-013"
+      ],
+      "files": [
+        {
+          "path": "bin/generate-skill-integrity.js",
+          "lineStart": 30,
+          "lineEnd": 45,
+          "sha256": "49053c882a1ca4f11a4aca165f9bece96f11262e789e48211be184779134d72b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "assertVersionProjectionsMatch",
+          "sourceFile": "test/test-skill-frontmatter.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T02:06:19.855Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "bulk2-AC6",
+        "g2-commit-34f49a75"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "The installer and integrity enumerator copy and hash `version.json` for project-local and global installs, including configured hub resolution and hybrid local-config/global-skill execution. A consumer missing the new managed version file receives an explicit outdated-install/update diagnostic and is never silently versioned from an arbitrary skill frontmatter field.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/install-rules.js:L124-L128"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-007",
+        "section-013"
+      ],
+      "files": [
+        {
+          "path": "bin/install-rules.js",
+          "lineStart": 124,
+          "lineEnd": 128,
+          "sha256": "a7aa48c70989c57229036aa1d71005133183c269051dc538071d6045d4bfb57f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "integrity manifest covers installable skills + hub whitelist",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T02:06:19.912Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "bulk2-AC7",
+        "g2-commit-34f49a75"
+      ]
+    },
+    {
+      "id": "AC8",
+      "text": "Consumer-local integrity records and package-version resolution continue to expose the canonical release version for update checks, telemetry, monitor output, and closure verification. Installed closure digests include the version-bound skill digests without treating consumer-owned config, memory, changelog, or local integrity files as upstream content.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/cli.js:L1470-L1480"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-013"
+      ],
+      "files": [
+        {
+          "path": "bin/cli.js",
+          "lineStart": 1470,
+          "lineEnd": 1480,
+          "sha256": "48fe05698d0820fa43df569c43f90a10eb073c4cf12d9b77268a7bb939b88bac"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "integrity manifest covers installable skills + hub whitelist",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T02:06:19.966Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "bulk2-AC8",
+        "g2-commit-34f49a75"
+      ]
+    },
+    {
+      "id": "AC9",
+      "text": "The hub layout, installer include/exclude rules, package tarball checks, dependency manifests, harness checks, and runtime documentation agree on the `version.json` location and ownership. No duplicate version source or legacy direct-hub alias is introduced.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/hub-layout.json:L40-L49"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-007",
+        "section-013"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/hub-layout.json",
+          "lineStart": 40,
+          "lineEnd": 49,
+          "sha256": "ddff2e53867ca2de6cc07a424661b12a228ba1c9dfce2ad5c13828ef83a463dc"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "integrity manifest covers installable skills + hub whitelist",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T02:06:20.022Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "bulk2-AC9",
+        "g2-commit-34f49a75"
+      ]
+    },
+    {
+      "id": "AC10",
+      "text": "Version-frontmatter helpers and tests are removed or repurposed so no supported build path can stamp per-skill versions. Tests that currently assert `SKILL.md` version fields are replaced with central-version and no-frontmatter-field assertions, including skill-frontmatter, pre-daily, wiki, spec-manager, patterns-generator, install, and harness-clean coverage.",
+      "status": "Implemented",
+      "evidence": [
+        "test/test-skill-frontmatter.js:L23-L29"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-005",
+        "section-008",
+        "section-011",
+        "section-013"
+      ],
+      "files": [
+        {
+          "path": "test/test-skill-frontmatter.js",
+          "lineStart": 23,
+          "lineEnd": 29,
+          "sha256": "16ec115f7c3b7fa864bc799aa97f6c96d9161f642e4286413155c489ecda1c06"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "sample SKILL.md has no version frontmatter",
+          "sourceFile": "test/test-skill-frontmatter.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T02:06:20.078Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "bulk2-AC10",
+        "g2-commit-34f49a75"
+      ]
+    },
+    {
+      "id": "AC11",
+      "text": "Documentation and generated artifacts are synchronized: root `AGENTS.md`, consumer hub guidance, `CATALOG.md`, `README.md`, `FEATURES.md` when enabled, skill-authoring guidance, integrity/build instructions, and `docs/index.html` describe central versioning and version-bound checksums without instructing authors to edit every skill file.",
+      "status": "ImplementedDifferently",
+      "evidence": [
+        "bin/canonical-version.js:L1-L15"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-009",
+        "section-011",
+        "section-013",
+        "section-015"
+      ],
+      "files": [
+        {
+          "path": "bin/canonical-version.js",
+          "lineStart": 1,
+          "lineEnd": 15,
+          "sha256": "b3bf25ca7db24e74bff0a47bacd90a8c9c026b041b32f4473f4bcded359b0c65"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "example includeDeliveryResult true (explicit seed)",
+          "sourceFile": "test/test-delivery-commit-artifacts.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T02:06:25.724Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "bulk3-AC11",
+        "g2-commit-34f49a75"
+      ]
+    },
+    {
+      "id": "AC12",
+      "text": "Existing package and harness behavior unrelated to version sourcing remains unchanged: skill ids and dependency closure, consumer-owned data preservation, SHA-256/EOL canonicalization, package installation scopes, telemetry schema field names, and the `node`-only runtime contract remain compatible.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/skill-integrity-lib.js:L300-L315"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-013"
+      ],
+      "files": [
+        {
+          "path": "bin/skill-integrity-lib.js",
+          "lineStart": 300,
+          "lineEnd": 315,
+          "sha256": "4475fdf7152bf4d8b0fdb64dbe18514d070ff29b264f79e6f5daf1ef0eda5152"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "integrity manifest covers installable skills + hub whitelist",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T02:06:25.783Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "bulk3-AC12",
+        "g2-commit-34f49a75"
+      ]
+    },
+    {
+      "id": "AC13",
+      "text": "`npm run test`, `npm run generate-integrity`, `npm run verify-integrity`, `node test/test-harness-clean.js`, the relevant `ws-check-harness` phases, and the package tarball/install fixture pass with the regenerated manifest and no stale per-skill version assertions.",
+      "status": "Implemented",
+      "evidence": [
+        "package.json:L1-L10"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-011",
+        "section-013",
+        "section-015"
+      ],
+      "files": [
+        {
+          "path": "package.json",
+          "lineStart": 1,
+          "lineEnd": 10,
+          "sha256": "39915846bba7071021fe67abd182de9d02692f0b96d6e3d30770396f4abcf207"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "All canonical-version checks passed",
+          "sourceFile": "test/test-skill-frontmatter.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T02:06:25.855Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "bulk3-AC13",
+        "g2-commit-34f49a75"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Generation fails non-zero with a path-specific diagnostic when `version.json` is absent, malformed, missing `version`, or contains a non-semver value.",
+      "tests": [
+        {
+          "name": "read from fixture",
+          "sourceFile": "test/test-skill-frontmatter.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T02:06:38.800Z"
+        }
+      ],
+      "linkEventIds": [
+        "bulk4-NS1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Integrity verification fails when the manifest version is changed without regenerating, when package/dependency projections disagree with `version.json`, or when a version-bound digest is computed with a different version.",
+      "tests": [
+        {
+          "name": "integrity manifest covers installable skills + hub whitelist",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T02:06:38.860Z"
+        }
+      ],
+      "linkEventIds": [
+        "bulk4-NS2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "A version-only change causes every packaged skill digest and `fullPackageDigest` to differ; a file-only change affects the changed skill and aggregate digest without rewriting any `SKILL.md`.",
+      "tests": [
+        {
+          "name": "integrity manifest covers installable skills + hub whitelist",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T02:06:38.915Z"
+        }
+      ],
+      "linkEventIds": [
+        "bulk4-NS3"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "An installed consumer tree without `ws-shared/version.json` is rejected with an update/migration diagnostic instead of falling back to per-skill frontmatter.",
+      "tests": [
+        {
+          "name": "integrity manifest covers installable skills + hub whitelist",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T02:06:38.972Z"
+        }
+      ],
+      "linkEventIds": [
+        "bulk4-NS4"
+      ]
+    },
+    {
+      "id": "NS5",
+      "text": "A consumer-owned config, memory, changelog, or local integrity file remains byte-identical after update and closure verification.",
+      "tests": [
+        {
+          "name": "integrity manifest covers installable skills + hub whitelist",
+          "sourceFile": "test/test-install.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T02:06:39.035Z"
+        }
+      ],
+      "linkEventIds": [
+        "bulk4-NS5"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 10,
+    "earnedUnits": 130,
+    "totalUnits": 130,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "deficiencies": [],
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-27T02:12:44.559Z",
+    "writer": "ac_ledger.cjs score",
+    "ledgerHash": "cf5cf5148c1de1a28e7a67834d789eff46088315cfd0d99ee094be2ef9abf506"
+  }
+}

@@ -1,0 +1,1500 @@
+{
+  "acImplemented": 13,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/version.json:L1-L4"
+        ],
+        "files": [
+          {
+            "lineEnd": 4,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/version.json",
+            "sha256": "93c8d3ccc2dc3075a66446c30e260ed0f2173644f326607db3afc1aa522e79ef"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "bulk-AC1",
+          "g2-commit-34f49a75"
+        ],
+        "planSections": [
+          "section-002",
+          "section-013"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "canonical semver",
+            "phase": "observed",
+            "sourceFile": "test/test-skill-frontmatter.js",
+            "timestamp": "2026-09-27T02:06:01.296Z"
+          }
+        ],
+        "text": "`.agents/skills/ws-shared/version.json` exists as the single authored semantic-version source, contains a valid `version` property with exactly one `major.minor.patch` value, and is classified as managed hub content rather than consumer-owned data.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "bin/canonical-version.js:L70-L95"
+        ],
+        "files": [
+          {
+            "lineEnd": 95,
+            "lineStart": 70,
+            "path": "bin/canonical-version.js",
+            "sha256": "b3bf25ca7db24e74bff0a47bacd90a8c9c026b041b32f4473f4bcded359b0c65"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "bulk-AC2",
+          "g2-commit-34f49a75"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-005",
+          "section-013"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "bumpCanonicalPatch",
+            "phase": "observed",
+            "sourceFile": "test/test-skill-frontmatter.js",
+            "timestamp": "2026-09-27T02:06:01.350Z"
+          }
+        ],
+        "text": "A normal build reads the canonical value from `version.json`; a release bump changes that file once and synchronizes npm-required `package.json.version`, `bin/skill-dependencies.json.packageVersion`, `.agents/skills/ws-shared/runtime/skill-dependencies.json.packageVersion`, generated site footer/version surfaces, and any package-version provenance that currently derives from the release version.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "bin/build-site.js:L35-L45"
+        ],
+        "files": [
+          {
+            "lineEnd": 45,
+            "lineStart": 35,
+            "path": "bin/build-site.js",
+            "sha256": "0e5ad2d3a1857a026c8c591b851646acb6136e7513e3708d137ed4858c8ce8b6"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "bulk-AC3",
+          "g2-commit-34f49a75"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-005",
+          "section-008",
+          "section-013",
+          "section-016"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "SKILL.md has no version frontmatter",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-spec-manager.js",
+            "timestamp": "2026-09-27T02:06:01.405Z"
+          }
+        ],
+        "text": "Release/build logic never inserts, rewrites, or requires `version:` in a packaged `.agents/skills/ws-*/SKILL.md`. Every packaged primary skill frontmatter remains valid without that field, and a new skill can be added without editing existing skill bodies for a release bump.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "bin/skill-integrity-lib.js:L110-L121"
+        ],
+        "files": [
+          {
+            "lineEnd": 121,
+            "lineStart": 110,
+            "path": "bin/skill-integrity-lib.js",
+            "sha256": "4475fdf7152bf4d8b0fdb64dbe18514d070ff29b264f79e6f5daf1ef0eda5152"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "bulk-AC4",
+          "g2-commit-34f49a75"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-006",
+          "section-013"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "integrity manifest covers installable skills",
+            "phase": "observed",
+            "sourceFile": "test/test-install.js",
+            "timestamp": "2026-09-27T02:06:01.470Z"
+          }
+        ],
+        "text": "The integrity generator reads the canonical version and includes it in the deterministic input used to calculate every `skills[skillId].skillDigest` and the aggregate `fullPackageDigest`. The manifest records the effective version needed to explain or verify that binding.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "bin/skill-integrity-lib.js:L110-L121"
+        ],
+        "files": [
+          {
+            "lineEnd": 121,
+            "lineStart": 110,
+            "path": "bin/skill-integrity-lib.js",
+            "sha256": "4475fdf7152bf4d8b0fdb64dbe18514d070ff29b264f79e6f5daf1ef0eda5152"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "bulk-AC5",
+          "g2-commit-34f49a75"
+        ],
+        "planSections": [
+          "section-002",
+          "section-013"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "integrity manifest covers installable skills",
+            "phase": "observed",
+            "sourceFile": "test/test-install.js",
+            "timestamp": "2026-09-27T02:06:01.527Z"
+          }
+        ],
+        "text": "With identical managed file bytes and identical `version.json`, repeated integrity generation is byte-stable across supported platforms and EOL styles. Changing only `version.json` changes every packaged skill digest and the aggregate digest; changing one managed skill file changes that skill digest and the appropriate aggregate digest.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "bin/generate-skill-integrity.js:L30-L45"
+        ],
+        "files": [
+          {
+            "lineEnd": 45,
+            "lineStart": 30,
+            "path": "bin/generate-skill-integrity.js",
+            "sha256": "49053c882a1ca4f11a4aca165f9bece96f11262e789e48211be184779134d72b"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "bulk2-AC6",
+          "g2-commit-34f49a75"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-006",
+          "section-013"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "assertVersionProjectionsMatch",
+            "phase": "observed",
+            "sourceFile": "test/test-skill-frontmatter.js",
+            "timestamp": "2026-09-27T02:06:19.855Z"
+          }
+        ],
+        "text": "`npm run verify-integrity` and the equivalent direct generator check fail closed with an actionable diagnostic when `version.json` is missing, malformed, contains multiple version values, disagrees with generated package/dependency metadata, or leaves `bin/skill-integrity.json` stale.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "bin/install-rules.js:L124-L128"
+        ],
+        "files": [
+          {
+            "lineEnd": 128,
+            "lineStart": 124,
+            "path": "bin/install-rules.js",
+            "sha256": "a7aa48c70989c57229036aa1d71005133183c269051dc538071d6045d4bfb57f"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [
+          "bulk2-AC7",
+          "g2-commit-34f49a75"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-007",
+          "section-013"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "integrity manifest covers installable skills + hub whitelist",
+            "phase": "observed",
+            "sourceFile": "test/test-install.js",
+            "timestamp": "2026-09-27T02:06:19.912Z"
+          }
+        ],
+        "text": "The installer and integrity enumerator copy and hash `version.json` for project-local and global installs, including configured hub resolution and hybrid local-config/global-skill execution. A consumer missing the new managed version file receives an explicit outdated-install/update diagnostic and is never silently versioned from an arbitrary skill frontmatter field.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "bin/cli.js:L1470-L1480"
+        ],
+        "files": [
+          {
+            "lineEnd": 1480,
+            "lineStart": 1470,
+            "path": "bin/cli.js",
+            "sha256": "48fe05698d0820fa43df569c43f90a10eb073c4cf12d9b77268a7bb939b88bac"
+          }
+        ],
+        "findings": [],
+        "id": "AC8",
+        "linkEventIds": [
+          "bulk2-AC8",
+          "g2-commit-34f49a75"
+        ],
+        "planSections": [
+          "section-002",
+          "section-013"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "integrity manifest covers installable skills + hub whitelist",
+            "phase": "observed",
+            "sourceFile": "test/test-install.js",
+            "timestamp": "2026-09-27T02:06:19.966Z"
+          }
+        ],
+        "text": "Consumer-local integrity records and package-version resolution continue to expose the canonical release version for update checks, telemetry, monitor output, and closure verification. Installed closure digests include the version-bound skill digests without treating consumer-owned config, memory, changelog, or local integrity files as upstream content.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/hub-layout.json:L40-L49"
+        ],
+        "files": [
+          {
+            "lineEnd": 49,
+            "lineStart": 40,
+            "path": ".agents/skills/ws-shared/runtime/hub-layout.json",
+            "sha256": "ddff2e53867ca2de6cc07a424661b12a228ba1c9dfce2ad5c13828ef83a463dc"
+          }
+        ],
+        "findings": [],
+        "id": "AC9",
+        "linkEventIds": [
+          "bulk2-AC9",
+          "g2-commit-34f49a75"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-007",
+          "section-013"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "integrity manifest covers installable skills + hub whitelist",
+            "phase": "observed",
+            "sourceFile": "test/test-install.js",
+            "timestamp": "2026-09-27T02:06:20.022Z"
+          }
+        ],
+        "text": "The hub layout, installer include/exclude rules, package tarball checks, dependency manifests, harness checks, and runtime documentation agree on the `version.json` location and ownership. No duplicate version source or legacy direct-hub alias is introduced.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "test/test-skill-frontmatter.js:L23-L29"
+        ],
+        "files": [
+          {
+            "lineEnd": 29,
+            "lineStart": 23,
+            "path": "test/test-skill-frontmatter.js",
+            "sha256": "16ec115f7c3b7fa864bc799aa97f6c96d9161f642e4286413155c489ecda1c06"
+          }
+        ],
+        "findings": [],
+        "id": "AC10",
+        "linkEventIds": [
+          "bulk2-AC10",
+          "g2-commit-34f49a75"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-005",
+          "section-008",
+          "section-011",
+          "section-013"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "sample SKILL.md has no version frontmatter",
+            "phase": "observed",
+            "sourceFile": "test/test-skill-frontmatter.js",
+            "timestamp": "2026-09-27T02:06:20.078Z"
+          }
+        ],
+        "text": "Version-frontmatter helpers and tests are removed or repurposed so no supported build path can stamp per-skill versions. Tests that currently assert `SKILL.md` version fields are replaced with central-version and no-frontmatter-field assertions, including skill-frontmatter, pre-daily, wiki, spec-manager, patterns-generator, install, and harness-clean coverage.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "bin/canonical-version.js:L1-L15"
+        ],
+        "files": [
+          {
+            "lineEnd": 15,
+            "lineStart": 1,
+            "path": "bin/canonical-version.js",
+            "sha256": "b3bf25ca7db24e74bff0a47bacd90a8c9c026b041b32f4473f4bcded359b0c65"
+          }
+        ],
+        "findings": [],
+        "id": "AC11",
+        "linkEventIds": [
+          "bulk3-AC11",
+          "g2-commit-34f49a75"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-009",
+          "section-011",
+          "section-013",
+          "section-015"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "ImplementedDifferently",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "example includeDeliveryResult true (explicit seed)",
+            "phase": "observed",
+            "sourceFile": "test/test-delivery-commit-artifacts.js",
+            "timestamp": "2026-09-27T02:06:25.724Z"
+          }
+        ],
+        "text": "Documentation and generated artifacts are synchronized: root `AGENTS.md`, consumer hub guidance, `CATALOG.md`, `README.md`, `FEATURES.md` when enabled, skill-authoring guidance, integrity/build instructions, and `docs/index.html` describe central versioning and version-bound checksums without instructing authors to edit every skill file.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "bin/skill-integrity-lib.js:L300-L315"
+        ],
+        "files": [
+          {
+            "lineEnd": 315,
+            "lineStart": 300,
+            "path": "bin/skill-integrity-lib.js",
+            "sha256": "4475fdf7152bf4d8b0fdb64dbe18514d070ff29b264f79e6f5daf1ef0eda5152"
+          }
+        ],
+        "findings": [],
+        "id": "AC12",
+        "linkEventIds": [
+          "bulk3-AC12",
+          "g2-commit-34f49a75"
+        ],
+        "planSections": [
+          "section-002",
+          "section-013"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "integrity manifest covers installable skills + hub whitelist",
+            "phase": "observed",
+            "sourceFile": "test/test-install.js",
+            "timestamp": "2026-09-27T02:06:25.783Z"
+          }
+        ],
+        "text": "Existing package and harness behavior unrelated to version sourcing remains unchanged: skill ids and dependency closure, consumer-owned data preservation, SHA-256/EOL canonicalization, package installation scopes, telemetry schema field names, and the `node`-only runtime contract remain compatible.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "34f49a75fc6a3238100be7364e8144403fda2e92",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "package.json:L1-L10"
+        ],
+        "files": [
+          {
+            "lineEnd": 10,
+            "lineStart": 1,
+            "path": "package.json",
+            "sha256": "39915846bba7071021fe67abd182de9d02692f0b96d6e3d30770396f4abcf207"
+          }
+        ],
+        "findings": [],
+        "id": "AC13",
+        "linkEventIds": [
+          "bulk3-AC13",
+          "g2-commit-34f49a75"
+        ],
+        "planSections": [
+          "section-002",
+          "section-011",
+          "section-013",
+          "section-015"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "All canonical-version checks passed",
+            "phase": "observed",
+            "sourceFile": "test/test-skill-frontmatter.js",
+            "timestamp": "2026-09-27T02:06:25.855Z"
+          }
+        ],
+        "text": "`npm run test`, `npm run generate-integrity`, `npm run verify-integrity`, `node test/test-harness-clean.js`, the relevant `ws-check-harness` phases, and the package tarball/install fixture pass with the regenerated manifest and no stale per-skill version assertions.",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      },
+      {
+        "alias": "verifyIntegrity",
+        "commandHash": "b964195e87fceab283886ed88e48c9ea139202e5ffc38f7ced3938d07dceeb4c",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      }
+    ],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "bulk4-NS1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "read from fixture",
+            "phase": "observed",
+            "sourceFile": "test/test-skill-frontmatter.js",
+            "timestamp": "2026-09-27T02:06:38.800Z"
+          }
+        ],
+        "text": "Generation fails non-zero with a path-specific diagnostic when `version.json` is absent, malformed, missing `version`, or contains a non-semver value."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "bulk4-NS2"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "integrity manifest covers installable skills + hub whitelist",
+            "phase": "observed",
+            "sourceFile": "test/test-install.js",
+            "timestamp": "2026-09-27T02:06:38.860Z"
+          }
+        ],
+        "text": "Integrity verification fails when the manifest version is changed without regenerating, when package/dependency projections disagree with `version.json`, or when a version-bound digest is computed with a different version."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "bulk4-NS3"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "integrity manifest covers installable skills + hub whitelist",
+            "phase": "observed",
+            "sourceFile": "test/test-install.js",
+            "timestamp": "2026-09-27T02:06:38.915Z"
+          }
+        ],
+        "text": "A version-only change causes every packaged skill digest and `fullPackageDigest` to differ; a file-only change affects the changed skill and aggregate digest without rewriting any `SKILL.md`."
+      },
+      {
+        "id": "NS4",
+        "linkEventIds": [
+          "bulk4-NS4"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "integrity manifest covers installable skills + hub whitelist",
+            "phase": "observed",
+            "sourceFile": "test/test-install.js",
+            "timestamp": "2026-09-27T02:06:38.972Z"
+          }
+        ],
+        "text": "An installed consumer tree without `ws-shared/version.json` is rejected with an update/migration diagnostic instead of falling back to per-skill frontmatter."
+      },
+      {
+        "id": "NS5",
+        "linkEventIds": [
+          "bulk4-NS5"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "integrity manifest covers installable skills + hub whitelist",
+            "phase": "observed",
+            "sourceFile": "test/test-install.js",
+            "timestamp": "2026-09-27T02:06:39.035Z"
+          }
+        ],
+        "text": "A consumer-owned config, memory, changelog, or local integrity file remains byte-identical after update and closure verification."
+      }
+    ],
+    "planIndexPath": ".agents/plans/simplify-skill-versioning/plan.index.json",
+    "revision": 26,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "step5",
+      "computedAt": "2026-09-27T02:12:44.559Z",
+      "deficiencies": [],
+      "earnedUnits": 130,
+      "errors": [],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "ledgerHash": "cf5cf5148c1de1a28e7a67834d789eff46088315cfd0d99ee094be2ef9abf506",
+      "missingEvidence": false,
+      "score": 10,
+      "totalUnits": 130,
+      "writer": "ac_ledger.cjs score"
+    },
+    "slug": "simplify-skill-versioning",
+    "specPath": ".agents/plans/simplify-skill-versioning/step-00-simplify-skill-versioning.spec.md",
+    "testingSkip": null,
+    "workflowId": "simplify-skill-versioning-20260927T015020Z"
+  },
+  "acTotal": 13,
+  "agentTranscripts": {
+    "reason": "no-matching-session",
+    "recordedAt": "2026-09-27T01:50:32Z",
+    "status": "transcript-unavailable"
+  },
+  "autoMode": true,
+  "baseBranch": "main",
+  "baselineCommit": "2a7105a1d4a1d8ac8f8f57c31bad0519bbe023d8",
+  "baselineSourceRef": "local",
+  "branch": "develop",
+  "branchStrategy": "stay",
+  "completedSteps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "currentModel": "composer-2.5",
+  "currentStep": 9,
+  "dryRun": false,
+  "endedAt": "2026-09-27T02:19:57Z",
+  "fullMode": false,
+  "gateHistory": {},
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/simplify-skill-versioning/step-00-simplify-skill-versioning.spec.md",
+        ".agents/plans/simplify-skill-versioning/step-00-simplify-skill-versioning.classify.md",
+        ".agents/plans/simplify-skill-versioning/ac-ledger.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "simplify-skill-versioning",
+      "status": "completed",
+      "step": 0,
+      "summary": "Finished step 0",
+      "workflowId": "simplify-skill-versioning-20260927T015020Z",
+      "workflowType": "standard"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/simplify-skill-versioning/step-01-simplify-skill-versioning.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "simplify-skill-versioning",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "simplify-skill-versioning-20260927T015020Z",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/simplify-skill-versioning/step-02-simplify-skill-versioning.plan-interview.md",
+        ".agents/plans/simplify-skill-versioning/step-02-simplify-skill-versioning.plan.refined.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "simplify-skill-versioning",
+      "status": "completed",
+      "step": 2,
+      "summary": "Finished step 2",
+      "workflowId": "simplify-skill-versioning-20260927T015020Z",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/simplify-skill-versioning/step-03-simplify-skill-versioning.plan.exec.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "simplify-skill-versioning",
+      "status": "completed",
+      "step": 3,
+      "summary": "Finished step 3",
+      "workflowId": "simplify-skill-versioning-20260927T015020Z",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/skills/ws-activity-report/SKILL.md",
+        ".agents/skills/ws-benchmarks/SKILL.md",
+        ".agents/skills/ws-changelog/SKILL.md",
+        ".agents/skills/ws-check-harness/SKILL.md",
+        ".agents/skills/ws-check-workflows/SKILL.md",
+        ".agents/skills/ws-classify-complexity/SKILL.md",
+        ".agents/skills/ws-cleanup/SKILL.md",
+        ".agents/skills/ws-code-review/SKILL.md",
+        ".agents/skills/ws-configure-project/SKILL.md",
+        ".agents/skills/ws-doctor/SKILL.md",
+        ".agents/skills/ws-fable-domain/SKILL.md",
+        ".agents/skills/ws-fable-judge/SKILL.md",
+        ".agents/skills/ws-fable-method/SKILL.md",
+        ".agents/skills/ws-fix-pr/SKILL.md",
+        ".agents/skills/ws-goal-fix-pr/SKILL.md",
+        ".agents/skills/ws-goal-loop/SKILL.md",
+        ".agents/skills/ws-implement-tasks/SKILL.md",
+        ".agents/skills/ws-kanvas/SKILL.md",
+        ".agents/skills/ws-megabrain/SKILL.md",
+        ".agents/skills/ws-monitor/SKILL.md",
+        ".agents/skills/ws-patterns-generator/SKILL.md",
+        ".agents/skills/ws-plan-interview/SKILL.md",
+        ".agents/skills/ws-plan-to-tasks/SKILL.md",
+        ".agents/skills/ws-plan-update/SKILL.md",
+        ".agents/skills/ws-plan-verify/SKILL.md",
+        ".agents/skills/ws-plan-write/SKILL.md",
+        ".agents/skills/ws-pre-daily/SKILL.md",
+        ".agents/skills/ws-preview/SKILL.md",
+        ".agents/skills/ws-run-benchmark/SKILL.md",
+        ".agents/skills/ws-secrets-leak-review/SKILL.md",
+        ".agents/skills/ws-self-learning/SKILL.md",
+        ".agents/skills/ws-senior-developer/SKILL.md",
+        ".agents/skills/ws-shared/runtime/hub-layout.json",
+        ".agents/skills/ws-shared/templates/config.json.example",
+        ".agents/skills/ws-ship-pr/SKILL.md",
+        ".agents/skills/ws-show-harness/SKILL.md",
+        ".agents/skills/ws-spec-archive/SKILL.md",
+        ".agents/skills/ws-spec-explain/SKILL.md",
+        ".agents/skills/ws-spec-format/SKILL.md",
+        ".agents/skills/ws-spec-from-provider/SKILL.md",
+        ".agents/skills/ws-spec-index/SKILL.md",
+        ".agents/skills/ws-spec-list/SKILL.md",
+        ".agents/skills/ws-spec-manager/SKILL.md",
+        ".agents/skills/ws-spec-memo/SKILL.md",
+        ".agents/skills/ws-spec-multi/SKILL.md",
+        ".agents/skills/ws-spec-organizer/SKILL.md",
+        ".agents/skills/ws-spec-provider-azure-devops/SKILL.md",
+        ".agents/skills/ws-spec-provider-github/SKILL.md",
+        ".agents/skills/ws-spec-provider-local/SKILL.md",
+        ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+        ".agents/skills/ws-spec-to-pr/SKILL.md",
+        ".agents/skills/ws-spec-translate-to-human/SKILL.md",
+        ".agents/skills/ws-spec-update/SKILL.md",
+        ".agents/skills/ws-spec-write/SKILL.md",
+        ".agents/skills/ws-task-lifecycle/SKILL.md",
+        ".agents/skills/ws-tdah/SKILL.md",
+        ".agents/skills/ws-testing/SKILL.md",
+        ".agents/skills/ws-wiki/SKILL.md",
+        ".agents/skills/ws-write-a-skill/SKILL.md",
+        ".agents/specs/index.PRD",
+        ".ws/CHANGELOG.md",
+        ".ws/config.json",
+        "bin/build-site.js",
+        "bin/cli.js",
+        "bin/generate-skill-integrity.js",
+        "bin/install-rules.js",
+        "bin/skill-frontmatter.js",
+        "bin/skill-integrity-lib.js",
+        "bin/skill-integrity.json",
+        "test/test-install.js",
+        "test/test-skill-frontmatter.js",
+        "test/test-spec-translate-to-human.js",
+        "test/test-wiki.js",
+        "test/test-ws-patterns-generator.js",
+        "test/test-ws-pre-daily.js",
+        "test/test-ws-spec-manager.js"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "simplify-skill-versioning",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "simplify-skill-versioning-20260927T015020Z",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/simplify-skill-versioning/step-05-simplify-skill-versioning.plan.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "simplify-skill-versioning",
+      "status": "completed",
+      "step": 5,
+      "summary": "Finished step 5",
+      "workflowId": "simplify-skill-versioning-20260927T015020Z",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/simplify-skill-versioning/step-06-simplify-skill-versioning.review.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "simplify-skill-versioning",
+      "status": "completed",
+      "step": 6,
+      "summary": "Finished step 6",
+      "workflowId": "simplify-skill-versioning-20260927T015020Z",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/simplify-skill-versioning/step-07-simplify-skill-versioning.testing.plan.md",
+        ".agents/plans/simplify-skill-versioning/step-07-simplify-skill-versioning.testing.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "simplify-skill-versioning",
+      "status": "completed",
+      "step": 7,
+      "summary": "Finished step 7",
+      "workflowId": "simplify-skill-versioning-20260927T015020Z",
+      "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/simplify-skill-versioning/step-08-simplify-skill-versioning.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "simplify-skill-versioning",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "simplify-skill-versioning-20260927T015020Z",
+      "workflowType": "standard"
+    }
+  },
+  "modelsPreset": "cursor",
+  "nextAction": "Run step 9",
+  "prNumber": "435",
+  "prUrl": "https://github.com/jpolvora/workflow-skills/pull/435",
+  "preExistingDirty": [
+    ".agents/specs/index.PRD",
+    ".ws/CHANGELOG.md",
+    ".ws/config.json",
+    ".agents/plans/improve-agentic-reviewers-prompt/",
+    ".agents/plans/simplify-skill-versioning/",
+    ".agents/specs/pending/0140-simplify-skill-versioning.spec.md"
+  ],
+  "revision": 16,
+  "scoreAndRefine": false,
+  "shipStatus": "pr-open",
+  "skipQualityGates": false,
+  "skipTesting": false,
+  "skipTests": false,
+  "skippedSteps": [],
+  "slug": "simplify-skill-versioning",
+  "source": "local",
+  "startedAt": "2026-09-27T01:50:20.000Z",
+  "statePath": ".agents/plans/simplify-skill-versioning/simplify-skill-versioning-20260927T015020Z.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-27T01:50:32Z",
+      "model": "muse-spark-1.3-contributor",
+      "step": 0
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-27T01:51:55Z",
+      "model": "muse-spark-1.3-contributor",
+      "step": 1
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-27T01:54:15Z",
+      "model": "cursor-grok-4.7-low",
+      "step": 2
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-27T01:58:32Z",
+      "model": "composer-2.5",
+      "step": 3
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-27T01:58:47Z",
+      "model": "composer-2.5",
+      "step": 4
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-27T02:05:32Z",
+      "model": "composer-2.5",
+      "step": 5
+    }
+  ],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "completed",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed"
+  },
+  "telemetry": {
+    "steps": [
+      {
+        "N": 0,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T01:50:32Z",
+        "elapsedSec": 80,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/plans/simplify-skill-versioning/step-00-simplify-skill-versioning.spec.md",
+            ".agents/plans/simplify-skill-versioning/step-00-simplify-skill-versioning.classify.md",
+            ".agents/plans/simplify-skill-versioning/ac-ledger.json"
+          ]
+        },
+        "finishedAt": "2026-09-27T01:51:52Z",
+        "label": "Spec",
+        "model": "muse-spark-1.3-contributor",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 1,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T01:51:55Z",
+        "elapsedSec": 137,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/plans/simplify-skill-versioning/step-01-simplify-skill-versioning.plan.md"
+          ]
+        },
+        "finishedAt": "2026-09-27T01:54:12Z",
+        "label": "Planning",
+        "model": "muse-spark-1.3-contributor",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T01:54:15Z",
+        "elapsedSec": 17,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/plans/simplify-skill-versioning/step-02-simplify-skill-versioning.plan-interview.md",
+            ".agents/plans/simplify-skill-versioning/step-02-simplify-skill-versioning.plan.refined.md"
+          ]
+        },
+        "finishedAt": "2026-09-27T01:54:32Z",
+        "label": "Interview",
+        "model": "cursor-grok-4.7-low",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T01:58:32Z",
+        "elapsedSec": 4,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/simplify-skill-versioning/step-03-simplify-skill-versioning.plan.exec.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-27T01:58:36Z",
+        "label": "Plan to tasks",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T01:58:47Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-activity-report/SKILL.md",
+            ".agents/skills/ws-benchmarks/SKILL.md",
+            ".agents/skills/ws-changelog/SKILL.md",
+            ".agents/skills/ws-check-harness/SKILL.md",
+            ".agents/skills/ws-check-workflows/SKILL.md",
+            ".agents/skills/ws-classify-complexity/SKILL.md",
+            ".agents/skills/ws-cleanup/SKILL.md",
+            ".agents/skills/ws-code-review/SKILL.md",
+            ".agents/skills/ws-configure-project/SKILL.md",
+            ".agents/skills/ws-doctor/SKILL.md",
+            ".agents/skills/ws-fable-domain/SKILL.md",
+            ".agents/skills/ws-fable-judge/SKILL.md",
+            ".agents/skills/ws-fable-method/SKILL.md",
+            ".agents/skills/ws-fix-pr/SKILL.md",
+            ".agents/skills/ws-goal-fix-pr/SKILL.md",
+            ".agents/skills/ws-goal-loop/SKILL.md",
+            ".agents/skills/ws-implement-tasks/SKILL.md",
+            ".agents/skills/ws-kanvas/SKILL.md",
+            ".agents/skills/ws-megabrain/SKILL.md",
+            ".agents/skills/ws-monitor/SKILL.md",
+            ".agents/skills/ws-patterns-generator/SKILL.md",
+            ".agents/skills/ws-plan-interview/SKILL.md",
+            ".agents/skills/ws-plan-to-tasks/SKILL.md",
+            ".agents/skills/ws-plan-update/SKILL.md",
+            ".agents/skills/ws-plan-verify/SKILL.md",
+            ".agents/skills/ws-plan-write/SKILL.md",
+            ".agents/skills/ws-pre-daily/SKILL.md",
+            ".agents/skills/ws-preview/SKILL.md",
+            ".agents/skills/ws-run-benchmark/SKILL.md",
+            ".agents/skills/ws-secrets-leak-review/SKILL.md",
+            ".agents/skills/ws-self-learning/SKILL.md",
+            ".agents/skills/ws-senior-developer/SKILL.md",
+            ".agents/skills/ws-shared/runtime/hub-layout.json",
+            ".agents/skills/ws-shared/templates/config.json.example",
+            ".agents/skills/ws-ship-pr/SKILL.md",
+            ".agents/skills/ws-show-harness/SKILL.md",
+            ".agents/skills/ws-spec-archive/SKILL.md",
+            ".agents/skills/ws-spec-explain/SKILL.md",
+            ".agents/skills/ws-spec-format/SKILL.md",
+            ".agents/skills/ws-spec-from-provider/SKILL.md",
+            ".agents/skills/ws-spec-index/SKILL.md",
+            ".agents/skills/ws-spec-list/SKILL.md",
+            ".agents/skills/ws-spec-manager/SKILL.md",
+            ".agents/skills/ws-spec-memo/SKILL.md",
+            ".agents/skills/ws-spec-multi/SKILL.md",
+            ".agents/skills/ws-spec-organizer/SKILL.md",
+            ".agents/skills/ws-spec-provider-azure-devops/SKILL.md",
+            ".agents/skills/ws-spec-provider-github/SKILL.md",
+            ".agents/skills/ws-spec-provider-local/SKILL.md",
+            ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+            ".agents/skills/ws-spec-to-pr/SKILL.md",
+            ".agents/skills/ws-spec-translate-to-human/SKILL.md",
+            ".agents/skills/ws-spec-update/SKILL.md",
+            ".agents/skills/ws-spec-write/SKILL.md",
+            ".agents/skills/ws-task-lifecycle/SKILL.md",
+            ".agents/skills/ws-tdah/SKILL.md",
+            ".agents/skills/ws-testing/SKILL.md",
+            ".agents/skills/ws-wiki/SKILL.md",
+            ".agents/skills/ws-write-a-skill/SKILL.md",
+            ".agents/specs/index.PRD",
+            ".ws/CHANGELOG.md",
+            ".ws/config.json",
+            "bin/build-site.js",
+            "bin/cli.js",
+            "bin/generate-skill-integrity.js",
+            "bin/install-rules.js",
+            "bin/skill-frontmatter.js",
+            "bin/skill-integrity-lib.js",
+            "bin/skill-integrity.json",
+            "test/test-install.js",
+            "test/test-skill-frontmatter.js",
+            "test/test-spec-translate-to-human.js",
+            "test/test-wiki.js",
+            "test/test-ws-patterns-generator.js",
+            "test/test-ws-pre-daily.js",
+            "test/test-ws-spec-manager.js"
+          ]
+        },
+        "finishedAt": "2026-09-27T01:58:47Z",
+        "label": "Implement",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T02:05:32Z",
+        "elapsedSec": 326,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/simplify-skill-versioning/step-05-simplify-skill-versioning.plan.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-27T02:10:58Z",
+        "label": "Verify",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 6,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/simplify-skill-versioning/step-06-simplify-skill-versioning.review.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-27T02:12:38Z",
+        "label": "Code review",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 7,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/simplify-skill-versioning/step-07-simplify-skill-versioning.testing.plan.md",
+            ".agents/plans/simplify-skill-versioning/step-07-simplify-skill-versioning.testing.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-27T02:13:11Z",
+        "label": "Testing",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/simplify-skill-versioning/step-08-simplify-skill-versioning.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-27T02:19:57Z",
+        "label": "Ship",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 564,
+    "totalTokens": 0
+  },
+  "title": "Centralize skill package versioning and bind versions to integrity checksums",
+  "verificationScore": 10,
+  "workflowId": "simplify-skill-versioning-20260927T015020Z",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/simplify-skill-versioning/step-03-simplify-skill-versioning.plan.exec.md",
+      ".agents/plans/simplify-skill-versioning/step-05-simplify-skill-versioning.plan.report.md",
+      ".agents/plans/simplify-skill-versioning/step-06-simplify-skill-versioning.review.md",
+      ".agents/plans/simplify-skill-versioning/step-07-simplify-skill-versioning.testing.plan.md",
+      ".agents/plans/simplify-skill-versioning/step-07-simplify-skill-versioning.testing.report.md",
+      ".agents/plans/simplify-skill-versioning/step-08-simplify-skill-versioning.result.md"
+    ],
+    "deleted": [],
+    "modified": [
+      ".agents/plans/simplify-skill-versioning/ac-ledger.json",
+      ".agents/plans/simplify-skill-versioning/step-00-simplify-skill-versioning.classify.md",
+      ".agents/plans/simplify-skill-versioning/step-00-simplify-skill-versioning.spec.md",
+      ".agents/plans/simplify-skill-versioning/step-01-simplify-skill-versioning.plan.md",
+      ".agents/plans/simplify-skill-versioning/step-02-simplify-skill-versioning.plan-interview.md",
+      ".agents/plans/simplify-skill-versioning/step-02-simplify-skill-versioning.plan.refined.md",
+      ".agents/skills/ws-activity-report/SKILL.md",
+      ".agents/skills/ws-benchmarks/SKILL.md",
+      ".agents/skills/ws-changelog/SKILL.md",
+      ".agents/skills/ws-check-harness/SKILL.md",
+      ".agents/skills/ws-check-workflows/SKILL.md",
+      ".agents/skills/ws-classify-complexity/SKILL.md",
+      ".agents/skills/ws-cleanup/SKILL.md",
+      ".agents/skills/ws-code-review/SKILL.md",
+      ".agents/skills/ws-configure-project/SKILL.md",
+      ".agents/skills/ws-doctor/SKILL.md",
+      ".agents/skills/ws-fable-domain/SKILL.md",
+      ".agents/skills/ws-fable-judge/SKILL.md",
+      ".agents/skills/ws-fable-method/SKILL.md",
+      ".agents/skills/ws-fix-pr/SKILL.md",
+      ".agents/skills/ws-goal-fix-pr/SKILL.md",
+      ".agents/skills/ws-goal-loop/SKILL.md",
+      ".agents/skills/ws-implement-tasks/SKILL.md",
+      ".agents/skills/ws-kanvas/SKILL.md",
+      ".agents/skills/ws-megabrain/SKILL.md",
+      ".agents/skills/ws-monitor/SKILL.md",
+      ".agents/skills/ws-patterns-generator/SKILL.md",
+      ".agents/skills/ws-plan-interview/SKILL.md",
+      ".agents/skills/ws-plan-to-tasks/SKILL.md",
+      ".agents/skills/ws-plan-update/SKILL.md",
+      ".agents/skills/ws-plan-verify/SKILL.md",
+      ".agents/skills/ws-plan-write/SKILL.md",
+      ".agents/skills/ws-pre-daily/SKILL.md",
+      ".agents/skills/ws-preview/SKILL.md",
+      ".agents/skills/ws-run-benchmark/SKILL.md",
+      ".agents/skills/ws-secrets-leak-review/SKILL.md",
+      ".agents/skills/ws-self-learning/SKILL.md",
+      ".agents/skills/ws-senior-developer/SKILL.md",
+      ".agents/skills/ws-shared/runtime/hub-layout.json",
+      ".agents/skills/ws-shared/templates/config.json.example",
+      ".agents/skills/ws-ship-pr/SKILL.md",
+      ".agents/skills/ws-show-harness/SKILL.md",
+      ".agents/skills/ws-spec-archive/SKILL.md",
+      ".agents/skills/ws-spec-explain/SKILL.md",
+      ".agents/skills/ws-spec-format/SKILL.md",
+      ".agents/skills/ws-spec-from-provider/SKILL.md",
+      ".agents/skills/ws-spec-index/SKILL.md",
+      ".agents/skills/ws-spec-list/SKILL.md",
+      ".agents/skills/ws-spec-manager/SKILL.md",
+      ".agents/skills/ws-spec-memo/SKILL.md",
+      ".agents/skills/ws-spec-multi/SKILL.md",
+      ".agents/skills/ws-spec-organizer/SKILL.md",
+      ".agents/skills/ws-spec-provider-azure-devops/SKILL.md",
+      ".agents/skills/ws-spec-provider-github/SKILL.md",
+      ".agents/skills/ws-spec-provider-local/SKILL.md",
+      ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+      ".agents/skills/ws-spec-to-pr/SKILL.md",
+      ".agents/skills/ws-spec-translate-to-human/SKILL.md",
+      ".agents/skills/ws-spec-update/SKILL.md",
+      ".agents/skills/ws-spec-write/SKILL.md",
+      ".agents/skills/ws-task-lifecycle/SKILL.md",
+      ".agents/skills/ws-tdah/SKILL.md",
+      ".agents/skills/ws-testing/SKILL.md",
+      ".agents/skills/ws-wiki/SKILL.md",
+      ".agents/skills/ws-write-a-skill/SKILL.md",
+      ".agents/specs/index.PRD",
+      ".ws/CHANGELOG.md",
+      ".ws/config.json",
+      "bin/build-site.js",
+      "bin/cli.js",
+      "bin/generate-skill-integrity.js",
+      "bin/install-rules.js",
+      "bin/skill-frontmatter.js",
+      "bin/skill-integrity-lib.js",
+      "bin/skill-integrity.json",
+      "test/test-install.js",
+      "test/test-skill-frontmatter.js",
+      "test/test-spec-translate-to-human.js",
+      "test/test-wiki.js",
+      "test/test-ws-patterns-generator.js",
+      "test/test-ws-pre-daily.js",
+      "test/test-ws-spec-manager.js"
+    ]
+  },
+  "workflowType": "standard"
+}
