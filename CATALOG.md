@@ -270,8 +270,8 @@ Print a board after each row (same ✅ / ❌ / ⏭ convention as [`ws-ship-pr/PR
 | # | Check | Command / skill | When required |
 |---|-------|-----------------|---------------|
 | 1 | **Install tests** | `npm run test` (or `npm run tests` during dev) | Always — installer, integrity, tree checks |
-| 2 | **Website / catalog** | `npm run build-site:bump` when shipping package content; else `node bin/build-site.js` for catalog-only | Skills/hubs/CLI/installer changed → bump + rebuild `docs/index.html`; verify no merge-conflict markers |
-| 3 | **Version** | `package.json` patch bump via step 2; `bin/skill-dependencies.json` → `packageVersion` stays aligned | **CI deploy on `main` never bumps** — bump locally once per release PR before push |
+| 2 | **Website / catalog** | `npm run build-site:bump` every PR (bumps version + rebuilds `docs/index.html`) | Skills/hubs/CLI/installer/docs → bump + rebuild `docs/index.html`; verify no merge-conflict markers |
+| 3 | **Version** | `package.json` patch bump via step 2, every PR; `bin/skill-dependencies.json` → `packageVersion` stays aligned | **CI deploy on `main` never bumps** — bump locally once per PR before push |
 | 4 | **Installer (Node CLI)** | Review/fix `bin/cli.js`, `bin/install-rules.js` | Install/update/uninstall behavior or hub paths changed |
 | 5 | **Installer (npx + bash shim)** | `install-skills.sh` argv/help aligned with `bin/cli.js --help`; consumer docs in `README.md` if UX changed | Shim or npx surface changed |
 | 6 | **Skill dependency graph** | `bin/skill-dependencies.json` (+ `.agents/skills/ws-shared/runtime/skill-dependencies.json` when packaged graph ships) | Skills added/removed/renamed, package membership, or orch dispatch changed |
@@ -286,7 +286,7 @@ Print a board after each row (same ✅ / ❌ / ⏭ convention as [`ws-ship-pr/PR
 
 **Upstream skill integrity regenerate (step 7 detail):** Hash `.agents/skills/ws-*`, `bin/`, and manifest-classified hub `runtime/` + `templates/` content packed by the CLI. Regenerate and commit `bin/skill-integrity.json` with content changes; both integrity commands must pass before ship.
 
-**Version bump (step 3 detail):** One patch bump per release PR (`npm run build-site:bump` stamps site footer + `package.json`). Do not rely on GitHub Actions to bump — Actions deploy site on `main` only.
+**Version bump (step 3 detail):** One patch bump per PR, every PR - no docs/hub/catalog exception: `npm run build-site:bump` + `npm run generate-integrity` when hashes change. Actions never bumps.
 
 **Post-ship:** Do not merge while review threads are open or required checks are red. `ws-goal-fix-pr` owns the fix loop; `ws-ship-pr` merges only after convergence (unless `no-merge` / orch `stopBeforeFixPr`).
 
