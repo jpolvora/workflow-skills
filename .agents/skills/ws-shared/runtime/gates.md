@@ -246,6 +246,8 @@ After successful close (any close-advancing choice): MEMORY.md / ws-self-learnin
 
 `ws-spec-index sync` on close uses **implementation** evidence only — not merged/shipped.
 
+**Pre-ship doc-sync trio gate (`defaults.requirePreShipDocSync`, default true; absent/invalid → true):** when the effective flag is true, the close phase must record all three legs — `ws-spec-index sync` (implementation evidence), the `ws-changelog` entry, and `ws-wiki sync` (warn-skip with a visible `wiki-sync skipped: no wiki configured` warning when `plans.wikiDir` is absent) — before the ship phase advances; `shipStatus` stays `pending` while a required leg is outstanding, and re-entry after a leg succeeded is idempotent (no duplicate changelog entry or `index.PRD` row). When false, keep today's behavior (`ws-spec-index`/changelog as today; `ws-wiki sync` offered, not mandatory). Under `autoMode`, the recommended option already covers a completed trio; if a leg is outstanding the orchestrator runs the remaining legs before advancing rather than pausing.
+
 Pass the selected ship intent into `ws-ship-pr` as `shipAction: create-pr|push-only|skip` with `workflowMode: true`, `stopBeforeFixPr: true`. Update `shipStatus` per outcome (`pushed`, `pr-open`, `skipped`, `stopped`). `ws-ship-pr` in `workflowMode` does **not** own delivery commit or workflow completion.
 
 **Legacy separate menus (Separate gates / Pause only):**

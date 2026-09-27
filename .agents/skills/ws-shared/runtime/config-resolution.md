@@ -180,6 +180,20 @@ Optional setting in `defaults.enableDag` for task execution mode in `ws-spec-to-
 
 ---
 
+## Pre-ship doc-sync gate resolution (`defaults.requirePreShipDocSync`)
+
+Optional setting controlling whether the pre-ship doc-sync trio (`ws-wiki sync` + `ws-spec-index sync` + changelog entry) is a gate-enforced close step in `ws-spec-to-pr` (Step 8) and `ws-spec-to-pr-lite` (Step 4).
+
+| Condition | Effective `requirePreShipDocSync` | Close Behavior |
+|-----------|-----------------------------------|----------------|
+| Key omitted / missing / non-boolean / invalid | `true` | Trio gate-enforced: the ship phase does not advance while a required leg is outstanding. The wiki leg warn-skips (visible warning) when `plans.wikiDir` is absent; the `ws-spec-index` and changelog legs stay required. |
+| Explicit `true` | `true` | Same as above. |
+| Explicit `false` | `false` | Today's behavior: `ws-spec-index` sync and changelog run as before; `ws-wiki sync` is offered, not mandatory. |
+
+Runtime resolver: `resolveRequirePreShipDocSync(config)` in [`scripts/resolve_consumer_root.cjs`](scripts/resolve_consumer_root.cjs) returns the effective value (absent or non-boolean → `true`).
+
+---
+
 ## Verbose step preview (`defaults.verboseMode`)
 
 Optional setting in `defaults.verboseMode` for `ws-spec-to-pr` / `ws-spec-to-pr-lite`.

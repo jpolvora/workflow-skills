@@ -1,11 +1,16 @@
 ---
 id: null
 slug: restore-automode-continuous-orchestration
-title: "Restore autoMode continuous orchestration (host-turn chaining through ship and fix-pr)"
+title: Restore autoMode continuous orchestration (host-turn chaining through ship and fix-pr)
 source: local
 specDate: 2026-09-27
+step: 0
+workflowId: restore-automode-continuous-orchestration-20260927T023632Z
+status: completed
+startedAt: "2026-09-27T02:36:31.810Z"
+endedAt: "2026-09-27T02:36:31.810Z"
+acRefs: []
 ---
-
 # Specification — Restore autoMode continuous orchestration (host-turn chaining through ship and fix-pr)
 
 ## Description

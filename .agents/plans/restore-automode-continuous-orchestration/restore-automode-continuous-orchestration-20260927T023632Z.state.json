@@ -1,0 +1,2162 @@
+{
+  "acImplemented": 9,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "3eb036411a5fe5b31c7f719656535a9d1c17a180",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/gates.md:L45-L52"
+        ],
+        "files": [
+          {
+            "lineEnd": 52,
+            "lineStart": 45,
+            "path": ".agents/skills/ws-shared/runtime/gates.md",
+            "sha256": "319147c1c49767f5f5e0bac7e8faef15e4a098ea7d7410adc6ae9a5cb7f56251"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "g2-commit-3eb036411a5fe5b31c7f719656535a9d1c17a180",
+          "step5-ac1"
+        ],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-005",
+          "section-006",
+          "section-007",
+          "section-008",
+          "section-017",
+          "section-019",
+          "section-020"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06",
+          "T07",
+          "T08",
+          "T09"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "keeps the same host session",
+            "phase": "observed",
+            "sourceFile": ".agents/skills/ws-shared/runtime/gates.md",
+            "timestamp": "2026-09-27T03:01:38.092Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1:ac1-gates-cadence",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10:ns2-no-pause-every-boundary",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11:ns3-regression-suite",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V12:ac9-worker-scope",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2:ac2-skill-table",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3:ac3-dispatch-protocols",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4:ac4-lite-continuous",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5:ac5-readme-features-wiki",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6:ac6-d1-negation",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7:ac7-checkpoint-retained",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V8:ac8-spec-0125-untouched",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9:ns1-d1-sabotage",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "`ws-shared/runtime/gates.md` § Interactive execution cadence states that `autoMode` keeps the same host session through Steps 0→9 (close → `ws-ship-pr` → `ws-goal-fix-pr`) without voluntary turn stops between steps; hard stops unchanged; host-forced mid-step end uses PROTOCOLS turn-boundary pause.",
+        "verdicts": []
+      },
+      {
+        "commits": [],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/SKILL.md:L44-L55"
+        ],
+        "files": [
+          {
+            "lineEnd": 55,
+            "lineStart": 44,
+            "path": ".agents/skills/ws-spec-to-pr/SKILL.md",
+            "sha256": "22e05bda1922e80f4f8807aada1dbecddae260099d5d7cd5097833c47f941400"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "step5-ac2"
+        ],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-005",
+          "section-007",
+          "section-008",
+          "section-017"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06",
+          "T07",
+          "T08",
+          "T09"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "Chain host turns: orchestrator owns Steps 0",
+            "phase": "observed",
+            "sourceFile": ".agents/skills/ws-spec-to-pr/SKILL.md",
+            "timestamp": "2026-09-27T03:01:47.267Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1:ac1-gates-cadence",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10:ns2-no-pause-every-boundary",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11:ns3-regression-suite",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V12:ac9-worker-scope",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2:ac2-skill-table",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3:ac3-dispatch-protocols",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4:ac4-lite-continuous",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5:ac5-readme-features-wiki",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6:ac6-d1-negation",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7:ac7-checkpoint-retained",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V8:ac8-spec-0125-untouched",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9:ns1-d1-sabotage",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "`ws-spec-to-pr/SKILL.md` `autoMode ≠ skip planning` table places host-turn chaining through Step 9 in the Does column and voluntary turn end between step boundaries in the Never column; prose matches AC1.",
+        "verdicts": []
+      },
+      {
+        "commits": [],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/PROTOCOLS.md:L227-L261",
+          ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L9-L16"
+        ],
+        "files": [
+          {
+            "lineEnd": 261,
+            "lineStart": 227,
+            "path": ".agents/skills/ws-spec-to-pr/PROTOCOLS.md",
+            "sha256": "9912597f30d096ecfc5ec0ed3c5462260424cf649119f0c86234fd113b45c0c9"
+          },
+          {
+            "lineEnd": 16,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+            "sha256": "678bce485007a2977ee3494338572cf673c15fbedb72a88c5defad296632f21b"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "step5-ac3"
+        ],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-005",
+          "section-008",
+          "section-017"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06",
+          "T07",
+          "T08",
+          "T09"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "the orchestrator chains Steps 0",
+            "phase": "observed",
+            "sourceFile": ".agents/skills/ws-spec-to-pr/PROTOCOLS.md",
+            "timestamp": "2026-09-27T03:01:47.349Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1:ac1-gates-cadence",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10:ns2-no-pause-every-boundary",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11:ns3-regression-suite",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V12:ac9-worker-scope",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2:ac2-skill-table",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3:ac3-dispatch-protocols",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4:ac4-lite-continuous",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5:ac5-readme-features-wiki",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6:ac6-d1-negation",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7:ac7-checkpoint-retained",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V8:ac8-spec-0125-untouched",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9:ns1-d1-sabotage",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "`ws-spec-to-pr/STEP-DISPATCH.md` and `PROTOCOLS.md` § Automatic Mode align with AC1–AC2; `PROTOCOLS.md` § Turn-boundary pause clarifies fallback-only role in `autoMode`.",
+        "verdicts": []
+      },
+      {
+        "commits": [],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr-lite/SKILL.md:L21-L21"
+        ],
+        "files": [
+          {
+            "lineEnd": 21,
+            "lineStart": 21,
+            "path": ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+            "sha256": "eb0c17f6151f004d8e642eb10deb2591cc4346c6ae096bca244768f4ed7964ee"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "step5-ac4"
+        ],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-005",
+          "section-009",
+          "section-017"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06",
+          "T07",
+          "T08",
+          "T09"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "proceed continuously through close",
+            "phase": "observed",
+            "sourceFile": ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+            "timestamp": "2026-09-27T03:01:47.421Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1:ac1-gates-cadence",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10:ns2-no-pause-every-boundary",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11:ns3-regression-suite",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V12:ac9-worker-scope",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2:ac2-skill-table",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3:ac3-dispatch-protocols",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4:ac4-lite-continuous",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5:ac5-readme-features-wiki",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6:ac6-d1-negation",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7:ac7-checkpoint-retained",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V8:ac8-spec-0125-untouched",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9:ns1-d1-sabotage",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "`ws-spec-to-pr-lite/SKILL.md` states continuous close/ship/fix-pr in `autoMode` without voluntary host-turn stops between steps.",
+        "verdicts": []
+      },
+      {
+        "commits": [],
+        "evidence": [
+          ".agents/specs/wiki/delivery/spec-to-pr-pipeline.md:L27-L27",
+          "FEATURES.md:L56-L56",
+          "README.md:L35-L35"
+        ],
+        "files": [
+          {
+            "lineEnd": 27,
+            "lineStart": 27,
+            "path": ".agents/specs/wiki/delivery/spec-to-pr-pipeline.md",
+            "sha256": "28f54a8c0c25b689b8b3bdf82617e46529a30b1f35c728c7d947b0e7fc8fd254"
+          },
+          {
+            "lineEnd": 56,
+            "lineStart": 56,
+            "path": "FEATURES.md",
+            "sha256": "7e3cf2cf1b5e3321c47175152f2af9cf3f5c15dc2977b5355aebbdb7cb99badb"
+          },
+          {
+            "lineEnd": 35,
+            "lineStart": 35,
+            "path": "README.md",
+            "sha256": "d58b0c3aa17f69f9bb7e4838a1e3358cde6750fff36cb4e84ef5bffe1d030ffd"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "step5-ac5"
+        ],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-005",
+          "section-010",
+          "section-015",
+          "section-017"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06",
+          "T07",
+          "T08",
+          "T09"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "the orchestrator chains Steps 0",
+            "phase": "observed",
+            "sourceFile": "README.md",
+            "timestamp": "2026-09-27T03:01:47.503Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1:ac1-gates-cadence",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10:ns2-no-pause-every-boundary",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11:ns3-regression-suite",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V12:ac9-worker-scope",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2:ac2-skill-table",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3:ac3-dispatch-protocols",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4:ac4-lite-continuous",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5:ac5-readme-features-wiki",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6:ac6-d1-negation",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7:ac7-checkpoint-retained",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V8:ac8-spec-0125-untouched",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9:ns1-d1-sabotage",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "`README.md`, `FEATURES.md`, and `.agents/specs/wiki/delivery/spec-to-pr-pipeline.md` describe continuous `autoMode` plus host-forced checkpoint/pause fallback; site wiki rebuilt when wiki source changes.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "3eb036411a5fe5b31c7f719656535a9d1c17a180",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "test/test-liveness-checkpoints.js:L340-L354"
+        ],
+        "files": [
+          {
+            "lineEnd": 354,
+            "lineStart": 340,
+            "path": "test/test-liveness-checkpoints.js",
+            "sha256": "49dec758ecfec66c469c67fdba5fb66a8364d4d6216fe0c425b9d01808c490ac"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "g2-commit-3eb036411a5fe5b31c7f719656535a9d1c17a180",
+          "step5-ac6"
+        ],
+        "planSections": [
+          "section-003",
+          "section-004",
+          "section-005",
+          "section-011",
+          "section-017"
+        ],
+        "sabotage": {
+          "exitCode": 0,
+          "required": true,
+          "status": "passed"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06",
+          "T07",
+          "T08",
+          "T09"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "D1 orchestrator docs state autoMode continuous run + host-forced pause fallback: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-liveness-checkpoints.js",
+            "timestamp": "2026-09-27T03:01:47.566Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1:ac1-gates-cadence",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10:ns2-no-pause-every-boundary",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11:ns3-regression-suite",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V12:ac9-worker-scope",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2:ac2-skill-table",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3:ac3-dispatch-protocols",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4:ac4-lite-continuous",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5:ac5-readme-features-wiki",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6:ac6-d1-negation",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7:ac7-checkpoint-retained",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V8:ac8-spec-0125-untouched",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9:ns1-d1-sabotage",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "`test/test-liveness-checkpoints.js` D1 asserts SKILL.md documents chaining (not “does not chain host turns”) and host-forced pause fallback; D2 README/FEATURES checks unchanged.",
+        "verdicts": []
+      },
+      {
+        "commits": [],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/PROTOCOLS.md:L259-L268"
+        ],
+        "files": [
+          {
+            "lineEnd": 268,
+            "lineStart": 259,
+            "path": ".agents/skills/ws-spec-to-pr/PROTOCOLS.md",
+            "sha256": "9912597f30d096ecfc5ec0ed3c5462260424cf649119f0c86234fd113b45c0c9"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [
+          "step5-ac7"
+        ],
+        "planSections": [
+          "section-003",
+          "section-005",
+          "section-012",
+          "section-017",
+          "section-018"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06",
+          "T07",
+          "T08",
+          "T09"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "T1 checkpoint persists sub-progress",
+            "phase": "observed",
+            "sourceFile": "test/test-liveness-checkpoints.js",
+            "timestamp": "2026-09-27T03:01:47.642Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1:ac1-gates-cadence",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10:ns2-no-pause-every-boundary",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11:ns3-regression-suite",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V12:ac9-worker-scope",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2:ac2-skill-table",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3:ac3-dispatch-protocols",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4:ac4-lite-continuous",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5:ac5-readme-features-wiki",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6:ac6-d1-negation",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7:ac7-checkpoint-retained",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V8:ac8-spec-0125-untouched",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9:ns1-d1-sabotage",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "`checkpoint` / `pause-turn` CLI behavior, schemas, and `ws-monitor` pause-vs-stall semantics from US-412/413 remain valid — no removal of operations or telemetry types.",
+        "verdicts": []
+      },
+      {
+        "commits": [],
+        "evidence": [
+          ".agents/plans/restore-automode-continuous-orchestration/step-00-restore-automode-continuous-orchestration.spec.md:L38-L49"
+        ],
+        "files": [
+          {
+            "lineEnd": 49,
+            "lineStart": 38,
+            "path": ".agents/plans/restore-automode-continuous-orchestration/step-00-restore-automode-continuous-orchestration.spec.md",
+            "sha256": "92717683cea795d4cc76209bcdc48453001a18f70a66a3de4b6a693ef634d8a8"
+          }
+        ],
+        "findings": [],
+        "id": "AC8",
+        "linkEventIds": [
+          "step5-ac8"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002",
+          "section-003",
+          "section-005",
+          "section-011",
+          "section-014",
+          "section-017",
+          "section-019",
+          "section-020"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06",
+          "T07",
+          "T08",
+          "T09"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "option (a) restored for",
+            "phase": "observed",
+            "sourceFile": ".agents/plans/restore-automode-continuous-orchestration/step-00-restore-automode-continuous-orchestration.spec.md",
+            "timestamp": "2026-09-27T03:01:54.958Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1:ac1-gates-cadence",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10:ns2-no-pause-every-boundary",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11:ns3-regression-suite",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V12:ac9-worker-scope",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2:ac2-skill-table",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3:ac3-dispatch-protocols",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4:ac4-lite-continuous",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5:ac5-readme-features-wiki",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6:ac6-d1-negation",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7:ac7-checkpoint-retained",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V8:ac8-spec-0125-untouched",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9:ns1-d1-sabotage",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "Completed spec US-412/413 is not rewritten; this spec records the corrected interpretation of its orchestration gap (option (a) restored for `autoMode`).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "3eb036411a5fe5b31c7f719656535a9d1c17a180",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/WORKER-TURN-RULES.md:L8-L14"
+        ],
+        "files": [
+          {
+            "lineEnd": 14,
+            "lineStart": 8,
+            "path": ".agents/skills/ws-spec-to-pr/WORKER-TURN-RULES.md",
+            "sha256": "62d12674cfa0ee4a816b3f23c3778b7b3a2f429303585fded000ec3ec0f0938f"
+          }
+        ],
+        "findings": [],
+        "id": "AC9",
+        "linkEventIds": [
+          "g2-commit-3eb036411a5fe5b31c7f719656535a9d1c17a180",
+          "step5-ac9"
+        ],
+        "planSections": [
+          "section-004",
+          "section-005",
+          "section-013",
+          "section-017",
+          "section-019",
+          "section-020"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06",
+          "T07",
+          "T08",
+          "T09"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "These rules bind dispatched workers only:",
+            "phase": "observed",
+            "sourceFile": ".agents/skills/ws-spec-to-pr/WORKER-TURN-RULES.md",
+            "timestamp": "2026-09-27T03:01:55.032Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1:ac1-gates-cadence",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10:ns2-no-pause-every-boundary",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11:ns3-regression-suite",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V12:ac9-worker-scope",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2:ac2-skill-table",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3:ac3-dispatch-protocols",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4:ac4-lite-continuous",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5:ac5-readme-features-wiki",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6:ac6-d1-negation",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7:ac7-checkpoint-retained",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V8:ac8-spec-0125-untouched",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9:ns1-d1-sabotage",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "`WORKER-TURN-RULES.md` scopes its turn rule to dispatched workers (standard dispatch, step-baton workers, inline-isolated). It states the `autoMode` orchestrator host session stays unattended through Steps 0→9 and is not a worker turn. Worker obligations stay: preview plus at least two tool calls, zero-tool-call failure, no mid-batch parent ping. `worker_turn_guard.cjs` and `step_coordinator.cjs` behavior stay unchanged.",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      }
+    ],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "step5-ns1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "does not chain host turns",
+            "phase": "observed",
+            "sourceFile": "test/test-liveness-checkpoints.js",
+            "timestamp": "2026-09-27T03:01:55.107Z"
+          }
+        ],
+        "text": "Reintroducing “autoMode does not chain host turns” as the primary contract in SKILL.md or PROTOCOLS.md fails `test-liveness-checkpoints.js` D1."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "step5-ns2"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "without voluntarily ending the turn between steps",
+            "phase": "observed",
+            "sourceFile": ".agents/skills/ws-shared/runtime/gates.md",
+            "timestamp": "2026-09-27T03:01:55.173Z"
+          }
+        ],
+        "text": "Requiring `pause-turn` between every step boundary in `autoMode` fails review against AC1."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "step5-ns3"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "pause-turn",
+            "phase": "observed",
+            "sourceFile": ".agents/skills/ws-spec-to-pr/PROTOCOLS.md",
+            "timestamp": "2026-09-27T03:01:55.240Z"
+          }
+        ],
+        "text": "Removing `checkpoint`/`pause-turn` operations or `turnPause` schema fields fails US-412/413 regression tests (AC7)."
+      }
+    ],
+    "planIndexPath": ".agents/plans/restore-automode-continuous-orchestration/plan.index.json",
+    "revision": 18,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "pre-step6",
+      "computedAt": "2026-09-27T03:02:28.769Z",
+      "deficiencies": [],
+      "earnedUnits": 90,
+      "errors": [
+        "AC2: product commit linkage required before step 6",
+        "AC3: product commit linkage required before step 6",
+        "AC4: product commit linkage required before step 6",
+        "AC5: product commit linkage required before step 6",
+        "AC7: product commit linkage required before step 6",
+        "AC8: product commit linkage required before step 6"
+      ],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "ledgerHash": "b059b23c42e04a85b70dbf140e0297656759f969f2e646be162d9a7874dfd828",
+      "missingEvidence": false,
+      "score": 9,
+      "totalUnits": 90,
+      "writer": "ac_ledger.cjs link"
+    },
+    "slug": "restore-automode-continuous-orchestration",
+    "specPath": ".agents/plans/restore-automode-continuous-orchestration/step-00-restore-automode-continuous-orchestration.spec.md",
+    "testingSkip": null,
+    "workflowId": "restore-automode-continuous-orchestration-20260927T023632Z"
+  },
+  "acTotal": 9,
+  "agentTranscripts": {
+    "reason": "no-matching-session",
+    "recordedAt": "2026-09-27T02:37:10Z",
+    "status": "transcript-unavailable"
+  },
+  "autoMode": true,
+  "baseBranch": "main",
+  "baselineCommit": "67b0cc5d7fe0f18066490ba10462239fd9978c73",
+  "baselineSourceRef": "local",
+  "branch": "develop",
+  "branchStrategy": "stay",
+  "commits": [
+    {
+      "sha": "3eb036411a5fe5b31c7f719656535a9d1c17a180",
+      "step": 5
+    }
+  ],
+  "completedSteps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "complexityClass": "complex",
+  "currentModel": "grok-4.7",
+  "currentStep": 9,
+  "dryRun": false,
+  "endedAt": "2026-09-27T03:05:02Z",
+  "finalPipeline": "standard",
+  "fullMode": true,
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/restore-automode-continuous-orchestration/ac-ledger.json",
+        ".agents/plans/restore-automode-continuous-orchestration/step-00-restore-automode-continuous-orchestration.spec.md",
+        ".agents/plans/restore-automode-continuous-orchestration/step-00-restore-automode-continuous-orchestration.classify.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "restore-automode-continuous-orchestration",
+      "status": "completed",
+      "step": 0,
+      "summary": "Finished step 0",
+      "workflowId": "restore-automode-continuous-orchestration-20260927T023632Z",
+      "workflowType": "standard"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/restore-automode-continuous-orchestration/step-01-restore-automode-continuous-orchestration.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "restore-automode-continuous-orchestration",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "restore-automode-continuous-orchestration-20260927T023632Z",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/restore-automode-continuous-orchestration/step-02-restore-automode-continuous-orchestration.plan-interview.md",
+        ".agents/plans/restore-automode-continuous-orchestration/step-02-restore-automode-continuous-orchestration.plan.refined.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "restore-automode-continuous-orchestration",
+      "status": "completed",
+      "step": 2,
+      "summary": "Finished step 2",
+      "workflowId": "restore-automode-continuous-orchestration-20260927T023632Z",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/restore-automode-continuous-orchestration/step-03-restore-automode-continuous-orchestration.plan.exec.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "restore-automode-continuous-orchestration",
+      "status": "completed",
+      "step": 3,
+      "summary": "Finished step 3",
+      "workflowId": "restore-automode-continuous-orchestration-20260927T023632Z",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/skills/ws-shared/runtime/gates.md",
+        ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+        ".agents/skills/ws-shared/version.json",
+        ".agents/skills/ws-spec-to-pr/WORKER-TURN-RULES.md",
+        ".agents/specs/pending/0141-restore-automode-continuous-orchestration.spec.md",
+        "bin/skill-dependencies.json",
+        "bin/skill-integrity.json",
+        "docs/index.html",
+        "package.json",
+        "test/package.json",
+        "test/test-liveness-checkpoints.js"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "restore-automode-continuous-orchestration",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "restore-automode-continuous-orchestration-20260927T023632Z",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/restore-automode-continuous-orchestration/step-05-restore-automode-continuous-orchestration.plan.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "restore-automode-continuous-orchestration",
+      "status": "completed",
+      "step": 5,
+      "summary": "Finished step 5",
+      "workflowId": "restore-automode-continuous-orchestration-20260927T023632Z",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/restore-automode-continuous-orchestration/step-06-restore-automode-continuous-orchestration.review.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "restore-automode-continuous-orchestration",
+      "status": "completed",
+      "step": 6,
+      "summary": "Finished step 6",
+      "workflowId": "restore-automode-continuous-orchestration-20260927T023632Z",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/restore-automode-continuous-orchestration/step-07-restore-automode-continuous-orchestration.testing.plan.md",
+        ".agents/plans/restore-automode-continuous-orchestration/step-07-restore-automode-continuous-orchestration.testing.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "restore-automode-continuous-orchestration",
+      "status": "completed",
+      "step": 7,
+      "summary": "Finished step 7",
+      "workflowId": "restore-automode-continuous-orchestration-20260927T023632Z",
+      "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/restore-automode-continuous-orchestration/step-08-restore-automode-continuous-orchestration.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "restore-automode-continuous-orchestration",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "restore-automode-continuous-orchestration-20260927T023632Z",
+      "workflowType": "standard"
+    },
+    "9": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "restore-automode-continuous-orchestration",
+      "status": "completed",
+      "step": 9,
+      "summary": "Finished step 9",
+      "workflowId": "restore-automode-continuous-orchestration-20260927T023632Z",
+      "workflowType": "standard"
+    }
+  },
+  "modelsPreset": "cursor",
+  "nextAction": "Run step 9",
+  "prNumber": "437",
+  "prUrl": "https://github.com/jpolvora/workflow-skills/pull/437",
+  "revision": 21,
+  "scoreAndRefine": false,
+  "shipStatus": "merged",
+  "skipQualityGates": false,
+  "skipTesting": false,
+  "skipTests": false,
+  "skippedSteps": [],
+  "slug": "restore-automode-continuous-orchestration",
+  "statePath": ".agents/plans/restore-automode-continuous-orchestration/restore-automode-continuous-orchestration-20260927T023632Z.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [
+    {
+      "agentType": "generalPurpose",
+      "dispatchedAt": "2026-09-27T02:37:10Z",
+      "model": "grok-4.7",
+      "step": 0
+    },
+    {
+      "agentType": "generalPurpose",
+      "dispatchedAt": "2026-09-27T02:37:28Z",
+      "model": "grok-4.7",
+      "step": 1
+    },
+    {
+      "agentType": "generalPurpose",
+      "dispatchedAt": "2026-09-27T02:43:42Z",
+      "model": "grok-4.7",
+      "step": 2
+    },
+    {
+      "agentType": "generalPurpose",
+      "dispatchedAt": "2026-09-27T02:49:27Z",
+      "model": "composer-2.5",
+      "step": 3
+    },
+    {
+      "agentType": "generalPurpose",
+      "dispatchedAt": "2026-09-27T02:51:18Z",
+      "model": "composer-2.5",
+      "step": 4
+    },
+    {
+      "agentType": "generalPurpose",
+      "dispatchedAt": "2026-09-27T02:56:42Z",
+      "model": "composer-2.5",
+      "step": 5
+    },
+    {
+      "agentType": "generalPurpose",
+      "dispatchedAt": "2026-09-27T03:03:26Z",
+      "model": "grok-4.7",
+      "step": 6
+    },
+    {
+      "agentType": "generalPurpose",
+      "dispatchedAt": "2026-09-27T03:03:26Z",
+      "model": "composer-2.5",
+      "step": 7
+    },
+    {
+      "agentType": "generalPurpose",
+      "dispatchedAt": "2026-09-27T03:04:40Z",
+      "model": "grok-4.7",
+      "step": 8
+    },
+    {
+      "agentType": "generalPurpose",
+      "dispatchedAt": "2026-09-27T03:08:41Z",
+      "model": "grok-4.7",
+      "step": 9
+    }
+  ],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "completed",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed",
+    "9": "completed"
+  },
+  "telemetry": {
+    "steps": [
+      {
+        "N": 0,
+        "agentType": "generalPurpose",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T02:37:10Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/restore-automode-continuous-orchestration/ac-ledger.json"
+          ],
+          "deleted": [],
+          "modified": [
+            ".agents/plans/restore-automode-continuous-orchestration/step-00-restore-automode-continuous-orchestration.spec.md",
+            ".agents/plans/restore-automode-continuous-orchestration/step-00-restore-automode-continuous-orchestration.classify.md"
+          ]
+        },
+        "finishedAt": "2026-09-27T02:37:10Z",
+        "label": "Spec",
+        "model": "grok-4.7",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 1,
+        "agentType": "generalPurpose",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T02:37:28Z",
+        "elapsedSec": 374,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/plans/restore-automode-continuous-orchestration/step-01-restore-automode-continuous-orchestration.plan.md"
+          ]
+        },
+        "finishedAt": "2026-09-27T02:43:42Z",
+        "label": "Planning",
+        "model": "grok-4.7",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": "generalPurpose",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T02:43:42Z",
+        "elapsedSec": 313,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/plans/restore-automode-continuous-orchestration/step-02-restore-automode-continuous-orchestration.plan-interview.md",
+            ".agents/plans/restore-automode-continuous-orchestration/step-02-restore-automode-continuous-orchestration.plan.refined.md"
+          ]
+        },
+        "finishedAt": "2026-09-27T02:48:55Z",
+        "label": "Interview",
+        "model": "grok-4.7",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": "generalPurpose",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T02:49:27Z",
+        "elapsedSec": 84,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/restore-automode-continuous-orchestration/step-03-restore-automode-continuous-orchestration.plan.exec.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-27T02:50:51Z",
+        "label": "Plan to tasks",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": "generalPurpose",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T02:51:18Z",
+        "elapsedSec": 97,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-shared/runtime/gates.md",
+            ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+            ".agents/skills/ws-shared/version.json",
+            ".agents/skills/ws-spec-to-pr/WORKER-TURN-RULES.md",
+            ".agents/specs/pending/0141-restore-automode-continuous-orchestration.spec.md",
+            "bin/skill-dependencies.json",
+            "bin/skill-integrity.json",
+            "docs/index.html",
+            "package.json",
+            "test/package.json",
+            "test/test-liveness-checkpoints.js"
+          ]
+        },
+        "finishedAt": "2026-09-27T02:52:55Z",
+        "label": "Implement",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": "generalPurpose",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T02:56:42Z",
+        "elapsedSec": 345,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/restore-automode-continuous-orchestration/step-05-restore-automode-continuous-orchestration.plan.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-27T03:02:27Z",
+        "label": "Verify",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 6,
+        "agentType": "generalPurpose",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T03:03:26Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/restore-automode-continuous-orchestration/step-06-restore-automode-continuous-orchestration.review.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-27T03:03:26Z",
+        "label": "Code review",
+        "model": "grok-4.7",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 7,
+        "agentType": "generalPurpose",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T03:03:26Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/restore-automode-continuous-orchestration/step-07-restore-automode-continuous-orchestration.testing.plan.md",
+            ".agents/plans/restore-automode-continuous-orchestration/step-07-restore-automode-continuous-orchestration.testing.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-27T03:03:26Z",
+        "label": "Testing",
+        "model": "composer-2.5",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": "generalPurpose",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T03:04:40Z",
+        "elapsedSec": 22,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/restore-automode-continuous-orchestration/step-08-restore-automode-continuous-orchestration.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-27T03:05:02Z",
+        "label": "Ship",
+        "model": "grok-4.7",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 9,
+        "agentType": "generalPurpose",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T03:08:41Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-27T03:08:41Z",
+        "label": "Fix PR",
+        "model": "grok-4.7",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 1235,
+    "totalTokens": 0
+  },
+  "verificationScore": 10,
+  "workflowId": "restore-automode-continuous-orchestration-20260927T023632Z",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/restore-automode-continuous-orchestration/ac-ledger.json",
+      ".agents/plans/restore-automode-continuous-orchestration/step-03-restore-automode-continuous-orchestration.plan.exec.md",
+      ".agents/plans/restore-automode-continuous-orchestration/step-05-restore-automode-continuous-orchestration.plan.report.md",
+      ".agents/plans/restore-automode-continuous-orchestration/step-06-restore-automode-continuous-orchestration.review.md",
+      ".agents/plans/restore-automode-continuous-orchestration/step-07-restore-automode-continuous-orchestration.testing.plan.md",
+      ".agents/plans/restore-automode-continuous-orchestration/step-07-restore-automode-continuous-orchestration.testing.report.md",
+      ".agents/plans/restore-automode-continuous-orchestration/step-08-restore-automode-continuous-orchestration.result.md"
+    ],
+    "deleted": [],
+    "modified": [
+      ".agents/plans/restore-automode-continuous-orchestration/step-00-restore-automode-continuous-orchestration.classify.md",
+      ".agents/plans/restore-automode-continuous-orchestration/step-00-restore-automode-continuous-orchestration.spec.md",
+      ".agents/plans/restore-automode-continuous-orchestration/step-01-restore-automode-continuous-orchestration.plan.md",
+      ".agents/plans/restore-automode-continuous-orchestration/step-02-restore-automode-continuous-orchestration.plan-interview.md",
+      ".agents/plans/restore-automode-continuous-orchestration/step-02-restore-automode-continuous-orchestration.plan.refined.md",
+      ".agents/skills/ws-shared/runtime/gates.md",
+      ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+      ".agents/skills/ws-shared/version.json",
+      ".agents/skills/ws-spec-to-pr/WORKER-TURN-RULES.md",
+      ".agents/specs/pending/0141-restore-automode-continuous-orchestration.spec.md",
+      "bin/skill-dependencies.json",
+      "bin/skill-integrity.json",
+      "docs/index.html",
+      "package.json",
+      "test/package.json",
+      "test/test-liveness-checkpoints.js"
+    ]
+  },
+  "workflowType": "standard"
+}

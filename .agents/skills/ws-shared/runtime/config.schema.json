@@ -153,6 +153,11 @@
           "default": false,
           "description": "When true, break execution plans into multiple parallel tasks executed concurrently by subagents. When false (default), execute tasks sequentially one by one in serial order."
         },
+        "requirePreShipDocSync": {
+          "type": "boolean",
+          "default": true,
+          "description": "When true (default), the pre-ship doc-sync trio (ws-wiki sync + ws-spec-index sync + changelog entry) is a gate-enforced close step in both orchestrators; the ship phase does not advance while a required leg is outstanding (the wiki leg warn-skips when no wiki is configured). When false, both orchestrators keep today's behavior. Omitted or invalid values resolve to true at runtime."
+        },
         "verboseMode": {
           "type": "boolean",
           "default": true,

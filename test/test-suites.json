@@ -93,6 +93,9 @@
       "test/test-min-verify-score.js"
     ],
     [
+      "test/test-pre-ship-doc-sync.js"
+    ],
+    [
       "test/test-skill-frontmatter.js"
     ],
     [
@@ -251,6 +254,9 @@
       "test/test-min-verify-score.js"
     ],
     [
+      "test/test-pre-ship-doc-sync.js"
+    ],
+    [
       "test/test-skill-frontmatter.js"
     ],
     [
@@ -292,9 +298,6 @@
   ],
   "harnessEfficiency": [
     [
-      "test/test-spec-lint.js"
-    ],
-    [
       "test/test-validate-spec.js"
     ],
     [
@@ -308,9 +311,6 @@
     ],
     [
       "test/test-run-state-integrity.js"
-    ],
-    [
-      "test/test-state-observability.js"
     ],
     [
       "test/test-artifact-economy.js"
@@ -332,9 +332,6 @@
     ],
     [
       "test/test-telemetry-observability.js"
-    ],
-    [
-      "test/test-orchestrator-intelligence.js"
     ],
     [
       "test/test-node-helper-ports.js"

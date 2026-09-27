@@ -2,14 +2,25 @@
   "schemaVersion": 1,
   "workflows": [
     {
+      "workflowId": "reduce-spec-to-pr-tokens-20260927T043013Z",
+      "slug": "reduce-spec-to-pr-tokens",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/reduce-spec-to-pr-tokens/reduce-spec-to-pr-tokens-20260927T043013Z.state.md",
+      "stateSha256": "6bdec7cbe3af89810bb18109ec851efd0fad7e37dea351183112d3ffc232667f",
+      "status": "active",
+      "currentStep": 8,
+      "updatedAt": "2026-09-27T06:22:41Z",
+      "runPath": ".agents/plans/reduce-spec-to-pr-tokens/reduce-spec-to-pr-tokens-20260927T043013Z.state.json"
+    },
+    {
       "workflowId": "restore-automode-continuous-orchestration-20260927T023632Z",
       "slug": "restore-automode-continuous-orchestration",
       "pipeline": "standard",
       "statePath": ".agents/plans/restore-automode-continuous-orchestration/restore-automode-continuous-orchestration-20260927T023632Z.state.md",
-      "stateSha256": "e4634d27a05ffca45919c188eb4d8949412f22ef55f794fe481e706e57c62738",
-      "status": "active",
-      "currentStep": 8,
-      "updatedAt": "2026-09-27T03:03:26Z",
+      "stateSha256": "dc7de39323a9325f2fa38fab4a5fa6cac5f570fff91960d2d699c43c671a0ffc",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-27T03:08:41Z",
       "runPath": ".agents/plans/restore-automode-continuous-orchestration/restore-automode-continuous-orchestration-20260927T023632Z.state.json"
     },
     {
@@ -24,6 +35,6 @@
       "runPath": ".agents/plans/simplify-skill-versioning/simplify-skill-versioning-20260927T015020Z.state.json"
     }
   ],
-  "revision": 16,
-  "generatedAt": "2026-09-27T03:03:26Z"
+  "revision": 18,
+  "generatedAt": "2026-09-27T06:22:41Z"
 }
