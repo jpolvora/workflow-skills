@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-09-27] Status-folder migrations require reference sweeps
+- **Layer**: `Tests and documentation`
+- **Module**: `Spec fixtures, repository links, and harness checks`
+- **Severity**: `High`
+- **PathPattern**: `test/**/*.js`, `RESEARCH.md`, `.agents/specs/**/*.md`
+- **Scenario / Context**: A cleanup change moved numbered specs from `.agents/specs/` into `.agents/specs/completed/` but left live tests and a root-anchored documentation link pointing at the old paths. CI then failed with missing-file validation errors and the harness reported a broken link.
+- **DO NOT**: Move or delete status-folder specs without scanning tests and live documentation for hardcoded numbered spec paths.
+- **INSTEAD DO**: Run a repository-wide search for `.agents/specs/<number>-...spec.md`, update live references to the retained status-aware path, and run the full test suite plus the harness link check before pushing.
+
 ### [2026-09-26] Fix-PR review defects: detection terminals, append EOL, hub path, dependency edges
 - **Layer**: `tests`
 - **Module**: `ws-check-harness/scripts/check_git_ownership.cjs, ws-changelog/scripts/append_changelog.cjs, bin/skill-dependencies.json`
