@@ -2,8 +2,11 @@
 step: 8
 slug: restore-automode-continuous-orchestration
 status: completed
+workflowId: restore-automode-continuous-orchestration-20260927T023632Z
+startedAt: "2026-09-27T03:04:40.768Z"
+endedAt: "2026-09-27T03:04:40.768Z"
+acRefs: []
 ---
-
 # Delivery result — restore-automode-continuous-orchestration
 
 ## Outcome
