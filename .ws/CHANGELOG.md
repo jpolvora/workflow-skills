@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-26 22:49] Agent: agent
+- **Prompt**: Check WORKER-TURN-RULES.md against autoMode unattended orchestration
+- **Done**: Scoped worker-turn rules to dispatched workers and kept the orchestrator unattended through Steps 0-9
+- **Result**: Added WORKER-TURN-RULES Scope, gates cross-link, spec AC9, and plan T08b
+
 ### [2026-09-26 22:13] Agent: agent
 - **Prompt**: Continue simplify-skill-versioning workflow (autoMode)
 - **Done**: Steps 6-8: review clean, testing pass, implementation closed

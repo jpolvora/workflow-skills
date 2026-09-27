@@ -2,6 +2,17 @@
   "schemaVersion": 1,
   "workflows": [
     {
+      "workflowId": "restore-automode-continuous-orchestration-20260927T023632Z",
+      "slug": "restore-automode-continuous-orchestration",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/restore-automode-continuous-orchestration/restore-automode-continuous-orchestration-20260927T023632Z.state.md",
+      "stateSha256": "e4634d27a05ffca45919c188eb4d8949412f22ef55f794fe481e706e57c62738",
+      "status": "active",
+      "currentStep": 8,
+      "updatedAt": "2026-09-27T03:03:26Z",
+      "runPath": ".agents/plans/restore-automode-continuous-orchestration/restore-automode-continuous-orchestration-20260927T023632Z.state.json"
+    },
+    {
       "workflowId": "simplify-skill-versioning-20260927T015020Z",
       "slug": "simplify-skill-versioning",
       "pipeline": "standard",
@@ -14,5 +25,5 @@
     }
   ],
   "revision": 16,
-  "generatedAt": "2026-09-27T02:19:57Z"
+  "generatedAt": "2026-09-27T03:03:26Z"
 }
