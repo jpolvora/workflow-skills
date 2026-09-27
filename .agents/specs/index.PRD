@@ -196,7 +196,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Separate Multi-CLI Step Baton into a Dedicated ws-spec-to-pr-distributed Workflow (`spec: pending/0143-ws-spec-to-pr-distributed.spec.md`) - `e79c96dc` (implementation)
 - [x] skillLoader: adopt token-centered skill loading at inline body-load sites (`spec: pending/0144-us-440.spec.md`) - `7ee4dd57` (implementation)
 - [x] (Spec) Create a new skill ws-spec-to-issue (`spec: pending/0145-us-439.spec.md`)
-- [ ] features to be emphasized in website and detailed in wiki (`spec: pending/0146-us-436.spec.md`)
+- [x] features to be emphasized in website and detailed in wiki (`spec: completed/0146-us-436.spec.md`) - `fbb69019` (implementation)
 
 
 
@@ -492,7 +492,7 @@ All Next-specs closed.
 
 | 150 | `us-439` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | [Spec] Create a new skill ws-spec-to-issue |
 
-| 151 | `us-436` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | features to be emphasized in website and detailed in wiki |
+| 151 | `us-436` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | features to be emphasized in website and detailed in wiki (`fbb69019` implementation) |
 
 ## 9. Inbox
 
@@ -645,6 +645,7 @@ All Next-specs closed.
 | 2026-09-27 | `ws-spec-to-pr-distributed` | Separate Multi-CLI Step Baton into a Dedicated ws-spec-to-pr-distributed Workflow | Implemented (`e79c96dc`) |
 | 2026-09-27 | `us-440` | skillLoader: adopt token-centered skill loading at inline body-load sites | commit 7ee4dd57 (implementation) |
 | 2026-09-27 | `us-439` | [Spec] Create a new skill ws-spec-to-issue | commit 0d2337df (implementation) |
+| 2026-09-27 | `us-436` | features to be emphasized in website and detailed in wiki | commit fbb69019 (implementation) |
 
 ## 11. Maintenance checklist
 
