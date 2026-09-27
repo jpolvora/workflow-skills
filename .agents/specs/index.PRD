@@ -189,9 +189,9 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] skillLoader host capability and unified skill-load procedure (`spec: completed/0136-skill-loader-host-capability.spec.md`) — `0373a45d` on develop
 - [x] Subagent Task Dispatch CLI Command and Asynchronous API (`spec: completed/0137-subagent-task-dispatch.spec.md`) — `38ef12c1` on develop
 - [x] Workflow parallel-writer compatibility audit and enforcement (`spec: completed/0138-workflow-parallel-writer-compat.spec.md`) — `5857094c` on develop
-- [ ] Improve agentic code reviewers prompt — simplify and align upstream vs local needs (`spec: pending/0139-improve-agentic-reviewers-prompt.spec.md`)
-- [ ] Centralize skill package versioning and bind versions to integrity checksums (`spec: pending/0140-simplify-skill-versioning.spec.md`)
-- [ ] Restore autoMode continuous orchestration (host-turn chaining through ship and fix-pr) (`spec: pending/0141-restore-automode-continuous-orchestration.spec.md`)
+- [x] Improve agentic code reviewers prompt — simplify and align upstream vs local needs (`spec: completed/0139-improve-agentic-reviewers-prompt.spec.md`) — `67b0cc5d` on develop
+- [x] Centralize skill package versioning and bind versions to integrity checksums (`spec: completed/0140-simplify-skill-versioning.spec.md`)
+- [x] Restore autoMode continuous orchestration (host-turn chaining through ship and fix-pr) (`spec: completed/0141-restore-automode-continuous-orchestration.spec.md`) — `3eb03641` on develop
 - [ ] Reduce token usage in spec-to-pr-* workflows via prose compaction and deduplication (`spec: pending/0142-reduce-spec-to-pr-tokens.spec.md`)
 
 
@@ -470,11 +470,11 @@ All Next-specs closed.
 
 | 143 | `workflow-parallel-writer-compat` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Workflow parallel-writer compatibility audit and enforcement (`5857094c` on develop) |
 
-| 144 | `improve-agentic-reviewers-prompt` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Improve agentic code reviewers prompt — simplify and align upstream vs local needs |
+| 144 | `improve-agentic-reviewers-prompt` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Improve agentic code reviewers prompt — simplify and align upstream vs local needs ([PR #434](https://github.com/jpolvora/workflow-skills/pull/434), `67b0cc5d` on develop) |
 
-| 145 | `simplify-skill-versioning` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Centralize skill package versioning and bind versions to integrity checksums |
+| 145 | `simplify-skill-versioning` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Centralize skill package versioning and bind versions to integrity checksums ([PR #435](https://github.com/jpolvora/workflow-skills/pull/435)) |
 
-| 146 | `restore-automode-continuous-orchestration` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Restore autoMode continuous orchestration (host-turn chaining through ship and fix-pr) |
+| 146 | `restore-automode-continuous-orchestration` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Restore autoMode continuous orchestration (host-turn chaining through ship and fix-pr) ([PR #437](https://github.com/jpolvora/workflow-skills/pull/437), `3eb03641` on develop) |
 
 | 147 | `reduce-spec-to-pr-tokens` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Reduce token usage in spec-to-pr-* workflows via prose compaction and deduplication |
 
@@ -622,6 +622,9 @@ All Next-specs closed.
 | 2026-09-26 | `skill-loader-host-capability` | skillLoader host capability and unified skill-load procedure | commit 0373a45d (delivery) |
 | 2026-09-26 | `subagent-task-dispatch` | Subagent Task Dispatch CLI Command and Asynchronous API | commit 38ef12c1 (delivery) |
 | 2026-09-26 | `workflow-parallel-writer-compat` | Workflow parallel-writer compatibility audit and enforcement | commit 5857094c (delivery) |
+| 2026-09-27 | `simplify-skill-versioning` | Centralize skill package versioning and bind versions to integrity checksums | [PR #435](https://github.com/jpolvora/workflow-skills/pull/435) |
+| 2026-09-27 | `restore-automode-continuous-orchestration` | Restore autoMode continuous orchestration (host-turn chaining through ship and fix-pr) | [PR #437](https://github.com/jpolvora/workflow-skills/pull/437) MERGED |
+| 2026-09-27 | `improve-agentic-reviewers-prompt` | Improve agentic code reviewers prompt — simplify and align upstream vs local needs | [PR #434](https://github.com/jpolvora/workflow-skills/pull/434) MERGED |
 
 ## 11. Maintenance checklist
 

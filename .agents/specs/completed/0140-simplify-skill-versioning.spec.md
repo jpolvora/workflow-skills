@@ -4,6 +4,7 @@ slug: simplify-skill-versioning
 title: "Centralize skill package versioning and bind versions to integrity checksums"
 source: local
 specDate: 2026-09-26
+status: completed
 ---
 
 # Specification — Centralize skill package versioning and bind versions to integrity checksums

@@ -4,6 +4,7 @@ slug: restore-automode-continuous-orchestration
 title: "Restore autoMode continuous orchestration (host-turn chaining through ship and fix-pr)"
 source: local
 specDate: 2026-09-27
+status: completed
 ---
 
 # Specification — Restore autoMode continuous orchestration (host-turn chaining through ship and fix-pr)
@@ -74,7 +75,7 @@ System boundaries: portable skill prose and tests only (`gates.md`, `ws-spec-to-
 
 ### Telemetry & Observable Signals
 
-- `node .agents/skills/ws-spec-format/scripts/validate_spec.cjs --mode=authoring .agents/specs/pending/0141-restore-automode-continuous-orchestration.spec.md` exits 0.
+- `node .agents/skills/ws-spec-format/scripts/validate_spec.cjs --mode=authoring .agents/specs/completed/0141-restore-automode-continuous-orchestration.spec.md` exits 0.
 - `node test/test-liveness-checkpoints.js` exits 0.
 - Spot-check: `gates.md`, `SKILL.md`, and `PROTOCOLS.md` contain continuous `autoMode` wording for Steps 0→9 including `ws-goal-fix-pr`; no primary “does not chain host turns” contract in active orch docs.
 

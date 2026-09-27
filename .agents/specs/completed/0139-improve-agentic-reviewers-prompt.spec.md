@@ -4,6 +4,7 @@ slug: improve-agentic-reviewers-prompt
 title: "Improve agentic code reviewers prompt — simplify and align upstream vs local needs"
 source: local
 specDate: 2026-09-26
+status: completed
 ---
 
 # Specification — Improve agentic code reviewers prompt — simplify and align upstream vs local needs
