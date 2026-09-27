@@ -28,7 +28,7 @@ Auto: HS-3/4/5 apply; HS-1/2 N/A.
 
 ### Transition Discipline
 
-**Normal:** dispatch → finish (`update_state.cjs`) → G2-code after Step 5 (and after Step 6 review-fix if dirty) → checkpoint → `validate_state.cjs --pre-advance {N+1}` → Board → Transition Gate. Canonical recipes: [`protocols/state-hygiene.md`](protocols/state-hygiene.md). G2-code algorithm: [`gates.md`](../ws-shared/runtime/gates.md) § Required G2-code save points. `dryRun` prints paths and does not `git commit`.
+**Normal:** dispatch → finish → G2-code (Step 5 + Step 6 fix) → checkpoint → pre-advance → Board → gate. Recipes: [`protocols/state-hygiene.md`](protocols/state-hygiene.md); G2-code per [`gates.md`](../ws-shared/runtime/gates.md).
 
 **Auto:** auto-gate + dispatch N+1 same turn (`autoMode` commits G2-code when the stage set is non-empty).
 
@@ -36,18 +36,18 @@ Auto: HS-3/4/5 apply; HS-1/2 N/A.
 
 ### Universal step controls (every boundary)
 
-Available at **every** transition gate (normal mode; under **More options…** when not primary):
+At every gate (normal; under More when not primary):
 
 | Control | Action |
 |---------|--------|
-| **Next** | Advance to Step N+1 (default Recommended) |
-| **Previous** | Go back to an earlier completed step (backward nav) |
-| **Replay** | Re-dispatch current step from checkpoint |
-| **Refine** | Replay with refinement intent (maps to Replay + log `refine-replay`) |
-| **Commit** | Explicit G2-code (`commit-code` / `files_touched`). Required after Step 5 and after Step 6 review-fix when product files remain; optional under More options at other boundaries |
-| **Undo** | Revert to checkpoint before current step (manifest algorithm) |
+| **Next** | Advance to N+1 (Recommended) |
+| **Previous** | Go back to a completed step |
+| **Replay** | Re-dispatch from checkpoint |
+| **Refine** | Replay + log `refine-replay` |
+| **Commit** | Explicit G2-code (required Step 5 + Step 6 fix) |
+| **Undo** | Revert to checkpoint |
 
-`autoMode`: only **Next** (auto-gate index 0). Backward/Replay/Refine/Commit/Undo disabled.
+`autoMode`: Next only.
 
 ### Refinement FSM (Step 2)
 
@@ -55,15 +55,13 @@ Available at **every** transition gate (normal mode; under **More options…** w
 
 | State | Owner | Output |
 |-------|-------|--------|
-| 2a Audit | refine | `gap_registry[]` by design-tree |
-| 2b Resolve | refine | Project-context sweep then close with evidence; `autoMode` → model-inferred (no `needs_user`); else escalate |
-| 2c Escalate | orch | user-gate — **one** question; max 3 rounds; always **End refinement and advance** |
-| 2d Exit | refine | §8 empty or `assumed-default`; `shared_understanding: pending` |
-| 2e Shared Understanding | orch | Only if 2c did **not** exit via End refinement. Else auto-confirm. |
+| 2a Audit | refine | `gap_registry[]` |
+| 2b Resolve | refine | Sweep then close; `autoMode` → model-inferred |
+| 2c Escalate | orch | One question; max 3 rounds |
+| 2d Exit | refine | §8 empty or `assumed-default` |
+| 2e Shared Understanding | orch | Only if 2c did not End-refine |
 
-Rules: multiple `needs_user` → one by design-tree priority. **End refinement and advance** → log `assumed-default`, set `shared_understanding: confirmed`, skip 2e. Block Step 3 only if interview ran and `refine.shared_understanding !== confirmed`.
-
-**Conditional skip:** See [`gates.md`](../ws-shared/runtime/gates.md) § Conditional interview. Step 2 grills the **plan**, not the spec.
+End-refine → `assumed-default`, `confirmed`, skip 2e. Skip rule per [`gates.md`](../ws-shared/runtime/gates.md) § Conditional interview.
 
 ### Complexity / Dynamic Execution
 
@@ -79,107 +77,73 @@ default → branch-direct (preferred on win32 and most consumers)
 worktree when config.plans.useWorktrees=true AND path≤180 AND git worktree add succeeds
 ```
 
-Any step **may** use a worktree when `useWorktrees=true`. **Preferred** for code-mutating steps 4, 6-fix, 7. branch-direct: edits on `state.branch`; subagent `wip(us-{id}): step-{N}` or dirty WT. Post-step: files exist, expected diff, build/tests per STACK.md.
+Worktree when `useWorktrees=true` (preferred steps 4, 6-fix, 7); else branch-direct on `state.branch`.
 
 ### State Hygiene
 
 → [`protocols/state-hygiene.md`](protocols/state-hygiene.md)
 
-Every step: call `update_state.cjs dispatch` before execution and `finish` afterward. The helper derives elapsed time and rejects authored `--elapsed`. Always pass `--jsonl-out {plansDir}/{slug}/telemetry.jsonl` (single stream for all steps). After checkpoint, run the Node pre-advance validator (see [`state-hygiene.md`](protocols/state-hygiene.md)). Missing boundary telemetry, hygiene failure, or pre-advance exit ≠ 0 → **HS-5**.
+Each step: `dispatch` before, `finish` after; pass `--jsonl-out telemetry.jsonl`. Pre-advance ≠0 → HS-5. Detail: [`protocols/state-hygiene.md`](protocols/state-hygiene.md).
 
 ### Model readiness
 
 No in-gate model picker. At every transition, show the gates.md banner (`Orchestrator session model` + `Subagent phase model` + Pause → IDE/agent host → Resume).
 
-The orchestrator session ALWAYS executes under the active session model (`currentModel`). Resolve subagent models from `defaults.modelsPreset` (or invocation parameter `preset=<name>` / `--preset`, persisted in `state.modelsPreset`) / `defaults.modelPresets`, optional `defaults.stepModels`, and legacy phase keys (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`). Those preferences apply EXCLUSIVELY to subagents spawned via `dispatch-agent`. Pass the resolved id on `dispatch-agent` and record it with `--model` / optional `--substep` on `update_state.cjs`. Step 7 uses the `testingModel` → `executionModel` → session chain after preset/`stepModels` overrides. Step 9 internal roles resolve per [`tools.md`](../ws-shared/runtime/tools.md) § Subagent model preferences (`fixPrPlan` → `reviewerModel`, `fixPrExec` → `executionModel`; never numeric `"9"`). On subagent switch failure or unconfigured model, gracefully fall back to the captured `currentModel`.
+Session runs as `currentModel`; resolve every subagent id per [`tools.md`](../ws-shared/runtime/tools.md) § Subagent model preferences. Model preferences apply EXCLUSIVELY to subagents spawned via `dispatch-agent`. Override per run with `preset=<name>` (persisted in state, resume-safe). Fall back to `currentModel` on switch failure.
 
 When Advance crosses **F1→F2** (after Step 3, before Step 4) or **F3→F4** (after Step 5, before Step 6), add the soft hint from [`gates.md`](../ws-shared/runtime/gates.md) (Coder / Reviewer class). Log `model-hint | F1→F2|F3→F4 | current={currentModel} | ISO`. Tags `before-step-4`, `before-step-6` remain for telemetry only.
 
 ### Step Dispatch & Isolation
 
-Orch calls **`dispatch-agent`** — never inline step impl.
+Orch calls **`dispatch-agent`** — never inline step impl (Step 3 only when `defaults.enableDag` is true).
 
 ```yaml
 dispatch-agent:
   subagent_type: generalPurpose | shell
   description: "STP step {N} — {Label}"
-  # Step 5 is product-tree immutable (no application source edits) but MUST
-  # run Shell and write {us-dir} reports/ledger. Never set host readonly
-  # (question-only session) on the verifier subagent.
-  run_in_background: false   # step 4 parallel (DAG): ≤3 parallel, same worktree, no file overlap
+  run_in_background: false
 ```
 
-Anchor (`Shell` tag): `uswf/{workflow-id}/before-step-{N} @ {sha}`. Worktree via `Shell`: `worktree add` → merge → `worktree remove` → `branch -d`. Max 1 active. Audit: `Write` `stepDispatches[]`. No per-DAG-task worktree.
+Anchor: `uswf/{workflow-id}/before-step-{N} @ {sha}`. Max 1 worktree. Audit `stepDispatches[]`.
 
-**Step 4 dispatch:**
-- `defaults.enableDag: false` (default) or `execMode: sequential` → single `dispatch-agent` `ws-implement-tasks` mode `build` with `plan.index.json` AC slices (plan of record: refined if present, else step-01). Step 3 is an orch `write_sequential_dag.cjs` stub, not a subagent.
-- `defaults.enableDag: true` & `execMode: parallel` → DAG: `dispatch-agent` per level, ≤3 concurrent, no file overlap within level.
+**Step 4:** sequential → single `ws-implement-tasks` build with AC slices; parallel → DAG ≤3 concurrent, no file overlap.
 
 ### Check-implementation score gate (Step 5)
 
-Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.md`**. Publish integer **score 0–10** in Progress Board + `step-05-{slug}.plan.report.md`.
-
-| Score | Behavior |
-|-------|----------|
-| ≥ `defaults.minVerifyScore` (default 9) | Complete Step 5 scoring; when Reach-10 conditions in [`gates.md`](../ws-shared/runtime/gates.md) hold, offer Reach-10 before G2-code; otherwise G2-code then Advance to 6 |
-| below `defaults.minVerifyScore` | **scoreAndRefine** until ≥ `defaults.minVerifyScore` (default 9) (max 3 rounds, then Pause). Never Advance or auto-approve below `defaults.minVerifyScore`. |
-
-`--strict`: always run full verification matrix regardless of score. `autoMode`: skip the Reach-10 offer and advance at the current passing score; still auto-run scoreAndRefine rounds below the bar — do **not** auto-approve below `defaults.minVerifyScore` — Pause only after max rounds still below `defaults.minVerifyScore`. Contract: [`gates.md`](../ws-shared/runtime/gates.md) § Check-implementation gate · § Reach-10 offer.
+Step 5 actions: [`STEP-DISPATCH.md`](STEP-DISPATCH.md) § Step 5; gates: [`gates.md`](../ws-shared/runtime/gates.md) § Check-implementation gate.
 
 ### Code review + fix → re-review loop (Step 6)
 
-| Case | Behavior |
-|------|----------|
-| Clean (no Critical/Warning) | Complete step 6; Advance to 7 |
-| Critical/Warning findings | **Fix → re-review loop:** `ws-implement-tasks` mode fix → targeted re-review (max **3** rounds); each round logs gate history + Workflow memory (+ `ws-self-learning` when durable); Advance only when clean |
-| Residual after 3 rounds | **Pause** (fail closed) — do not Advance with open Critical/Warning |
-| `autoMode` | Autofix without asking; same max 3; Pause on residual |
-
-Fix substep is **not** its own `completedSteps` entry — log `review-fix | round={n}/3` in `## Gate history`. Artifacts: `step-06-{slug}.review.md`, optional `step-06-{slug}.fix.report.md`. Full contract: [`ws-code-review`](../ws-code-review/SKILL.md) § Fix → re-review loop.
+Step 6 actions: [`STEP-DISPATCH.md`](STEP-DISPATCH.md) § Step 6 (fix → re-review, max 3); G2-code per [`gates.md`](../ws-shared/runtime/gates.md) § Required G2-code save points.
 
 ### Learning & Memory Protocol
 
-At step start, the subagent uses the injected MEMORY slice (orchestrator path-scoped query, ≤ 4,000 B) plus `## Step outputs (compact)` and at most two recent full outputs. After step, record `step-output.learning` → orchestrator appends to `## Workflow memory`.
-
-All recorded learnings and memory entries must use clear, direct, and actionable directives (e.g. "When dealing with X: DO NOT use Y because Z; INSTEAD DO W"). Avoid vague or passive descriptions so that humans and agents instantly understand what pattern to avoid and what pattern to execute.
-
-**Step 8 sweep:** Promote generalizable patterns to `{memoryDir}/memory/*.md` + run `node {skillsRoot}/ws-self-learning/scripts/self_learning.cjs --compile`. Criteria: technical, generalizable, non-duplicate, concise. `dryRun`: log in `## Doc consolidation log` only.
+Use the injected MEMORY slice + compact outputs (max two full). Record directives as "When X: DO NOT Y; INSTEAD DO W". Step 8: promote patterns to `{memoryDir}/memory/*.md` + `--compile` (`dryRun`: log only).
 
 ### Specification Protocol
 
-[`ws-spec-format`](../ws-spec-format/SKILL.md). Canonical spec for planning: `{us-dir}/step-00-{slug}.spec.md` — never live tracker APIs and never `*.issue.json` after Step 0. When entering from remote trackers (GitHub/ADO), `ws-spec-write` reformulates and enhances the fetched issue into an agentic spec of record `{specsDir}/{slug}.spec.md` (unambiguous ACs, technical boundaries, edge cases, while preserving human issue context in `## Original Issue Context`) before `ws-spec-provider-local` registers `{us-dir}/step-00-{slug}.spec.md`.
+Canonical planning spec: `{us-dir}/step-00-{slug}.spec.md` (never live tracker APIs after Step 0). Remote trackers → `ws-spec-write` enhance to `{specsDir}` then register `step-00`.
 
-| Input | Tracker / provider | Action | Uses Step 0? |
-|-------|--------------------|--------|--------------|
-| `{n}` or `US {n}` | `providers.active` | `fetch-to-spec` (snapshot → `ws-spec-write` enhancement → `{specsDir}/us-{n}.spec.md` → register `{us-dir}/step-00-us-{n}.spec.md`) | No — skip to Step 1 |
-| `{org}/{project}#{id}` / `ADO {id}` / `WI {id}` | `ws-spec-provider-azure-devops` | `fetch-to-spec` (snapshot → `ws-spec-write` enhancement → `{specsDir}` → register `step-00`) | No — skip to Step 1 |
-| `*.spec.md` | `ws-spec-provider-local` | `fetch-to-spec` → `{specsDir}` → register `step-00` | No — skip to Step 1 |
-| free-text / no args | none | `ws-spec-write` → `{specsDir}/{slug}.spec.md`, then `ws-spec-provider-local` register → `{us-dir}/step-00-{slug}.spec.md` | Yes — `dispatch-agent` `ws-spec-write` (+ register before Step 1) |
+| Input | Action | Uses Step 0? |
+|-------|--------|--------------|
+| Tracker id | `fetch-to-spec` → enhance → register | No |
+| `*.spec.md` | Register `step-00` | No |
+| free-text | `ws-spec-write` → register | Yes |
 
-Provider resolution and `fetch-to-spec` dispatch: load active provider skill; auth failure → STOP (no silent fallback). Details in each provider `SKILL.md`.
+Auth failure → STOP. Detail in each provider `SKILL.md`.
 
 ### Step 0 Entry Gate
 
-1. **Tracker id** → provider `fetch-to-spec` (fetch snapshot + `ws-spec-write` agentic reformulation + register) → skip Step 0 → Step 1 gate.
-2. **Local `*.spec.md`** → `ws-spec-provider-local` → skip Step 0 → Step 1 gate.
-3. **No args / free-text** → Entry menu: issue/spec path / brainstorm (`ws-spec-write` → `{specsDir}` only, then register to `{us-dir}` before planning).
-
-Store `specPath` in state `## Artifacts` (always points to the registered `step-00-{slug}.spec.md`).
+Tracker id or local spec → `fetch-to-spec` + register → skip to Step 1. Free-text → `ws-spec-write` + register. Store `specPath` in `## Artifacts`.
 
 
 ### Build & Test Validation (4, 6-fix, 7)
 
-Before G2-code commit: `config.json.rules.stackFile` → build (+ tests unless `skipTests`) → Coder fix loop. Stage **only** workflow `files_touched` product paths (`commit-code`) — never `{plansDir}/`, never `git add -A` / `git add .`. `skipTests`: `verification.tests: skipped`.
+Before G2-code: build (+ tests unless `skipTests`) → fix loop. Stage `files_touched` only; never `{plansDir}/` or `git add -A`.
 
 ### Testing (Step 7)
 
-`ws-testing` via **`dispatch-agent`** (label **Testing** — broader than integration-only). `skipTesting` → skip to Step 8. `autoMode`/`dryRun` → `dispatch-agent` without browser.
-
-Optional **mutation** substep (inside `ws-testing`, not a new FSM step): runs after green unit/integration/coverage when `verification.mutationTest` is set and `defaults.skipMutationTesting` is false; otherwise log Mutation `skipped`. Score &lt; `verification.mutationThreshold` (default 80) or runner failure → fail-closed (no Advance); hand off to `ws-implement-tasks` fix mode to strengthen tests. Lite orch does not run Step 7 / mutation.
-
-Gates (normal): **Approve and run test battery** (rec) / **Run without browser** / **Adjust test plan** / **Skip validation** / **Pause workflow**.
-
-Failure (max 3): **Apply fixes and revalidate** (rec) / **Accept with reservations** / **Re-run without fixes** / **Pause**. Fix: G2-code commit only. Mutation survivors count as Step 7 failure (same fix gate).
+`ws-testing` via `dispatch-agent`. `skipTesting` → skip to Step 8. Mutation only when configured; fail-closed below threshold. Gates and failure options per `ws-testing` (max 3; fix via G2-code).
 
 ### Workflow Artifact Commit Protocol
 
@@ -194,31 +158,11 @@ Orch `git add` must be path-scoped — never `git add .` / `git add -A` on code-
 
 ### Ship — close implementation, then push/PR (Step 8)
 
-→ [`protocols/delivery-result.md`](protocols/delivery-result.md) (writes `step-08-{slug}.result.md` with Timing totals from step `elapsedSec` only; never start a harness benchmark)
-
-**Order:** delivery result → **Step 8 combined gate** (one prompt; state still records close then ship) → `ws-ship-pr` when applicable (push/PR only) → optional Phase B plan-dir temp delete per [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md).
-
-**Terminal shipping (Phase A — once):** When `shipStatus` is terminal (`skipped`, `merged`, `stopped`, or skip-ship after close with no Step 9), run mandatory Phase A git cleanup **before** claiming the run fully ended:
-
-```bash
-node {skillsRoot}/ws-spec-to-pr/scripts/cleanup_workflow_git.cjs --workflow-id {workflow-id}
-```
-
-Do **not** invoke Phase A at close when `shipStatus` is still `pending`/`pr-open`/`pushed`. Phase B stays optional (delete-temps only). Keep-all still runs Phase A when shipping is terminal. Skip auto Phase A for `failed` / `cancelled` / `paused` / active Pause. Exit 0 → claim ended; exit 2 → surface leftovers, may claim ended; exit 1 → do not claim ended.
-
-**Step 8 combined gate:** follow [`gates.md`](../ws-shared/runtime/gates.md) § Step 8 combined gate for the five close/ship options; dispatch detail in [`STEP-DISPATCH.md`](STEP-DISPATCH.md) § Step 8.
-
-Dispatch `ws-ship-pr` with `workflowMode: true`, `shipAction`, `stopBeforeFixPr: true` — **no delivery commit, no goal-fix loop inside ship**. Advance to Step 9 when PR created and the ship intent was create-pr.
+Step 8 actions: [`STEP-DISPATCH.md`](STEP-DISPATCH.md) § Step 8 (close then ship via `ws-ship-pr`); gates: [`gates.md`](../ws-shared/runtime/gates.md) § Step 8 combined gate.
 
 ### Fix-PR (Step 9)
 
-First-class step after Step 8 when `shipAction: create-pr` and PR exists (canonical detail: [`STEP-DISPATCH.md`](STEP-DISPATCH.md) § Step 9):
-
-1. **Wait for code-review / CI** (≥300s settle + poll checks/threads) — do not merge yet.
-2. Dispatch `ws-goal-fix-pr` (default loop) or `ws-fix-pr` (one-shot). Each Act-round or standalone batch must complete its gate-only `fixPrPlan` before `fixPrExec`; when subagents are available, append both ordered role dispatches to Step 9 JSONL. Internal roles never finish Step 9.
-3. Continue until **no open issues** (`activeThreads == 0`), then **merge** via SCM `merge-pr` only after required checks are green. The outer orchestrator records one Step 9 finish.
-
-Stop: max exhausted · escalate · merge blocked · cancelled · PR closed · checks red.
+Step 9 actions: [`STEP-DISPATCH.md`](STEP-DISPATCH.md) § Step 9 (converge to `activeThreads == 0` then merge); gates: [`gates.md`](../ws-shared/runtime/gates.md) § Fix-PR gate.
 
 ### Progress Board & banners
 
@@ -228,27 +172,27 @@ Stop: max exhausted · escalate · merge blocked · cancelled · PR closed · ch
 
 Parse: `auto` + combinable `dry-run`, `skip-testing`, `skip-tests`, US/spec entry.
 
-Resume: active `autoMode` same US → continue `currentStep` (or `state.turnPause.nextAction` when the host forced a mid-step turn end); else new `workflow-id`. `autoMode` removes gate halts **and** voluntary host-turn limits: the orchestrator chains Steps 0→9 in one session (Step 8 close → workflow-mode `ws-ship-pr` → Step 9 `ws-goal-fix-pr` loop) until terminal ship + fix-pr convergence or a hard stop. Host-forced mid-step turn ends still use mid-step checkpoints plus a turn-boundary pause marker (see § Turn-boundary pause & mid-step checkpoints).
+Resume: same-US `autoMode` → continue `currentStep` (or `turnPause.nextAction`); else new id. Chain Steps 0→9 in one session until terminal ship + fix-pr convergence. Host-forced ends use § Turn-boundary pause & mid-step checkpoints.
 
 | Context | Auto choice (index 0) |
 |---------|----------------------|
-| Step 0 entry gate | **I have a US/issue number** (user must provide in invocation) |
-| Complexity ambiguous | **Standard path** |
-| Transition 0–6, 9 | **Advance to Step N+1** |
-| Transition / phase model | **Advance** with resolved phase model (`plannerModel`/`executionModel`/`reviewerModel`/`testingModel`; fallback to session `currentModel`) |
-| Step 2 needs_user | first option; early → **End refinement and advance** (auto-confirms 2e) |
-| Step 2e (only if shown) | **I confirm shared understanding — advance to Step 3** |
-| Step 5 score below `defaults.minVerifyScore` | scoreAndRefine until ≥ `defaults.minVerifyScore` (default 9) (max 3); Pause on residual (no auto-approve) |
-| Post-verify G2-code (after Step 5) | Commit when stage set non-empty; skip when empty |
-| Post-review-fix G2-code (after Step 6) | Commit when stage set non-empty; skip when empty |
-| Step 7 skipTesting / no API-UI | skip step |
-| Step 7 plan | **Approve and run test battery without browser** |
-| Step 7 mutation skip (`defaults.skipMutationTesting` / empty `mutationTest`) | log skipped; continue report |
-| Step 7 mutation fail (score &lt; threshold) | **Apply fixes and revalidate** (strengthen tests) |
-| Step 7 failure | **Apply fixes and revalidate** |
-| Step 8 combined gate (`fullMode`) | **Commit configured delivery artifacts, then create PR** |
-| Step 8 combined gate (not `fullMode`) | **Skip delivery commit and skip shipping** |
-| Step 9 fix-pr | **Run ws-goal-fix-pr loop** |
+| Step 0 entry | I have US/issue number |
+| Complexity ambiguous | Standard path |
+| Transition 0–6, 9 | Advance to N+1 |
+| Transition / phase model | Advance with resolved phase model |
+| Step 2 needs_user | First option; early End refinement |
+| Step 2e | Confirm shared understanding |
+| Step 5 below min | scoreAndRefine (max 3); Pause on residual |
+| Post-verify G2-code | Commit when non-empty; skip when empty |
+| Post-review-fix G2-code | Commit when non-empty; skip when empty |
+| Step 7 skip / no surface | Skip step |
+| Step 7 plan | Approve without browser |
+| Step 7 mutation skip | Log skipped; continue |
+| Step 7 mutation fail | Apply fixes and revalidate |
+| Step 7 failure | Apply fixes and revalidate |
+| Step 8 (`fullMode`) | Commit then create PR |
+| Step 8 (not `fullMode`) | Skip shipping |
+| Step 9 fix-pr | Run ws-goal-fix-pr loop |
 
 Shared defaults: [`gates.md`](../ws-shared/runtime/gates.md) § Auto-gate defaults. Log `auto-gate | step {N} | {choice} | ISO`. Disabled: backward/repeat/pause menus; Step 3 without shared understanding.
 

@@ -4,17 +4,17 @@
 
 **Dual-mode (mandatory):** This file is **not** the lite step index. [`ws-spec-to-pr-lite`](../ws-spec-to-pr-lite/SKILL.md) keeps its own Steps 0–5 table. Shared gate/ship UX and artifact names stay in [`gates.md`](../ws-shared/runtime/gates.md) / [`config-resolution.md`](../ws-shared/runtime/config-resolution.md). Pipeline `ws-*` folders (folder == frontmatter `name:`; FSM steps stay 0–9 / Post) stay orch-agnostic: never assume full vs lite step numbers; orch passes `workflowType`, paths, and flags.
 
-**Host execution mode (mandatory):** Resolve the host-tool binding once at bootstrap per [`host-dispatch.md`](../ws-shared/runtime/host-dispatch.md) (`defaults.hostAdapter.mode` force → `{sharedDir}/host-capabilities.json` hit for `hostId::orchestratorModel` → one probe; no mid-workflow re-probe). Tier 1 uses the bound `subagentTool`; Tier 2 uses the bound `backgroundTaskTool` / CLI template; Tier 3 uses Inline Isolated Execution (session adopts step persona, context pointers only, log `inline-isolated-step`). Interactive gates bind to the cached `askQuestionTool` per [`gates.md`](../ws-shared/runtime/gates.md) (in normal mode, bound tool when present, else markdown with strict turn-yielding; in `autoMode`, zero prompts — auto-select index 0 and proceed automatically) and One Step Per Turn in normal interactive mode per [`gates.md`](../ws-shared/runtime/gates.md) (markdown fallback never starts Step N+1 in the same turn as the gate; native modal gate returning any recommended advance option continues in the same turn — rule 7: **Next**, **Accept recommendation**, Commit-then-advance, Reach-10 advance, close, or ship intent; in `autoMode`, proceed continuously).
+**Host execution mode:** bind once at bootstrap per [`host-dispatch.md`](../ws-shared/runtime/host-dispatch.md) — no mid-workflow re-probe (cache hit path only); tiers in [`tools.md`](../ws-shared/runtime/tools.md) § Host-tool binding & dispatch tiers; gates and turn rules in [`gates.md`](../ws-shared/runtime/gates.md).
 
 ### autoMode ≠ skip planning
 
-| Does | Never |
-|------|-------|
-| Auto-select recommended gate option (index 0) at every boundary | Skip Steps 1–3 |
-| Proceed continuously across step boundaries (no One Step Per Turn halt) | Edit product code before `step-01-*.plan.md` and other advance-to-4 artifacts exist on disk |
-| Chain host turns through Step 8 ship (`ws-ship-pr` workflow mode) and Step 9 `ws-goal-fix-pr` until terminal | Voluntarily halt the host turn between step boundaries in `autoMode` |
-| | Ignore classifier `runInterview` / `execMode` to waive planning |
-| | Treat an existing parent feature branch plus a child slug as a planning waiver |
+
+
+See `SKILL.md` § `autoMode != skip planning` — autoMode auto-selects index 0 and chains Steps 0→9 without skipping planning; honor classifier `runInterview` / `execMode` outputs.
+
+
+
+
 
 Before the first Step 4 `dispatch-agent`, unless `--skip-gates` / `skipQualityGates` is active (omit and log `gate-bypass | pre-advance` per [`gates.md`](../ws-shared/runtime/gates.md) § Quality gate bypass), run fail-closed `node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs {state} --pre-advance 4`. Bypass does **not** weaken autoMode ≠ skip planning. Exit ≠ 0 → **HS-5** STOP — name missing files (`step-01-*.plan.md`, `.runtime/plan.index.json`, refined plan when interview was required; sequential Step 3 writes no stubs); do not edit product paths; do not dispatch.
 
@@ -22,65 +22,39 @@ Before the first Step 4 `dispatch-agent`, unless `--skip-gates` / `skipQualityGa
 
 > **Consistency:** the Skill map in `SKILL.md` (`ws-plan-verify` → Step 5, etc.) is authoritative. Keep this table aligned — never dispatch retired ids (`05-verify-sync-plan-us`, `implement-plan`, `plan-us`, …).
 
-> **Subagent Model Switching:** The orchestrator session ALWAYS runs under the active session model (`currentModel`). Resolve subagent models from `defaults.modelsPreset` (or invocation parameter `preset=<name>` / `--preset`, persisted in `state.modelsPreset`) / `defaults.modelPresets`, optional `defaults.stepModels` (numeric `"0"`–`"9"`, `dag`, `scoreAndRefine`, `reviewFix`, `fixPrPlan`, `fixPrExec`), and legacy phase keys (`plannerModel`, `executionModel`, `reviewerModel`, `testingModel`). Pass the resolved host id on `dispatch-agent` and as `--model` (plus optional `--substep`) to `update_state.cjs`. Blank `--model` backfills via `resolvePhaseModel`. **Standard buckets:** Steps 0–3 → `plannerModel`; Step 4 sequential (`enableDag: false`) → numeric `4` / `executionModel`; DAG → `dag` / `executionModel`; Steps 5–6 → `reviewerModel`; `scoreAndRefine` and `reviewFix` → `executionModel`; **Step 7 resolve:** `testingModel` → `executionModel` → session after overrides; Steps 8–9 → session unless their numeric override is set. Inside Step 9, capture the session fallback once: `fixPrPlan` resolves role override → preset role → `reviewerModel` → session, and `fixPrExec` resolves role override → preset role → `executionModel` → session. These two roles never consult numeric `"9"`. Token `"current"` → session. On switch failure or unconfigured model, run the role under captured `currentModel` and record that actual model. An unknown `modelsPreset` (invocation or configured) never falls through to another preset's model: `dispatch` fails closed with `unknown modelsPreset "<name>" (available: ...)` (us-414 AC1).
+> **Subagent models:** session runs as `currentModel`; resolve every subagent id per [`tools.md`](../ws-shared/runtime/tools.md) § Subagent model preferences (unknown `modelsPreset` fails closed). Steps 5-6 → `reviewerModel`; Step 7 resolves `testingModel` (fallback `executionModel`, else session model).
 
-> **Dispatch Provenance & Specialized Subagents:** When `defaults.specializedSubagents.enabled` is `true` and projections exist, `dispatch-agent` addresses the named subagent `{prefix}-step-{step}-{role}` (e.g. `subagent_type: ws-step-04-implement-tasks`) with discrete context pointers. When unsupported by host capabilities, embed-inline execution is healthy. Pass `--agent-type named:<projection-id>` (or `--agent-type generic:<tool>` / `inline:session`) and optional `--subagent-id <id>` to `update_state.cjs dispatch` so provenance is recorded in `state.stepDispatches` and telemetry.
+> **Dispatch provenance:** with `defaults.specializedSubagents.enabled` address `{prefix}-step-{step}-{role}`; record `--agent-type` and `--subagent-id` in `state.stepDispatches`. Rejected model id → retry under `currentModel` and record both ids.
 
-If the host rejects a configured model id, retry the role under captured `currentModel`, pass `--configured-model` with the rejected id, and record configured versus actual in telemetry.
-
-**Verbose preview:** When `defaults.verboseMode` is explicit `true`, the **model that will execute this step** (orchestrator for orch-owned work; the dispatched subagent otherwise) must **analyze this run** (Action column, state, files already on disk, skip rules, config) and print, before any tool call:
-
-```text
-Starting step {N} ({Label}):
-* {goal for this slug / this run}
-* {what you will look for}
-* {what you will do}
-* {conditional writes}
-* {how you will know the next step is ready}
-```
-
-Fill 4–8 `*` bullets from that analysis. Do **not** copy a canned list from a skill, script, or prior step. After printing the preview, then immediately continue with tool calls in the same response; never end the turn after the preview. Omitted or `false` → do not print this block. Schema/seed default is `true` only when `ws-configure-project` writes the key. When using `dispatch-agent`, append the VerboseMode addendum in [`PROTOCOLS.md`](PROTOCOLS.md) § Base Prompt Prefix.
+**Verbose preview:** format and trigger per [`gates.md`](../ws-shared/runtime/gates.md) § Verbose step preview (`defaults.verboseMode` explicit `true`); the executing model must analyze this run before previewing, then immediately continue with tool calls in the same response; never end the turn after the preview; addendum in [`PROTOCOLS.md`](PROTOCOLS.md) § Base Prompt Prefix.
 
 > **Dispatch context (mandatory before each `dispatch-agent`):** build the prompt with `node {skillsRoot}/ws-spec-to-pr/scripts/build_dispatch_context.cjs --skill <SKILL.md> --step {N} --slug {slug} [--ac ACn ...] --output {us-dir}/.runtime/step-{N}-dispatch-prompt.md`. Prefix contract: enhancing-skill contracts and MEMORY slice are inlined; do not reload those skill bodies (already loaded per the canonical skill-load procedure). Still Read product files and the target `## Subagent contract` if not inlined.
 
 | Step | Action | Artifact |
 |------|--------|----------|
-| 0 | Entry gate (user-gate). US/tracker provided → provider fetch snapshot → **prior-work sweep** (`sweep-prior-work` plus `node {skillsRoot}/ws-spec-to-pr/scripts/search_plan_history.cjs --slug {slug} --keyword <terms>`, index first, top-3 bodies plus `totalMatches`; when capped, surface the count and narrow keywords) recorded in `step-00`; surface matching completed local workflow artifacts. Then `dispatch-agent` `ws-spec-write` (reformulate & enhance to `{specsDir}/{slug}.spec.md` with agentic ACs + original human context + authoring validate). **Existing-spec short circuit:** when `{specsDir}` spec already validates (`authoring` or pre-closure `compat`), skip reformulation and full-body history scan — still register, ledger init, classify, finish. **Newly written** spec: `node {skillsRoot}/ws-spec-format/scripts/validate_spec.cjs --mode=authoring "{specsDir}/{slug}.spec.md"` — non-zero → **skip** `ws-spec-provider-local` register and STOP. Pre-closure existing `*.spec.md`: register allowed under `--mode=compat` (warn, do not fail). No args → free-text → same local history sweep → `dispatch-agent` `ws-spec-write` → authoring validate → register only on PASS. Existing `*.spec.md` → history sweep → compat validate → register. Optional soft clarify if AC empty. After register: `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs init --spec "{us-dir}/step-00-{slug}.spec.md" --output "{us-dir}/ac-ledger.json" --slug {slug} --workflow-id {workflow-id}` (required before pre-advance 1). `update_state.cjs finish --step 0` is called **once** at the conclusion of Step 0 (after spec writing, validation, ac-ledger initialization, and complexity classification). | `{specsDir}/{slug}.spec.md` **then** `step-00-{slug}.spec.md` + `ac-ledger.json` |
-| 1 | Complexity gate → if `complexityClass: simple`: `node {skillsRoot}/ws-spec-to-pr/scripts/write_simple_plan_stub.cjs --spec "{us-dir}/step-00-{slug}.spec.md" --plan "{us-dir}/step-01-{slug}.plan.md" --slug {slug}`; `node {skillsRoot}/ws-spec-to-pr/scripts/plan_index.cjs build --plan "{us-dir}/step-01-{slug}.plan.md" --spec "{us-dir}/step-00-{slug}.spec.md" --output "{us-dir}/.runtime/plan.index.json"`; `node {skillsRoot}/ws-shared/runtime/scripts/update_state.cjs finish-batch {state} --steps "2:skipped:interview-not-required,3:skipped:dag-disabled"`; advance to 4. Else `dispatch-agent` `ws-plan-write`; same `plan_index.cjs build`; then `node {skillsRoot}/ws-spec-to-pr/scripts/check_memory_conflict.cjs {us-dir}/step-01-{slug}.plan.md --json` (exit 0 → proceed, including missing MEMORY.md consult-skipped; exit 2 → record trap titles and `force_interview`; exit 1 → HS-5 STOP for a missing plan file). | `step-01-{slug}.plan.md` + `.runtime/plan.index.json` |
-| 2 | Conditional: skip if eligible **and** `force_interview` is not true ([`gates.md`](../ws-shared/runtime/gates.md)); `finish --status skipped --reason interview-not-required`. Else `dispatch-agent` `ws-plan-interview`; 2c End auto-confirms 2e. The subagent always writes `step-02-{slug}.plan-interview.md` with the complete registry and a separate `step-02-{slug}.plan.refined.md`; finish stamps both artifacts. After refined plan: rebuild `plan_index.cjs build --plan "{us-dir}/step-02-{slug}.plan.refined.md" --spec "{us-dir}/step-00-{slug}.spec.md" --output "{us-dir}/.runtime/plan.index.json" --draft "{us-dir}/step-01-{slug}.plan.md"`. | `step-02-{slug}.plan-interview.md` + `step-02-{slug}.plan.refined.md` (or skip) |
-| 3 | When `defaults.enableDag` is `false` (default): do **not** `dispatch-agent` and write no stub files. `update_state finish --status skipped --reason dag-disabled` (compat shape: the monitor accepts the missing files on this skip). A `completed` Step 3 finish requires both files on disk (fail-closed). When `defaults.enableDag` is `true`: `dispatch-agent` `ws-plan-to-tasks` (evaluates `dagThresholds`; sequential stub or parallel DAG). | `step-03-{slug}.plan.exec.md` + `step-03-{slug}.exec.dag.json` (only when `enableDag`; no stubs in sequential mode) |
-| 4 | **Pre-advance guard (before first dispatch):** unless `--skip-gates` / `skipQualityGates` is active (omit and log `gate-bypass | pre-advance` per [`gates.md`](../ws-shared/runtime/gates.md) § Quality gate bypass), run `node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs {plansDir}/{slug}/{workflow-id}.state.md --pre-advance 4` — exit ≠ 0 → **HS-5** STOP; name missing files (stub `step-01-*.plan.md` accepted when `complexityClass: simple`); do not edit product paths; do not `dispatch-agent`. Bypass does **not** weaken autoMode ≠ skip planning. Then pre-implement check: `node {skillsRoot}/ws-spec-to-pr/scripts/check_memory_conflict.cjs {targetPlan} --json` (`{targetPlan}` = plan of record; exit 0 proceed including MEMORY consult-skipped; exit 2 pass DO NOT / INSTEAD DO into subagent; exit 1 HS-5). After Step 4 (and after G2), write `.runtime/verification-manifest.json` via `write_verification_manifest.cjs`; Steps 5/6/7 re-run alias/stack/sabotage commands only if `files_touched` changed. `dispatch-agent` `ws-implement-tasks` mode build (skill owns Fix-Entire-Defect-Class: repo-wide sibling sweep + exemptions; orch confirms the sweep ran before verify); inject AC slices via `node {skillsRoot}/ws-spec-to-pr/scripts/plan_index.cjs read --index "{us-dir}/.runtime/plan.index.json" --ac AC{n}` (do not re-read superseded step-01). Verify `memory_consult` proof; branch-direct default. `finish --step 4 --status completed` requires non-empty `files_touched` or an explicit `--noop "<reason>"` (fail-closed) | verification |
-| 5 | `dispatch-agent` `ws-plan-verify` **quick-score default** vs refined spec ‖ spec; full matrix if score `< minVerifyScore` or `--strict`; **Regression Sabotage Check** when required (missing required → fail-closed below the Advance bar (`knownDefect` caps at 8)); alias `not-applicable` only with change-class justification (docs-only, no backend) — never to skip `backendTest` on code-touching work; **below-bar gate**: emit `dispatch --step 5 --substep scoreAndRefine`, execute the full Pass 1 refinement via the named implementation projection when enabled, then emit `finish --step 5 --substep scoreAndRefine`; re-verify Step 5 before advance; then **Reach-10 offer** when conditions in [`gates.md`](../ws-shared/runtime/gates.md) hold; then **G2-code after Step 5 before Step 6** via `node {skillsRoot}/ws-spec-to-pr/scripts/commit_g2_code.cjs --state {state} --step 5 --message "feat({slug}): verified implementation"` (skip if empty; `link` persists `scoreState` `pre-step6` — no separate agent-authored `verify --persist-score` required) | `step-05-{slug}.plan.report.md` + telemetry `scoreAndRefine` substep |
-| 6 | Fail-closed dirty preflight; `dispatch-agent` `ws-code-review` (`git diff {base}...HEAD`). When `defaults.reviewJury.size` is 2 or 3, dispatch that many independent reviews against the same commit, then for each juror run `node {skillsRoot}/ws-code-review/scripts/write_review_round.cjs … --jury-out {us-dir}/.runtime/step-06-{slug}.juror-{N}.json`, then `node {skillsRoot}/ws-spec-to-pr/scripts/merge_review_jury.cjs --review … --output {us-dir}/step-06-{slug}.jury.json --canonical-review-out {us-dir}/step-06-{slug}.review.md`. Union never drops Warning/Critical; identical findings collapse. Size 1 matches today. When `defaults.contextHygiene.backgroundVerboseSteps` is true, orch **may** use non-blocking `dispatch-agent` for Steps 6/7 if the host supports it; otherwise log `background-unsupported` and run blocking (no HS-5). Critical/Warning → **fix → re-review** via `ws-implement-tasks` (max 3; not a separate step); then G2-code of review fixes if dirty; soft model tip for stronger review LLM | `step-06-{slug}.review.md` (+ optional `.fix.report.md`) |
-| 7 | Machine probe first: `node {skillsRoot}/ws-testing/scripts/probe_test_surface.cjs --json` (via `git ls-files`; persist `hasTestSurface`). Auto-skip **only** when `skipTesting` (`finish --reason testing-disabled`) or probe `hasTestSurface` is false and unit aliases are green (`finish --reason no-test-surface`). Agent judgment cannot skip. Else `dispatch-agent` `ws-testing`. Inside Step 7, optional **mutation** substep runs only when `verification.mutationTest` is set and `defaults.skipMutationTesting` is false; skip (log) otherwise. When mutation skipped/unset, **regression sabotage** via `run_sabotage.cjs`. Mutation score &lt; `verification.mutationThreshold` (default 80) or runner non-zero → Step 7 **fail-closed** (no Advance to 8); hand off to `ws-implement-tasks` fix mode. FSM stays 0–9 (no new step). | `step-07-{slug}.testing.*` |
-| 8 | **Close implementation then ship — primary + overflow, two state phases** ([`gates.md`](../ws-shared/runtime/gates.md)): delivery result → primary user-gate (Create PR / Push only / More options…) + overflow gate when More → close phase (G2-delivery per choice, MEMORY, changelog, `status: completed`, `shipStatus: pending`) → ship phase for ship intents (`ws-ship-pr` `workflowMode: true`, `stopBeforeFixPr: true`, push/PR only); Skip-shipping skips ship; Separate gates / Pause pauses. **`comment-issue`** on PR create when tracker id present (PR body carries `Closes #{id}` via `ensure_pr_closer.cjs` for GitHub auto-close); **`check-pr-status`** for CI triage. | `step-08-{slug}.result.md` |
-| 9 | `dispatch-agent` `ws-goal-fix-pr` (default) or `ws-fix-pr` (one-shot) after PR exists. CI fixes use **`check-pr-status`** only (baseline vs diff + one flake rerun). On in-session merge when tracker `id` is present: **`comment-issue`** (comment-only merged follow-up), then **`close-issue`** (explicit tracker transition; PR body still carries `Closes #{id}` via `ensure_pr_closer.cjs` for GitHub default-branch auto-close). | PR threads / merge |
+| 0 | Entry gate. Tracker id → provider fetch + `ws-spec-write` enhance to `{specsDir}/{slug}.spec.md`; free-text → sweep + `ws-spec-write`; existing spec → validate then register. Prior-work sweep: `search_plan_history.cjs --slug {slug} --keyword <terms>` (index first, top-3). Validate new spec `--mode=authoring` (non-zero → skip register, STOP); pre-closure spec `--mode=compat`. Then `ac_ledger.cjs init` (required before pre-advance 1). Call `finish --step 0` once. | `{specsDir}/{slug}.spec.md` then `step-00-{slug}.spec.md` + `ac-ledger.json` |
+| 1 | `simple` → `write_simple_plan_stub.cjs` + `plan_index.cjs build` + `finish-batch "2:skipped,3:skipped"`; advance to 4. Else `dispatch-agent` `ws-plan-write` + `plan_index.cjs build` + `check_memory_conflict.cjs --json` (0 proceed; 2 set `force_interview`; 1 HS-5). | `step-01-{slug}.plan.md` + `plan.index.json` |
+| 2 | Skip if eligible and no `force_interview` (`finish --status skipped`). Else `dispatch-agent` `ws-plan-interview` (writes interview + refined plan); rebuild `plan_index.cjs build` with `--draft step-01`. | interview + refined plan (or skip) |
+| 3 | `defaults.enableDag: false` → `finish --status skipped` (`dag-disabled`, no stubs); do **not** `dispatch-agent` `ws-plan-to-tasks`. `true` → `dispatch-agent` `ws-plan-to-tasks`. `completed` requires both files. | exec plan + dag (only when enabled) |
+| 4 | Pre-advance `validate_state.cjs --pre-advance 4` (≠0 → HS-5); then `check_memory_conflict.cjs --json` (0 proceed; 2 inject traps; 1 HS-5). `dispatch-agent` `ws-implement-tasks` mode build with `plan_index.cjs read --ac AC{n}` slices; confirm sibling sweep ran. `finish` requires `files_touched` or `--noop`. Write `verification-manifest.json`. | verification |
+| 5 | `dispatch-agent` `ws-plan-verify` (quick-score; full matrix if `< minVerifyScore` or `--strict`). Below bar → `scoreAndRefine` rounds, re-verify, then Reach-10 offer; then G2-code after Step 5 (`commit_g2_code.cjs --step 5`). | `step-05 report` + `scoreAndRefine` |
+| 6 | Dirty preflight; `dispatch-agent` `ws-code-review` (`git diff {base}...HEAD`). Jury size 2–3 → parallel reviews + `merge_review_jury.cjs`. Critical/Warning → fix → re-review (max 3); G2-code if dirty. | `step-06 review` (+ fix report) |
+| 7 | Probe `probe_test_surface.cjs`; skip only on `skipTesting` or no surface + green aliases. Else `dispatch-agent` `ws-testing`. Mutation (Regression Sabotage via `run_sabotage.cjs`) only when configured; fail-closed below threshold. | `step-07 testing` |
+| 8 | Close then ship per [`gates.md`](../ws-shared/runtime/gates.md) § Step 8: delivery result → gate → close (`status: completed`) → ship via `ws-ship-pr` (`workflowMode:true`). | `step-08 result` |
+| 9 | `dispatch-agent` `ws-goal-fix-pr` (default) or `ws-fix-pr` after PR exists; converge to `activeThreads == 0`, then merge. | PR threads / merge |
 
-### Execution observer dispatch (opt-in, us-365)
+### Execution observer dispatch (opt-in)
 
-- Gate: `node {skillsRoot}/ws-spec-to-pr/scripts/observer.cjs should-dispatch
-  --config {sharedDir}/config.json --telemetry {us-dir}/telemetry.jsonl --state {state}`.
-  Refused (`dispatch: false`, exit 2 only when enabled-but-already-dispatched; default-off exits 0) → dispatch nothing.
-- On allow: first reserve the single dispatch slot (fail-closed when already taken)
-  `node {skillsRoot}/ws-spec-to-pr/scripts/observer.cjs note-dispatch
-  --state {state} --telemetry {us-dir}/telemetry.jsonl --config {sharedDir}/config.json`,
-  then one `dispatch-agent` read-only watcher (report state/execution and
-  skill-instruction errors per `{skillsRoot}/ws-shared/runtime/observer-instructions.md`;
-  forbid product, state, config, commit, and PR writes).
-- At most one watcher per run; the watcher never blocks step advancement and
-  default-off runs dispatch zero watchers.
-- Transcript marker call site (us-419 AC2): every `update_state.cjs dispatch`
-  records `state.agentTranscripts` once (available paths from
-  `--transcript-paths <csv>` when the host session path is known, else the
-  explicit absent marker); an existing marker is never overwritten.
+- Gate `observer.cjs should-dispatch`; refused → dispatch nothing. On allow: `note-dispatch` to reserve the slot, then one read-only watcher (no product/state/commit/PR writes).
+- Each `dispatch` records `state.agentTranscripts` once (`--transcript-paths` or absent marker).
 
 ### Post-mutating transition (after step N completes)
 
 **Order (mandatory):**
 
-1. **`update_state.cjs`** — use `dispatch` before execution and `finish` after structured output; pass `--step-output` (or `--created / --modified`; auto-discovers `{plansDir}/{slug}/.runtime/step-{N}-output.json` or falls back to stamped step artifacts when omitted on mutating steps), merge `files_touched`, record measured telemetry, and advance `currentStep`. Always pass `--jsonl-out {plansDir}/{slug}/telemetry.jsonl` (single stream for all steps). `finish` records the handoff in `{workflow-id}.state.json` under `state.handoffs` first, then renders `.state.md`. When `defaults.contextHygiene.pruneAfterStep` is true (default), the next step reads that handoff plus compact state, not full prior step markdown, unless ARTIFACTS.md names the file. When `--skip-gates` or `config.json.invariants.skipQualityGates` is active, run its `bypass` operation.
-2. **G2-code (Steps 5 and 6 only)** — After Step 5 (score ≥ `defaults.minVerifyScore` (default 9)): **G2-code after Step 5 before Step 6** (skip if empty stage). After Step 6 review-fix: one G2-code if product files remain. Algorithm and messages: [`gates.md`](../ws-shared/runtime/gates.md) § Required G2-code save points. Uncommitted workflow product files → **STOP**; do not dispatch `ws-code-review`. `dryRun` simulates only. Other steps: skip this item.
-3. **Checkpoint** — `Shell` tag `uswf/{workflow-id}/before-step-{N+1}` @ HEAD **after** any G2-code (skip tag write in `dryRun`; log only). Pre-advance soft-passes missing tags when `dryRun: true`.
+1. **`update_state.cjs`** — `dispatch` before, `finish` after; pass `--jsonl-out telemetry.jsonl`. `finish` records the handoff in `{workflow-id}.state.json` under `state.handoffs`, then renders `.state.md`.
+2. **G2-code (Steps 5 and 6 only)** — per [`gates.md`](../ws-shared/runtime/gates.md) § Required G2-code save points. Uncommitted product files → STOP.
+3. **Checkpoint** — tag `uswf/{workflow-id}/before-step-{N+1}` @ HEAD after G2-code (`dryRun` soft-pass: log only).
 4. **Pre-advance validation** — **shell command** (not `dispatch-agent`):
 
 ```bash
@@ -91,59 +65,43 @@ node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs \
 
 On exit ≠ 0 → **HS-5**; **STOP** — no Progress Board, no Transition Gate, no dispatch to step N+1.
 
-**Skip (pre-advance gate only):** When `--skip-gates` or `skipQualityGates` is active, **omit** step 4; log gate-bypass in JSONL (`type: gate-bypass`, `gate: pre-advance`, `reason: skip-gates|config`). Does **not** skip `update_state`, G2-code, checkpoint, build/test/security, or HS-1–HS-4.
+**Skip:** with `--skip-gates` omit step 4; log `gate-bypass`.
 
-5. **Progress Board** → **Transition Gate** → dispatch step N+1 (or auto-gate + dispatch in `autoMode`).
+5. Board → gate → dispatch N+1 (auto-gate in `autoMode`). Cadence: One Step Per Turn in normal mode — markdown fallback never starts Step N+1 in the same turn as the gate; native modal gate returning any recommended advance option proceeds in the same turn.
 
 ### Golden-path state commands (per gate)
 
-At each gate boundary, drive state only with the commands in [`gates.md`](../ws-shared/runtime/gates.md) § Golden-path state commands (both orchestrators) — never hand-edit `.state.*` or `ac-ledger.json`. The pre-advance 6 sequence is: `update_state.cjs finish <state> --step 5 --verification-score <score>`, then G2-code (`commit_g2_code.cjs --state <state> --step 5`, which links the commit SHA and persists `pre-step6` scoreState), then `ac_ledger.cjs score --ledger <ledger> --boundary pre-step6` only if ledger content changed after the G2 link, then `validate_state.cjs <state> --pre-advance 6`. Pre-advance 7/8 re-score at boundary `step5`; pre-advance 9 at boundary `ship`.
+Per [`gates.md`](../ws-shared/runtime/gates.md) § Golden-path state commands — never hand-edit `.state.*` or `ac-ledger.json`.
 
 ---
 ### Step 5 — Check-implementation (score gate)
 
-Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.md`**. Publish integer **score 0–10** in Progress Board + report.
+Eval vs refined spec else `step-00`; publish integer 0–10. Off-tree alias failure → `link aliasResult skipReason:baseline-dirty`.
 
-When `defaults.parallelVerifyReview` is `true`, first run G2-code after Step 4 and pin that immutable commit. Dispatch Steps 5 and 6 concurrently as read-only product-tree reviewers; each may write only its own workflow report and neither may write state, ledger, or product files. After both finish, the orchestrator runs `merge_verify_review.cjs`, which sorts findings by severity, path, line, id, and source, then links results serially. Any score gap or Warning/Critical enters one fix, re-verify, and re-review loop. The default remains `false`, preserving sequential Step 5 then Step 6.
+`parallelVerifyReview:true` → G2 after Step 4, concurrent read-only 5+6, merge via `merge_verify_review.cjs`; default `false` sequential.
 
-When a configured format/build alias fails only on paths outside workflow `files_touched`, `link` `aliasResult` with `skipReason: baseline-dirty` (record the real non-zero `exitCode`).
-
-When overall score is below `minVerifyScore`, run `scoreAndRefine` even if `defaults.scoreAndRefine` is false. When `scoreAndRefine` mode is active (or triggered at bootstrap on completed workflows) **or** score is below `minVerifyScore`:
-- Evaluates each plan task in `step-01-{slug}.plan.md` on criteria fulfillment, code quality, edge-cases, and test coverage.
-- Outputs `step-05-{slug}.score-analysis.md` containing task-by-task scores (0–10) and specific enhancement recommendations.
-- **Optional (AC6):** When `step-05-{slug}.score-analysis.md` exists, re-invoke `ws-classify-complexity` with `--score-analysis` before the score gate — advisory only; does not block Advance.
-- If overall score below `minVerifyScore`: do **not** offer Accept Pass 1 As-Is. Re-dispatch `ws-implement-tasks` for tasks scoring below `minVerifyScore`, then re-verify, until overall ≥ `minVerifyScore` (max 3 rounds; log `score-refine | round={n}/3`). After 3 rounds still below `minVerifyScore`: Pause. Resume continues the loop.
-- If overall score already ≥ `minVerifyScore` and `scoreAndRefine` flag: prompt **Pass 1 Score Analysis Gate** via `user-gate` (Option 1: Proceed with Second Pass Refinement; Option 2: Accept Pass 1 As-Is & Ship; Option 3: Selective Refinement). Option 1 or 3 re-dispatches `ws-implement-tasks` (role `scoreAndRefine`) for the **wide-context second pass** in [`gates.md`](../ws-shared/runtime/gates.md) § Score & Refine (item 4): full Pass 1 diff, overengineering sweep, unused workflow-introduced artifact removal. Option 1 runs even when zero tasks are flagged.
+Below `defaults.minVerifyScore` → `scoreAndRefine` (max 3): write `score-analysis.md`, re-dispatch below-bar tasks, re-verify; Pause after 3. At/above with flag → Pass 1 gate (Proceed / Accept As-Is / Selective); role `scoreAndRefine` runs the wide-context second pass per [`gates.md`](../ws-shared/runtime/gates.md) § Score & Refine — Option 1 runs even when zero tasks are flagged (`dispatch --substep scoreAndRefine`).
 
 | Score | Behavior |
 |-------|----------|
-| ≥ `minVerifyScore` | Complete step 5; **Reach-10 offer** when conditions in [`gates.md`](../ws-shared/runtime/gates.md) hold; **G2-code after Step 5 before Step 6** (skip if empty); then dispatch 6 |
-| below `minVerifyScore` | **scoreAndRefine** until ≥ `minVerifyScore` (max 3 rounds, then Pause). Never Advance, complete Step 5, or auto-approve below `minVerifyScore`. Refine runs **before** the product commit. |
+| ≥ `minVerifyScore` | Complete; Reach-10 offer; G2-code; dispatch 6 |
+| below | Refine until ≥ min (max 3, then Pause). Never Advance below. |
 
-`autoMode`: auto-run scoreAndRefine rounds; auto-select **Proceed with Second Pass Refinement**; do **not** call `update_state finish --step 5` or dispatch Step 6 below `minVerifyScore` — Pause only after max rounds still below `minVerifyScore`. When refinement completes: re-verify, G2-code if score ≥ `minVerifyScore`, then complete Step 5 and dispatch Step 6.
+`autoMode`: auto-run rounds; never finish/dispatch 6 below min.
 
-**Step 5 Completion & G2 Commit Linking:**
-1. Finish Step 5 propagating the verified score:
-   `node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs finish {plansDir}/{slug}/{workflow-id}.state.md --step 5 --status completed --verification-score {score} --model {modelName} --jsonl-out {plansDir}/{slug}/telemetry.jsonl`
-   (If `--verification-score` is omitted, `update_state.cjs` auto-derives and validates it from `{us-dir}/ac-ledger.json`).
-2. After Step 5 G2-code product commit, link the commit SHA into `ac-ledger.json` before Step 6 pre-advance:
-   `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs link --ledger {plansDir}/{slug}/ac-ledger.json --event-id g2-commit-{sha} --ac AC1 [--ac AC2...] --commit '{"sha":"{sha}","step":5}'`
+Finish: `update_state.cjs finish --step 5 --verification-score {score}`; after G2 link SHA via `ac_ledger.cjs link` before pre-advance 6. Await each subagent before its `finish`.
 
-Await each `dispatch-agent` subagent before its matching `finish`: dispatching the next step while a refine or fix runner is still active orphans it, and the Step 6 dispatch and pre-advance guards stay red until the active round finishes.
-
-Contract: [`gates.md`](../ws-shared/runtime/gates.md) § Check-implementation gate and § Score & Refine gate.
+Contract: [`gates.md`](../ws-shared/runtime/gates.md) § Check-implementation gate, § Score & Refine.
 
 ### Step 6 — Code-review + fix → re-review loop (substep)
 
 | Case | Behavior |
 |------|----------|
-| Clean (no Critical/Warning) | Complete step 6; skip review-fix G2-code; Advance to 7 |
-| Critical/Warning findings | Fix → re-review rounds via `ws-implement-tasks` mode fix (max **3**); state/memory each round; Advance only when clean |
-| After loop, product files remain | One **G2-code** commit for all fix rounds (`fix({slug}): code-review fixes`); then Advance |
-| Residual after 3 rounds | **Pause** (fail closed) — do not Advance with open Critical/Warning |
-| `autoMode` | Autofix (no ask); same max 3; Pause on residual; G2-code when stage set non-empty |
+| Clean | Complete; Advance to 7 |
+| Critical/Warning | Fix → re-review (max 3); Advance only when clean |
+| Residual | Pause; never Advance with open findings |
 
-Fix is **not** its own `completedSteps` entry — log `review-fix | round={n}/3` in gate history. Contract: [`ws-code-review`](../ws-code-review/SKILL.md) § Fix → re-review loop. **Do not dispatch** review while uncommitted workflow product files remain.
+Fix logs `review-fix | round={n}/3` (no `completedSteps` entry). Never dispatch review with uncommitted product files. Contract: [`ws-code-review`](../ws-code-review/SKILL.md).
 
 ### Step 8 — Close implementation, then ship
 
@@ -177,7 +135,7 @@ G2-delivery stages only artifacts enabled by `defaults.deliveryCommitArtifacts` 
 After Step 8 when `shipAction: create-pr` and PR exists:
 
 1. **Wait for code-review / CI feedback** (adaptive per `ws-goal-fix-pr`: exit immediately when checks are green and `activeThreads == 0`; otherwise poll with backoff per configured convergence). Do not merge yet.
-2. Dispatch `ws-goal-fix-pr` (default loop) or `ws-fix-pr` (one-shot) once under the outer numeric Step 9 model. Each internal batch then runs `fixPrPlan` before `fixPrExec`: emit ordered `dispatch --step 9 --substep fixPrPlan` and `dispatch --step 9 --substep fixPrExec` JSONL events with actual models when `dispatch-agent` is available. The plan role may write only its complete gate; execution validates/follows it and records amendments before deviations. Internal roles never call `finish --step 9`; JSONL is their history while compact `stepDispatches` keeps only the latest Step 9 dispatch.
+2. Dispatch `ws-goal-fix-pr` (default loop) or `ws-fix-pr` (one-shot) once under the outer numeric Step 9 model. Internal roles never consult numeric Step 9; invoke a step with `preset=<name>` to override the preset per run. Each internal batch then runs `fixPrPlan` before `fixPrExec`: emit ordered `dispatch --step 9 --substep fixPrPlan` and `dispatch --step 9 --substep fixPrExec` JSONL events with actual models when `dispatch-agent` is available. The plan role may write only its complete gate; execution validates/follows it and records amendments before deviations. Internal roles never call `finish --step 9`; JSONL is their history while compact `stepDispatches` keeps only the latest Step 9 dispatch.
 3. Continue until **no open issues** (`activeThreads == 0`), then **merge** via SCM provider `merge-pr` only when required checks are green. When merge succeeds and tracker `id` is present, dispatch **`comment-issue`** then **`close-issue`** by intent name (same order as `ws-ship-pr` Step 7). The outer orchestrator calls `finish --step 9` exactly once after convergence or terminal stop. Never merge with open review threads or failing required checks.
 
 When shipping reaches a **terminal** `shipStatus` after Step 9 convergence (or skip-ship/skip-PR after close), run **Phase A** git cleanup once before claiming the run fully ended — see [`protocols/artifact-cleanup.md`](protocols/artifact-cleanup.md). Do **not** set `status: completed` again in Step 9 (`status` was set at close). On merge, the single outer `finish --step 9` carries the ship writeback (us-414 AC3): `node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs finish {state} --step 9 --ship-status merged --pr-number <N> --pr-url <URL>` (terminal stop without merge: `--ship-status stopped`). This finish also records the Step 9 handoff; a `completed` run never leaves ship fields empty after a merged PR. Do not run Phase A at both Step 8 close and Step 9.
