@@ -1,0 +1,1250 @@
+{
+  "schemaVersion": 1,
+  "revision": 31,
+  "workflowId": "ws-spec-to-pr-distributed",
+  "slug": "ws-spec-to-pr-distributed",
+  "specPath": ".agents/plans/ws-spec-to-pr-distributed/step-00-ws-spec-to-pr-distributed.spec.md",
+  "planIndexPath": ".agents/plans/ws-spec-to-pr-distributed/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "A new packaged skill `ws-spec-to-pr-distributed` exists at `{skillsRoot}/ws-spec-to-pr-distributed/SKILL.md` with valid `name`, `description`, and an `invocation_names` entry; it is registered in both `bin/skill-dependencies.json` and `.agents/skills/ws-shared/runtime/skill-dependencies.json` under the `workflows` package with an explicit `dependencies` entry.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/skill-dependencies.json:L1-L1",
+        ".agents/skills/ws-spec-to-pr-distributed/SKILL.md:L1-L1",
+        "bin/skill-dependencies.json:L1-L1"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09"
+      ],
+      "planSections": [
+        "section-003",
+        "section-005",
+        "section-006",
+        "section-010",
+        "section-016"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "56cd32b87c572b635007b6da21b61638c05d317d90328fa169e309821d758506"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr-distributed/SKILL.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "b8e41bab368b90108c768dfd3c29e23d3271db36ec2212cbc2823485084f57b8"
+        },
+        {
+          "path": "bin/skill-dependencies.json",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "56cd32b87c572b635007b6da21b61638c05d317d90328fa169e309821d758506"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e79c96dc7b35736d849ea004317e08a4d4ad80dd",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-config",
+          "sourceFile": "test/test-step-baton-config.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:07.580Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-step5",
+        "impl-ac1"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "The coordinator and its spawn logic live at `ws-spec-to-pr-distributed/scripts/step_coordinator.cjs`; no coordinator script remains under `ws-spec-to-pr/scripts/`, and no other `ws-spec-to-pr` script owns the distributed run loop.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr-distributed/scripts/step_coordinator.cjs:L1-L1"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09"
+      ],
+      "planSections": [
+        "section-005",
+        "section-007",
+        "section-016"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr-distributed/scripts/step_coordinator.cjs",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "c328620719d1ded006051a854a22aef2971b6f6ed2776b8b0db0bdce2e7f2d22"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e79c96dc7b35736d849ea004317e08a4d4ad80dd",
+          "step": 5
+        },
+        {
+          "sha": "20f247bc",
+          "step": 8
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-coordinator",
+          "sourceFile": "test/test-step-coordinator.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:07.637Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-step5",
+        "g2-fix-coordinator",
+        "impl-ac2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "`ws-spec-to-pr/SKILL.md` no longer documents `defaults.stepRunners` / `defaults.runners` / `defaults.stepBaton` or the coordinator invocation; the former \"Step-level baton runs\" section is reduced to at most a two-line neutral pointer to `ws-spec-to-pr-distributed`, and the resulting file is strictly smaller in byte size than the pre-change file.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/SKILL.md:L1-L1"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09"
+      ],
+      "planSections": [
+        "section-001",
+        "section-005",
+        "section-009",
+        "section-016"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/SKILL.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "e52009050ae0e723e6377b2aef68e059ef99f73200ba32cb3c4c3d4a0e7b4f6e"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e79c96dc7b35736d849ea004317e08a4d4ad80dd",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-config",
+          "sourceFile": "test/test-step-baton-config.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:07.694Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-step5",
+        "impl-ac3"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "Baton-specific prose is owned by the distributed workflow: the \"Step-level baton runs (multi-CLI coordinator)\" section of `host-dispatch.md` and the \"Coordinator gate surfacing (step baton)\" section of `gates.md` are re-homed into the distributed skill (or its references) so the shared runtime files loaded by `ws-spec-to-pr` carry no coordinator-language surface beyond at most a cross-reference.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/gates.md:L1-L1",
+        ".agents/skills/ws-shared/runtime/host-dispatch.md:L1-L1",
+        ".agents/skills/ws-spec-to-pr-distributed/references/coordinator.md:L1-L1"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09"
+      ],
+      "planSections": [
+        "section-005",
+        "section-008",
+        "section-016"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/gates.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "6c25bd6cab34236071807b3a7f4ff40941cc0ce9bee14634d3b9ea48a05f0c65"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/host-dispatch.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "603ff8aaf7fd76426ffcab1e30d1a1a34c843c7c6a3da198c9b15927b19e483e"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr-distributed/references/coordinator.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "5ee5d0955dbdac6eb831db63658207207af77d4dfed83da5b55cae7b73bb191f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e79c96dc7b35736d849ea004317e08a4d4ad80dd",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "All worker-turn-guard checks passed.",
+          "sourceFile": "test/test-worker-turn-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:07.755Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-step5",
+        "impl-ac4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "The shared baton primitive `step_baton.cjs` remains a neutral shared helper under `ws-shared/runtime/scripts/`; only `ws-spec-to-pr-distributed` requires it, and the dependency is recorded in the graph.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs:L1-L1"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09"
+      ],
+      "planSections": [
+        "section-005",
+        "section-010",
+        "section-016"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/step_baton.cjs",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "3f37e308445fd0443e708b0d55e0b4cc893bf2ba9bced21a4bcb9e4cb78b7da5"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e79c96dc7b35736d849ea004317e08a4d4ad80dd",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-claim",
+          "sourceFile": "test/test-step-baton-claim.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:07.809Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-step5",
+        "impl-ac5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "`ws-spec-to-pr-distributed` drives the standard 0–9 step set by delegating each step to the existing shared pipeline skills; unmapped steps execute through the existing single-host dispatch tiers (Tier 1/2/3) and mapped steps execute through the coordinator, with no change to step numbering or step semantics.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr-distributed/SKILL.md:L1-L1"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09"
+      ],
+      "planSections": [
+        "section-005",
+        "section-006",
+        "section-016"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr-distributed/SKILL.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "b8e41bab368b90108c768dfd3c29e23d3271db36ec2212cbc2823485084f57b8"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e79c96dc7b35736d849ea004317e08a4d4ad80dd",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-check-workflows-distributed",
+          "sourceFile": "test/test-check-workflows-distributed.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:07.873Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-step5",
+        "impl-ac6"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "The distributed workflow preserves the shipped baton contract unchanged: revision-checked claim with atomic dual-write, exactly-once release on `finish` in the same update that advances `currentStep`, re-claimable lease expiry with logged attempts, `blocked` after `maxAttempts` (default 2), one-shot non-interactive workers, and gate-shaped worker output recorded as a protocol violation without advancing.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr-distributed/scripts/step_coordinator.cjs:L1-L1"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09"
+      ],
+      "planSections": [
+        "section-016"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr-distributed/scripts/step_coordinator.cjs",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "c328620719d1ded006051a854a22aef2971b6f6ed2776b8b0db0bdce2e7f2d22"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e79c96dc7b35736d849ea004317e08a4d4ad80dd",
+          "step": 5
+        },
+        {
+          "sha": "20f247bc",
+          "step": 8
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-coordinator",
+          "sourceFile": "test/test-step-coordinator.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:07.929Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-step5",
+        "g2-fix-coordinator",
+        "impl-ac7"
+      ]
+    },
+    {
+      "id": "AC8",
+      "text": "`defaults.stepRunners` / `defaults.runners` / `defaults.stepBaton` remain valid config keys validated fail-closed by `ws-spec-to-pr-distributed` before Step 0; an unknown step key, unknown runner id, or empty command fails fast with a named error and starts no partial run.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr-distributed/SKILL.md:L1-L1"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09"
+      ],
+      "planSections": [
+        "section-016"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr-distributed/SKILL.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "b8e41bab368b90108c768dfd3c29e23d3271db36ec2212cbc2823485084f57b8"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e79c96dc7b35736d849ea004317e08a4d4ad80dd",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-config",
+          "sourceFile": "test/test-step-baton-config.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:07.981Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-step5",
+        "impl-ac8"
+      ]
+    },
+    {
+      "id": "AC9",
+      "text": "`ws-spec-to-pr` ignores `defaults.stepRunners` / `defaults.runners` / `defaults.stepBaton` entirely when they are present and continues single-host dispatch; configuring runners alone never starts a distributed run.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/SKILL.md:L1-L1"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09"
+      ],
+      "planSections": [
+        "section-005",
+        "section-009",
+        "section-016"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/SKILL.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "e52009050ae0e723e6377b2aef68e059ef99f73200ba32cb3c4c3d4a0e7b4f6e"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e79c96dc7b35736d849ea004317e08a4d4ad80dd",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-config",
+          "sourceFile": "test/test-step-baton-config.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:08.038Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-step5",
+        "impl-ac9"
+      ]
+    },
+    {
+      "id": "AC10",
+      "text": "`ws-spec-to-pr-distributed` is opt-in: it runs only on explicit invocation (`/spec-to-pr-distributed` or its skill id). The `ws-spec-to-pr` classifier, `ws-spec-multi`, and any auto-router do not select it without an explicit consumer choice.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr-distributed/SKILL.md:L1-L1"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09"
+      ],
+      "planSections": [
+        "section-005",
+        "section-006",
+        "section-016"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr-distributed/SKILL.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "b8e41bab368b90108c768dfd3c29e23d3271db36ec2212cbc2823485084f57b8"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e79c96dc7b35736d849ea004317e08a4d4ad80dd",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-check-workflows-distributed",
+          "sourceFile": "test/test-check-workflows-distributed.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:08.096Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-step5",
+        "impl-ac10"
+      ]
+    },
+    {
+      "id": "AC11",
+      "text": "The baton test suites (`test-step-coordinator.js`, `test-step-baton-config.js`, `test-step-baton-claim.js`, `test-step-baton-telemetry.js`, `test-step-baton-monitor.js`, `test-step-baton-specmemo.js`) and `test/fixtures/step-baton/*` reference the new skill path and pass; `test/test-suites.json` entries are updated to the new paths.",
+      "status": "Implemented",
+      "evidence": [
+        "test/test-step-coordinator.js:L1-L1",
+        "test/test-suites.json:L1-L1"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09"
+      ],
+      "planSections": [
+        "section-005",
+        "section-011",
+        "section-016"
+      ],
+      "files": [
+        {
+          "path": "test/test-step-coordinator.js",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "48a143f1cf4cebfd17dccb89c9a4ece2a83e2af6cb8b6c54db68cc6bbb62a0b0"
+        },
+        {
+          "path": "test/test-suites.json",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "f01410dedeb073aa478b1bc150a0198f7c716adf5ad8766d2477776e49cd4e25"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e79c96dc7b35736d849ea004317e08a4d4ad80dd",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-check-workflows-distributed",
+          "sourceFile": "test/test-check-workflows-distributed.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:08.160Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-step5",
+        "impl-ac11"
+      ]
+    },
+    {
+      "id": "AC12",
+      "text": "`ws-check-harness` and `test/test-harness-clean.js` report 0 findings at the package root after the move (no dangling link to the old coordinator path, Node-only runtime intact, dependency graph complete); `npm run verify-integrity` passes after `npm run generate-integrity`.",
+      "status": "Implemented",
+      "evidence": [
+        "bin/skill-integrity.json:L1-L1"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09"
+      ],
+      "planSections": [
+        "section-005",
+        "section-014",
+        "section-016"
+      ],
+      "files": [
+        {
+          "path": "bin/skill-integrity.json",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "b47c1d9170185dc92616bd0c36b96078ff74bfca903f910b621521e1fdf84830"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e79c96dc7b35736d849ea004317e08a4d4ad80dd",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "Harness OK (upstream clean) — 0 findings.",
+          "sourceFile": "test/test-harness-clean.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:08.216Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-step5",
+        "impl-ac12"
+      ]
+    },
+    {
+      "id": "AC13",
+      "text": "`ws-check-workflows` recognizes `ws-spec-to-pr-distributed` as a supported workflow and its simulated FSM does not regress; a missing/unknown workflow id still fails closed.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs:L1-L1"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09"
+      ],
+      "planSections": [
+        "section-005",
+        "section-012",
+        "section-016"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "373c0e5b1855d3520c0af785ca1cda72013b0fda35682736dcf13f1ead8ed831"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e79c96dc7b35736d849ea004317e08a4d4ad80dd",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-check-workflows-distributed",
+          "sourceFile": "test/test-check-workflows-distributed.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:08.273Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "g2-code-step5",
+        "impl-ac13",
+        "sabotage-step7"
+      ]
+    },
+    {
+      "id": "AC14",
+      "text": "`package.json` `version` and `packageVersion` in `bin/skill-dependencies.json` are bumped once for the release, and the baton capability is indexed/routed to `ws-spec-to-pr-distributed` in `AGENTS.md`, `.ws/AGENTS.md`, `README.md`, `FEATURES.md`, `CATALOG.md`, `autoload.md`, `docs/llms.txt`, and `docs/index.html`.",
+      "status": "Implemented",
+      "evidence": [
+        "AGENTS.md:L1-L1",
+        "CATALOG.md:L1-L1",
+        "FEATURES.md:L1-L1",
+        "README.md:L1-L1",
+        "bin/skill-dependencies.json:L1-L1",
+        "docs/index.html:L1-L1",
+        "docs/llms.txt:L1-L1",
+        "package.json:L1-L1"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09"
+      ],
+      "planSections": [
+        "section-005",
+        "section-013",
+        "section-014",
+        "section-016"
+      ],
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "695a3f3e344732d908b9b5a2ed3043d6a3f600c2754143b69484da99fa2932f7"
+        },
+        {
+          "path": "bin/skill-dependencies.json",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "56cd32b87c572b635007b6da21b61638c05d317d90328fa169e309821d758506"
+        },
+        {
+          "path": "CATALOG.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "68d60ee31ddfea1d236c23b5e0c21dd7091c67f4f9128884a051bb40789a70aa"
+        },
+        {
+          "path": "docs/index.html",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "d008a769def6683eb60ecb74dde0a8c54353b806da775624c6666f48335ef7e7"
+        },
+        {
+          "path": "docs/llms.txt",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "3491603c3876efeaf9211f67291efa3a117440408312f410b236c16e8754db45"
+        },
+        {
+          "path": "FEATURES.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "4f5f569fd6a7ff07acbe61c2b603bf533aeb58b5ab9a8d6b2cd46a8eab6a3f38"
+        },
+        {
+          "path": "package.json",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "e9a599cb5ce570701ad4c5b91ad7eeeb1753378ec903a402d54f11cc7c6ad20f"
+        },
+        {
+          "path": "README.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "508a1b9e685f0ecf0cb3320ce49983d0bbf196408ba44e97d12ee960c4d6deca"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e79c96dc7b35736d849ea004317e08a4d4ad80dd",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "All canonical-version checks passed.",
+          "sourceFile": "test/test-skill-frontmatter.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:08.336Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-step5",
+        "impl-ac14"
+      ]
+    },
+    {
+      "id": "AC15",
+      "text": "Every live reference to `ws-spec-to-pr/scripts/step_coordinator.cjs` and the baton run config that survives in code, tests, or docs points at the new owner; no consumer-facing doc attributes the baton feature to `ws-spec-to-pr` without naming `ws-spec-to-pr-distributed`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/git-ownership.md:L1-L1"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09"
+      ],
+      "planSections": [
+        "section-005",
+        "section-008",
+        "section-013",
+        "section-016"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/git-ownership.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "5b6df4f78c95f54c62d00de761b0ad44792876f212c5b43c5437f3cd0150b820"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e79c96dc7b35736d849ea004317e08a4d4ad80dd",
+          "step": 5
+        },
+        {
+          "sha": "20f247bc",
+          "step": 8
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-check-workflows-distributed",
+          "sourceFile": "test/test-check-workflows-distributed.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:08.398Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-step5",
+        "g2-fix-coordinator",
+        "impl-ac15"
+      ]
+    },
+    {
+      "id": "AC16",
+      "text": "The skill dependency-graph check is applied to both the new skill and `ws-spec-to-pr`: callers (router, `ws-check-workflows`, installer packages, docs) and callees (shared pipeline skills, `ws-shared/runtime/scripts/step_baton.cjs`) still match their contracts, and any stale edge from the old ownership is removed.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/git-ownership.md:L1-L1",
+        ".agents/skills/ws-shared/runtime/skill-dependencies.json:L1-L1"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09"
+      ],
+      "planSections": [
+        "section-005",
+        "section-010",
+        "section-016"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/git-ownership.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "5b6df4f78c95f54c62d00de761b0ad44792876f212c5b43c5437f3cd0150b820"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "56cd32b87c572b635007b6da21b61638c05d317d90328fa169e309821d758506"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e79c96dc7b35736d849ea004317e08a4d4ad80dd",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "git-ownership contract OK",
+          "sourceFile": "test/test-git-ownership-contract.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:08.463Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-step5",
+        "impl-ac16"
+      ]
+    },
+    {
+      "id": "AC17",
+      "text": "The delivery PR body carries `Closes #438` (GitHub default-branch auto-close on merge to `main`): the spec frontmatter keeps `source: github` + `id: 438` through `ws-spec-provider-local` register, and `ws-ship-pr` runs `ensure_pr_closer.cjs --id 438` so the source issue closes without a manual step. The workflow is started from this spec file so the spec of record stays `0143-ws-spec-to-pr-distributed.spec.md`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/plans/ws-spec-to-pr-distributed/step-00-ws-spec-to-pr-distributed.spec.md:L1-L1"
+      ],
+      "tasks": [
+        "T01",
+        "T02",
+        "T03",
+        "T04",
+        "T05",
+        "T06",
+        "T07",
+        "T08",
+        "T09"
+      ],
+      "planSections": [
+        "section-003",
+        "section-016"
+      ],
+      "files": [
+        {
+          "path": ".agents/plans/ws-spec-to-pr-distributed/step-00-ws-spec-to-pr-distributed.spec.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "bb3b600673fa889dab14b63ec60e9eb452664f3895c91bdf6a43683469b0f3f6"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e79c96dc7b35736d849ea004317e08a4d4ad80dd",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-specmemo",
+          "sourceFile": "test/test-step-baton-specmemo.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:08.511Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-code-step5",
+        "impl-ac17"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Old coordinator path still referenced anywhere (docs, tests, installer package, router): `ws-check-harness` link check fails with the stale path named; the change must remove it before ship.",
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-claim",
+          "sourceFile": "test/test-step-baton-claim.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:15.351Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns-ns1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "`ws-spec-to-pr` run with `defaults.stepRunners` configured: it must run single-host and must not spawn the coordinator (proves the ownership separation).",
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-config",
+          "sourceFile": "test/test-step-baton-config.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:15.410Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns-ns2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Distributed run maps a step to an undeclared runner id, an out-of-range step key, or an empty command: the run refuses to start with a named error before Step 0 and produces no step artifacts.",
+      "tests": [
+        {
+          "name": "PASS: test-step-baton-config",
+          "sourceFile": "test/test-step-baton-config.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:15.468Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns-ns3"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "Worker exits 0 without calling `finish`, or emits gate-shaped output: the coordinator records a protocol violation / failed attempt and does not advance `currentStep`.",
+      "tests": [
+        {
+          "name": "PASS: test-step-coordinator",
+          "sourceFile": "test/test-step-coordinator.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:15.532Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns-ns4"
+      ]
+    },
+    {
+      "id": "NS5",
+      "text": "A worker or caller requires `step_baton.cjs` from a path that resolves outside the resolved `ws-shared` runtime: the resolver fails closed rather than loading a stale or foreign runtime.",
+      "tests": [
+        {
+          "name": "PASS: test-step-coordinator",
+          "sourceFile": "test/test-step-coordinator.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:15.582Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns-ns5"
+      ]
+    },
+    {
+      "id": "NS6",
+      "text": "`ws-check-workflows` invoked with `ws-spec-to-pr-distributed` while the id is absent from the FSM registry: it must fail closed with an unknown-workflow error rather than reporting a passed simulation.",
+      "tests": [
+        {
+          "name": "PASS: test-check-workflows-distributed",
+          "sourceFile": "test/test-check-workflows-distributed.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T15:55:15.639Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns-ns6"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "pre-step6",
+    "score": 10,
+    "earnedUnits": 170,
+    "totalUnits": 170,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "deficiencies": [],
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-27T16:18:36.861Z",
+    "writer": "ac_ledger.cjs link",
+    "ledgerHash": "31002f372cd26979304b23c3605ef5d97378f5aa75b23744d4a22ef569ab225e"
+  }
+}

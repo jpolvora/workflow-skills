@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-27 17:35] Agent: agent
+- **Prompt**: /ws-wiki sync (incremental 7d6d39fb..8d98fd01)
+- **Done**: Synced 5 wiki files to specs 0001-0146; watermark advanced to 8d98fd01
+- **Result**: validate_wiki.cjs PASS (12 pages), exit 0
+
 ### [2026-09-27 16:48] Agent: agent
 - **Prompt**: ship-pr should bump version every run / add bump instruction to root AGENTS.md
 - **Done**: Root AGENTS.md version-bump rule strengthened to mandate a patch bump on every shipped PR (no docs/hub/catalog exception); ws-ship-pr owns the bump; CATALOG.md Pre-ship rows 2-3 + step-3 note reconciled; version 0.5.7 -> 0.5.8 + integrity + site footer regenerated

@@ -198,6 +198,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] (Spec) Create a new skill ws-spec-to-issue (`spec: completed/0145-us-439.spec.md`) - [PR #444](https://github.com/jpolvora/workflow-skills/pull/444) MERGED (`0d2337df` implementation)
 - [x] features to be emphasized in website and detailed in wiki (`spec: completed/0146-us-436.spec.md`) - [PR #445](https://github.com/jpolvora/workflow-skills/pull/445) MERGED (`fbb69019` implementation)
 - [ ] ws-ship-pr/scripts/verify.cjs: skip empty verification aliases instead of executing them (`spec: pending/0147-us-446.spec.md`)
+- [ ] ws-spec-multi stores run state in a skill-named shared directory instead of a per-run directory (`spec: pending/0148-us-448.spec.md`)
+
 
 
 
@@ -497,6 +499,8 @@ All Next-specs closed.
 | 151 | `us-436` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | features to be emphasized in website and detailed in wiki ([PR #445](https://github.com/jpolvora/workflow-skills/pull/445), `fbb69019`) |
 
 | 152 | `us-446` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-ship-pr/scripts/verify.cjs: skip empty verification aliases instead of executing them |
+
+| 153 | `us-448` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-multi stores run state in a skill-named shared directory instead of a per-run directory |
 
 ## 9. Inbox
 
