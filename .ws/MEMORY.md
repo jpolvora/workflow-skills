@@ -15,6 +15,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **DO NOT**: Ship a detection regex whose only terminal is whitespace/EOL; rewrite a consumer file by splitting and rejoining with a fixed EOL; hardcode the `.ws` hub path when `pathTokens.sharedDir` can relocate; call another skill's script without adding the dependency edge.
 - **INSTEAD DO**: Accept EOL and shell separators (`;`, `&`, `|`) as regex terminals and cover equivalent flags (`--all`); preserve the target file's dominant EOL on append (build LF, convert back); resolve hub paths through `context.sharedDir` / `resolve_hub_root.cjs`; add the edge to BOTH `bin/skill-dependencies.json` and `.agents/skills/ws-shared/runtime/skill-dependencies.json`, then regenerate integrity and rebuild the site.
 
+### [2026-09-26] Detector-terminal fixes must sweep every table and validate suggested diffs against combined flags
+- **Layer**: `tests`
+- **Module**: `ws-check-harness/scripts/check_git_ownership.cjs, test/test-git-ownership-contract.js`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-check-harness/scripts/*.cjs, test/test-*.js`
+- **Scenario / Context**: A release-PR review round fixed separator-aware terminals on the BROAD_STAGING detector table; the sibling DESTRUCTIVE table in the same file kept narrow terminals, so the next review round flagged the identical defect class again (4 threads). Separately, the reviewer's verbatim suggested diff for `destructive:clean-fd` (`(?:\s|$|;|&|\|)`) would have stopped matching the meaningful combined-flag variant `git clean -fdx` (the old un-terminated pattern matched it as a substring) — applying it verbatim trades one false-negative for a more destructive one.
+- **DO NOT**: Fix a detector-terminal defect on only the anchored table, or apply a suggested regex diff verbatim without checking what the old pattern matched that the new one drops.
+- **INSTEAD DO**: Sweep every detector table in the file for the same terminal class (plus the committed test mirror and its samples); diff old-vs-new match sets on separator-chained AND flag-combined variants (`git clean -fdx`, `git stash;`, `git reset --hard;`) before committing, and record any deliberate deviation as a gate amendment with evidence.
+
 ### [2026-09-25] Monitor severity contract: status-literal beats shape-derived
 - **Layer**: `domain`
 - **Module**: `ws-monitor`

@@ -309,7 +309,7 @@ Cross-walk research themes to [`SKILL_AUTHORING.md`](.agents/skills/ws-write-a-s
 
 Use this file when drafting specs or `ws-write-a-skill` updates. Suggested workflow:
 
-1. Program of record: [`.agents/specs/0050-research-driven-pipeline-quality.spec.md`](.agents/specs/0050-research-driven-pipeline-quality.spec.md) (JSON state, inter-step handoff, optional jury, memory sanitization).
+1. Program of record: [`.agents/specs/completed/0050-research-driven-pipeline-quality.spec.md`](.agents/specs/completed/0050-research-driven-pipeline-quality.spec.md) (JSON state, inter-step handoff, optional jury, memory sanitization).
 2. Reconcile with portability rules in root `AGENTS.md`.
 3. Prototype in upstream SoT only (`.agents/skills/`).
 4. Run `ws-check-harness` + `npm run test` before ship.

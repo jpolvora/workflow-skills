@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-26 19:36] Agent: agent
+- **Prompt**: PR 433 goal-fix-pr round 3: resolve 4 review threads on destructive detector terminals
+- **Done**: Separator-aware terminals on all DESTRUCTIVE patterns plus test mirror and integrity regen
+- **Result**: green
+
 ### [2026-09-26 19:13] Agent: agent
 - **Prompt**: use muse spark 1.2 contributor as default CI reviewer and dry-run local model
 - **Done**: Set opencode-go/muse-spark-1.2-contributor as default model in .github/workflows/agentic-code-review.yml fallback + repo Variable, bin/review-dry-run.cjs DEFAULT_MODEL, and synced test/CATALOG/.ws config comment

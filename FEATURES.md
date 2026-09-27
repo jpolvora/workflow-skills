@@ -291,12 +291,18 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.4.38)
+## 12. Recent evolution (0.3.22 → 0.4.78)
 
-Derived from recent commits on `develop` (2026-08-16 → 2026-09-19).
+Derived from recent commits on `develop` (2026-08-16 → 2026-09-26).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.4.78** | Sep 26 | **Release train specs 0134–0138:** `defaults.branchStrategy` (`stay` default, `from-current`, `from-base`, `prompt`; detached HEAD rejects `stay`) with shared-head ship resolution (`resolve_ship_refs.cjs`: feature / shared-head / push-only); spec status subfolders (`plans.statusSubfolders`, `organize_specs.cjs --by-status` into `pending/` `completed/` `archived/`); eighth host capability token `skillLoader` with one canonical skill-load procedure and Phase 5a `check_skill_load.cjs`; on-demand `workflow-skills dispatch --subagent --task [--payload]` plus async `dispatchSubagentTask` API; tree-wide parallel-writer enforcement (Phase 5a `check_git_ownership.cjs`, warn-only `concurrency_preflight.cjs`, `file_lock.cjs` for shared artifacts, idempotent `append_changelog.cjs`) |
+| **0.4.77** | Sep 26 | **Path-aware verify defects (`us-430`):** an alias sets `knownDefect` only when failing paths intersect `filesTouched` or it declares `productFailure`; untouched failures link `skipReason: baseline-dirty`; implement runs every scoring alias and formats only its own files; interview rewrites contradicted ACs in both spec copies |
+| **0.4.76** | Sep 26 | **Consumer hub seeding (`us-429`):** `ws-configure-project` and install bootstrap seed missing-only `STACK.md`, hub `AGENTS.md`, `autoload.md`, and `.gitignore` under the effective hub root; existing bytes preserved; `runtime/` and `templates/` never copied into the hub |
+| **0.4.75** | Sep 26 | **Consumer harness audit fixes (#427):** `ws-kanvas` routed in the consumer hub; duplicate gate skips generated hub twins; `update --global` refreshes a stale hub pointer |
+| **0.4.73–0.4.74** | Sep 25 | **`ws-kanvas` local kanban board** (loopback, read-only, six columns, `npm run kanvas`); workflow diagrams in `docs/flow.md`; Python bytecode fail-closed |
+| **0.4.70–0.4.72** | Sep 24–25 | **Golden-path state commands and run-state integrity:** per-subcommand `--help`, per-row score deficiencies, ledger tamper hash, phantom-finish exit; unknown configured `modelsPreset` fails closed; ship writeback of `shipStatus`/`prNumber`/`prUrl`; Step 9 round artifacts; monitor step-membership expectations and correlated transcript reads |
 | **0.4.67** | Sep 24 | **ws-monitor live watch profile + SCM defect issue:** default profile (`--watch --interval 60 --until-terminal --follow-transcript --session-id <id> --agent <name> --open-issue`) polls until terminal, follows a session, detects stall/hang via a `stopwatch` (`worker-session-stall` / `stalled-workflow`, `--stall-window`), and proposes an enriched anonymized defect issue; new SCM `create-issue` intent on GitHub + Azure DevOps (`create_issue.cjs`) with parity coverage |
 | **0.4.59** | Sep 22 | **Ownership-scoped git contract for parallel writers (`us-401`):** sessions stage only their own paths, never run whole-tree `reset`/`checkout`/`restore`/`clean`/`stash`/force-push, tolerate foreign dirty trees, and advance `baselineCommit` forward via `refresh_baseline.cjs` (STOP on foreign-path overlap); canonical contract in `.agents/skills/ws-shared/runtime/git-ownership.md` referenced by both orchestrators, `ws-spec-multi`, `ws-fix-pr`, and the G2 commit recipes |
 | **0.4.58** | Sep 22 | **Close the source issue on ship (GitHub):** `ws-ship-pr` Step 5 keeps `Closes #{id}` in the PR body via `ensure_pr_closer.cjs` (idempotent; no-op for null ids and non-GitHub providers) so merging the PR closes the source issue; wired through the provider contract, GitHub `create-pr` procedure, and standard/lite Step 8/4 dispatch |

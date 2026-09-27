@@ -363,7 +363,7 @@
         <div class="role-card-icon">P</div>
         <h4 class="role-card-title">Per-run model preset</h4>
       </div>
-      <p class="role-card-desc"><code>preset=&lt;name&gt;</code> on the orch invocation overrides <code>defaults.modelsPreset</code> for that run only. Unknown names warn and fall back; the resolved preset persists in state and survives resume.</p>
+      <p class="role-card-desc"><code>preset=&lt;name&gt;</code> on the orch invocation overrides <code>defaults.modelsPreset</code> for that run only. An unknown configured preset fails closed at run start; the resolved preset persists in state and survives resume, and telemetry records concrete model ids.</p>
     </div>
     <div class="role-matrix-card">
       <div class="role-card-header">
@@ -385,6 +385,48 @@
         <h4 class="role-card-title">Quiet ship preflight</h4>
       </div>
       <p class="role-card-desc">Ship resolves head, base, remote, provider, and commit title from state, git, config, then auto-detect — asking only on genuine ambiguity instead of re-prompting known values.</p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">⎇</div>
+        <h4 class="role-card-title">Stay on your branch</h4>
+      </div>
+      <p class="role-card-desc">Runs start on the branch you checked out: <code>defaults.branchStrategy</code> defaults to <code>stay</code> (or <code>from-current</code>, <code>from-base</code>, <code>prompt</code>). Ship resolves feature, shared-head, or push-only refs so a stay run never tries to PR a branch into itself.</p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">∥</div>
+        <h4 class="role-card-title">Parallel agents, one worktree</h4>
+      </div>
+      <p class="role-card-desc">Every workflow stages only its own paths and never resets, cleans, or stashes foreign work. A harness gate scans all shipped recipes for broad staging and destructive verbs, bootstrap warns about other active runs, and shared files (<code>index.PRD</code>, MEMORY, changelog) update under a cross-process lock.</p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">10</div>
+        <h4 class="role-card-title">A dirty baseline never costs the score</h4>
+      </div>
+      <p class="role-card-desc">Verify counts an alias failure as a defect only when failing paths touch the workflow's own files. Implement runs every scoring alias and formats only what it changed, so a first-pass 10 is reachable on a repo with pre-existing lint debt.</p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">S</div>
+        <h4 class="role-card-title">Spec board by status</h4>
+      </div>
+      <p class="role-card-desc">Opt in with <code>plans.statusSubfolders</code> to file specs under <code>pending/</code>, <code>completed/</code>, and <code>archived/</code>. <code>organize_specs.cjs --by-status</code> moves specs with their companions and rewrites <code>index.PRD</code>; shipped specs move to <code>completed/</code> on sync.</p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">⤴</div>
+        <h4 class="role-card-title">Dispatch a subagent on demand</h4>
+      </div>
+      <p class="role-card-desc"><code>workflow-skills dispatch --subagent &lt;name&gt; --task "…" [--payload &lt;json&gt;] [--json]</code> or the async <code>dispatchSubagentTask()</code> API run one task outside an orchestrator, with validated inputs and structured results.</p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">⌂</div>
+        <h4 class="role-card-title">Ready-to-use project hub</h4>
+      </div>
+      <p class="role-card-desc"><code>ws-configure-project</code> seeds only what is missing in <code>.ws/</code>: <code>STACK.md</code>, hub <code>AGENTS.md</code>, <code>autoload.md</code>, and <code>.gitignore</code>. Your existing config is never rewritten, and a <code>skillLoader</code> capability lets hosts load skills with their native tool.</p>
     </div>
   </div>
 

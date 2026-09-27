@@ -122,6 +122,7 @@ jobs:
           # Download to a file so BASH_SOURCE is bound (curl|bash leaves it unbound under set -u).
           curl -fsSL https://raw.githubusercontent.com/jpolvora/agentic-code-reviewers/release/run.sh \
             -o /tmp/agentic-code-reviewers-run.sh
+          # Custom stack requires --custom-prompt; do not run Custom without it.
           bash /tmp/agentic-code-reviewers-run.sh \
             --engine "$ENGINE_ARG" \
             --model "$REVIEW_MODEL" \

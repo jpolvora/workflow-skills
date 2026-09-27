@@ -8,7 +8,7 @@ Primary use cases from `index.PRD`: end-to-end Spec-to-PR (standard or lite), se
 
 ## Architectural Boundaries
 
-- **Harness & install**: Portable skill bodies under `.agents/skills/ws-*`, installer CLI, integrity hashes, hybrid global vs project-local install. Consumer hub `ws-shared/` holds config; managed `runtime/` and `templates/` are installer-owned.
+- **Harness & install**: Portable skill bodies under `.agents/skills/ws-*`, installer CLI, integrity hashes, hybrid global vs project-local install. Consumer hub `.ws/` holds config; managed `runtime/` and `templates/` stay installer-owned under `{skillsRoot}/ws-shared/`.
 - **Delivery orchestrators**: `ws-spec-to-pr` (steps 0–9) and `ws-spec-to-pr-lite` (steps 0–5); `ws-spec-multi` classifies each spec and dispatches one pipeline at a time. Isolated `workflowType`; no cross-resume.
 - **SCM providers**: GitHub, Azure DevOps, and local specs implement the same required intents; orchestrators never embed host CLI names.
 - **Specs vs plans vs wiki**: Specs are point-in-time contracts. `{plansDir}` holds run artifacts. `index.PRD` tracks phases. `CHANGELOG.md` is chronological history. This wiki is the living domain knowledge base.
@@ -17,7 +17,7 @@ Primary use cases from `index.PRD`: end-to-end Spec-to-PR (standard or lite), se
 
 ## Domain Catalog
 
-Living synthesis of specs 0001–0131. The delta since `9d1cdef6` covers unattended checkpoints, golden-path state commands, run-state integrity, monitor accuracy, observer-log follow-ups, the pre-ship doc-sync gate, provider `create-issue`, the kanvas board, and Python-bytecode fail-closed enforcement. Spec 0131 (kanvas drag-and-drop phase 2) is a spec of record still unimplemented; the kanvas page describes the shipped v1 behavior. Feature subpages use `{domain}/{feature}.md` with `## Feature` and `## How it works` required; `## Backend`, `## Frontend`, and `## Third-party services` are conditional.
+Living synthesis of specs 0001–0138. The delta since `f63a0653` covers consumer hub seeding, path-aware verify defect classification, the `stay` default branch strategy with shared-head ship resolution, spec status subfolders, the `skillLoader` capability token, on-demand subagent task dispatch, and parallel-writer git ownership enforcement. Specs are now filed under `{specsDir}/pending/`, `completed/`, and `archived/`. Pending specs of record not yet implemented: 0129 (pre-ship doc-sync gate follow-ups), 0131 (kanvas drag-and-drop phase 2), and 0139 (agentic reviewer prompt); the kanvas page describes the shipped v1 behavior. Feature subpages use `{domain}/{feature}.md` with `## Feature` and `## How it works` required; `## Backend`, `## Frontend`, and `## Third-party services` are conditional.
 
 ## Domain: harness
 
@@ -56,7 +56,7 @@ Living synthesis of specs 0001–0131. The delta since `9d1cdef6` covers unatten
 
 ## Sync Baseline
 
-- Commit: `f63a065361c37a6833d73bf72d7728f6f464ed60`
-- Synced: 2026-09-25
+- Commit: `7d6d39fb57cf2a0277ed2096ef2d878c4f4ff91a`
+- Synced: 2026-09-26
 
 Next wiki update: diff this commit against `HEAD` (`git diff --name-status <commit>..HEAD`) and sweep only the changed specs and code areas. A full-tree sweep is only needed when this block is missing or the commit is unreachable. Contract: `ws-wiki` SKILL.md § Incremental baseline.
