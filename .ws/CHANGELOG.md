@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-27 15:43] Agent: agent
+- **Prompt**: /ws-spec-multi 143,144,145,146
+- **Done**: Sequential ws-spec-multi batch: standard ws-spec-to-pr for 0143/0144/0145/0146, merged PRs #442-#445 into develop, closed issues #438/#440/#439/#436, filed specs to completed/ and synced index.PRD
+- **Result**: 4/4 shipped; PRs #442 #443 #444 #445 MERGED; per-PR version bumps 0.5.4 to 0.5.7; tests green; harness 0 findings
+
 ### [2026-09-27 15:29] Agent: agent
 - **Prompt**: Emphasize four shipped capability clusters (proof of work; translate to human; unattended autoMode + ws-spec-multi; spec organizer/subfolder sync/cleanup) on the public site and detail them in the living wiki (issue #436).
 - **Done**: Added four marker-delimited feature cards to bin/build-site.js, regenerated docs/index.html + docs/wiki; tightened proof-of-work/cleanup wiki prose; added FEATURES.md 1.7; bumped version 0.5.6 -> 0.5.7 and regenerated integrity.
