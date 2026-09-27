@@ -192,6 +192,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] Improve agentic code reviewers prompt — simplify and align upstream vs local needs (`spec: pending/0139-improve-agentic-reviewers-prompt.spec.md`)
 - [ ] Centralize skill package versioning and bind versions to integrity checksums (`spec: pending/0140-simplify-skill-versioning.spec.md`)
 - [ ] Restore autoMode continuous orchestration (host-turn chaining through ship and fix-pr) (`spec: pending/0141-restore-automode-continuous-orchestration.spec.md`)
+- [ ] Reduce token usage in spec-to-pr-* workflows via prose compaction and deduplication (`spec: pending/0142-reduce-spec-to-pr-tokens.spec.md`)
+
 
 
 
@@ -473,6 +475,8 @@ All Next-specs closed.
 | 145 | `simplify-skill-versioning` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Centralize skill package versioning and bind versions to integrity checksums |
 
 | 146 | `restore-automode-continuous-orchestration` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Restore autoMode continuous orchestration (host-turn chaining through ship and fix-pr) |
+
+| 147 | `reduce-spec-to-pr-tokens` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Reduce token usage in spec-to-pr-* workflows via prose compaction and deduplication |
 
 ## 9. Inbox
 
