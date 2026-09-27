@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-26 21:47] Agent: agent
+- **Prompt**: C:/Program Files/Git/ws-spec-write Improve versioning in skills by centralizing the release version in ws-shared/version.json and binding it to skill checksums
+- **Done**: Created and validated .agents/specs/pending/0140-simplify-skill-versioning.spec.md; tracked simplify-skill-versioning in .agents/specs/index.PRD
+- **Result**: Spec-only change; version.json replaces per-skill frontmatter versioning in the proposed contract. Authoring validator and linter passed.
+
 ### [2026-09-26 21:19] Agent: agent
 - **Prompt**: C:/Program Files/Git/ws-goal-fix-pr 434
 - **Done**: Fixed four stale numbered-spec references left by the status-folder cleanup, committed f3706e54ea7a3dd49b31d2263702b8e06ea87996, and pushed develop.

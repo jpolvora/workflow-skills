@@ -139,14 +139,14 @@
     "_comment_deliveryCommitArtifacts": "Step 8 delivery commit includes under {us-dir}. Defaults: refined plan on; delivery result off (behavior change vs legacy always plan+result); opt-ins false. Omitted object/keys at read time merge to these AC1 defaults — never silently revert to always staging plan+result.",
     "deliveryCommitArtifacts": {
       "includeRefinedPlan": true,
-      "includeDeliveryResult": false,
+      "includeDeliveryResult": true,
       "includeSpec": false,
       "includeCheckReport": false,
       "includeCodeReview": false,
       "includeTestingReport": false
     },
     "_comment_models": "Resolve order when --model is blank: stepModels[role|N] → active preset steps[role|N] → top-level phase key → preset phase key → session. Token \"current\" uses session currentModel (no fallthrough). Empty string falls through. Unknown modelsPreset → preset \"default\" if present, else legacy four keys. Fix-PR roles bypass numeric Step 9: fixPrPlan → reviewerModel; fixPrExec → executionModel. Lite ignores testingModel and all role keys, including fixPrPlan/fixPrExec, while preserving inline plan-before-edit order. Presets are lean phase-key bundles without a steps map; put per-step or per-role overrides in top-level stepModels. The default preset is all current (session-only safe fallback). Switch modelsPreset to a named bundle (cursor, deepseek, opencode, cheap, muse-spark) for host-specific models.",
-    "modelsPreset": "muse",
+    "modelsPreset": "cursor",
     "modelPresets": {
       "muse": {
         "plannerModel": "muse-spark-1.3-contributor",
@@ -161,10 +161,10 @@
         "reviewerModel": "current"
       },
       "cursor": {
-        "plannerModel": "cursor-grok-4.7-high",
+        "plannerModel": "cursor-grok-4.7-low",
         "executionModel": "composer-2.5",
         "testingModel": "composer-2.5",
-        "reviewerModel": "cursor-grok-4.7-medium"
+        "reviewerModel": "cursor-grok-4.7-low"
       },
       "deepseek": {
         "plannerModel": "opencode-go/deepseek-v4-pro",
