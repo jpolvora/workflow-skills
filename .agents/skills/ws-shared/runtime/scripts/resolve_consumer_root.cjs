@@ -156,6 +156,14 @@ function resolveMinVerifyScore(config) {
   return n;
 }
 
+// Pre-ship doc-sync trio gate (ws-wiki sync + ws-spec-index sync + changelog).
+// Absent, non-boolean, or otherwise invalid values resolve to the effective
+// schema default true; only an explicit boolean false restores today's behavior.
+function resolveRequirePreShipDocSync(config) {
+  const value = config?.defaults?.requirePreShipDocSync;
+  return typeof value === 'boolean' ? value : true;
+}
+
 // us-365: opt-in execution observer. Omitted or any non-true value resolves
 // to false (zero watcher dispatches); only explicit true enables the watcher.
 function resolveAutoStartObserver(config) {
@@ -617,6 +625,7 @@ module.exports = {
   reportResolved,
   normalizeConfig,
   resolveMinVerifyScore,
+  resolveRequirePreShipDocSync,
   resolveAutoStartObserver,
   resolveMemoryRouting,
   DEFAULT_CHANGELOG_FILE,

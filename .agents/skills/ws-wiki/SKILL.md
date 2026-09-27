@@ -148,4 +148,4 @@ node {skillsRoot}/ws-wiki/scripts/list_wiki_from_code_areas.cjs --json --repo-ro
 
 ## Delivery Close Lifecycle Integration
 
-In `ws-spec-to-pr` (Step 8 close) and `ws-spec-to-pr-lite` (Step 4 close), after implementation is completed and product code is committed, `ws-wiki sync` is offered as a post-close documentation sync step alongside `ws-spec-index` and `ws-changelog` to keep living domain documentation permanently synchronized with shipped code.
+In `ws-spec-to-pr` (Step 8 close) and `ws-spec-to-pr-lite` (Step 4 close), after implementation is completed and product code is committed, `ws-wiki sync` runs as the wiki leg of the pre-ship doc-sync trio alongside `ws-spec-index` and `ws-changelog` to keep living domain documentation permanently synchronized with shipped code. When `defaults.requirePreShipDocSync` is true (default) that trio is a gate-enforced close step; when no wiki is configured (`plans.wikiDir` absent) the wiki leg warn-and-skips with a visible warning without blocking, and the index + changelog legs stay required. When the flag is false, `ws-wiki sync` is offered, not mandatory.

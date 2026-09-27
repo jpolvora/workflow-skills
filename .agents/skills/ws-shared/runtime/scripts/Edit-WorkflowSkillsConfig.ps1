@@ -1308,6 +1308,7 @@ function Populate-Sections {
             'defaults' {
                 Add-SectionHeader -ParentPanel $page -YOffset $y -Title 'Execution & Gates' -Subtitle 'Autonomy, scoring gates, budgets, and run modes.'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'enableDag' -LabelText 'Enable DAG Parallel Tasks (defaults.enableDag)' -Type 'bool' -DefaultVal $false
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'requirePreShipDocSync' -LabelText 'Require Pre-ship Doc Sync Trio (default true)' -Type 'bool' -DefaultVal $true
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'verboseMode' -LabelText 'Verbose Step Preview (defaults.verboseMode)' -Type 'bool' -DefaultVal $true
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'branchStrategy' -LabelText 'Default Branch Strategy (stay | from-current | from-base | prompt)' -Type 'enum' -Options @('stay', 'from-current', 'from-base', 'prompt') -DefaultVal 'stay'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'enableOptionalProofOfWork' -LabelText 'Optional Proof-of-Work Step (defaults.enableOptionalProofOfWork)' -Type 'bool' -DefaultVal $false

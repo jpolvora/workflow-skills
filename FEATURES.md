@@ -108,6 +108,7 @@ The suite's central claim is that nothing ships on an agent's word alone. Every 
 | **Secrets and PII scan** | Leak audit before ship, with an optional pre-commit hook (user-requested only). | `ws-secrets-leak-review` |
 | **Adversarial audit** | Claimed work is checked against real git diffs and re-run verifications. `auditVerdictsBlockShip` supports `false`, `"refuted"` (default), or stricter `"caveats"` while preserving the REFUTED safety floor. | `ws-fable-judge` |
 | **Preview dry-run before Create PR** | `ws-ship-pr` Step 4b reuses `preview.dryRunCommand` verbatim after push and before PR creation; default on via `preview.previewBeforeShip`, disabled only by explicit `false`. Findings or failure are reported on the Prepare-to-PR board and never block shipping. | `ws-ship-pr` + `ws-preview` |
+| **Pre-ship doc-sync gate (`defaults.requirePreShipDocSync`)** | Default true, omitted/invalid → true. Standard Step 8 / lite Step 4 block the ship phase until the trio (`ws-wiki sync` + `ws-spec-index sync` + changelog entry) completes; a project with no wiki warn-skips the wiki leg while index and changelog stay required. Set false to restore the offered-wiki behavior. | `gates.md` (close) |
 | **Delivery gate** | Scope control, anti-reinvention, ambiguity stops, and pre-ship proof checklist. | `ws-senior-developer` |
 
 ---

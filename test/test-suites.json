@@ -93,6 +93,9 @@
       "test/test-min-verify-score.js"
     ],
     [
+      "test/test-pre-ship-doc-sync.js"
+    ],
+    [
       "test/test-skill-frontmatter.js"
     ],
     [
@@ -249,6 +252,9 @@
     ],
     [
       "test/test-min-verify-score.js"
+    ],
+    [
+      "test/test-pre-ship-doc-sync.js"
     ],
     [
       "test/test-skill-frontmatter.js"
