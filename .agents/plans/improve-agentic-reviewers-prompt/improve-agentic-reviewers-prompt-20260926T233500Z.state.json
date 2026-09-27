@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "0.4.46",
+  "workflowId": "improve-agentic-reviewers-prompt-20260926T233500Z",
+  "slug": "improve-agentic-reviewers-prompt",
+  "title": "Improve agentic code reviewers prompt — simplify and align upstream vs local needs",
+  "source": "local",
+  "status": "completed",
+  "currentStep": 9,
+  "completedSteps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "skippedSteps": [],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "completed",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed",
+    "9": "skipped"
+  },
+  "branch": "develop",
+  "branchStrategy": "stay",
+  "baseBranch": "main",
+  "baselineCommit": "eedba98ac7a2c23d54c2d8e12400327e8eeb2353",
+  "baselineSourceRef": "local",
+  "modelsPreset": "current",
+  "currentModel": "unknown",
+  "startedAt": "2026-09-27T00:23:27.542Z",
+  "updatedAt": "2026-09-27T00:53:58.608Z",
+  "preExistingDirty": [],
+  "filesTouched": [
+    ".github/agentic-code-reviewers-prompt.md",
+    ".github/workflows/agentic-code-review.yml"
+  ],
+  "commits": [],
+  "verificationScore": 10,
+  "minVerifyScore": 9,
+  "autoMode": true,
+  "dryRun": false,
+  "skipQualityGates": false,
+  "shipModelsPreset": "current",
+  "shipPrModelsPreset": "current",
+  "goalFixPrModelsPreset": "current",
+  "turnPause": null,
+  "stepCheckpoints": {},
+  "handoffs": {},
+  "gateHistory": [
+    {
+      "gate": "branch-gate",
+      "mode": "auto",
+      "strategy": "stay",
+      "branch": "develop",
+      "at": "2026-09-27T00:23:27.542Z"
+    }
+  ],
+  "endedAt": "2026-09-27T00:53:41.633Z",
+  "shipStatus": "pr-open",
+  "prUrl": "https://github.com/jpolvora/workflow-skills/pull/434",
+  "prNumber": 434
+}

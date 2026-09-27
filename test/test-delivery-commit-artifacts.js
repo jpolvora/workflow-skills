@@ -32,7 +32,7 @@ const schema = JSON.parse(
 const dca = example.defaults?.deliveryCommitArtifacts;
 assert(!!dca, 'example has defaults.deliveryCommitArtifacts');
 assert(dca.includeRefinedPlan === true, 'example includeRefinedPlan default true');
-assert(dca.includeDeliveryResult === false, 'example includeDeliveryResult default false');
+assert(dca.includeDeliveryResult === true, 'example includeDeliveryResult true (explicit seed)');
 assert(dca.includeSpec === false, 'example includeSpec default false');
 assert(dca.includeCheckReport === false, 'example includeCheckReport default false');
 assert(dca.includeCodeReview === false, 'example includeCodeReview default false');

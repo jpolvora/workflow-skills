@@ -82,10 +82,9 @@ try {
   assert(fs.existsSync(OUTPUT_MD), 'ws-pre-daily/references/OUTPUT.md exists');
   assert(fs.existsSync(SCRIPT), 'ws-pre-daily/scripts/collect_window.cjs exists');
 
-  const pkg = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'package.json'), 'utf8'));
   const skillContent = fs.readFileSync(SKILL_MD, 'utf8');
   assert(skillContent.includes('name: ws-pre-daily'), 'SKILL.md has name');
-  assert(skillContent.includes(`version: ${pkg.version}`), `SKILL.md has version ${pkg.version}`);
+  assert(!/^version:\s/m.test((skillContent.match(/^---\n([\s\S]*?)\n---/) || [])[1] || ''), 'SKILL.md has no version frontmatter');
   assert(skillContent.includes('pre-daily'), 'SKILL.md has invocation_names');
   assert(skillContent.includes('{skillsRoot}'), 'SKILL.md uses {skillsRoot}');
   assert(skillContent.includes('{plansDir}'), 'SKILL.md uses {plansDir}');

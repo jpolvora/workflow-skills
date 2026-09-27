@@ -1,6 +1,5 @@
 ---
 name: ws-tdah
-version: 0.4.78
 description: Action-first reply shape, anti-slop clarity, and operational judgment. Trigger via /ws-tdah, /tdah, /wait-what, or start ws-tdah (autoload in upstream dogfood hubs).
 invocation_names:
   - tdah
@@ -12,7 +11,6 @@ invocation_names:
   - gabarito
   - ws-gabarito
 ---
-
 # ws-tdah
 
 > When this skill is loaded, output "ws-tdah loaded."

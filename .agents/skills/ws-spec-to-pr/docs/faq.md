@@ -104,7 +104,7 @@ flowchart TD
 
 ### Modes & Flags
 *   `dry-run` (`dryRun: true`): Simulates all operations. Prevents source edits, git commits, remote pushes, browser automation, and memory updates.
-*   `auto` (`autoMode: true`): Disables interactive menus. Auto-selects options (index 0). Workflow pauses only on hard stops or if a verify score stays below `defaults.minVerifyScore` after max scoreAndRefine rounds.
+*   `auto` (`autoMode: true`): Disables interactive menus. Auto-selects options (index 0). The orchestrator chains Steps 0→9 in one host session (ship + `ws-goal-fix-pr` subloops) without voluntarily ending the turn between steps. Workflow pauses only on hard stops, host-forced mid-step turn ends (resume via `state.turnPause`), or if a verify score stays below `defaults.minVerifyScore` after max scoreAndRefine rounds.
 *   `skip-testing`: Skips standard Step 7 Testing entirely, moving directly to Step 8 Ship.
 *   `skip-tests`: Skips the execution of testing suites (e.g. `npm run test` or `pytest`) in STACK.md. Build checks are still enforced.
 *   Mutation (inside Step 7): not a CLI flag by default — configure `verification.mutationTest` and set `defaults.skipMutationTesting: false` to opt in. Empty `mutationTest` or `skipMutationTesting: true` skips mutation without failing.

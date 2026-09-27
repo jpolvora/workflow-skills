@@ -12,11 +12,9 @@ assert.ok(front, 'SKILL.md has YAML frontmatter');
 const frontmatter = front[1];
 assert.match(frontmatter, /^name: ws-spec-translate-to-human$/m, 'frontmatter name');
 assert.match(frontmatter, /^description: /m, 'frontmatter description');
-assert.match(frontmatter, /^version: \d+\.\d+\.\d+$/m, 'frontmatter version');
+assert.ok(!/^version:\s/m.test(frontmatter), 'no version frontmatter on packaged skills');
 assert.match(frontmatter, /^invocation_names:$/m, 'frontmatter invocation_names');
 assert.match(frontmatter, /translate-to-human/, 'invocation alias present');
-const pkgVersion = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8')).version;
-assert.match(frontmatter, new RegExp(`^version: ${pkgVersion.replace(/\./g, '\\.')}$`, 'm'), 'skill version tracks package.json');
 assert.match(skillBody, new RegExp(`${SKILL} loaded\\.`), 'load banner');
 assert.match(skillBody, /validate_companion\.cjs/, 'validator tool anchor');
 

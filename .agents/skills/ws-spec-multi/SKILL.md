@@ -1,13 +1,11 @@
 ---
 name: ws-spec-multi
-version: 0.4.78
 description: Batch specs one by one. Classifies each spec and runs standard or lite. Trigger for multi-spec queues.
 disable-model-invocation: true
 invocation_names:
   - spec-multi
   - ws-spec-multi
 ---
-
 # `ws-spec-multi` — Smart Multi-Spec Orchestrator
 
 > When this skill is loaded, output "ws-spec-multi loaded."

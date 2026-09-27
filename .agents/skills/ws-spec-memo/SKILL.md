@@ -1,6 +1,5 @@
 ---
 name: ws-spec-memo
-version: 0.4.78
 disable-model-invocation: true
 description: >-
   workflow-skills ↔ spec-memo bridge only: wire config.json memory backends, import/migrate
@@ -11,7 +10,6 @@ invocation_names:
   - ws-spec-memo
   - spec-memo-setup
 ---
-
 # ws-spec-memo
 
 > When this skill is loaded, output "ws-spec-memo loaded."

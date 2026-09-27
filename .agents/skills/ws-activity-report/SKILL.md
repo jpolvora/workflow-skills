@@ -1,6 +1,5 @@
 ---
 name: ws-activity-report
-version: 0.4.78
 description: >-
   Timesheet entries (date, start, end, description) for ws-spec-to-pr /
   ws-spec-to-pr-lite deliveries. Start = earliest bootstrap file creation in
@@ -11,7 +10,6 @@ invocation_names:
   - activity-report
   - ws-activity-report
 ---
-
 # ws-activity-report
 
 > When this skill is loaded, output "ws-activity-report loaded."

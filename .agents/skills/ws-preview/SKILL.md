@@ -1,14 +1,12 @@
 ---
 name: ws-preview
 description: Run the consumer-configured local pipeline review dry-run command without publishing PR threads.
-version: 0.4.78
 disable-model-invocation: true
 invocation_names:
   - ws-preview
   - pipeline-review
   - exec-code-review
 ---
-
 # ws-preview
 
 > When this skill is loaded, output "ws-preview loaded."

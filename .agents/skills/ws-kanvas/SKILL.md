@@ -1,13 +1,11 @@
 ---
 name: ws-kanvas
-version: 0.4.78
 description: Packaged local kanban visualizer for spec and workflow state (Backlog, Sprint, Development, Staging, Production, Abandoned).
 disable-model-invocation: true
 invocation_names:
   - kanvas
   - ws-kanvas
 ---
-
 # ws-kanvas
 
 > When this skill is loaded, output "ws-kanvas loaded."

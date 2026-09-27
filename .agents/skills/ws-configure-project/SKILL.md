@@ -1,12 +1,10 @@
 ---
 name: ws-configure-project
-version: 0.4.78
 description: Project configuration wizard — detects project settings and interviews config.json sections (including preview.dryRunCommand and optional specMemo).
 invocation_names:
   - configure-project
   - ws-configure-project
 ---
-
 # ws-configure-project
 
 > When this skill is loaded, output "ws-configure-project loaded."

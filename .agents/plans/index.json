@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "workflows": [
+    {
+      "workflowId": "simplify-skill-versioning-20260927T015020Z",
+      "slug": "simplify-skill-versioning",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/simplify-skill-versioning/simplify-skill-versioning-20260927T015020Z.state.md",
+      "stateSha256": "95f956522034e19c44467a79b51e71d20f8334835bcf2dd0386be71d6692eccf",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-27T02:19:57Z",
+      "runPath": ".agents/plans/simplify-skill-versioning/simplify-skill-versioning-20260927T015020Z.state.json"
+    }
+  ],
+  "revision": 16,
+  "generatedAt": "2026-09-27T02:19:57Z"
+}

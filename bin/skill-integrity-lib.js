@@ -11,6 +11,7 @@ import fs from 'fs';
 import path from 'path';
 import {
   HUB_WHITELIST,
+  HUB_MANAGED_FILE_PATHS,
   HUB_DEST_ALIASES,
   SKIP_INSTALL_FILES,
   CONSUMER_OWNED_DIRS,
@@ -106,13 +107,18 @@ export function writeJsonStable(filePath, obj) {
 
 /**
  * skillDigest: sha256 over UTF-8 lines `relPath + NUL + fileDigest + LF` sorted by relPath.
+ * When packageVersion is set, prefix `packageVersion\\n{semver}\\n` binds release version to the digest.
  */
-export function digestFromFilesMap(filesMap) {
+export function digestFromFilesMap(filesMap, packageVersion = null) {
   const lines = Object.keys(filesMap)
     .sort(compareCodepoint)
     .map((rel) => `${rel}\0${filesMap[rel]}\n`)
     .join('');
-  return sha256Hex(Buffer.from(lines, 'utf8'));
+  const prefix =
+    packageVersion != null && String(packageVersion).length
+      ? `packageVersion\n${String(packageVersion)}\n`
+      : '';
+  return sha256Hex(Buffer.from(prefix + lines, 'utf8'));
 }
 
 /**
@@ -234,22 +240,27 @@ export function enumerateHubFiles(sharedRoot) {
     if (!fs.existsSync(digestPath) || fs.statSync(digestPath).isDirectory()) continue;
     files[toPosix(destinationName)] = hashFileBytes(fs.readFileSync(digestPath));
   }
+  for (const name of HUB_MANAGED_FILE_PATHS) {
+    const abs = path.join(sharedRoot, name);
+    if (!fs.existsSync(abs) || fs.statSync(abs).isDirectory()) continue;
+    files[toPosix(name)] = hashFileBytes(fs.readFileSync(abs));
+  }
   return files;
 }
 
-export function buildSkillEntry(skillRoot) {
+export function buildSkillEntry(skillRoot, packageVersion = null) {
   const files = enumerateSkillFiles(skillRoot);
   return {
     files,
-    skillDigest: digestFromFilesMap(files),
+    skillDigest: digestFromFilesMap(files, packageVersion),
   };
 }
 
-export function buildHubEntry(sharedRoot) {
+export function buildHubEntry(sharedRoot, packageVersion = null) {
   const files = enumerateHubFiles(sharedRoot);
   return {
     files,
-    skillDigest: digestFromFilesMap(files),
+    skillDigest: digestFromFilesMap(files, packageVersion),
   };
 }
 
@@ -294,9 +305,9 @@ export function buildUpstreamManifest(packageRoot, packageVersion) {
   const skillIds = listInstallableSkills(skillsDir);
   const skills = {};
   for (const id of skillIds) {
-    skills[id] = buildSkillEntry(path.join(skillsDir, id));
+    skills[id] = buildSkillEntry(path.join(skillsDir, id), packageVersion);
   }
-  const hub = buildHubEntry(path.join(skillsDir, HUB_DIR));
+  const hub = buildHubEntry(path.join(skillsDir, HUB_DIR), packageVersion);
   const packageEntry = buildPackageEntry(packageRoot);
   const fullPackageDigest = aggregateDigest(skillIds, skills, hub, packageEntry);
   return {
@@ -344,8 +355,8 @@ export function compareFilesMap(expectedFiles, actualFiles, pathPrefix = '') {
 /**
  * Verify a skill tree on disk against a manifest skill entry.
  */
-export function verifySkillOnDisk(skillRoot, expectedEntry, skillId) {
-  const actual = buildSkillEntry(skillRoot);
+export function verifySkillOnDisk(skillRoot, expectedEntry, skillId, packageVersion = null) {
+  const actual = buildSkillEntry(skillRoot, packageVersion);
   const fileCmp = compareFilesMap(expectedEntry?.files || {}, actual.files, skillId);
   const digestOk = actual.skillDigest === expectedEntry?.skillDigest;
   if (!digestOk && fileCmp.ok) {
@@ -360,11 +371,11 @@ export function verifySkillOnDisk(skillRoot, expectedEntry, skillId) {
   return { ok: fileCmp.ok && digestOk, actual, mismatches: fileCmp.mismatches };
 }
 
-export function verifyHubOnDisk(sharedRoot, expectedHub) {
+export function verifyHubOnDisk(sharedRoot, expectedHub, packageVersion = null) {
   if (expectedHub == null) {
     return { ok: true, actual: null, mismatches: [] };
   }
-  const actual = buildHubEntry(sharedRoot);
+  const actual = buildHubEntry(sharedRoot, packageVersion);
   const fileCmp = compareFilesMap(expectedHub.files || {}, actual.files, 'hub');
   const digestOk = actual.skillDigest === expectedHub.skillDigest;
   if (!digestOk && fileCmp.ok) {
@@ -391,6 +402,7 @@ export function verifyHubOnDisk(sharedRoot, expectedHub) {
 export function verifyClosure({ skillsDir, manifest, skillIds, includeHub, hubDir }) {
   const mismatches = [];
   const actualSkills = {};
+  const packageVersion = manifest?.packageVersion ?? null;
 
   for (const id of skillIds) {
     const expected = manifest.skills?.[id];
@@ -403,7 +415,7 @@ export function verifyClosure({ skillsDir, manifest, skillIds, includeHub, hubDi
       mismatches.push({ path: id, reason: 'missing' });
       continue;
     }
-    const result = verifySkillOnDisk(skillRoot, expected, id);
+    const result = verifySkillOnDisk(skillRoot, expected, id, packageVersion);
     actualSkills[id] = result.actual;
     mismatches.push(...result.mismatches);
   }
@@ -411,7 +423,7 @@ export function verifyClosure({ skillsDir, manifest, skillIds, includeHub, hubDi
   let actualHub = null;
   if (includeHub) {
     const sharedRoot = hubDir || path.join(skillsDir, HUB_DIR);
-    const result = verifyHubOnDisk(sharedRoot, manifest.hub);
+    const result = verifyHubOnDisk(sharedRoot, manifest.hub, packageVersion);
     actualHub = result.actual;
     mismatches.push(...result.mismatches);
   }

@@ -3,9 +3,9 @@
 /**
  * Regenerate docs/index.html from AGENTS.md + skills.
  *
- * Version contract (single source of truth = package.json):
- * - Default: stamp footer from package.json.version (no bump). Safe for CI.
- * - --bump: patch-bump package.json, then stamp footer. Use only for intentional releases.
+ * Version contract (single source of truth = .agents/skills/ws-shared/version.json):
+ * - Default: stamp footer from canonical version (no bump). Safe for CI.
+ * - --bump: patch-bump version.json, sync package.json projections, then stamp footer.
  * Never bump in GitHub Actions site deploy — that used to write footer+1 while
  * only committing docs/, leaving install/--version/--check one patch behind the site.
  */
@@ -13,7 +13,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { rewriteSkillMarkdown } from './skill-frontmatter.js';
+import { bumpCanonicalPatch, readCanonicalVersion } from './canonical-version.js';
 import { buildWikiSite, resolveWikiDir, buildSitemapXml } from './build-wiki-site.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -29,50 +29,19 @@ if (unknownArgs.length || (shouldBump && shouldCheck)) {
   process.exit(1);
 }
 
-// --- Version (package.json is canonical) ---
-const pkgPath = path.join(root, 'package.json');
-const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
-const currentVersion = pkg.version;
-let siteVersion = currentVersion;
+// --- Version (version.json is canonical) ---
+let siteVersion;
+try {
+  siteVersion = readCanonicalVersion(root);
+} catch (err) {
+  console.error(err.message);
+  process.exit(1);
+}
 
 if (shouldBump) {
-  const versionParts = currentVersion.split('.').map(Number);
-  if (versionParts.length !== 3 || versionParts.some((n) => Number.isNaN(n))) {
-    console.error(`Invalid package.json version "${currentVersion}" (expected x.y.z)`);
-    process.exit(1);
-  }
-  versionParts[2] += 1;
-  siteVersion = versionParts.join('.');
-  pkg.version = siteVersion;
-  fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
-  console.log(`Bumping package.json version: ${currentVersion} -> ${siteVersion}`);
-
-  // Keep skill frontmatter + skill-dependencies packageVersion in lockstep with package.json
-  const skillRoot = path.join(root, '.agents', 'skills');
-  let skillVerUpdates = 0;
-  for (const ent of fs.readdirSync(skillRoot, { withFileTypes: true })) {
-    if (!ent.isDirectory()) continue;
-    const skillMd = path.join(skillRoot, ent.name, 'SKILL.md');
-    if (!fs.existsSync(skillMd)) continue;
-    const text = fs.readFileSync(skillMd, 'utf-8');
-    const next = rewriteSkillMarkdown(text, siteVersion);
-    if (next && next !== text) {
-      fs.writeFileSync(skillMd, next);
-      skillVerUpdates += 1;
-    }
-  }
-  console.log(`Synced version: ${siteVersion} into ${skillVerUpdates} SKILL.md frontmatter(s)`);
-
-  for (const rel of [
-    path.join(root, 'bin', 'skill-dependencies.json'),
-    path.join(root, '.agents', 'skills', 'ws-shared', 'runtime', 'skill-dependencies.json'),
-  ]) {
-    if (!fs.existsSync(rel)) continue;
-    const deps = JSON.parse(fs.readFileSync(rel, 'utf-8'));
-    deps.packageVersion = siteVersion;
-    fs.writeFileSync(rel, JSON.stringify(deps, null, 2) + '\n');
-    console.log(`Synced packageVersion in ${path.relative(root, rel)}`);
-  }
+  const { from, to } = bumpCanonicalPatch(root);
+  siteVersion = to;
+  console.log(`Bumping canonical version: ${from} -> ${to}`);
 
   // Keep the consumer-fixture tarball reference aligned with the release version.
   const testPkgPath = path.join(root, 'test', 'package.json');

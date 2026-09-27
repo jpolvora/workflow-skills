@@ -1,13 +1,11 @@
 ---
 name: ws-patterns-generator
 description: Consumer project-patterns skill generator that harvests run artifacts and project knowledge to seed and refresh an autoloaded, hub-hosted ws-project-patterns skill.
-version: 0.4.78
 disable-model-invocation: true
 invocation_names:
   - ws-patterns-generator
   - patterns-generator
 ---
-
 # ws-patterns-generator
 
 > When this skill is loaded, output "ws-patterns-generator loaded."

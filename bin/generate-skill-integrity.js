@@ -16,20 +16,24 @@ import {
   stableStringify,
   writeJsonStable,
 } from './skill-integrity-lib.js';
+import {
+  assertVersionProjectionsMatch,
+  readCanonicalVersion,
+} from './canonical-version.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const packageRoot = path.resolve(__dirname, '..');
 const manifestPath = path.join(packageRoot, MANIFEST_REL);
-const pkgPath = path.join(packageRoot, 'package.json');
-
-function getPackageVersion() {
-  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-  return pkg.version || '0.0.0';
-}
-
 function main() {
   const checkOnly = process.argv.includes('--check');
-  const version = getPackageVersion();
+  let version;
+  try {
+    version = readCanonicalVersion(packageRoot);
+    assertVersionProjectionsMatch(packageRoot, version);
+  } catch (err) {
+    console.error(`Error: ${err.message}`);
+    process.exit(1);
+  }
   const generated = buildUpstreamManifest(packageRoot, version);
   const generatedText = stableStringify(generated);
 
@@ -48,7 +52,7 @@ function main() {
     }
     if (existing.packageVersion !== version) {
       console.error(
-        `Error: packageVersion drift: manifest=${existing.packageVersion} package.json=${version}`
+        `Error: packageVersion drift: manifest=${existing.packageVersion} canonical=${version}`
       );
       process.exit(1);
     }

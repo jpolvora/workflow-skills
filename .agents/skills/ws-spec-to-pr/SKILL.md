@@ -1,13 +1,11 @@
 ---
 name: ws-spec-to-pr
 description: End-to-end Spec-to-PR (steps 0–9). Verify score ≥ `defaults.minVerifyScore` (default 9) before review. Trigger for full/standard delivery.
-version: 0.4.78
 disable-model-invocation: true
 invocation_names:
   - spec-to-pr
   - ws-spec-to-pr
 ---
-
 # ws-spec-to-pr
 
 > When this skill is loaded, output "ws-spec-to-pr loaded."
@@ -21,7 +19,7 @@ Before Step 0, on-demand load [`setup.md`](../ws-shared/runtime/setup.md) for bo
 
 ## Native Tool Contract
 
-Aliases: [`tools.md`](../ws-shared/runtime/tools.md). Params: `.ws/config.json` (bootstrap, fixed). Entry check: [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check. Never narrate undone work. Host mode: resolve the host-tool binding (abstract aliases → concrete session tools) per [`host-dispatch.md`](../ws-shared/runtime/host-dispatch.md) at bootstrap; honor Tier 1 → Tier 2 → Tier 3. Orch never edits code except Inline Isolated Execution (Tier 3) where the session model temporarily adopts the step persona to edit via native file tools; otherwise use `dispatch-agent` only. Interactive cadence: in normal mode, enforce One Step Per Turn per [`gates.md`](../ws-shared/runtime/gates.md) — markdown fallback never starts Step N+1 in the same turn as the gate; native modal `user-gate` returning any recommended advance option continues in the same turn (rule 7: **Next**, **Accept recommendation**, Commit-then-advance, Reach-10 advance, close, or ship intent); in `autoMode`, auto-select index 0 and proceed automatically without halting.
+Aliases: [`tools.md`](../ws-shared/runtime/tools.md). Params: `.ws/config.json` (bootstrap, fixed). Entry check: [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check. Never narrate undone work. Host mode: resolve the host-tool binding (abstract aliases → concrete session tools) per [`host-dispatch.md`](../ws-shared/runtime/host-dispatch.md) at bootstrap; honor Tier 1 → Tier 2 → Tier 3. Orch never edits code except Inline Isolated Execution (Tier 3) where the session model temporarily adopts the step persona to edit via native file tools; otherwise use `dispatch-agent` only. Interactive cadence: in normal mode, enforce One Step Per Turn per [`gates.md`](../ws-shared/runtime/gates.md) — markdown fallback never starts Step N+1 in the same turn as the gate; native modal `user-gate` returning any recommended advance option continues in the same turn (rule 7: **Next**, **Accept recommendation**, Commit-then-advance, Reach-10 advance, close, or ship intent); in `autoMode`, auto-select index 0 and **run continuously** through Step 9 (ship + `ws-goal-fix-pr` subloops per [`STEP-DISPATCH.md`](STEP-DISPATCH.md)) without voluntarily ending the host turn between steps.
 
 | Intent | Alias | Rule |
 |--------|-------|------|
@@ -50,11 +48,11 @@ Subagents return parseable `step-output`. Gate contexts: transitions, entry/resu
 | Auto-select recommended gate option (index 0) at every boundary | Skip Steps 1–3 for `standard`/`complex` |
 | Proceed continuously across step boundaries (no One Step Per Turn halt) | Edit product code before `step-01-*.plan.md` and other advance-to-4 artifacts exist on disk |
 | Apply scripted `complexityClass: simple` (stub Step 1, skip 2/3) in autoMode | Ignore classifier `runInterview` / `execMode` to waive planning |
-| Checkpoint mid-step progress and record a turn-boundary pause before ending a turn the step could not finish | Assume `autoMode` chains host turns |
-| Resume at `state.turnPause.nextAction` / `state.stepCheckpoints[N]` on the next turn | Treat an unchanged `revision` on an active step as a stall |
+| Chain host turns: orchestrator owns Steps 0→9 in one session (Step 8 close → `ws-ship-pr` → Step 9 `ws-goal-fix-pr` until terminal) | Voluntarily end the host turn between step boundaries in `autoMode` |
+| Resume at `state.turnPause.nextAction` / `state.stepCheckpoints[N]` when the host forced a mid-step turn end | Treat an unchanged `revision` on an active step as a stall |
 | | Treat an existing parent feature branch plus a child slug as a planning waiver |
 
-`autoMode` removes gate halts but **does not chain host turns**: every host turn still ends on its own. Before ending a turn with the current step incomplete, run `checkpoint` (unit marker + remaining count) and `pause-turn` (reason + `nextAction`) through `update_state.cjs` — recipes in [`PROTOCOLS.md`](PROTOCOLS.md) § Turn-boundary pause & mid-step checkpoints. Write the pause marker **only** on a real turn end, never speculatively. The step's terminating `finish` clears both markers; a pause is not a `dispatch`.
+`autoMode` removes gate halts **and** host-turn limits between steps: keep dispatching until `status: completed`, terminal `shipStatus`, and Step 9 convergence (or a hard stop). **Host-forced turn end only:** when the host ends the turn mid-step despite `autoMode`, run `checkpoint` and `pause-turn` through `update_state.cjs` before yielding — recipes in [`PROTOCOLS.md`](PROTOCOLS.md) § Turn-boundary pause & mid-step checkpoints. Write the pause marker only on a real forced turn end, never speculatively. The step's terminating `finish` clears both markers; a pause is not a `dispatch`.
 
 First Step 4 `dispatch-agent` (`ws-implement-tasks`) only after fail-closed `validate_state.cjs --pre-advance 4` exits 0, unless `--skip-gates` / `skipQualityGates` is active (omit the pre-advance and log `gate-bypass | pre-advance` per [`gates.md`](../ws-shared/runtime/gates.md) § Quality gate bypass). Bypass does **not** weaken autoMode ≠ skip planning. Guard failure → **HS-5** STOP — no product-file edits, no Step 4 dispatch.
 6. **Artifacts:** Never commit `{plansDir}/` in Steps 0–7. Product G2-code after Step 5 and after Step 6 review-fix uses path-scoped `files_touched` only. Delivery commit Step 8: plan + `step-08-{slug}.result.md` only.

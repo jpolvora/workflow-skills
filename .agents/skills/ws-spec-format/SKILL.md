@@ -1,12 +1,10 @@
 ---
 name: ws-spec-format
 description: Specification schema & validator — defines canonical *.spec.md format, section hierarchy, and acceptance criteria rules.
-version: 0.4.78
 invocation_names:
   - spec-format
   - ws-spec-format
 ---
-
 # ws-spec-format
 
 > When this skill is loaded, output "ws-spec-format loaded."

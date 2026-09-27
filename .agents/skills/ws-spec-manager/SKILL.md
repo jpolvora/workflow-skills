@@ -1,13 +1,11 @@
 ---
 name: ws-spec-manager
-version: 0.4.78
 description: Unified specification router and lifecycle manager — routes spec creation, listing, inspection, drift updating, index synchronization, organization, and archiving to specialized ws-spec-* skills.
 disable-model-invocation: true
 invocation_names:
   - ws-spec-manager
   - spec-manager
 ---
-
 # ws-spec-manager
 
 > When this skill is loaded, output "ws-spec-manager loaded."

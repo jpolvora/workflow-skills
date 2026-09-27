@@ -1,5 +1,20 @@
 # Changelog
 
+### [2026-09-26 22:13] Agent: agent
+- **Prompt**: Continue simplify-skill-versioning workflow (autoMode)
+- **Done**: Steps 6-8: review clean, testing pass, implementation closed
+- **Result**: Ship skipped (fullMode false). Product on develop at 34f49a75. PR: run ship-pr or enable fullMode.
+
+### [2026-09-26 21:47] Agent: agent
+- **Prompt**: C:/Program Files/Git/ws-spec-write Improve versioning in skills by centralizing the release version in ws-shared/version.json and binding it to skill checksums
+- **Done**: Created and validated .agents/specs/pending/0140-simplify-skill-versioning.spec.md; tracked simplify-skill-versioning in .agents/specs/index.PRD
+- **Result**: Spec-only change; version.json replaces per-skill frontmatter versioning in the proposed contract. Authoring validator and linter passed.
+
+### [2026-09-26 21:19] Agent: agent
+- **Prompt**: C:/Program Files/Git/ws-goal-fix-pr 434
+- **Done**: Fixed four stale numbered-spec references left by the status-folder cleanup, committed f3706e54ea7a3dd49b31d2263702b8e06ea87996, and pushed develop.
+- **Result**: PR 434 converged with activeThreads empty and green CI plus Agentic Code Review checks.
+
 ### [2026-09-26 19:36] Agent: agent
 - **Prompt**: PR 433 goal-fix-pr round 3: resolve 4 review threads on destructive detector terminals
 - **Done**: Separator-aware terminals on all DESTRUCTIVE patterns plus test mirror and integrity regen
