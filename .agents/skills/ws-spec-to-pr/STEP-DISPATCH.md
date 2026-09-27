@@ -12,6 +12,7 @@
 |------|-------|
 | Auto-select recommended gate option (index 0) at every boundary | Skip Steps 1–3 |
 | Proceed continuously across step boundaries (no One Step Per Turn halt) | Edit product code before `step-01-*.plan.md` and other advance-to-4 artifacts exist on disk |
+| Chain host turns through Step 8 ship (`ws-ship-pr` workflow mode) and Step 9 `ws-goal-fix-pr` until terminal | Voluntarily halt the host turn between step boundaries in `autoMode` |
 | | Ignore classifier `runInterview` / `execMode` to waive planning |
 | | Treat an existing parent feature branch plus a child slug as a planning waiver |
 

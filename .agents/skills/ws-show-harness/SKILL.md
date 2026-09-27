@@ -1,13 +1,11 @@
 ---
 name: ws-show-harness
 description: Session harness snapshot generator — reports active skills, rules, precedence hierarchy, and capabilities for the current session.
-version: 0.4.78
 disable-model-invocation: true
 invocation_names:
   - ws-show-harness
   - show-harness
 ---
-
 # ws-show-harness
 
 > When this skill is loaded, output "ws-show-harness loaded."

@@ -1,6 +1,5 @@
 ---
 name: ws-spec-explain
-version: 0.4.78
 disable-model-invocation: true
 description: >-
   Read-only panorama of a spec or US/issue — status, what it does, what it
@@ -11,7 +10,6 @@ invocation_names:
   - spec-explain
   - explain
 ---
-
 # ws-spec-explain
 
 > When this skill is loaded, output "ws-spec-explain loaded."

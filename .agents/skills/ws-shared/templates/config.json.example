@@ -194,7 +194,7 @@
     "_comment_deliveryCommitArtifacts": "Step 8 delivery commit includes under {us-dir}. Defaults: refined plan on; delivery result off (behavior change vs legacy always plan+result); opt-ins false. Omitted object/keys at read time merge to these AC1 defaults — never silently revert to always staging plan+result.",
     "deliveryCommitArtifacts": {
       "includeRefinedPlan": true,
-      "includeDeliveryResult": false,
+      "includeDeliveryResult": true,
       "includeSpec": false,
       "includeCheckReport": false,
       "includeCodeReview": false,
@@ -215,11 +215,11 @@
         "testingModel": "current",
         "reviewerModel": "current"
       },
-      "cursor": {
-        "plannerModel": "cursor-grok-4.6-high",
+       "cursor": {
+        "plannerModel": "cursor-grok-4.7-low",
         "executionModel": "composer-2.5",
         "testingModel": "composer-2.5",
-        "reviewerModel": "cursor-grok-4.6-medium"
+        "reviewerModel": "cursor-grok-4.7-low"
       },
       "deepseek": {
         "plannerModel": "opencode-go/deepseek-v4-pro",

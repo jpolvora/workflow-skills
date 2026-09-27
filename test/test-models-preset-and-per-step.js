@@ -69,16 +69,16 @@ assert(
   'default preset testingModel is current',
 );
 assert(
-  example.defaults.modelPresets?.cursor?.plannerModel === 'cursor-grok-4.6-high',
-  'cursor preset plannerModel is cursor-grok-4.6-high',
+  example.defaults.modelPresets?.cursor?.plannerModel === 'cursor-grok-4.7-low',
+  'cursor preset plannerModel is cursor-grok-4.7-low',
 );
 assert(
   example.defaults.modelPresets?.cursor?.executionModel === 'composer-2.5',
   'cursor preset executionModel is composer-2.5',
 );
 assert(
-  example.defaults.modelPresets?.cursor?.reviewerModel === 'cursor-grok-4.6-medium',
-  'cursor preset reviewerModel is cursor-grok-4.6-medium',
+  example.defaults.modelPresets?.cursor?.reviewerModel === 'cursor-grok-4.7-low',
+  'cursor preset reviewerModel is cursor-grok-4.7-low',
 );
 assert(
   example.defaults.modelPresets?.cursor?.testingModel === 'composer-2.5',
@@ -117,8 +117,8 @@ const baseDefaults = {
 
 assert(
   resolvePhaseModel(baseDefaults, { step: 0, pipeline: 'standard', sessionModel: session }) ===
-    'cursor-grok-4.6-high',
-  'preset step 0 uses cursor-grok-4.6-high',
+    'cursor-grok-4.7-low',
+  'preset step 0 uses cursor-grok-4.7-low',
 );
 assert(
   resolvePhaseModel(baseDefaults, { step: 0, pipeline: 'standard', sessionModel: session, preset: 'deepseek' }) ===
@@ -132,7 +132,7 @@ assert(
 );
 assert(
   resolvePhaseModel(baseDefaults, { step: 0, pipeline: 'standard', sessionModel: session, preset: 'nonexistent-preset' }) !==
-    'cursor-grok-4.6-high',
+    'cursor-grok-4.7-low',
   'us-414: unknown preset never resolves to another preset model (fail-closed)',
 );
 assert(
@@ -274,24 +274,24 @@ fs.writeFileSync(
 const fallback = resolveDispatchModel(
   hostContext,
   { hostBinding: { supportedModels: ['composer-2.5'] } },
-  'cursor-grok-4.6-high',
+  'cursor-grok-4.7-low',
   session,
 );
 assert(
   fallback.model === session &&
-    fallback.configuredModel === 'cursor-grok-4.6-high' &&
+    fallback.configuredModel === 'cursor-grok-4.7-low' &&
     fallback.fallbackReason === 'unsupported-host-model',
   'unsupported configured model falls back to captured session model',
 );
 const fileFallback = resolveDispatchModel(
   hostContext,
   { hostBinding: {} },
-  'cursor-grok-4.6-high',
+  'cursor-grok-4.7-low',
   session,
 );
 assert(
   fileFallback.model === session &&
-    fileFallback.configuredModel === 'cursor-grok-4.6-high' &&
+    fileFallback.configuredModel === 'cursor-grok-4.7-low' &&
     fileFallback.fallbackReason === 'unsupported-host-model',
   'host-capabilities binding models trigger session fallback',
 );
@@ -331,7 +331,7 @@ assert(
   resolvePhaseModel(
     { ...liteDefaults, stepModels: {} },
     { step: 3, pipeline: 'lite', sessionModel: session },
-  ) === 'cursor-grok-4.6-medium',
+  ) === 'cursor-grok-4.7-low',
   'lite step 3 falls through to reviewerModel when steps 3 empty',
 );
 assert(

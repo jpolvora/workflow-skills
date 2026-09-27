@@ -1,12 +1,10 @@
 ---
 name: ws-self-learning
-version: 0.4.78
 description: Anti-regression memory engine — consults shared MEMORY before planning/coding and records newly discovered traps into the project knowledge hub.
 invocation_names:
   - self-learning
   - ws-self-learning
 ---
-
 # Self-Learning
 
 > When this skill is loaded, output "ws-self-learning loaded."

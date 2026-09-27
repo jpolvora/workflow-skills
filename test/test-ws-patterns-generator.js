@@ -56,8 +56,7 @@ if (skill) {
   const sharedGraph = JSON.parse(fs.readFileSync(sharedGraphPath, 'utf8'));
   assert(binGraph.packageVersion === pkgVersion, 'bin packageVersion matches package.json');
   assert(sharedGraph.packageVersion === pkgVersion, 'shared packageVersion matches package.json');
-  const ver = (front.match(/^version:\s*"?([^"\n]+)"?$/m) || [])[1];
-  assert(ver === pkgVersion, `frontmatter version matches packageVersion (${ver})`);
+  assert(!/^version:\s/m.test(front), 'SKILL.md has no version frontmatter');
   assert(/invocation_names:[\s\S]*?ws-patterns-generator/.test(front), 'invocation names cover ws-patterns-generator');
   const lines = skill.split('\n');
   const h1 = lines.findIndex((l) => l === '# ws-patterns-generator');

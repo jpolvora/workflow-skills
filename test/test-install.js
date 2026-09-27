@@ -1973,7 +1973,7 @@ child.on('close', async (code) => {
       hashFileBytes,
       canonicalizeForHash,
     } = await import(pathToFileURL(path.join(parentDir, 'bin', 'skill-integrity-lib.js')).href);
-    const { HUB_WHITELIST, HUB_DEST_ALIASES, CONSUMER_OWNED_HUB_FILES } = await import(
+    const { HUB_WHITELIST, HUB_MANAGED_FILE_PATHS, HUB_DEST_ALIASES, CONSUMER_OWNED_HUB_FILES } = await import(
       pathToFileURL(path.join(parentDir, 'bin', 'install-rules.js')).href
     );
 
@@ -2009,6 +2009,7 @@ child.on('close', async (code) => {
       if (
         !HUB_WHITELIST.includes(top) &&
         !HUB_WHITELIST.includes(rel) &&
+        !HUB_MANAGED_FILE_PATHS.includes(rel) &&
         !hubAliasDestinations.has(top) &&
         !hubAliasDestinations.has(rel)
       ) {

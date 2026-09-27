@@ -1,6 +1,5 @@
 ---
 name: ws-cleanup
-version: 0.4.78
 disable-model-invocation: true
 description: >-
   Lists disposable workflow leftovers (telemetry, .runtime, fix-pr temps,
@@ -12,7 +11,6 @@ invocation_names:
   - cleanup
   - clean-up
 ---
-
 # ws-cleanup
 
 > When this skill is loaded, output "ws-cleanup loaded."

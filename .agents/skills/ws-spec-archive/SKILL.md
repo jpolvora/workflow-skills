@@ -1,6 +1,5 @@
 ---
 name: ws-spec-archive
-version: 0.4.78
 disable-model-invocation: true
 description: >-
   Harvests plansDir delivery facts into specsDir/index.PRD, then proposes
@@ -11,7 +10,6 @@ invocation_names:
   - spec-archive
   - archive-plans
 ---
-
 # ws-spec-archive
 
 > When this skill is loaded, output "ws-spec-archive loaded."

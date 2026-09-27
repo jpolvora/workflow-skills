@@ -2,13 +2,11 @@
 name: ws-benchmarks
 description: >-
   Benchmark management suite — interactive menu to inspect version-over-version evolution results, run static/live benchmarks, and update comparison reports.
-version: 0.4.78
 disable-model-invocation: true
 invocation_names:
   - ws-benchmarks
   - benchmarks
 ---
-
 # ws-benchmarks
 
 > When this skill is loaded, output "ws-benchmarks loaded."

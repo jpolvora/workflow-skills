@@ -19,8 +19,7 @@ assert.ok(fs.existsSync(skillFile), 'SKILL.md exists');
 const skillContent = fs.readFileSync(skillFile, 'utf8');
 
 assert.match(skillContent, /^name:\s*ws-spec-manager/m, 'frontmatter name is ws-spec-manager');
-const pkg = JSON.parse(fs.readFileSync(path.join(REPO, 'package.json'), 'utf8'));
-assert.match(skillContent, new RegExp(`^version:\\s*${pkg.version.replace(/\\./g, '\\.')}`, 'm'), `frontmatter version matches package ${pkg.version}`);
+assert.ok(!/^version:\s/m.test(skillContent.split('---')[1] || ''), 'SKILL.md has no version frontmatter');
 assert.match(skillContent, /^disable-model-invocation:\s*true/m, 'disable-model-invocation is true');
 for (const alias of ['ws-spec-manager', 'spec-manager']) {
   assert.ok(skillContent.includes(`- ${alias}`), `invocation_names includes ${alias}`);

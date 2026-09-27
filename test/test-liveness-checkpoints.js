@@ -341,11 +341,11 @@ function checkpoint(fixture, root, step, payload, name = 'progress.json') {
 {
   const skill = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/SKILL.md'), 'utf8');
   const protocols = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/PROTOCOLS.md'), 'utf8');
-  assert.ok(/does not chain host turns/i.test(skill), 'SKILL.md states autoMode does not chain host turns');
-  assert.ok(/turn[- ]boundary/i.test(skill), 'SKILL.md documents the turn-boundary pause');
+  assert.ok(/chain host turns|chains Steps 0/i.test(skill), 'SKILL.md states autoMode chains host turns through Step 9');
+  assert.ok(/Host-forced turn end|host forced/i.test(skill), 'SKILL.md documents host-forced turn-boundary fallback');
   assert.ok(/turn[- ]boundary/i.test(protocols), 'PROTOCOLS.md documents the turn-boundary pause');
   assert.ok(/checkpoint/.test(protocols) && /pause-turn/.test(protocols), 'PROTOCOLS.md documents both operations');
-  console.log('D1 orchestrator docs state autoMode does not chain host turns: ok');
+  console.log('D1 orchestrator docs state autoMode continuous run + host-forced pause fallback: ok');
 }
 
 // D2 - AC19

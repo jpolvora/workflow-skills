@@ -1,13 +1,11 @@
 ---
 name: ws-wiki
-version: 0.4.78
 disable-model-invocation: true
 description: Living project feature wiki and domain knowledge base manager — initializes, synchronizes, and validates living feature documentation, business rules, and technical architecture.
 invocation_names:
   - ws-wiki
   - wiki
 ---
-
 # ws-wiki
 
 > When this skill is loaded, output "ws-wiki loaded."

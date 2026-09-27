@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
 import {
   HUB_WHITELIST,
+  HUB_MANAGED_FILE_PATHS,
   HUB_DEST_ALIASES,
   HUB_LAYOUT,
   isHubBackupArtifact,
@@ -50,6 +51,7 @@ import {
   verifyClosure,
   writeJsonStable,
 } from './skill-integrity-lib.js';
+import { readCanonicalVersion } from './canonical-version.js';
 import {
   pruneRetiredConsumerArtifacts,
   RETIRED_HUB_FILES,
@@ -1257,7 +1259,7 @@ function ensureSharedHubInstalled(mode = 'install') {
   migrateLegacyFlatHub(destManaged);
   retireProjectHubManagedContent(destShared);
 
-  for (const name of HUB_WHITELIST) {
+  for (const name of [...HUB_WHITELIST, ...HUB_MANAGED_FILE_PATHS]) {
     const srcPath = path.join(srcShared, name);
     if (!fs.existsSync(srcPath)) continue;
     const destName = HUB_DEST_ALIASES[name] || name;
@@ -1469,10 +1471,11 @@ function assertNotSelfOverwrite() {
 
 function getLocalVersion() {
   try {
-    const pkg = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
-    return pkg.version || '0.0.0';
-  } catch {
-    return '0.0.0';
+    return readCanonicalVersion(packageRoot);
+  } catch (err) {
+    console.error(`Error: ${err.message}`);
+    console.error('Run update to install ws-shared/version.json from upstream.');
+    process.exit(1);
   }
 }
 
@@ -1570,11 +1573,13 @@ function postVerifyAndWriteLocal(skillIds, { includeHub, force, manifest }) {
     const actualSkills = {};
     for (const id of skillIds) {
       const root = path.join(targetSkillsDir, id);
-      if (fs.existsSync(root)) actualSkills[id] = buildSkillEntry(root);
+      if (fs.existsSync(root)) {
+        actualSkills[id] = buildSkillEntry(root, expected.packageVersion);
+      }
     }
     let actualHub = null;
     if (includeHub && fs.existsSync(managedHubDir())) {
-      actualHub = buildHubEntry(managedHubDir());
+      actualHub = buildHubEntry(managedHubDir(), expected.packageVersion);
     }
     const isFull =
       listInstallableSkills(packageSkillsDir).length === skillIds.length && includeHub;
@@ -1624,11 +1629,13 @@ function rewriteLocalIntegrityForRemaining(remainingSkillIds) {
   const actualSkills = {};
   for (const id of remainingSkillIds) {
     const root = path.join(targetSkillsDir, id);
-    if (fs.existsSync(root)) actualSkills[id] = buildSkillEntry(root);
+    const pv = prior?.packageVersion || getLocalVersion();
+    if (fs.existsSync(root)) actualSkills[id] = buildSkillEntry(root, pv);
   }
-  const actualHub = includeHub ? buildHubEntry(managedHubDir()) : null;
+  const pvRemain = prior?.packageVersion || getLocalVersion();
+  const actualHub = includeHub ? buildHubEntry(managedHubDir(), pvRemain) : null;
   const record = buildLocalRecord({
-    packageVersion: prior?.packageVersion || getLocalVersion(),
+    packageVersion: pvRemain,
     fullPackageDigest: null,
     skillIds: remainingSkillIds.filter((id) => actualSkills[id]),
     actualSkills,
@@ -1685,7 +1692,7 @@ function runIntegrityAudit() {
       mismatches.push({ path: id, reason: 'missing' });
       continue;
     }
-    const actual = buildSkillEntry(skillRoot);
+    const actual = buildSkillEntry(skillRoot, record.packageVersion);
     for (const rel of Object.keys(expected.files || {}).sort()) {
       if (!actual.files[rel]) {
         mismatches.push({ path: `${id}/${rel}`, reason: 'missing' });
@@ -1702,7 +1709,7 @@ function runIntegrityAudit() {
 
   // Skills in record but not installed → skip (AC7)
   if (record.hub != null) {
-    const actualHub = buildHubEntry(managedHubDir());
+    const actualHub = buildHubEntry(managedHubDir(), record.packageVersion);
     for (const rel of Object.keys(record.hub.files || {}).sort()) {
       if (!actualHub.files[rel]) {
         mismatches.push({ path: `hub/${rel}`, reason: 'missing' });

@@ -121,6 +121,12 @@ export const HUB_WHITELIST = Object.values(HUB_LAYOUT.categories)
   .flatMap((category) => category.roots)
   .filter((value, index, values) => values.indexOf(value) === index);
 
+/** Managed hub-root files (not under runtime/ or templates/ roots). */
+export const HUB_MANAGED_FILE_PATHS = Object.values(HUB_LAYOUT.categories)
+  .filter((category) => category.copy === true)
+  .flatMap((category) => (category.paths || []).map((entry) => normalizeHubPath(entry)))
+  .filter((value, index, values) => values.indexOf(value) === index && !value.includes('/'));
+
 /** Dest paths for nested managed files whose installed name differs. */
 export const HUB_DEST_ALIASES = Object.fromEntries(
   Object.values(HUB_LAYOUT.categories)

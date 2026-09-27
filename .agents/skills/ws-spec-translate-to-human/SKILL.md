@@ -1,14 +1,12 @@
 ---
 name: ws-spec-translate-to-human
 description: Translates an agent spec into a parallel human runbook (numbered Implementation / UI Test / Out of scope steps beside the source artifact). Trigger on spec translate, human runbook, manual test script, or refinement companion.
-version: 0.4.78
 disable-model-invocation: true
 invocation_names:
   - ws-spec-translate-to-human
   - translate-to-human
   - spec-translate-to-human
 ---
-
 # ws-spec-translate-to-human
 
 > When this skill is loaded, output "ws-spec-translate-to-human loaded."

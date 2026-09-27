@@ -228,7 +228,7 @@ Stop: max exhausted · escalate · merge blocked · cancelled · PR closed · ch
 
 Parse: `auto` + combinable `dry-run`, `skip-testing`, `skip-tests`, US/spec entry.
 
-Resume: active `autoMode` same US → continue `currentStep`; else new `workflow-id`. `autoMode` removes gate halts but **does not chain host turns** — a step too large for one turn ends with mid-step checkpoints plus a turn-boundary pause marker (see § Turn-boundary pause & mid-step checkpoints), and the next turn resumes at that marker.
+Resume: active `autoMode` same US → continue `currentStep` (or `state.turnPause.nextAction` when the host forced a mid-step turn end); else new `workflow-id`. `autoMode` removes gate halts **and** voluntary host-turn limits: the orchestrator chains Steps 0→9 in one session (Step 8 close → workflow-mode `ws-ship-pr` → Step 9 `ws-goal-fix-pr` loop) until terminal ship + fix-pr convergence or a hard stop. Host-forced mid-step turn ends still use mid-step checkpoints plus a turn-boundary pause marker (see § Turn-boundary pause & mid-step checkpoints).
 
 | Context | Auto choice (index 0) |
 |---------|----------------------|
@@ -258,7 +258,7 @@ Tag `uswf/{workflow-id}/before-step-{N}` = HEAD before step N first mutation. `b
 
 ### Turn-boundary pause & mid-step checkpoints
 
-Distinct from the git-tag § Checkpoints above (the `checkpoints[]` mirror array and `uswf/*` tags): these are **state records** written through `update_state.cjs` when a host turn cannot finish the step. `status` stays `active`; whole-step gates remain authoritative.
+Distinct from the git-tag § Checkpoints above (the `checkpoints[]` mirror array and `uswf/*` tags): these are **state records** written through `update_state.cjs` when a host turn cannot finish the step. In **`autoMode`**, the orchestrator does not voluntarily end turns between steps; use this section only when the **host** forces a turn end mid-step (context limit, external interrupt) or in **normal** mode per One Step Per Turn. `status` stays `active`; whole-step gates remain authoritative.
 
 - **Mid-step checkpoint** (`checkpoint`) — replaceable sub-progress record per step:
   `state.stepCheckpoints["N"] = { step, substep, completedUnits: [unit ids], remainingUnits: int >= 0, updatedAt }`.

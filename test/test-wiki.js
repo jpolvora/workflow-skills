@@ -208,7 +208,7 @@ Missing Business Rules & Logic section!
     const content = fs.readFileSync(skillPath, 'utf8');
     assert(/name:\s*ws-wiki/.test(content), 'AC1: frontmatter contains name: ws-wiki');
     assert(/invocation_names:\s*\n\s*-\s*ws-wiki\s*\n\s*-\s*wiki/.test(content), 'AC1: frontmatter contains invocation names ws-wiki and wiki');
-    assert(/version:\s*0\.4\.\d+/.test(content), 'AC1: frontmatter contains matching version');
+    assert(!/^version:\s/m.test((content.match(/^---\n([\s\S]*?)\n---/) || [])[1] || ''), 'AC1: no per-skill version frontmatter');
     assert(content.includes('> When this skill is loaded, output "ws-wiki loaded."'), 'AC2: body outputs load banner "ws-wiki loaded."');
   }
 

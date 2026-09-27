@@ -1,13 +1,11 @@
 ---
 name: ws-pre-daily
-version: 0.4.78
 disable-model-invocation: true
 description: Standup briefing of the last 36 hours — delivered, made, ongoing, next.
 invocation_names:
   - pre-daily
   - ws-pre-daily
 ---
-
 # ws-pre-daily
 
 > When this skill is loaded, output "ws-pre-daily loaded."

@@ -1,13 +1,11 @@
 ---
 name: ws-task-lifecycle
 description: On-demand coordinator for prompt-driven product work — Intake, Implementation, Completion tracking without a Spec-to-PR plan tree.
-version: 0.4.78
 disable-model-invocation: true
 invocation_names:
   - task-lifecycle
   - ws-task-lifecycle
 ---
-
 # ws-task-lifecycle
 
 > When this skill is loaded, output "ws-task-lifecycle loaded."
