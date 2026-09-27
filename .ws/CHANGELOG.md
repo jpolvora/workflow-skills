@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-26 22:13] Agent: agent
+- **Prompt**: Continue simplify-skill-versioning workflow (autoMode)
+- **Done**: Steps 6-8: review clean, testing pass, implementation closed
+- **Result**: Ship skipped (fullMode false). Product on develop at 34f49a75. PR: run ship-pr or enable fullMode.
+
 ### [2026-09-26 21:47] Agent: agent
 - **Prompt**: C:/Program Files/Git/ws-spec-write Improve versioning in skills by centralizing the release version in ws-shared/version.json and binding it to skill checksums
 - **Done**: Created and validated .agents/specs/pending/0140-simplify-skill-versioning.spec.md; tracked simplify-skill-versioning in .agents/specs/index.PRD
