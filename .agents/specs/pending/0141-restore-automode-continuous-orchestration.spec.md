@@ -42,6 +42,7 @@ System boundaries: portable skill prose and tests only (`gates.md`, `ws-spec-to-
 - AC6: `test/test-liveness-checkpoints.js` D1 asserts SKILL.md documents chaining (not “does not chain host turns”) and host-forced pause fallback; D2 README/FEATURES checks unchanged.
 - AC7: `checkpoint` / `pause-turn` CLI behavior, schemas, and `ws-monitor` pause-vs-stall semantics from US-412/413 remain valid — no removal of operations or telemetry types.
 - AC8: Completed spec US-412/413 is not rewritten; this spec records the corrected interpretation of its orchestration gap (option (a) restored for `autoMode`).
+- AC9: `WORKER-TURN-RULES.md` scopes its turn rule to dispatched workers (standard dispatch, step-baton workers, inline-isolated). It states the `autoMode` orchestrator host session stays unattended through Steps 0→9 and is not a worker turn. Worker obligations stay: preview plus at least two tool calls, zero-tool-call failure, no mid-batch parent ping. `worker_turn_guard.cjs` and `step_coordinator.cjs` behavior stay unchanged.
 
 ## Out of Scope
 

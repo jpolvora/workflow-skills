@@ -5,6 +5,14 @@ Single source of truth for the worker-turn rule text shared by standard
 execution. Dispatch builders quote the key sentences below and point here;
 they never maintain a divergent copy.
 
+## Scope
+
+These rules bind dispatched workers only: standard `dispatch-agent` prompts, step-baton coordinator workers, and inline-isolated step execution. They do not bind the orchestrator host session.
+
+In `autoMode` the orchestrator runs unattended in one host session through Steps 0→9 (close, `ws-ship-pr`, `ws-goal-fix-pr`) and does not stop between steps because a worker turn ended. A worker completion is not an orchestrator turn boundary.
+
+Worker obligations stay in force: the first worker response includes the verbose preview and at least two tool calls; a zero-tool-call worker turn is failed delivery; the parent does not inject a message into a running worker turn and polls workflow state read-only.
+
 ## Turn rule
 
 - The worker's FIRST response must contain BOTH the verbose preview AND at least 2 tool calls.
