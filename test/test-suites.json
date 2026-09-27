@@ -490,6 +490,9 @@
       "test/test-worker-turn-guard.js"
     ],
     [
+      "test/test-check-workflows-distributed.js"
+    ],
+    [
       "test/test-local-first-precedence.js"
     ],
     [

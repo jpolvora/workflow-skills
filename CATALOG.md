@@ -65,6 +65,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Action-first shape + /wait-what |
 | `ws-spec-to-pr` | `.agents/skills/ws-spec-to-pr/SKILL.md` | Spec-to-PR (steps 0–9) |
 | `ws-spec-to-pr-lite` | `.agents/skills/ws-spec-to-pr-lite/SKILL.md` | Fast Spec-to-PR (steps 0–5) |
+| `ws-spec-to-pr-distributed` | `.agents/skills/ws-spec-to-pr-distributed/SKILL.md` | Distributed Spec-to-PR |
 | `ws-spec-multi` | `.agents/skills/ws-spec-multi/SKILL.md` | Batch multi-spec delivery |
 | `ws-fable-method` | `.agents/skills/ws-fable-method/SKILL.md` | 7-step problem-solving loop |
 | `ws-fable-domain` | `.agents/skills/ws-fable-domain/SKILL.md` | Domain adapter generator & schemas (Extra) |
@@ -124,6 +125,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | Ship PR | `ws-ship-pr` |
 | Spec → PR E2E | `ws-spec-to-pr` |
 | Spec → PR lite | `ws-spec-to-pr-lite` |
+| Spec → PR distributed | `ws-spec-to-pr-distributed` |
 | Prompt-driven implementation (not Spec-to-PR) | `ws-task-lifecycle` |
 | Batch spec delivery | `ws-spec-multi` |
 | Project spec index init/sync/promote | `ws-spec-index` |
@@ -238,7 +240,6 @@ Opt-out phrases (`stop ws-tdah`, `stop ws-senior-developer`, …) are in `AGENTS
 | Draft a spec | `AGENTS.md` § Write a spec → `{specsDir}/{slug}.spec.md` (not `{plansDir}`). Load live `ws-spec-write` only when authoring that skill. |
 | Spec → PR (full) | `ws-spec-to-pr` |
 | Spec → PR (fast) | `ws-spec-to-pr-lite` |
-| GitHub issue → spec / fix | `ws-spec-provider-github` `fetch-to-spec` (writes `{specsDir}` first, then registers `step-00`) |
 | Open PR review threads | `ws-fix-pr` / `ws-goal-fix-pr` |
 | Timesheet / activity hours (Spec-to-PR plan folder) | `ws-activity-report` (Extra) |
 | Vault prompt/session activity | `ws-session-tracking` (external; skip if missing) |

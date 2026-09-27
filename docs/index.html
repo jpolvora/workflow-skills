@@ -159,7 +159,7 @@
     <span class="badge-dot"></span>
     <span>Deterministic Spec-Driven Harness</span>
     <span style="color:var(--text-dim)">&bull;</span>
-    <span style="color:var(--accent-cyan);font-family:var(--font-mono)">v0.5.3</span>
+    <span style="color:var(--accent-cyan);font-family:var(--font-mono)">v0.5.4</span>
   </a>
   <h1>From Spec to <span class="gradient-text">Delivery</span></h1>
   <p class="hero-brand">Workflow Skills</p>
@@ -283,9 +283,9 @@
     <div class="role-matrix-card">
       <div class="role-card-header">
         <div class="role-card-icon">B</div>
-        <h4 class="role-card-title">Step-level baton runs (multi-CLI)</h4>
+        <h4 class="role-card-title">Multi-CLI step runs (ws-spec-to-pr-distributed)</h4>
       </div>
-      <p class="role-card-desc">Execute different steps in different CLI processes through the deterministic coordinator (<code>step_coordinator.cjs</code>, no LLM): map steps to runners with <code>defaults.stepRunners</code> / <code>defaults.runners</code>, tune polling with <code>defaults.stepBaton</code>. Revision-serialized claim/release/expiry on the state-file baton, one-shot workers with sparse pointers, <code>baton_*</code> telemetry plus read-only monitor fields, and coordinator-surfaced gates.</p>
+      <p class="role-card-desc">The opt-in <code>ws-spec-to-pr-distributed</code> workflow executes different steps in different CLI processes through the deterministic coordinator (<code>step_coordinator.cjs</code>, no LLM): map steps to runners with <code>defaults.stepRunners</code> / <code>defaults.runners</code>, tune polling with <code>defaults.stepBaton</code>. Revision-serialized claim/release/expiry on the state-file baton, one-shot workers with sparse pointers, <code>baton_*</code> telemetry plus read-only monitor fields, and coordinator-surfaced gates. <code>ws-spec-to-pr</code> ignores those keys and stays single-host.</p>
     </div>
   <!-- efficiency-verifiability:end -->
     <div class="role-matrix-card">
@@ -1352,7 +1352,7 @@ disable-model-invocation: true
       <p class="section-subtitle">Discover every shipped skill. Search by name, layer, or full vs lite.</p>
     </div>
     <div class="catalog-stats">
-      <span class="catalog-counter"><strong id="visible-skills-count">57</strong> skills available</span>
+      <span class="catalog-counter"><strong id="visible-skills-count">58</strong> skills available</span>
     </div>
   </div>
 
@@ -1756,7 +1756,7 @@ disable-model-invocation: true
   <div class="layer" data-layer-id="layer-5">
     <div class="layer-header">
       <h3><span class="layer-tag">Layer 5</span> — Utility & meta</h3>
-      <span class="count">30 skills</span>
+      <span class="count">31 skills</span>
     </div>
     <div class="skill-grid">
       <div class="skill-card" data-path=".agents/skills/ws-activity-report/SKILL.md" data-name="ws-activity-report" data-slug="ws-activity-report" data-desc="timesheet entries (date, start, end, description) for ws-spec-to-pr / ws-spec-to-pr-lite deliveries. start = earliest bootstrap file creation in the plan folder; end = latest of last pr thread comment or last delivery commit. trigger on activity-report {date}, log hours, timesheet, or activities for a day." data-deps="" data-layer="layer-5" data-full="false" data-lite="false">
@@ -2034,6 +2034,16 @@ disable-model-invocation: true
           <a class="view-skill" href="#" data-path=".agents/skills/ws-spec-to-pr/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
         </div>
       </div>
+      <div class="skill-card" data-path=".agents/skills/ws-spec-to-pr-distributed/SKILL.md" data-name="ws-spec-to-pr-distributed" data-slug="ws-spec-to-pr-distributed" data-desc="distributed spec-to-pr — drives the shared standard 0–9 step set across multiple cli processes on one machine via the deterministic step coordinator and state-file baton. explicit opt-in only." data-deps="ws-spec-to-pr ws-spec-write ws-classify-complexity ws-plan-write ws-plan-interview ws-plan-to-tasks ws-implement-tasks ws-plan-verify ws-code-review ws-testing ws-ship-pr ws-fix-pr ws-goal-fix-pr ws-spec-provider-github ws-spec-provider-azure-devops ws-spec-provider-local ws-check-harness ws-check-workflows ws-tdah ws-spec-format ws-goal-loop ws-self-learning ws-changelog ws-configure-project ws-spec-index ws-wiki ws-senior-developer ws-spec-translate-to-human" data-layer="layer-5" data-full="false" data-lite="false">
+        <div class="skill-card-top">
+          <div class="name">ws-spec-to-pr-distributed</div>
+        </div>
+        <div class="desc">Distributed Spec-to-PR — drives the shared standard 0–9 step set across multiple CLI processes on one machine via the deterministic step coordinator and state-file baton. Explicit opt-in only.</div>
+        <div class="skill-card-bottom">
+          <div class="skill-deps-wrap"><div class="deps-heading">Dependencies (28):</div><div class="deps-list"><span class="dep-pill" data-dep="ws-spec-to-pr">ws-spec-to-pr</span><span class="dep-pill" data-dep="ws-spec-write">ws-spec-write</span><span class="dep-pill" data-dep="ws-classify-complexity">ws-classify-complexity</span><span class="dep-pill" data-dep="ws-plan-write">ws-plan-write</span><span class="dep-pill" data-dep="ws-plan-interview">ws-plan-interview</span><span class="dep-pill" data-dep="ws-plan-to-tasks">ws-plan-to-tasks</span><span class="dep-pill" data-dep="ws-implement-tasks">ws-implement-tasks</span><span class="dep-pill" data-dep="ws-plan-verify">ws-plan-verify</span><span class="dep-pill" data-dep="ws-code-review">ws-code-review</span><span class="dep-pill" data-dep="ws-testing">ws-testing</span><span class="dep-pill" data-dep="ws-ship-pr">ws-ship-pr</span><span class="dep-pill" data-dep="ws-fix-pr">ws-fix-pr</span><span class="dep-pill" data-dep="ws-goal-fix-pr">ws-goal-fix-pr</span><span class="dep-pill" data-dep="ws-spec-provider-github">ws-spec-provider-github</span><span class="dep-pill" data-dep="ws-spec-provider-azure-devops">ws-spec-provider-azure-devops</span><span class="dep-pill" data-dep="ws-spec-provider-local">ws-spec-provider-local</span><span class="dep-pill" data-dep="ws-check-harness">ws-check-harness</span><span class="dep-pill" data-dep="ws-check-workflows">ws-check-workflows</span><span class="dep-pill" data-dep="ws-tdah">ws-tdah</span><span class="dep-pill" data-dep="ws-spec-format">ws-spec-format</span><span class="dep-pill" data-dep="ws-goal-loop">ws-goal-loop</span><span class="dep-pill" data-dep="ws-self-learning">ws-self-learning</span><span class="dep-pill" data-dep="ws-changelog">ws-changelog</span><span class="dep-pill" data-dep="ws-configure-project">ws-configure-project</span><span class="dep-pill" data-dep="ws-spec-index">ws-spec-index</span><span class="dep-pill" data-dep="ws-wiki">ws-wiki</span><span class="dep-pill" data-dep="ws-senior-developer">ws-senior-developer</span><span class="dep-pill" data-dep="ws-spec-translate-to-human">ws-spec-translate-to-human</span></div></div>
+          <a class="view-skill" href="#" data-path=".agents/skills/ws-spec-to-pr-distributed/SKILL.md">View skill <span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
       <div class="skill-card" data-path=".agents/skills/ws-spec-to-pr-lite/SKILL.md" data-name="ws-spec-to-pr-lite" data-slug="ws-spec-to-pr-lite" data-desc="fast spec-to-pr (steps 0–5). plan, implement, commit, review, ship. trigger for lite/fast delivery." data-deps="ws-spec-write ws-classify-complexity ws-plan-write ws-implement-tasks ws-code-review ws-ship-pr ws-fix-pr ws-goal-fix-pr ws-spec-provider-github ws-spec-provider-azure-devops ws-spec-provider-local ws-tdah ws-spec-format ws-self-learning ws-changelog ws-configure-project ws-spec-index ws-wiki ws-senior-developer ws-spec-translate-to-human" data-layer="layer-5" data-full="false" data-lite="true">
         <div class="skill-card-top">
           <div class="name">ws-spec-to-pr-lite</div>
@@ -2146,9 +2156,9 @@ disable-model-invocation: true
         <span class="package-shortcut">Shortcut: <code>w</code></span>
       </div>
       <h4>Workflows Package</h4>
-      <p class="package-desc">Workflows package — 49 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the consumer (<code>.ws/</code>) hub.</p>
+      <p class="package-desc">Workflows package — 50 skills (orchestrators, pipeline, providers, harness, promoted utilities) plus the consumer (<code>.ws/</code>) hub.</p>
       <div class="package-preview">
-        <strong>Included core skills:</strong> <code>ws-spec-to-pr</code>, <code>ws-spec-to-pr-lite</code>, <code>ws-spec-write</code>, <code>ws-classify-complexity</code>, <code>ws-plan-write</code>, <code>ws-plan-interview</code>, <code>ws-plan-to-tasks</code>, <code>ws-implement-tasks</code>, … (+41)
+        <strong>Included core skills:</strong> <code>ws-spec-to-pr</code>, <code>ws-spec-to-pr-lite</code>, <code>ws-spec-to-pr-distributed</code>, <code>ws-spec-write</code>, <code>ws-classify-complexity</code>, <code>ws-plan-write</code>, <code>ws-plan-interview</code>, <code>ws-plan-to-tasks</code>, … (+42)
       </div>
     </div>
 
@@ -2848,7 +2858,7 @@ npx --yes github:jpolvora/workflow-skills --global
 <div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.5.3 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.5.4 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
 <!-- Skill Viewer Slide-Over Drawer -->

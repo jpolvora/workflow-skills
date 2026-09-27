@@ -125,7 +125,7 @@ Intent → skill: [`CATALOG.md`](CATALOG.md) § Task router. Specs keywords: [`a
 
 **Product commits:** standard after Step 5 reaches `minVerifyScore` (default 9); lite after Step 2. Commit only `files_touched`; review `{base}...HEAD`; review fixes get a separate commit. `{plansDir}` only at Step 8 / lite 4; never `git add -A`. Fix-PR: `fixPrPlan` before `fixPrExec` in standard Step 9; lite inline.
 
-Step-level baton runs (multi-CLI) execute different steps in different CLI processes via `step_coordinator.cjs` (`defaults.stepRunners` / `defaults.runners` / `defaults.stepBaton`); state-file baton with claim/release/expiry; gates surface at the coordinator while workers stay non-interactive.
+Step-level baton runs (multi-CLI) are owned by the opt-in **`ws-spec-to-pr-distributed`** workflow (its `step_coordinator.cjs`, `defaults.stepRunners` / `defaults.runners` / `defaults.stepBaton`); `ws-spec-to-pr` stays single-host and ignores those keys.
 
 ## Managed skills — no silent local refactors
 

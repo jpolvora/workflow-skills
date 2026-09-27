@@ -37,7 +37,7 @@ const RULE_SENTENCES = [
 ];
 const SOURCES = {
   standard: '.agents/skills/ws-spec-to-pr/PROTOCOLS.md',
-  baton: '.agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs',
+  baton: '.agents/skills/ws-spec-to-pr-distributed/scripts/step_coordinator.cjs',
   inline: '.agents/skills/ws-shared/runtime/host-dispatch.md',
   canonical: '.agents/skills/ws-spec-to-pr/WORKER-TURN-RULES.md',
 };
@@ -172,7 +172,7 @@ assert(
   fs.existsSync(path.join(usDir, 'partial-progress.md')),
   'AC5 fixture partial progress is preserved (not rebuilt from scratch)',
 );
-const coordinator = read('.agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs');
+const coordinator = read('.agents/skills/ws-spec-to-pr-distributed/scripts/step_coordinator.cjs');
 assert(!/git (reset|clean)/.test(coordinator), 'AC5 coordinator retry paths run no git reset/clean (worktree intact)');
 assert(
   read(SOURCES.canonical).includes('reuses the intact'),
@@ -189,12 +189,13 @@ assert(
   'AC4 no ping path remains in the coordinator dispatch loop',
 );
 const hostDispatch = read('.agents/skills/ws-shared/runtime/host-dispatch.md');
+const coordinatorRef = read('.agents/skills/ws-spec-to-pr-distributed/references/coordinator.md');
 assert(
-  hostDispatch.includes('never-ping-mid-batch') || hostDispatch.includes('never sends a message into a running worker turn'),
-  'AC4 never-ping-mid-batch contract is documented for all dispatch tiers',
+  hostDispatch.includes('ws-spec-to-pr-distributed') && coordinatorRef.includes('never-ping-mid-batch'),
+  'AC4 never-ping-mid-batch contract is documented for all dispatch tiers (shared cross-ref + distributed owner)',
 );
 assert(
-  hostDispatch.includes('read-only poll of the workflow state'),
+  coordinatorRef.includes('read-only poll of the workflow state'),
   'AC4 read-only state poll is documented as the sanctioned progress signal',
 );
 

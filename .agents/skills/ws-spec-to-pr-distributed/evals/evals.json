@@ -1,0 +1,35 @@
+{
+  "skill_name": "ws-spec-to-pr-distributed",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/spec-to-pr-distributed for local spec 0143-ws-spec-to-pr-distributed.spec.md",
+      "expected_output": "Multi-CLI run driven by step_coordinator.cjs over the same 0-9 steps: mapped steps use the state-file baton, unmapped steps keep single-host dispatch.",
+      "assertions": [
+        "Agent loads ws-spec-to-pr-distributed (explicit opt-in), never auto-selected",
+        "Uses the distributed coordinator at its own skill path, not ws-spec-to-pr",
+        "Delegates steps to the shared pipeline skills without forking the FSM"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/spec-to-pr-distributed with defaults.stepRunners mapping step 4 to an undeclared runner id",
+      "expected_output": "Run refuses to start before Step 0 with a named error (RUNNER_UNKNOWN_ID); no step artifacts are produced.",
+      "assertions": [
+        "Validates runner config fail-closed before Step 0",
+        "Names the failing runner id in the error",
+        "Starts no partial run and writes no step artifacts"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Run standard /spec-to-pr while defaults.stepRunners is configured",
+      "expected_output": "ws-spec-to-pr stays single-host and ignores the baton keys; it never spawns the coordinator.",
+      "assertions": [
+        "ws-spec-to-pr does not load the distributed coordinator",
+        "Baton keys are ignored for single-host dispatch",
+        "No baton telemetry is emitted by the standard orchestrator"
+      ]
+    }
+  ]
+}

@@ -13,9 +13,9 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '..');
 const require = createRequire(import.meta.url);
-const coordinator = require('../.agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs');
+const coordinator = require('../.agents/skills/ws-spec-to-pr-distributed/scripts/step_coordinator.cjs');
 
-const COORDINATOR = path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs');
+const COORDINATOR = path.join(repoRoot, '.agents/skills/ws-spec-to-pr-distributed/scripts/step_coordinator.cjs');
 const LITE_UPDATER = path.join(repoRoot, '.agents/skills/ws-spec-to-pr-lite/scripts/update_state.cjs');
 const FIXTURES = path.join(repoRoot, 'test/fixtures/step-baton');
 const tempRoots = [];

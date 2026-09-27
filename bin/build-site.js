@@ -406,9 +406,9 @@ const efficiencyFeatureBlock = `  <!-- efficiency-verifiability:start -->
     <div class="role-matrix-card">
       <div class="role-card-header">
         <div class="role-card-icon">B</div>
-        <h4 class="role-card-title">Step-level baton runs (multi-CLI)</h4>
+        <h4 class="role-card-title">Multi-CLI step runs (ws-spec-to-pr-distributed)</h4>
       </div>
-      <p class="role-card-desc">Execute different steps in different CLI processes through the deterministic coordinator (<code>step_coordinator.cjs</code>, no LLM): map steps to runners with <code>defaults.stepRunners</code> / <code>defaults.runners</code>, tune polling with <code>defaults.stepBaton</code>. Revision-serialized claim/release/expiry on the state-file baton, one-shot workers with sparse pointers, <code>baton_*</code> telemetry plus read-only monitor fields, and coordinator-surfaced gates.</p>
+      <p class="role-card-desc">The opt-in <code>ws-spec-to-pr-distributed</code> workflow executes different steps in different CLI processes through the deterministic coordinator (<code>step_coordinator.cjs</code>, no LLM): map steps to runners with <code>defaults.stepRunners</code> / <code>defaults.runners</code>, tune polling with <code>defaults.stepBaton</code>. Revision-serialized claim/release/expiry on the state-file baton, one-shot workers with sparse pointers, <code>baton_*</code> telemetry plus read-only monitor fields, and coordinator-surfaced gates. <code>ws-spec-to-pr</code> ignores those keys and stays single-host.</p>
     </div>
   <!-- efficiency-verifiability:end -->
 `;

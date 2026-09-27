@@ -103,6 +103,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | Vibe-coding implement / what-next / plan or research without a spec | [`ws-megabrain`](../../ws-megabrain/SKILL.md) | Does not replace spec-to-pr; defers when orch owns the session |
 | Deliver **one** feature Spec→PR (full FSM 0–9) | [`ws-spec-to-pr`](../../ws-spec-to-pr/SKILL.md) | Not for batch; not for format-only edits |
 | Deliver **one** feature Spec→PR (fast lite 0–5) | [`ws-spec-to-pr-lite`](../../ws-spec-to-pr-lite/SKILL.md) | Not for complex multi-phase work; never cross-resume with standard |
+| Deliver **one** feature Spec→PR across multiple CLI processes (opt-in) | [`ws-spec-to-pr-distributed`](../../ws-spec-to-pr-distributed/SKILL.md) | Explicit invocation only; never auto-selected; runner-mapped steps use the state-file baton, unmapped steps stay single-host |
 | Pick lite vs standard for a ready spec | [`ws-classify-complexity`](../../ws-classify-complexity/SKILL.md) | Orthogonal to gates.md simple/standard/complex skip axis |
 | Deliver **many** specs sequentially (auto lite/standard workers) | [`ws-spec-multi`](../../ws-spec-multi/SKILL.md) | Master orch only — does not edit product code itself |
 | Explain status / what a spec delivered (read-only panorama) | [`ws-spec-explain`](../../ws-spec-explain/SKILL.md) | Does not implement, ship, or edit specs |
@@ -127,6 +128,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | vibe coding, megabrain, implement without spec, what next | `ws-megabrain` |
 | spec to pr, full pipeline, standard orch | `ws-spec-to-pr` |
 | lite / fast spec to pr | `ws-spec-to-pr-lite` |
+| distributed spec to pr, multi-CLI baton, step runners | `ws-spec-to-pr-distributed` |
 | classify complexity, lite or standard? | `ws-classify-complexity` |
 | multi-spec, batch specs, run all specs | `ws-spec-multi` |
 | explain spec, spec status, what did US deliver, /explain | `ws-spec-explain` |

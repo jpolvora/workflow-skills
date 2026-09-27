@@ -137,7 +137,7 @@ if (Object.keys(empty.stepRunners).length !== 0) throw new Error('empty map shou
       completedSteps: [0, 1, 2], skippedSteps: [],
     }));
     const result = cp.spawnSync(process.execPath, [
-      path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs'),
+      path.join(repoRoot, '.agents/skills/ws-spec-to-pr-distributed/scripts/step_coordinator.cjs'),
       '--state', stateFile, '--repo-root', root,
     ], { encoding: 'utf8' });
     if (result.status !== 3) throw new Error(`empty-map coordinator should exit 3, got ${result.status}: ${result.stderr || result.stdout}`);
@@ -181,7 +181,7 @@ if (lease !== '2026-01-01T00:03:00.000Z') throw new Error(`lease must be 3x time
 for (const file of ['step_baton.cjs', 'step_coordinator.cjs']) {
   const body = fs.readFileSync(path.join(
     repoRoot,
-    file === 'step_baton.cjs' ? '.agents/skills/ws-shared/runtime/scripts' : '.agents/skills/ws-spec-to-pr/scripts',
+    file === 'step_baton.cjs' ? '.agents/skills/ws-shared/runtime/scripts' : '.agents/skills/ws-spec-to-pr-distributed/scripts',
     file,
   ), 'utf8').toLowerCase();
   for (const term of ['cursor', 'claude', 'opencode', 'gemini', 'copilot', 'antigravity']) {
@@ -189,17 +189,28 @@ for (const file of ['step_baton.cjs', 'step_coordinator.cjs']) {
   }
 }
 
-// Docs mirror: tier ladder + lite carve-outs intact, coordinator pointers added, handoffs pointer kept.
+// Docs mirror: tier ladder + lite carve-outs intact; coordinator prose re-homed to the distributed workflow.
 const hostDispatch = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/runtime/host-dispatch.md'), 'utf8');
 for (const needle of ['Tier 1', 'Tier 2', 'Tier 3', 'Inline Isolated Execution', '## 7. Step-level baton runs', '{step}', 'state.handoffs']) {
   if (!hostDispatch.includes(needle)) throw new Error(`host-dispatch.md lost required prose: ${needle}`);
 }
-if (!hostDispatch.includes('{us-dir}/.runtime/step-{N}-dispatch-prompt.md')) throw new Error('host-dispatch.md lacks the {prompt}-as-path effective resolution');
+if (!hostDispatch.includes('ws-spec-to-pr-distributed')) throw new Error('host-dispatch.md lacks the distributed cross-reference');
+const coordinatorRef = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr-distributed/references/coordinator.md'), 'utf8');
+for (const needle of ['{us-dir}/.runtime/step-{N}-dispatch-prompt.md', 'Worker contract', 'never-ping-mid-batch', 'gate-shaped worker output']) {
+  if (!coordinatorRef.includes(needle)) throw new Error(`distributed coordinator.md lost re-homed prose: ${needle}`);
+}
 const gates = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/runtime/gates.md'), 'utf8');
 if (!gates.includes('Coordinator gate surfacing')) throw new Error('gates.md lacks the coordinator surfacing note');
 const orchSkill = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/SKILL.md'), 'utf8');
-if (!orchSkill.includes('Step-level baton runs (multi-CLI)') || !orchSkill.includes('step_coordinator.cjs')) {
-  throw new Error('ws-spec-to-pr SKILL.md lacks the baton-runs pointer');
+if (orchSkill.includes('step_coordinator.cjs')) {
+  throw new Error('ws-spec-to-pr SKILL.md must not own the coordinator invocation');
+}
+if (!orchSkill.includes('ws-spec-to-pr-distributed')) {
+  throw new Error('ws-spec-to-pr SKILL.md lacks the distributed pointer');
+}
+const distSkill = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr-distributed/SKILL.md'), 'utf8');
+if (!distSkill.includes('step_coordinator.cjs')) {
+  throw new Error('ws-spec-to-pr-distributed SKILL.md must own the coordinator invocation');
 }
 
 console.log('PASS: test-step-baton-config (AC1-AC4, NS4)');
