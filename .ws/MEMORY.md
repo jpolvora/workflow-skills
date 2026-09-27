@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-09-27] ws-spec-to-pr ac-ledger evidence linking (Step 5)
+- **Layer**: `devops`
+- **Module**: `workflow-skills / ac_ledger.cjs`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs, .agents/plans/*/ac-ledger.json`
+- **Scenario / Context**: Recording AC evidence for a standard run's Step 5 score. Three separate mistakes cost several retries: (1) `--file` is declared repeatable but the parser reads value-then-advance, so passing several `--file` flags in ONE `link` call silently attaches only the first path; (2) the `--file` range shape is `path:Lstart-Lend` with a literal `L` on BOTH bounds, so `path:1-1` is rejected with "file evidence must use path:Lstart-Lend"; (3) any later `link` with `--commit` re-scores the ledger at boundary `pre-step6`, so a subsequent `validate_state --pre-advance 7` fails with "ledger scoreState must match derived step5 score".
+- **DO NOT**: Pass multiple `--file`/`--test` values in a single `ac_ledger.cjs link` call expecting all to attach; use `path:1-1` or `path:L1-1` range syntax; leave the persisted boundary at `pre-step6` when the next gate is pre-advance 6+ (which expects `step5`).
+- **INSTEAD DO**: Issue ONE `link` call per file (`--event-id impl-acN-i --ac ACN --file path:Lstart-Lend`), verify `files`/`tests` counts in `ac-ledger.json` after attaching, and re-run `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs score --ledger {ledger} --boundary step5` after any commit-linking `link` before running `validate_state --pre-advance` for steps 6+.
+
 ### [2026-09-27] Step finish on gitignored disposable artifacts must use stamped fallback
 - **Layer**: `harness`
 - **Module**: `ws-spec-to-pr / commit_g2_code`
