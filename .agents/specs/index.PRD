@@ -193,10 +193,10 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Centralize skill package versioning and bind versions to integrity checksums (`spec: completed/0140-simplify-skill-versioning.spec.md`)
 - [x] Restore autoMode continuous orchestration (host-turn chaining through ship and fix-pr) (`spec: completed/0141-restore-automode-continuous-orchestration.spec.md`) — `3eb03641` on develop
 - [x] Reduce token usage in spec-to-pr-* workflows via prose compaction and deduplication (`spec: completed/0142-reduce-spec-to-pr-tokens.spec.md`) - `9db3f991` on develop
-- [x] Separate Multi-CLI Step Baton into a Dedicated ws-spec-to-pr-distributed Workflow (`spec: pending/0143-ws-spec-to-pr-distributed.spec.md`) - `e79c96dc` (implementation)
-- [x] skillLoader: adopt token-centered skill loading at inline body-load sites (`spec: pending/0144-us-440.spec.md`) - `7ee4dd57` (implementation)
-- [x] (Spec) Create a new skill ws-spec-to-issue (`spec: pending/0145-us-439.spec.md`)
-- [x] features to be emphasized in website and detailed in wiki (`spec: completed/0146-us-436.spec.md`) - `fbb69019` (implementation)
+- [x] Separate Multi-CLI Step Baton into a Dedicated ws-spec-to-pr-distributed Workflow (`spec: completed/0143-ws-spec-to-pr-distributed.spec.md`) - [PR #442](https://github.com/jpolvora/workflow-skills/pull/442) MERGED (`e79c96dc` implementation)
+- [x] skillLoader: adopt token-centered skill loading at inline body-load sites (`spec: completed/0144-us-440.spec.md`) - [PR #443](https://github.com/jpolvora/workflow-skills/pull/443) MERGED (`7ee4dd57` implementation)
+- [x] (Spec) Create a new skill ws-spec-to-issue (`spec: completed/0145-us-439.spec.md`) - [PR #444](https://github.com/jpolvora/workflow-skills/pull/444) MERGED (`0d2337df` implementation)
+- [x] features to be emphasized in website and detailed in wiki (`spec: completed/0146-us-436.spec.md`) - [PR #445](https://github.com/jpolvora/workflow-skills/pull/445) MERGED (`fbb69019` implementation)
 
 
 
@@ -486,13 +486,13 @@ All Next-specs closed.
 
 | 147 | `reduce-spec-to-pr-tokens` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Reduce token usage in spec-to-pr-* workflows via prose compaction and deduplication |
 
-| 148 | `ws-spec-to-pr-distributed` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Separate Multi-CLI Step Baton into a Dedicated ws-spec-to-pr-distributed Workflow (`e79c96dc` implementation) |
+| 148 | `ws-spec-to-pr-distributed` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Separate Multi-CLI Step Baton into a Dedicated ws-spec-to-pr-distributed Workflow ([PR #442](https://github.com/jpolvora/workflow-skills/pull/442), `e79c96dc`) |
 
-| 149 | `us-440` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | skillLoader: adopt token-centered skill loading at inline body-load sites (`7ee4dd57` implementation) |
+| 149 | `us-440` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | skillLoader: adopt token-centered skill loading at inline body-load sites ([PR #443](https://github.com/jpolvora/workflow-skills/pull/443), `7ee4dd57`) |
 
-| 150 | `us-439` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | [Spec] Create a new skill ws-spec-to-issue |
+| 150 | `us-439` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | [Spec] Create a new skill ws-spec-to-issue ([PR #444](https://github.com/jpolvora/workflow-skills/pull/444), `0d2337df`) |
 
-| 151 | `us-436` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | features to be emphasized in website and detailed in wiki (`fbb69019` implementation) |
+| 151 | `us-436` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | features to be emphasized in website and detailed in wiki ([PR #445](https://github.com/jpolvora/workflow-skills/pull/445), `fbb69019`) |
 
 ## 9. Inbox
 
@@ -642,10 +642,10 @@ All Next-specs closed.
 | 2026-09-27 | `restore-automode-continuous-orchestration` | Restore autoMode continuous orchestration (host-turn chaining through ship and fix-pr) | [PR #437](https://github.com/jpolvora/workflow-skills/pull/437) MERGED |
 | 2026-09-27 | `improve-agentic-reviewers-prompt` | Improve agentic code reviewers prompt — simplify and align upstream vs local needs | [PR #434](https://github.com/jpolvora/workflow-skills/pull/434) MERGED |
 | 2026-09-27 | `reduce-spec-to-pr-tokens` | Reduce token usage in spec-to-pr-* workflows via prose compaction and deduplication | Implemented |
-| 2026-09-27 | `ws-spec-to-pr-distributed` | Separate Multi-CLI Step Baton into a Dedicated ws-spec-to-pr-distributed Workflow | Implemented (`e79c96dc`) |
-| 2026-09-27 | `us-440` | skillLoader: adopt token-centered skill loading at inline body-load sites | commit 7ee4dd57 (implementation) |
-| 2026-09-27 | `us-439` | [Spec] Create a new skill ws-spec-to-issue | commit 0d2337df (implementation) |
-| 2026-09-27 | `us-436` | features to be emphasized in website and detailed in wiki | commit fbb69019 (implementation) |
+| 2026-09-27 | `ws-spec-to-pr-distributed` | Separate Multi-CLI Step Baton into a Dedicated ws-spec-to-pr-distributed Workflow | [PR #442](https://github.com/jpolvora/workflow-skills/pull/442) MERGED (`e79c96dc`) |
+| 2026-09-27 | `us-440` | skillLoader: adopt token-centered skill loading at inline body-load sites | [PR #443](https://github.com/jpolvora/workflow-skills/pull/443) MERGED (`7ee4dd57`) |
+| 2026-09-27 | `us-439` | [Spec] Create a new skill ws-spec-to-issue | [PR #444](https://github.com/jpolvora/workflow-skills/pull/444) MERGED (`0d2337df`) |
+| 2026-09-27 | `us-436` | features to be emphasized in website and detailed in wiki | [PR #445](https://github.com/jpolvora/workflow-skills/pull/445) MERGED (`fbb69019`) |
 
 ## 11. Maintenance checklist
 
