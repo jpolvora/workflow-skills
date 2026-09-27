@@ -36,6 +36,7 @@ spec-from-provider (bulk import) ──────────┘         ↓
 | [`ws-spec-update`](#9-ws-spec-update--drift-fix) | Surgical body sync when code drifted from AC text | Fixing spec drift after prompt-driven code changes |
 | [`ws-spec-archive`](#10-ws-spec-archive--history) | Harvests `{plansDir}` facts → `index.PRD` Archive + cleanup proposal | Archiving shipped plan folders without losing history |
 | [`ws-spec-multi`](#11-ws-spec-multi--batch) | Sequential batch delivery over multiple specs | Delivering a queue spec-by-spec with auto lite/standard routing |
+| [`ws-spec-to-issue`](#12-ws-spec-to-issue--outbound-tracker-item) | Reformulates a free-text idea into an anonymized tracker item (no local spec, no git) | Sending an idea to the tracker without dirtying the working tree |
 
 ---
 
@@ -316,6 +317,25 @@ Auto-run after task completion (alongside `ws-changelog`, `ws-self-learning`), o
 Batch queues. Interactive pick-one delegates to `ws-spec-list`.
 
 **Invariants:** one worker at a time; base-branch sync before/after each; every PR through `ws-goal-fix-pr` (`activeThreads == 0`) + explicit SCM merge before next; pause on failure (Resume/Skip/Abort).
+
+---
+
+### 12. `ws-spec-to-issue` — Outbound Tracker Item
+
+**Path:** `.agents/skills/ws-spec-to-issue/SKILL.md` · Helper: `.agents/skills/ws-spec-to-issue/scripts/run_spec_to_issue.cjs`
+
+**What:** Reformulates a free-text idea into a spec-shaped payload (Description + testable ACs + Out of Scope), anonymizes it, and creates a GitHub issue or ADO User Story through the active provider `create-issue` intent — with no `{specsDir}` / `{plansDir}` artifact and no git mutation. The outbound half of `ws-spec-from-provider`.
+
+**Use when:**
+
+```text
+/ws-spec-to-issue "<description>" [--title "..."|--tracker github|azure-devops|--label X|--type "User Story"|--dry-run]
+node .agents/skills/ws-spec-to-issue/scripts/run_spec_to_issue.cjs --title "..." --body-file payload.md --dry-run
+```
+
+Use while a workflow owns the working tree and you do not want a local spec file.
+
+**Don't use when:** you want a local spec now (use `ws-spec-write`) or a batch import (use `ws-spec-from-provider`).
 
 ---
 

@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-09-27 14:53] Agent: agent
+- **Prompt**: Issue #439: add packaged skill ws-spec-to-issue (free text -> anonymized tracker item).
+- **Done**: Added ws-spec-to-issue skill (body + run_spec_to_issue.cjs helper + evals): resolves the active tracker, reformulates a free-text idea into a spec-shaped payload via ws-spec-write, anonymizes it, and creates a GitHub issue / ADO User Story through the provider create-issue intent with no local spec and no git mutation. Registered both dependency manifests + git-ownership matrix row, routed in AGENTS.md/.ws/AGENTS.md/README/FEATURES/CATALOG/SPEC-MANAGEMENT/autoload/docs/llms.txt, added contract tests, bumped version to 0.5.6.
+- **Result**: verify score 10/10; npm run test 139/139; harness-clean 0 findings; integrity regenerated (v0.5.6); ws-check-harness + context-budget + git-ownership green.
+
+### [2026-09-27 12:44] Agent: agent
+- **Prompt**: Issue #440: skillLoader: adopt token-centered skill loading at inline body-load sites
+- **Done**: Converted 6 shipped skill bodies (task-lifecycle, spec-manager, spec-write, code-review, ship-pr, goal-fix-pr) to cite {skillLoader} + canonical-procedure link at in-session body-load sites; kept dispatch-agent orchestration and script-level delegation exempt; deferred the optional check_skill_load.cjs bare-load extension to a follow-up (not a bounded patch); bumped version to 0.5.5.
+- **Result**: verify score 10/10; npm run test 138/138; check_skill_load + check_duplicates + harness-clean 0 findings; integrity regenerated (v0.5.5); 10/10 Phase 5a gates green.
+
 ### [2026-09-27 12:08] Agent: agent
 - **Prompt**: Extract the multi-CLI step baton out of ws-spec-to-pr into a dedicated ws-spec-to-pr-distributed workflow (issue #438).
 - **Done**: Added ws-spec-to-pr-distributed skill (body + coordinator + references + evals), registered both dependency manifests, re-homed coordinator prose out of shared runtime, slimmed ws-spec-to-pr, added a fail-closed workflow registry to ws-check-workflows, re-pointed baton suites, synced docs/site/wiki/router, bumped version to 0.5.4.

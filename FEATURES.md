@@ -165,6 +165,7 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 | Dual board of specs versus plan workflows, with a manage menu | `ws-spec-list` |
 | Local kanban board (Backlog, Sprint, Development, Staging, Production, Abandoned) with card details popup; `npm run kanvas` | `ws-kanvas` |
 | Bulk-import open GitHub issues or ADO User Stories (assigned to PAT) into `{specsDir}` + full register + auto-track in `index.PRD` | `ws-spec-from-provider` |
+| Create an anonymized tracker item (GitHub issue / ADO User Story) from a free-text idea with no local spec and no git mutation; outbound companion of `ws-spec-from-provider` | `ws-spec-to-issue` |
 | Project feature index (`index.PRD`): init, sync against delivery evidence, promote from inbox, track an existing spec | `ws-spec-index` |
 | Harvest `{plansDir}` delivery facts into `index.PRD` Archive, then propose cleanup of shipped plan folders | `ws-spec-archive` |
 | Update spec bodies when code drifted after ad-hoc prompts | `ws-spec-update` |
@@ -425,6 +426,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-kanvas`](.agents/skills/ws-kanvas/SKILL.md) | W | Local kanban board for spec and workflow state |
 | [`ws-spec-manager`](.agents/skills/ws-spec-manager/SKILL.md) | W | Unified router for spec create/list/update/sync/track/organize/archive/validate/import/run |
 | [`ws-spec-from-provider`](.agents/skills/ws-spec-from-provider/SKILL.md) | W | Bulk-import open GH issues / ADO User Stories → spec-write + register + auto-track |
+| [`ws-spec-to-issue`](.agents/skills/ws-spec-to-issue/SKILL.md) | W | Reformulate free text → anonymized tracker item (GH issue / ADO US) with no local spec and no git |
 | [`ws-spec-update`](.agents/skills/ws-spec-update/SKILL.md) | W | Update spec bodies when code drifts |
 | [`ws-spec-memo`](.agents/skills/ws-spec-memo/SKILL.md) | W | Harness ↔ spec-memo **bridge** only; runtime vault ops are `ws-memo` / `ws-session-tracking` (`externalSkills`, spec-memo package) |
 | [`ws-spec-organizer`](.agents/skills/ws-spec-organizer/SKILL.md) | W | Resolve spec-of-record path and organize/prefix specs chronologically |
