@@ -6,10 +6,10 @@
       "slug": "reduce-spec-to-pr-tokens",
       "pipeline": "standard",
       "statePath": ".agents/plans/reduce-spec-to-pr-tokens/reduce-spec-to-pr-tokens-20260927T043013Z.state.md",
-      "stateSha256": "6bdec7cbe3af89810bb18109ec851efd0fad7e37dea351183112d3ffc232667f",
-      "status": "active",
-      "currentStep": 8,
-      "updatedAt": "2026-09-27T06:22:41Z",
+      "stateSha256": "bc336365037f4d93b2e4f55e27af2de61361178e30a6d907099140da1789a718",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-27T06:40:52Z",
       "runPath": ".agents/plans/reduce-spec-to-pr-tokens/reduce-spec-to-pr-tokens-20260927T043013Z.state.json"
     },
     {
@@ -35,6 +35,6 @@
       "runPath": ".agents/plans/simplify-skill-versioning/simplify-skill-versioning-20260927T015020Z.state.json"
     }
   ],
-  "revision": 18,
-  "generatedAt": "2026-09-27T06:22:41Z"
+  "revision": 24,
+  "generatedAt": "2026-09-27T06:40:52Z"
 }
