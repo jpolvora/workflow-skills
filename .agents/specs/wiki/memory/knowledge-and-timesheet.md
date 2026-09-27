@@ -1,6 +1,6 @@
 # Knowledge & Timesheet (`memory`)
 
-> Provenance: `.agents/skills/ws-self-learning/SKILL.md`, `.agents/skills/ws-changelog/SKILL.md`, `.agents/skills/ws-spec-memo/SKILL.md`, `.agents/skills/ws-activity-report/SKILL.md`, `.agents/skills/ws-pre-daily/SKILL.md`, root `AGENTS.md` § Memory + changelog, living synthesis of specs 0018, 0021, 0033, 0034, 0048, 0049, 0114-patterns-generator-shared-hub-output.
+> Provenance: `.agents/skills/ws-self-learning/SKILL.md`, `.agents/skills/ws-changelog/SKILL.md`, `.agents/skills/ws-spec-memo/SKILL.md`, `.agents/skills/ws-activity-report/SKILL.md`, `.agents/skills/ws-pre-daily/SKILL.md`, root `AGENTS.md` § Memory + changelog, living synthesis of specs 0018, 0021, 0033, 0034, 0048, 0049, 0114-patterns-generator-shared-hub-output, 0138-workflow-parallel-writer-compat.
 
 ## Feature
 
@@ -15,6 +15,8 @@ Before plan, code, or fix work, agents gather three to eight keywords plus touch
 Failure reflection is mandatory when two or more tool, test, or build failures occurred before passing; `Learning: N/A` is forbidden in that case. Real reviewer or CI mistakes from fix-PR rounds persist the same way. Adversarial audits with `REFUTED` or `CAVEATS` verdicts require High or Critical trap entries. `ws-spec-memo` never duplicates vault `SURFACE.md` and adds no MCP tools to this package; disabled vault remains the recommended default with warnings only when integration is enabled but the vault is missing.
 
 Pattern learning closes the loop into reusable project knowledge. Self-learning runs compile their traps into a generated project-patterns body that is stored under the shared hub output, so later skill generations and plan interviews consult the persisted patterns instead of rediscovering them. The generator and the memory track share the same hub root and the same layout classification, which keeps the stored body discoverable from any later run.
+
+Changelog entries go through one idempotent helper, `append_changelog.cjs --prompt … --done … --result …`. It inserts a single `### [date] Agent:` block directly under `# Changelog`, skips an exact-duplicate re-run, and never rewrites or reorders past entries, so concurrent writers only prepend their own entry. The compiled `MEMORY.md` and the changelog both update under the cross-process shared-artifact lock, so a parallel workflow cannot silently overwrite another writer's entry.
 
 Invoice timing through `ws-activity-report` treats Human Total as inclusive of agent supervision, requiring Human ≥ Agent Running when agent time is positive. Idle or AFK gaps over 30 minutes are non-billable and reported separately. `ws-pre-daily` is read-only over git, plan states, and changelog, classifying the window into Delivered, Made, Ongoing, Next, and Gaps with stable headings.
 
