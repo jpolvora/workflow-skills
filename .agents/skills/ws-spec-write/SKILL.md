@@ -101,7 +101,7 @@ When writing a spec derived from a remote tracker issue or raw human description
    Fix the spec and re-run until PASS. Do not register, hand off as done, or auto-track to the standalone `index.PRD` while validation fails.
    - Done when: authoring validation exits 0.
 
-7. **Optional register** — Only if `--register` or the orchestrator explicitly requests a workflow plan copy **and** authoring validation passed. Delegate to `ws-spec-provider-local`:
+7. **Optional register** — Only if `--register` or the orchestrator explicitly requests a workflow plan copy **and** authoring validation passed. Delegate to `ws-spec-provider-local` via `{skillLoader}` ([canonical skill-load procedure](../ws-shared/runtime/host-capability-tokens.md)):
 
    ```bash
    node {skillsRoot}/ws-spec-provider-local/scripts/register_local_spec.cjs \

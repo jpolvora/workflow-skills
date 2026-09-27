@@ -71,7 +71,7 @@ function makeRepo({ integration }) {
 
 function run_repo(repo) {
   const result = cp.spawnSync(process.execPath, [
-    path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs'),
+    path.join(repoRoot, '.agents/skills/ws-spec-to-pr-distributed/scripts/step_coordinator.cjs'),
     '--state', repo.stateFile, '--repo-root', repo.root,
   ], { encoding: 'utf8', timeout: 120000, env: { ...process.env, SPEC_MEMO_CALLS: repo.callsFile } });
   const state = JSON.parse(fs.readFileSync(repo.stateFile, 'utf8'));

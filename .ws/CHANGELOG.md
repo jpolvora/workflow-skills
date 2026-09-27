@@ -1,5 +1,35 @@
 # Changelog
 
+### [2026-09-27 15:43] Agent: agent
+- **Prompt**: /ws-spec-multi 143,144,145,146
+- **Done**: Sequential ws-spec-multi batch: standard ws-spec-to-pr for 0143/0144/0145/0146, merged PRs #442-#445 into develop, closed issues #438/#440/#439/#436, filed specs to completed/ and synced index.PRD
+- **Result**: 4/4 shipped; PRs #442 #443 #444 #445 MERGED; per-PR version bumps 0.5.4 to 0.5.7; tests green; harness 0 findings
+
+### [2026-09-27 15:29] Agent: agent
+- **Prompt**: Emphasize four shipped capability clusters (proof of work; translate to human; unattended autoMode + ws-spec-multi; spec organizer/subfolder sync/cleanup) on the public site and detail them in the living wiki (issue #436).
+- **Done**: Added four marker-delimited feature cards to bin/build-site.js, regenerated docs/index.html + docs/wiki; tightened proof-of-work/cleanup wiki prose; added FEATURES.md 1.7; bumped version 0.5.6 -> 0.5.7 and regenerated integrity.
+- **Result**: PASS: npm run test 139/139; harness-clean 0 findings; ws-check-harness 0 findings; validate_wiki PASS; build-site --check exit 0; generate/verify-integrity exit 0.
+
+### [2026-09-27 14:53] Agent: agent
+- **Prompt**: Issue #439: add packaged skill ws-spec-to-issue (free text -> anonymized tracker item).
+- **Done**: Added ws-spec-to-issue skill (body + run_spec_to_issue.cjs helper + evals): resolves the active tracker, reformulates a free-text idea into a spec-shaped payload via ws-spec-write, anonymizes it, and creates a GitHub issue / ADO User Story through the provider create-issue intent with no local spec and no git mutation. Registered both dependency manifests + git-ownership matrix row, routed in AGENTS.md/.ws/AGENTS.md/README/FEATURES/CATALOG/SPEC-MANAGEMENT/autoload/docs/llms.txt, added contract tests, bumped version to 0.5.6.
+- **Result**: verify score 10/10; npm run test 139/139; harness-clean 0 findings; integrity regenerated (v0.5.6); ws-check-harness + context-budget + git-ownership green.
+
+### [2026-09-27 12:44] Agent: agent
+- **Prompt**: Issue #440: skillLoader: adopt token-centered skill loading at inline body-load sites
+- **Done**: Converted 6 shipped skill bodies (task-lifecycle, spec-manager, spec-write, code-review, ship-pr, goal-fix-pr) to cite {skillLoader} + canonical-procedure link at in-session body-load sites; kept dispatch-agent orchestration and script-level delegation exempt; deferred the optional check_skill_load.cjs bare-load extension to a follow-up (not a bounded patch); bumped version to 0.5.5.
+- **Result**: verify score 10/10; npm run test 138/138; check_skill_load + check_duplicates + harness-clean 0 findings; integrity regenerated (v0.5.5); 10/10 Phase 5a gates green.
+
+### [2026-09-27 12:08] Agent: agent
+- **Prompt**: Extract the multi-CLI step baton out of ws-spec-to-pr into a dedicated ws-spec-to-pr-distributed workflow (issue #438).
+- **Done**: Added ws-spec-to-pr-distributed skill (body + coordinator + references + evals), registered both dependency manifests, re-homed coordinator prose out of shared runtime, slimmed ws-spec-to-pr, added a fail-closed workflow registry to ws-check-workflows, re-pointed baton suites, synced docs/site/wiki/router, bumped version to 0.5.4.
+- **Result**: 138/138 tests pass; harness 0 findings; integrity verified; verify score 10/10; coverage 82.4% lines; regression sabotage passed.
+
+### [2026-09-27 08:55] Agent: agent
+- **Prompt**: fetch gh issues into specs (ws-spec-from-provider)
+- **Done**: Imported open GitHub issues #440, #439, #436 into .agents/specs/pending as agentic specs (0144/0145/0146); skipped #438 (already imported as 0143-ws-spec-to-pr-distributed); registered step-00 workflow copies and tracked all three in index.PRD
+- **Result**: 3 imported, 1 skipped, 0 failed; specs pass authoring validation, step-00 registered, index.PRD rows 149-151
+
 ### [2026-09-27 02:27] Agent: agent
 - **Prompt**: Reduce token usage in spec-to-pr workflows via prose compaction and deduplication (0142)
 - **Done**: Compacted ws-spec-to-pr SKILL/STEP-DISPATCH/PROTOCOLS + lite SKILL (96892 to 62173 B, 38 pct); byte-budget assertions in test-context-budget.js; verify 10/10; full suite 137/137 green

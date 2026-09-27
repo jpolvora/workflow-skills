@@ -12,6 +12,7 @@ Install: `npx --yes github:jpolvora/workflow-skills`
 
 - Spec of record: `{specsDir}/{slug}.spec.md` (default `.agents/specs/`). Format: `ws-spec-format`. Authoring: `ws-spec-write`. Index: `ws-spec-index` (`index.PRD`).
 - Tracker import: GitHub or Azure DevOps → spec of record → register workflow copy (`ws-spec-from-provider`, providers).
+- Tracker export: free-text idea → anonymized GitHub issue / ADO User Story with no local spec and no git mutation (`ws-spec-to-issue`).
 - Plans: `{plansDir}/{slug}/` holds step artifacts (`step-00-*.spec.md` is a copy). Specs and plans are two boards (`ws-spec-list`).
 - Verify: standard Step 5 derives score 0–10 from an AC ledger. Advance only at ≥ 9. Agents cannot author or override the score.
 - This upstream repo dogfoods the same model.
@@ -22,7 +23,7 @@ Install: `npx --yes github:jpolvora/workflow-skills`
 - `ws-spec-to-pr-lite` — lite steps 0–5 (spec, plan, implement, review, ship, fix-PR).
 - `ws-spec-multi` — queue pending specs; classify lite vs standard per spec.
 - `ws-fable-method` — 7-step evidence loop when a full pipeline is not warranted. Adjacent, not a second spec contract.
-- Step-level baton runs — one run across CLI processes via `step_coordinator.cjs` (`defaults.stepRunners` / `runners` / `stepBaton`); revision-serialized claim/release/expiry; gates at the coordinator.
+- `ws-spec-to-pr-distributed` — opt-in multi-CLI run over the standard 0–9 FSM via `step_coordinator.cjs` (`defaults.stepRunners` / `runners` / `stepBaton`); revision-serialized claim/release/expiry; gates at the coordinator. `ws-spec-to-pr` stays single-host.
 
 ## Model routing & fix-PR
 

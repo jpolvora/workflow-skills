@@ -406,9 +406,37 @@ const efficiencyFeatureBlock = `  <!-- efficiency-verifiability:start -->
     <div class="role-matrix-card">
       <div class="role-card-header">
         <div class="role-card-icon">B</div>
-        <h4 class="role-card-title">Step-level baton runs (multi-CLI)</h4>
+        <h4 class="role-card-title">Multi-CLI step runs (ws-spec-to-pr-distributed)</h4>
       </div>
-      <p class="role-card-desc">Execute different steps in different CLI processes through the deterministic coordinator (<code>step_coordinator.cjs</code>, no LLM): map steps to runners with <code>defaults.stepRunners</code> / <code>defaults.runners</code>, tune polling with <code>defaults.stepBaton</code>. Revision-serialized claim/release/expiry on the state-file baton, one-shot workers with sparse pointers, <code>baton_*</code> telemetry plus read-only monitor fields, and coordinator-surfaced gates.</p>
+      <p class="role-card-desc">The opt-in <code>ws-spec-to-pr-distributed</code> workflow executes different steps in different CLI processes through the deterministic coordinator (<code>step_coordinator.cjs</code>, no LLM): map steps to runners with <code>defaults.stepRunners</code> / <code>defaults.runners</code>, tune polling with <code>defaults.stepBaton</code>. Revision-serialized claim/release/expiry on the state-file baton, one-shot workers with sparse pointers, <code>baton_*</code> telemetry plus read-only monitor fields, and coordinator-surfaced gates. <code>ws-spec-to-pr</code> ignores those keys and stays single-host.</p>
+    </div>
+    <div class="role-matrix-card featured-highlight-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">PW</div>
+        <h4 class="role-card-title">Opt-in proof of work (UI evidence)</h4>
+      </div>
+      <p class="role-card-desc">A post-completion, non-blocking evidence step gated by <code>defaults.enableOptionalProofOfWork</code> plus <code>defaults.enableAutomaticEvidenceCollectForProofOfWork</code>. Evidence lands under <code>defaults.projectRootFolderToSave</code> (default <code>{projectRoot}/.proofOfWork/{slug}</code>) and that folder is never committed unless separately asked. <a href="wiki/delivery/spec-to-pr-pipeline.html">Pipeline details &rarr;</a></p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">TH</div>
+        <h4 class="role-card-title">Translate to human</h4>
+      </div>
+      <p class="role-card-desc"><code>ws-spec-translate-to-human</code> writes a numbered Implementation / UI Test / Out of scope runbook beside an agent spec. It never replaces the spec, and the refinement hook that offers it is non-blocking when the companion is absent. <a href="wiki/specs/spec-lifecycle.html">Spec lifecycle &rarr;</a></p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">AW</div>
+        <h4 class="role-card-title">Unattended autoMode and batch runs</h4>
+      </div>
+      <p class="role-card-desc"><code>autoMode</code> chains Steps 0&rarr;9 in one orchestrator session with mid-step <code>checkpoint</code> and turn-boundary <code>pause-turn</code> resume via <code>update_state.cjs</code>. <code>ws-spec-multi</code> classifies each queued spec and dispatches exactly one pipeline at a time with isolated <code>workflowType</code> and no cross-resume. <a href="wiki/delivery/spec-to-pr-pipeline.html">Pipeline details &rarr;</a></p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">SO</div>
+        <h4 class="role-card-title">Spec organizer, subfolder sync, and cleanup</h4>
+      </div>
+      <p class="role-card-desc"><code>ws-spec-organizer</code> files specs into <code>pending</code> / <code>completed</code> / <code>archived</code> subfolders and prefixes <code>NNNN-</code> when <code>plans.enforceSpecPrefixOrdering</code> is true; <code>ws-spec-index sync</code> follows a move, while <code>ws-spec-archive</code> harvests shipped plan folders into <code>index.PRD</code> and <code>ws-cleanup</code> deletes only user-approved untracked leftovers. <a href="wiki/harness/diagnostics-and-benchmarks.html">Cleanup &amp; diagnostics &rarr;</a></p>
     </div>
   <!-- efficiency-verifiability:end -->
 `;

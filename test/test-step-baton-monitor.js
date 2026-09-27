@@ -119,7 +119,7 @@ try {
   };
   write(path.join(root, '.ws/config.json'), JSON.stringify(config));
   const coord = cp.spawnSync(process.execPath, [
-    path.join(repoRoot, '.agents/skills/ws-spec-to-pr/scripts/step_coordinator.cjs'),
+    path.join(repoRoot, '.agents/skills/ws-spec-to-pr-distributed/scripts/step_coordinator.cjs'),
     '--state', coordState, '--repo-root', root, '--once',
   ], { encoding: 'utf8', timeout: 120000 });
   if (coord.status !== 0) throw new Error(`side-channel run should exit 0, got ${coord.status}: ${coord.stderr || coord.stdout}`);

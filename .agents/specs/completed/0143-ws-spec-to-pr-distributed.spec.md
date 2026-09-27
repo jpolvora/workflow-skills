@@ -3,9 +3,9 @@ id: 438
 slug: ws-spec-to-pr-distributed
 title: "Separate Multi-CLI Step Baton into a Dedicated ws-spec-to-pr-distributed Workflow"
 source: github
-issueState: open
-issueUrl: "https://github.com/jpolvora/workflow-skills/issues/438"
 specDate: 2026-09-27
+issueState: closed
+issueUrl: "https://github.com/jpolvora/workflow-skills/issues/438"
 ---
 
 # Specification — Separate Multi-CLI Step Baton into a Dedicated ws-spec-to-pr-distributed Workflow

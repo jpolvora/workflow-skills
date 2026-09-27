@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.5.3",
+  "packageVersion": "0.5.7",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -45,6 +45,7 @@
       "skills": [
         "ws-spec-to-pr",
         "ws-spec-to-pr-lite",
+        "ws-spec-to-pr-distributed",
         "ws-spec-write",
         "ws-classify-complexity",
         "ws-plan-write",
@@ -78,6 +79,7 @@
         "ws-spec-list",
         "ws-kanvas",
         "ws-spec-from-provider",
+        "ws-spec-to-issue",
         "ws-spec-update",
         "ws-task-lifecycle",
         "ws-senior-developer",
@@ -157,6 +159,36 @@
       "ws-spec-provider-local",
       "ws-tdah",
       "ws-spec-format",
+      "ws-self-learning",
+      "ws-changelog",
+      "ws-configure-project",
+      "ws-spec-index",
+      "ws-wiki",
+      "ws-senior-developer",
+      "ws-spec-translate-to-human"
+    ],
+    "ws-spec-to-pr-distributed": [
+      "ws-spec-to-pr",
+      "ws-spec-write",
+      "ws-classify-complexity",
+      "ws-plan-write",
+      "ws-plan-interview",
+      "ws-plan-to-tasks",
+      "ws-implement-tasks",
+      "ws-plan-verify",
+      "ws-code-review",
+      "ws-testing",
+      "ws-ship-pr",
+      "ws-fix-pr",
+      "ws-goal-fix-pr",
+      "ws-spec-provider-github",
+      "ws-spec-provider-azure-devops",
+      "ws-spec-provider-local",
+      "ws-check-harness",
+      "ws-check-workflows",
+      "ws-tdah",
+      "ws-spec-format",
+      "ws-goal-loop",
       "ws-self-learning",
       "ws-changelog",
       "ws-configure-project",
@@ -248,6 +280,13 @@
       "ws-spec-index",
       "ws-configure-project"
     ],
+    "ws-spec-to-issue": [
+      "ws-spec-write",
+      "ws-spec-format",
+      "ws-spec-provider-github",
+      "ws-spec-provider-azure-devops",
+      "ws-configure-project"
+    ],
     "ws-activity-report": [],
     "ws-pre-daily": [
       "ws-configure-project"
@@ -298,6 +337,7 @@
       "ws-spec-archive",
       "ws-spec-format",
       "ws-spec-from-provider",
+      "ws-spec-to-issue",
       "ws-classify-complexity",
       "ws-configure-project"
     ],

@@ -6,7 +6,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 
 ## Skill catalog (layers)
 
-> **Scope:** 48 workflow + 8 Extra; see [`bin/skill-dependencies.json`](bin/skill-dependencies.json). Routes: [`.ws/AGENTS.md`](.ws/AGENTS.md).
+> **Scope:** 49 workflow + 8 Extra; see [`bin/skill-dependencies.json`](bin/skill-dependencies.json). Routes: [`.ws/AGENTS.md`](.ws/AGENTS.md).
 >
 > **Index only.** Load skills per root `AGENTS.md` § Progressive disclosure.
 
@@ -65,6 +65,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | `ws-tdah` | `.agents/skills/ws-tdah/SKILL.md` | Action-first shape + /wait-what |
 | `ws-spec-to-pr` | `.agents/skills/ws-spec-to-pr/SKILL.md` | Spec-to-PR (steps 0–9) |
 | `ws-spec-to-pr-lite` | `.agents/skills/ws-spec-to-pr-lite/SKILL.md` | Fast Spec-to-PR (steps 0–5) |
+| `ws-spec-to-pr-distributed` | `.agents/skills/ws-spec-to-pr-distributed/SKILL.md` | Distributed Spec-to-PR |
 | `ws-spec-multi` | `.agents/skills/ws-spec-multi/SKILL.md` | Batch multi-spec delivery |
 | `ws-fable-method` | `.agents/skills/ws-fable-method/SKILL.md` | 7-step problem-solving loop |
 | `ws-fable-domain` | `.agents/skills/ws-fable-domain/SKILL.md` | Domain adapter generator & schemas (Extra) |
@@ -78,6 +79,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | `ws-spec-list` | `.agents/skills/ws-spec-list/SKILL.md` | Dual board: specs vs plans + menu |
 | `ws-kanvas` | `.agents/skills/ws-kanvas/SKILL.md` | Local kanban board for spec and workflow state |
 | `ws-spec-from-provider` | `.agents/skills/ws-spec-from-provider/SKILL.md` | Bulk-import GH/ADO issues → specs |
+| `ws-spec-to-issue` | `.agents/skills/ws-spec-to-issue/SKILL.md` | Free text → anonymized tracker item |
 | `ws-activity-report` | `.agents/skills/ws-activity-report/SKILL.md` | Timesheet entries for delivery (Extra) |
 | `ws-pre-daily` | `.agents/skills/ws-pre-daily/SKILL.md` | 36-hour standup briefing |
 | `ws-megabrain` | `.agents/skills/ws-megabrain/SKILL.md` | Vibe-coding implementer + specialists |
@@ -124,12 +126,14 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | Ship PR | `ws-ship-pr` |
 | Spec → PR E2E | `ws-spec-to-pr` |
 | Spec → PR lite | `ws-spec-to-pr-lite` |
+| Spec → PR distributed | `ws-spec-to-pr-distributed` |
 | Prompt-driven implementation (not Spec-to-PR) | `ws-task-lifecycle` |
 | Batch spec delivery | `ws-spec-multi` |
 | Project spec index init/sync/promote | `ws-spec-index` |
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
 | View specs as a local kanban board | `ws-kanvas` |
 | Bulk-import GH issues / ADO US → local specs | `ws-spec-from-provider` |
+| Idea → tracker item | `ws-spec-to-issue` |
 | Session autoload set (which skills load every prompt) | This repo: § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only). Consumers: [`{skillsRoot}/ws-shared/runtime/autoload.md`](.agents/skills/ws-shared/runtime/autoload.md) § Always-applied |
 | Specs keywords / which skill to invoke | [`{skillsRoot}/ws-shared/runtime/autoload.md`](.agents/skills/ws-shared/runtime/autoload.md) § Specs skill router |
 | Dev commands (deps, tests, local install, integrity, site) | § [Development commands](#development-commands-this-repo) |
@@ -238,7 +242,6 @@ Opt-out phrases (`stop ws-tdah`, `stop ws-senior-developer`, …) are in `AGENTS
 | Draft a spec | `AGENTS.md` § Write a spec → `{specsDir}/{slug}.spec.md` (not `{plansDir}`). Load live `ws-spec-write` only when authoring that skill. |
 | Spec → PR (full) | `ws-spec-to-pr` |
 | Spec → PR (fast) | `ws-spec-to-pr-lite` |
-| GitHub issue → spec / fix | `ws-spec-provider-github` `fetch-to-spec` (writes `{specsDir}` first, then registers `step-00`) |
 | Open PR review threads | `ws-fix-pr` / `ws-goal-fix-pr` |
 | Timesheet / activity hours (Spec-to-PR plan folder) | `ws-activity-report` (Extra) |
 | Vault prompt/session activity | `ws-session-tracking` (external; skip if missing) |

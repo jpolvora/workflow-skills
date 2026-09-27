@@ -32,6 +32,7 @@ To guarantee predictability and avoid overlapping responsibilities, `ws-spec-man
 | **Harvest & Plan Archive** | [`ws-spec-archive`](../ws-spec-archive/SKILL.md) | Harvests completed `{plansDir}` workflow facts into `index.PRD` Archive and proposes cleanup of finished plan directories. Does **not** delete untracked scratch (that is `ws-cleanup`). |
 | **Bridge / Promotion** | [`ws-spec-provider-local`](../ws-spec-provider-local/SKILL.md) | Registers `{specsDir}` spec into `{us-dir}/step-00-*.spec.md` workflow copy. |
 | **Backlog Bulk Import** | [`ws-spec-from-provider`](../ws-spec-from-provider/SKILL.md) | Bulk imports open issues from GitHub or Azure DevOps into local specs. |
+| **Outbound Tracker Item** | [`ws-spec-to-issue`](../ws-spec-to-issue/SKILL.md) | Reformulates a free-text idea and creates an anonymized tracker item with no local spec and no git mutation. Does **not** write `{specsDir}` / `{plansDir}` and does **not** import. |
 | **Complexity Classifier** | [`ws-classify-complexity`](../ws-classify-complexity/SKILL.md) | Evaluates spec scope and recommends `ws-spec-to-pr-lite` vs `ws-spec-to-pr`. |
 
 ---
@@ -60,6 +61,8 @@ Displays an interactive structured `user-gate` with 11 distinct actions.
 /spec import [--dry-run|--limit N]          Bulk import tracker issues (ws-spec-from-provider)
 /spec run <slug>                            Classify & execute pipeline (ws-classify-complexity)
 ```
+
+Load each target `ws-spec-*` skill via `{skillLoader}` ([canonical skill-load procedure](../ws-shared/runtime/host-capability-tokens.md)); the mapping names *which* skill, never *how* to load it.
 
 ---
 
@@ -93,7 +96,7 @@ Displays an interactive structured `user-gate` with 11 distinct actions.
 - **Done when:** User selects exactly one action, or skill terminates on cancel.
 
 ### 4. Dispatch & Delegate
-Execute the specialized skill mapped from Step 2 or Step 3:
+Execute the specialized skill mapped from Step 2 or Step 3. Load the mapped skill via `{skillLoader}` ([canonical skill-load procedure](../ws-shared/runtime/host-capability-tokens.md)):
 
 - **Action 1: Create Spec**
   - Prompt user for feature description if omitted.

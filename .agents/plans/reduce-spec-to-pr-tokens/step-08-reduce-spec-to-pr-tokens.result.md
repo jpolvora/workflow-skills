@@ -1,3 +1,12 @@
+---
+step: 8
+slug: reduce-spec-to-pr-tokens
+workflowId: reduce-spec-to-pr-tokens-20260927T043013Z
+status: completed
+startedAt: "2026-09-27T06:33:14.904Z"
+endedAt: "2026-09-27T06:33:14.904Z"
+acRefs: []
+---
 # reduce-spec-to-pr-tokens — Delivery Result
 
 ## Expected

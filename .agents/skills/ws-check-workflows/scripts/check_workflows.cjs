@@ -66,18 +66,40 @@ class Issue {
   }
 }
 
+const WORKFLOW_REGISTRY = {
+  'ws-spec-to-pr': 'standard',
+  'ws-spec-to-pr-lite': 'lite',
+  'ws-spec-multi': 'multi_spec',
+  'ws-spec-to-pr-distributed': 'distributed',
+};
+
 class WorkflowChecker {
-  constructor() {
+  constructor(options = {}) {
     this.issues = [];
+    this.requestedWorkflow = options.workflow || null;
     this.simulationResults = {
       standard: { steps: {}, status: 'PASS' },
       lite: { steps: {}, status: 'PASS' },
       multi_spec: { steps: {}, status: 'PASS' },
+      distributed: { steps: {}, status: 'PASS' },
     };
     this.depsMap = {};
     this.depsLoaded = false;
     this.depsLocation = 'skill-dependencies.json';
     this.loadDependencies();
+  }
+
+  validateRequestedWorkflow() {
+    if (!this.requestedWorkflow) return;
+    if (!Object.prototype.hasOwnProperty.call(WORKFLOW_REGISTRY, this.requestedWorkflow)) {
+      this.addIssue(
+        'CRITICAL',
+        'Workflow Registry',
+        `requested workflow: ${this.requestedWorkflow}`,
+        `Unknown workflow id '${this.requestedWorkflow}'. Supported ids: ${Object.keys(WORKFLOW_REGISTRY).join(', ')}.`,
+        'Pass a supported workflow id (fail-closed: an unknown id is never simulated as passing).',
+      );
+    }
   }
 
   loadDependencies() {
@@ -260,6 +282,63 @@ class WorkflowChecker {
     }
   }
 
+  simulateDistributedWorkflow() {
+    const distSkillPath = path.join(SKILLS_DIR, 'ws-spec-to-pr-distributed', 'SKILL.md');
+    if (!fs.existsSync(distSkillPath)) {
+      this.addIssue('CRITICAL', 'Workflow Structure', 'ws-spec-to-pr-distributed/SKILL.md', 'Distributed ws-spec-to-pr-distributed SKILL.md file is missing.', 'Ensure .agents/skills/ws-spec-to-pr-distributed/SKILL.md exists.');
+      this.simulationResults.distributed.status = 'FAIL';
+      return;
+    }
+    const text = fs.readFileSync(distSkillPath, 'utf8');
+    for (const needle of ['0\u20139', 'step_coordinator.cjs', 'ws-spec-to-pr']) {
+      if (!text.includes(needle)) {
+        this.addIssue('CRITICAL', 'Step Continuity', 'ws-spec-to-pr-distributed/SKILL.md', `Distributed workflow body is missing required reference '${needle}'.`, 'Reference the shared standard 0-9 FSM and the coordinator in ws-spec-to-pr-distributed/SKILL.md.');
+        this.simulationResults.distributed.status = 'FAIL';
+      }
+    }
+    const coordinator = path.join(SKILLS_DIR, 'ws-spec-to-pr-distributed', 'scripts', 'step_coordinator.cjs');
+    if (!fs.existsSync(coordinator)) {
+      this.addIssue('CRITICAL', 'Workflow Structure', 'ws-spec-to-pr-distributed/scripts/step_coordinator.cjs', 'Distributed coordinator script is missing at the distributed skill path.', 'Move step_coordinator.cjs under ws-spec-to-pr-distributed/scripts/.');
+      this.simulationResults.distributed.status = 'FAIL';
+    } else {
+      this.simulationResults.distributed.steps['Coordinator: step_coordinator.cjs'] = { status: 'PASS', skill: 'ws-spec-to-pr-distributed', details: ['Coordinator verified at the distributed path'] };
+    }
+    if (fs.existsSync(path.join(SKILLS_DIR, 'ws-spec-to-pr', 'scripts', 'step_coordinator.cjs'))) {
+      this.addIssue('CRITICAL', 'Workflow Ownership', 'ws-spec-to-pr/scripts/step_coordinator.cjs', 'Coordinator still present under ws-spec-to-pr (ownership not moved).', 'Remove the duplicate; ws-spec-to-pr-distributed is the only owner.');
+      this.simulationResults.distributed.status = 'FAIL';
+    }
+    const expectedSteps = {
+      0: ['Spec Creation', 'ws-spec-write'],
+      1: ['Plan Creation', 'ws-plan-write'],
+      2: ['Plan Interview', 'ws-plan-interview'],
+      3: ['Plan to Tasks', 'ws-plan-to-tasks'],
+      4: ['Task Implementation', 'ws-implement-tasks'],
+      5: ['Plan Verification', 'ws-plan-verify'],
+      6: ['Code Review', 'ws-code-review'],
+      7: ['Testing', 'ws-testing'],
+      8: ['Ship PR', 'ws-ship-pr'],
+      9: ['Fix PR Threads', 'ws-fix-pr'],
+    };
+    const dispatched = new Set();
+    for (const [num, [name, folder]] of Object.entries(expectedSteps)) {
+      if (fs.existsSync(path.join(SKILLS_DIR, folder, 'SKILL.md'))) {
+        dispatched.add(folder);
+        this.simulationResults.distributed.steps[`Step ${num}: ${name}`] = { status: 'PASS', skill: folder, details: ['Delegated to the shared pipeline skill'] };
+      } else {
+        this.addIssue('CRITICAL', 'Step Skill Link', `ws-spec-to-pr-distributed (Step ${num})`, `Distributed step ${num} delegates to missing skill folder '${folder}'.`, `Ensure .agents/skills/${folder}/SKILL.md exists on disk.`);
+        this.simulationResults.distributed.status = 'FAIL';
+      }
+    }
+    if (this.depsLoaded) {
+      const declared = new Set(this.depsMap['ws-spec-to-pr-distributed'] || []);
+      const missing = [...dispatched].filter((s) => !declared.has(s));
+      if (missing.length) {
+        this.addIssue('CRITICAL', 'Dependency Closure', this.depsLocation, `ws-spec-to-pr-distributed dispatches skills not listed in dependencies['ws-spec-to-pr-distributed']: ${JSON.stringify(missing.sort())}.`, `Add missing skill IDs to ${this.depsLocation} under dependencies['ws-spec-to-pr-distributed'].`);
+        this.simulationResults.distributed.status = 'FAIL';
+      }
+    }
+  }
+
   checkScriptsSyntax() {
     const scripts = [];
     const walk = (dir) => {
@@ -370,9 +449,11 @@ class WorkflowChecker {
   }
 
   runAll() {
+    this.validateRequestedWorkflow();
     this.simulateStandardWorkflow();
     this.simulateLiteWorkflow();
     this.simulateMultiSpecWorkflow();
+    this.simulateDistributedWorkflow();
     this.checkScriptsSyntax();
     this.checkStateIsolationAndConfig();
     this.checkG2CodeContract();
@@ -388,7 +469,7 @@ class WorkflowChecker {
     lines.push('');
     lines.push('## 🔄 Workflow Simulations');
     lines.push('');
-    for (const [key, title] of [['standard', 'Standard (`ws-spec-to-pr`)'], ['lite', 'Lite (`ws-spec-to-pr-lite`)'], ['multi_spec', 'Smart Multi-Spec (`ws-spec-multi`)']]) {
+    for (const [key, title] of [['standard', 'Standard (`ws-spec-to-pr`)'], ['lite', 'Lite (`ws-spec-to-pr-lite`)'], ['multi_spec', 'Smart Multi-Spec (`ws-spec-multi`)'], ['distributed', 'Distributed (`ws-spec-to-pr-distributed`)']]) {
       const data = this.simulationResults[key];
       lines.push(`### ${title} — ${data.status === 'PASS' ? '✅' : '❌'} ${data.status}`);
       lines.push('');
@@ -417,17 +498,21 @@ class WorkflowChecker {
 }
 
 function printHelp() {
-  console.log('Usage: node check_workflows.cjs [--report] [--json] [--fix] [--yes|-y]');
+  console.log('Usage: node check_workflows.cjs [--workflow <id>] [--report] [--json] [--fix] [--yes|-y]');
+  console.log(`Supported workflow ids: ${Object.keys(WORKFLOW_REGISTRY).join(', ')}`);
 }
 
 function parseArgs(argv) {
-  const o = { report: false, json: false, fix: false, yes: false };
-  for (const a of argv) {
+  const o = { report: false, json: false, fix: false, yes: false, workflow: null };
+  for (let i = 0; i < argv.length; i += 1) {
+    const a = argv[i];
     if (a === '--help' || a === '-h') { printHelp(); process.exit(0); }
     else if (a === '--report') o.report = true;
     else if (a === '--json') o.json = true;
     else if (a === '--fix') o.fix = true;
     else if (a === '--yes' || a === '-y') o.yes = true;
+    else if (a === '--workflow') { o.workflow = argv[i + 1] || null; i += 1; }
+    else if (a.startsWith('--workflow=')) o.workflow = a.slice('--workflow='.length) || null;
     else { console.error(`unknown argument: ${a}`); process.exit(2); }
   }
   return o;
@@ -435,7 +520,7 @@ function parseArgs(argv) {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
-  const checker = new WorkflowChecker();
+  const checker = new WorkflowChecker({ workflow: args.workflow });
   checker.runAll();
   const report = checker.generateReport();
   if (args.json) {

@@ -1,0 +1,2546 @@
+{
+  "acImplemented": 9,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "ffae2209e8d74093b3eb8bbfb20e15e491651804",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/SKILL.md:L44-L55",
+          ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L9-L13"
+        ],
+        "files": [
+          {
+            "lineEnd": 55,
+            "lineStart": 44,
+            "path": ".agents/skills/ws-spec-to-pr/SKILL.md",
+            "sha256": "b8f423331538df704155ff049f06ff28333f7cee81774f33c680517164ce1fed"
+          },
+          {
+            "lineEnd": 13,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+            "sha256": "26c45a893741603809aac7796f596e39ce7e332fd723827f507cefe21c617ec7"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "g2-commit-ffae2209e8d74093b3eb8bbfb20e15e491651804",
+          "step5-ac1"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-004",
+          "section-006",
+          "section-007",
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T00",
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06",
+          "T07",
+          "T08"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-09-27T06:10:00.019Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-liveness-checkpoints",
+            "phase": "observed",
+            "sourceFile": "test/test-liveness-checkpoints.js",
+            "timestamp": "2026-09-27T06:10:00.018Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1:byte-baseline",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10:full-suite",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11:pipeline-handoff",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V12",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V12:ship-hygiene",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2:dedup-lookup",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3:pointer-parity",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4:protocol-sweep",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5:compaction-diff",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6:context-budget",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7:liveness",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V8:state-contract",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9:run-integrity",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "Retain the `autoMode ≠ skip planning` table in `ws-spec-to-pr/SKILL.md` as canonical, and replace its duplicate in `STEP-DISPATCH.md` with a concise link/reference to `SKILL.md § autoMode ≠ skip planning`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "ffae2209e8d74093b3eb8bbfb20e15e491651804",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/SKILL.md:L18-L22",
+          ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L25-L29",
+          ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L7-L13"
+        ],
+        "files": [
+          {
+            "lineEnd": 22,
+            "lineStart": 18,
+            "path": ".agents/skills/ws-spec-to-pr/SKILL.md",
+            "sha256": "b8f423331538df704155ff049f06ff28333f7cee81774f33c680517164ce1fed"
+          },
+          {
+            "lineEnd": 13,
+            "lineStart": 7,
+            "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+            "sha256": "26c45a893741603809aac7796f596e39ce7e332fd723827f507cefe21c617ec7"
+          },
+          {
+            "lineEnd": 29,
+            "lineStart": 25,
+            "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+            "sha256": "26c45a893741603809aac7796f596e39ce7e332fd723827f507cefe21c617ec7"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "g2-commit-ffae2209e8d74093b3eb8bbfb20e15e491651804",
+          "step5-ac2"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T00",
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06",
+          "T07",
+          "T08"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check_pipeline_handoff",
+            "phase": "observed",
+            "sourceFile": ".agents/skills/ws-check-harness/scripts/check_pipeline_handoff.cjs",
+            "timestamp": "2026-09-27T06:10:00.083Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-09-27T06:10:00.083Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1:byte-baseline",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10:full-suite",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11:pipeline-handoff",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V12:ship-hygiene",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2:dedup-lookup",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3:pointer-parity",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4:protocol-sweep",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5:compaction-diff",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6:context-budget",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7:liveness",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V8:state-contract",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9:run-integrity",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "Centralize host execution mode, subagent model resolution, verbose preview format, and golden-path state command recipes in their canonical runtime documentation (`gates.md`, `tools.md`, `PROTOCOLS.md`), replacing repetitive paragraph-length duplicates across `ws-spec-to-pr/SKILL.md`, `STEP-DISPATCH.md`, and `ws-spec-to-pr-lite/SKILL.md` with concise single-sentence pointers.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "ffae2209e8d74093b3eb8bbfb20e15e491651804",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/PROTOCOLS.md:L111-L117",
+          ".agents/skills/ws-spec-to-pr/PROTOCOLS.md:L159-L165"
+        ],
+        "files": [
+          {
+            "lineEnd": 117,
+            "lineStart": 111,
+            "path": ".agents/skills/ws-spec-to-pr/PROTOCOLS.md",
+            "sha256": "b94af745dfeb2cf1953a45160b3e0df0646ea568012152a1b1c61216bf8250d8"
+          },
+          {
+            "lineEnd": 165,
+            "lineStart": 159,
+            "path": ".agents/skills/ws-spec-to-pr/PROTOCOLS.md",
+            "sha256": "b94af745dfeb2cf1953a45160b3e0df0646ea568012152a1b1c61216bf8250d8"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "g2-commit-ffae2209e8d74093b3eb8bbfb20e15e491651804",
+          "step5-ac3"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T00",
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06",
+          "T07",
+          "T08"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-09-27T06:10:00.141Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-liveness-checkpoints",
+            "phase": "observed",
+            "sourceFile": "test/test-liveness-checkpoints.js",
+            "timestamp": "2026-09-27T06:10:00.141Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1:byte-baseline",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10:full-suite",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11:pipeline-handoff",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V12:ship-hygiene",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2:dedup-lookup",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3:pointer-parity",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4:protocol-sweep",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5:compaction-diff",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6:context-budget",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7:liveness",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V8:state-contract",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9:run-integrity",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "Consolidate `PROTOCOLS.md` by removing redundant per-step implementation and execution procedures for Step 5 (check-implementation / score gate), Step 6 (code review + fix loop), Step 8 (ship / close phase), and Step 9 (fix-pr), establishing `STEP-DISPATCH.md` as the sole source of truth for step actions and `gates.md` for gate transitions.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "ffae2209e8d74093b3eb8bbfb20e15e491651804",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr-lite/SKILL.md:L21-L21",
+          ".agents/skills/ws-spec-to-pr/PROTOCOLS.md:L31-L35",
+          ".agents/skills/ws-spec-to-pr/SKILL.md:L36-L42",
+          ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L21-L29"
+        ],
+        "files": [
+          {
+            "lineEnd": 21,
+            "lineStart": 21,
+            "path": ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+            "sha256": "7d3ab25fd0e9dac47e2eddcbb94fee4ac7a26e972c42d8fa829d444d3a88a977"
+          },
+          {
+            "lineEnd": 35,
+            "lineStart": 31,
+            "path": ".agents/skills/ws-spec-to-pr/PROTOCOLS.md",
+            "sha256": "b94af745dfeb2cf1953a45160b3e0df0646ea568012152a1b1c61216bf8250d8"
+          },
+          {
+            "lineEnd": 42,
+            "lineStart": 36,
+            "path": ".agents/skills/ws-spec-to-pr/SKILL.md",
+            "sha256": "b8f423331538df704155ff049f06ff28333f7cee81774f33c680517164ce1fed"
+          },
+          {
+            "lineEnd": 29,
+            "lineStart": 21,
+            "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+            "sha256": "26c45a893741603809aac7796f596e39ce7e332fd723827f507cefe21c617ec7"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "g2-commit-ffae2209e8d74093b3eb8bbfb20e15e491651804",
+          "step5-ac4"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T00",
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06",
+          "T07",
+          "T08"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check_pipeline_handoff",
+            "phase": "observed",
+            "sourceFile": ".agents/skills/ws-check-harness/scripts/check_pipeline_handoff.cjs",
+            "timestamp": "2026-09-27T06:10:00.214Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-09-27T06:10:00.213Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1:byte-baseline",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10:full-suite",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11:pipeline-handoff",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V12:ship-hygiene",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2:dedup-lookup",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3:pointer-parity",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4:protocol-sweep",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5:compaction-diff",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6:context-budget",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7:liveness",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V8:state-contract",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9:run-integrity",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "Compact prose and eliminate sediment across `ws-spec-to-pr/SKILL.md`, `STEP-DISPATCH.md`, `PROTOCOLS.md`, and `ws-spec-to-pr-lite/SKILL.md` per `SKILL_AUTHORING.md` §6 (removing historical story/issue citations, no-ops, echo statements, and run-on parentheticals, while converting narrative instructions into structured imperative bullets).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "ffae2209e8d74093b3eb8bbfb20e15e491651804",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr-lite/SKILL.md:L13-L13",
+          ".agents/skills/ws-spec-to-pr-lite/SKILL.md:L29-L34",
+          ".agents/skills/ws-spec-to-pr-lite/SKILL.md:L54-L57"
+        ],
+        "files": [
+          {
+            "lineEnd": 13,
+            "lineStart": 13,
+            "path": ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+            "sha256": "7d3ab25fd0e9dac47e2eddcbb94fee4ac7a26e972c42d8fa829d444d3a88a977"
+          },
+          {
+            "lineEnd": 34,
+            "lineStart": 29,
+            "path": ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+            "sha256": "7d3ab25fd0e9dac47e2eddcbb94fee4ac7a26e972c42d8fa829d444d3a88a977"
+          },
+          {
+            "lineEnd": 57,
+            "lineStart": 54,
+            "path": ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+            "sha256": "7d3ab25fd0e9dac47e2eddcbb94fee4ac7a26e972c42d8fa829d444d3a88a977"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "g2-commit-ffae2209e8d74093b3eb8bbfb20e15e491651804",
+          "step5-ac5"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T00",
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06",
+          "T07",
+          "T08"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-09-27T06:10:00.317Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-workflow-state-contract",
+            "phase": "observed",
+            "sourceFile": "test/test-workflow-state-contract.js",
+            "timestamp": "2026-09-27T06:10:00.318Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1:byte-baseline",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10:full-suite",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11:pipeline-handoff",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V12:ship-hygiene",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2:dedup-lookup",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3:pointer-parity",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4:protocol-sweep",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5:compaction-diff",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6:context-budget",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7:liveness",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V8:state-contract",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9:run-integrity",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "Align `ws-spec-to-pr-lite/SKILL.md` to the same lean standard by referencing shared runtime contracts (`gates.md`, `tools.md`, `git-ownership.md`) instead of restating long paragraphs of duplicate rules for models, preview formatting, and post-mutating transitions.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "ffae2209e8d74093b3eb8bbfb20e15e491651804",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/SKILL.md:L44-L55",
+          "test/test-context-budget.js:L38-L49"
+        ],
+        "files": [
+          {
+            "lineEnd": 55,
+            "lineStart": 44,
+            "path": ".agents/skills/ws-spec-to-pr/SKILL.md",
+            "sha256": "b8f423331538df704155ff049f06ff28333f7cee81774f33c680517164ce1fed"
+          },
+          {
+            "lineEnd": 49,
+            "lineStart": 38,
+            "path": "test/test-context-budget.js",
+            "sha256": "127d90ee06a12a748d0055fed023391d1ec5f8421df31812215ad9e12e92daa9"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "g2-commit-ffae2209e8d74093b3eb8bbfb20e15e491651804",
+          "step5-ac6"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002",
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T00",
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06",
+          "T07",
+          "T08"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-09-27T06:10:00.406Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1:byte-baseline",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10:full-suite",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11:pipeline-handoff",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V12:ship-hygiene",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2:dedup-lookup",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3:pointer-parity",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4:protocol-sweep",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5:compaction-diff",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6:context-budget",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7:liveness",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V8:state-contract",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9:run-integrity",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "Achieve a measurable reduction in UTF-8 byte size for each refactored file without altering behavior:",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "ffae2209e8d74093b3eb8bbfb20e15e491651804",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr-lite/SKILL.md:L21-L21",
+          ".agents/skills/ws-spec-to-pr/PROTOCOLS.md:L203-L213",
+          ".agents/skills/ws-spec-to-pr/SKILL.md:L66-L76",
+          ".agents/skills/ws-spec-to-pr/SKILL.md:L91-L93"
+        ],
+        "files": [
+          {
+            "lineEnd": 21,
+            "lineStart": 21,
+            "path": ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+            "sha256": "7d3ab25fd0e9dac47e2eddcbb94fee4ac7a26e972c42d8fa829d444d3a88a977"
+          },
+          {
+            "lineEnd": 213,
+            "lineStart": 203,
+            "path": ".agents/skills/ws-spec-to-pr/PROTOCOLS.md",
+            "sha256": "b94af745dfeb2cf1953a45160b3e0df0646ea568012152a1b1c61216bf8250d8"
+          },
+          {
+            "lineEnd": 76,
+            "lineStart": 66,
+            "path": ".agents/skills/ws-spec-to-pr/SKILL.md",
+            "sha256": "b8f423331538df704155ff049f06ff28333f7cee81774f33c680517164ce1fed"
+          },
+          {
+            "lineEnd": 93,
+            "lineStart": 91,
+            "path": ".agents/skills/ws-spec-to-pr/SKILL.md",
+            "sha256": "b8f423331538df704155ff049f06ff28333f7cee81774f33c680517164ce1fed"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [
+          "g2-commit-ffae2209e8d74093b3eb8bbfb20e15e491651804",
+          "step5-ac7"
+        ],
+        "planSections": [
+          "section-002",
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T00",
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06",
+          "T07",
+          "T08"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-liveness-checkpoints",
+            "phase": "observed",
+            "sourceFile": "test/test-liveness-checkpoints.js",
+            "timestamp": "2026-09-27T06:10:00.471Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-run-state-integrity",
+            "phase": "observed",
+            "sourceFile": "test/test-run-state-integrity.js",
+            "timestamp": "2026-09-27T06:10:00.472Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-workflow-state-contract",
+            "phase": "observed",
+            "sourceFile": "test/test-workflow-state-contract.js",
+            "timestamp": "2026-09-27T06:10:00.471Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1:byte-baseline",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10:full-suite",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11:pipeline-handoff",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V12:ship-hygiene",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2:dedup-lookup",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3:pointer-parity",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4:protocol-sweep",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5:compaction-diff",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6:context-budget",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7:liveness",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V8:state-contract",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9:run-integrity",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "Maintain 100% behavioral parity: all FSM phases F0–F6, Steps 0–9, continuous `autoMode` host-turn progression, mid-step pause/checkpoint fallbacks, native modal and markdown gate rules, required G2-code commits (after Step 5 in standard, Step 2 in lite, and review-fix), delivery commits at Step 8 close, step-baton multi-CLI compatibility, and execution observer contracts remain intact.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "ffae2209e8d74093b3eb8bbfb20e15e491651804",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "test/test-context-budget.js:L43-L49"
+        ],
+        "files": [
+          {
+            "lineEnd": 49,
+            "lineStart": 43,
+            "path": "test/test-context-budget.js",
+            "sha256": "127d90ee06a12a748d0055fed023391d1ec5f8421df31812215ad9e12e92daa9"
+          }
+        ],
+        "findings": [],
+        "id": "AC8",
+        "linkEventIds": [
+          "g2-commit-ffae2209e8d74093b3eb8bbfb20e15e491651804",
+          "step5-ac8"
+        ],
+        "planSections": [
+          "section-002",
+          "section-004",
+          "section-006",
+          "section-007"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T00",
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06",
+          "T07",
+          "T08"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-09-27T06:10:00.523Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1:byte-baseline",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10:full-suite",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11:pipeline-handoff",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V12:ship-hygiene",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2:dedup-lookup",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3:pointer-parity",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4:protocol-sweep",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5:compaction-diff",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6:context-budget",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7:liveness",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V8:state-contract",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9:run-integrity",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "Add automated byte-budget assertions to `test/test-context-budget.js` enforcing maximum allowed sizes for `ws-spec-to-pr/SKILL.md`, `STEP-DISPATCH.md`, `PROTOCOLS.md`, and `ws-spec-to-pr-lite/SKILL.md` to prevent future prose inflation.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "ffae2209e8d74093b3eb8bbfb20e15e491651804",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/PROTOCOLS.md:L140-L146",
+          "test/test-context-budget.js:L38-L49"
+        ],
+        "files": [
+          {
+            "lineEnd": 146,
+            "lineStart": 140,
+            "path": ".agents/skills/ws-spec-to-pr/PROTOCOLS.md",
+            "sha256": "b94af745dfeb2cf1953a45160b3e0df0646ea568012152a1b1c61216bf8250d8"
+          },
+          {
+            "lineEnd": 49,
+            "lineStart": 38,
+            "path": "test/test-context-budget.js",
+            "sha256": "127d90ee06a12a748d0055fed023391d1ec5f8421df31812215ad9e12e92daa9"
+          }
+        ],
+        "findings": [],
+        "id": "AC9",
+        "linkEventIds": [
+          "g2-commit-ffae2209e8d74093b3eb8bbfb20e15e491651804",
+          "step5-ac9"
+        ],
+        "planSections": [
+          "section-002",
+          "section-004",
+          "section-006",
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [
+          "T00",
+          "T01",
+          "T02",
+          "T03",
+          "T04",
+          "T05",
+          "T06",
+          "T07",
+          "T08"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-09-27T06:10:00.594Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-liveness-checkpoints",
+            "phase": "observed",
+            "sourceFile": "test/test-liveness-checkpoints.js",
+            "timestamp": "2026-09-27T06:10:00.595Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-run-state-integrity",
+            "phase": "observed",
+            "sourceFile": "test/test-run-state-integrity.js",
+            "timestamp": "2026-09-27T06:10:00.595Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-workflow-state-contract",
+            "phase": "observed",
+            "sourceFile": "test/test-workflow-state-contract.js",
+            "timestamp": "2026-09-27T06:10:00.595Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1:byte-baseline",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V10:full-suite",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V11:pipeline-handoff",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V12",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V12:ship-hygiene",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2:dedup-lookup",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3:pointer-parity",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4:protocol-sweep",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5:compaction-diff",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6:context-budget",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7:liveness",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V8:state-contract",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V9:run-integrity",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "All existing test suites, including `test-liveness-checkpoints.js`, `test-context-budget.js`, `test-workflow-state-contract.js`, and `test-run-state-integrity.js`, pass with zero regressions.",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      }
+    ],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "step5-ns1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-09-27T06:10:00.646Z"
+          }
+        ],
+        "text": "Reintroducing duplicated sections into `STEP-DISPATCH.md` or inflating prose beyond the maximum thresholds in AC6 fails `test-context-budget.js`."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "step5-ns2"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-liveness-checkpoints",
+            "phase": "observed",
+            "sourceFile": "test/test-liveness-checkpoints.js",
+            "timestamp": "2026-09-27T06:10:00.701Z"
+          }
+        ],
+        "text": "Omitting `autoMode` host-turn chaining language or `turn-boundary pause` fallback from `SKILL.md` or `PROTOCOLS.md` fails `test-liveness-checkpoints.js` D1."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "step5-ns3"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-run-state-integrity",
+            "phase": "observed",
+            "sourceFile": "test/test-run-state-integrity.js",
+            "timestamp": "2026-09-27T06:10:00.754Z"
+          }
+        ],
+        "text": "Removing required G2-code or pre-advance validation instructions breaks workflow state validation in `test-run-state-integrity.js`."
+      }
+    ],
+    "planIndexPath": ".agents/plans/reduce-spec-to-pr-tokens/.runtime/plan.index.json",
+    "revision": 20,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "ship",
+      "computedAt": "2026-09-27T06:37:48.619Z",
+      "deficiencies": [],
+      "earnedUnits": 90,
+      "errors": [],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "ledgerHash": "06f3c98219587cd29b6553cb7e6b035ba7c31ff0a56501ef9135d150d4303ff2",
+      "missingEvidence": false,
+      "score": 10,
+      "totalUnits": 90,
+      "writer": "ac_ledger.cjs score"
+    },
+    "slug": "reduce-spec-to-pr-tokens",
+    "specPath": ".agents/plans/reduce-spec-to-pr-tokens/step-00-reduce-spec-to-pr-tokens.spec.md",
+    "testingSkip": null,
+    "workflowId": "reduce-spec-to-pr-tokens-20260927T043013Z"
+  },
+  "acTotal": 9,
+  "agentTranscripts": {
+    "paths": [
+      "C:\\Users\\jpolv\\.local\\share\\muse\\sessions\\2026\\09\\27\\01a0e105-b528-7ed2-ba56-9e741f96e69e\\session.jsonl"
+    ],
+    "recordedAt": "2026-09-27T04:37:56Z",
+    "status": "available"
+  },
+  "autoMode": true,
+  "baseBranch": "main",
+  "baselineCommit": "5ff7fb595dc6b073590d5facef00034da2592af2",
+  "baselineSourceRef": "local",
+  "branch": "develop",
+  "branchStrategy": "stay",
+  "commits": [
+    {
+      "sha": "ffae2209e8d74093b3eb8bbfb20e15e491651804",
+      "step": 5
+    }
+  ],
+  "completedSteps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "complexityClass": "standard",
+  "configuredModel": "muse-spark-1.2-contributor",
+  "currentModel": "muse-spark",
+  "currentStep": 9,
+  "dryRun": false,
+  "endedAt": "2026-09-27T06:37:40Z",
+  "finalPipeline": "standard",
+  "fullMode": true,
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/reduce-spec-to-pr-tokens/ac-ledger.json",
+        ".agents/plans/reduce-spec-to-pr-tokens/step-00-reduce-spec-to-pr-tokens.spec.md",
+        ".agents/plans/reduce-spec-to-pr-tokens/step-00-reduce-spec-to-pr-tokens.classify.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "reduce-spec-to-pr-tokens",
+      "status": "completed",
+      "step": 0,
+      "summary": "Finished step 0",
+      "workflowId": "reduce-spec-to-pr-tokens-20260927T043013Z",
+      "workflowType": "standard"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/reduce-spec-to-pr-tokens/step-01-reduce-spec-to-pr-tokens.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "reduce-spec-to-pr-tokens",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "reduce-spec-to-pr-tokens-20260927T043013Z",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/reduce-spec-to-pr-tokens/step-02-reduce-spec-to-pr-tokens.plan-interview.md",
+        ".agents/plans/reduce-spec-to-pr-tokens/step-02-reduce-spec-to-pr-tokens.plan.refined.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "reduce-spec-to-pr-tokens",
+      "status": "completed",
+      "step": 2,
+      "summary": "Finished step 2",
+      "workflowId": "reduce-spec-to-pr-tokens-20260927T043013Z",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/reduce-spec-to-pr-tokens/step-03-reduce-spec-to-pr-tokens.plan.exec.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "reduce-spec-to-pr-tokens",
+      "status": "completed",
+      "step": 3,
+      "summary": "Finished step 3",
+      "workflowId": "reduce-spec-to-pr-tokens-20260927T043013Z",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/skills/ws-spec-to-pr/SKILL.md",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+        ".agents/skills/ws-spec-to-pr/PROTOCOLS.md",
+        ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+        "test/test-context-budget.js",
+        "package.json",
+        "bin/skill-dependencies.json",
+        "bin/skill-integrity.json",
+        "docs/index.html",
+        "docs/wiki/delivery/spec-to-pr-pipeline.html",
+        "test/package.json",
+        ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+        ".agents/skills/ws-shared/version.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "reduce-spec-to-pr-tokens",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "reduce-spec-to-pr-tokens-20260927T043013Z",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/reduce-spec-to-pr-tokens/step-05-reduce-spec-to-pr-tokens.plan.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "reduce-spec-to-pr-tokens",
+      "status": "completed",
+      "step": 5,
+      "summary": "Finished step 5",
+      "workflowId": "reduce-spec-to-pr-tokens-20260927T043013Z",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/reduce-spec-to-pr-tokens/step-06-reduce-spec-to-pr-tokens.review.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "reduce-spec-to-pr-tokens",
+      "status": "completed",
+      "step": 6,
+      "summary": "Finished step 6",
+      "workflowId": "reduce-spec-to-pr-tokens-20260927T043013Z",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/reduce-spec-to-pr-tokens/step-07-reduce-spec-to-pr-tokens.testing.plan.md",
+        ".agents/plans/reduce-spec-to-pr-tokens/step-07-reduce-spec-to-pr-tokens.testing.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "reduce-spec-to-pr-tokens",
+      "status": "completed",
+      "step": 7,
+      "summary": "Finished step 7",
+      "workflowId": "reduce-spec-to-pr-tokens-20260927T043013Z",
+      "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/reduce-spec-to-pr-tokens/step-08-reduce-spec-to-pr-tokens.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "reduce-spec-to-pr-tokens",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "reduce-spec-to-pr-tokens-20260927T043013Z",
+      "workflowType": "standard"
+    },
+    "9": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "reduce-spec-to-pr-tokens",
+      "status": "completed",
+      "step": 9,
+      "summary": "Finished step 9",
+      "workflowId": "reduce-spec-to-pr-tokens-20260927T043013Z",
+      "workflowType": "standard"
+    }
+  },
+  "hostBinding": {
+    "approval": "bypassed",
+    "askQuestion": "request_user_input",
+    "browserVerify": "none",
+    "dispatchAgent": "subagent_spawn",
+    "mode": "native-tool",
+    "sandbox": "off",
+    "shellExec": "powershell",
+    "skillLoader": "read_skill",
+    "trust": "trusted"
+  },
+  "modelsPreset": "muse",
+  "nextAction": "Run step 9",
+  "observer": {
+    "dispatchCount": 1,
+    "dispatchedAt": "2026-09-27T04:39:17Z",
+    "enabled": true
+  },
+  "prNumber": "441",
+  "prUrl": "https://github.com/jpolvora/workflow-skills/pull/441",
+  "preExistingDirty": [],
+  "revision": 24,
+  "scoreAndRefine": false,
+  "shipStatus": "pr-open",
+  "skipQualityGates": false,
+  "skipTesting": false,
+  "skipTests": false,
+  "skippedSteps": [],
+  "slug": "reduce-spec-to-pr-tokens",
+  "statePath": ".agents/plans/reduce-spec-to-pr-tokens/reduce-spec-to-pr-tokens-20260927T043013Z.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [
+    {
+      "agentType": "inline:session",
+      "configuredModel": "muse-spark-1.3-contributor",
+      "dispatchedAt": "2026-09-27T04:37:56Z",
+      "model": "muse-spark",
+      "step": 0
+    },
+    {
+      "agentType": "generic:subagent_spawn",
+      "configuredModel": "muse-spark-1.3-contributor",
+      "dispatchedAt": "2026-09-27T04:39:17Z",
+      "model": "muse-spark",
+      "step": 1
+    },
+    {
+      "agentType": "generic:subagent_spawn",
+      "configuredModel": "muse-spark-1.3-contributor",
+      "dispatchedAt": "2026-09-27T04:43:39Z",
+      "model": "muse-spark",
+      "step": 2
+    },
+    {
+      "agentType": "generic:subagent_spawn",
+      "configuredModel": "muse-spark-1.3-contributor",
+      "dispatchedAt": "2026-09-27T04:46:39Z",
+      "model": "muse-spark",
+      "step": 3
+    },
+    {
+      "agentType": "generic:subagent_spawn",
+      "configuredModel": "muse-spark-1.2-contributor",
+      "dispatchedAt": "2026-09-27T04:52:13Z",
+      "model": "muse-spark",
+      "step": 4
+    },
+    {
+      "agentType": "generic:subagent_spawn",
+      "configuredModel": "muse-spark-1.3-contributor",
+      "dispatchedAt": "2026-09-27T06:02:19Z",
+      "model": "muse-spark",
+      "step": 5
+    },
+    {
+      "agentType": "generic:subagent_spawn",
+      "configuredModel": "muse-spark-1.3-contributor",
+      "dispatchedAt": "2026-09-27T06:12:57Z",
+      "model": "muse-spark",
+      "step": 6
+    },
+    {
+      "agentType": "generic:subagent_spawn",
+      "configuredModel": "muse-spark-1.2-contributor",
+      "dispatchedAt": "2026-09-27T06:18:26Z",
+      "model": "muse-spark",
+      "step": 7
+    },
+    {
+      "agentType": "generic:subagent_spawn",
+      "dispatchedAt": "2026-09-27T06:22:41Z",
+      "model": "muse-spark",
+      "step": 8
+    },
+    {
+      "agentType": "generic:subagent_spawn",
+      "configuredModel": "muse-spark-1.2-contributor",
+      "dispatchedAt": "2026-09-27T06:38:39Z",
+      "model": "muse-spark",
+      "step": 9,
+      "substep": "fixPrExec"
+    }
+  ],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "completed",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed",
+    "9": "completed"
+  },
+  "telemetry": {
+    "loc": {
+      "baseline": 96892,
+      "unit": "target-doc-bytes"
+    },
+    "steps": [
+      {
+        "N": 0,
+        "agentType": "inline:session",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T04:37:56Z",
+        "elapsedSec": 9,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/reduce-spec-to-pr-tokens/ac-ledger.json"
+          ],
+          "deleted": [],
+          "modified": [
+            ".agents/plans/reduce-spec-to-pr-tokens/step-00-reduce-spec-to-pr-tokens.spec.md",
+            ".agents/plans/reduce-spec-to-pr-tokens/step-00-reduce-spec-to-pr-tokens.classify.md"
+          ]
+        },
+        "finishedAt": "2026-09-27T04:38:05Z",
+        "label": "Spec",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 1,
+        "agentType": "generic:subagent_spawn",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T04:39:17Z",
+        "elapsedSec": 251,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/reduce-spec-to-pr-tokens/step-01-reduce-spec-to-pr-tokens.plan.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-27T04:43:28Z",
+        "label": "Planning",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": "generic:subagent_spawn",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T04:43:39Z",
+        "elapsedSec": 172,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/reduce-spec-to-pr-tokens/step-02-reduce-spec-to-pr-tokens.plan-interview.md",
+            ".agents/plans/reduce-spec-to-pr-tokens/step-02-reduce-spec-to-pr-tokens.plan.refined.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-27T04:46:31Z",
+        "label": "Interview",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": "generic:subagent_spawn",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T04:46:39Z",
+        "elapsedSec": 248,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/reduce-spec-to-pr-tokens/step-03-reduce-spec-to-pr-tokens.plan.exec.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-27T04:50:47Z",
+        "label": "Plan to tasks",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": "generic:subagent_spawn",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T04:52:13Z",
+        "elapsedSec": 4161,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-spec-to-pr/SKILL.md",
+            ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+            ".agents/skills/ws-spec-to-pr/PROTOCOLS.md",
+            ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+            "test/test-context-budget.js",
+            "package.json",
+            "bin/skill-dependencies.json",
+            "bin/skill-integrity.json",
+            "docs/index.html",
+            "docs/wiki/delivery/spec-to-pr-pipeline.html",
+            "test/package.json",
+            ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+            ".agents/skills/ws-shared/version.json"
+          ]
+        },
+        "finishedAt": "2026-09-27T06:01:34Z",
+        "label": "Implement",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": "generic:subagent_spawn",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T06:02:19Z",
+        "elapsedSec": 587,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/reduce-spec-to-pr-tokens/step-05-reduce-spec-to-pr-tokens.plan.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-27T06:12:06Z",
+        "label": "Verify",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 6,
+        "agentType": "generic:subagent_spawn",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T06:12:57Z",
+        "elapsedSec": 317,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/reduce-spec-to-pr-tokens/step-06-reduce-spec-to-pr-tokens.review.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-27T06:18:14Z",
+        "label": "Code review",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 7,
+        "agentType": "generic:subagent_spawn",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T06:18:26Z",
+        "elapsedSec": 203,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/reduce-spec-to-pr-tokens/step-07-reduce-spec-to-pr-tokens.testing.plan.md",
+            ".agents/plans/reduce-spec-to-pr-tokens/step-07-reduce-spec-to-pr-tokens.testing.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-27T06:21:49Z",
+        "label": "Testing",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": "generic:subagent_spawn",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T06:22:41Z",
+        "elapsedSec": 899,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/reduce-spec-to-pr-tokens/step-08-reduce-spec-to-pr-tokens.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-27T06:37:40Z",
+        "label": "Ship",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 9,
+        "agentType": "generic:subagent_spawn",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-27T06:38:39Z",
+        "elapsedSec": 133,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-27T06:40:52Z",
+        "label": "Fix PR",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 6980,
+    "totalTokens": 0,
+    "workflowStartedAt": "2026-09-27T04:37:09Z"
+  },
+  "verificationScore": 10,
+  "workflowId": "reduce-spec-to-pr-tokens-20260927T043013Z",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/reduce-spec-to-pr-tokens/ac-ledger.json",
+      ".agents/plans/reduce-spec-to-pr-tokens/step-01-reduce-spec-to-pr-tokens.plan.md",
+      ".agents/plans/reduce-spec-to-pr-tokens/step-02-reduce-spec-to-pr-tokens.plan-interview.md",
+      ".agents/plans/reduce-spec-to-pr-tokens/step-02-reduce-spec-to-pr-tokens.plan.refined.md",
+      ".agents/plans/reduce-spec-to-pr-tokens/step-03-reduce-spec-to-pr-tokens.plan.exec.md",
+      ".agents/plans/reduce-spec-to-pr-tokens/step-05-reduce-spec-to-pr-tokens.plan.report.md",
+      ".agents/plans/reduce-spec-to-pr-tokens/step-06-reduce-spec-to-pr-tokens.review.md",
+      ".agents/plans/reduce-spec-to-pr-tokens/step-07-reduce-spec-to-pr-tokens.testing.plan.md",
+      ".agents/plans/reduce-spec-to-pr-tokens/step-07-reduce-spec-to-pr-tokens.testing.report.md",
+      ".agents/plans/reduce-spec-to-pr-tokens/step-08-reduce-spec-to-pr-tokens.result.md"
+    ],
+    "deleted": [],
+    "modified": [
+      ".agents/plans/reduce-spec-to-pr-tokens/step-00-reduce-spec-to-pr-tokens.classify.md",
+      ".agents/plans/reduce-spec-to-pr-tokens/step-00-reduce-spec-to-pr-tokens.spec.md",
+      ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+      ".agents/skills/ws-shared/version.json",
+      ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+      ".agents/skills/ws-spec-to-pr/PROTOCOLS.md",
+      ".agents/skills/ws-spec-to-pr/SKILL.md",
+      ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+      "bin/skill-dependencies.json",
+      "bin/skill-integrity.json",
+      "docs/index.html",
+      "docs/wiki/delivery/spec-to-pr-pipeline.html",
+      "package.json",
+      "test/package.json",
+      "test/test-context-budget.js"
+    ]
+  },
+  "workflowType": "standard"
+}

@@ -40,7 +40,7 @@ Host binding: [`tools.md`](tools.md) § Host-tool binding & dispatch tiers (`ask
 
 ### Coordinator gate surfacing (step baton)
 
-In step-level baton runs, all Transition Gates and `user-gate` prompts surface at the deterministic coordinator (`ws-spec-to-pr/scripts/step_coordinator.cjs`) as pause-and-prompt, or auto-apply index 0 in `autoMode`. Prompts stay chunked to at most 3 options per question (rule 8). Worker processes run non-interactive and must not emit gates; gate-shaped worker output is recorded as a worker protocol violation without advancing the step.
+Coordinator gate surfacing applies only to the distributed multi-CLI workflow ([`ws-spec-to-pr-distributed`](../../ws-spec-to-pr-distributed/SKILL.md)); see that skill's [`references/coordinator.md`](../../ws-spec-to-pr-distributed/references/coordinator.md). Standard single-host runs surface gates here as usual.
 
 ## Interactive execution cadence (One Step Per Turn)
 

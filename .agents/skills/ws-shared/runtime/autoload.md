@@ -103,11 +103,13 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | Vibe-coding implement / what-next / plan or research without a spec | [`ws-megabrain`](../../ws-megabrain/SKILL.md) | Does not replace spec-to-pr; defers when orch owns the session |
 | Deliver **one** feature Spec→PR (full FSM 0–9) | [`ws-spec-to-pr`](../../ws-spec-to-pr/SKILL.md) | Not for batch; not for format-only edits |
 | Deliver **one** feature Spec→PR (fast lite 0–5) | [`ws-spec-to-pr-lite`](../../ws-spec-to-pr-lite/SKILL.md) | Not for complex multi-phase work; never cross-resume with standard |
+| Deliver **one** feature Spec→PR across multiple CLI processes (opt-in) | [`ws-spec-to-pr-distributed`](../../ws-spec-to-pr-distributed/SKILL.md) | Explicit invocation only; never auto-selected; runner-mapped steps use the state-file baton, unmapped steps stay single-host |
 | Pick lite vs standard for a ready spec | [`ws-classify-complexity`](../../ws-classify-complexity/SKILL.md) | Orthogonal to gates.md simple/standard/complex skip axis |
 | Deliver **many** specs sequentially (auto lite/standard workers) | [`ws-spec-multi`](../../ws-spec-multi/SKILL.md) | Master orch only — does not edit product code itself |
 | Explain status / what a spec delivered (read-only panorama) | [`ws-spec-explain`](../../ws-spec-explain/SKILL.md) | Does not implement, ship, or edit specs |
 | Translate a spec into a human runbook beside the source artifact | [`ws-spec-translate-to-human`](../../ws-spec-translate-to-human/SKILL.md) | Never implements code or edits the agent spec; one companion write target |
 | Bulk-import open GH issues / ADO User Stories → local specs + register | [`ws-spec-from-provider`](../../ws-spec-from-provider/SKILL.md) | Not single-id fetch (use provider `fetch-to-spec`); not orch delivery |
+| Create a tracker item from a free-text idea (no local spec, no git) | [`ws-spec-to-issue`](../../ws-spec-to-issue/SKILL.md) | Does not write `{specsDir}` / `{plansDir}`; does not import; reverse half of `ws-spec-from-provider` |
 
 ### Keyword → skill (quick map)
 
@@ -118,6 +120,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | format spec, validate AC, spec-format, missing acceptance criteria | `ws-spec-format` |
 | register spec, fetch-to-spec (file), promote spec into a workflow run | `ws-spec-provider-local` |
 | import issues, import user stories, bulk specs from github/ado, spec-from-provider | `ws-spec-from-provider` |
+| open an issue from an idea, create issue/us from free text, send idea to tracker, spec-to-issue | `ws-spec-to-issue` |
 | list specs, list plans, dual board, unlinked specs, manage workflows | `ws-spec-list` |
 | index.PRD, promote inbox, sync index status, init PRD, track spec | `ws-spec-index` |
 | archive plans, archive index.PRD, harvest plan history | `ws-spec-archive` |
@@ -127,6 +130,7 @@ Load **only** the skill that matches the user intent. Do not load the whole fami
 | vibe coding, megabrain, implement without spec, what next | `ws-megabrain` |
 | spec to pr, full pipeline, standard orch | `ws-spec-to-pr` |
 | lite / fast spec to pr | `ws-spec-to-pr-lite` |
+| distributed spec to pr, multi-CLI baton, step runners | `ws-spec-to-pr-distributed` |
 | classify complexity, lite or standard? | `ws-classify-complexity` |
 | multi-spec, batch specs, run all specs | `ws-spec-multi` |
 | explain spec, spec status, what did US deliver, /explain | `ws-spec-explain` |
@@ -164,6 +168,10 @@ ideas / free text
     → ws-spec-write          → {specsDir}/{slug}.spec.md
     → ws-spec-format         → validate / reshape same file
     → ws-spec-index promote  → optional index.PRD row + stub
+
+outbound (idea, keep the working tree clean)
+    → ws-spec-to-issue       → anonymized GH issue / ADO User Story (no local file, no git)
+    → (later) provider fetch-to-spec / ws-spec-from-provider → local spec of record
 
 tracker issue / work item
     → ws-spec-provider-github / ws-spec-provider-azure-devops fetch
@@ -203,6 +211,7 @@ harvest {plansDir} history (manual)
 4. `ws-spec-update` (body ↔ code) ≠ `ws-spec-index sync` (index ↔ delivery evidence).
 5. `ws-spec-multi` dispatches `ws-spec-to-pr` / `ws-spec-to-pr-lite` workers; it does not replace `ws-spec-list` for interactive pick-one.
 6. Tracker issues/WIs enter via `ws-spec-provider-github` / `ws-spec-provider-azure-devops` fetch → `ws-spec-write` agentic reformulation → `{specsDir}` spec of record, then spec-provider-local register → `step-00` with `--source {github|azure-devops}`. No provider writes `step-00` directly. Batch backlog import: `ws-spec-from-provider`.
+7. `ws-spec-to-issue` is the outbound half of `ws-spec-from-provider`: it creates the tracker item only (no local spec, no git) so a running workflow's tree stays clean; the item re-enters through a provider `fetch-to-spec` / `ws-spec-from-provider` when implementation starts.
 8. `ws-spec-archive` (manual) harvests `{plansDir}` into `index.PRD` Archive then proposes plan-dir cleanup. `ws-cleanup` deletes untracked scratch only. Archive first when history must survive.
 
 ---

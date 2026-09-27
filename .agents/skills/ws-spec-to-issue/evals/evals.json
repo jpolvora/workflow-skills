@@ -1,0 +1,37 @@
+{
+  "skill_name": "ws-spec-to-issue",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Use @ws-spec-to-issue to turn this idea into a tracker item: \"let users tag invoices with a cost center and filter reports by it\". Do not touch the working tree.",
+      "expected_output": "Agent reformulates the idea into a spec-shaped payload, anonymizes it, resolves the active tracker, runs validate-auth, and creates the item via the provider create-issue intent (or prints a --dry-run payload). No local spec file is written.",
+      "assertions": [
+        "Agent loads ws-spec-to-issue before acting",
+        "Payload is reformulated (Description + testable ACs + Out of Scope), not a verbatim copy of the input",
+        "Agent resolves the tracker from .ws/config.json and loads only the resolved provider body",
+        "Agent runs the provider validate-auth before any mutating call",
+        "No {specsDir} / {plansDir} artifact is created and no git mutation occurs"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/spec-to-issue --dry-run \"add a retry to the webhook dispatcher\"",
+      "expected_output": "Agent prints the resolved tracker, title, and anonymized body and creates nothing.",
+      "assertions": [
+        "Recognizes the /spec-to-issue trigger and --dry-run flag",
+        "Prints the resolved tracker, title, and reformulated body",
+        "Does not call the provider create-issue mutation path"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "ws-spec-to-issue \"move the C:\\Users\\jdoe\\secret-project\\deploy.ps1 step into CI\"",
+      "expected_output": "Agent refuses to send the raw absolute path; it anonymizes the payload (generic failure class) before creating, or stops.",
+      "assertions": [
+        "Agent does not pass an absolute local path to the tracker payload",
+        "Agent restates the request generically per the anonymization rule",
+        "The anonymization guard fails closed when a path or secret-shaped text remains"
+      ]
+    }
+  ]
+}

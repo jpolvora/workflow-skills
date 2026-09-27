@@ -85,9 +85,13 @@ Projects canonical skills (`.agents/skills/ws-*`) into native host agent definit
 - **Integrity protection:** Signs generated files with `@generated` SHA-256 hashes and non-clobber protection so human-authored custom agents are never overwritten or deleted.
 - **Fail-safe fallback ladder:** `host-dispatch.md` implements Tier 1 (named specialized subagent) → Tier 2 (generic subagent reading `SKILL.md`) → Tier 3 (inline execution), preserving 100% harness portability. Step 5 (`ws-plan-verify`) is product-tree readonly in the compiled prompt; the compiler never emits host `readonly: true` (question-only session blocks Shell).
 
-### 1.6 Step-level baton runs (multi-CLI)
+### 1.6 Step-level baton runs (multi-CLI) — `ws-spec-to-pr-distributed`
 
-One run may execute different steps in different CLI processes via the deterministic coordinator (`ws-spec-to-pr/scripts/step_coordinator.cjs`, plain Node, no LLM): map steps to runner ids with `defaults.stepRunners`, declare command templates in `defaults.runners` (`{prompt}`/`{cwd}`/`{slug}`/`{step}` substitutions, timeout, env allowlist), and tune polling/retries with `defaults.stepBaton` (`pollIntervalSeconds` 5–300 default 30, `maxAttempts` default 2). Unknown steps, runner ids, or empty commands fail fast before Step 0; unmapped steps keep single-host dispatch. The state-file baton (`holder`, `step`, `claimedAt`, `leaseUntil`, `revision`) is the sole turn signal: revision-checked claim, exactly-once release on `finish`, re-claimable expiry with logged attempts, `blocked` after `maxAttempts`. Workers spawn one-shot with sparse pointers plus a baton envelope and must call `finish` before exit; the coordinator verifies advancement and artifacts, emits `baton_*` / `runner_*` telemetry, and mirrors released handoffs to the spec-memo vault when integration is enabled. Gates surface at the coordinator while workers stay non-interactive. Same-machine same-repo only; no IPC bus, multi-machine queue, or CLI provisioning.
+Owned by the opt-in, explicitly invoked [`ws-spec-to-pr-distributed`](.agents/skills/ws-spec-to-pr-distributed/SKILL.md) workflow. One run may execute different steps in different CLI processes via the deterministic coordinator (`{skillsRoot}/ws-spec-to-pr-distributed/scripts/step_coordinator.cjs`, plain Node, no LLM): map steps to runner ids with `defaults.stepRunners`, declare command templates in `defaults.runners` (`{prompt}`/`{cwd}`/`{slug}`/`{step}` substitutions, timeout, env allowlist), and tune polling/retries with `defaults.stepBaton` (`pollIntervalSeconds` 5–300 default 30, `maxAttempts` default 2). Unknown steps, runner ids, or empty commands fail fast before Step 0; unmapped steps keep single-host dispatch. The state-file baton (`holder`, `step`, `claimedAt`, `leaseUntil`, `revision`) is the sole turn signal: revision-checked claim, exactly-once release on `finish`, re-claimable expiry with logged attempts, `blocked` after `maxAttempts`. Workers spawn one-shot with sparse pointers plus a baton envelope and must call `finish` before exit; the coordinator verifies advancement and artifacts, emits `baton_*` / `runner_*` telemetry, and mirrors released handoffs to the spec-memo vault when integration is enabled. Gates surface at the coordinator while workers stay non-interactive. Same-machine same-repo only; no IPC bus, multi-machine queue, or CLI provisioning. The standard `ws-spec-to-pr` ignores the baton keys entirely and stays single-host.
+
+### 1.7 Optional post-completion proof of work
+
+After a run reaches terminal ship or fix-PR convergence with `status: completed`, two boolean switches and one folder setting gate a single non-blocking UI-evidence step. `defaults.enableOptionalProofOfWork` (explicit `true` only) asks once through `user-gate` whether to start the evidence collector; adding `defaults.enableAutomaticEvidenceCollectForProofOfWork` starts it without asking. The collector writes numbered screenshots plus one Markdown report per user story under `defaults.projectRootFolderToSave` (default `{projectRoot}/.proofOfWork/{slug}`), and that folder is never committed unless separately asked.
 
 ---
 
@@ -165,6 +169,7 @@ A deliberate vocabulary separates a **spec** (human-facing feature description) 
 | Dual board of specs versus plan workflows, with a manage menu | `ws-spec-list` |
 | Local kanban board (Backlog, Sprint, Development, Staging, Production, Abandoned) with card details popup; `npm run kanvas` | `ws-kanvas` |
 | Bulk-import open GitHub issues or ADO User Stories (assigned to PAT) into `{specsDir}` + full register + auto-track in `index.PRD` | `ws-spec-from-provider` |
+| Create an anonymized tracker item (GitHub issue / ADO User Story) from a free-text idea with no local spec and no git mutation; outbound companion of `ws-spec-from-provider` | `ws-spec-to-issue` |
 | Project feature index (`index.PRD`): init, sync against delivery evidence, promote from inbox, track an existing spec | `ws-spec-index` |
 | Harvest `{plansDir}` delivery facts into `index.PRD` Archive, then propose cleanup of shipped plan folders | `ws-spec-archive` |
 | Update spec bodies when code drifted after ad-hoc prompts | `ws-spec-update` |
@@ -425,6 +430,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-kanvas`](.agents/skills/ws-kanvas/SKILL.md) | W | Local kanban board for spec and workflow state |
 | [`ws-spec-manager`](.agents/skills/ws-spec-manager/SKILL.md) | W | Unified router for spec create/list/update/sync/track/organize/archive/validate/import/run |
 | [`ws-spec-from-provider`](.agents/skills/ws-spec-from-provider/SKILL.md) | W | Bulk-import open GH issues / ADO User Stories → spec-write + register + auto-track |
+| [`ws-spec-to-issue`](.agents/skills/ws-spec-to-issue/SKILL.md) | W | Reformulate free text → anonymized tracker item (GH issue / ADO US) with no local spec and no git |
 | [`ws-spec-update`](.agents/skills/ws-spec-update/SKILL.md) | W | Update spec bodies when code drifts |
 | [`ws-spec-memo`](.agents/skills/ws-spec-memo/SKILL.md) | W | Harness ↔ spec-memo **bridge** only; runtime vault ops are `ws-memo` / `ws-session-tracking` (`externalSkills`, spec-memo package) |
 | [`ws-spec-organizer`](.agents/skills/ws-spec-organizer/SKILL.md) | W | Resolve spec-of-record path and organize/prefix specs chronologically |

@@ -12,7 +12,7 @@ invocation_names:
 
 **Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
-Drive PR review threads to zero by wrapping [ws-fix-pr](../ws-fix-pr/SKILL.md) in a [ws-goal-loop](../ws-goal-loop/SKILL.md): auto-approve cooperative gates and re-check threads after every push until `activeThreads == 0`.
+Drive PR review threads to zero by wrapping `ws-fix-pr` in a `ws-goal-loop` (each loaded via `{skillLoader}` — [canonical skill-load procedure](../ws-shared/runtime/host-capability-tokens.md)): auto-approve cooperative gates and re-check threads after every push until `activeThreads == 0`.
 
 ## Invocation
 
@@ -53,7 +53,7 @@ Success criterion: `len(activeThreads) == 0` from a `list-threads` call **AND** 
 
 ## Goal contract guards (AC7–AC8)
 
-This loop applies the same revision-guarded / fail-closed / resume contract as [`ws-goal-loop`](../ws-goal-loop/SKILL.md) (contract + evals; no runtime loop engine).
+This loop applies the same revision-guarded / fail-closed / resume contract as `ws-goal-loop` loaded via `{skillLoader}` ([canonical skill-load procedure](../ws-shared/runtime/host-capability-tokens.md)) (contract + evals; no runtime loop engine).
 
 | Guard | Contract |
 |-------|----------|
@@ -84,7 +84,7 @@ A bare workflow id fails with `state file not found`.
 1. **Initialize**: restate parameters (above) and resolve `providers.scm`.
    - Done when: PR number, mode, and provider are confirmed.
 
-2. **Initial convergence check**: call `list-threads` and check active SCM CI/code-review run status, then apply [`ws-goal-loop`](../ws-goal-loop/SKILL.md)'s configured convergence helper. If a fresh read has `activeThreads == 0` and every required check concluded successfully, exit without arming a heartbeat — but record the clean-immediate reason first (us-414 AC4): write `{reviewsDir}/PR-<N>-round-0-clean-immediate.md` (frontmatter `pr`, `round: 0`, `exitBranch: clean-immediate`, non-empty `reason`, `activeThreads: []`, checks evidence) and verify with `node {skillsRoot}/ws-goal-fix-pr/scripts/check_fixpr_rounds.cjs --reviews-dir {reviewsDir} --pr <N>` (exit 0 required). A convergence with zero round artifacts and no recorded reason is a defect, not a clean run. Running checks poll at `defaults.convergence.minPollSec`; queued or absent runs poll at `maxPollSec`; record observed state and chosen interval in every round log.
+2. **Initial convergence check**: call `list-threads` and check active SCM CI/code-review run status, then apply [`ws-goal-loop`](../ws-goal-loop/SKILL.md)'s configured convergence helper (load `ws-goal-loop` via `{skillLoader}` — [canonical skill-load procedure](../ws-shared/runtime/host-capability-tokens.md)). If a fresh read has `activeThreads == 0` and every required check concluded successfully, exit without arming a heartbeat — but record the clean-immediate reason first (us-414 AC4): write `{reviewsDir}/PR-<N>-round-0-clean-immediate.md` (frontmatter `pr`, `round: 0`, `exitBranch: clean-immediate`, non-empty `reason`, `activeThreads: []`, checks evidence) and verify with `node {skillsRoot}/ws-goal-fix-pr/scripts/check_fixpr_rounds.cjs --reviews-dir {reviewsDir} --pr <N>` (exit 0 required). A convergence with zero round artifacts and no recorded reason is a defect, not a clean run. Running checks poll at `defaults.convergence.minPollSec`; queued or absent runs poll at `maxPollSec`; record observed state and chosen interval in every round log.
    - Done when: `activeThreads` is confirmed either still 0 and actions completed (stop, converged) or > 0 / actions in progress (proceed to Act or wait).
 
 3. **Act round**: on the standard dispatch path, dispatch one fresh worker per round batch through the portable `dispatch-agent` alias; the worker must invoke [ws-fix-pr](../ws-fix-pr/SKILL.md) once for `<PR-NUMBER>` with overrides active. All active threads fetched in this round form one batch and run one ordered `fixPrPlan` → `fixPrExec` pair inside that worker, never one pair per thread. `fixPrPlan` must write the complete matching `plan-gate.md` before product or remote mutation; `fixPrExec` must validate and follow it, append any amendment before a deviating edit, and run the cooperative **proactive class sweep** per [`COOPERATIVE_FIX.md`](../ws-fix-pr/scripts/COOPERATIVE_FIX.md) (multi-source discovery, size gate, `defectClass` / `sourcesConsulted` / `proactiveFixed` / `proactiveSkipped`). **Forbidden:** resolve or push before both substeps have evidence, or while same-class surgical hits remain unfixed without recorded skips. Commit as `fix(#<PR-NUMBER>): fix issues from review threads [<threadId>, ...]`, resolve via provider `resolve-thread`, and `git push origin HEAD` (skip push when `dry-run`). When the base moved mid-loop, advance the baseline per round — `node {skillsRoot}/ws-spec-to-pr/scripts/refresh_baseline.cjs --state {us-dir}/{workflow-id}.state.json --base-ref origin/{baseBranch}`, then `git fetch` + `git rebase {newTip}` (merge-forward where rebase is disallowed); never reset to the original baseline. The skill session owns the loop inline and never authors plan gates or product fixes itself when dispatch is available (see Round-batch dispatch). Internal roles emit dispatch telemetry only and never finish outer Step 9.

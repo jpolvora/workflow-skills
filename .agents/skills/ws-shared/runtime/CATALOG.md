@@ -81,6 +81,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-spec-list` | `.agents/skills/ws-spec-list/SKILL.md` | Dual board: specs vs plans + menu |
 | `ws-kanvas` | `.agents/skills/ws-kanvas/SKILL.md` | Local kanban board for spec and workflow state |
 | `ws-spec-from-provider` | `.agents/skills/ws-spec-from-provider/SKILL.md` | Bulk-import GH/ADO issues → specs |
+| `ws-spec-to-issue` | `.agents/skills/ws-spec-to-issue/SKILL.md` | Free-text idea → anonymized tracker item (no local spec, no git) |
 | `ws-activity-report` | `.agents/skills/ws-activity-report/SKILL.md` | Timesheet entries for delivery (Extra) |
 | `ws-pre-daily` | `.agents/skills/ws-pre-daily/SKILL.md` | 36-hour standup briefing |
 | `ws-megabrain` | `.agents/skills/ws-megabrain/SKILL.md` | Vibe-coding implementer + specialists |
@@ -133,6 +134,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | List / manage specs vs plan workflows (dual board + menu) | `ws-spec-list` |
 | View specs as a local kanban board | `ws-kanvas` |
 | Bulk-import GH issues / ADO US → local specs | `ws-spec-from-provider` |
+| Create a tracker item (GH issue / ADO US) from free text, no local spec | `ws-spec-to-issue` |
 | Session autoload set (which skills load every prompt) | [`{skillsRoot}/ws-shared/runtime/autoload.md`](autoload.md) § Always-applied (a consumer root `AGENTS.md` may override membership) |
 | Specs keywords / which skill to invoke | [`{skillsRoot}/ws-shared/runtime/autoload.md`](autoload.md) § Specs skill router |
 | Package release tasks (deps, integrity, site) | Upstream source repo only — see root `CATALOG.md` |

@@ -12,17 +12,20 @@ invocation_names:
 
 **Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
-Run the workflow simulation script against standard, lite, and multi-spec orchestrators.
+Run the workflow simulation script against standard, lite, multi-spec, and distributed orchestrators.
 
 ---
 
 ## Quick Start
 
-Run deep simulation and validation against both workflows:
+Run deep simulation and validation against all workflows:
 
 ```bash
-# Standard report execution
+# Full report execution (standard, lite, multi-spec, distributed)
 node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs
+
+# Validate a specific registered workflow id (fail-closed on unknown ids)
+node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs --workflow ws-spec-to-pr-distributed
 
 # Save Markdown report to ws-check-workflows-report.md
 node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs --report
@@ -44,7 +47,9 @@ The validation process performs end-to-end simulation across both orchestrators:
 ### 1. Workflow Simulation & Step Continuity
 - **Standard (`ws-spec-to-pr`) Simulation**: Simulates stepping through Steps 0 to 9 (`ws-spec-write`, `ws-plan-write`, `ws-plan-interview`, `ws-plan-to-tasks`, `ws-implement-tasks`, `ws-plan-verify`, `ws-code-review`, `ws-testing`, `ws-ship-pr`, `ws-fix-pr`). Step 7 (`ws-testing`) may include optional mutation skip/pass/fail branches documented in `ws-testing` / `DIAGRAM.md` — FSM step count stays 0–9 (mutation is not a separate step).
 - **Lite (`ws-spec-to-pr-lite`) Simulation**: Simulates stepping through Steps 0 to 5 (`ws-spec-write`, `ws-plan-write`, `ws-implement-tasks`, `ws-code-review`, `ws-ship-pr`, `ws-fix-pr`). Does **not** require `ws-testing` or mutation.
+- **Distributed (`ws-spec-to-pr-distributed`) Simulation**: Verifies the opt-in distributed workflow delegates the same 0–9 step set to the shared pipeline skills, owns `scripts/step_coordinator.cjs` at its own path (no duplicate under `ws-spec-to-pr`), and declares its dependency closure.
 - **Linked Skill Check**: Verifies that every step links to an existing skill under `{skillsRoot}/<skill>/SKILL.md` (upstream SoT is `.agents/skills/`).
+- **Workflow Registry (fail-closed)**: `--workflow <id>` accepts only registered workflow ids (`ws-spec-to-pr`, `ws-spec-to-pr-lite`, `ws-spec-multi`, `ws-spec-to-pr-distributed`); an unknown id is a CRITICAL issue (exit 1), never a passing simulation.
 
 ### 2. Script Syntax & Execution Check
 - Checks Node.js scripts (`.cjs`/`.js`) via `node --check`.
