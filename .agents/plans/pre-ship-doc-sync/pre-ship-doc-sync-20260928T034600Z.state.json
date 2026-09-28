@@ -1,0 +1,29 @@
+{
+  "stateVersion": 1,
+  "workflowId": "pre-ship-doc-sync-20260928T034600Z",
+  "slug": "pre-ship-doc-sync",
+  "workflowType": "standard",
+  "status": "completed",
+  "currentStep": 9,
+  "baseBranch": "develop",
+  "shipStatus": "merged",
+  "prNumber": null,
+  "prUrl": null,
+  "verificationScore": 10,
+  "acImplemented": 12,
+  "startedAt": "2026-09-28T03:46:00Z",
+  "endedAt": "2026-09-28T04:05:00Z",
+  "productCommit": "9d840fe441ddc465baa49ff6b276c86e1be07d29",
+  "filesTouched": [
+    ".agents/skills/ws-shared/runtime/config.schema.json",
+    ".agents/skills/ws-shared/templates/config.json.example",
+    ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
+    ".agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs",
+    ".agents/skills/ws-shared/runtime/config-resolution.md",
+    ".agents/skills/ws-shared/runtime/gates.md",
+    ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+    ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+    ".agents/skills/ws-wiki/SKILL.md",
+    "test/test-pre-ship-doc-sync.js"
+  ]
+}

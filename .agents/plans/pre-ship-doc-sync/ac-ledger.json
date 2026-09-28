@@ -1,0 +1,269 @@
+{
+  "schemaVersion": 1,
+  "revision": 1,
+  "workflowId": "pre-ship-doc-sync-20260928T034600Z",
+  "slug": "pre-ship-doc-sync",
+  "specPath": ".agents/plans/pre-ship-doc-sync/step-00-pre-ship-doc-sync.spec.md",
+  "planIndexPath": null,
+  "declaredGaps": [],
+  "aliasResults": [],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "`defaults.requirePreShipDocSync` is declared in `{skillsRoot}/ws-shared/runtime/config.schema.json` under `defaults` as `type: boolean`, `default: true`, with a description naming the trio (`ws-wiki sync` + `ws-spec-index sync` + changelog).",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC2",
+      "text": "`{skillsRoot}/ws-shared/templates/config.json.example` seeds `\"requirePreShipDocSync\": true` under `defaults` with a sibling `_comment_requirePreShipDocSync` explaining the gate and the write-leg fallback.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC3",
+      "text": "`{skillsRoot}/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1` exposes one `defaults` boolean binding for `requirePreShipDocSync` (default `true`) in the Execution & Gates section; `node test/test-powershell-config-editor.js` exits 0.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC4",
+      "text": "In `ws-spec-to-pr`, when the effective flag is true, the Step 8 close gate blocks the ship phase until `ws-spec-index sync`, the changelog entry, and the wiki leg (or its warn-skip) are recorded. `shipStatus` is not advanced to `pending`/`pushed` while a required leg is outstanding.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC5",
+      "text": "In `ws-spec-to-pr-lite`, when the effective flag is true, the Step 4 close gate enforces the same trio before the ship gate, with the same blocking semantics as AC4.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC6",
+      "text": "When the effective flag is true and the wiki is absent or unconfigured (`plans.wikiDir` missing), the wiki leg warn-and-skips with a visible warning in the close output; the gate does **not** block, and the index-sync and changelog legs remain required and recorded.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC7",
+      "text": "When the effective flag is `false`, both orchs behave exactly as today: standard keeps the wiki leg offered-not-mandatory (no ship block on a missing wiki), lite keeps its inline doc sync, and index/changelog behavior is unchanged. No new gate prompt or block is introduced.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC8",
+      "text": "An absent, non-boolean, or otherwise invalid `requirePreShipDocSync` value resolves to the effective default `true` at runtime (schema default aligns with the runtime resolution).",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC9",
+      "text": "A regression test (`test/test-pre-ship-doc-sync.js`) asserts: flag-true enforcement in both orchs, wiki-absent warn-skip does not block, flag-false legacy behavior (no gate), and schema/example/GUI default alignment.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC10",
+      "text": "Re-entering the close gate after a leg already succeeded does not duplicate the changelog entry or the `index.PRD` row (idempotent re-entry).",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC11",
+      "text": "Documentation is reconciled to one strength/placement: root `AGENTS.md` Dual-mode close bullet, `ws-spec-to-pr/STEP-DISPATCH.md` Step 8 rows, the `ws-spec-to-pr-lite` Steps table, and `ws-wiki/SKILL.md` all describe the flag-governed gate consistently; the site is rebuilt.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    },
+    {
+      "id": "AC12",
+      "text": "`bin/skill-integrity.json` is regenerated for every changed hashed skill file and `npm run verify-integrity` exits 0.",
+      "status": "Pending",
+      "evidence": [],
+      "tasks": [],
+      "planSections": [],
+      "files": [],
+      "commits": [],
+      "tests": [],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": []
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "NS1 (wiki absent, flag true): a close run with `plans.wikiDir` absent must **not** block ship and must emit the visible wiki warn-skip; index-sync + changelog legs still recorded. Fails today (no flag/gate exists) and must pass after implementation.",
+      "tests": [],
+      "linkEventIds": []
+    },
+    {
+      "id": "NS2",
+      "text": "NS2 (wiki present, flag true, wiki leg not run): the close gate must STOP the ship phase; assert `shipStatus` is not advanced and no PR/push occurs.",
+      "tests": [],
+      "linkEventIds": []
+    },
+    {
+      "id": "NS3",
+      "text": "NS3 (flag false): standard close must not block on a missing wiki (legacy offered-not-mandatory) and lite close must match today's inline doc sync; assert no new gate prompt appears.",
+      "tests": [],
+      "linkEventIds": []
+    },
+    {
+      "id": "NS4",
+      "text": "NS4 (invalid value): `requirePreShipDocSync` set to a non-boolean must resolve to the effective `true` and behave as enabled, not throw.",
+      "tests": [],
+      "linkEventIds": []
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": null
+}
