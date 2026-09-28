@@ -34,7 +34,10 @@ function normalizeRead(text) {
 
 function writeLf(file, text) {
   const body = normalizeRead(text).replace(/\r\n/g, '\n');
-  fs.writeFileSync(file, body, 'utf8');
+  const dir = path.dirname(file);
+  const tmp = path.join(dir, `.kanvas-write-${process.pid}-${Date.now()}.tmp`);
+  fs.writeFileSync(tmp, body, 'utf8');
+  fs.renameSync(tmp, file);
 }
 
 function readText(file) {

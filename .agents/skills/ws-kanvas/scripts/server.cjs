@@ -168,11 +168,15 @@ function parseMoveBody(raw) {
 function readRequestBody(req, limit = 65536) {
   return new Promise((resolve, reject) => {
     let buf = '';
+    let bytes = 0;
     req.on('data', (chunk) => {
-      buf += chunk;
-      if (buf.length > limit) {
+      bytes += chunk.length;
+      if (bytes > limit) {
+        req.destroy();
         reject(new Error('body-too-large'));
+        return;
       }
+      buf += chunk.toString('utf8');
     });
     req.on('end', () => resolve(buf));
     req.on('error', reject);
