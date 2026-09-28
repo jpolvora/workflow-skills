@@ -10,9 +10,10 @@ invocation_names:
 
 > When this skill is loaded, output "ws-kanvas loaded."
 
-Local, read-only kanban board over the specs of record (`{specsDir}`) and their workflow state
-(`{plansDir}` + `index.PRD`). One card per spec; click a card for a details popup. The board never
-mutates specs, plans, or the index — it is a read lens over the same sources `ws-spec-list` reads.
+Local kanban board over the specs of record (`{specsDir}`) and their workflow state
+(`{plansDir}` + `index.PRD`). One card per spec; click a card for a details popup, drag cards
+between columns, or use the keyboard Move action in the popup. Moves persist through `POST /api/move`
+(index track/sync, plan status, archive rows); the board never creates run directories or ship records.
 
 **Entry check:** Follow [`config-resolution.md`](../ws-shared/runtime/config-resolution.md) § Entry check.
 
@@ -21,69 +22,63 @@ mutates specs, plans, or the index — it is a read lens over the same sources `
 Dogfood in this repo:
 
 ```bash
-npm run kanvas                 # serves the board from the packaged skill tree
+npm run kanvas
 KANVAS_PORT=4173 npm run kanvas
 ```
 
-From any installed tree (project-local or global), with consumer overrides:
+From any installed tree:
 
 ```bash
 node {skillsRoot}/ws-kanvas/scripts/server.cjs --specs-dir {specsDir} --plans-dir {plansDir}
 node {skillsRoot}/ws-kanvas/scripts/server.cjs --config {sharedDir}/config.json
-node {skillsRoot}/ws-kanvas/scripts/server.cjs --port 4173
 ```
 
-| Flag / env | Effect |
-|------------|--------|
-| `--specs-dir DIR` | Specs root (default: `<cwd>/.agents/specs`) |
-| `--plans-dir DIR` | Plans root (default: `<cwd>/.agents/plans`) |
-| `--index FILE` | `index.PRD` path (default: `<specsDir>/index.PRD`) |
-| `--config FILE` | Consumer hub config; `plans.specsDir` / `plans.dir` resolve relative to the consumer root unless absolute; the root is the config directory minus one hub segment (resolver-sourced name or any dot-directory), never the bare cwd |
-| `--port N` / `KANVAS_PORT` | Bind port (default `4173`) |
+The server binds `127.0.0.1` only (default port `4173`, `KANVAS_PORT` override), recomputes per request, and logs one JSON line per successful move.
 
-Explicit flags win over `--config`, which wins over the `<cwd>` defaults. No hardcoded
-`.agents/specs` / `.agents/plans` assumptions: every path is a resolved parameter.
+## Column rules (first match wins, top-down)
 
-## Endpoints (GET only; anything else → 405)
+1. **Abandoned** — cancelled/failed plan status or Archive outcome row.
+2. **Production** — index `[x]` done **and** a Done-log row for the slug.
+3. **Staging** — `step-08-*.result.md` exists without index `[x]`.
+4. **Development** — plan state `active` / `implemented`.
+5. **Sprint** — index `[ ]` todo **and** a run directory exists.
+6. **Backlog** — everything else.
+
+## Endpoints
 
 | Endpoint | Response |
 |----------|----------|
 | `GET /` | Self-contained board page (`refs/board.html`) |
 | `GET /api/board` | Board JSON: `{ generatedAt, specsDir, plansDir, warnings[], columns[], cards[] }` |
 | `GET /api/card?slug={slug}` | One card in the AC7 shape, or typed `not-found` JSON for unknown slugs |
+| `POST /api/move` | Body `{ "slug", "toColumn" }` — validates, writes owning signals, returns `{ card, notice? }` or typed `400`/`404`/`409` |
 
-The server binds `127.0.0.1` only, recomputes per request (no cache, no watcher; use the Refresh
-button), and prints the bound URL on start. Missing or unreadable inputs yield an empty board with a
-named warning banner, never a crash. Slugs over HTTP must match `^[a-z0-9]+(-[a-z0-9]+)*$` and stay
-inside the resolved roots (anything else → 400 before any filesystem read).
+All other non-`GET` routes (except `POST /api/move`) return `405`.
 
-## Column rules (first match wins, top-down)
+### Move transition table (drop target)
 
-1. **Abandoned** — plan state `status: cancelled`/`failed`, or the slug sits in the index Archive table
-   with a `cancelled`/`failed` outcome (`dropped`/`superseded` read the same).
-2. **Production** — index Feature map / Next-specs row is `[x]` done AND a Done-log row exists
-   for the slug (the delivery record; any era outcome cell, including legacy `Implemented`).
-3. **Staging** — a `step-08-*.result.md` ship record exists but the index row is not yet `[x]`.
-4. **Development** — a plan `*.state.md` exists with `status: active` (or `implemented`).
-5. **Sprint** — tracked in `index.PRD` as `[ ]` todo AND a `{plansDir}/{slug}/` run directory exists.
-6. **Backlog** — everything else (spec of record, no run directory, no done mark).
+| Target | Write |
+|--------|--------|
+| **backlog** | Untrack index row when no `{plansDir}/{slug}/` exists |
+| **sprint** | `ws-spec-index` track (`[ ]` row); notice when runless |
+| **development** | Plan `*.state.md` `status: active` when state file exists |
+| **staging** | Always `409` (`staging-not-writable`) — derived column only |
+| **production** | Index `[x]` + Done-log row when delivery evidence exists |
+| **abandoned** | Plan `status: cancelled` or Archive row when runless |
 
-## Card shape (AC7 — the only contract the page consumes)
-
-`slug`, `title`, `column`, `indexStatus` (`done` | `todo` | `untracked`), `phase`,
-`acCount`, `planStep`, `planStatus`, `evidence` (PR URL / commit sha when present), `links`
-(repo-relative spec file, plan directory, index row anchor).
+Demotions that rewrite shipped history return `409`. Same-column drop is `200` no-op.
 
 ## Files
 
 | File | Role |
 |------|------|
 | `scripts/collect.cjs` | Board JSON builder (`collectBoard({specsDir, plansDir, indexPath})` + `--json` CLI) |
-| `scripts/server.cjs` | `node:http` loopback server for the page + JSON endpoints (Node 22 stdlib only) |
-| `refs/board.html` | Self-contained page (inline CSS/JS, `fetch`); no build step, no dependencies |
+| `scripts/move.cjs` | Move transition table + index/plan/archive writers |
+| `scripts/server.cjs` | `node:http` loopback server for the page + JSON + `POST /api/move` (Node 22 stdlib only) |
+| `refs/board.html` | Self-contained page (inline CSS/JS, drag-and-drop + popup Move action) |
 
 ## Rules
 
 - en-us; harness-neutral; path tokens and flags only — never hardcode consumer directories.
-- Read-only: no `POST`/`PUT`/`DELETE` routes, no file writes, no watcher side effects.
-- Stdlib only: zero new `package.json` dependencies.
+- Loopback-only; stdlib-only; zero new `package.json` dependencies.
+- Only `POST /api/move` mutates consumer index/state files; the board never commits git changes.

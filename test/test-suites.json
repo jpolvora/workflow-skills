@@ -175,6 +175,9 @@
     ],
     [
       "test/test-kanvas-board.js"
+    ],
+    [
+      "test/test-kanvas-drag-drop.js"
     ]
   ],
   "remote": [

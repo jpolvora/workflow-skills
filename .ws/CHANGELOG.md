@@ -1,5 +1,25 @@
 # Changelog
 
+### [2026-09-27 23:33] Agent: agent
+- **Prompt**: kanvas-board-drag-drop ws-spec-multi child
+- **Done**: POST /api/move, board DnD, tests
+- **Result**: PR pending
+
+### [2026-09-27 22:38] Agent: ws-spec-multi-child
+- **Prompt**: Fix ws-ship-pr verification gates skipping empty aliases
+- **Done**: Normalized empty and whitespace-only backend/frontend verification commands, added regression coverage, and preserved fail-closed behavior for non-empty commands.
+- **Result**: Implementation verified at 10/10; full test suite and integrity checks passed; ready to ship.
+
+### [2026-09-27 21:59] Agent: agent
+- **Prompt**: Execute the standard us-448 workflow
+- **Done**: Moved ws-spec-multi batch state to per-run directories with legacy resume fallback and removed reserved child-slug guards
+- **Result**: Tests, harness, integrity, and stack scans passed; product and delivery commits recorded
+
+### [2026-09-27 21:02] Agent: agent
+- **Prompt**: C:/Program Files/Git/ws-ship-pr standalone develop to main
+- **Done**: Prepared board, synced wiki HTML, pushed develop, opened and merged PR #449 (v0.5.8).
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/449 merged; CI green; 0 review threads.
+
 ### [2026-09-27 17:35] Agent: agent
 - **Prompt**: /ws-wiki sync (incremental 7d6d39fb..8d98fd01)
 - **Done**: Synced 5 wiki files to specs 0001-0146; watermark advanced to 8d98fd01
