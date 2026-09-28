@@ -1,6 +1,6 @@
 # Spec Lifecycle (`specs`)
 
-> Provenance: `.agents/skills/ws-spec-write/SKILL.md`, `.agents/skills/ws-spec-format/scripts/validate_spec.cjs`, `.agents/skills/ws-spec-organizer/scripts/resolve_spec_path.cjs`, `.agents/skills/ws-spec-index/SKILL.md`, living synthesis of specs 0009, 0040, 0045, 0051, 0053, 0065, 0084, 0108-code-review-findings-fixes through 0121-us-395, 0135-spec-organizer-status-subfolders.
+> Provenance: `.agents/skills/ws-spec-write/SKILL.md`, `.agents/skills/ws-spec-format/scripts/validate_spec.cjs`, `.agents/skills/ws-spec-organizer/scripts/resolve_spec_path.cjs`, `.agents/skills/ws-spec-index/SKILL.md`, living synthesis of specs 0009, 0040, 0045, 0051, 0053, 0065, 0084, 0108-code-review-findings-fixes through 0121-us-395, 0135-spec-organizer-status-subfolders, 0145-us-439, 0146-us-436.
 
 ## Feature
 
@@ -23,3 +23,5 @@ The dispatcher never reimplements specialist scripts. Slice specs for task-lifec
 Path authority lives in `resolve_spec_path.cjs`, which reads `plans.specsDir` (default `.agents/specs`) and the prefix flag. `organize_specs.cjs` supports `--dry-run` and `--apply` with index backtick updates after moves. Tracking order for index operations walks `FEATURES.md` → `PLAN.md` → `PRODUCT.PRD` → `index.PRD`, skipping missing files with a note.
 
 Validation tooling includes `validate_spec.cjs --mode=authoring|compat`, covered by `test/test-spec-dor-tdd.js` and `test/test-ws-spec-manager.js`. Local registration copies specs into `{plansDir}/{slug}/step-00-*.spec.md` through `register_local_spec.cjs` after the specs-of-record file exists under `{specsDir}`.
+
+The outbound `ws-spec-to-issue` flow resolves the active tracker from `providers.active` (falling back to an enabled tracker or the repo host, and STOPs when only `local` resolves), validates provider auth before any mutating call, and creates the item through the provider `create-issue` intent with an anonymized spec-shaped body passed via `--body-file`. A successful run leaves `git status` byte-identical, and `--dry-run` prints the resolved tracker, title, and body without creating anything.

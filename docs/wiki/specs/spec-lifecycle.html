@@ -207,7 +207,7 @@
       </tr>
       <tr>
         <th>Provenance</th>
-        <td>Specs 0009, 0040, 0045, 0051, 0053, 0065, 0084, 0108-code-review-findings-fixes through 0121-us-395, 0135-spec-organizer-status-subfolders</td>
+        <td>Specs 0009, 0040, 0045, 0051, 0053, 0065, 0084, 0108-code-review-findings-fixes through 0121-us-395, 0135-spec-organizer-status-subfolders, 0145-us-439, 0146-us-436</td>
       </tr>
       <tr>
         <th>Framework</th>
@@ -220,7 +220,7 @@
     </tbody>
   </table>
 </aside>
-<p>&gt; Provenance: <code>.agents/skills/ws-spec-write/SKILL.md</code>, <code>.agents/skills/ws-spec-format/scripts/validate_spec.cjs</code>, <code>.agents/skills/ws-spec-organizer/scripts/resolve_spec_path.cjs</code>, <code>.agents/skills/ws-spec-index/SKILL.md</code>, living synthesis of specs 0009, 0040, 0045, 0051, 0053, 0065, 0084, 0108-code-review-findings-fixes through 0121-us-395, 0135-spec-organizer-status-subfolders.</p>
+<p>&gt; Provenance: <code>.agents/skills/ws-spec-write/SKILL.md</code>, <code>.agents/skills/ws-spec-format/scripts/validate_spec.cjs</code>, <code>.agents/skills/ws-spec-organizer/scripts/resolve_spec_path.cjs</code>, <code>.agents/skills/ws-spec-index/SKILL.md</code>, living synthesis of specs 0009, 0040, 0045, 0051, 0053, 0065, 0084, 0108-code-review-findings-fixes through 0121-us-395, 0135-spec-organizer-status-subfolders, 0145-us-439, 0146-us-436.</p>
 <div class="wiki-toc-box" id="toc" role="navigation" aria-label="Table of contents">
   <div class="wiki-toc-header">
     <span class="wiki-toc-title">Contents</span>
@@ -243,6 +243,7 @@
 <h2 id="backend">Backend <span class="wiki-edit-section"><a href="https://github.com/jpolvora/workflow-skills/edit/main/.agents/specs/wiki/specs/spec-lifecycle.md" target="_blank" rel="noopener" title="Edit section: Backend">[edit]</a></span></h2>
 <p>Path authority lives in <code>resolve_spec_path.cjs</code>, which reads <code>plans.specsDir</code> (default <code>.agents/specs</code>) and the prefix flag. <code>organize_specs.cjs</code> supports <code>--dry-run</code> and <code>--apply</code> with index backtick updates after moves. Tracking order for index operations walks <code>FEATURES.md</code> → <code>PLAN.md</code> → <code>PRODUCT.PRD</code> → <code>index.PRD</code>, skipping missing files with a note.</p>
 <p>Validation tooling includes <code>validate_spec.cjs --mode=authoring|compat</code>, covered by <code>test/test-spec-dor-tdd.js</code> and <code>test/test-ws-spec-manager.js</code>. Local registration copies specs into <code>{plansDir}/{slug}/step-00-*.spec.md</code> through <code>register_local_spec.cjs</code> after the specs-of-record file exists under <code>{specsDir}</code>.</p>
+<p>The outbound <code>ws-spec-to-issue</code> flow resolves the active tracker from <code>providers.active</code> (falling back to an enabled tracker or the repo host, and STOPs when only <code>local</code> resolves), validates provider auth before any mutating call, and creates the item through the provider <code>create-issue</code> intent with an anonymized spec-shaped body passed via <code>--body-file</code>. A successful run leaves <code>git status</code> byte-identical, and <code>--dry-run</code> prints the resolved tracker, title, and body without creating anything.</p>
       <div class="wiki-catlinks">
         <span class="wiki-catlinks-title">Categories:</span>
         <a href="../index.html">Workflow Skills</a>

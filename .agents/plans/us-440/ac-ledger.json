@@ -1,0 +1,941 @@
+{
+  "schemaVersion": 1,
+  "revision": 36,
+  "workflowId": "us-440-20260927T162130Z",
+  "slug": "us-440",
+  "specPath": ".agents/plans/us-440/step-00-us-440.spec.md",
+  "planIndexPath": ".agents/plans/us-440/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "`ws-task-lifecycle/SKILL.md` load sites cite `{skillLoader}` with the canonical-procedure link: invoke `ws-spec-write`, invoke `ws-spec-index`, load `ws-senior-developer`, and invoke `ws-changelog` then `ws-self-learning`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-task-lifecycle/SKILL.md:L29-L59"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-008"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-task-lifecycle/SKILL.md",
+          "lineStart": 29,
+          "lineEnd": 59,
+          "sha256": "c9840c9da4cf8e481f72379eaf3725d7189c493dfaa4635ec4633b15ea99daf4"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "check_skill_load: OK",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/check_skill_load.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:36:48.664Z"
+        },
+        {
+          "name": "entries passed",
+          "sourceFile": "test/run-tests.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:36:48.663Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+        "impl-ac1",
+        "impl-tests-AC1"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "`ws-spec-manager/SKILL.md` cites `{skillLoader}` with the canonical-procedure link in the subcommand → target `ws-spec-*` mapping and in § Dispatch & Delegate.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-manager/SKILL.md:L64-L98"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-manager/SKILL.md",
+          "lineStart": 64,
+          "lineEnd": 98,
+          "sha256": "fb3564e220bf36fb631bf64a9d2553c1b0a173535bd4728ca5b6d5d8bf26a67b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "check_skill_load: OK",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/check_skill_load.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:36:48.749Z"
+        },
+        {
+          "name": "entries passed",
+          "sourceFile": "test/run-tests.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:36:48.748Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+        "impl-ac2",
+        "impl-tests-AC2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "`ws-spec-write/SKILL.md` cites `{skillLoader}` with the canonical-procedure link when delegating to `ws-spec-provider-local`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-write/SKILL.md:L104-L104"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-write/SKILL.md",
+          "lineStart": 104,
+          "lineEnd": 104,
+          "sha256": "cc0869c1e783d58fff909c299f41223d5ed4469fab4e5d069c81ac8950ea37dc"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "check_skill_load: OK",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/check_skill_load.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:36:48.805Z"
+        },
+        {
+          "name": "entries passed",
+          "sourceFile": "test/run-tests.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:36:48.804Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+        "impl-ac3",
+        "impl-tests-AC3"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "`ws-code-review/SKILL.md` cites `{skillLoader}` with the canonical-procedure link when writing via `ws-self-learning` and when running the optional `ws-fable-judge` audit.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-code-review/SKILL.md:L52-L91"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-code-review/SKILL.md",
+          "lineStart": 52,
+          "lineEnd": 91,
+          "sha256": "a52a33bf47b2033a22b9210e8ee8d73e037fed086ae5c9a01911d25859230a69"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "check_skill_load: OK",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/check_skill_load.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:36:48.870Z"
+        },
+        {
+          "name": "entries passed",
+          "sourceFile": "test/run-tests.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:36:48.870Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+        "impl-ac4",
+        "impl-tests-AC4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "`ws-ship-pr/SKILL.md` cites `{skillLoader}` with the canonical-procedure link for the `ws-fable-judge` row and for security via `ws-secrets-leak-review`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-ship-pr/SKILL.md:L78-L124"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006",
+        "section-009"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-ship-pr/SKILL.md",
+          "lineStart": 78,
+          "lineEnd": 124,
+          "sha256": "748893172c3b2e0d88978066f70930c420a1946240723cf3c04b314272f134e6"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "check_skill_load: OK",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/check_skill_load.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:36:48.931Z"
+        },
+        {
+          "name": "entries passed",
+          "sourceFile": "test/run-tests.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:36:48.930Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+        "impl-ac5",
+        "impl-tests-AC5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "`ws-goal-fix-pr/SKILL.md` cites `{skillLoader}` with the canonical-procedure link when wrapping `ws-fix-pr` in `ws-goal-loop` and when applying the `ws-goal-loop` helper.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-goal-fix-pr/SKILL.md:L15-L87"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006",
+        "section-009"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-goal-fix-pr/SKILL.md",
+          "lineStart": 15,
+          "lineEnd": 87,
+          "sha256": "819b2a84a57f760c7ec531fa7f0341697fb152768b7713064c6cfd25a38e9e32"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "check_skill_load: OK",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/check_skill_load.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:36:48.993Z"
+        },
+        {
+          "name": "entries passed",
+          "sourceFile": "test/run-tests.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:36:48.992Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+        "impl-ac6",
+        "impl-tests-AC6"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "The reference shape already shipped at `.agents/skills/ws-spec-list/ACTIONS.md` (\"load `ws-spec-to-pr[/lite]` via `{skillLoader}` (canonical skill-load procedure)\") is the template; converted sites match that phrasing shape (token + link), not a paraphrase that drops the token or the link.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-goal-fix-pr/SKILL.md:L15-L87",
+        ".agents/skills/ws-spec-list/ACTIONS.md:L95-L95",
+        ".agents/skills/ws-task-lifecycle/SKILL.md:L29-L59"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-goal-fix-pr/SKILL.md",
+          "lineStart": 15,
+          "lineEnd": 87,
+          "sha256": "819b2a84a57f760c7ec531fa7f0341697fb152768b7713064c6cfd25a38e9e32"
+        },
+        {
+          "path": ".agents/skills/ws-spec-list/ACTIONS.md",
+          "lineStart": 95,
+          "lineEnd": 95,
+          "sha256": "d540a328b06a1177ac39c8d5b9a063099151057d272746094d1a57c825e9fa98"
+        },
+        {
+          "path": ".agents/skills/ws-task-lifecycle/SKILL.md",
+          "lineStart": 29,
+          "lineEnd": 59,
+          "sha256": "c9840c9da4cf8e481f72379eaf3725d7189c493dfaa4635ec4633b15ea99daf4"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "check_skill_load: OK",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/check_skill_load.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:36:23.329Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+        "impl-ac7"
+      ]
+    },
+    {
+      "id": "AC8",
+      "text": "No converted site duplicates the procedure text; each delegates by link. `check_duplicates.cjs` (Phase 5a) remains green after the edits.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-check-harness/scripts/check_duplicates.cjs:L1-L1"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-check-harness/scripts/check_duplicates.cjs",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "bb02ce7323c7f99ffad244a9768a04ab9994a1add76aa87a640c621f7c7642a4"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "No duplicated normative blocks.",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/check_duplicates.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:36:23.381Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+        "impl-ac8"
+      ]
+    },
+    {
+      "id": "AC9",
+      "text": "`dispatch-agent` orchestration sites (e.g. `.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md`, `.agents/skills/ws-spec-to-pr-lite/SKILL.md`) are unchanged and remain exempt; the PR records that exemption with the reason \"subagent loads its own body; `{skillLoader}` is the wrong token\".",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr-lite/SKILL.md:L1-L1",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L1-L1"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr-lite/SKILL.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "7d3ab25fd0e9dac47e2eddcbb94fee4ac7a26e972c42d8fa829d444d3a88a977"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "55436eaf728cca9f63766a041eba451affaf697637424a8e91ef9aab1c2b3e7c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "check_skill_load: OK",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/check_skill_load.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:36:49.055Z"
+        },
+        {
+          "name": "entries passed",
+          "sourceFile": "test/run-tests.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:36:49.054Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+        "impl-ac9",
+        "impl-tests-AC9"
+      ]
+    },
+    {
+      "id": "AC10",
+      "text": "Script-level delegation sites (`ws-configure-project` → `ws-spec-memo` `.cjs`, `ws-ship-pr` → `ws-secrets-leak-review` hook, `ws-goal-fix-pr` → `ws-goal-loop` helper) are unchanged and remain exempt; the PR records that exemption with the reason \"no body read\".",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-configure-project/SKILL.md:L1-L1",
+        ".agents/skills/ws-goal-fix-pr/SKILL.md:L1-L1",
+        ".agents/skills/ws-ship-pr/PREPARE-CHECKLIST.md:L1-L1"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006",
+        "section-009"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-configure-project/SKILL.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "2cfe46fd9a9bdc03a1cb4fd59d1a73f0f64e3659b4c60869149767a48ea8ae1c"
+        },
+        {
+          "path": ".agents/skills/ws-goal-fix-pr/SKILL.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "819b2a84a57f760c7ec531fa7f0341697fb152768b7713064c6cfd25a38e9e32"
+        },
+        {
+          "path": ".agents/skills/ws-ship-pr/PREPARE-CHECKLIST.md",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "a3ebbf4e5d022ec1380b73223eea1b944a21799d5fd16791439ba8b57e5edb87"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "check_skill_load: OK",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/check_skill_load.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:36:49.117Z"
+        },
+        {
+          "name": "entries passed",
+          "sourceFile": "test/run-tests.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:36:49.117Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+        "impl-ac10",
+        "impl-tests-AC10"
+      ]
+    },
+    {
+      "id": "AC11",
+      "text": "If `check_skill_load.cjs` is extended, it flags a bare `Load`/`invoke` of a `ws-<id>` where the wording means an in-session body load, and it consults an explicit allowlist for `dispatch-agent` orchestration, script-level delegation, and the canonical doc. No new false positive is emitted for the allowlisted classes.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-check-harness/scripts/check_skill_load.cjs:L1-L1"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006",
+        "section-008",
+        "section-009"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-check-harness/scripts/check_skill_load.cjs",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "ea2f9c09d38561aba1ddc19789822ee5d1a7d47c886ef9a9420082eae2b36435"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "check_skill_load: OK",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/check_skill_load.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:36:23.558Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+        "impl-ac11"
+      ]
+    },
+    {
+      "id": "AC12",
+      "text": "Any `check_skill_load.cjs` extension ships positive and negative fixtures under the existing test fixtures location; the negative fixture is a synthetic bare-load site that must fail, the positive fixture is an allowlisted site that must pass.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-check-harness/scripts/check_skill_load.cjs:L1-L1"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006",
+        "section-008",
+        "section-009"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-check-harness/scripts/check_skill_load.cjs",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "ea2f9c09d38561aba1ddc19789822ee5d1a7d47c886ef9a9420082eae2b36435"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "check_skill_load: OK",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/check_skill_load.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:36:23.610Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+        "impl-ac12"
+      ]
+    },
+    {
+      "id": "AC13",
+      "text": "`node .agents/skills/ws-check-harness/scripts/check_skill_load.cjs` (all skill docs) exits 0, `npm run test` (`verification.backendTest`) exits 0, and `ws-check-harness` Phases 0–5c report 0 findings at the package root.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-check-harness/scripts/check_skill_load.cjs:L1-L1"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-check-harness/scripts/check_skill_load.cjs",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "ea2f9c09d38561aba1ddc19789822ee5d1a7d47c886ef9a9420082eae2b36435"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "check_skill_load: OK",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/check_skill_load.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:35:13.228Z"
+        },
+        {
+          "name": "entries passed",
+          "sourceFile": "test/run-tests.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:35:13.228Z"
+        },
+        {
+          "name": "Harness OK (upstream clean)",
+          "sourceFile": "test/test-harness-clean.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:35:13.235Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+        "impl-ac13"
+      ]
+    },
+    {
+      "id": "AC14",
+      "text": "`npm run generate-integrity` followed by `npm run verify-integrity` both exit 0; if the change ships as a release PR, `package.json` `version` and `packageVersion` in `bin/skill-dependencies.json` are bumped once (strictly above the merge-base).",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/skill-dependencies.json:L1-L1",
+        ".agents/skills/ws-shared/version.json:L1-L1",
+        "bin/skill-dependencies.json:L1-L1",
+        "package.json:L1-L1"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-006",
+        "section-008"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "052430c3596957c8e5fceec61a9037366d2c438b7db8a2bf0a8c2c486ad7fd2c"
+        },
+        {
+          "path": ".agents/skills/ws-shared/version.json",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "c77e2b1ac8db57dafe0cedf17a49b996b8e2b71a8ae7da3c615882672d20e379"
+        },
+        {
+          "path": "bin/skill-dependencies.json",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "052430c3596957c8e5fceec61a9037366d2c438b7db8a2bf0a8c2c486ad7fd2c"
+        },
+        {
+          "path": "package.json",
+          "lineStart": 1,
+          "lineEnd": 1,
+          "sha256": "7c673674276931ac9fca7390b810e6ba845074cf7e70414fd178fe732c758d0a"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "matches tree",
+          "sourceFile": "bin/generate-skill-integrity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:35:13.293Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-7ee4dd57a49f28282f41208bb26ef4c7af196dbf",
+        "impl-ac14"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "A bare `Load ws-<id>` left without the token and link at an in-scope site: the intended gate extension (or manual review) fails with the site named; the site must be fixed before ship.",
+      "tests": [
+        {
+          "name": "check_skill_load: OK",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/check_skill_load.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:35:13.344Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns-ns1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "A `dispatch-agent` step or a script-delegation line accidentally converted to `{skillLoader}` wording: the exemption check fails and the conversion is reverted.",
+      "tests": [
+        {
+          "name": "check_skill_load: OK",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/check_skill_load.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:35:13.393Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns-ns2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Duplicated procedure text pasted into a converted site instead of a link: `check_duplicates.cjs` fails.",
+      "tests": [
+        {
+          "name": "No duplicated normative blocks",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/check_duplicates.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:34:50.042Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns-ns3"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "Optional gate extension absent an allowlist entry for the canonical doc or for the dispatch/script classes: the negative fixture fails (as required) but the positive allowlisted fixture must pass — a false positive on the positive fixture fails the gate test.",
+      "tests": [
+        {
+          "name": "check_skill_load: OK",
+          "sourceFile": ".agents/skills/ws-check-harness/scripts/check_skill_load.cjs",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:35:13.450Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns-ns4"
+      ]
+    },
+    {
+      "id": "NS5",
+      "text": "`npm run verify-integrity` after edits without regenerating: fails with the drifted skill digest named, proving integrity regeneration is required.",
+      "tests": [
+        {
+          "name": "matches tree",
+          "sourceFile": "bin/generate-skill-integrity.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-27T16:35:13.500Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns-ns5"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 10,
+    "earnedUnits": 140,
+    "totalUnits": 140,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "deficiencies": [],
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-27T16:38:03.172Z",
+    "writer": "ac_ledger.cjs score",
+    "ledgerHash": "5979bf2103f228b886522aa92cab2163d2351432deccd28858dc163e239dcc31"
+  }
+}

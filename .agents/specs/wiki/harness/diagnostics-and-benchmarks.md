@@ -1,6 +1,6 @@
 # Diagnostics & Benchmarks (`harness`)
 
-> Provenance: `.agents/skills/ws-doctor/SKILL.md`, `.agents/skills/ws-check-harness/SKILL.md`, `.agents/skills/ws-check-workflows/SKILL.md`, `.agents/skills/ws-benchmarks/SKILL.md`, `.agents/skills/ws-monitor/SKILL.md`, living synthesis of specs 0003, 0012, 0014, 0019, 0020, 0026, 0030, 0036, 0039, 0041, 0056, 0059, 0064, 0088, 0096-us-348, 0100-us-356, 0107-us-369, 0116-us-385, 0121-us-395, 0125-us-412-413, 0128-us-412-418, 0129-us-419, 0136-skill-loader-host-capability, 0138-workflow-parallel-writer-compat, 0144-us-440.
+> Provenance: `.agents/skills/ws-doctor/SKILL.md`, `.agents/skills/ws-check-harness/SKILL.md`, `.agents/skills/ws-check-workflows/SKILL.md`, `.agents/skills/ws-benchmarks/SKILL.md`, `.agents/skills/ws-monitor/SKILL.md`, living synthesis of specs 0003, 0012, 0014, 0019, 0020, 0026, 0030, 0036, 0039, 0041, 0056, 0059, 0064, 0088, 0096-us-348, 0100-us-356, 0107-us-369, 0116-us-385, 0121-us-395, 0125-us-412-413, 0128-us-412-418, 0129-us-419, 0136-skill-loader-host-capability, 0138-workflow-parallel-writer-compat, 0144-us-440, 0146-us-436.
 
 ## Feature
 
