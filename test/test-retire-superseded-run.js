@@ -76,6 +76,46 @@ function field(text, name) {
   if (!JSON.parse(again.stdout).noop) throw new Error('us-395 AC3: re-run should be a no-op');
 }
 
+// us-448 AC1/AC3: canonical per-run state resolves a per-run target first.
+{
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-retire-us448-new-'));
+  tempRoots.push(root);
+  const plans = path.join(root, '.agents', 'plans');
+  const oldDir = path.join(plans, 'ms-old');
+  const newDir = path.join(plans, 'ms-new');
+  write(path.join(oldDir, 'ms-old.state.md'), stateBody({ runId: 'ms-old', status: 'active', createdAt: '2026-09-19T23:16:39Z' }));
+  write(path.join(newDir, 'ms-new.state.md'), stateBody({ runId: 'ms-new', status: 'active', createdAt: '2026-09-19T23:25:56Z', supersedesRunId: 'ms-old' }));
+  const result = run(['--run', path.join(newDir, 'ms-new.state.md'), '--timestamp', '2026-09-22T16:30:00Z', '--json'], root);
+  if (result.status !== 0) throw new Error(`us-448 AC1: canonical per-run retirement failed: ${result.stderr || result.stdout}`);
+  const payload = JSON.parse(result.stdout);
+  if (payload.layout !== 'per-run' || !payload.updated.some((p) => p.endsWith('ms-old/ms-old.state.md'))) {
+    throw new Error(`us-448 AC1: canonical target resolution unexpected: ${result.stdout}`);
+  }
+  if (field(fs.readFileSync(path.join(oldDir, 'ms-old.state.md'), 'utf8'), 'status') !== 'cancelled') {
+    throw new Error('us-448 AC1: per-run superseded state was not retired');
+  }
+}
+
+// us-448 AC3: a canonical source can still retire a legacy flat target.
+{
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-retire-us448-legacy-'));
+  tempRoots.push(root);
+  const plans = path.join(root, '.agents', 'plans');
+  const legacyDir = path.join(plans, 'ws-spec-multi');
+  const newDir = path.join(plans, 'ms-new');
+  write(path.join(legacyDir, 'ms-old.state.md'), stateBody({ runId: 'ms-old', status: 'active', createdAt: '2026-09-19T23:16:39Z' }));
+  write(path.join(newDir, 'ms-new.state.md'), stateBody({ runId: 'ms-new', status: 'active', createdAt: '2026-09-19T23:25:56Z', supersedesRunId: 'ms-old' }));
+  const result = run(['--run', path.join(newDir, 'ms-new.state.md'), '--timestamp', '2026-09-22T16:35:00Z', '--json'], root);
+  if (result.status !== 0) throw new Error(`us-448 AC3: legacy fallback failed: ${result.stderr || result.stdout}`);
+  const payload = JSON.parse(result.stdout);
+  if (payload.layout !== 'legacy-flat' || !payload.updated.some((p) => p.endsWith('ws-spec-multi/ms-old.state.md'))) {
+    throw new Error(`us-448 AC3: legacy fallback resolution unexpected: ${result.stdout}`);
+  }
+  if (field(fs.readFileSync(path.join(legacyDir, 'ms-old.state.md'), 'utf8'), 'status') !== 'cancelled') {
+    throw new Error('us-448 AC3: legacy target was not retired');
+  }
+}
+
 // Fail closed: a named run that cannot be resolved.
 {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-retire-us395-fail-'));

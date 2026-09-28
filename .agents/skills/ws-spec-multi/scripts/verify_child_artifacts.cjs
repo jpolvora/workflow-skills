@@ -27,9 +27,6 @@ const path = require('path');
 const DEFAULT_PLANS_DIR = '.agents/plans';
 const REQUIREMENTS = new Set(['state', 'step-01']);
 const SLUG_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
-// `{plansDir}/ws-spec-multi/` holds the parent batch run state, not a child plan
-// dir; a queue item aliasing it must never resolve its child artifacts there.
-const RESERVED_PLAN_DIRS = new Set(['ws-spec-multi']);
 
 function parseArgs(argv) {
   const options = { require: 'state,step-01' };
@@ -50,8 +47,7 @@ function parseArgs(argv) {
 function isSafeSlug(value) {
   return typeof value === 'string'
     && SLUG_PATTERN.test(value)
-    && !value.includes('..')
-    && !RESERVED_PLAN_DIRS.has(value);
+    && !value.includes('..');
 }
 
 function isNonEmptyFile(file) {

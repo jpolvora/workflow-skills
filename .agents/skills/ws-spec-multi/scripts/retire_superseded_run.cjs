@@ -27,8 +27,9 @@ const path = require('path');
 const TERMINAL = new Set(['completed', 'cancelled', 'superseded', 'stopped', 'failed']);
 const RUN_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_-]*$/;
 
-// A run id is interpolated into a filename; reject anything that could escape
-// the ws-spec-multi directory (path separators, drive letters, traversal).
+// A run id is interpolated into a directory and filename; reject anything that
+// could escape the configured plans directory (path separators, drive letters,
+// traversal).
 function isSafeRunId(value) {
   return typeof value === 'string' && RUN_ID_PATTERN.test(value) && !value.includes('..');
 }
@@ -40,11 +41,21 @@ function atomicWrite(file, content) {
   fs.renameSync(temporary, file);
 }
 
-function containedPath(runDir, name) {
-  const target = path.resolve(runDir, name);
-  const base = path.resolve(runDir) + path.sep;
-  if (!target.startsWith(base)) throw new Error(`refusing to write outside the ws-spec-multi directory: ${name}`);
+function containedPath(baseDir, ...parts) {
+  const base = path.resolve(baseDir);
+  const target = path.resolve(base, ...parts);
+  if (target !== base && !target.startsWith(`${base}${path.sep}`)) {
+    throw new Error(`refusing to write outside the plans directory: ${parts.join(path.sep)}`);
+  }
   return target;
+}
+
+function resolveRunState(plansRoot, runId) {
+  const canonical = containedPath(plansRoot, runId, `${runId}.state.md`);
+  const legacy = containedPath(plansRoot, 'ws-spec-multi', `${runId}.state.md`);
+  if (fs.existsSync(canonical)) return { path: canonical, layout: 'per-run' };
+  if (fs.existsSync(legacy)) return { path: legacy, layout: 'legacy-flat' };
+  return { path: canonical, layout: 'per-run' };
 }
 
 function parseArgs(argv) {
@@ -103,12 +114,6 @@ function main() {
   }
   const timestamp = options.timestamp || new Date().toISOString();
 
-  // Resolve the ws-spec-multi directory. An explicit --plans-dir wins; when the
-  // helper is invoked with only --run (the documented form) the directory is
-  // derived from the run file itself, so a custom plans.dir is honored without
-  // requiring the caller to repeat it.
-  let runDir = options.plansDir ? path.join(path.resolve(options.plansDir), 'ws-spec-multi') : null;
-
   let supersededRunId = options.supersedes || null;
   let sourceFile = null;
   if (options.run) {
@@ -117,10 +122,14 @@ function main() {
       fail(`superseding run state not found: ${options.run}`, options);
       return;
     }
-    if (!runDir) runDir = path.dirname(sourceFile);
     supersededRunId = supersededRunId || readField(fs.readFileSync(sourceFile, 'utf8'), 'supersedesRunId');
   }
-  if (!runDir) runDir = path.join(path.resolve('.agents/plans'), 'ws-spec-multi');
+  // An explicit --plans-dir wins. Without it, derive the root from the source
+  // state file so both canonical and legacy layouts honor custom plan roots.
+  const plansRoot = path.resolve(
+    options.plansDir
+      || (sourceFile ? path.dirname(path.dirname(sourceFile)) : '.agents/plans'),
+  );
   if (!supersededRunId) {
     fail('no supersedesRunId found on the superseding run and --supersedes was not provided', options);
     return;
@@ -130,15 +139,15 @@ function main() {
     return;
   }
 
-  let targetMd;
+  let target;
   try {
-    targetMd = containedPath(runDir, `${supersededRunId}.state.md`);
+    target = resolveRunState(plansRoot, supersededRunId);
   } catch (error) {
     fail(error.message, options);
     return;
   }
-  if (!fs.existsSync(targetMd)) {
-    fail(`superseded run state not found under ${runDir}: ${supersededRunId}`, options);
+  if (!fs.existsSync(target.path)) {
+    fail(`superseded run state not found under ${plansRoot}: ${supersededRunId}`, options);
     return;
   }
 
@@ -146,7 +155,7 @@ function main() {
   // The ws-spec-multi run state is Markdown-canonical (`{runId}.state.md`); a
   // retirement is therefore a single atomic file write (temp file + rename),
   // so there is no cross-file window. A re-run is idempotent.
-  const text = fs.readFileSync(targetMd, 'utf8');
+  const text = fs.readFileSync(target.path, 'utf8');
   const current = readField(text, 'status');
   if (TERMINAL.has(String(current))) {
     result.noop = true;
@@ -167,9 +176,10 @@ function main() {
     result.timestamp = effectiveTimestamp;
     let next = setField(text, 'status', status);
     next = setField(next, 'updatedAt', `"${effectiveTimestamp}"`);
-    atomicWrite(targetMd, next);
-    result.updated.push(path.relative(process.cwd(), targetMd).split(path.sep).join('/'));
+    atomicWrite(target.path, next);
+    result.updated.push(path.relative(process.cwd(), target.path).split(path.sep).join('/'));
   }
+  result.layout = target.layout;
   result.source = sourceFile ? path.relative(process.cwd(), sourceFile).split(path.sep).join('/') : null;
 
   if (options.json) process.stdout.write(`${JSON.stringify(result)}\n`);

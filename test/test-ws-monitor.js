@@ -418,9 +418,10 @@ if (!multiSpecFindings.some((f) => f.code === 'multi-spec-failed-item' && f.mess
 }
 
 // Write multi-spec batch state file in root to test end-to-end snapshot discovery
-const multiSpecDir = path.join(root, '.agents', 'plans', 'ws-spec-multi');
+const multiSpecRunId = 'ms-20260911T120000Z';
+const multiSpecDir = path.join(root, '.agents', 'plans', multiSpecRunId);
 write(
-  path.join(multiSpecDir, 'ms-20260911T120000Z.state.md'),
+  path.join(multiSpecDir, `${multiSpecRunId}.state.md`),
   `---
 workflowType: ws-spec-multi
 runId: ms-20260911T120000Z

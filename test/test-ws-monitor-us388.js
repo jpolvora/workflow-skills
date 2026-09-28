@@ -123,15 +123,16 @@ ${[header, sep, ...rows].join('\n')}
   }
 }
 
-// AC6: the reserved batch directory alias must not mask a missing child state.
+// AC6/AC4: the batch directory name is a normal child slug and must report a
+// missing child state rather than being silently filtered.
 {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-monitor-us388-reserved-'));
   tempRoots.push(dir);
   const plans = path.join(dir, '.agents/plans');
   write(path.join(plans, 'ws-spec-multi', 'ms-20260922T080709Z.state.json'), JSON.stringify({ workflowType: 'ws-spec-multi' }));
   const expected = expectedChildArtifacts([{ slug: 'ws-spec-multi', status: 'shipped' }], plans, dir);
-  if (expected.length !== 0) {
-    throw new Error('us-388 AC6: the reserved ws-spec-multi slug must not be treated as a child plan dir');
+  if (expected.length !== 1 || expected[0].present) {
+    throw new Error('us-448 AC4: ws-spec-multi must be treated as a normal child plan dir');
   }
 }
 

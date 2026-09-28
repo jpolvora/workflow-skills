@@ -18,4 +18,8 @@ Generated hub-root `autoload.md` uses project-relative links into the skills ins
 
 Project-local configuration takes precedence over global configuration. Do not place credentials in `config.json`; use environment-variable references.
 
+Batch workflow state from `ws-spec-multi` uses the configured plans root at
+`{plansDir}/{runId}/{runId}.state.md`; legacy flat state files under
+`{plansDir}/ws-spec-multi/` remain readable during resume.
+
 Source control: track non-secret `config.json` and a maintained `STACK.md`; ignore generated memory/history and installer metadata. The installed hub `.gitignore` reflects this default.

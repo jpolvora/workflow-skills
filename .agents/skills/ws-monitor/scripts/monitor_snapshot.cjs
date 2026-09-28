@@ -588,17 +588,12 @@ function listChildStateFiles(dir, expectedSlug) {
 // is surfaced as `missing-child-state`, complementing (not duplicating)
 // `stale-parent-row`, which requires a child that already closed.
 const CHILD_ADVANCED_STATUSES = new Set(['in_progress', 'shipped', 'failed']);
-// `{plansDir}/ws-spec-multi/` is the reserved batch directory holding the parent
-// run state, not any child's plan dir. A queue item that aliases that slug would
-// otherwise scan the parent batch state and mask a genuinely missing child state.
-const RESERVED_PLAN_DIRS = new Set(['ws-spec-multi']);
 function isSafePlanSlug(slug) {
   return typeof slug === 'string'
     && slug.length > 0
     && !slug.includes('..')
     && !slug.includes('/')
-    && !slug.includes('\\')
-    && !RESERVED_PLAN_DIRS.has(slug);
+    && !slug.includes('\\');
 }
 function expectedChildArtifacts(items, plansDir, repoRoot) {
   const expected = [];

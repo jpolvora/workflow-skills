@@ -148,14 +148,39 @@ function setupRoot() {
   if (regress.status === 0) throw new Error('us-388 AC5: terminal-status regression must fail closed');
 }
 
-// The reserved batch-directory slug is refused (the guard must not inspect the parent run dir).
+// The batch-directory name is a normal child slug once batch state is per-run.
 {
   const root = setupRoot();
   const plans = path.join(root, '.agents', 'plans');
   const runFile = path.join(plans, 'ws-spec-multi', 'ms-us388.state.md');
   write(runFile, runState('ms-us388', ['| 1 | ws-spec-multi | .agents/specs/x.spec.md | standard | pending | | | | 2026-09-22T08:07:09Z |']));
-  const reserved = run(['--run', runFile, '--slug', 'ws-spec-multi', '--status', 'skipped', '--json'], root);
-  if (reserved.status === 0) throw new Error('us-388 AC5: the reserved ws-spec-multi slug must be refused');
+  write(path.join(plans, 'ws-spec-multi', 'ws-spec-multi-20260922T080709Z.state.json'), JSON.stringify(validChildState('ws-spec-multi')));
+  write(path.join(plans, 'ws-spec-multi', 'step-01-ws-spec-multi.plan.md'), '# plan\n');
+  const normal = run(['--run', runFile, '--slug', 'ws-spec-multi', '--status', 'shipped', '--json'], root);
+  if (normal.status !== 0) throw new Error(`us-448 AC4: ws-spec-multi child slug must be accepted: ${normal.stderr || normal.stdout}`);
+  if (!fs.readFileSync(runFile, 'utf8').includes('| shipped |')) {
+    throw new Error('us-448 AC4: normal child slug was not transitioned');
+  }
+}
+
+// us-448 AC1/AC2: canonical batch state is isolated by run id and never
+// creates or reuses the flat ws-spec-multi directory.
+{
+  const root = setupRoot();
+  const plans = path.join(root, '.agents', 'plans');
+  const runA = path.join(plans, 'ms-a', 'ms-a.state.md');
+  const runB = path.join(plans, 'ms-b', 'ms-b.state.md');
+  write(runA, runState('ms-a', ['| 1 | demo-a | .agents/specs/demo-a.spec.md | standard | pending | | | | 2026-09-22T08:07:09Z |']));
+  write(runB, runState('ms-b', ['| 1 | demo-b | .agents/specs/demo-b.spec.md | standard | pending | | | | 2026-09-22T08:07:09Z |']));
+  const first = run(['--run', runA, '--slug', 'demo-a', '--status', 'skipped', '--reason', 'already-implemented', '--json'], root);
+  const second = run(['--run', runB, '--slug', 'demo-b', '--status', 'skipped', '--reason', 'already-implemented', '--json'], root);
+  if (first.status !== 0 || second.status !== 0) {
+    throw new Error(`us-448 AC1/AC2: per-run state transitions failed: ${first.stderr || second.stderr}`);
+  }
+  if (fs.existsSync(path.join(plans, 'ws-spec-multi', 'ms-a.state.md'))
+    || fs.existsSync(path.join(plans, 'ws-spec-multi', 'ms-b.state.md'))) {
+    throw new Error('us-448 AC1: canonical runs must not write flat ws-spec-multi state');
+  }
 }
 
 for (const root of tempRoots) fs.rmSync(root, { recursive: true, force: true });
