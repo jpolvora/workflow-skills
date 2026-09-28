@@ -7,16 +7,19 @@
 <style>
 :root { color-scheme: light dark; }
 body { font-family: system-ui, sans-serif; margin: 0; padding: 16px; }
-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; }
+header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
 header h1 { font-size: 20px; margin: 0; }
 header button { margin-left: auto; }
+#status { font-size: 14px; min-height: 1.2em; }
 #warnings { margin-bottom: 12px; }
 #warnings:empty { display: none; }
 .banner { border: 1px solid currentColor; border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; }
 #board { display: grid; grid-template-columns: repeat(6, minmax(180px, 1fr)); gap: 12px; }
 .column { border: 1px solid #888; border-radius: 8px; padding: 8px; min-height: 120px; }
+.column.drop-target { outline: 3px solid Highlight; outline-offset: 2px; }
 .column h2 { font-size: 14px; margin: 0 0 8px; }
-.card { border: 1px solid #888; border-radius: 6px; padding: 6px 8px; margin-bottom: 6px; cursor: pointer; background: transparent; width: 100%; text-align: left; font: inherit; }
+.card { border: 1px solid #888; border-radius: 6px; padding: 6px 8px; margin-bottom: 6px; cursor: grab; background: transparent; width: 100%; text-align: left; font: inherit; }
+.card:active { cursor: grabbing; }
 .card:hover { border-width: 2px; }
 .card .slug { font-size: 12px; opacity: 0.75; }
 #popup-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; }
@@ -27,6 +30,7 @@ header button { margin-left: auto; }
 #popup dt { font-weight: bold; }
 #popup dd { margin: 0; overflow-wrap: anywhere; }
 #popup .close { float: right; }
+#popup .move-row { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 #error { color: inherit; font-weight: bold; }
 @media (max-width: 1100px) { #board { grid-template-columns: repeat(3, minmax(180px, 1fr)); } }
 @media (max-width: 640px) { #board { grid-template-columns: 1fr; } }
@@ -38,6 +42,7 @@ header button { margin-left: auto; }
 <span id="meta"></span>
 <button id="refresh" type="button">Refresh</button>
 </header>
+<div id="status" role="status" aria-live="polite"></div>
 <div id="warnings" role="alert"></div>
 <main id="board" aria-live="polite"></main>
 <div id="popup-backdrop">
@@ -53,9 +58,12 @@ header button { margin-left: auto; }
   var boardEl = document.getElementById('board');
   var warningsEl = document.getElementById('warnings');
   var metaEl = document.getElementById('meta');
+  var statusEl = document.getElementById('status');
   var backdrop = document.getElementById('popup-backdrop');
   var popupTitle = document.getElementById('popup-title');
   var popupBody = document.getElementById('popup-body');
+  var columnIds = ['backlog', 'sprint', 'development', 'staging', 'production', 'abandoned'];
+  var popupCard = null;
 
   function esc(text) {
     return String(text === null || text === undefined ? '' : text)
@@ -76,7 +84,19 @@ header button { margin-left: auto; }
     return parts.length ? parts.join('<br>') : esc('none');
   }
 
+  function moveForm(card) {
+    var opts = columnIds.map(function (id) {
+      return '<option value="' + esc(id) + '">' + esc(id) + '</option>';
+    }).join('');
+    return '<div class="move-row">' +
+      '<label for="move-target">Move to</label>' +
+      '<select id="move-target">' + opts + '</select>' +
+      '<button id="move-confirm" type="button">Confirm move</button>' +
+      '</div>';
+  }
+
   function openPopup(card) {
+    popupCard = card;
     popupTitle.textContent = card.title || card.slug;
     popupBody.innerHTML = '<dl>' +
       row('Slug', esc(card.slug)) +
@@ -88,12 +108,20 @@ header button { margin-left: auto; }
       row('Plan status', esc(card.planStatus === null ? 'none' : card.planStatus)) +
       row('Evidence', esc(card.evidence === null ? 'none' : card.evidence)) +
       row('Links', linkList(card.links)) +
-      '</dl>';
+      '</dl>' + moveForm(card);
+    var sel = document.getElementById('move-target');
+    if (sel) sel.value = card.column;
+    var btn = document.getElementById('move-confirm');
+    if (btn) btn.addEventListener('click', function () {
+      var target = document.getElementById('move-target').value;
+      postMove(card.slug, target);
+    });
     backdrop.classList.add('open');
     document.getElementById('popup-close').focus();
   }
 
   function openNotFound(slug) {
+    popupCard = null;
     popupTitle.textContent = 'Card not found';
     popupBody.innerHTML = '<p id="error">No board card exists for slug "' + esc(slug) + '".</p>';
     backdrop.classList.add('open');
@@ -102,6 +130,34 @@ header button { margin-left: auto; }
 
   function closePopup() {
     backdrop.classList.remove('open');
+    popupCard = null;
+  }
+
+  function announce(msg) {
+    statusEl.textContent = msg;
+  }
+
+  function postMove(slug, toColumn) {
+    announce('Moving ' + slug + ' to ' + toColumn + '…');
+    fetch('api/move', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slug: slug, toColumn: toColumn }),
+    }).then(function (res) {
+      return res.json().then(function (payload) { return { status: res.status, payload: payload }; });
+    }).then(function (result) {
+      if (result.status >= 200 && result.status < 300 && result.payload.card) {
+        var note = result.payload.notice ? ' ' + result.payload.notice : '';
+        announce('Moved ' + slug + ' to ' + result.payload.card.column + '.' + note);
+        closePopup();
+        fetchBoard();
+        return;
+      }
+      var err = result.payload.error || {};
+      announce('Move failed: ' + (err.message || err.reason || 'unknown error'));
+    }).catch(function () {
+      announce('Move failed: network error');
+    });
   }
 
   function render(board) {
@@ -120,18 +176,37 @@ header button { margin-left: auto; }
     (board.columns || []).forEach(function (col) {
       var section = document.createElement('section');
       section.className = 'column';
+      section.dataset.columnId = col.id;
       var h = document.createElement('h2');
       h.textContent = col.title + ' (' + col.count + ')';
       section.appendChild(h);
+      section.addEventListener('dragover', function (ev) {
+        ev.preventDefault();
+        section.classList.add('drop-target');
+      });
+      section.addEventListener('dragleave', function () {
+        section.classList.remove('drop-target');
+      });
+      section.addEventListener('drop', function (ev) {
+        ev.preventDefault();
+        section.classList.remove('drop-target');
+        var slug = ev.dataTransfer.getData('text/plain');
+        if (slug) postMove(slug, col.id);
+      });
       (byColumn[col.id] || []).forEach(function (card) {
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'card';
+        btn.draggable = true;
         btn.dataset.slug = card.slug;
         btn.innerHTML = '<div></div><div class="slug"></div>';
         btn.firstChild.textContent = card.title;
         btn.lastChild.textContent = card.slug;
         btn.addEventListener('click', function () { fetchCard(card.slug); });
+        btn.addEventListener('dragstart', function (ev) {
+          ev.dataTransfer.setData('text/plain', card.slug);
+          ev.dataTransfer.effectAllowed = 'move';
+        });
         section.appendChild(btn);
       });
       boardEl.appendChild(section);

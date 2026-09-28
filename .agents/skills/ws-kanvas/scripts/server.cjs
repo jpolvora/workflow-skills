@@ -2,11 +2,11 @@
 'use strict';
 
 /**
- * ws-kanvas server: loopback-only, read-only board server over the collector.
+ * ws-kanvas server: loopback-only board server over the collector.
  *
  * Node 22 stdlib only (`node:http`, `node:fs`, `node:path`). Serves the
- * self-contained page plus two GET JSON endpoints. No POST/PUT/DELETE routes
- * exist; any non-GET request gets 405. Binds 127.0.0.1 only.
+ * self-contained page plus GET JSON endpoints and POST /api/move. Any other
+ * non-GET request gets 405. Binds 127.0.0.1 only.
  */
 
 const fs = require('fs');
@@ -14,6 +14,7 @@ const http = require('node:http');
 const path = require('node:path');
 
 const { collectBoard, getCard, isValidSlug } = require('./collect.cjs');
+const { moveCard } = require('./move.cjs');
 
 const DEFAULT_PORT = 4173;
 const LOOPBACK = '127.0.0.1';
@@ -142,18 +143,106 @@ function sendJson(res, status, payload) {
   res.end(body);
 }
 
+function parseMoveBody(raw) {
+  if (raw === undefined || raw === null || String(raw).trim() === '') {
+    return { error: { code: 'invalid-body', message: 'Request body is required.' } };
+  }
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return { error: { code: 'invalid-json', message: 'Malformed JSON body.' } };
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return { error: { code: 'invalid-body', message: 'Body must be a JSON object.' } };
+  }
+  if (typeof parsed.slug !== 'string') {
+    return { error: { code: 'invalid-body', message: 'slug must be a string.' } };
+  }
+  if (typeof parsed.toColumn !== 'string') {
+    return { error: { code: 'invalid-body', message: 'toColumn must be a string.' } };
+  }
+  return { slug: parsed.slug, toColumn: parsed.toColumn };
+}
+
+function readRequestBody(req, limit = 65536) {
+  return new Promise((resolve, reject) => {
+    let buf = '';
+    req.on('data', (chunk) => {
+      buf += chunk;
+      if (buf.length > limit) {
+        reject(new Error('body-too-large'));
+      }
+    });
+    req.on('end', () => resolve(buf));
+    req.on('error', reject);
+  });
+}
+
+function logMoveLine(entry) {
+  process.stdout.write(`${JSON.stringify({ event: 'kanvas-move', ...entry })}\n`);
+}
+
+function handlePostMove(roots, body) {
+  const result = moveCard(roots, body);
+  if (result.status === 200) {
+    logMoveLine({
+      slug: body.slug,
+      from: result.fromColumn || result.card?.column,
+      to: body.toColumn,
+      writer: result.writer,
+      result: result.writer === 'no-op' ? 'no-op' : 'ok',
+    });
+    const payload = { card: result.card };
+    if (result.notice) payload.notice = result.notice;
+    return { status: 200, body: payload };
+  }
+  if (result.error) {
+    logMoveLine({
+      slug: body.slug,
+      from: result.fromColumn || 'unknown',
+      to: body.toColumn,
+      writer: result.writer || 'none',
+      result: result.error.reason || result.error.code,
+    });
+  }
+  return { status: result.status, body: result.error ? { error: result.error } : { card: result.card } };
+}
+
 function createServer(roots) {
   return http.createServer((req, res) => {
-    if (req.method !== 'GET') {
-      res.writeHead(405, { 'content-type': 'application/json; charset=utf-8' });
-      res.end(JSON.stringify({ error: { code: 'method-not-allowed', message: 'Read-only server: GET only.' } }));
-      return;
-    }
     let url;
     try {
       url = new URL(req.url, 'http://127.0.0.1');
     } catch {
       sendJson(res, 400, { error: { code: 'bad-request', message: 'Unparseable request path.' } });
+      return;
+    }
+
+    if (req.method === 'POST' && url.pathname === '/api/move') {
+      readRequestBody(req)
+        .then((raw) => {
+          const parsed = parseMoveBody(raw);
+          if (parsed.error) {
+            sendJson(res, 400, { error: parsed.error });
+            return;
+          }
+          if (!isValidSlug(parsed.slug)) {
+            sendJson(res, 400, { error: { code: 'bad-request', message: 'Malformed slug.' } });
+            return;
+          }
+          const result = handlePostMove(roots, parsed);
+          sendJson(res, result.status, result.body);
+        })
+        .catch(() => {
+          sendJson(res, 400, { error: { code: 'invalid-body', message: 'Could not read request body.' } });
+        });
+      return;
+    }
+
+    if (req.method !== 'GET') {
+      res.writeHead(405, { 'content-type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ error: { code: 'method-not-allowed', message: 'Only GET and POST /api/move are supported.' } }));
       return;
     }
     if (url.pathname === '/') {

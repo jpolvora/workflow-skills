@@ -373,7 +373,19 @@ function main(argv) {
   return 0;
 }
 
-module.exports = { collectBoard, getCard, isValidSlug, resolveInside, parseFrontmatter, parseIndex, COLUMNS };
+module.exports = {
+  collectBoard,
+  getCard,
+  isValidSlug,
+  resolveInside,
+  parseFrontmatter,
+  parseIndex,
+  COLUMNS,
+  readPlanSignals,
+  discoverSpecs,
+  specRefToSlug,
+  SLUG_RE,
+};
 
 if (require.main === module) {
   process.exitCode = main(process.argv.slice(2));
