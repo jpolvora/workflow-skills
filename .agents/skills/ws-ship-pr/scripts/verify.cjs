@@ -53,18 +53,33 @@ function frontendTouched(baseBranch) {
   return parts.join('\n').split('\n').some((l) => l.startsWith('web/'));
 }
 
+function normalizeCommand(value) {
+  if (typeof value !== 'string') return null;
+  const command = value.trim();
+  return command || null;
+}
+
 function readVerificationConfig(configFile) {
   // Node-native config read (replaces the python -c inline in verify.sh).
   const cfg = JSON.parse(fs.readFileSync(configFile, 'utf8'));
   const v = cfg.verification || {};
   const s = ((cfg.stack || {}).frontend) || {};
   return {
-    backendBuild: v.backendBuild || '',
-    backendTest: v.backendTest || '',
-    frontendBuild: v.frontendBuild || '',
-    frontendTest: v.frontendTest || '',
+    backendBuild: normalizeCommand(v.backendBuild),
+    backendTest: normalizeCommand(v.backendTest),
+    frontendBuild: normalizeCommand(v.frontendBuild),
+    frontendTest: normalizeCommand(v.frontendTest),
     frontendDir: String((s.sourceDir || 'web')).split('/')[0],
   };
+}
+
+function runRequiredCheck(alias, command) {
+  if (!command) {
+    console.log(`==> ${alias} (skipped: not configured)`);
+    return;
+  }
+  console.log(`==> ${command}`);
+  if (sh(command) !== 0) process.exit(1);
 }
 
 function main() {
@@ -97,15 +112,23 @@ function main() {
     frontendDir = 'web';
   }
 
-  console.log(`==> ${backendBuild}`);
-  if (sh(backendBuild) !== 0) process.exit(1);
-  console.log(`==> ${backendTest}`);
-  if (sh(backendTest) !== 0) process.exit(1);
+  runRequiredCheck('backendBuild', backendBuild);
+  runRequiredCheck('backendTest', backendTest);
 
   if (frontendTouched(baseBranch)) {
-    console.log(`==> ${frontendDir}/ touched — ${frontendTest} + ${frontendBuild}`);
-    try { execSync(frontendTest, { stdio: 'inherit', shell: true }); } catch { /* test best-effort, mirrors `|| true` */ }
-    if (sh(frontendBuild) !== 0) process.exit(1);
+    console.log(`==> ${frontendDir}/ touched`);
+    if (frontendTest) {
+      console.log(`==> ${frontendTest}`);
+      try { execSync(frontendTest, { stdio: 'inherit', shell: true }); } catch { /* test best-effort, mirrors `|| true` */ }
+    } else {
+      console.log('==> frontendTest (skipped: not configured)');
+    }
+    if (frontendBuild) {
+      console.log(`==> ${frontendBuild}`);
+      if (sh(frontendBuild) !== 0) process.exit(1);
+    } else {
+      console.log('==> frontendBuild (skipped: not configured)');
+    }
   } else {
     console.log(`==> ${frontendDir}/ not touched — skipping frontend`);
   }

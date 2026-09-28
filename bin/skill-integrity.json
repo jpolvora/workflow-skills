@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "48ab23bf4e212468cc2e6fa7be435ff1adf10db1e737559594c50fa664fc1c2c",
+  "fullPackageDigest": "4659b92d241a2c2f0f1ed0468d42d94b88cda66b61730e988ee4c61fce85ba4d",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -404,9 +404,9 @@
         "scripts/detect-base-branch.cjs": "1f24ca0f54790f1020047dac9e89c0163fcf96d07366d473606c59f0123cfd4d",
         "scripts/ensure_pr_closer.cjs": "315a0a016532a4bd0b955c3a9bd8c65c29409cae44c052b6cc53ebf4f842752d",
         "scripts/resolve_ship_refs.cjs": "8cf36de58ec9236dd995d9c41d20b8dfa38a4c10ab6eac906a581ecdc3da56b7",
-        "scripts/verify.cjs": "9f8006931c377c65dd8bdcdec7c258fd4f7c13b4f6f4693a3b1c30f508247eba"
+        "scripts/verify.cjs": "d52542e45cdf03feb5b45b997b12d20b155fb2ae9de6d02f022eee2669947e35"
       },
-      "skillDigest": "2cb312ef9e496444ba193db7da0abbf7e5100b5098fd90fb174a0101bd1f5c2e"
+      "skillDigest": "9d05c501fbb6f77103a4977a19871aec54b016f49e49b0b0cbef58f59065d6e0"
     },
     "ws-show-harness": {
       "files": {

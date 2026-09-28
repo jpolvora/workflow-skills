@@ -541,6 +541,9 @@
       "test/test-ship-verify-line-endings.js"
     ],
     [
+      "test/test-ship-verify-empty-aliases.js"
+    ],
+    [
       "test/test-pr-closer.js"
     ],
     [
