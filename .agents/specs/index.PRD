@@ -197,7 +197,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] skillLoader: adopt token-centered skill loading at inline body-load sites (`spec: completed/0144-us-440.spec.md`) - [PR #443](https://github.com/jpolvora/workflow-skills/pull/443) MERGED (`7ee4dd57` implementation)
 - [x] (Spec) Create a new skill ws-spec-to-issue (`spec: completed/0145-us-439.spec.md`) - [PR #444](https://github.com/jpolvora/workflow-skills/pull/444) MERGED (`0d2337df` implementation)
 - [x] features to be emphasized in website and detailed in wiki (`spec: completed/0146-us-436.spec.md`) - [PR #445](https://github.com/jpolvora/workflow-skills/pull/445) MERGED (`fbb69019` implementation)
-- [ ] ws-ship-pr/scripts/verify.cjs: skip empty verification aliases instead of executing them (`spec: pending/0147-us-446.spec.md`)
+- [x] ws-ship-pr/scripts/verify.cjs: skip empty verification aliases instead of executing them (`spec: completed/0147-us-446.spec.md`) — `412e3f37` delivery commit
 - [x] ws-spec-multi stores run state in a skill-named shared directory instead of a per-run directory (`spec: completed/0148-us-448.spec.md`) — `75e8f6b7` on develop
 
 
@@ -498,7 +498,7 @@ All Next-specs closed.
 
 | 151 | `us-436` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | features to be emphasized in website and detailed in wiki ([PR #445](https://github.com/jpolvora/workflow-skills/pull/445), `fbb69019`) |
 
-| 152 | `us-446` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-ship-pr/scripts/verify.cjs: skip empty verification aliases instead of executing them |
+| 152 | `us-446` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-ship-pr/scripts/verify.cjs: skip empty verification aliases instead of executing them (`412e3f37` delivery commit) |
 
 | 153 | `us-448` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-multi stores run state in a skill-named shared directory instead of a per-run directory (`75e8f6b7` on develop) |
 
@@ -511,6 +511,7 @@ All Next-specs closed.
 
 | Date | Slug | Title | PR / Commit |
 |------|------|-------|-------------|
+| 2026-09-28 | `us-446` | ws-ship-pr/scripts/verify.cjs: skip empty verification aliases instead of executing them | `412e3f37` delivery commit |
 | 2026-09-28 | `us-448` | ws-spec-multi stores run state in a skill-named shared directory instead of a per-run directory | `75e8f6b7` on develop |
 | 2026-07-13 | `spec-provider-skills` | Provider skills for spec-to-pr (GitHub, Azure DevOps, local specs) | Implemented |
 | 2026-07-16 | `promote-shared-skills` | Promote shared skills to first-class installable packages | Implemented |
