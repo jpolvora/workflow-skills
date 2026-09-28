@@ -12,7 +12,7 @@ Six columns fill by first match, top to bottom. Abandoned is a cancelled or fail
 
 A card click opens a popup with title, column, index status, phase, acceptance-criteria count, plan step and status, PR or commit evidence, and repo-relative links. An unknown slug shows a typed not-found state. Missing specs, plans, or `index.PRD` yield an empty board and a named warning.
 
-Phase 2 (spec 0131) specifies draggable cards plus a keyboard Move path and a single `POST /api/move` transition table over the owning index, plan-state, and archive writes, but it is not implemented. The shipped board stays read-only: v1 routes are `GET`-only and any other method returns `405`.
+Phase 2 (spec 0131) adds draggable cards, a keyboard Move path in the card popup, and `POST /api/move` with a documented transition table over index track/sync, plan status, and archive writes. v1 `GET` routes are unchanged; only `POST /api/move` mutates consumer index/state files (never git commits).
 
 ## Backend
 
