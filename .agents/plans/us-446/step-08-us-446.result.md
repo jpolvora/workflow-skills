@@ -2,9 +2,11 @@
 slug: us-446
 step: 8
 workflowId: us-446-20260928T021400Z
-status: "delivery result ready"
+status: completed
+startedAt: "2026-09-28T02:14:00Z"
+endedAt: "2026-09-28T02:39:36.971Z"
+acRefs: []
 ---
-
 # us-446 — Delivery Result
 
 ## Expected
