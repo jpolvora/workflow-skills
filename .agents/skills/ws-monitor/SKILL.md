@@ -15,7 +15,7 @@ Observe active `ws-spec-to-pr`, `ws-spec-to-pr-lite`, and `ws-spec-multi` runs w
 
 ## Boundaries
 
-- Read `{plansDir}/{slug}/` state JSON/Markdown, `{plansDir}/ws-spec-multi/` batch runner state, `telemetry.jsonl`, expected step artifacts, and memory vault records.
+- Read `{plansDir}/{slug}/` state JSON/Markdown, canonical `{plansDir}/{runId}/{runId}.state.md` batch state (plus legacy `{plansDir}/ws-spec-multi/{runId}.state.md`), `telemetry.jsonl`, expected step artifacts, and memory vault records.
 - State and telemetry (`stepDispatches` in state files, `telemetry.jsonl`) are the canonical source of truth for dispatch provenance (`subagentId`, `agentType`, `model`). Memory vault records and transcripts are secondary observational signals.
 - Check project memory vault (`spec-memo` MCP/CLI or local `{memoryDir}/memory/`) to discover and cross-reference running workflows for the current project.
 - Read transcript roots from configured `monitor.transcriptRoots`, workspace candidate roots (`.agents/transcripts/`, `.cursor/`, `.opencode/`), and host locations when requested via `--transcript-root` or `--discover-host-transcripts`.
@@ -109,7 +109,7 @@ The live watch exists to catch **workflow misbehavior**: failed operations, work
 
 ## Multi-Spec Batch Monitoring (`ws-spec-multi`)
 
-`ws-spec-multi` runs sequential batches over multiple specifications, maintaining queue state under `{plansDir}/ws-spec-multi/ms-*.state.md` (or `.state.json`):
+`ws-spec-multi` runs sequential batches over multiple specifications, maintaining queue state under `{plansDir}/ms-*/ms-*.state.md` (or `.state.json`). The monitor also discovers legacy flat files under `{plansDir}/ws-spec-multi/`:
 
 - **Queue inspection:**
   - Parse queue table: extract index, slug, specPath, flowMode (`lite` or `standard`), status (`pending`, `in_progress`, `shipped`, `skipped`, `failed`), prNumber, prUrl, and reason.

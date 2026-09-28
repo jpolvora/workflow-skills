@@ -311,7 +311,7 @@ Auto-run after task completion (alongside `ws-changelog`, `ws-self-learning`), o
 ```text
 /ws-spec-multi
 /ws-spec-multi {specsDir}/13-runner.spec.md {specsDir}/14-editor.spec.md
-/ws-spec-multi {plansDir}/ws-spec-multi/ms-20260725T220000Z.state.md
+/ws-spec-multi {plansDir}/ms-20260725T220000Z/ms-20260725T220000Z.state.md
 ```
 
 Batch queues. Interactive pick-one delegates to `ws-spec-list`.

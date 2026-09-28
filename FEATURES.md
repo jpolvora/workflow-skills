@@ -390,7 +390,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 |-------|-----|------|
 | [`ws-spec-to-pr`](.agents/skills/ws-spec-to-pr/SKILL.md) | W | Standard end-to-end pipeline, FSM steps 0–9 |
 | [`ws-spec-to-pr-lite`](.agents/skills/ws-spec-to-pr-lite/SKILL.md) | W | Fast pipeline, steps 0–5 |
-| [`ws-spec-multi`](.agents/skills/ws-spec-multi/SKILL.md) | W | Sequential batch queue with per-spec flow auto-detection |
+| [`ws-spec-multi`](.agents/skills/ws-spec-multi/SKILL.md) | W | Sequential batch queue with isolated per-run state, legacy resume, and per-spec flow auto-detection |
 | [`ws-fable-method`](.agents/skills/ws-fable-method/SKILL.md) | W | 7-step structured problem-solving loop |
 
 ### Pipeline stages

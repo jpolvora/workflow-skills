@@ -7,7 +7,7 @@
 /ws-spec-multi
 ```
 
-Scans pending/unfinished specs under `{specsDir}` (`plans.specsDir`, default `.agents/specs`): index `[ ]` / `[~]` and untracked files, omitting `[x]` / Done-log / already-merged items. Prompts a multi-select gate, creates `{plansDir}/ws-spec-multi/ms-20260725T220000Z.state.md` with auto-detected `baseBranch: develop`, syncs feature branches with `baseBranch` before worker dispatch, evaluates each spec's complexity (lite vs standard), and dispatches workers sequentially. Explicit `*.spec.md` args still queue those paths even if already shipped.
+Scans pending/unfinished specs under `{specsDir}` (`plans.specsDir`, default `.agents/specs`): index `[ ]` / `[~]` and untracked files, omitting `[x]` / Done-log / already-merged items. Prompts a multi-select gate, creates `{plansDir}/ms-20260725T220000Z/ms-20260725T220000Z.state.md` with auto-detected `baseBranch: develop`, syncs feature branches with `baseBranch` before worker dispatch, evaluates each spec's complexity (lite vs standard), and dispatches workers sequentially. Explicit `*.spec.md` args still queue those paths even if already shipped.
 
 ## 2. Explicit Spec List
 
@@ -20,10 +20,10 @@ Initializes run queue with specified spec paths (expand `{specsDir}` first), rec
 ## 3. Resume Existing Run
 
 ```bash
-/ws-spec-multi {plansDir}/ws-spec-multi/ms-20260725T220000Z.state.md
+/ws-spec-multi {plansDir}/ms-20260725T220000Z/ms-20260725T220000Z.state.md
 ```
 
-Loads existing state file, reads recorded `baseBranch`, syncs feature branch for the next spec with `baseBranch` (`git merge {baseBranch}` or `git rebase {baseBranch}`), and resumes from the first pending or failed item without re-running shipped items.
+Loads existing state file, reads recorded `baseBranch`, syncs feature branch for the next spec with `baseBranch` (`git merge {baseBranch}` or `git rebase {baseBranch}`), and resumes from the first pending or failed item without re-running shipped items. A legacy `{plansDir}/ws-spec-multi/{runId}.state.md` input is also accepted and resumed in place.
 
 ## 4. Failure Recovery Gate
 

@@ -20,7 +20,7 @@
  * single atomic write (temp file + rename). Read-only when it refuses.
  *
  * Usage:
- *   node record_child_outcome.cjs --run {plansDir}/ws-spec-multi/{runId}.state.md \
+ *   node record_child_outcome.cjs --run {plansDir}/{runId}/{runId}.state.md \
  *     --slug <slug> --status shipped|failed|skipped \
  *     [--plans-dir DIR] [--pr-number N] [--pr-url U] [--reason TEXT] [--timestamp ISO] [--json]
  */
@@ -32,15 +32,11 @@ const { spawnSync } = require('child_process');
 const TERMINAL_STATUSES = new Set(['shipped', 'skipped', 'failed']);
 const TARGET_STATUSES = new Set(['shipped', 'skipped', 'failed']);
 const SLUG_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
-// `{plansDir}/ws-spec-multi/` holds the parent batch run state, not a child plan
-// dir; a queue item aliasing it must never resolve its child artifacts there.
-const RESERVED_PLAN_DIRS = new Set(['ws-spec-multi']);
 
 function isSafeSlug(value) {
   return typeof value === 'string'
     && SLUG_PATTERN.test(value)
-    && !value.includes('..')
-    && !RESERVED_PLAN_DIRS.has(value);
+    && !value.includes('..');
 }
 
 function parseArgs(argv) {
@@ -131,7 +127,9 @@ function main() {
   const runFile = path.resolve(options.run);
   if (!fs.existsSync(runFile)) { fail(`run state not found: ${options.run}`, options); return; }
   const runDir = path.dirname(runFile);
-  // The batch run lives at {plansDir}/ws-spec-multi/, so the plans dir is its parent.
+  // The batch run may use either the new per-run directory or the legacy
+  // {plansDir}/ws-spec-multi/ directory; both resolve plansDir from the run's
+  // immediate parent.
   const plansDir = path.resolve(options.plansDir || path.dirname(runDir));
 
   const text = fs.readFileSync(runFile, 'utf8');

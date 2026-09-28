@@ -33,8 +33,8 @@ Aliases: [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md). Param
 | User gate | `user-gate` / `user-gate-auto` | Selection gate for blank scan (`pending[]` only); failure pause gate (Resume, Skip, Abort) |
 | Blank-scan inventory | `Shell` | `node {skillsRoot}/ws-spec-multi/scripts/list_pending_specs.cjs --specs-dir {specsDir} --plans-dir {plansDir} --json` |
 | SCM / state probe | `Shell` | SCM query & file probes; parse worker `step-output` |
-| Outcome transition | `Shell` | `node {skillsRoot}/ws-spec-multi/scripts/record_child_outcome.cjs --run {plansDir}/ws-spec-multi/{runId}.state.md --slug {slug} --status shipped\|failed\|skipped [--pr-number N --pr-url U --reason TEXT]` — the executable guarded row transition (fails closed on a `shipped` row lacking child state/`step-01`) |
-| State persistence | `write-to-file` | Update `{plansDir}/ws-spec-multi/{runId}.state.md` |
+| Outcome transition | `Shell` | `node {skillsRoot}/ws-spec-multi/scripts/record_child_outcome.cjs --run {plansDir}/{runId}/{runId}.state.md --slug {slug} --status shipped\|failed\|skipped [--pr-number N --pr-url U --reason TEXT]` — the executable guarded row transition (fails closed on a `shipped` row lacking child state/`step-01`) |
+| State persistence | `write-to-file` | Update `{plansDir}/{runId}/{runId}.state.md`; resume also accepts the legacy flat path |
 
 ## Goals & Invariants
 
@@ -42,7 +42,7 @@ Aliases: [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md). Param
 2. **Base Branch Sync:** Record `baseBranch` in state file header. Before worker dispatch and after PR merge success, fetch & pull `baseBranch` via `git merge {baseBranch}` (default). Use `git rebase {baseBranch}` only when `config.json` / run flag requests rebase.
 3. **Flow Auto-Detect:** Run [`ws-classify-complexity`](../ws-classify-complexity/SKILL.md). Select `ws-spec-to-pr-lite` when ≤3 steps / ≤6 files / ≤2 layers / frontmatter `complexity: low`; `ws-spec-to-pr` otherwise.
 4. **End-to-End Closure per Spec:** Every PR must undergo `ws-goal-fix-pr` convergence (`activeThreads == 0`) and explicit SCM merge (`state: MERGED`) before dispatching next spec.
-5. **Isolation & State:** Fresh worker context per spec; update `{plansDir}/ws-spec-multi/{runId}.state.md`.
+5. **Isolation & State:** Fresh worker context per spec; update `{plansDir}/{runId}/{runId}.state.md`. Legacy flat state files remain resumable.
 6. **Pause on Failure:** No silent continue on worker error; prompt user gate (Resume, Skip, Abort).
 7. **Keyed, Idempotent Queue Writes:** Every state transition updates the single existing row for that spec (`specPath`, fallback `slug`) in place — the queue never gains a second row for the same spec. The reported item count is frozen at the Phase 2 selection length (`totalItems`), and a write that would duplicate a row index or a `slug` fails closed (surface the conflict, do not write). A superseding run records `supersedesRunId` and retires that run (`cancelled` / `superseded`) deterministically via `scripts/retire_superseded_run.cjs`, and a child worker's terminal state propagates to its parent row plus the parent `updatedAt`. Re-applying a close or ship transition is idempotent (no new rows, no terminal-status regression). Invariant detail: [`STATE.md`](STATE.md) § Queue invariants.
 
@@ -52,11 +52,11 @@ Aliases: [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md). Param
 /spec-multi
 /ws-spec-multi
 /ws-spec-multi {specsDir}/13-runner.spec.md {specsDir}/14-editor.spec.md
-/ws-spec-multi {plansDir}/ws-spec-multi/ms-20260725T220000Z.state.md
+/ws-spec-multi {plansDir}/ms-20260725T220000Z/ms-20260725T220000Z.state.md
 ```
 
 ## Done when (run)
 
 - Config entry check passed.
 - Each selected spec worker completed with PR merged (`activeThreads == 0`, SCM `MERGED`) or user Skip/Abort recorded.
-- State file `{plansDir}/ws-spec-multi/{runId}.state.md` updated for every outcome.
+- State file `{plansDir}/{runId}/{runId}.state.md` updated for every outcome; legacy flat files are read-only compatibility inputs.

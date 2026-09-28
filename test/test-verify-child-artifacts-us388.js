@@ -154,14 +154,17 @@ const validChildState = {
   if (result.status === 0) throw new Error('us-388 AC5: a .state.md render alone must not satisfy the machine state requirement');
 }
 
-// Unsafe slug and unknown --require fail closed without writing.
+// Unsafe slug and unknown --require fail closed without writing; the former
+// reserved batch name is now a normal child directory.
 {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'verify-child-us388-bad-'));
   tempRoots.push(root);
   const badSlug = run(['--slug', '..\\escape', '--plans-dir', plansDir(root)], root);
   if (badSlug.status === 0) throw new Error('us-388 AC5: unsafe slug must be refused');
-  const reserved = run(['--slug', 'ws-spec-multi', '--plans-dir', plansDir(root)], root);
-  if (reserved.status === 0) throw new Error('us-388 AC5: the reserved ws-spec-multi slug must be refused');
+  write(path.join(plansDir(root), 'ws-spec-multi', 'ws-spec-multi-20260922T080709Z.state.json'), JSON.stringify(validChildState, null, 2).replace('"slug": "demo"', '"slug": "ws-spec-multi"').replace('"workflowId": "demo-20260922T080709Z"', '"workflowId": "ws-spec-multi-20260922T080709Z"'));
+  write(path.join(plansDir(root), 'ws-spec-multi', 'step-01-ws-spec-multi.plan.md'), '# plan\n');
+  const normal = run(['--slug', 'ws-spec-multi', '--plans-dir', plansDir(root)], root);
+  if (normal.status !== 0) throw new Error(`us-448 AC4: normal ws-spec-multi child slug must be accepted: ${normal.stderr || normal.stdout}`);
   const badReq = run(['--slug', 'demo', '--plans-dir', plansDir(root), '--require', 'bogus'], root);
   if (badReq.status === 0) throw new Error('us-388 AC5: unknown --require must be refused');
 }

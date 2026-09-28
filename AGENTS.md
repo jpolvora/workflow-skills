@@ -455,6 +455,10 @@ Resolve in order (first match). Read paths from project `{sharedDir}/config.json
 | Domain catalog | `specs/domains/` — consumer; starter [`specs/domains/index.md.example`](specs/domains/index.md.example) |
 | Workflow artifacts | `config.json` → `plans.dir` (token `{plansDir}`; default `.agents/plans`) · `plans.specsDir` (token `{specsDir}`; default `.agents/specs`; prefer existing repo-root `specs/`) · optional `reviews.dir` (token `{reviewsDir}`; default `.agents/codereviews`) |
 
+`ws-spec-multi` batch state follows the per-run artifact convention:
+`{plansDir}/{runId}/{runId}.state.md`. Legacy
+`{plansDir}/ws-spec-multi/{runId}.state.md` files remain resumable.
+
 Packaged consumer mirror: [`.ws/AGENTS.md`](.ws/AGENTS.md) § External dependencies · bootstrap notes in [`ws-shared/runtime/setup.md`](.agents/skills/ws-shared/runtime/setup.md).
 
 ### Code review proof
