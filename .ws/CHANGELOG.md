@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-29 09:31] Agent: agent
+- **Prompt**: Import open GitHub issues via ws-spec-from-provider
+- **Done**: Imported issue 457; skipped 455 (already registered)
+- **Result**: Wrote .agents/specs/pending/0150-us-457.spec.md and .agents/plans/us-457/step-00-us-457.spec.md; tracked index.PRD row 155
+
 ### [2026-09-29 08:51] Agent: agent
 - **Prompt**: ws-spec-from-provider import open GitHub issues
 - **Done**: Imported issue 455 as us-455 spec, registered step-00, tracked index.PRD
