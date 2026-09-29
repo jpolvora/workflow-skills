@@ -165,7 +165,8 @@ function appendDoneLogRow(indexText, slug, title, evidence) {
 
 function appendArchiveRow(indexText, slug, outcome) {
   const esc = slugEsc(slug);
-  if (new RegExp('\\|\\s*`?' + esc + '`?\\s*\\|', 'i').test(indexText)) return indexText;
+  const archiveSection = (indexText.split(/^##\s+.*archiv/im)[1] || '').split(/^##\s+/m)[0];
+  if (new RegExp('\\|\\s*`?' + esc + '`?\\s*\\|', 'i').test(archiveSection)) return indexText;
   const row = `| \`${slug}\` | ${outcome} | active | none | board-move |`;
   const m = indexText.match(/^##\s+.*archiv/im);
   if (!m) return indexText.trimEnd() + `\n\n## Archive\n\n| Slug | Outcome | Last state | PR / Commit | Summary |\n|------|---------|------------|-------------|----------|\n${row}\n`;
