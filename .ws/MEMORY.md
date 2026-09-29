@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-09-29] Version bump and integrity manifest must ship in one commit
+- **Layer**: `Release verification`
+- **Module**: `generate-skill-integrity / ship + fix-pr commit scope`
+- **Severity**: `High`
+- **PathPattern**: `bin/skill-integrity.json, package.json, bin/skill-dependencies.json, .agents/skills/ws-shared/version.json`
+- **Scenario / Context**: A fix-pr/ship round regenerated `bin/skill-integrity.json` from a working tree that still held an unrelated uncommitted version bump (and another session's skill edits), then committed the manifest alone. CI `verify-integrity` failed with `packageVersion drift: manifest=X canonical=Y`, and later the version bump landed without regenerating the manifest, failing the same gate the opposite way.
+- **DO NOT**: Run `generate-integrity` on a dirty tree carrying another session's uncommitted version bump or skill edits, and never commit `bin/skill-integrity.json` without the matching `package.json` / `bin/skill-dependencies.json` / `.agents/skills/ws-shared/version.json` change in the same commit.
+- **INSTEAD DO**: Bump the version and regenerate integrity in the same commit, from a tree whose hashed content matches what you are committing; if the working tree is polluted, generate in a clean `git worktree` at the target commit and copy the manifest back, then confirm `npm run verify-integrity` is green on the committed tree.
+
 ### [2026-09-29] Site stale after skill description edit
 - **Layer**: `harness`
 - **Module**: `docs/index.html`

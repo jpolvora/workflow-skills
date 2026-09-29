@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-29 10:53] Agent: agent
+- **Prompt**: Fix PR #456: drive review threads to zero and clear failing CI checks.
+- **Done**: Regenerated bin/skill-integrity.json for the PR tree (0.5.13, then again at 0.5.14 after a concurrent version bump landed) so verify-integrity stops reporting packageVersion drift; recorded the trap in memory.
+- **Result**: PR #456 CI green (test + review pass) and 0 active review threads.
+
 ### [2026-09-29 10:37] Agent: agent
 - **Prompt**: import #458, track; link spec with the source issue; add check-workflows coverage for autoMode ON and OFF
 - **Done**: Imported GitHub issue #458 as spec of record, registered the step-00 workflow copy, tracked it in index.PRD, and linked it to the source issue. Extended ws-check-workflows with autoMode ON (unattended internal checkpoints + canonical stop list) and autoMode OFF (per-step or gateGranularity) assertions, evals, and an executable regression test.
