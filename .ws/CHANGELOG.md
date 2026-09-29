@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-29 08:51] Agent: agent
+- **Prompt**: ws-spec-from-provider import open GitHub issues
+- **Done**: Imported issue 455 as us-455 spec, registered step-00, tracked index.PRD
+- **Result**: imported 1, skipped 0, failed 0
+
 ### [2026-09-29 08:04] Agent: agent
 - **Prompt**: C:/Program Files/Git/ws-ship-pr bump then PR
 - **Done**: Bumped 0.5.11 to 0.5.12, committed, pushed develop, opened PR
