@@ -352,4 +352,29 @@ console.log('11. Testing plans.autoOrganizeByStatus');
   assert.ok(fs.existsSync(path.join(preview.specs, 'done-two.spec.md')), '--dry-run does not move');
 }
 
+// 12. Index [x] beats issueState open
+console.log('12. Testing index completed over open issueState');
+{
+  const proj = createTempProject({ statusSubfolders: true });
+  fs.writeFileSync(
+    path.join(proj.specs, 'index.PRD'),
+    '# Spec Index\n\n## 7. Feature map by phase\n\n- [x] Shipped (`spec: pending/0147-us-446.spec.md`)\n',
+    'utf8'
+  );
+  fs.mkdirSync(path.join(proj.specs, 'pending'), { recursive: true });
+  writeSpec(path.join(proj.specs, 'pending'), '0147-us-446.spec.md', {
+    slug: 'us-446',
+    title: 'Shipped',
+    issueState: 'open',
+  });
+  const res = spawnSync(
+    process.execPath,
+    [ORGANIZE_SCRIPT, '--repo-root', proj.tmp, '--by-status', '--apply', '--json'],
+    { encoding: 'utf8' }
+  );
+  assert.strictEqual(res.status, 0, res.stderr);
+  assert.ok(fs.existsSync(path.join(proj.specs, 'completed', '0147-us-446.spec.md')), 'open issueState still files to completed when index is [x]');
+  assert.ok(!fs.existsSync(path.join(proj.specs, 'pending', '0147-us-446.spec.md')), 'pending copy removed');
+}
+
 console.log('--- All ws-spec-organizer status-subfolder tests PASSED ---');

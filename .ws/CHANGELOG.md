@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-29 07:36] Agent: agent
+- **Prompt**: move completed specs and fix organizer detection
+- **Done**: Index [x] and Done log now beat issueState open; filed us-446 and us-448 into completed/
+- **Result**: organize_specs --by-status --apply moved pending/0147 and pending/0148 to completed/
+
 ### [2026-09-29 07:27] Agent: agent
 - **Prompt**: set autoOrganizeByStatus true and apply now
 - **Done**: Ran organize_specs.cjs by-status apply

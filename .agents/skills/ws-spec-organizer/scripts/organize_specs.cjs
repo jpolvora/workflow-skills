@@ -355,13 +355,15 @@ function readIndexSignals(indexPrdPath) {
 function statusOfSpec(item, indexSignals) {
   const direct = mapTokenToStatus(item.status);
   if (direct) return direct;
+  // Index completion beats a stale tracker issueState (open issues can
+  // already be delivered). Explicit frontmatter status still wins above.
+  if (indexSignals.archived.has(item.slug)) return 'archived';
+  if (indexSignals.completed.has(item.slug)) return 'completed';
   if (item.issueState) {
     const t = normalizeStatusToken(item.issueState);
     if (t === 'closed') return 'completed';
     if (t === 'open') return 'pending';
   }
-  if (indexSignals.completed.has(item.slug)) return 'completed';
-  if (indexSignals.archived.has(item.slug)) return 'archived';
   return 'pending';
 }
 

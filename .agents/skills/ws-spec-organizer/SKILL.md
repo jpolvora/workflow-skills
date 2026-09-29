@@ -42,7 +42,7 @@ In `config.json`:
   - No automatic migration: enabling `statusSubfolders` never moves existing files.
 - `plans.autoOrganizeByStatus` (boolean, default: `false`):
   - Requires `plans.statusSubfolders: true`. When that is false, this switch is ignored.
-  - `true`: `organize_specs.cjs` with no `--slug` and no `--dry-run` runs as `--by-status --apply`. Classification is frontmatter `status:`, then `issueState:`, then `index.PRD` (`[x]`, Done log, Archive). `--dry-run` stays a preview of that filing.
+  - `true`: `organize_specs.cjs` with no `--slug` and no `--dry-run` runs as `--by-status --apply`. Classification is frontmatter `status:`, then `index.PRD` Archive / Done log / `[x]` (this beats `issueState: open`), then `issueState:`. `--dry-run` stays a preview of that filing.
   - `false`: filing still requires an explicit `organize_specs.cjs --by-status --apply`.
 
 **Invariants:**
@@ -71,5 +71,5 @@ node {skillsRoot}/ws-spec-organizer/scripts/organize_specs.cjs --slug <slug> --s
 
 - `--dry-run` (default): inspect proposed renames and index updates without modifying the filesystem.
 - `--apply`: execute safe `git mv` (or `fs.renameSync` for untracked files), assigning chronological `0001`… prefixes by `specDate` → git first-add date → file mtime, and update `index.PRD` `spec:` references.
-- `--by-status`: file every spec into `pending/`, `completed/`, or `archived/` by frontmatter `status:` (synonyms accepted) → frontmatter `issueState:` (`closed` → completed, `open` → pending) → `index.PRD` Done log / `[x]` checkboxes / Archive table. Moves the `*.spec.md` plus companion `*.context.md` and `*.assets/` sidecars, keeping file names; rewrites `index.PRD` `spec:` references to subfolder-relative paths. Fails closed on dirty overlapping paths or target collisions.
+- `--by-status`: file every spec into `pending/`, `completed/`, or `archived/` by frontmatter `status:` (synonyms accepted) → `index.PRD` Archive table, then Done log / `[x]` checkboxes → frontmatter `issueState:` (`closed` → completed, `open` → pending only when the index does not already mark the slug completed or archived). An index `[x]` or Done-log row moves the spec to `completed/` even when `issueState` is `open`. Moves the `*.spec.md` plus companion `*.context.md` and `*.assets/` sidecars, keeping file names; rewrites `index.PRD` `spec:` references to subfolder-relative paths. Fails closed on dirty overlapping paths or target collisions.
 - `--slug <slug> --status <status>`: file one spec (used by `ws-spec-index sync` completion transitions).

@@ -197,8 +197,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] skillLoader: adopt token-centered skill loading at inline body-load sites (`spec: completed/0144-us-440.spec.md`) - [PR #443](https://github.com/jpolvora/workflow-skills/pull/443) MERGED (`7ee4dd57` implementation)
 - [x] (Spec) Create a new skill ws-spec-to-issue (`spec: completed/0145-us-439.spec.md`) - [PR #444](https://github.com/jpolvora/workflow-skills/pull/444) MERGED (`0d2337df` implementation)
 - [x] features to be emphasized in website and detailed in wiki (`spec: completed/0146-us-436.spec.md`) - [PR #445](https://github.com/jpolvora/workflow-skills/pull/445) MERGED (`fbb69019` implementation)
-- [x] ws-ship-pr/scripts/verify.cjs: skip empty verification aliases instead of executing them (`spec: pending/0147-us-446.spec.md`) — `412e3f37` delivery commit
-- [x] ws-spec-multi stores run state in a skill-named shared directory instead of a per-run directory (`spec: pending/0148-us-448.spec.md`) — `75e8f6b7` on develop
+- [x] ws-ship-pr/scripts/verify.cjs: skip empty verification aliases instead of executing them (`spec: completed/0147-us-446.spec.md`) — `412e3f37` delivery commit
+- [x] ws-spec-multi stores run state in a skill-named shared directory instead of a per-run directory (`spec: completed/0148-us-448.spec.md`) — `75e8f6b7` on develop
 
 
 
