@@ -1,5 +1,20 @@
 # Changelog
 
+### [2026-09-29 15:19] Agent: ws-spec-to-pr
+- **Prompt**: Execute standard Spec-to-PR for us-459: ws-kanvas board phase color coding and theme-aware surfaces
+- **Done**: CSS-only restyle of ws-kanvas refs/board.html <style> block: six phase accents, theme-aware Canvas/CanvasText surfaces for column/card/drop-target/popup; bumped 0.5.16, regenerated integrity, synced site/wiki/index.PRD
+- **Result**: Verify 10/10, review clean, kanvas suites + npm run test 144/144, harness 0 findings; PR opened develop->main
+
+### [2026-09-29 11:44] Agent: agent
+- **Prompt**: Refresh webpage, README, AGENTS/wiki/docs to 0.5.14+ and ship
+- **Done**: Site cards, README, FEATURES, CATALOG, wiki, llms.txt updated; bumped 0.5.15; PR #460 merged
+- **Result**: PR #460 MERGED; 144/144 tests, harness 0 findings, wiki 12 pages PASS
+
+### [2026-09-29 11:40] Agent: agent
+- **Prompt**: /ws-spec-from-provider bulk import of open tracker backlog
+- **Done**: Imported us-459 (kanvas phase color coding) to .agents/specs/pending/0152-us-459.spec.md with agentic reformulation, registered step-00, tracked in index.PRD; skipped us-458 and us-457 (already registered)
+- **Result**: 1 imported, 2 skipped, 0 failed; authoring validation PASS; memory trap recorded for verbatim-marker validation failures
+
 ### [2026-09-29 10:53] Agent: agent
 - **Prompt**: Fix PR #456: drive review threads to zero and clear failing CI checks.
 - **Done**: Regenerated bin/skill-integrity.json for the PR tree (0.5.13, then again at 0.5.14 after a concurrent version bump landed) so verify-integrity stops reporting packageVersion drift; recorded the trap in memory.

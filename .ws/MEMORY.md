@@ -15,6 +15,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **DO NOT**: Run `generate-integrity` on a dirty tree carrying another session's uncommitted version bump or skill edits, and never commit `bin/skill-integrity.json` without the matching `package.json` / `bin/skill-dependencies.json` / `.agents/skills/ws-shared/version.json` change in the same commit.
 - **INSTEAD DO**: Bump the version and regenerate integrity in the same commit, from a tree whose hashed content matches what you are committing; if the working tree is polluted, generate in a clean `git worktree` at the target commit and copy the manifest back, then confirm `npm run verify-integrity` is green on the committed tree.
 
+### [2026-09-29] Verbatim tracker headings and AC bullets break spec authoring validation
+- **Layer**: `specs`
+- **Module**: `ws-spec-format (validate_spec.cjs), ws-spec-write Original Issue Context`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/specs/**/*.spec.md`
+- **Scenario / Context**: Importing a tracker issue whose body held nested `##` headings and `- ACn:` bullets. Pasted verbatim into `## Original Issue Context`, authoring validation failed twice: `ac-sequence` errors because the AC bullet regex scans document-wide, and `out-of-scope-empty` because the table finder uses first-match so the verbatim bullet list shadowed the canonical table.
+- **DO NOT**: Paste tracker `- ACn:` bullets or `## <section>` headings verbatim into `## Original Issue Context`.
+- **INSTEAD DO**: Demote nested headings to bold text and unbullet AC lines (bare `ACn: ...`), noting the marker adjustment; keep wording intact, then re-run authoring validation.
+
 ### [2026-09-29] Site stale after skill description edit
 - **Layer**: `harness`
 - **Module**: `docs/index.html`
