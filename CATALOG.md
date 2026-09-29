@@ -17,8 +17,8 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | `ws-check-harness` | `.agents/skills/ws-check-harness/SKILL.md` | Harness integrity audit |
 | `ws-check-workflows` | `.agents/skills/ws-check-workflows/SKILL.md` | Deep workflow simulation & validation |
 | `ws-doctor` | `.agents/skills/ws-doctor/SKILL.md` | Install & runtime diagnostics, hybrid hub resolution |
-| `ws-monitor` | `.agents/skills/ws-monitor/SKILL.md` | Read-only live workflow observer; live watch profile + enriched defect-issue proposal |
-| `ws-version` | `.agents/skills/ws-version/SKILL.md` | Read-only install scope, skill directory, and package version snapshot |
+| `ws-monitor` | `.agents/skills/ws-monitor/SKILL.md` | Live workflow observer |
+| `ws-version` | `.agents/skills/ws-version/SKILL.md` | Install scope and package version |
 | `ws-write-a-skill` | `.agents/skills/ws-write-a-skill/SKILL.md` | Create/edit/optimize skills (Extra) |
 | `ws-show-harness` | `.agents/skills/ws-show-harness/SKILL.md` | Session harness snapshot (Extra) |
 | `ws-preview` | `.agents/skills/ws-preview/SKILL.md` | Run consumer `preview.dryRunCommand` local dry-run (Extra; `/ws-configure-project --section preview`) |
@@ -162,7 +162,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | Observe a live workflow | `ws-monitor` |
 | Show install scope / package version | `ws-version` |
 | Grill plan vs docs | `grill-with-docs` |
-| Record learning | This file § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) (live `ws-self-learning` only when authoring that skill) |
+| Record learning | § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) |
 | Convergence loop | `ws-goal-loop` |
 | Record ws-changelog | This file § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) (live `ws-changelog` only when authoring that skill) |
 | Fill / update `config.json` | `ws-configure-project` (wizard) · `npm run config:gui` / `Edit-Config.bat` (GUI editor). Hub root is relocatable via `pathTokens.sharedDir` (repo-relative, contained); bootstrap `.ws/config.json` stays fixed as the discovery point |
