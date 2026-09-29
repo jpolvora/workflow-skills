@@ -8,7 +8,7 @@ issueState: open
 issueUrl: "https://github.com/jpolvora/workflow-skills/issues/455"
 labels: []
 step: 0
-workflowId: us-455
+workflowId: us-455-20260929T125300Z
 status: completed
 startedAt: "2026-09-29T12:51:03.958Z"
 endedAt: "2026-09-29T12:51:03.958Z"
@@ -31,7 +31,7 @@ The skill body stays agent-neutral: no IDE product names, Node-only helpers if a
 ## Acceptance Criteria
 
 - AC1: Invoking `/ws-version` prints the absolute directory of the `ws-version` skill folder that was loaded, and labels the install scope as `global` when that directory is under the global skills root, otherwise `project-local`.
-- AC2: The same reply prints `packageVersion` read from `{loadedSkillsRoot}/ws-shared/version.json`. When that file is missing or is not valid JSON, the reply says version is unavailable and still prints the skill directory (non-zero helper exit is surfaced; the skill does not invent a version).
+- AC2: The same reply prints `packageVersion` from the `version` string in `{loadedSkillsRoot}/ws-shared/version.json` (the only version property that file allows). When that file is missing, is not valid JSON, or has no semver `version` string, the reply says version is unavailable and still prints the skill directory (non-zero helper exit is surfaced; the skill does not invent a version).
 - AC3: When `$PWD/.ws/config.json` exists and parses, the reply includes `pathTokens.skillsRoot`, `pathTokens.sharedDir`, `plans.dir`, and `plans.specsDir` as stored (brace tokens not expanded into a second root). When `.ws/config.json` is missing or invalid JSON, the reply says project config is unavailable and still prints scope, directory, and version from AC1–AC2.
 - AC4: `ws-version` is a skill package under `.agents/skills/ws-version/` with `SKILL.md`, is listed in `bin/skill-dependencies.json`, and is reachable from the task router. A harness check of the new skill id does not report a missing dependency edge.
 - AC5: Output stays short (one screen of facts: scope, skill directory, version, token paths, config status). It does not start a workflow, write files, or prompt for confirmation.
