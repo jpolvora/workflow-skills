@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-09-29 07:55] Agent: agent
+- **Prompt**: do not hardcode changelog paths in wiki update
+- **Done**: Wiki update, sync, and from-code read the effective rules.changelogFile from config
+- **Result**: No hardcoded changelog path remains in those ws-wiki instructions
+
+### [2026-09-29 07:53] Agent: agent
+- **Prompt**: wiki update should use CHANGELOG.md when it exists
+- **Done**: update, sync, and from-code now read rules.changelogFile to choose what to inspect
+- **Result**: Missing changelog is a skip; rows are not copied into wiki pages
+
 ### [2026-09-29 07:49] Agent: agent
 - **Prompt**: C:/Program Files/Git/ws-wiki update from code
 - **Done**: Merged organizer completion rules into the spec-lifecycle wiki page

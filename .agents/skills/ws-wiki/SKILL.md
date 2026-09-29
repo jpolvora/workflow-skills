@@ -15,7 +15,7 @@ invocation_names:
 Authoritative manager for living project feature wikis and domain knowledge bases within the `workflow-skills` harness.
 
 Existing documents serve distinct roles:
-- `CHANGELOG.md`: Chronological delivery history log.
+- `rules.changelogFile`: Chronological delivery history log.
 - `index.PRD`: Implementation phases and task completion tracker.
 - `*.spec.md`: Bounded, point-in-time contract for a specific delivery package.
 - `ws-spec-update`: Surgical drift updater for individual delta specifications.
@@ -84,6 +84,8 @@ Page-writing flows (`from-code`, `sweep`, `sync`, `update`) resolve `verbosity` 
 ```
 
 Phase names: Phase 1 is sweep/backfill, Phase 2 is wiki-vs-code statement verify, Phase 3 is findings plan plus batch apply. From-code is an alternate genesis beside sweep (not Phase 4).
+
+`update`, `sync`, and `from-code` read the effective `rules.changelogFile` from `{sharedDir}/config.json` when that file exists. Recent entries name what shipped. Use them to pick the code, specs, and pages to inspect deeply. Skip when the key is empty or the file is missing. Do not copy changelog rows into wiki pages.
 
 ---
 
