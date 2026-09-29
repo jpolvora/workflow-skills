@@ -60,6 +60,9 @@
       "test/test-ws-version.js"
     ],
     [
+      "test/test-resolve-skill-path.js"
+    ],
+    [
       "test/test-shell-quoting-audit.js"
     ],
     [
@@ -231,6 +234,9 @@
     ],
     [
       "test/test-ws-version.js"
+    ],
+    [
+      "test/test-resolve-skill-path.js"
     ],
     [
       "test/test-shell-quoting-audit.js"
