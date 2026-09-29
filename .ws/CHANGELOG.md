@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-29 07:49] Agent: agent
+- **Prompt**: C:/Program Files/Git/ws-wiki update from code
+- **Done**: Merged organizer completion rules into the spec-lifecycle wiki page
+- **Result**: validate_wiki.cjs --check passed for 12 pages; sync baseline left unchanged
+
 ### [2026-09-29 07:36] Agent: agent
 - **Prompt**: move completed specs and fix organizer detection
 - **Done**: Index [x] and Done log now beat issueState open; filed us-446 and us-448 into completed/
