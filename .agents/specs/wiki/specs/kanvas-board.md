@@ -10,7 +10,7 @@
 
 Six columns fill by first match, top to bottom. Abandoned is a cancelled or failed plan state, or an Archive row with a dropped or superseded outcome. Production is an index row marked `[x]` with E1 delivery evidence in the Done log. Staging is a `step-08-*.result.md` ship record whose index row is still open. Development is a plan `*.state.md` with `status: active` or `implemented`. Sprint is a tracked `[ ]` row that already has a `{plansDir}/{slug}/` directory. Backlog is every other spec of record.
 
-A card click opens a popup with title, column, index status, phase, acceptance-criteria count, plan step and status, PR or commit evidence, and repo-relative links. An unknown slug shows a typed not-found state. Missing specs, plans, or `index.PRD` yield an empty board and a named warning.
+A card click opens a popup with title, column, index status, phase, acceptance-criteria count, plan step and status, PR or commit evidence, and repo-relative links. An unknown slug shows a typed not-found state. A "Show spec" toggle in the popup fetches the card's spec of record through read-only `GET /api/spec?slug={slug}` (path-confined to `{specsDir}`, typed errors) and renders its Markdown in the modal with a dependency-free escape-first renderer; the viewer never edits, saves, or commits. Missing specs, plans, or `index.PRD` yield an empty board and a named warning.
 
 Phase 2 (spec 0131) adds draggable cards, a keyboard Move path in the card popup, and `POST /api/move` with a documented transition table over index track/sync, plan status, and archive writes. v1 `GET` routes are unchanged; only `POST /api/move` mutates consumer index/state files (never git commits).
 
