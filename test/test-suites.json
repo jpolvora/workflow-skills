@@ -184,6 +184,9 @@
     ],
     [
       "test/test-kanvas-drag-drop.js"
+    ],
+    [
+      "test/test-check-workflows-automode.js"
     ]
   ],
   "remote": [

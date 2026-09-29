@@ -201,6 +201,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] ws-spec-multi stores run state in a skill-named shared directory instead of a per-run directory (`spec: completed/0148-us-448.spec.md`) — `75e8f6b7` on develop
 - [ ] add a simple skill to show version and directory of the skill file (`spec: pending/0149-us-455.spec.md`)
 - [ ] Resolve missing local skills from the global install; do not junction them into the repo (`spec: pending/0150-us-457.spec.md`)
+- [ ] autoMode should mean unattended: no yield at internal checkpoints (`spec: pending/0151-us-458.spec.md`)
+
 
 
 
@@ -509,6 +511,8 @@ All Next-specs closed.
 | 154 | `us-455` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | add a simple skill to show version and directory of the skill file |
 
 | 155 | `us-457` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Resolve missing local skills from the global install; do not junction them into the repo |
+
+| 156 | `us-458` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | autoMode should mean unattended: no yield at internal checkpoints |
 
 ## 9. Inbox
 

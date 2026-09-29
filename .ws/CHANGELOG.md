@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-29 10:37] Agent: agent
+- **Prompt**: import #458, track; link spec with the source issue; add check-workflows coverage for autoMode ON and OFF
+- **Done**: Imported GitHub issue #458 as spec of record, registered the step-00 workflow copy, tracked it in index.PRD, and linked it to the source issue. Extended ws-check-workflows with autoMode ON (unattended internal checkpoints + canonical stop list) and autoMode OFF (per-step or gateGranularity) assertions, evals, and an executable regression test.
+- **Result**: check_workflows.cjs reports 0 issues; test-check-workflows-automode PASS; test-harness-clean 0 findings; validate_spec --mode=authoring PASS (9 ACs).
+
 ### [2026-09-29 10:02] Agent: agent
 - **Prompt**: autoMode ws-spec-to-pr paused after step 5 asking to continue
 - **Done**: Step 5 exit in autoMode skips Pass 1 and Reach-10 and dispatches step 6 in the same turn

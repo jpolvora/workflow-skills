@@ -1,0 +1,121 @@
+---
+id: 458
+slug: us-458
+title: "autoMode should mean unattended: no yield at internal checkpoints"
+source: github
+specDate: 2026-09-29
+issueState: open
+issueUrl: "https://github.com/jpolvora/workflow-skills/issues/458"
+step: 0
+workflowId: us-458
+status: completed
+startedAt: "2026-09-29T14:34:07.392Z"
+endedAt: "2026-09-29T14:34:07.392Z"
+acRefs: []
+---
+# Specification — autoMode should mean unattended: no yield at internal checkpoints
+
+## Description
+
+`defaults.autoMode: true` currently means "auto-select the recommended gate option and proceed across step boundaries without halting" (`ws-spec-to-pr/SKILL.md`, `ws-shared/runtime/gates.md`). It says nothing about internal checkpoints **inside** a step, so agents still stop mid-workflow to narrate progress and wait for the next user prompt — end of a DAG node/wave, a green verification or build, or end of step artifacts. Operators running full-auto expect one unattended session through ship.
+
+This spec closes that gap for the standard (`ws-spec-to-pr`) and lite (`ws-spec-to-pr-lite`) orchestrators: the `autoMode` contract must forbid yielding at internal checkpoints and enumerate the only valid stops. The canonical stop list lives in `ws-shared/runtime/gates.md`; both orchs reference it and must not duplicate it. Progress under `autoMode` goes to machine surfaces (`telemetry.jsonl`, state handoffs, `## Gate history`), never a user-facing halt. A green wave is evidence for the next wave, never a stop reason.
+
+System boundaries: portable skill prose, the shared gate contract, and the `ws-check-workflows` validator. No change to the state schema, baton/worker-turn semantics, or the host-forced `checkpoint` / `pause-turn` fallback.
+
+## Acceptance Criteria
+
+- AC1: `ws-shared/runtime/gates.md` holds a canonical `autoMode` stop-conditions section listing exactly the valid stops: red suite after the retries the skill already allows, a product-required destructive confirmation, missing credentials or network, and terminal `completed`/`failed`.
+- AC2: `gates.md` states that under `autoMode` the orchestrator must not end the user turn at an internal checkpoint: DAG node or wave end, green verification or build, end of step artifacts, or a mid-step status report.
+- AC3: `gates.md` states that under `autoMode` a green wave is not a stop and progress is written only to machine surfaces (`telemetry.jsonl`, state handoffs, `## Gate history`).
+- AC4: `ws-spec-to-pr/SKILL.md` references the canonical `gates.md` `autoMode` stop-conditions section and does not restate a second stop-condition list.
+- AC5: `ws-spec-to-pr-lite/SKILL.md` references the same canonical section and does not restate a second stop-condition list.
+- AC6: Both orch SKILLs keep step-boundary index-0 auto-selection in force and scope the no-yield rule to internal checkpoints inside a step.
+- AC7: `ws-check-workflows` `check_workflows.cjs` asserts that an `autoMode`-ON run is unattended: the internal-checkpoint no-yield clause is present and the canonical stop list is referenced rather than duplicated.
+- AC8: `check_workflows.cjs` asserts that an `autoMode`-OFF run gates at every step boundary, or at the configured `defaults.gateGranularity` (`step` vs `phase`), and reports a critical finding when that contract is absent.
+- AC9: `ws-check-workflows` `evals/evals.json` carries cases for `autoMode` ON (unattended internal checkpoints) and `autoMode` OFF (per-step or per-granularity gating).
+
+## Original Issue Context
+
+check if it was already fixed
+
+autoMode (full auto) currently means "auto-select the recommended gate option and proceed across step boundaries without halting" (ws-spec-to-pr SKILL.md, setup.md). It says nothing about turn boundaries / internal checkpoints, so agents still stop mid-workflow to report progress and wait for the next user prompt.
+
+Reproduction context
+During a full-auto ws-spec-to-pr run on a large multi-AC spec (multi-node implementation DAG, ship intent):
+
+Steps 0–3 (classify, plan, interview, exec DAG) flowed without prompts — autoMode worked there.
+Inside Step 4 the agent finished the first implementation wave, verified green on the full suite, then stopped to report instead of continuing to the next wave.
+The operator had to ask whether the run was completed and what had happened — they expected unattended execution through ship.
+No gate fired. The halt was purely the agent treating end-of-wave as a reporting point. That is the gap: the skill never forbids yielding at internal checkpoints under autoMode.
+
+Proposal
+Amend ws-spec-to-pr + ws-spec-to-pr-lite SKILL.md and ws-shared/runtime/gates.md § autoMode:
+
+When autoMode: true, the orchestrator must not yield control at internal checkpoints (end of DAG node/wave, green verification, end of step artifacts). Continue across turns until status: completed/failed or a real blocker.
+Progress reporting goes to machine surfaces (telemetry.jsonl, state handoffs, ## Gate history), not user turns.
+Enumerate the only valid stop conditions under autoMode: red suite the agent cannot fix after reasonable retries, destructive-gate requiring explicit human confirm (backup/merge/delete), missing credentials/network, or status: completed.
+A green wave is never a stop reason — it is evidence for the next wave.
+Acceptance
+Re-running the same full-auto invocation proceeds Step 0 → Step 9 with zero user prompts except real blockers.
+gates.md documents the stop-condition list; both orchs reference it (no duplicated contract).
+
+### Prior Work Sweep
+
+Sweep run 2026-09-29 (`sweep_prior_work.cjs --issue 458 --keywords autoMode "internal checkpoint" unattended orchestrator`):
+
+- Related PRs: PR #370 (Node-22 runtime, MERGED) and PR #270 (release, MERGED) matched the `#458` search but are unrelated. No open PR exists for issue 458.
+- Related commits (same files): `3eb03641` "feat(restore-automode-continuous-orchestration): keep autoMode unattended through ship" sets the step-boundary chaining baseline; `34f49a75`, `ffae2209`, and `dace1b7d` also touched `gates.md` and both orch SKILLs.
+- Current working tree already carries an uncommitted implementation of the internal-checkpoint half of this contract (`gates.md` § autoMode stop conditions plus both orch SKILLs). The spec normalizes that contract and its test coverage.
+
+### Design Intent
+
+Modification of the existing `autoMode` contract, not greenfield. US-0059 / US-0141 already established continuous orchestration **across step boundaries**; this spec extends the same no-voluntary-yield rule to internal checkpoints **inside** a step, without weakening step-boundary index-0 auto-selection or the host-forced `checkpoint` / `pause-turn` fallback that `ws-monitor` depends on. The canonical stop list is centralized in `gates.md` so the two orchestrators cannot drift.
+
+## Notes
+
+- The host-forced turn end remains distinct from an orchestrator-chosen halt: on a real platform-forced turn end, the run still emits `checkpoint` + `pause-turn`; that is not an internal-checkpoint yield.
+- Related completed specs: `0062-us-275` (autoMode must not skip planning), `0125-us-412-413-liveness-checkpoints`, `0141-restore-automode-continuous-orchestration`.
+- Observe long runs with `ws-monitor --watch --until-terminal`.
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Changing state schema or the `turnPause` / `stepCheckpoints` fields | US-412/413 machinery is unchanged and still required |
+| Waiving planning Steps 1–3 in `autoMode` | US-0062 invariant unchanged |
+| Baton / `step_coordinator.cjs` worker-turn semantics | Separate multi-CLI feature (`ws-spec-to-pr-distributed`) |
+| Controlling host turn limits | The harness cannot force an IDE to keep a turn open |
+
+## Assumptions & Open Questions
+
+| Assumption | Chosen default | Rationale | Confirmed |
+|------------|----------------|-----------|-----------|
+| Canonical stop list owner | `gates.md` § autoMode stop conditions | Both orchs reference one list; prevents drift | y |
+| Green wave semantics | Evidence for the next wave, never a stop | Matches operator expectation of unattended execution | y |
+| Host-forced turn end | Still uses `checkpoint` + `pause-turn` | Preserves `ws-monitor` stall-vs-pause accuracy | y |
+| Check-workflows coverage | Assertions in `check_workflows.cjs` plus evals | Executable regression guard for both autoMode states | y |
+
+## Definition of Ready (DoR)
+
+| Readiness Item | Requirement | Verification Method |
+|----------------|-------------|---------------------|
+| Scope bounded | Only `gates.md`, both orch SKILLs, and `ws-check-workflows` change | Review implementation diff |
+| Criteria atomic | Each AC maps to one file or one validator assertion | AC-to-artifact cross-check |
+| Stop list complete | Red suite, destructive confirm, missing credentials/network, terminal status only | Read `gates.md` § autoMode stop conditions |
+| Observability present | Progress surfaces named (`telemetry.jsonl`, state handoffs, `## Gate history`) | Grep the canonical section |
+| Zero open blockers | No unresolved product choice; stop list is exhaustive | Assumptions table confirmed |
+
+## Validation & Observation Notes
+
+### Telemetry & Observable Signals
+
+- `node .agents/skills/ws-spec-format/scripts/validate_spec.cjs --mode=authoring .agents/specs/pending/0151-us-458.spec.md` exits 0.
+- `node .agents/skills/ws-check-workflows/scripts/check_workflows.cjs` exits 0 (no new critical findings).
+- `gates.md` contains a single `autoMode stop conditions` section; both orch SKILLs link to it and contain no second stop list.
+
+### Negative & Failing Test Scenarios
+
+- Introducing a second copy of the stop-condition list in either orch SKILL fails the `ws-check-workflows` reference assertion.
+- Removing the internal-checkpoint no-yield clause from `gates.md` fails the `autoMode`-ON assertion in `check_workflows.cjs`.
+- Gating only under `autoMode: true` so `autoMode: false` silently runs unattended fails the `autoMode`-OFF assertion in `check_workflows.cjs`.

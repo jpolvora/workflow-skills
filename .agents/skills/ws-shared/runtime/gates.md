@@ -53,6 +53,25 @@ In interactive execution mode (normal mode), the turn boundary depends on how th
 
 **Orchestrator obligation:** both orchestrators resolve `defaults.gateGranularity` (`step` default, or `phase`). In **normal** mode, `step` runs `user-gate` at each step boundary; `phase` runs at most five blocking gates in a standard run: entry, plan approval, implementation approval, delivery, and fix-PR. Boundaries inside a phase advance after validation and state persistence without another blocking prompt. In **`autoMode`**, `gateGranularity` does not present a gate: index 0 is applied and the next step is dispatched in the same turn, including the Step 5 → Step 6 boundary after a passing verify score. Asking the user to continue, printing the model-switch banner as a question, or ending the turn after `finish --step 5` is a stall. Hard stops, required save points, review findings, test failures, and safety checks never become implicit approvals.
 
+### autoMode stop conditions (canonical; both orchs)
+
+Step-boundary gate auto-selection (index 0 at every `user-gate`) stays in force and is **not** replaced by this rule. This section forbids yielding at **internal checkpoints** inside a step or between waves.
+
+When `defaults.autoMode: true`, the orchestrator **must not** end the user turn to narrate progress or wait for confirmation at internal checkpoints — including end of a DAG node/wave, a green verification or build, end of step artifacts, or a mid-step status report. Keep executing until a listed stop below. Write progress to machine surfaces only: `telemetry.jsonl`, state handoffs (`state.handoffs` / `{workflow-id}.state.json`), and `## Gate history` — never a user-facing halt.
+
+**Only valid autoMode stops:**
+
+| Stop | Notes |
+|------|--------|
+| Suite stays red after allowed retries | After the retries the skill already allows; do not invent endless loops |
+| Destructive confirmation already required by the product | Backup, merge, or delete that the product/skill already requires a human to approve |
+| Missing credentials or network | Blocks the next required command |
+| Workflow `status: completed` or `status: failed` | Terminal workflow outcomes |
+
+**A green wave is not a stop.** A successful build, a passing wave/suite, or a mid-step status report is evidence for the next wave — never a reason to yield. Host-forced turn end (platform limit) still uses checkpoint + `pause-turn` per the `autoMode` exception above; that is not an orchestrator-chosen checkpoint halt.
+
+Both [`ws-spec-to-pr`](../../ws-spec-to-pr/SKILL.md) and [`ws-spec-to-pr-lite`](../../ws-spec-to-pr-lite/SKILL.md) MUST reference this section and MUST NOT copy a second stop-condition list.
+
 ---
 
 ## Universal step controls (every step boundary)
