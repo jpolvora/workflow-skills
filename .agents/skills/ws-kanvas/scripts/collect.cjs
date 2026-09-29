@@ -92,8 +92,8 @@ function toDisplayPath(cwd, file) {
   return file.split(path.sep).join('/');
 }
 
-/** Discover specs of record: every `*.spec.md` under specsDir (recursive). */
-function discoverSpecs(specsDir, cwd) {
+/** Absolute-path spec discovery shared by discoverSpecs and readSpecMarkdown. */
+function discoverSpecFiles(specsDir) {
   const specs = [];
   const seenSlugs = new Set();
   for (const file of listFilesRecursive(specsDir, '.spec.md')) {
@@ -109,11 +109,70 @@ function discoverSpecs(specsDir, cwd) {
       slug,
       title: typeof data.title === 'string' && data.title ? data.title : slug,
       acCount,
-      file: toDisplayPath(cwd, file),
+      file,
     });
   }
   specs.sort((a, b) => (a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0));
   return specs;
+}
+
+/** Discover specs of record: every `*.spec.md` under specsDir (recursive). */
+function discoverSpecs(specsDir, cwd) {
+  return discoverSpecFiles(specsDir).map((spec) => ({ ...spec, file: toDisplayPath(cwd, spec.file) }));
+}
+
+/**
+ * Containment probe: true only when `file` sits inside `specsDir` both lexically
+ * and after realpath resolution (refuses symlinked/junctioned escapes). Never reads
+ * the file and never throws for missing/unresolvable inputs (those return false).
+ */
+function isInsideSpecsDir(specsDir, file) {
+  let base;
+  try {
+    base = path.resolve(specsDir);
+  } catch {
+    return false;
+  }
+  const target = path.resolve(base, path.relative(base, path.resolve(file)));
+  if (target !== base && !target.startsWith(base + path.sep)) return false;
+  let realRoot;
+  let realTarget;
+  try {
+    realRoot = fs.realpathSync(base);
+    realTarget = fs.realpathSync(path.resolve(file));
+  } catch {
+    return false;
+  }
+  return realTarget === realRoot || realTarget.startsWith(realRoot + path.sep);
+}
+
+/**
+ * Read one spec of record by slug. Typed lookup: `{ slug, path, markdown }` or
+ * `{ error: { code, slug, message } }` (`not-found`, `spec-unavailable`,
+ * `outside-specs-dir`). The file is re-derived from discovery by slug (never from a
+ * caller-supplied path) and is never read when containment fails. Never throws.
+ */
+function readSpecMarkdown({ specsDir, plansDir, indexPath } = {}, slug) {
+  if (!isValidSlug(slug)) {
+    return { error: { code: 'not-found', slug: String(slug), message: 'Unknown card slug.' } };
+  }
+  const cwd = process.cwd();
+  const resolvedSpecs = specsDir ? path.resolve(specsDir) : path.join(cwd, '.agents', 'specs');
+  const board = collectBoard({ specsDir, plansDir, indexPath });
+  const found = getCard(board, slug);
+  if (found.error) return found;
+  const match = discoverSpecFiles(resolvedSpecs).find((spec) => spec.slug === slug) || null;
+  if (!match) {
+    return { error: { code: 'spec-unavailable', slug, message: 'Spec file is unavailable.' } };
+  }
+  if (!isInsideSpecsDir(resolvedSpecs, match.file)) {
+    return { error: { code: 'outside-specs-dir', slug, message: 'Spec path escapes the specs directory.' } };
+  }
+  const text = readFileOrNull(match.file);
+  if (text === null) {
+    return { error: { code: 'spec-unavailable', slug, message: 'Spec file is unavailable.' } };
+  }
+  return { slug, path: toDisplayPath(cwd, match.file), markdown: text.replace(/^\uFEFF/, '') };
 }
 
 /**
@@ -383,6 +442,9 @@ module.exports = {
   COLUMNS,
   readPlanSignals,
   discoverSpecs,
+  discoverSpecFiles,
+  isInsideSpecsDir,
+  readSpecMarkdown,
   specRefToSlug,
   SLUG_RE,
 };
