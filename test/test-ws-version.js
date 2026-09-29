@@ -209,8 +209,15 @@ function testSkillRegisteredInDependencyGraph() {
   const workflowsRt = runtime.packages?.workflows?.skills || [];
   assert(workflowsBin.includes('ws-version'), 'bin workflows package lists ws-version');
   assert(workflowsRt.includes('ws-version'), 'runtime workflows package lists ws-version');
-  assert(Array.isArray(bin.dependencies['ws-version']), 'bin dependencies.ws-version is []');
-  assert(Array.isArray(runtime.dependencies['ws-version']), 'runtime dependencies.ws-version is []');
+  assert(
+    Array.isArray(bin.dependencies['ws-version']) && bin.dependencies['ws-version'].length === 0,
+    'bin dependencies.ws-version is []',
+  );
+  assert(
+    Array.isArray(runtime.dependencies['ws-version']) &&
+      runtime.dependencies['ws-version'].length === 0,
+    'runtime dependencies.ws-version is []',
+  );
 }
 
 function testOutputIsShortAndReadOnly() {
