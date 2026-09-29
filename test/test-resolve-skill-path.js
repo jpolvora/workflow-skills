@@ -55,6 +55,15 @@ assert(missing.status !== 0, 'V3:missing should fail');
 assert(missing.stderr.includes('missing skill path'), missing.stderr);
 assert(!fs.existsSync(path.join(repo, '.agents/skills/ws-missing')), 'AC4 no junction');
 
+const outside = path.join(tmp, 'outside');
+fs.mkdirSync(outside);
+fs.writeFileSync(path.join(outside, 'SKILL.md'), 'secret\n');
+const evil = path.join(repo, '.agents/skills/ws-evil');
+fs.symlinkSync(outside, evil, process.platform === 'win32' ? 'junction' : 'dir');
+const dirLink = run(repo, '.agents/skills/ws-evil/SKILL.md');
+assert(dirLink.status !== 0, 'directory symlink should fail');
+assert(dirLink.stderr.includes('refusing symlink'), dirLink.stderr);
+
 const traversal = run(repo, '../outside/SKILL.md');
 assert(traversal.status !== 0, 'V4:traversal should fail');
 assert(traversal.stderr.includes('rejected skill path'), traversal.stderr);

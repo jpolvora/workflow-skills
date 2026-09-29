@@ -26,6 +26,25 @@ function reject(rel) {
   throw error;
 }
 
+function refuseLinkedSegment(base, segments, rel) {
+  let current = base;
+  for (const segment of segments) {
+    current = path.join(current, segment);
+    let stat;
+    try {
+      stat = fs.lstatSync(current);
+    } catch (error) {
+      if (error && error.code === 'ENOENT') return;
+      throw error;
+    }
+    if (stat.isSymbolicLink()) {
+      const linkError = new Error(`refusing symlink for skill path: ${rel}`);
+      linkError.code = 'ERESOLVE_SKILL_LINK';
+      throw linkError;
+    }
+  }
+}
+
 function resolveSkillFile(repoRoot, repoRelativePath, options = {}) {
   const rel = String(repoRelativePath || '').replace(/\\/g, '/').trim();
   if (!rel || path.isAbsolute(rel) || path.win32.isAbsolute(rel)) reject(rel);
@@ -36,14 +55,8 @@ function resolveSkillFile(repoRoot, repoRelativePath, options = {}) {
   const local = path.resolve(root, ...segments);
   if (!contained(root, local)) reject(rel);
 
-  if (fs.existsSync(local)) {
-    if (fs.lstatSync(local).isSymbolicLink()) {
-      const error = new Error(`refusing symlink for skill path: ${rel}`);
-      error.code = 'ERESOLVE_SKILL_LINK';
-      throw error;
-    }
-    return { root: 'local', path: local };
-  }
+  refuseLinkedSegment(root, segments, rel);
+  if (fs.existsSync(local)) return { root: 'local', path: local };
 
   const globalRoot = globalSkillsRoot(options);
   const globalSegments = rel.startsWith('.agents/skills/')
@@ -51,6 +64,7 @@ function resolveSkillFile(repoRoot, repoRelativePath, options = {}) {
     : segments;
   const globalPath = path.resolve(globalRoot, ...globalSegments);
   if (!contained(globalRoot, globalPath)) reject(rel);
+  refuseLinkedSegment(globalRoot, globalSegments, rel);
   if (!fs.existsSync(globalPath)) {
     const error = new Error(`missing skill path: ${rel}`);
     error.code = 'ERESOLVE_SKILL_MISSING';
