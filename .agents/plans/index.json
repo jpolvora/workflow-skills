@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 16,
-  "generatedAt": "2026-09-29T19:19:10Z",
+  "revision": 8,
+  "generatedAt": "2026-09-29T20:08:07Z",
   "workflows": [
     {
       "workflowId": "reduce-spec-to-pr-tokens-20260927T043013Z",
@@ -118,11 +118,22 @@
       "slug": "us-459",
       "pipeline": "standard",
       "statePath": ".agents/plans/us-459/wf-us-459.state.md",
-      "stateSha256": "f78535ae7d515c3d3de850c2e22db01e2480bbd5942d45c8f4681bdbfc320863",
+      "stateSha256": "ae582838f81a3758d5899050e1b8eba0dbcbef9fa21160d7369a99099e524a82",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-29T19:34:55Z",
+      "runPath": ".agents/plans/us-459/wf-us-459.state.json"
+    },
+    {
+      "workflowId": "wf-us-461",
+      "slug": "us-461",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/us-461/wf-us-461.state.md",
+      "stateSha256": "0c8c4f4d0674a2f1ba18562da573ea720e47a344691992b4ca114cb4f11b5be1",
       "status": "active",
       "currentStep": 8,
-      "updatedAt": "2026-09-29T19:19:10Z",
-      "runPath": ".agents/plans/us-459/wf-us-459.state.json"
+      "updatedAt": "2026-09-29T20:08:07Z",
+      "runPath": ".agents/plans/us-461/wf-us-461.state.json"
     },
     {
       "workflowId": "ws-spec-to-pr-distributed",

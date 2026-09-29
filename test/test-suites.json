@@ -186,6 +186,9 @@
       "test/test-kanvas-drag-drop.js"
     ],
     [
+      "test/test-kanvas-spec-viewer.js"
+    ],
+    [
       "test/test-check-workflows-automode.js"
     ]
   ],

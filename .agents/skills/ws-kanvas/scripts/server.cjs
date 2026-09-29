@@ -13,7 +13,7 @@ const fs = require('fs');
 const http = require('node:http');
 const path = require('node:path');
 
-const { collectBoard, getCard, isValidSlug } = require('./collect.cjs');
+const { collectBoard, getCard, isValidSlug, readSpecMarkdown } = require('./collect.cjs');
 const { moveCard } = require('./move.cjs');
 
 const DEFAULT_PORT = 4173;
@@ -273,6 +273,20 @@ function createServer(roots) {
       }
       const board = collectBoard({ specsDir: roots.specsDir, plansDir: roots.plansDir, indexPath: roots.index });
       const result = getCard(board, slug);
+      if (result.error) {
+        sendJson(res, 404, result);
+        return;
+      }
+      sendJson(res, 200, result);
+      return;
+    }
+    if (url.pathname === '/api/spec') {
+      const slug = url.searchParams.get('slug') || '';
+      if (!isValidSlug(slug)) {
+        sendJson(res, 400, { error: { code: 'not-found', message: 'Unknown card slug.' } });
+        return;
+      }
+      const result = readSpecMarkdown({ specsDir: roots.specsDir, plansDir: roots.plansDir, indexPath: roots.index }, slug);
       if (result.error) {
         sendJson(res, 404, result);
         return;

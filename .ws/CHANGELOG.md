@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-29 16:12] Agent: ws-spec-to-pr
+- **Prompt**: Execute standard Spec-to-PR for us-461: kanvas modal spec-content viewer
+- **Done**: Read-only GET /api/spec endpoint plus escape-first Markdown renderer and popup toggle in ws-kanvas; bumped 0.5.17, regenerated integrity, synced site/wiki/index.PRD
+- **Result**: Verify 10/10, review clean, kanvas suites plus npm run test 145/145, harness 0 findings; PR opened develop into main
+
 ### [2026-09-29 15:19] Agent: ws-spec-to-pr
 - **Prompt**: Execute standard Spec-to-PR for us-459: ws-kanvas board phase color coding and theme-aware surfaces
 - **Done**: CSS-only restyle of ws-kanvas refs/board.html <style> block: six phase accents, theme-aware Canvas/CanvasText surfaces for column/card/drop-target/popup; bumped 0.5.16, regenerated integrity, synced site/wiki/index.PRD

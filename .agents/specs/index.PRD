@@ -203,7 +203,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] Resolve missing local skills from the global install; do not junction them into the repo (`spec: pending/0150-us-457.spec.md`)
 - [ ] autoMode should mean unattended: no yield at internal checkpoints (`spec: pending/0151-us-458.spec.md`)
 - [x] ws-kanvas board: add phase color coding and replace hardcoded grey/transparent styling (`spec: completed/0152-us-459.spec.md`)
-- [ ] kanvas modal option to show full spec content in .md rendered (`spec: pending/0153-us-461.spec.md`)
+- [x] kanvas modal option to show full spec content in .md rendered (`spec: completed/0153-us-461.spec.md`)
 
 
 
@@ -520,7 +520,7 @@ All Next-specs closed.
 
 | 157 | `us-459` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-kanvas board: add phase color coding and replace hardcoded grey/transparent styling |
 
-| 158 | `us-461` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | kanvas modal option to show full spec content in .md rendered |
+| 158 | `us-461` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | kanvas modal option to show full spec content in .md rendered |
 
 ## 9. Inbox
 
@@ -532,6 +532,7 @@ All Next-specs closed.
 | Date | Slug | Title | PR / Commit |
 |------|------|-------|-------------|
 | 2026-09-29 | `us-459` | ws-kanvas board: add phase color coding and replace hardcoded grey/transparent styling | `d6b451b7` delivery commit |
+| 2026-09-29 | `us-461` | kanvas modal option to show full spec content in .md rendered | `55cf318f` delivery commit |
 | 2026-09-28 | `pre-ship-doc-sync` | Pre-ship documentation-sync gate (configurable) | [PR #453](https://github.com/jpolvora/workflow-skills/pull/453), `9d840fe4` |
 | 2026-09-28 | `kanvas-board-drag-drop` | Kanvas board phase 2 — drag-and-drop columns with status update on move | [PR #452](https://github.com/jpolvora/workflow-skills/pull/452) |
 | 2026-09-28 | `us-446` | ws-ship-pr/scripts/verify.cjs: skip empty verification aliases instead of executing them | `412e3f37` delivery commit |

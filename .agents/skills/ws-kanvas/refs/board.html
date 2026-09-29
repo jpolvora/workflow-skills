@@ -37,6 +37,13 @@ header button { margin-left: auto; }
 #popup dd { margin: 0; overflow-wrap: anywhere; }
 #popup .close { float: right; }
 #popup .move-row { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+#popup .spec-row { margin-top: 16px; }
+#spec-view { margin-top: 8px; max-height: 40vh; overflow: auto; border: 1px solid CanvasText; border-radius: 6px; padding: 8px 12px; }
+#spec-view[hidden] { display: none; }
+#spec-view pre { overflow: auto; background: color-mix(in srgb, CanvasText 6%, Canvas); padding: 8px; border-radius: 4px; }
+#spec-view pre code { background: transparent; padding: 0; }
+#spec-view code { background: color-mix(in srgb, CanvasText 6%, Canvas); padding: 1px 4px; border-radius: 3px; }
+#spec-error { font-weight: bold; }
 #error { color: inherit; font-weight: bold; }
 @media (max-width: 1100px) { #board { grid-template-columns: repeat(3, minmax(180px, 1fr)); } }
 @media (max-width: 640px) { #board { grid-template-columns: 1fr; } }
@@ -71,6 +78,96 @@ header button { margin-left: auto; }
   var columnIds = ['backlog', 'sprint', 'development', 'staging', 'production', 'abandoned'];
   var popupCard = null;
 
+  // __KANVAS_MD_RENDERER_START__
+  // Synchronous pure Markdown subset renderer (string in, HTML string out).
+  // Covers headings, emphasis, inline code, fenced code blocks, links, unordered
+  // and ordered lists, and paragraphs. HTML-escapes input before formatting; link
+  // URLs pass a scheme allowlist. Self-contained (own escaper) so tests can extract
+  // this block between the markers and evaluate it without a DOM.
+  function renderMarkdown(src) {
+    var text = String(src === null || src === undefined ? '' : src).replace(/\r\n?/g, '\n');
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    function isSafeUrl(url) {
+      var scheme = String(url).match(/^([a-zA-Z][a-zA-Z0-9+.-]*):/);
+      if (!scheme) return true;
+      var name = scheme[1].toLowerCase();
+      return name === 'http' || name === 'https' || name === 'mailto';
+    }
+    var fences = [];
+    text = text.replace(/```([^\n]*)\n([\s\S]*?)(?:```|\$)/g, function (m, lang, code) {
+      fences.push({ lang: String(lang).trim(), code: String(code).replace(/\n$/, '') });
+      return '\n\x00F' + (fences.length - 1) + '\x00\n';
+    });
+    var spans = [];
+    text = text.replace(/`([^`\n]+)`/g, function (m, code) {
+      spans.push(String(code));
+      return '\x00C' + (spans.length - 1) + '\x00';
+    });
+    text = escapeHtml(text);
+    function inline(s) {
+      s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, function (m, label, url) {
+        if (!isSafeUrl(url)) return label;
+        return '<a href="' + url + '">' + label + '</a>';
+      });
+      s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      s = s.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+      s = s.replace(/\x00C(\d+)\x00/g, function (m, i) {
+        return '<code>' + escapeHtml(spans[Number(i)]) + '</code>';
+      });
+      return s;
+    }
+    var html = [];
+    var list = null;
+    function closeList() {
+      if (list) { html.push(list === 'ul' ? '</ul>' : '</ol>'); list = null; }
+    }
+    var lines = text.split('\n');
+    var para = [];
+    function flushPara() {
+      if (para.length) { html.push('<p>' + inline(para.join(' ')) + '</p>'); para = []; }
+    }
+    lines.forEach(function (line) {
+      var fence = line.match(/^\x00F(\d+)\x00$/);
+      if (fence) {
+        flushPara(); closeList();
+        var f = fences[Number(fence[1])];
+        var cls = f.lang ? ' class="language-' + escapeHtml(f.lang) + '"' : '';
+        html.push('<pre><code' + cls + '>' + escapeHtml(f.code) + '</code></pre>');
+        return;
+      }
+      var heading = line.match(/^(#{1,6})\s+(.*)$/);
+      if (heading) {
+        flushPara(); closeList();
+        var level = heading[1].length;
+        html.push('<h' + level + '>' + inline(heading[2]) + '</h' + level + '>');
+        return;
+      }
+      var ul = line.match(/^(?:-|\*)\s+(.*)$/);
+      if (ul) {
+        flushPara();
+        if (list !== 'ul') { closeList(); html.push('<ul>'); list = 'ul'; }
+        html.push('<li>' + inline(ul[1]) + '</li>');
+        return;
+      }
+      var ol = line.match(/^\d+\.\s+(.*)$/);
+      if (ol) {
+        flushPara();
+        if (list !== 'ol') { closeList(); html.push('<ol>'); list = 'ol'; }
+        html.push('<li>' + inline(ol[1]) + '</li>');
+        return;
+      }
+      if (/^\s*$/.test(line)) { flushPara(); closeList(); return; }
+      para.push(line.trim());
+    });
+    flushPara(); closeList();
+    return html.join('\n');
+  }
+  // __KANVAS_MD_RENDERER_END__
+  if (typeof window !== 'undefined') { window.__kanvasRenderMarkdown = renderMarkdown; }
+
   function esc(text) {
     return String(text === null || text === undefined ? '' : text)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;')
@@ -88,6 +185,34 @@ header button { margin-left: auto; }
     if (links.plan) parts.push('plan: ' + esc(links.plan));
     if (links.index) parts.push('index: ' + esc(links.index));
     return parts.length ? parts.join('<br>') : esc('none');
+  }
+
+  function specSection() {
+    return '<div class="spec-row">' +
+      '<button id="spec-toggle" type="button" aria-expanded="false" aria-controls="spec-view">Show spec</button>' +
+      '<div id="spec-view" hidden></div>' +
+      '</div>';
+  }
+
+  function fetchSpec(slug) {
+    var view = document.getElementById('spec-view');
+    view.hidden = false;
+    view.textContent = 'Loading spec\u2026';
+    fetch('api/spec?slug=' + encodeURIComponent(slug)).then(function (res) {
+      return res.json().then(function (payload) { return { status: res.status, payload: payload }; });
+    }).then(function (result) {
+      var viewNow = document.getElementById('spec-view');
+      if (!viewNow) return;
+      if (result.status >= 200 && result.status < 300 && result.payload && result.payload.markdown !== undefined) {
+        viewNow.innerHTML = renderMarkdown(result.payload.markdown);
+        return;
+      }
+      var err = (result.payload && result.payload.error) || {};
+      viewNow.innerHTML = '<p id="spec-error">Spec unavailable: ' + esc(err.message || err.code || 'unknown error') + '</p>';
+    }).catch(function () {
+      var viewNow = document.getElementById('spec-view');
+      if (viewNow) viewNow.innerHTML = '<p id="spec-error">Spec unavailable: network error</p>';
+    });
   }
 
   function moveForm(card) {
@@ -114,13 +239,28 @@ header button { margin-left: auto; }
       row('Plan status', esc(card.planStatus === null ? 'none' : card.planStatus)) +
       row('Evidence', esc(card.evidence === null ? 'none' : card.evidence)) +
       row('Links', linkList(card.links)) +
-      '</dl>' + moveForm(card);
+      '</dl>' + moveForm(card) + specSection();
     var sel = document.getElementById('move-target');
     if (sel) sel.value = card.column;
     var btn = document.getElementById('move-confirm');
     if (btn) btn.addEventListener('click', function () {
       var target = document.getElementById('move-target').value;
       postMove(card.slug, target);
+    });
+    var specToggle = document.getElementById('spec-toggle');
+    if (specToggle) specToggle.addEventListener('click', function () {
+      var view = document.getElementById('spec-view');
+      var expanded = specToggle.getAttribute('aria-expanded') === 'true';
+      if (expanded) {
+        view.hidden = true;
+        view.innerHTML = '';
+        specToggle.setAttribute('aria-expanded', 'false');
+        specToggle.textContent = 'Show spec';
+      } else {
+        specToggle.setAttribute('aria-expanded', 'true');
+        specToggle.textContent = 'Hide spec';
+        fetchSpec(card.slug);
+      }
     });
     backdrop.classList.add('open');
     document.getElementById('popup-close').focus();
