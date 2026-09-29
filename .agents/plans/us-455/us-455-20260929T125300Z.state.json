@@ -484,7 +484,7 @@
   "currentModel": "grok-4.7-low",
   "currentStep": 9,
   "dryRun": false,
-  "endedAt": "2026-09-29T13:16:14Z",
+  "endedAt": "2026-09-29T13:16:45Z",
   "fullMode": true,
   "handoffs": {
     "0": {
@@ -673,10 +673,12 @@
   },
   "modelsPreset": "cursor",
   "nextAction": "Run step 9",
+  "prNumber": "456",
+  "prUrl": "https://github.com/jpolvora/workflow-skills/pull/456",
   "preExistingDirty": [],
-  "revision": 13,
+  "revision": 14,
   "scoreAndRefine": false,
-  "shipStatus": "pending",
+  "shipStatus": "pr-open",
   "skipQualityGates": false,
   "skipTesting": false,
   "skipTests": false,
@@ -913,7 +915,7 @@
           "deleted": [],
           "modified": []
         },
-        "finishedAt": "2026-09-29T13:16:14Z",
+        "finishedAt": "2026-09-29T13:16:45Z",
         "label": "Ship",
         "model": "grok-4.7-low",
         "promptTokens": 0,

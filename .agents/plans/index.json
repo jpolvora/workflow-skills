@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 13,
-  "generatedAt": "2026-09-29T13:16:14Z",
+  "revision": 14,
+  "generatedAt": "2026-09-29T13:16:45Z",
   "workflows": [
     {
       "workflowId": "reduce-spec-to-pr-tokens-20260927T043013Z",
@@ -96,10 +96,10 @@
       "slug": "us-455",
       "pipeline": "standard",
       "statePath": ".agents/plans/us-455/us-455-20260929T125300Z.state.md",
-      "stateSha256": "8a8abf194f81b32a6e2cdfee786a5e09b79d905827759237a3378af447dc061a",
+      "stateSha256": "03c2444befdef6a568f5ba39dca87bd56ea881003021a8a6c383c355f6b1d1e6",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-09-29T13:16:14Z",
+      "updatedAt": "2026-09-29T13:16:45Z",
       "runPath": ".agents/plans/us-455/us-455-20260929T125300Z.state.json"
     },
     {
