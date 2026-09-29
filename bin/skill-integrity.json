@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "ee004d19320006e3e59ba5b45adc1d776834e6efa6adef3a2b8c6dd59727d3b9",
+  "fullPackageDigest": "a11be449e8f466232f955f8d28deec9152af73bbfb03129129836a35768b675a",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -46,6 +46,7 @@
       "runtime/scripts/resolve_consumer_root.cjs": "cbfcb033f8c921ea5eeb867e77e5f7fb3ef262be403f482fcf21a870495b80d7",
       "runtime/scripts/resolve_hub_root.cjs": "b77afe730911aaa8543e4ccc1ba9e502a31f4d37378cb6d32e0d17608870c8ff",
       "runtime/scripts/resolve_proof_of_work.cjs": "ff2f3441d987885154447eeb196619cca7e099054f9ccba36ca340ea2fd3f939",
+      "runtime/scripts/resolve_skill_path.cjs": "bb4753dcb9d91cfd1a110eeb44e3121d3a6bb927019e0fd80d018f6c464f8945",
       "runtime/scripts/retired_artifacts.cjs": "075a658a19314bd039a406f4651a0e1f9eedd01a4e253b7aca7d02bd686633de",
       "runtime/scripts/scan_stack_invariants.cjs": "f186e197040142066fa7e78b563b11a171c8dc5a62c8026a135457fa82faf5e7",
       "runtime/scripts/step_baton.cjs": "d18f4bd9cf4720c6bf5d3322c8a143a64c94593cce480f4577341f294645d071",
@@ -59,7 +60,7 @@
       "runtime/stacks/typescript-node.md": "8b6290e02dbfdf7d8ad5221627fb602bb0193e83f04853456897af5c1ec962ea",
       "runtime/step-artifact.schema.json": "85a1674590d900df2bbbf818d9f4a4c5ccaf004bdc4a1523fe2c28e4dab554a2",
       "runtime/telemetry.schema.json": "21a577e8fe956cd65fedee4fbb3b79b74eb078030f37c5ceaa72a7933d274b8a",
-      "runtime/tools.md": "fc7ec77f5b0751922adc14051c543d76d9cac87e2a5baf8373a906a8eb961650",
+      "runtime/tools.md": "53a4c0a092ff946dccd72f235f1f2fa3ab3be9566543f0581e0d4db33f783c16",
       "runtime/workflow-state.schema.json": "dc43c2212dbf8b0544e12f5f634b554697d373a6e2b95808536597eb2a69f250",
       "templates/CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
       "templates/MEMORY.md.template": "1a604cb2184c9c54cfb24a2da547d3664bc5d4d8e713ffa937c3c3083c21340d",
@@ -67,7 +68,7 @@
       "templates/config.json.example": "7065f80acb4d6052a3db5c993295af9865798aee1ebb12db0e1583181368321a",
       "version.json": "12484abe2cbe1f23464649037e50fa004d49be4a619efd1bdddbbc8f1edb799f"
     },
-    "skillDigest": "d46972b48b0278b0bf02b085885925c281da41e383667dd438e6be643043ccf0"
+    "skillDigest": "f8df836743bb440d23f2703ec028d32b56fbfc0cf3a45bfc28f3d5def75b437c"
   },
   "package": {
     "files": {
