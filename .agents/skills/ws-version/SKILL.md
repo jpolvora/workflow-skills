@@ -3,7 +3,7 @@ name: ws-version
 disable-model-invocation: true
 description: >-
   Read-only install snapshot: loaded skill directory, global vs project-local
-  scope, package semver from ws-shared/version.json, and stored hub path tokens.
+  scope, package semver from .agents/skills/ws-shared/version.json, and stored hub path tokens.
   Trigger on /ws-version or version.
 invocation_names:
   - ws-version
