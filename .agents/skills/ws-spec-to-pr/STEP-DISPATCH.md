@@ -80,14 +80,14 @@ Eval vs refined spec else `step-00`; publish integer 0–10. Off-tree alias fail
 
 `parallelVerifyReview:true` → G2 after Step 4, concurrent read-only 5+6, merge via `merge_verify_review.cjs`; default `false` sequential.
 
-Below `defaults.minVerifyScore` → `scoreAndRefine` (max 3): write `score-analysis.md`, re-dispatch below-bar tasks, re-verify; Pause after 3. At/above with flag → Pass 1 gate (Proceed / Accept As-Is / Selective); role `scoreAndRefine` runs the wide-context second pass per [`gates.md`](../ws-shared/runtime/gates.md) § Score & Refine — Option 1 runs even when zero tasks are flagged (`dispatch --substep scoreAndRefine`).
+Below `defaults.minVerifyScore` → `scoreAndRefine` (max 3): write `score-analysis.md`, re-dispatch below-bar tasks, re-verify; Pause after 3. At/above with flag, **normal mode only** → Pass 1 gate (Proceed / Accept As-Is / Selective); role `scoreAndRefine` runs the wide-context second pass per [`gates.md`](../ws-shared/runtime/gates.md) § Score & Refine — Option 1 runs even when zero tasks are flagged (`dispatch --substep scoreAndRefine`).
 
 | Score | Behavior |
 |-------|----------|
-| ≥ `minVerifyScore` | Complete; Reach-10 offer; G2-code; dispatch 6 |
+| ≥ `minVerifyScore` | Complete; Reach-10 offer (normal mode); G2-code; dispatch 6 |
 | below | Refine until ≥ min (max 3, then Pause). Never Advance below. |
 
-`autoMode`: auto-run rounds; never finish/dispatch 6 below min.
+`autoMode`: auto-run below-bar rounds with no prompt. At or above `minVerifyScore`, skip Pass 1 and Reach-10; G2-code when the stage set is non-empty; `finish --step 5`; dispatch Step 6 in the same turn. Do not end the turn to ask the user to continue from Step 5. Never finish or dispatch 6 below min.
 
 Finish: `update_state.cjs finish --step 5 --verification-score {score}`; after G2 link SHA via `ac_ledger.cjs link` before pre-advance 6. Await each subagent before its `finish`.
 

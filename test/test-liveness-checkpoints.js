@@ -341,6 +341,8 @@ function checkpoint(fixture, root, step, payload, name = 'progress.json') {
 {
   const skill = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/SKILL.md'), 'utf8');
   const protocols = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/PROTOCOLS.md'), 'utf8');
+  const stepDispatch = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md'), 'utf8');
+  const gates = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-shared/runtime/gates.md'), 'utf8');
   const chainPositive = /Chain host turns:|chains Steps 0/i;
   const negatedPhrase = /does not chain host turns/i;
   assert.ok(!chainPositive.test('does not chain host turns'), 'positive matcher must not pass on negated sentence');
@@ -350,6 +352,8 @@ function checkpoint(fixture, root, step, payload, name = 'progress.json') {
   assert.ok(/Host-forced turn end|host forced/i.test(skill), 'SKILL.md documents host-forced turn-boundary fallback');
   assert.ok(/turn[- ]boundary/i.test(protocols), 'PROTOCOLS.md documents the turn-boundary pause');
   assert.ok(/checkpoint/.test(protocols) && /pause-turn/.test(protocols), 'PROTOCOLS.md documents both operations');
+  assert.ok(/dispatch Step 6 in the same turn/.test(stepDispatch), 'STEP-DISPATCH autoMode continues from Step 5 into Step 6');
+  assert.ok(/Asking the user to continue/.test(gates), 'gates.md treats a continue prompt after Step 5 as a stall in autoMode');
   console.log('D1 orchestrator docs state autoMode continuous run + host-forced pause fallback: ok');
 }
 

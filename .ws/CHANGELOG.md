@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-29 10:02] Agent: agent
+- **Prompt**: autoMode ws-spec-to-pr paused after step 5 asking to continue
+- **Done**: Step 5 exit in autoMode skips Pass 1 and Reach-10 and dispatches step 6 in the same turn
+- **Result**: gates.md and STEP-DISPATCH.md updated; test-liveness-checkpoints D1 green
+
 ### [2026-09-29 09:31] Agent: agent
 - **Prompt**: Import open GitHub issues via ws-spec-from-provider
 - **Done**: Imported issue 457; skipped 455 (already registered)
