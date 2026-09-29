@@ -6,6 +6,24 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-09-29] Site stale after skill description edit
+- **Layer**: `harness`
+- **Module**: `docs/index.html`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-*/SKILL.md`
+- **Scenario / Context**: A skill description change is copied into the generated site. CI `build-site.js --check` fails when docs/index.html is not regenerated.
+- **DO NOT**: Commit a SKILL.md description or catalog wording change without regenerating the site.
+- **INSTEAD DO**: Run `node bin/build-site.js` (no extra bump if the version is already above the merge-base) and `node bin/build-site.js --check` before push.
+
+### [2026-09-29] New skill must join the git ownership matrix
+- **Layer**: `harness`
+- **Module**: `git-ownership.md`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-*/SKILL.md`
+- **Scenario / Context**: Adding a ws-* skill folder without a row in git-ownership.md section 5 fails test/test-git-ownership-contract.js.
+- **DO NOT**: Ship a new ws-* directory without a compatibility-matrix row.
+- **INSTEAD DO**: Add one row with the skill's git class (read-only when it does not mutate git) and regenerate integrity.
+
 ### [2026-09-27] ws-spec-to-pr ac-ledger evidence linking (Step 5)
 - **Layer**: `devops`
 - **Module**: `workflow-skills / ac_ledger.cjs`

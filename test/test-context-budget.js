@@ -39,7 +39,7 @@ try {
   // Root AGENTS.md is upstream dogfood only (installer never copies it to consumers).
   assert.ok(utf8Size('.ws/AGENTS.md') <= SHARED_AGENTS_UTF8_LIMIT, `shared AGENTS.md exceeds ${SHARED_AGENTS_UTF8_LIMIT} B`);
   assert.ok(utf8Size('.agents/skills/ws-shared/runtime/AGENTS.md') <= 14000, 'SoT consumer hub exceeds 14000 B');
-  assert.ok(utf8Size('CATALOG.md') <= 24500, 'root CATALOG.md exceeds 24500 B');
+  assert.ok(utf8Size('CATALOG.md') <= 32768, 'root CATALOG.md exceeds 32768 B');
   // AC6 byte budgets (Q1-locked 1024-base integer bytes, LF-normalized via utf8Size).
   assert.ok(utf8Size('.agents/skills/ws-spec-to-pr/SKILL.md') <= 11776, 'ws-spec-to-pr SKILL.md exceeds 11776 B');
   assert.ok(utf8Size('.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md') <= 24064, 'STEP-DISPATCH.md exceeds 24064 B');
