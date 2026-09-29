@@ -17,7 +17,7 @@ Primary use cases from `index.PRD`: end-to-end Spec-to-PR (standard or lite), se
 
 ## Domain Catalog
 
-Living synthesis of specs 0001–0146. The delta since `7d6d39fb` covers centralized skill versioning with version-bound integrity checksums, autoMode continuous orchestration through ship and fix-pr, orchestrator prose compaction with byte budgets, the `ws-spec-to-pr-distributed` extraction, token-centered skill loading at inline body-load sites, the `ws-spec-to-issue` outbound tracker skill, agentic reviewer prompt hygiene, and website/wiki feature emphasis. Specs are filed under `{specsDir}/pending/`, `completed/`, and `archived/`. Index `[x]` and Done-log rows file a spec into `completed/` even when frontmatter `issueState` is `open`. `plans.autoOrganizeByStatus` applies that filing when status subfolders are enabled. The kanvas page describes the shipped board, including the drag-and-drop phase. Feature subpages use `{domain}/{feature}.md` with `## Feature` and `## How it works` required; `## Backend`, `## Frontend`, and `## Third-party services` are conditional.
+Living synthesis of specs 0001–0150. The delta since adds empty-alias verify skips (`us-446`, 0147), per-run batch state with legacy resume (`us-448`, 0148), the `ws-version` install snapshot (`us-455`, 0149), and global-fallback skill resolution without junctions (`us-457`, 0150). Prior synthesis of specs 0001–0146. The delta since `7d6d39fb` covers centralized skill versioning with version-bound integrity checksums, autoMode continuous orchestration through ship and fix-pr, orchestrator prose compaction with byte budgets, the `ws-spec-to-pr-distributed` extraction, token-centered skill loading at inline body-load sites, the `ws-spec-to-issue` outbound tracker skill, agentic reviewer prompt hygiene, and website/wiki feature emphasis. Specs are filed under `{specsDir}/pending/`, `completed/`, and `archived/`. Index `[x]` and Done-log rows file a spec into `completed/` even when frontmatter `issueState` is `open`. `plans.autoOrganizeByStatus` applies that filing when status subfolders are enabled. The kanvas page describes the shipped board, including the drag-and-drop phase. Feature subpages use `{domain}/{feature}.md` with `## Feature` and `## How it works` required; `## Backend`, `## Frontend`, and `## Third-party services` are conditional.
 
 ## Domain: harness
 
@@ -56,7 +56,7 @@ Living synthesis of specs 0001–0146. The delta since `7d6d39fb` covers central
 
 ## Sync Baseline
 
-- Commit: `8d98fd012b7029ba1882bcc51f1aea6df60d1f7c`
-- Synced: 2026-09-27
+- Commit: `f62e45faf538437808f8e7b1cb04cb56ad0d7600`
+- Synced: 2026-09-29
 
 Next wiki update: diff this commit against `HEAD` (`git diff --name-status <commit>..HEAD`) and sweep only the changed specs and code areas. A full-tree sweep is only needed when this block is missing or the commit is unreachable. Contract: `ws-wiki` SKILL.md § Incremental baseline.

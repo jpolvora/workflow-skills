@@ -1,6 +1,6 @@
 # Diagnostics & Benchmarks (`harness`)
 
-> Provenance: `.agents/skills/ws-doctor/SKILL.md`, `.agents/skills/ws-check-harness/SKILL.md`, `.agents/skills/ws-check-workflows/SKILL.md`, `.agents/skills/ws-benchmarks/SKILL.md`, `.agents/skills/ws-monitor/SKILL.md`, living synthesis of specs 0003, 0012, 0014, 0019, 0020, 0026, 0030, 0036, 0039, 0041, 0056, 0059, 0064, 0088, 0096-us-348, 0100-us-356, 0107-us-369, 0116-us-385, 0121-us-395, 0125-us-412-413, 0128-us-412-418, 0129-us-419, 0136-skill-loader-host-capability, 0138-workflow-parallel-writer-compat, 0144-us-440, 0146-us-436.
+> Provenance: `.agents/skills/ws-doctor/SKILL.md`, `.agents/skills/ws-check-harness/SKILL.md`, `.agents/skills/ws-check-workflows/SKILL.md`, `.agents/skills/ws-benchmarks/SKILL.md`, `.agents/skills/ws-monitor/SKILL.md`, living synthesis of specs 0003, 0012, 0014, 0019, 0020, 0026, 0030, 0036, 0039, 0041, 0056, 0059, 0064, 0088, 0096-us-348, 0100-us-356, 0107-us-369, 0116-us-385, 0121-us-395, 0125-us-412-413, 0128-us-412-418, 0129-us-419, 0136-skill-loader-host-capability, 0138-workflow-parallel-writer-compat, 0144-us-440, 0146-us-436, 0149-us-455, 0151-us-458.
 
 ## Feature
 
@@ -8,7 +8,7 @@ Harness health is observable without running a full delivery. `ws-doctor` provid
 
 ## How it works
 
-`ws-doctor` edits nothing. It runs path, script, and reference checks even when project config is missing, reporting config-unavailable status and recommending `ws-configure-project`. It does not replace `ws-check-harness` phases or `ws-show-harness` inventory. The `doctor.js --json` flag emits exactly one JSON object on stdout; warnings and usage text go to stderr. A skill-local ESM marker keeps copied installs loadable without modifying root `package.json`.
+`ws-doctor` edits nothing. It runs path, script, and reference checks even when project config is missing, reporting config-unavailable status and recommending `ws-configure-project`. It does not replace `ws-check-harness` phases or `ws-show-harness` inventory. The `doctor.js --json` flag emits exactly one JSON object on stdout; warnings and usage text go to stderr. A skill-local ESM marker keeps copied installs loadable without modifying root `package.json`. `ws-version` prints the install snapshot — scope, loaded skill directory, canonical package version, stored path tokens — read-only with no writes or network calls. `ws-check-workflows` asserts `autoMode` ON (unattended internal checkpoints plus the canonical stop list) and OFF (per-step or `gateGranularity`) behavior.
 
 Duplicated normative blocks fail `ws-check-harness`. Path recipes resolve the consumer hub from `--repo-root` or cwd probe, never from `__file__` inside a managed copy. Token expansion keeps `{skillsRoot}` local-first and `{sharedDir}` independent. Effective `defaults.autoload` is false unless explicitly true; when true, a consumer root `AGENTS.md` must exist and delegate to `autoload.md`, otherwise the harness fails closed. The installer never creates root agent index files.
 

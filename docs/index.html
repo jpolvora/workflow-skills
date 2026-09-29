@@ -159,7 +159,7 @@
     <span class="badge-dot"></span>
     <span>Deterministic Spec-Driven Harness</span>
     <span style="color:var(--text-dim)">&bull;</span>
-    <span style="color:var(--accent-cyan);font-family:var(--font-mono)">v0.5.14</span>
+    <span style="color:var(--accent-cyan);font-family:var(--font-mono)">v0.5.15</span>
   </a>
   <h1>From Spec to <span class="gradient-text">Delivery</span></h1>
   <p class="hero-brand">Workflow Skills</p>
@@ -306,7 +306,7 @@
         <div class="role-card-icon">AW</div>
         <h4 class="role-card-title">Unattended autoMode and batch runs</h4>
       </div>
-      <p class="role-card-desc"><code>autoMode</code> chains Steps 0&rarr;9 in one orchestrator session with mid-step <code>checkpoint</code> and turn-boundary <code>pause-turn</code> resume via <code>update_state.cjs</code>. <code>ws-spec-multi</code> classifies each queued spec and dispatches exactly one pipeline at a time with isolated <code>workflowType</code> and no cross-resume. <a href="wiki/delivery/spec-to-pr-pipeline.html">Pipeline details &rarr;</a></p>
+      <p class="role-card-desc"><code>autoMode</code> chains Steps 0&rarr;9 in one orchestrator session with mid-step <code>checkpoint</code> and turn-boundary <code>pause-turn</code> resume via <code>update_state.cjs</code>. <code>ws-spec-multi</code> classifies each queued spec and dispatches exactly one pipeline at a time with isolated <code>workflowType</code> and no cross-resume. In <code>autoMode</code>, Step 5 exit skips Pass 1 / Reach-10 and dispatches Step 6 in the same turn. <a href="wiki/delivery/spec-to-pr-pipeline.html">Pipeline details &rarr;</a></p>
     </div>
     <div class="role-matrix-card">
       <div class="role-card-header">
@@ -314,6 +314,20 @@
         <h4 class="role-card-title">Spec organizer, subfolder sync, and cleanup</h4>
       </div>
       <p class="role-card-desc"><code>ws-spec-organizer</code> files specs into <code>pending</code> / <code>completed</code> / <code>archived</code> subfolders and prefixes <code>NNNN-</code> when <code>plans.enforceSpecPrefixOrdering</code> is true; <code>ws-spec-index sync</code> follows a move, while <code>ws-spec-archive</code> harvests shipped plan folders into <code>index.PRD</code> and <code>ws-cleanup</code> deletes only user-approved untracked leftovers. <a href="wiki/harness/diagnostics-and-benchmarks.html">Cleanup &amp; diagnostics &rarr;</a></p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">TI</div>
+        <h4 class="role-card-title">Tracker export without a spec</h4>
+      </div>
+      <p class="role-card-desc"><code>ws-spec-to-issue</code> turns a free-text idea into an anonymized GitHub issue / ADO User Story through the active provider <code>create-issue</code> intent. No local spec, no git mutation. <a href="wiki/providers/scm-providers.html">Provider intents &rarr;</a></p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">VS</div>
+        <h4 class="role-card-title">Install snapshot and global fallback</h4>
+      </div>
+      <p class="role-card-desc"><code>ws-version</code> prints install scope (<code>global</code> vs <code>project-local</code>), the loaded skill directory, and the package semver. A repo-relative skill path missing on disk falls through to the same path under the global install instead of creating a junction, symlink, or copy. <a href="wiki/harness/install-and-hub.html">Install &amp; hub &rarr;</a></p>
     </div>
   <!-- efficiency-verifiability:end -->
     <div class="role-matrix-card">
@@ -1360,12 +1374,34 @@ disable-model-invocation: true
         <li>Routes simple specs to lite and complex specs to standard</li>
         <li>Blank scan lists only pending/unfinished specs</li>
         <li>Skips specs that already have a merged PR</li>
-        <li>Keeps queue state under <code>{plansDir}/ws-spec-multi/</code></li>
+        <li>Keeps queue state in per-run <code>{plansDir}/{runId}/</code> dirs (legacy flat files still resume)</li>
         <li>On failure: Resume, Skip, or Abort</li>
       </ul>
       <div class="workflow-card-actions">
       <button type="button" class="workflow-btn view-skill" data-path=".agents/skills/ws-spec-multi/SKILL.md">
         View ws-spec-multi orchestrator &rarr;
+      </button>
+      <a href="#install" class="workflow-btn">Start in your repo</a>
+      </div>
+    </div>
+
+    <div class="workflow-card distributed" style="grid-column: 1 / -1;">
+      <div class="workflow-card-header">
+        <h3>ws-spec-to-pr-distributed</h3>
+        <span class="workflow-badge" style="background: rgba(56,189,248,0.2); color: #38bdf8;">Opt-in multi-CLI</span>
+      </div>
+      <p class="workflow-tagline">Same standard steps, several CLI processes</p>
+      <p>Drives the standard 0–9 step set across CLI processes on one machine via the state-file baton and deterministic <code>step_coordinator.cjs</code>. Explicitly invoked only; never auto-selected.</p>
+      <div class="workflow-steps-title">What it does:</div>
+      <ul class="workflow-steps-list">
+        <li>Maps steps to runners with <code>defaults.stepRunners</code> / <code>defaults.runners</code></li>
+        <li>Revision-serialized claim/release/expiry on the state-file baton</li>
+        <li>One-shot workers get sparse pointers plus a baton envelope</li>
+        <li>Gates surface at the coordinator; <code>ws-spec-to-pr</code> stays single-host</li>
+      </ul>
+      <div class="workflow-card-actions">
+      <button type="button" class="workflow-btn view-skill" data-path=".agents/skills/ws-spec-to-pr-distributed/SKILL.md">
+        View distributed workflow &rarr;
       </button>
       <a href="#install" class="workflow-btn">Start in your repo</a>
       </div>
@@ -2906,7 +2942,7 @@ npx --yes github:jpolvora/workflow-skills --global
 <div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
 
 <footer>
-  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.5.14 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
+  <p>MIT &mdash; <a href="https://github.com/jpolvora/workflow-skills" target="_blank" rel="noopener">jpolvora/workflow-skills</a> &mdash; v0.5.15 &mdash; Developed by <a href="https://jpolvora.github.io/" target="_blank" rel="noopener">Jone Polvora</a></p>
 </footer>
 
 <!-- Skill Viewer Slide-Over Drawer -->

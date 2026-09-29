@@ -429,7 +429,7 @@ const efficiencyFeatureBlock = `  <!-- efficiency-verifiability:start -->
         <div class="role-card-icon">AW</div>
         <h4 class="role-card-title">Unattended autoMode and batch runs</h4>
       </div>
-      <p class="role-card-desc"><code>autoMode</code> chains Steps 0&rarr;9 in one orchestrator session with mid-step <code>checkpoint</code> and turn-boundary <code>pause-turn</code> resume via <code>update_state.cjs</code>. <code>ws-spec-multi</code> classifies each queued spec and dispatches exactly one pipeline at a time with isolated <code>workflowType</code> and no cross-resume. <a href="wiki/delivery/spec-to-pr-pipeline.html">Pipeline details &rarr;</a></p>
+      <p class="role-card-desc"><code>autoMode</code> chains Steps 0&rarr;9 in one orchestrator session with mid-step <code>checkpoint</code> and turn-boundary <code>pause-turn</code> resume via <code>update_state.cjs</code>. <code>ws-spec-multi</code> classifies each queued spec and dispatches exactly one pipeline at a time with isolated <code>workflowType</code> and no cross-resume. In <code>autoMode</code>, Step 5 exit skips Pass 1 / Reach-10 and dispatches Step 6 in the same turn. <a href="wiki/delivery/spec-to-pr-pipeline.html">Pipeline details &rarr;</a></p>
     </div>
     <div class="role-matrix-card">
       <div class="role-card-header">
@@ -437,6 +437,20 @@ const efficiencyFeatureBlock = `  <!-- efficiency-verifiability:start -->
         <h4 class="role-card-title">Spec organizer, subfolder sync, and cleanup</h4>
       </div>
       <p class="role-card-desc"><code>ws-spec-organizer</code> files specs into <code>pending</code> / <code>completed</code> / <code>archived</code> subfolders and prefixes <code>NNNN-</code> when <code>plans.enforceSpecPrefixOrdering</code> is true; <code>ws-spec-index sync</code> follows a move, while <code>ws-spec-archive</code> harvests shipped plan folders into <code>index.PRD</code> and <code>ws-cleanup</code> deletes only user-approved untracked leftovers. <a href="wiki/harness/diagnostics-and-benchmarks.html">Cleanup &amp; diagnostics &rarr;</a></p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">TI</div>
+        <h4 class="role-card-title">Tracker export without a spec</h4>
+      </div>
+      <p class="role-card-desc"><code>ws-spec-to-issue</code> turns a free-text idea into an anonymized GitHub issue / ADO User Story through the active provider <code>create-issue</code> intent. No local spec, no git mutation. <a href="wiki/providers/scm-providers.html">Provider intents &rarr;</a></p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">VS</div>
+        <h4 class="role-card-title">Install snapshot and global fallback</h4>
+      </div>
+      <p class="role-card-desc"><code>ws-version</code> prints install scope (<code>global</code> vs <code>project-local</code>), the loaded skill directory, and the package semver. A repo-relative skill path missing on disk falls through to the same path under the global install instead of creating a junction, symlink, or copy. <a href="wiki/harness/install-and-hub.html">Install &amp; hub &rarr;</a></p>
     </div>
   <!-- efficiency-verifiability:end -->
 `;

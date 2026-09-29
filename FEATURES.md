@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.4.60** · 57 skills (Workflows + Extra) + the `ws-shared` consumer hub.
+Package version: **0.5.14** · 60 skills (52 Workflows + 8 Extra) + the `ws-shared` consumer hub.
 
 ### ws-shared hybrid configuration boundary
 
@@ -298,12 +298,17 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.4.78)
+## 12. Recent evolution (0.3.22 → 0.5.14)
 
-Derived from recent commits on `develop` (2026-08-16 → 2026-09-26).
+Derived from recent commits on `develop` (2026-08-16 → 2026-09-29).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.5.13–0.5.14** | Sep 29 | **`ws-version` (`us-455`, PR #456):** read-only install snapshot — `installScope` (`global` vs `project-local`), absolute loaded skill directory, `packageVersion` from `.agents/skills/ws-shared/version.json`, stored `.ws/config.json` path tokens. **Global fallback without junctions (`us-457`):** `resolve_skill_path.cjs` reads a missing repo-relative skill path from `{globalSkillsRoot}` instead of creating a junction, symlink, or copy in the consumer repo; local real files win, both-missing or traversal/absolute paths fail closed. **autoMode same-turn Step 5→6:** Step 5 exit in `autoMode` skips Pass 1 and Reach-10 and dispatches Step 6 in the same turn; `ws-check-workflows` covers `autoMode` ON (unattended internal checkpoints + canonical stop list) and OFF (per-step / `gateGranularity`). `us-458` (fully unattended `autoMode`, no yield at internal checkpoints) remains in flight |
+| **0.5.10–0.5.12** | Sep 28–29 | **Skip empty verification aliases (`us-446`):** `ws-ship-pr/scripts/verify.cjs` skips configured aliases with an empty command instead of executing them. **Per-run batch state (`us-448`):** `ws-spec-multi` writes `{plansDir}/{runId}/{runId}.state.md`, drops the `RESERVED_PLAN_DIRS` guards, and resumes legacy flat `{plansDir}/ws-spec-multi/*.state.md` files. **`ws-kanvas` drag-and-drop (0131, #452):** `POST /api/move` with atomic writes and byte-limited body; abandoning a tracked runless spec files it as Abandoned. **Pre-ship doc-sync delivery records** plus `plans.autoOrganizeByStatus` by-status filing; agentic code review runs the `high` variant (PRs #449–#451, #453–#454) |
+| **0.5.8–0.5.9** | Sep 27–28 | **Bump on every shipped PR:** `ws-ship-pr` owns the patch bump — no docs/hub/catalog exception — with integrity regen in the same change. Wiki `update`/`sync`/`from-code` read the effective `rules.changelogFile`; `ws-spec-organizer` prioritizes index completion over `issueState` when filing specs |
+| **0.5.4–0.5.7** | Sep 27 | **`ws-spec-to-pr-distributed` extraction (0143):** opt-in multi-CLI step-baton workflow with deterministic `step_coordinator.cjs`. **Token-centered skill loading (`us-440`, 0144):** in-session body-load sites cite `{skillLoader}` plus the canonical procedure. **Outbound tracker export (`us-439`, 0145):** new `ws-spec-to-issue` skill turns a free-text idea into an anonymized GitHub issue / ADO User Story with no local spec and no git mutation. Shipped as PRs #442–#445, one bump per PR |
+| **0.4.79–0.5.3** | Sep 26–27 | **Continuous `autoMode` restore (0141):** Steps 0→9 chain in one session through ship and fix-pr with mid-step `checkpoint` and turn-boundary `pause-turn` resume. **Orchestrator prose compaction (0142):** single-source boundaries plus per-document byte budgets (`test-context-budget.js`). **Centralized versioning (0140):** `version.json` is the single canonical semver; the integrity generator binds it into every skill digest, so drift fails `verify-integrity` closed |
 | **0.4.78** | Sep 26 | **Release train specs 0134–0138:** `defaults.branchStrategy` (`stay` default, `from-current`, `from-base`, `prompt`; detached HEAD rejects `stay`) with shared-head ship resolution (`resolve_ship_refs.cjs`: feature / shared-head / push-only); spec status subfolders (`plans.statusSubfolders`, `organize_specs.cjs --by-status` into `pending/` `completed/` `archived/`); eighth host capability token `skillLoader` with one canonical skill-load procedure and Phase 5a `check_skill_load.cjs`; on-demand `workflow-skills dispatch --subagent --task [--payload]` plus async `dispatchSubagentTask` API; tree-wide parallel-writer enforcement (Phase 5a `check_git_ownership.cjs`, warn-only `concurrency_preflight.cjs`, `file_lock.cjs` for shared artifacts, idempotent `append_changelog.cjs`) |
 | **0.4.77** | Sep 26 | **Path-aware verify defects (`us-430`):** an alias sets `knownDefect` only when failing paths intersect `filesTouched` or it declares `productFailure`; untouched failures link `skipReason: baseline-dirty`; implement runs every scoring alias and formats only its own files; interview rewrites contradicted ACs in both spec copies |
 | **0.4.76** | Sep 26 | **Consumer hub seeding (`us-429`):** `ws-configure-project` and install bootstrap seed missing-only `STACK.md`, hub `AGENTS.md`, `autoload.md`, and `.gitignore` under the effective hub root; existing bytes preserved; `runtime/` and `templates/` never copied into the hub |
