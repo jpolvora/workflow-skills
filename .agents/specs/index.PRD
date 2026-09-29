@@ -202,6 +202,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] add a simple skill to show version and directory of the skill file (`spec: pending/0149-us-455.spec.md`)
 - [ ] Resolve missing local skills from the global install; do not junction them into the repo (`spec: pending/0150-us-457.spec.md`)
 - [ ] autoMode should mean unattended: no yield at internal checkpoints (`spec: pending/0151-us-458.spec.md`)
+- [ ] ws-kanvas board: add phase color coding and replace hardcoded grey/transparent styling (`spec: pending/0152-us-459.spec.md`)
+
 
 
 
@@ -513,6 +515,8 @@ All Next-specs closed.
 | 155 | `us-457` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Resolve missing local skills from the global install; do not junction them into the repo |
 
 | 156 | `us-458` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | autoMode should mean unattended: no yield at internal checkpoints |
+
+| 157 | `us-459` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-kanvas board: add phase color coding and replace hardcoded grey/transparent styling |
 
 ## 9. Inbox
 
