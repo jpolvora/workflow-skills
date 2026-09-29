@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-29 15:19] Agent: ws-spec-to-pr
+- **Prompt**: Execute standard Spec-to-PR for us-459: ws-kanvas board phase color coding and theme-aware surfaces
+- **Done**: CSS-only restyle of ws-kanvas refs/board.html <style> block: six phase accents, theme-aware Canvas/CanvasText surfaces for column/card/drop-target/popup; bumped 0.5.16, regenerated integrity, synced site/wiki/index.PRD
+- **Result**: Verify 10/10, review clean, kanvas suites + npm run test 144/144, harness 0 findings; PR opened develop->main
+
 ### [2026-09-29 11:44] Agent: agent
 - **Prompt**: Refresh webpage, README, AGENTS/wiki/docs to 0.5.14+ and ship
 - **Done**: Site cards, README, FEATURES, CATALOG, wiki, llms.txt updated; bumped 0.5.15; PR #460 merged

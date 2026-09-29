@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 21,
-  "generatedAt": "2026-09-29T14:00:57Z",
+  "revision": 16,
+  "generatedAt": "2026-09-29T19:19:10Z",
   "workflows": [
     {
       "workflowId": "reduce-spec-to-pr-tokens-20260927T043013Z",
@@ -112,6 +112,17 @@
       "currentStep": 9,
       "updatedAt": "2026-09-29T14:00:57Z",
       "runPath": ".agents/plans/us-457/us-457-20260929T134533Z.state.json"
+    },
+    {
+      "workflowId": "wf-us-459",
+      "slug": "us-459",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/us-459/wf-us-459.state.md",
+      "stateSha256": "f78535ae7d515c3d3de850c2e22db01e2480bbd5942d45c8f4681bdbfc320863",
+      "status": "active",
+      "currentStep": 8,
+      "updatedAt": "2026-09-29T19:19:10Z",
+      "runPath": ".agents/plans/us-459/wf-us-459.state.json"
     },
     {
       "workflowId": "ws-spec-to-pr-distributed",

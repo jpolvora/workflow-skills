@@ -20,4 +20,4 @@ The server binds loopback only and serves `GET` routes from the Node 22 standard
 
 ## Frontend
 
-`refs/board.html` is one self-contained page. It renders the six columns and the details popup and consumes only the collector JSON.
+`refs/board.html` is one self-contained page. It renders the six columns and the details popup and consumes only the collector JSON. Each column carries a distinct phase accent (a `--phase-accent` custom property keyed off `data-column-id`) used for its border, header underline, card tint, and drop-target outline; the phase label text remains the primary differentiator. Column, card, drop-target, popup, and backdrop surfaces derive from system colors (`Canvas`/`CanvasText`/`Highlight`) with `color-mix()` tints and plain system-color fallbacks, so they stay legible under the declared `color-scheme: light dark`.
