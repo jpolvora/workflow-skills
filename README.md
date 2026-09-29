@@ -52,6 +52,10 @@
 | **One task at a time** | `defaults.enableDag` is `false`. Set `true` for parallel DAG. Fresh `ws-configure-project` / `config.json.example` seed `defaults.verboseMode: true` (reasoned start-of-step preview); omitted or `false` at runtime is silent. To change the orchestrator model: Pause, switch it in the session host, then Resume. |
 | **Optional proof-of-work** | `defaults.enableOptionalProofOfWork` is `false`. Set `true` for one post-completion gate offering UI-evidence collection; set `defaults.enableAutomaticEvidenceCollectForProofOfWork: true` as well to start without asking. Evidence lands under `defaults.projectRootFolderToSave` (default `{projectRoot}/.proofOfWork/{slug}`) and is never committed. |
 | **Reviewer-aligned gates** | Structured stack invariant rules (`.agents/skills/ws-shared/runtime/stacks/`), DoR & negative scenario injection, pre-completion static scan (`scan_stack_invariants.cjs`), verify score capping at 7/10 on Critical violations, two-phase adversarial code review (Triage -> 4-part Proof of Exploitability), local review dry-run gate (`localReviewCommand`), and initial framework traps seeded in `MEMORY.md`. |
+| **Tracker export without a spec** | [`ws-spec-to-issue`](.agents/skills/ws-spec-to-issue/SKILL.md) turns a free-text idea into an anonymized GitHub issue / ADO User Story through the active provider `create-issue` intent — no local spec, no git mutation (outbound companion of `ws-spec-from-provider`). |
+| **Missing skills resolve from the global install** | A repo-relative skill path absent on disk falls through to the same path under `{globalSkillsRoot}` (`resolve_skill_path.cjs`); the session never creates a junction, symlink, or copy in the consumer repo, so `git status` stays clean. Local real files win; both-missing or traversal/absolute paths fail closed. |
+| **Install snapshot on demand** | [`ws-version`](.agents/skills/ws-version/SKILL.md) prints install scope (`global` vs `project-local`), the loaded skill directory, the package semver from `.agents/skills/ws-shared/version.json`, and stored hub path tokens. Read-only; no writes, no network. |
+| **Local kanban board** | [`ws-kanvas`](.agents/skills/ws-kanvas/SKILL.md) serves a read-only six-column board of spec and workflow state (`npm run kanvas`); cards move via drag-and-drop (`POST /api/move`, atomic writes, byte-limited body). |
 
 ### Roadmap
 
@@ -305,6 +309,7 @@ Full **routing and auto-load rules** live in [`AGENTS.md`](AGENTS.md). Browse th
 | [`ws-check-harness`](.agents/skills/ws-check-harness/SKILL.md) | Audit routing, links, portability |
 | [`ws-check-workflows`](.agents/skills/ws-check-workflows/SKILL.md) | Deep workflow simulation & validation (Full/Lite) |
 | [`ws-doctor`](.agents/skills/ws-doctor/SKILL.md) | Read-only install/runtime diagnose (paths, recipes, config, missing refs, hybrid runtime source) |
+| [`ws-version`](.agents/skills/ws-version/SKILL.md) | Read-only install snapshot: `global` vs `project-local` scope, loaded skill directory, package semver, stored hub path tokens (`/ws-version`) |
 | [`ws-monitor`](.agents/skills/ws-monitor/SKILL.md) | Read-only live workflow observer for state, telemetry, artifacts, and configured transcripts; the default live watch profile polls until terminal, follows a session id, detects stall/hang with a stopwatch, and proposes an enriched defect issue for the configured SCM provider `create-issue` intent; multi-spec runs surface `missing-child-state` when a queue item advances without child state |
 | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) | Create/edit/optimize skills (Extra) |
 | [`ws-show-harness`](.agents/skills/ws-show-harness/SKILL.md) | Snapshot active session harness (Extra) |

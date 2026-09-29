@@ -1,6 +1,6 @@
 # Install & Hub (`harness`)
 
-> Provenance: `bin/cli.js`, `bin/skill-dependencies.json`, `.agents/skills/ws-shared/runtime/hub-layout.json`, root `AGENTS.md` § Skill SoT, living synthesis of specs 0002, 0007, 0010, 0013, 0017, 0027, 0032, 0037, 0042, 0052, 0058, 0061, 0066, 0069, 0070, 0071, 0083, 0100-us-351, 0106, 0115-configurable-hub-root, 0119-us-389, 0132-us-429, 0137-subagent-task-dispatch, 0140-simplify-skill-versioning.
+> Provenance: `bin/cli.js`, `bin/skill-dependencies.json`, `.agents/skills/ws-shared/runtime/hub-layout.json`, root `AGENTS.md` § Skill SoT, living synthesis of specs 0002, 0007, 0010, 0013, 0017, 0027, 0032, 0037, 0042, 0052, 0058, 0061, 0066, 0069, 0070, 0071, 0083, 0100-us-351, 0106, 0115-configurable-hub-root, 0119-us-389, 0132-us-429, 0137-subagent-task-dispatch, 0140-simplify-skill-versioning, 0149-us-455, 0150-us-457.
 
 ## Feature
 
@@ -35,6 +35,8 @@ Individual subagent tasks can be dispatched on demand outside an orchestrator. `
 Package versioning is centralized in one authored file, `.agents/skills/ws-shared/version.json`, whose single `version` property is the canonical release semver. A release bump edits that file once, and the build synchronizes every derived surface — `package.json`, both dependency manifests' `packageVersion`, the site footer, and telemetry provenance — without touching skill bodies. Packaged `SKILL.md` frontmatter carries no `version` field, and no supported build path can stamp one. The integrity generator binds the canonical version into every packaged skill digest and the aggregate package digest, so a version bump alone changes all digests; verification fails closed when `version.json` is missing, malformed, or stale against the manifest. The installer copies and hashes `version.json` for project-local and global installs, and a consumer missing the file gets an explicit outdated-install diagnostic instead of a silent fallback version.
 
 The test suite stays side-effect free against the live hub. Every editor invocation from tests passes an explicit isolated `-ConfigPath` pointing at a temp copy, diagnostic-only runs perform no writes and leave no `.bak` behind, PowerShell path literals are quoted so suite failures clean their fixtures, and the hub-mutation guard hashes backup content and runs on the failure path as well as the happy path so a green run never flips delivery-artifact flags in the repository's own `.ws/config.json`.
+
+Missing repo-relative skill paths resolve at read time instead of materializing links. `resolve_skill_path.cjs` tries the project path first and falls back to the same relative path under `{globalSkillsRoot}`; it never creates a junction, symlink, or copy in the consumer repo, so `git status` stays clean. A path missing on both sides — or with traversal or absolute form — fails closed with a named error. `ws-version` reports which tree served the session: `installScope` (`global` vs `project-local`), the absolute loaded skill directory, the canonical `packageVersion`, and the stored hub path tokens, read-only with no writes or network calls.
 
 ## Backend
 

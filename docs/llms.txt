@@ -34,6 +34,8 @@ Install: `npx --yes github:jpolvora/workflow-skills`
 ## Not spec-driven (adjacent)
 
 Harness checks, doctor, preview, changelog, memory, patterns, activity report. They support delivery; they do not replace the spec.
+- Install snapshot: `/ws-version` prints scope (`global` vs `project-local`), loaded skill dir, package semver. Read-only.
+- Hybrid installs: a repo-relative skill path missing on disk reads from the global install (`resolve_skill_path.cjs`); never junctions, symlinks, or copies into the repo.
 
 ## Docs for humans and agents
 
