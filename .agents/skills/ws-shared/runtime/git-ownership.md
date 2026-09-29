@@ -158,5 +158,6 @@ class. Every orchestrator follows this table; a skill absent from it fails
 | `ws-task-lifecycle` | read-only | lifecycle tracking; no artifact writes |
 | `ws-tdah` | read-only | reply shape; no writes |
 | `ws-testing` | git-mutating | sabotage uses `git apply` transiently, always reverted |
+| `ws-version` | read-only | prints install scope and version; no writes |
 | `ws-wiki` | shared-artifact-writing | wiki pages + watermarks; section-scoped sync |
 | `ws-write-a-skill` | read-only | authors new skills; no shared writes itself |

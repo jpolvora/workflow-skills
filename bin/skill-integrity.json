@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "a0883af66b59b006a440a72688d9d8cc7050dcbb0bbd13902e2327f5c68d567b",
+  "fullPackageDigest": "ee004d19320006e3e59ba5b45adc1d776834e6efa6adef3a2b8c6dd59727d3b9",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -19,7 +19,7 @@
       "runtime/config.schema.json": "659530060e823a83df52e171c0bc1f5e0e62b081d6cfd940c892ba7bb5eab957",
       "runtime/evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
       "runtime/gates.md": "fa993d9009beae41e1a3abb23a4c152705b5fa78982df77c206d7e6dc763cb9c",
-      "runtime/git-ownership.md": "fbf0703a2c89a799e054877ce948fe335458ffbfbca54035b0ad23b6837c2a8f",
+      "runtime/git-ownership.md": "c1d885141d9c9a1bbdac00b6efbe77a0f8e87ed9031202698dad6c49f80937f7",
       "runtime/host-capability-tokens.md": "a2dcad9b4adff9eaab004fc0d762146dd76874c78b4df192b0363826ff0aac24",
       "runtime/host-dispatch.md": "bf756780f5bc4784d996c13c8e0083312eab078a19f22bcbf8de2dfc92aafd15",
       "runtime/host-tool-map.json": "0d491f18511fe01ae09c95f344e3fdbc73c50dc6f9050408c46f60d7631eaf7a",
@@ -67,7 +67,7 @@
       "templates/config.json.example": "7065f80acb4d6052a3db5c993295af9865798aee1ebb12db0e1583181368321a",
       "version.json": "12484abe2cbe1f23464649037e50fa004d49be4a619efd1bdddbbc8f1edb799f"
     },
-    "skillDigest": "d975d30b7a247524281259abe63d709af496bdacbb7264bbf5656a4fa0862ac5"
+    "skillDigest": "d46972b48b0278b0bf02b085885925c281da41e383667dd438e6be643043ccf0"
   },
   "package": {
     "files": {
