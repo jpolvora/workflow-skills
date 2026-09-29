@@ -146,6 +146,17 @@ function testVersionUnavailableWhenInvalidJson() {
   assert(out.includes('skillDir:'), 'skillDir still printed on bad version.json');
 }
 
+function testVersionUnavailableWhenNonSemver() {
+  console.log('\n--- testVersionUnavailableWhenNonSemver ---');
+  const root = mkTmp('ws-version-badsemver-');
+  const helper = installHelperUnderSkillsRoot(root, JSON.stringify({ version: '1.2.3-beta' }));
+  const r = runHelper(helper, { cwd: root });
+  const out = r.stdout || '';
+  assert(r.status !== 0, 'non-semver version exits non-zero');
+  assert(/packageVersion: unavailable/.test(out), 'non-semver reported unavailable');
+  assert(/skillDir:/.test(out), 'skillDir still printed on bad semver');
+}
+
 function testPrintsPathTokensFromConfig() {
   console.log('\n--- testPrintsPathTokensFromConfig ---');
   const root = mkTmp('ws-version-config-');
@@ -240,6 +251,7 @@ function main() {
   testPrintsPackageVersionFromVersionJson();
   testVersionUnavailableWhenMissing();
   testVersionUnavailableWhenInvalidJson();
+  testVersionUnavailableWhenNonSemver();
   testPrintsPathTokensFromConfig();
   testConfigUnavailableWhenMissingOrInvalid();
   testSkillRegisteredInDependencyGraph();

@@ -32,6 +32,13 @@ fs.mkdirSync(path.join(globalRoot, 'ws-only'), { recursive: true });
 fs.writeFileSync(path.join(globalRoot, 'ws-only/SKILL.md'), 'global\n');
 process.env.WORKFLOW_SKILLS_GLOBAL_DIR = globalRoot;
 
+const linkPath = path.join(repo, '.agents/skills/ws-link/SKILL.md');
+fs.mkdirSync(path.dirname(linkPath), { recursive: true });
+fs.symlinkSync(path.join(repo, '.agents/skills/ws-local/SKILL.md'), linkPath);
+const link = run(repo, '.agents/skills/ws-link/SKILL.md');
+assert(link.status !== 0, 'symlink should fail');
+assert(link.stderr.includes('refusing symlink'), link.stderr);
+
 const local = run(repo, '.agents/skills/ws-local/SKILL.md');
 assert(local.status === 0, local.stderr);
 const localJson = JSON.parse(local.stdout);
