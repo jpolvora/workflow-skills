@@ -18,6 +18,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | `ws-check-workflows` | `.agents/skills/ws-check-workflows/SKILL.md` | Deep workflow simulation & validation |
 | `ws-doctor` | `.agents/skills/ws-doctor/SKILL.md` | Install & runtime diagnostics, hybrid hub resolution |
 | `ws-monitor` | `.agents/skills/ws-monitor/SKILL.md` | Read-only live workflow observer; live watch profile + enriched defect-issue proposal |
+| `ws-version` | `.agents/skills/ws-version/SKILL.md` | Read-only install scope, skill directory, and package version snapshot |
 | `ws-write-a-skill` | `.agents/skills/ws-write-a-skill/SKILL.md` | Create/edit/optimize skills (Extra) |
 | `ws-show-harness` | `.agents/skills/ws-show-harness/SKILL.md` | Session harness snapshot (Extra) |
 | `ws-preview` | `.agents/skills/ws-preview/SKILL.md` | Run consumer `preview.dryRunCommand` local dry-run (Extra; `/ws-configure-project --section preview`) |
@@ -159,6 +160,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | Diagnose skills / doctor the harness | `ws-doctor` |
 | Check workflows | `ws-check-workflows` |
 | Observe a live workflow | `ws-monitor` |
+| Show install scope / package version | `ws-version` |
 | Grill plan vs docs | `grill-with-docs` |
 | Record learning | This file § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) (live `ws-self-learning` only when authoring that skill) |
 | Convergence loop | `ws-goal-loop` |

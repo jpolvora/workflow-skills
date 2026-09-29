@@ -1,0 +1,26 @@
+{
+  "skill_name": "ws-version",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Use /ws-version in this project.",
+      "expected_output": "Agent runs report_version.cjs and prints scope, skillDir, packageVersion, and config tokens.",
+      "assertions": [
+        "Agent loads ws-version before acting",
+        "Invokes node on the helper from the loaded skills root",
+        "Does not start a workflow or write files",
+        "Output is en-us and host-neutral"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/ws-version when ws-shared/version.json is missing in the loaded tree.",
+      "expected_output": "packageVersion unavailable, skillDir still printed, helper exits non-zero.",
+      "assertions": [
+        "Does not invent a semver",
+        "Still reports installScope and skillDir",
+        "Stops after printing facts"
+      ]
+    }
+  ]
+}

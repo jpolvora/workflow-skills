@@ -57,6 +57,9 @@
       "test/test-ws-doctor.js"
     ],
     [
+      "test/test-ws-version.js"
+    ],
+    [
       "test/test-shell-quoting-audit.js"
     ],
     [
@@ -225,6 +228,9 @@
     ],
     [
       "test/test-ws-doctor.js"
+    ],
+    [
+      "test/test-ws-version.js"
     ],
     [
       "test/test-shell-quoting-audit.js"
