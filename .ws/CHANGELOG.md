@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-29 08:04] Agent: agent
+- **Prompt**: C:/Program Files/Git/ws-ship-pr bump then PR
+- **Done**: Bumped 0.5.11 to 0.5.12, committed, pushed develop, opened PR
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/454
+
 ### [2026-09-29 07:55] Agent: agent
 - **Prompt**: do not hardcode changelog paths in wiki update
 - **Done**: Wiki update, sync, and from-code read the effective rules.changelogFile from config
