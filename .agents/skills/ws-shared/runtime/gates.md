@@ -51,7 +51,26 @@ In interactive execution mode (normal mode), the turn boundary depends on how th
 
 **`autoMode` exception:** when running with `autoMode: true`, interactive single-turn halting does not apply at step boundaries. The orchestrator automatically applies the recommended option (index 0) from the auto-gate table and **keeps the same host session** through Steps 0→9: subagent dispatch per step, Step 8 close, workflow-mode [`ws-ship-pr`](../../ws-ship-pr/SKILL.md), and Step 9 [`ws-goal-fix-pr`](../../ws-goal-fix-pr/SKILL.md) until convergence or a terminal stop — without voluntarily ending the turn between steps. Hard stops still apply (HS-1, HS-5, verify below `defaults.minVerifyScore` after max scoreAndRefine rounds, merge blocked, user cancel). **Host-forced turn end only:** if the host ends the turn mid-step despite `autoMode`, record mid-step checkpoints plus a turn-boundary pause ([`PROTOCOLS.md`](../../ws-spec-to-pr/PROTOCOLS.md) § Turn-boundary pause & mid-step checkpoints) before yielding so the next turn resumes deterministically — not the expected unattended path. Worker-turn rules in [`WORKER-TURN-RULES.md`](../../ws-spec-to-pr/WORKER-TURN-RULES.md) bind dispatched workers only (preview plus tool calls, zero-tool-call failure, no mid-batch ping). They do not stop this unattended orchestrator session when a worker finishes.
 
-**Orchestrator obligation:** both orchestrators resolve `defaults.gateGranularity` (`step` default, or `phase`). `step` runs `user-gate` at each step boundary. `phase` runs at most five blocking gates in a normal standard run: entry, plan approval, implementation approval, delivery, and fix-PR. Boundaries inside a phase advance after validation and state persistence without another blocking prompt. Hard stops, required save points, review findings, test failures, and safety checks never become implicit approvals.
+**Orchestrator obligation:** both orchestrators resolve `defaults.gateGranularity` (`step` default, or `phase`). In **normal** mode, `step` runs `user-gate` at each step boundary; `phase` runs at most five blocking gates in a standard run: entry, plan approval, implementation approval, delivery, and fix-PR. Boundaries inside a phase advance after validation and state persistence without another blocking prompt. In **`autoMode`**, `gateGranularity` does not present a gate: index 0 is applied and the next step is dispatched in the same turn, including the Step 5 → Step 6 boundary after a passing verify score. Asking the user to continue, printing the model-switch banner as a question, or ending the turn after `finish --step 5` is a stall. Hard stops, required save points, review findings, test failures, and safety checks never become implicit approvals.
+
+### autoMode stop conditions (canonical; both orchs)
+
+Step-boundary gate auto-selection (index 0 at every `user-gate`) stays in force and is **not** replaced by this rule. This section forbids yielding at **internal checkpoints** inside a step or between waves.
+
+When `defaults.autoMode: true`, the orchestrator **must not** end the user turn to narrate progress or wait for confirmation at internal checkpoints — including end of a DAG node/wave, a green verification or build, end of step artifacts, or a mid-step status report. Keep executing until a listed stop below. Write progress to machine surfaces only: `telemetry.jsonl`, state handoffs (`state.handoffs` / `{workflow-id}.state.json`), and `## Gate history` — never a user-facing halt.
+
+**Only valid autoMode stops:**
+
+| Stop | Notes |
+|------|--------|
+| Suite stays red after allowed retries | After the retries the skill already allows; do not invent endless loops |
+| Destructive confirmation already required by the product | Backup, merge, or delete that the product/skill already requires a human to approve |
+| Missing credentials or network | Blocks the next required command |
+| Workflow `status: completed` or `status: failed` | Terminal workflow outcomes |
+
+**A green wave is not a stop.** A successful build, a passing wave/suite, or a mid-step status report is evidence for the next wave — never a reason to yield. Host-forced turn end (platform limit) still uses checkpoint + `pause-turn` per the `autoMode` exception above; that is not an orchestrator-chosen checkpoint halt.
+
+Both [`ws-spec-to-pr`](../../ws-spec-to-pr/SKILL.md) and [`ws-spec-to-pr-lite`](../../ws-spec-to-pr-lite/SKILL.md) MUST reference this section and MUST NOT copy a second stop-condition list.
 
 ---
 
@@ -149,7 +168,7 @@ Eval implemented code vs **refined spec when present, else `step-00-{slug}.spec.
 | ≥ `defaults.minVerifyScore` (default 9) | Complete Step 5; required **G2-code after Step 5 before Step 6** (skip if empty stage); then dispatch Step 6 |
 | below `defaults.minVerifyScore` | Run **scoreAndRefine** until overall score ≥ `defaults.minVerifyScore` (default 9) (even when `defaults.scoreAndRefine` is false). Write `step-05-{slug}.score-analysis.md`, re-dispatch `ws-implement-tasks` for tasks scoring below `defaults.minVerifyScore`, re-run `ws-plan-verify`. Max **3** rounds per Step 5 visit; log `score-refine round={n}/3`. After 3 rounds still below `defaults.minVerifyScore`: **Pause** (fail closed). Resume continues the loop. Refine runs **before** the product commit. Never Advance or auto-approve below `defaults.minVerifyScore`. |
 
-`autoMode`: auto-run scoreAndRefine rounds; automatically select **Proceed with Second Pass Refinement**; do **not** auto-approve or advance to Step 6 below `defaults.minVerifyScore` — do **not** call `update_state finish --step 5` or dispatch Step 6 below `minVerifyScore`; Pause only after max rounds still below `defaults.minVerifyScore`.
+`autoMode`: auto-run scoreAndRefine rounds with no prompt. When the score is already ≥ `defaults.minVerifyScore`, skip the Pass 1 menu (Proceed / Accept As-Is / Selective) and the Reach-10 offer; run required G2-code when the stage set is non-empty; `finish --step 5`; then dispatch Step 6 in the **same turn**. Do not print a continue prompt, the session-model banner, or the before-step-6 model hint as a question. Do **not** auto-approve or advance to Step 6 below `defaults.minVerifyScore` — do **not** call `update_state finish --step 5` or dispatch Step 6 below `minVerifyScore`; Pause only after max rounds still below `defaults.minVerifyScore`.
 
 ---
 

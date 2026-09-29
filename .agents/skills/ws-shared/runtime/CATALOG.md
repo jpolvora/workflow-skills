@@ -17,6 +17,7 @@ Path tokens: expand via [`tools.md`](tools.md) before tool calls.
 | `ws-check-harness` | `.agents/skills/ws-check-harness/SKILL.md` | Harness integrity audit (install mode/scope aware) |
 | `ws-check-workflows` | `.agents/skills/ws-check-workflows/SKILL.md` | Deep workflow simulation & validation |
 | `ws-doctor` | `.agents/skills/ws-doctor/SKILL.md` | Install & runtime diagnostics |
+| `ws-version` | `.agents/skills/ws-version/SKILL.md` | Install scope, skill directory, and package version snapshot |
 | `ws-write-a-skill` | `.agents/skills/ws-write-a-skill/SKILL.md` | Create/edit/optimize skills (Extra) |
 | `ws-show-harness` | `.agents/skills/ws-show-harness/SKILL.md` | Session harness snapshot (Extra) |
 | `ws-preview` | `.agents/skills/ws-preview/SKILL.md` | Run consumer `preview.dryRunCommand` local dry-run (Extra; `/ws-configure-project --section preview`) |
@@ -158,6 +159,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Harness benchmark suite & evolution reporting (never spec-to-pr) | `ws-benchmarks` (Extra) |
 | Audit harness | `ws-check-harness` |
 | Diagnose skills / doctor the harness | `ws-doctor` |
+| Show install scope / package version | `ws-version` |
 | Check workflows | `ws-check-workflows` |
 | Grill plan vs docs | `grill-with-docs` |
 | Record learning | `ws-self-learning` (MEMORY consult before plan/code/fix; trap write on completion) |

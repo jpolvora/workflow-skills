@@ -199,6 +199,12 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] features to be emphasized in website and detailed in wiki (`spec: completed/0146-us-436.spec.md`) - [PR #445](https://github.com/jpolvora/workflow-skills/pull/445) MERGED (`fbb69019` implementation)
 - [x] ws-ship-pr/scripts/verify.cjs: skip empty verification aliases instead of executing them (`spec: completed/0147-us-446.spec.md`) — `412e3f37` delivery commit
 - [x] ws-spec-multi stores run state in a skill-named shared directory instead of a per-run directory (`spec: completed/0148-us-448.spec.md`) — `75e8f6b7` on develop
+- [ ] add a simple skill to show version and directory of the skill file (`spec: pending/0149-us-455.spec.md`)
+- [ ] Resolve missing local skills from the global install; do not junction them into the repo (`spec: pending/0150-us-457.spec.md`)
+- [ ] autoMode should mean unattended: no yield at internal checkpoints (`spec: pending/0151-us-458.spec.md`)
+
+
+
 
 
 
@@ -501,6 +507,12 @@ All Next-specs closed.
 | 152 | `us-446` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-ship-pr/scripts/verify.cjs: skip empty verification aliases instead of executing them (`412e3f37` delivery commit) |
 
 | 153 | `us-448` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-multi stores run state in a skill-named shared directory instead of a per-run directory (`75e8f6b7` on develop) |
+
+| 154 | `us-455` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | add a simple skill to show version and directory of the skill file |
+
+| 155 | `us-457` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Resolve missing local skills from the global install; do not junction them into the repo |
+
+| 156 | `us-458` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | autoMode should mean unattended: no yield at internal checkpoints |
 
 ## 9. Inbox
 

@@ -210,6 +210,7 @@ Meta-skills that keep the suite itself honest.
 | `ws-check-harness` | Install mode/scope detection (upstream, project, global, hybrid) plus routing, links, portability, integrity digests, instruction duplication, role clarity, skill composition topology |
 | `ws-check-workflows` | FSM simulation of standard, lite, and multi-spec pipelines: step continuity, state isolation, provider dispatch, artifact transitions |
 | `ws-doctor` | Read-only diagnosis of path errors, tool recipes, config switches, and missing references across installed skills |
+| `ws-version` | Read-only snapshot of install scope (`global` vs `project-local`), absolute loaded `ws-version` skill directory, `packageVersion` from `.agents/skills/ws-shared/version.json`, and stored `.ws/config.json` path tokens |
 | `ws-monitor` | Read-only live observation of workflow state, telemetry, expected artifacts, and configured transcript roots; per-root discovery budget + one shared sanitized correlation window (honest `scan-capped`), `worker-session-paused` replaces the stall warning under a turn-boundary pause, `--watch --until-terminal` exits on a non-active scoped workflow; multi-spec runs derive child-state expectations from the queue and surface `missing-child-state`; the default live watch profile (`--watch --interval 60 --until-terminal --follow-transcript --session-id <id> --agent <name> --open-issue`) follows a session, detects stall/hang via a `stopwatch` (`worker-session-stall` / `stalled-workflow`, `--stall-window`), and proposes an enriched anonymized defect issue for the configured SCM provider `create-issue` intent |
 | `ws-show-harness` | Snapshot of the active session: loaded skills, rules, precedence hierarchy |
 | `ws-preview` | Consumer-configured local pipeline review dry-run (`preview.dryRunCommand`) without publishing PR threads |
@@ -455,6 +456,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-check-harness`](.agents/skills/ws-check-harness/SKILL.md) | W | Meta-harness integrity auditor |
 | [`ws-check-workflows`](.agents/skills/ws-check-workflows/SKILL.md) | W | Workflow FSM simulation runner |
 | [`ws-doctor`](.agents/skills/ws-doctor/SKILL.md) | W | Read-only install and runtime diagnosis |
+| [`ws-version`](.agents/skills/ws-version/SKILL.md) | W | Read-only install scope and package version snapshot |
 | [`ws-show-harness`](.agents/skills/ws-show-harness/SKILL.md) | E | Session harness snapshot |
 | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) | E | Skill authoring and optimization protocol |
 | [`ws-run-benchmark`](.agents/skills/ws-run-benchmark/SKILL.md) | E | Upstream live/static harness benchmark runner (package root only; never spec-to-pr) |

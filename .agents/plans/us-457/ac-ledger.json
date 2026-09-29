@@ -1,0 +1,366 @@
+{
+  "schemaVersion": 1,
+  "revision": 14,
+  "workflowId": "us-457-20260929T134533Z",
+  "slug": "us-457",
+  "specPath": ".agents/plans/us-457/step-00-us-457.spec.md",
+  "planIndexPath": null,
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "When a repo-relative skill path in `.ws/config.json` is missing under the project and the same relative path exists under `{globalSkillsRoot}`, the loader reads that global file and does not create a junction, symlink, or copy under the consumer repo.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/resolve_skill_path.cjs:L29-L70"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/resolve_skill_path.cjs",
+          "lineStart": 29,
+          "lineEnd": 70,
+          "sha256": "24339f866e87dcb5cb5b7651af7ea2f769a8698fd3973200f9e7eb7cfcb958ed"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "2763756858f88b6ea20742996e78066cb870cb47",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "V2:global-fallthrough",
+          "sourceFile": "test/test-resolve-skill-path.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T13:53:50.397Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-2763756858f88b6ea20742996e78066cb870cb47",
+        "step5-ac1"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "After that resolution, `git status` in the consumer repo does not list the resolved global skill directory as an untracked or new path.",
+      "status": "Implemented",
+      "evidence": [
+        "test/test-resolve-skill-path.js:L40-L44"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": "test/test-resolve-skill-path.js",
+          "lineStart": 40,
+          "lineEnd": 44,
+          "sha256": "06a5f625b192355e9aa6d9753df53b5d9c767ce21341b0f45a216760c40044d9"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "2763756858f88b6ea20742996e78066cb870cb47",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "V2:global-fallthrough",
+          "sourceFile": "test/test-resolve-skill-path.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T13:53:50.466Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-2763756858f88b6ea20742996e78066cb870cb47",
+        "step5-ac2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "When the project-local path exists as a real directory (not a link), the loader uses that local path and does not replace it with the global tree.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/resolve_skill_path.cjs:L40-L50"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/resolve_skill_path.cjs",
+          "lineStart": 40,
+          "lineEnd": 50,
+          "sha256": "24339f866e87dcb5cb5b7651af7ea2f769a8698fd3973200f9e7eb7cfcb958ed"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "2763756858f88b6ea20742996e78066cb870cb47",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "V1:local-hit",
+          "sourceFile": "test/test-resolve-skill-path.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T13:53:50.550Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-2763756858f88b6ea20742996e78066cb870cb47",
+        "step5-ac3"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "A missing path under both the project and `{globalSkillsRoot}` fails closed with a named missing-skill error and still creates no junction, symlink, or copy.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/resolve_skill_path.cjs:L55-L62"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/resolve_skill_path.cjs",
+          "lineStart": 55,
+          "lineEnd": 62,
+          "sha256": "24339f866e87dcb5cb5b7651af7ea2f769a8698fd3973200f9e7eb7cfcb958ed"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "2763756858f88b6ea20742996e78066cb870cb47",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "V3:missing",
+          "sourceFile": "test/test-resolve-skill-path.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T13:53:50.622Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-2763756858f88b6ea20742996e78066cb870cb47",
+        "step5-ac4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "Packaged skills that belong in the product tree remain ordinary files or directories; this change does not delete or rewrite them.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/tools.md:L34-L36"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/tools.md",
+          "lineStart": 34,
+          "lineEnd": 36,
+          "sha256": "2de94effc3408663011e16f64b02383770646cb0dd7e6a5a03fbc32c7322091f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "2763756858f88b6ea20742996e78066cb870cb47",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "V1:local-hit",
+          "sourceFile": "test/test-resolve-skill-path.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T13:53:50.711Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-2763756858f88b6ea20742996e78066cb870cb47",
+        "step5-ac5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "Path resolution rejects traversal and absolute escapes when joining a repo-relative config path onto `{globalSkillsRoot}` (containment check before read).",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/resolve_skill_path.cjs:L29-L38"
+      ],
+      "tasks": [],
+      "planSections": [],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/resolve_skill_path.cjs",
+          "lineStart": 29,
+          "lineEnd": 38,
+          "sha256": "24339f866e87dcb5cb5b7651af7ea2f769a8698fd3973200f9e7eb7cfcb958ed"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "2763756858f88b6ea20742996e78066cb870cb47",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "V4:traversal",
+          "sourceFile": "test/test-resolve-skill-path.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T13:53:50.780Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-2763756858f88b6ea20742996e78066cb870cb47",
+        "step5-ac6"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Negative 1: Local skill path missing and global path missing → error names the missing skill and the consumer tree gains no junction, symlink, or copy.",
+      "tests": [
+        {
+          "name": "V3:missing",
+          "sourceFile": "test/test-resolve-skill-path.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T13:53:50.847Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-ns1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Negative 2: Config path `../outside` or an absolute path joined onto `{globalSkillsRoot}` is rejected and no link is created (path traversal invariant).",
+      "tests": [
+        {
+          "name": "V4:traversal",
+          "sourceFile": "test/test-resolve-skill-path.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T13:53:50.919Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-ns2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Negative 3: Creating a junction so the repo-relative path exists is a failing outcome even when the global `SKILL.md` is readable through that junction.",
+      "tests": [
+        {
+          "name": "V2:global-fallthrough",
+          "sourceFile": "test/test-resolve-skill-path.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T13:53:50.990Z"
+        }
+      ],
+      "linkEventIds": [
+        "step5-ns3"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "pre-step6",
+    "score": 9,
+    "earnedUnits": 54,
+    "totalUnits": 60,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "deficiencies": [
+      "AC1: no tasks or planSections",
+      "AC2: no tasks or planSections",
+      "AC3: no tasks or planSections",
+      "AC4: no tasks or planSections",
+      "AC5: no tasks or planSections",
+      "AC6: no tasks or planSections"
+    ],
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-29T14:00:05.570Z",
+    "writer": "ac_ledger.cjs link",
+    "ledgerHash": "46d2edda88e53cfe749ee0ccd74972e9ce59bdaa8f97f7914e4c5ad73fe3fed3"
+  }
+}

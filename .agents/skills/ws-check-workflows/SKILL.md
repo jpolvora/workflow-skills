@@ -69,6 +69,11 @@ The validation process performs end-to-end simulation across both orchestrators:
 - `gates.md` auto-gate rows cover post-verify and post-review-fix save points.
 - `ws-code-review` reviews committed `{base}...HEAD` vs `config.project.baseBranch` and does not commit.
 
+### 6. autoMode contract (ON unattended / OFF gated)
+- **`autoMode: true`** — asserts the canonical `gates.md` § autoMode stop conditions section exists with the no-yield rule at **internal checkpoints** and the four valid stops; both orch SKILLs reference that section and do not duplicate the list.
+- **`autoMode: false`** — asserts normal-mode gating: `defaults.gateGranularity` is documented, `step` runs a `user-gate` at each step boundary, and `phase` runs at most five blocking gates in a standard run.
+- A missing no-yield clause, a duplicated stop list, or an undocumented OFF-mode gate is a **CRITICAL** finding.
+
 ---
 
 ## Report & Confirmation Flow

@@ -57,6 +57,12 @@
       "test/test-ws-doctor.js"
     ],
     [
+      "test/test-ws-version.js"
+    ],
+    [
+      "test/test-resolve-skill-path.js"
+    ],
+    [
       "test/test-shell-quoting-audit.js"
     ],
     [
@@ -178,6 +184,9 @@
     ],
     [
       "test/test-kanvas-drag-drop.js"
+    ],
+    [
+      "test/test-check-workflows-automode.js"
     ]
   ],
   "remote": [
@@ -225,6 +234,12 @@
     ],
     [
       "test/test-ws-doctor.js"
+    ],
+    [
+      "test/test-ws-version.js"
+    ],
+    [
+      "test/test-resolve-skill-path.js"
     ],
     [
       "test/test-shell-quoting-audit.js"

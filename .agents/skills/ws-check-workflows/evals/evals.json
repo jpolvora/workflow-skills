@@ -20,6 +20,26 @@
         "Reports critical findings with file paths",
         "Uses path tokens ({skillsRoot}, {sharedDir}, {plansDir}) instead of hardcoded consumer paths"
       ]
+    },
+    {
+      "id": 3,
+      "prompt": "check-workflows with autoMode ON — the orchestrator must be unattended",
+      "expected_output": "Validator confirms the canonical autoMode stop list and the internal-checkpoint no-yield rule.",
+      "assertions": [
+        "Asserts gates.md § autoMode stop conditions lists only the valid stops (red suite, destructive confirm, missing credentials/network, terminal status)",
+        "Asserts both orch SKILLs reference that section without duplicating the stop list",
+        "Flags a missing internal-checkpoint no-yield clause as CRITICAL"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "check-workflows with autoMode OFF — gates must wait for the user each step or per gateGranularity",
+      "expected_output": "Validator confirms normal-mode gating at the step boundary and the step|phase granularity.",
+      "assertions": [
+        "Asserts defaults.gateGranularity is documented with step (user-gate at each step boundary) and phase (at most five blocking gates)",
+        "Asserts both orch SKILLs document normal-mode per-step-boundary gating",
+        "Flags an undocumented OFF-mode gate cadence as CRITICAL"
+      ]
     }
   ]
 }

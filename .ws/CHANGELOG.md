@@ -1,5 +1,30 @@
 # Changelog
 
+### [2026-09-29 10:53] Agent: agent
+- **Prompt**: Fix PR #456: drive review threads to zero and clear failing CI checks.
+- **Done**: Regenerated bin/skill-integrity.json for the PR tree (0.5.13, then again at 0.5.14 after a concurrent version bump landed) so verify-integrity stops reporting packageVersion drift; recorded the trap in memory.
+- **Result**: PR #456 CI green (test + review pass) and 0 active review threads.
+
+### [2026-09-29 10:37] Agent: agent
+- **Prompt**: import #458, track; link spec with the source issue; add check-workflows coverage for autoMode ON and OFF
+- **Done**: Imported GitHub issue #458 as spec of record, registered the step-00 workflow copy, tracked it in index.PRD, and linked it to the source issue. Extended ws-check-workflows with autoMode ON (unattended internal checkpoints + canonical stop list) and autoMode OFF (per-step or gateGranularity) assertions, evals, and an executable regression test.
+- **Result**: check_workflows.cjs reports 0 issues; test-check-workflows-automode PASS; test-harness-clean 0 findings; validate_spec --mode=authoring PASS (9 ACs).
+
+### [2026-09-29 10:02] Agent: agent
+- **Prompt**: autoMode ws-spec-to-pr paused after step 5 asking to continue
+- **Done**: Step 5 exit in autoMode skips Pass 1 and Reach-10 and dispatches step 6 in the same turn
+- **Result**: gates.md and STEP-DISPATCH.md updated; test-liveness-checkpoints D1 green
+
+### [2026-09-29 09:31] Agent: agent
+- **Prompt**: Import open GitHub issues via ws-spec-from-provider
+- **Done**: Imported issue 457; skipped 455 (already registered)
+- **Result**: Wrote .agents/specs/pending/0150-us-457.spec.md and .agents/plans/us-457/step-00-us-457.spec.md; tracked index.PRD row 155
+
+### [2026-09-29 08:51] Agent: agent
+- **Prompt**: ws-spec-from-provider import open GitHub issues
+- **Done**: Imported issue 455 as us-455 spec, registered step-00, tracked index.PRD
+- **Result**: imported 1, skipped 0, failed 0
+
 ### [2026-09-29 08:04] Agent: agent
 - **Prompt**: C:/Program Files/Git/ws-ship-pr bump then PR
 - **Done**: Bumped 0.5.11 to 0.5.12, committed, pushed develop, opened PR

@@ -448,6 +448,78 @@ class WorkflowChecker {
     }
   }
 
+  checkAutoModeContract() {
+    const paths = {
+      gates: 'ws-shared/runtime/gates.md',
+      standard: 'ws-spec-to-pr/SKILL.md',
+      lite: 'ws-spec-to-pr-lite/SKILL.md',
+    };
+    const texts = {};
+    let missing = false;
+    for (const [key, rel] of Object.entries(paths)) {
+      const p = path.join(SKILLS_DIR, rel);
+      if (!fs.existsSync(p)) {
+        this.addIssue('CRITICAL', 'autoMode Contract', rel, `Missing file required for the autoMode contract check: ${rel}.`, `Restore .agents/skills/${rel} from upstream.`);
+        missing = true;
+        continue;
+      }
+      texts[key] = fs.readFileSync(p, 'utf8');
+    }
+    if (missing) return;
+    const gates = texts.gates;
+
+    // autoMode ON — unattended through internal checkpoints (not only step boundaries).
+    if (!/^###\s+autoMode stop conditions\b/m.test(gates)) {
+      this.addIssue('CRITICAL', 'autoMode Contract', paths.gates, 'Canonical autoMode stop-conditions section is missing.', 'Add "### autoMode stop conditions (canonical; both orchs)" to gates.md.');
+    }
+    if (!/internal checkpoint/i.test(gates)) {
+      this.addIssue('CRITICAL', 'autoMode Contract', paths.gates, 'autoMode contract does not forbid yielding at internal checkpoints.', 'State that autoMode must not end the user turn at internal checkpoints (wave end, green verify/build, end of artifacts).');
+    }
+    if (!/must not[\s\S]{0,160}end the user turn/i.test(gates)) {
+      this.addIssue('CRITICAL', 'autoMode Contract', paths.gates, 'autoMode contract does not state the no-yield rule for internal checkpoints.', 'State that under autoMode the orchestrator must not end the user turn to narrate progress.');
+    }
+    if (!/green wave is not a stop/i.test(gates)) {
+      this.addIssue('CRITICAL', 'autoMode Contract', paths.gates, 'autoMode contract does not state that a green wave is not a stop.', 'Add the "A green wave is not a stop" rule.');
+    }
+    const stopRows = [
+      [/Only valid autoMode stops/i, 'canonical stop-list header'],
+      [/Suite stays red after allowed retries/i, 'red-suite stop'],
+      [/Missing credentials or network/i, 'missing-credentials/network stop'],
+      [/status:\s*completed`?\s*or\s*`?status:\s*failed/i, 'terminal status stop'],
+    ];
+    for (const [re, label] of stopRows) {
+      if (!re.test(gates)) {
+        this.addIssue('CRITICAL', 'autoMode Contract', paths.gates, `autoMode canonical stop list is missing the ${label}.`, 'Restore the canonical stop list in gates.md § autoMode stop conditions.');
+      }
+    }
+    // Both orchs reference the canonical section; neither duplicates the list.
+    for (const [label, txt, rel] of [
+      ['ws-spec-to-pr', texts.standard, paths.standard],
+      ['ws-spec-to-pr-lite', texts.lite, paths.lite],
+    ]) {
+      if (!/autoMode stop conditions/i.test(txt)) {
+        this.addIssue('CRITICAL', 'autoMode Contract', rel, `${label} does not reference the canonical gates.md autoMode stop-conditions section.`, 'Reference gates.md § autoMode stop conditions; do not copy the list.');
+      }
+      if (/Only valid autoMode stops/i.test(txt)) {
+        this.addIssue('CRITICAL', 'autoMode Contract', rel, `${label} duplicates the canonical autoMode stop list.`, 'Remove the duplicated list; link gates.md § autoMode stop conditions instead.');
+      }
+      if (!/normal mode/i.test(txt) || !/step boundary/i.test(txt)) {
+        this.addIssue('CRITICAL', 'autoMode Contract', rel, `${label} does not document normal-mode (autoMode OFF) gating at the step boundary.`, 'State that in normal mode the orchestrator presents a user-gate at the step boundary.');
+      }
+    }
+
+    // autoMode OFF — gated per step boundary, or per defaults.gateGranularity (step | phase).
+    if (!/defaults\.gateGranularity/.test(gates)) {
+      this.addIssue('CRITICAL', 'autoMode Contract', paths.gates, 'Gate-granularity contract is missing for normal (autoMode OFF) mode.', 'Document defaults.gateGranularity (step default, or phase) as the normal-mode gate cadence.');
+    }
+    if (!/at each step boundary/i.test(gates)) {
+      this.addIssue('CRITICAL', 'autoMode Contract', paths.gates, 'Normal mode does not gate at each step boundary.', 'State that with gateGranularity "step" the orchestrator runs a user-gate at each step boundary.');
+    }
+    if (!/at most five blocking gates/i.test(gates)) {
+      this.addIssue('CRITICAL', 'autoMode Contract', paths.gates, 'Phase gate granularity is not documented for normal mode.', 'State that with gateGranularity "phase" a standard run has at most five blocking gates.');
+    }
+  }
+
   runAll() {
     this.validateRequestedWorkflow();
     this.simulateStandardWorkflow();
@@ -457,6 +529,7 @@ class WorkflowChecker {
     this.checkScriptsSyntax();
     this.checkStateIsolationAndConfig();
     this.checkG2CodeContract();
+    this.checkAutoModeContract();
   }
 
   generateReport() {
