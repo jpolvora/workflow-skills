@@ -179,9 +179,9 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Run-state and telemetry integrity: fail-closed preset resolution, ship writeback, Step 9 round artifacts, truthful skip semantics (`spec: completed/0127-us-414-run-state-integrity.spec.md`) — PR #422 MERGED
 - [x] Monitor accuracy: step-membership artifact expectations, legacy terminal tolerance, transcript correlation windows, discovery budget (`spec: completed/0128-us-412-418-monitor-accuracy.spec.md`) — [PR #423](https://github.com/jpolvora/workflow-skills/pull/423) MERGED
 - [x] Observer-log follow-ups (us-412-413 run): intra-root enumeration edge, missing agentTranscripts marker, G2 plans-index hash staleness, compactOutputs no-op (`spec: completed/0129-us-419.spec.md`) — PR #424 MERGED
-- [x] Pre-ship documentation-sync gate (configurable) (`spec: pending/0129-pre-ship-doc-sync.spec.md`)
+- [x] Pre-ship documentation-sync gate (configurable) (`spec: completed/0129-pre-ship-doc-sync.spec.md`)
 - [x] Kanvas board — packaged local kanban visualizer for spec and workflow state (`spec: completed/0130-kanvas-board.spec.md`) — [PR #425](https://github.com/jpolvora/workflow-skills/pull/425)
-- [x] Kanvas board phase 2 — drag-and-drop columns with status update on move (`spec: pending/0131-kanvas-board-drag-drop.spec.md`)
+- [x] Kanvas board phase 2 — drag-and-drop columns with status update on move (`spec: completed/0131-kanvas-board-drag-drop.spec.md`)
 - [x] ws-configure-project should initialize .ws/ local project directory with basic minimal required files (`spec: completed/0132-us-429.spec.md`) — [PR #431](https://github.com/jpolvora/workflow-skills/pull/431) MERGED
 - [x] Score 10 on first verify: run format and full test aliases in implement, and do not cap on baseline-dirty (`spec: completed/0133-us-430.spec.md`) — [PR #432](https://github.com/jpolvora/workflow-skills/pull/432)
 - [x] Organize specifications into status subfolders (pending, completed, archived) (`spec: completed/0135-spec-organizer-status-subfolders.spec.md`) — `4d0365eb` on develop
@@ -197,8 +197,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] skillLoader: adopt token-centered skill loading at inline body-load sites (`spec: completed/0144-us-440.spec.md`) - [PR #443](https://github.com/jpolvora/workflow-skills/pull/443) MERGED (`7ee4dd57` implementation)
 - [x] (Spec) Create a new skill ws-spec-to-issue (`spec: completed/0145-us-439.spec.md`) - [PR #444](https://github.com/jpolvora/workflow-skills/pull/444) MERGED (`0d2337df` implementation)
 - [x] features to be emphasized in website and detailed in wiki (`spec: completed/0146-us-436.spec.md`) - [PR #445](https://github.com/jpolvora/workflow-skills/pull/445) MERGED (`fbb69019` implementation)
-- [x] ws-ship-pr/scripts/verify.cjs: skip empty verification aliases instead of executing them (`spec: completed/0147-us-446.spec.md`) — `412e3f37` delivery commit
-- [x] ws-spec-multi stores run state in a skill-named shared directory instead of a per-run directory (`spec: completed/0148-us-448.spec.md`) — `75e8f6b7` on develop
+- [x] ws-ship-pr/scripts/verify.cjs: skip empty verification aliases instead of executing them (`spec: pending/0147-us-446.spec.md`) — `412e3f37` delivery commit
+- [x] ws-spec-multi stores run state in a skill-named shared directory instead of a per-run directory (`spec: pending/0148-us-448.spec.md`) — `75e8f6b7` on develop
 
 
 

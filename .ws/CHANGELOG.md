@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-29 07:27] Agent: agent
+- **Prompt**: set autoOrganizeByStatus true and apply now
+- **Done**: Ran organize_specs.cjs by-status apply
+- **Result**: Moved pre-ship-doc-sync and kanvas-board-drag-drop to completed; us-446 and us-448 moved to pending because issueState is open
+
 ### [2026-09-29 07:25] Agent: agent
 - **Prompt**: add ws-spec-organizer auto switch for by-status apply
 - **Done**: Added plans.autoOrganizeByStatus (default false; this repo true)
