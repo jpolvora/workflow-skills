@@ -45,6 +45,7 @@ spec('move-sprint', 'Move sprint');
 spec('move-dev', 'Move dev');
 spec('move-prod', 'Move prod');
 spec('move-abandon', 'Move abandon');
+spec('move-tracked', 'Move tracked');
 
 write(indexPath, `# index
 
@@ -52,6 +53,7 @@ write(indexPath, `# index
 
 | 1 | \`move-dev\` | \`[ ]\` todo | Phase 1 | Move dev |
 | 2 | \`move-prod\` | \`[ ]\` todo | Phase 1 | Move prod |
+| 3 | \`move-tracked\` | \`[ ]\` todo | Phase 1 | Move tracked |
 
 `);
 fs.mkdirSync(path.join(plansDir, 'move-dev'), { recursive: true });
@@ -111,6 +113,12 @@ assert(prodRes.status === 200 && prodRes.card.column === 'production', 'producti
 
 const abandonRes = moveCard(roots, { slug: 'move-abandon', toColumn: 'abandoned' });
 assert(abandonRes.status === 200 && abandonRes.writer === 'archive-row', 'runless abandoned appends archive');
+
+const trackedAbandon = moveCard(roots, { slug: 'move-tracked', toColumn: 'abandoned' });
+const trackedIndex = fs.readFileSync(indexPath, 'utf8');
+const archiveBody = (trackedIndex.split(/^##\s+.*archiv/im)[1] || '').split(/^##\s+/m)[0];
+assert(trackedAbandon.status === 200 && trackedAbandon.writer === 'archive-row', 'tracked runless abandoned still writes');
+assert(archiveBody.includes('move-tracked'), 'archive row added when slug already exists in the feature table');
 
 const noop = moveCard(roots, { slug: 'move-prod', toColumn: 'production' });
 assert(noop.status === 200 && noop.writer === 'no-op', 'same-column is idempotent no-op');

@@ -1,0 +1,1809 @@
+{
+  "acImplemented": 7,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "6ebf20146fbde40e47c401a0af22a8c9df77056e",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L590-L600",
+          ".agents/skills/ws-spec-multi/PROTOCOL.md:L1-L5",
+          ".agents/skills/ws-spec-multi/SKILL.md:L1-L5",
+          ".agents/skills/ws-spec-multi/STATE.md:L1-L5",
+          ".agents/skills/ws-spec-multi/scripts/record_child_outcome.cjs:L1-L5",
+          ".agents/skills/ws-spec-multi/scripts/retire_superseded_run.cjs:L1-L5",
+          ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs:L1-L5"
+        ],
+        "files": [
+          {
+            "lineEnd": 600,
+            "lineStart": 590,
+            "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            "sha256": "7d829244277da928de8b24a94d2acc33174dd587b59a3a24bfa585a45d556840"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/PROTOCOL.md",
+            "sha256": "ce26fde5f5669b8de2e17b39f05ecc561928dd40e3da976d6a0e43d2a75364d0"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/scripts/record_child_outcome.cjs",
+            "sha256": "211f262e4bca17fef0c0b6808e8f14ef6e55f5d72fb37141b0914535a58f1397"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/scripts/retire_superseded_run.cjs",
+            "sha256": "2117f1ecf630036fa7532331959652426502e5b3dbb80ab747fa5ad3997f416e"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs",
+            "sha256": "eba499df387f4203f6447525b9d920780607fabef824961bd6404f1ea964357b"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/SKILL.md",
+            "sha256": "a77f07e21d7cf8c0762a0bda4cee452730bc1ddcc60a05e6c96ff9befe7bada5"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/STATE.md",
+            "sha256": "eb9cabdf072a19926f18c35d0091a3d0102d6ebfac2386c019483780e932f279"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "impl-us448"
+        ],
+        "planSections": [
+          "section-005"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-ws-monitor: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor.js",
+            "timestamp": "2026-09-28T01:22:09.794Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 child-exit artifact guard ok",
+            "phase": "observed",
+            "sourceFile": "test/test-verify-child-artifacts-us388.js",
+            "timestamp": "2026-09-28T01:22:09.794Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 monitor multi-spec child-state expectations ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us388.js",
+            "timestamp": "2026-09-28T01:22:09.795Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC1/AC2:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.791Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC3:",
+            "phase": "observed",
+            "sourceFile": "test/test-retire-superseded-run.js",
+            "timestamp": "2026-09-28T01:22:09.793Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC4:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.794Z"
+          }
+        ],
+        "text": "A new batch run writes its state to `{plansDir}/{runId}/{runId}.state.md` (per-run directory) and never to the flat `{plansDir}/ws-spec-multi/{runId}.state.md`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "6ebf20146fbde40e47c401a0af22a8c9df77056e",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L590-L600",
+          ".agents/skills/ws-spec-multi/PROTOCOL.md:L1-L5",
+          ".agents/skills/ws-spec-multi/SKILL.md:L1-L5",
+          ".agents/skills/ws-spec-multi/STATE.md:L1-L5",
+          ".agents/skills/ws-spec-multi/scripts/record_child_outcome.cjs:L1-L5",
+          ".agents/skills/ws-spec-multi/scripts/retire_superseded_run.cjs:L1-L5",
+          ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs:L1-L5"
+        ],
+        "files": [
+          {
+            "lineEnd": 600,
+            "lineStart": 590,
+            "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            "sha256": "7d829244277da928de8b24a94d2acc33174dd587b59a3a24bfa585a45d556840"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/PROTOCOL.md",
+            "sha256": "ce26fde5f5669b8de2e17b39f05ecc561928dd40e3da976d6a0e43d2a75364d0"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/scripts/record_child_outcome.cjs",
+            "sha256": "211f262e4bca17fef0c0b6808e8f14ef6e55f5d72fb37141b0914535a58f1397"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/scripts/retire_superseded_run.cjs",
+            "sha256": "2117f1ecf630036fa7532331959652426502e5b3dbb80ab747fa5ad3997f416e"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs",
+            "sha256": "eba499df387f4203f6447525b9d920780607fabef824961bd6404f1ea964357b"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/SKILL.md",
+            "sha256": "a77f07e21d7cf8c0762a0bda4cee452730bc1ddcc60a05e6c96ff9befe7bada5"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/STATE.md",
+            "sha256": "eb9cabdf072a19926f18c35d0091a3d0102d6ebfac2386c019483780e932f279"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "impl-us448"
+        ],
+        "planSections": [
+          "section-005"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-ws-monitor: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor.js",
+            "timestamp": "2026-09-28T01:22:09.803Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 child-exit artifact guard ok",
+            "phase": "observed",
+            "sourceFile": "test/test-verify-child-artifacts-us388.js",
+            "timestamp": "2026-09-28T01:22:09.803Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 monitor multi-spec child-state expectations ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us388.js",
+            "timestamp": "2026-09-28T01:22:09.803Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC1/AC2:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.802Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC3:",
+            "phase": "observed",
+            "sourceFile": "test/test-retire-superseded-run.js",
+            "timestamp": "2026-09-28T01:22:09.802Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC4:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.803Z"
+          }
+        ],
+        "text": "Two runs with distinct `{runId}` values never share a state directory; each `{plansDir}/{runId}/` holds exactly one batch state file.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "6ebf20146fbde40e47c401a0af22a8c9df77056e",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L590-L600",
+          ".agents/skills/ws-spec-multi/PROTOCOL.md:L1-L5",
+          ".agents/skills/ws-spec-multi/SKILL.md:L1-L5",
+          ".agents/skills/ws-spec-multi/STATE.md:L1-L5",
+          ".agents/skills/ws-spec-multi/scripts/record_child_outcome.cjs:L1-L5",
+          ".agents/skills/ws-spec-multi/scripts/retire_superseded_run.cjs:L1-L5",
+          ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs:L1-L5"
+        ],
+        "files": [
+          {
+            "lineEnd": 600,
+            "lineStart": 590,
+            "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            "sha256": "7d829244277da928de8b24a94d2acc33174dd587b59a3a24bfa585a45d556840"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/PROTOCOL.md",
+            "sha256": "ce26fde5f5669b8de2e17b39f05ecc561928dd40e3da976d6a0e43d2a75364d0"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/scripts/record_child_outcome.cjs",
+            "sha256": "211f262e4bca17fef0c0b6808e8f14ef6e55f5d72fb37141b0914535a58f1397"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/scripts/retire_superseded_run.cjs",
+            "sha256": "2117f1ecf630036fa7532331959652426502e5b3dbb80ab747fa5ad3997f416e"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs",
+            "sha256": "eba499df387f4203f6447525b9d920780607fabef824961bd6404f1ea964357b"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/SKILL.md",
+            "sha256": "a77f07e21d7cf8c0762a0bda4cee452730bc1ddcc60a05e6c96ff9befe7bada5"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/STATE.md",
+            "sha256": "eb9cabdf072a19926f18c35d0091a3d0102d6ebfac2386c019483780e932f279"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "impl-us448"
+        ],
+        "planSections": [
+          "section-005"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-ws-monitor: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor.js",
+            "timestamp": "2026-09-28T01:22:09.809Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 child-exit artifact guard ok",
+            "phase": "observed",
+            "sourceFile": "test/test-verify-child-artifacts-us388.js",
+            "timestamp": "2026-09-28T01:22:09.809Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 monitor multi-spec child-state expectations ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us388.js",
+            "timestamp": "2026-09-28T01:22:09.809Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC1/AC2:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.808Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC3:",
+            "phase": "observed",
+            "sourceFile": "test/test-retire-superseded-run.js",
+            "timestamp": "2026-09-28T01:22:09.809Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC4:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.809Z"
+          }
+        ],
+        "text": "Entry/resume detection accepts both the new per-run path and the legacy flat path `{plansDir}/ws-spec-multi/*.state.md`; resuming a legacy file continues the same run without creating a duplicate run.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "6ebf20146fbde40e47c401a0af22a8c9df77056e",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L590-L600",
+          ".agents/skills/ws-spec-multi/PROTOCOL.md:L1-L5",
+          ".agents/skills/ws-spec-multi/SKILL.md:L1-L5",
+          ".agents/skills/ws-spec-multi/STATE.md:L1-L5",
+          ".agents/skills/ws-spec-multi/scripts/record_child_outcome.cjs:L1-L5",
+          ".agents/skills/ws-spec-multi/scripts/retire_superseded_run.cjs:L1-L5",
+          ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs:L1-L5"
+        ],
+        "files": [
+          {
+            "lineEnd": 600,
+            "lineStart": 590,
+            "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            "sha256": "7d829244277da928de8b24a94d2acc33174dd587b59a3a24bfa585a45d556840"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/PROTOCOL.md",
+            "sha256": "ce26fde5f5669b8de2e17b39f05ecc561928dd40e3da976d6a0e43d2a75364d0"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/scripts/record_child_outcome.cjs",
+            "sha256": "211f262e4bca17fef0c0b6808e8f14ef6e55f5d72fb37141b0914535a58f1397"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/scripts/retire_superseded_run.cjs",
+            "sha256": "2117f1ecf630036fa7532331959652426502e5b3dbb80ab747fa5ad3997f416e"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs",
+            "sha256": "eba499df387f4203f6447525b9d920780607fabef824961bd6404f1ea964357b"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/SKILL.md",
+            "sha256": "a77f07e21d7cf8c0762a0bda4cee452730bc1ddcc60a05e6c96ff9befe7bada5"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/STATE.md",
+            "sha256": "eb9cabdf072a19926f18c35d0091a3d0102d6ebfac2386c019483780e932f279"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "impl-us448"
+        ],
+        "planSections": [
+          "section-005"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-ws-monitor: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor.js",
+            "timestamp": "2026-09-28T01:22:09.818Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 child-exit artifact guard ok",
+            "phase": "observed",
+            "sourceFile": "test/test-verify-child-artifacts-us388.js",
+            "timestamp": "2026-09-28T01:22:09.818Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 monitor multi-spec child-state expectations ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us388.js",
+            "timestamp": "2026-09-28T01:22:09.819Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC1/AC2:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.817Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC3:",
+            "phase": "observed",
+            "sourceFile": "test/test-retire-superseded-run.js",
+            "timestamp": "2026-09-28T01:22:09.818Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC4:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.818Z"
+          }
+        ],
+        "text": "The three `RESERVED_PLAN_DIRS` guards are removed, and a queue item slugged `ws-spec-multi` resolves its child artifacts under `{plansDir}/ws-spec-multi/` (a normal plan dir) with no special-casing.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "6ebf20146fbde40e47c401a0af22a8c9df77056e",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L590-L600",
+          ".agents/skills/ws-spec-multi/PROTOCOL.md:L1-L5",
+          ".agents/skills/ws-spec-multi/SKILL.md:L1-L5",
+          ".agents/skills/ws-spec-multi/STATE.md:L1-L5",
+          ".agents/skills/ws-spec-multi/scripts/record_child_outcome.cjs:L1-L5",
+          ".agents/skills/ws-spec-multi/scripts/retire_superseded_run.cjs:L1-L5",
+          ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs:L1-L5"
+        ],
+        "files": [
+          {
+            "lineEnd": 600,
+            "lineStart": 590,
+            "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            "sha256": "7d829244277da928de8b24a94d2acc33174dd587b59a3a24bfa585a45d556840"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/PROTOCOL.md",
+            "sha256": "ce26fde5f5669b8de2e17b39f05ecc561928dd40e3da976d6a0e43d2a75364d0"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/scripts/record_child_outcome.cjs",
+            "sha256": "211f262e4bca17fef0c0b6808e8f14ef6e55f5d72fb37141b0914535a58f1397"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/scripts/retire_superseded_run.cjs",
+            "sha256": "2117f1ecf630036fa7532331959652426502e5b3dbb80ab747fa5ad3997f416e"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs",
+            "sha256": "eba499df387f4203f6447525b9d920780607fabef824961bd6404f1ea964357b"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/SKILL.md",
+            "sha256": "a77f07e21d7cf8c0762a0bda4cee452730bc1ddcc60a05e6c96ff9befe7bada5"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/STATE.md",
+            "sha256": "eb9cabdf072a19926f18c35d0091a3d0102d6ebfac2386c019483780e932f279"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "impl-us448"
+        ],
+        "planSections": [
+          "section-005"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-ws-monitor: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor.js",
+            "timestamp": "2026-09-28T01:22:09.825Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 child-exit artifact guard ok",
+            "phase": "observed",
+            "sourceFile": "test/test-verify-child-artifacts-us388.js",
+            "timestamp": "2026-09-28T01:22:09.825Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 monitor multi-spec child-state expectations ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us388.js",
+            "timestamp": "2026-09-28T01:22:09.825Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC1/AC2:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.824Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC3:",
+            "phase": "observed",
+            "sourceFile": "test/test-retire-superseded-run.js",
+            "timestamp": "2026-09-28T01:22:09.824Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC4:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.825Z"
+          }
+        ],
+        "text": "`STATE.md`, `PROTOCOL.md`, `SKILL.md`, and `EXAMPLES.md` document the new path; `retire_superseded_run.cjs` resolves the new path; `ws-monitor` discovery finds the state under `{plansDir}/{runId}/` and still reports `missing-child-state` correctly.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "6ebf20146fbde40e47c401a0af22a8c9df77056e",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L590-L600",
+          ".agents/skills/ws-spec-multi/PROTOCOL.md:L1-L5",
+          ".agents/skills/ws-spec-multi/SKILL.md:L1-L5",
+          ".agents/skills/ws-spec-multi/STATE.md:L1-L5",
+          ".agents/skills/ws-spec-multi/scripts/record_child_outcome.cjs:L1-L5",
+          ".agents/skills/ws-spec-multi/scripts/retire_superseded_run.cjs:L1-L5",
+          ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs:L1-L5"
+        ],
+        "files": [
+          {
+            "lineEnd": 600,
+            "lineStart": 590,
+            "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            "sha256": "7d829244277da928de8b24a94d2acc33174dd587b59a3a24bfa585a45d556840"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/PROTOCOL.md",
+            "sha256": "ce26fde5f5669b8de2e17b39f05ecc561928dd40e3da976d6a0e43d2a75364d0"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/scripts/record_child_outcome.cjs",
+            "sha256": "211f262e4bca17fef0c0b6808e8f14ef6e55f5d72fb37141b0914535a58f1397"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/scripts/retire_superseded_run.cjs",
+            "sha256": "2117f1ecf630036fa7532331959652426502e5b3dbb80ab747fa5ad3997f416e"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs",
+            "sha256": "eba499df387f4203f6447525b9d920780607fabef824961bd6404f1ea964357b"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/SKILL.md",
+            "sha256": "a77f07e21d7cf8c0762a0bda4cee452730bc1ddcc60a05e6c96ff9befe7bada5"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/STATE.md",
+            "sha256": "eb9cabdf072a19926f18c35d0091a3d0102d6ebfac2386c019483780e932f279"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "impl-us448"
+        ],
+        "planSections": [
+          "section-005"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-ws-monitor: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor.js",
+            "timestamp": "2026-09-28T01:22:09.832Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 child-exit artifact guard ok",
+            "phase": "observed",
+            "sourceFile": "test/test-verify-child-artifacts-us388.js",
+            "timestamp": "2026-09-28T01:22:09.832Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 monitor multi-spec child-state expectations ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us388.js",
+            "timestamp": "2026-09-28T01:22:09.832Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC1/AC2:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.830Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC3:",
+            "phase": "observed",
+            "sourceFile": "test/test-retire-superseded-run.js",
+            "timestamp": "2026-09-28T01:22:09.831Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC4:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.831Z"
+          }
+        ],
+        "text": "Path resolution honors a non-default `plans.dir`; no hardcoded `.agents/plans/ws-spec-multi` literal remains in the batch scripts.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "6ebf20146fbde40e47c401a0af22a8c9df77056e",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L590-L600",
+          ".agents/skills/ws-spec-multi/PROTOCOL.md:L1-L5",
+          ".agents/skills/ws-spec-multi/SKILL.md:L1-L5",
+          ".agents/skills/ws-spec-multi/STATE.md:L1-L5",
+          ".agents/skills/ws-spec-multi/scripts/record_child_outcome.cjs:L1-L5",
+          ".agents/skills/ws-spec-multi/scripts/retire_superseded_run.cjs:L1-L5",
+          ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs:L1-L5"
+        ],
+        "files": [
+          {
+            "lineEnd": 600,
+            "lineStart": 590,
+            "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            "sha256": "7d829244277da928de8b24a94d2acc33174dd587b59a3a24bfa585a45d556840"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/PROTOCOL.md",
+            "sha256": "ce26fde5f5669b8de2e17b39f05ecc561928dd40e3da976d6a0e43d2a75364d0"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/scripts/record_child_outcome.cjs",
+            "sha256": "211f262e4bca17fef0c0b6808e8f14ef6e55f5d72fb37141b0914535a58f1397"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/scripts/retire_superseded_run.cjs",
+            "sha256": "2117f1ecf630036fa7532331959652426502e5b3dbb80ab747fa5ad3997f416e"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs",
+            "sha256": "eba499df387f4203f6447525b9d920780607fabef824961bd6404f1ea964357b"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/SKILL.md",
+            "sha256": "a77f07e21d7cf8c0762a0bda4cee452730bc1ddcc60a05e6c96ff9befe7bada5"
+          },
+          {
+            "lineEnd": 5,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-spec-multi/STATE.md",
+            "sha256": "eb9cabdf072a19926f18c35d0091a3d0102d6ebfac2386c019483780e932f279"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [
+          "impl-us448"
+        ],
+        "planSections": [
+          "section-005"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-ws-monitor: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor.js",
+            "timestamp": "2026-09-28T01:22:09.838Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 child-exit artifact guard ok",
+            "phase": "observed",
+            "sourceFile": "test/test-verify-child-artifacts-us388.js",
+            "timestamp": "2026-09-28T01:22:09.838Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 monitor multi-spec child-state expectations ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us388.js",
+            "timestamp": "2026-09-28T01:22:09.839Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC1/AC2:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.837Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC3:",
+            "phase": "observed",
+            "sourceFile": "test/test-retire-superseded-run.js",
+            "timestamp": "2026-09-28T01:22:09.838Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC4:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.838Z"
+          }
+        ],
+        "text": "New coverage asserts the per-run layout, the legacy resume fallback, and the removal of reserved-dir special-casing; `npm run test` passes.",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      }
+    ],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "impl-us448"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-ws-monitor: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor.js",
+            "timestamp": "2026-09-28T01:22:09.840Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 child-exit artifact guard ok",
+            "phase": "observed",
+            "sourceFile": "test/test-verify-child-artifacts-us388.js",
+            "timestamp": "2026-09-28T01:22:09.840Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 monitor multi-spec child-state expectations ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us388.js",
+            "timestamp": "2026-09-28T01:22:09.840Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC1/AC2:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.839Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC3:",
+            "phase": "observed",
+            "sourceFile": "test/test-retire-superseded-run.js",
+            "timestamp": "2026-09-28T01:22:09.839Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC4:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.840Z"
+          }
+        ],
+        "text": "**Legacy resume:** a state file left at the flat `{plansDir}/ws-spec-multi/{runId}.state.md` still loads as its run and does not spawn a second run. (Red before the fallback lands.)"
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "impl-us448"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-ws-monitor: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor.js",
+            "timestamp": "2026-09-28T01:22:09.841Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 child-exit artifact guard ok",
+            "phase": "observed",
+            "sourceFile": "test/test-verify-child-artifacts-us388.js",
+            "timestamp": "2026-09-28T01:22:09.841Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 monitor multi-spec child-state expectations ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us388.js",
+            "timestamp": "2026-09-28T01:22:09.841Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC1/AC2:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.840Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC3:",
+            "phase": "observed",
+            "sourceFile": "test/test-retire-superseded-run.js",
+            "timestamp": "2026-09-28T01:22:09.841Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC4:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.841Z"
+          }
+        ],
+        "text": "**No shared directory:** creating two runs yields two distinct `{plansDir}/{runId}/` directories; a test asserting a single shared dir fails."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "impl-us448"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-ws-monitor: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor.js",
+            "timestamp": "2026-09-28T01:22:09.842Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 child-exit artifact guard ok",
+            "phase": "observed",
+            "sourceFile": "test/test-verify-child-artifacts-us388.js",
+            "timestamp": "2026-09-28T01:22:09.843Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 monitor multi-spec child-state expectations ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us388.js",
+            "timestamp": "2026-09-28T01:22:09.843Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC1/AC2:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.841Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC3:",
+            "phase": "observed",
+            "sourceFile": "test/test-retire-superseded-run.js",
+            "timestamp": "2026-09-28T01:22:09.842Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC4:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.842Z"
+          }
+        ],
+        "text": "**Slug alias no longer special-cased:** a queue item slugged `ws-spec-multi` resolves child artifacts to `{plansDir}/ws-spec-multi/`; the previous refusal path is gone (a test asserting the refusal now fails)."
+      },
+      {
+        "id": "NS4",
+        "linkEventIds": [
+          "impl-us448"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-ws-monitor: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor.js",
+            "timestamp": "2026-09-28T01:22:09.844Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 child-exit artifact guard ok",
+            "phase": "observed",
+            "sourceFile": "test/test-verify-child-artifacts-us388.js",
+            "timestamp": "2026-09-28T01:22:09.844Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 monitor multi-spec child-state expectations ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us388.js",
+            "timestamp": "2026-09-28T01:22:09.844Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC1/AC2:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.843Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC3:",
+            "phase": "observed",
+            "sourceFile": "test/test-retire-superseded-run.js",
+            "timestamp": "2026-09-28T01:22:09.843Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC4:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.844Z"
+          }
+        ],
+        "text": "**Missing child state:** an advanced queue item without child state is still reported `missing-child-state` by `ws-monitor` from the new layout (fail-closed observation, no silent blind spot)."
+      },
+      {
+        "id": "NS5",
+        "linkEventIds": [
+          "impl-us448"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-ws-monitor: ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor.js",
+            "timestamp": "2026-09-28T01:22:09.846Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 child-exit artifact guard ok",
+            "phase": "observed",
+            "sourceFile": "test/test-verify-child-artifacts-us388.js",
+            "timestamp": "2026-09-28T01:22:09.846Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-388 monitor multi-spec child-state expectations ok",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us388.js",
+            "timestamp": "2026-09-28T01:22:09.847Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC1/AC2:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.845Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC3:",
+            "phase": "observed",
+            "sourceFile": "test/test-retire-superseded-run.js",
+            "timestamp": "2026-09-28T01:22:09.845Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "us-448 AC4:",
+            "phase": "observed",
+            "sourceFile": "test/test-record-child-outcome-us388.js",
+            "timestamp": "2026-09-28T01:22:09.845Z"
+          }
+        ],
+        "text": "**Path containment:** a crafted `{runId}` or `--plans-dir` attempting traversal (`..`) is refused (typescript-node invariant 4)."
+      }
+    ],
+    "planIndexPath": ".agents/plans/us-448/.runtime/plan.index.json",
+    "revision": 3,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "pre-step6",
+      "computedAt": "2026-09-28T01:22:09.863Z",
+      "deficiencies": [],
+      "earnedUnits": 70,
+      "errors": [],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "ledgerHash": "30e0b0080e587581a5ebd4b98683a77ef2dbc1a536c4d318c81b9ece9c23f004",
+      "missingEvidence": false,
+      "score": 10,
+      "totalUnits": 70,
+      "writer": "ac_ledger.cjs link"
+    },
+    "slug": "us-448",
+    "specPath": ".agents/plans/us-448/step-00-us-448.spec.md",
+    "testingSkip": null,
+    "workflowId": "us-448-20260928T011143Z"
+  },
+  "acTotal": 7,
+  "agentTranscripts": {
+    "reason": "no-matching-session",
+    "recordedAt": "2026-09-28T01:13:34Z",
+    "status": "transcript-unavailable"
+  },
+  "autoMode": true,
+  "baseBranch": "develop",
+  "baselineCommit": "88f1d0e681dd6993ac40e47dcf06cb2134e3d734",
+  "baselineSourceRef": "local",
+  "branch": "develop",
+  "branchStrategy": "stay",
+  "checkpoints": [],
+  "commits": [
+    {
+      "sha": "6ebf20146fbde40e47c401a0af22a8c9df77056e",
+      "step": 5
+    },
+    {
+      "sha": "75e8f6b7b83c7b9f245c39a35807a14bc88dd281",
+      "step": 8
+    },
+    {
+      "sha": "981bb15de914fea5cff2b706d234ef600174dcc5",
+      "step": 8
+    }
+  ],
+  "completedSteps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "completedTasks": [],
+  "currentModel": "current",
+  "currentStep": 9,
+  "dryRun": false,
+  "endedAt": "2026-09-28T02:01:25Z",
+  "execMode": "parallel",
+  "filesTouched": [],
+  "fullMode": true,
+  "handoffs": {
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-448/step-01-us-448.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "us-448",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "us-448-20260928T011143Z",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-448/step-02-us-448.plan-interview.md",
+        ".agents/plans/us-448/step-02-us-448.plan.refined.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "us-448",
+      "status": "completed",
+      "step": 2,
+      "summary": "Finished step 2",
+      "workflowId": "us-448-20260928T011143Z",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-448/step-03-us-448.plan.exec.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "us-448",
+      "status": "completed",
+      "step": 3,
+      "summary": "Finished step 3",
+      "workflowId": "us-448-20260928T011143Z",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/skills/ws-monitor/SKILL.md",
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+        ".agents/skills/ws-spec-multi/EXAMPLES.md",
+        ".agents/skills/ws-spec-multi/PROTOCOL.md",
+        ".agents/skills/ws-spec-multi/SKILL.md",
+        ".agents/skills/ws-spec-multi/STATE.md",
+        ".agents/skills/ws-spec-multi/scripts/record_child_outcome.cjs",
+        ".agents/skills/ws-spec-multi/scripts/retire_superseded_run.cjs",
+        ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs",
+        "SPEC-MANAGEMENT.md",
+        "test/test-record-child-outcome-us388.js",
+        "test/test-retire-superseded-run.js",
+        "test/test-verify-child-artifacts-us388.js",
+        "test/test-ws-monitor-us388.js",
+        "test/test-ws-monitor.js"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "us-448",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "us-448-20260928T011143Z",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-448/step-05-us-448.plan.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "us-448",
+      "status": "completed",
+      "step": 5,
+      "summary": "Finished step 5",
+      "workflowId": "us-448-20260928T011143Z",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-448/step-06-us-448.review.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "us-448",
+      "status": "completed",
+      "step": 6,
+      "summary": "Finished step 6",
+      "workflowId": "us-448-20260928T011143Z",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-448/step-07-us-448.testing.plan.md",
+        ".agents/plans/us-448/step-07-us-448.testing.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "us-448",
+      "status": "completed",
+      "step": 7,
+      "summary": "Finished step 7",
+      "workflowId": "us-448-20260928T011143Z",
+      "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-448/step-08-us-448.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-448",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "us-448-20260928T011143Z",
+      "workflowType": "standard"
+    },
+    "9": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-448",
+      "status": "completed",
+      "step": 9,
+      "summary": "Finished step 9",
+      "workflowId": "us-448-20260928T011143Z",
+      "workflowType": "standard"
+    }
+  },
+  "mergeCommit": null,
+  "minVerifyScore": 9,
+  "modelsPreset": "default",
+  "nextAction": "Run step 9",
+  "prNumber": "450",
+  "prUrl": "https://github.com/jpolvora/workflow-skills/pull/450",
+  "preExistingDirty": [
+    ".ws/CHANGELOG.md",
+    ".agents/plans/ws-spec-multi/ms-20260928T010610Z.state.md",
+    ".agents/plans/us-448/step-00-us-448.classify.md"
+  ],
+  "preExistingDirtyCount": 3,
+  "revision": 21,
+  "scoreAndRefine": false,
+  "shipStatus": "merged",
+  "skipTesting": false,
+  "skipTests": false,
+  "skippedSteps": [],
+  "slug": "us-448",
+  "specPath": ".agents/plans/us-448/step-00-us-448.spec.md",
+  "specSource": "github",
+  "startedAt": "2026-09-28T01:11:43Z",
+  "statePath": ".agents/plans/us-448/us-448-20260928T011143Z.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-28T01:09:20Z",
+      "model": "current",
+      "step": 0
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-28T01:13:56Z",
+      "model": "current",
+      "step": 1
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-28T01:14:36Z",
+      "model": "current",
+      "step": 2
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-28T01:14:37Z",
+      "model": "current",
+      "step": 3
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-28T01:17:39Z",
+      "model": "current",
+      "step": 4
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-28T01:19:53Z",
+      "model": "current",
+      "step": 5
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-28T01:37:59Z",
+      "model": "current",
+      "step": 6
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-28T01:38:10Z",
+      "model": "current",
+      "step": 7
+    }
+  ],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "completed",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed",
+    "9": "completed"
+  },
+  "telemetry": {
+    "loc": {
+      "added": 0,
+      "baseline": 0,
+      "final": 0,
+      "netDelta": 0,
+      "removed": 0
+    },
+    "steps": [
+      {
+        "N": 0,
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-28T01:09:20Z",
+        "elapsedSec": 2,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-448/step-00-us-448.spec.md",
+            ".agents/plans/us-448/step-00-us-448.classify.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-28T01:09:22Z",
+        "label": "Spec",
+        "model": "current",
+        "promptTokens": 0
+      },
+      {
+        "N": 1,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-28T01:13:56Z",
+        "elapsedSec": 8,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-448/step-01-us-448.plan.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-28T01:14:04Z",
+        "label": "Planning",
+        "model": "current",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-28T01:14:36Z",
+        "elapsedSec": 1,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-448/step-02-us-448.plan-interview.md",
+            ".agents/plans/us-448/step-02-us-448.plan.refined.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-28T01:14:37Z",
+        "label": "Interview",
+        "model": "current",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-28T01:14:37Z",
+        "elapsedSec": 8,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-448/step-03-us-448.plan.exec.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-28T01:14:45Z",
+        "label": "Plan to tasks",
+        "model": "current",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-28T01:17:39Z",
+        "elapsedSec": 16,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-monitor/SKILL.md",
+            ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            ".agents/skills/ws-spec-multi/EXAMPLES.md",
+            ".agents/skills/ws-spec-multi/PROTOCOL.md",
+            ".agents/skills/ws-spec-multi/SKILL.md",
+            ".agents/skills/ws-spec-multi/STATE.md",
+            ".agents/skills/ws-spec-multi/scripts/record_child_outcome.cjs",
+            ".agents/skills/ws-spec-multi/scripts/retire_superseded_run.cjs",
+            ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs",
+            "SPEC-MANAGEMENT.md",
+            "test/test-record-child-outcome-us388.js",
+            "test/test-retire-superseded-run.js",
+            "test/test-verify-child-artifacts-us388.js",
+            "test/test-ws-monitor-us388.js",
+            "test/test-ws-monitor.js"
+          ]
+        },
+        "finishedAt": "2026-09-28T01:17:55Z",
+        "label": "Implement",
+        "model": "current",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-28T01:19:53Z",
+        "elapsedSec": 2349,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-448/step-05-us-448.plan.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-28T01:59:02Z",
+        "label": "Verify",
+        "model": "current",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 6,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-28T01:37:59Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-448/step-06-us-448.review.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-28T01:37:59Z",
+        "label": "Code review",
+        "model": "current",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 7,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-28T01:38:10Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-448/step-07-us-448.testing.plan.md",
+            ".agents/plans/us-448/step-07-us-448.testing.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-28T01:38:10Z",
+        "label": "Testing",
+        "model": "current",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-448/step-08-us-448.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-28T02:01:25Z",
+        "label": "Ship",
+        "model": "current",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 9,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-28T02:12:00Z",
+        "label": "Fix PR",
+        "model": "current",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 2384,
+    "totalTokens": 0,
+    "workflowEndedAt": null,
+    "workflowStartedAt": "2026-09-28T01:11:43Z"
+  },
+  "us": 448,
+  "verificationScore": 10,
+  "workflowId": "us-448-20260928T011143Z",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/us-448/step-00-us-448.classify.md",
+      ".agents/plans/us-448/step-00-us-448.spec.md",
+      ".agents/plans/us-448/step-01-us-448.plan.md",
+      ".agents/plans/us-448/step-02-us-448.plan-interview.md",
+      ".agents/plans/us-448/step-02-us-448.plan.refined.md",
+      ".agents/plans/us-448/step-03-us-448.plan.exec.md",
+      ".agents/plans/us-448/step-05-us-448.plan.report.md",
+      ".agents/plans/us-448/step-06-us-448.review.md",
+      ".agents/plans/us-448/step-07-us-448.testing.plan.md",
+      ".agents/plans/us-448/step-07-us-448.testing.report.md",
+      ".agents/plans/us-448/step-08-us-448.result.md"
+    ],
+    "deleted": [],
+    "modified": [
+      ".agents/skills/ws-monitor/SKILL.md",
+      ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+      ".agents/skills/ws-spec-multi/EXAMPLES.md",
+      ".agents/skills/ws-spec-multi/PROTOCOL.md",
+      ".agents/skills/ws-spec-multi/SKILL.md",
+      ".agents/skills/ws-spec-multi/STATE.md",
+      ".agents/skills/ws-spec-multi/scripts/record_child_outcome.cjs",
+      ".agents/skills/ws-spec-multi/scripts/retire_superseded_run.cjs",
+      ".agents/skills/ws-spec-multi/scripts/verify_child_artifacts.cjs",
+      "SPEC-MANAGEMENT.md",
+      "test/test-record-child-outcome-us388.js",
+      "test/test-retire-superseded-run.js",
+      "test/test-verify-child-artifacts-us388.js",
+      "test/test-ws-monitor-us388.js",
+      "test/test-ws-monitor.js"
+    ]
+  },
+  "workflowManifestHash": null,
+  "workflowType": "standard"
+}

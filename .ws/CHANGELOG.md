@@ -1,5 +1,45 @@
 # Changelog
 
+### [2026-09-29 08:04] Agent: agent
+- **Prompt**: C:/Program Files/Git/ws-ship-pr bump then PR
+- **Done**: Bumped 0.5.11 to 0.5.12, committed, pushed develop, opened PR
+- **Result**: https://github.com/jpolvora/workflow-skills/pull/454
+
+### [2026-09-29 07:55] Agent: agent
+- **Prompt**: do not hardcode changelog paths in wiki update
+- **Done**: Wiki update, sync, and from-code read the effective rules.changelogFile from config
+- **Result**: No hardcoded changelog path remains in those ws-wiki instructions
+
+### [2026-09-29 07:53] Agent: agent
+- **Prompt**: wiki update should use CHANGELOG.md when it exists
+- **Done**: update, sync, and from-code now read rules.changelogFile to choose what to inspect
+- **Result**: Missing changelog is a skip; rows are not copied into wiki pages
+
+### [2026-09-29 07:49] Agent: agent
+- **Prompt**: C:/Program Files/Git/ws-wiki update from code
+- **Done**: Merged organizer completion rules into the spec-lifecycle wiki page
+- **Result**: validate_wiki.cjs --check passed for 12 pages; sync baseline left unchanged
+
+### [2026-09-29 07:36] Agent: agent
+- **Prompt**: move completed specs and fix organizer detection
+- **Done**: Index [x] and Done log now beat issueState open; filed us-446 and us-448 into completed/
+- **Result**: organize_specs --by-status --apply moved pending/0147 and pending/0148 to completed/
+
+### [2026-09-29 07:27] Agent: agent
+- **Prompt**: set autoOrganizeByStatus true and apply now
+- **Done**: Ran organize_specs.cjs by-status apply
+- **Result**: Moved pre-ship-doc-sync and kanvas-board-drag-drop to completed; us-446 and us-448 moved to pending because issueState is open
+
+### [2026-09-29 07:25] Agent: agent
+- **Prompt**: add ws-spec-organizer auto switch for by-status apply
+- **Done**: Added plans.autoOrganizeByStatus (default false; this repo true)
+- **Result**: Bare organize_specs.cjs applies --by-status --apply when the switch and statusSubfolders are both true; --dry-run still previews
+
+### [2026-09-29 07:09] Agent: agent
+- **Prompt**: C:/Program Files/Git/ws-spec-manager sync
+- **Done**: Marked pre-ship-doc-sync and kanvas-board-drag-drop done in index.PRD from step-08 evidence
+- **Result**: Checkboxes and Done log updated; completed/ move skipped because organize_specs refuses dirty index.PRD
+
 ### [2026-09-27 23:33] Agent: agent
 - **Prompt**: kanvas-board-drag-drop ws-spec-multi child
 - **Done**: POST /api/move, board DnD, tests

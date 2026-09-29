@@ -13,7 +13,8 @@ Alternate whole-tree wiki genesis beside Phase 1 sweep. Inspect project structur
 1. Existing `{wikiDir}` feature pages (do not delete statements).
 2. Top-level specs of record, when present (hints / provenance, not a Phase 1 overlay).
 3. Project docs: `README.md`, `AGENTS.md`, `STACK.md`, `docs/`, `FEATURES.md`, `index.PRD` when they exist.
-4. Inferred behavior from code, tests, CI, and a bounded git surface.
+4. The effective `rules.changelogFile` from `{sharedDir}/config.json`, when the file exists. Recent entries select which code to inspect deeply. An empty key or a missing file is a skip. Do not paste changelog rows into pages.
+5. Inferred behavior from code, tests, CI, and a bounded git surface.
 
 ## Flow
 

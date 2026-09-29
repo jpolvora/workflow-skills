@@ -51,6 +51,7 @@ function parseArgs(argv) {
   const options = {
     repoRoot: null,
     apply: false,
+    dryRunExplicit: false,
     json: false,
     byStatus: false,
     slug: null,
@@ -69,6 +70,7 @@ function parseArgs(argv) {
       options.apply = true;
     } else if (arg === '--dry-run') {
       options.apply = false;
+      options.dryRunExplicit = true;
     } else if (arg === '--by-status') {
       options.byStatus = true;
     } else if (arg === '--slug') {
@@ -353,13 +355,15 @@ function readIndexSignals(indexPrdPath) {
 function statusOfSpec(item, indexSignals) {
   const direct = mapTokenToStatus(item.status);
   if (direct) return direct;
+  // Index completion beats a stale tracker issueState (open issues can
+  // already be delivered). Explicit frontmatter status still wins above.
+  if (indexSignals.archived.has(item.slug)) return 'archived';
+  if (indexSignals.completed.has(item.slug)) return 'completed';
   if (item.issueState) {
     const t = normalizeStatusToken(item.issueState);
     if (t === 'closed') return 'completed';
     if (t === 'open') return 'pending';
   }
-  if (indexSignals.completed.has(item.slug)) return 'completed';
-  if (indexSignals.archived.has(item.slug)) return 'archived';
   return 'pending';
 }
 
@@ -561,6 +565,16 @@ function organizeSpecs(options) {
   const plans = config.plans || {};
   const specsRel = plans.specsDir || '.agents/specs';
   const specsDir = path.resolve(context.repoRoot, specsRel);
+
+  if (
+    plans.autoOrganizeByStatus === true
+    && plans.statusSubfolders === true
+    && options.slug == null
+    && !options.dryRunExplicit
+  ) {
+    options.byStatus = true;
+    options.apply = true;
+  }
 
   const emptyResult = (mode) => ({
     ok: true,

@@ -1,0 +1,712 @@
+{
+  "schemaVersion": 1,
+  "revision": 8,
+  "workflowId": "us-446-20260928T021400Z",
+  "slug": "us-446",
+  "specPath": ".agents/plans/us-446/step-00-us-446.spec.md",
+  "planIndexPath": ".agents/plans/us-446/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "`verify.cjs` skips execution of any `verification.*` alias whose resolved command is empty or whitespace-only.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L118-L131",
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L56-L131",
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L76-L80",
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L76-L81",
+        "test/test-ship-verify-empty-aliases.js:L1-L108",
+        "test/test-ship-verify-empty-aliases.js:L35-L73",
+        "test/test-ship-verify-empty-aliases.js:L38-L72",
+        "test/test-ship-verify-empty-aliases.js:L68-L73",
+        "test/test-ship-verify-empty-aliases.js:L75-L96"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 56,
+          "lineEnd": 131,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 76,
+          "lineEnd": 80,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 76,
+          "lineEnd": 81,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 118,
+          "lineEnd": 131,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 1,
+          "lineEnd": 108,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 35,
+          "lineEnd": 73,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 38,
+          "lineEnd": 72,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 68,
+          "lineEnd": 73,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 75,
+          "lineEnd": 96,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "fe084d6c",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-ship-verify-empty-aliases: ok",
+          "sourceFile": "test/test-ship-verify-empty-aliases.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-28T02:29:20.495Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "commit-us446-step5",
+        "sabotage-us446-step5",
+        "verify-us446-step5"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "A skipped alias prints a visible note in the form `==> <alias> (skipped: not configured)` to stdout.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L118-L131",
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L56-L131",
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L76-L80",
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L76-L81",
+        "test/test-ship-verify-empty-aliases.js:L1-L108",
+        "test/test-ship-verify-empty-aliases.js:L35-L73",
+        "test/test-ship-verify-empty-aliases.js:L38-L72",
+        "test/test-ship-verify-empty-aliases.js:L68-L73",
+        "test/test-ship-verify-empty-aliases.js:L75-L96"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 56,
+          "lineEnd": 131,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 76,
+          "lineEnd": 80,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 76,
+          "lineEnd": 81,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 118,
+          "lineEnd": 131,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 1,
+          "lineEnd": 108,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 35,
+          "lineEnd": 73,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 38,
+          "lineEnd": 72,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 68,
+          "lineEnd": 73,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 75,
+          "lineEnd": 96,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "fe084d6c",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-ship-verify-empty-aliases: ok",
+          "sourceFile": "test/test-ship-verify-empty-aliases.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-28T02:29:20.496Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "commit-us446-step5",
+        "verify-us446-step5"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "A non-empty alias still executes and a non-zero exit aborts the gate with process exit code 1.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L118-L131",
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L56-L131",
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L76-L80",
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L76-L81",
+        "test/test-ship-verify-empty-aliases.js:L1-L108",
+        "test/test-ship-verify-empty-aliases.js:L35-L73",
+        "test/test-ship-verify-empty-aliases.js:L38-L72",
+        "test/test-ship-verify-empty-aliases.js:L68-L73",
+        "test/test-ship-verify-empty-aliases.js:L75-L96"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 56,
+          "lineEnd": 131,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 76,
+          "lineEnd": 80,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 76,
+          "lineEnd": 81,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 118,
+          "lineEnd": 131,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 1,
+          "lineEnd": 108,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 35,
+          "lineEnd": 73,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 38,
+          "lineEnd": 72,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 68,
+          "lineEnd": 73,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 75,
+          "lineEnd": 96,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "fe084d6c",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-ship-verify-empty-aliases: ok",
+          "sourceFile": "test/test-ship-verify-empty-aliases.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-28T02:29:20.498Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "commit-us446-step5",
+        "verify-us446-step5"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "A config where every `verification.*` alias is empty exits 0 and prints `VERIFY_OK`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L118-L131",
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L56-L131",
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L76-L80",
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L76-L81",
+        "test/test-ship-verify-empty-aliases.js:L1-L108",
+        "test/test-ship-verify-empty-aliases.js:L35-L73",
+        "test/test-ship-verify-empty-aliases.js:L38-L72",
+        "test/test-ship-verify-empty-aliases.js:L68-L73",
+        "test/test-ship-verify-empty-aliases.js:L75-L96"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 56,
+          "lineEnd": 131,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 76,
+          "lineEnd": 80,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 76,
+          "lineEnd": 81,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 118,
+          "lineEnd": 131,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 1,
+          "lineEnd": 108,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 35,
+          "lineEnd": 73,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 38,
+          "lineEnd": 72,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 68,
+          "lineEnd": 73,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 75,
+          "lineEnd": 96,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "fe084d6c",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-ship-verify-empty-aliases: ok",
+          "sourceFile": "test/test-ship-verify-empty-aliases.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-28T02:29:20.500Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "commit-us446-step5",
+        "verify-us446-step5"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "The frontend aliases `frontendTest` and `frontendBuild` receive the same empty-alias guard as the backend aliases.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L118-L131",
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L56-L131",
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L76-L80",
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L76-L81",
+        "test/test-ship-verify-empty-aliases.js:L1-L108",
+        "test/test-ship-verify-empty-aliases.js:L35-L73",
+        "test/test-ship-verify-empty-aliases.js:L38-L72",
+        "test/test-ship-verify-empty-aliases.js:L68-L73",
+        "test/test-ship-verify-empty-aliases.js:L75-L96"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 56,
+          "lineEnd": 131,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 76,
+          "lineEnd": 80,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 76,
+          "lineEnd": 81,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 118,
+          "lineEnd": 131,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 1,
+          "lineEnd": 108,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 35,
+          "lineEnd": 73,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 38,
+          "lineEnd": 72,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 68,
+          "lineEnd": 73,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 75,
+          "lineEnd": 96,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "fe084d6c",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-ship-verify-empty-aliases: ok",
+          "sourceFile": "test/test-ship-verify-empty-aliases.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-28T02:29:20.502Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "commit-us446-step5",
+        "verify-us446-step5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "An automated test feeds an all-empty `verification` config and asserts that no empty shell command is spawned.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L118-L131",
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L56-L131",
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L76-L80",
+        ".agents/skills/ws-ship-pr/scripts/verify.cjs:L76-L81",
+        "test/test-ship-verify-empty-aliases.js:L1-L108",
+        "test/test-ship-verify-empty-aliases.js:L35-L73",
+        "test/test-ship-verify-empty-aliases.js:L38-L72",
+        "test/test-ship-verify-empty-aliases.js:L68-L73",
+        "test/test-ship-verify-empty-aliases.js:L75-L96"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 56,
+          "lineEnd": 131,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 76,
+          "lineEnd": 80,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 76,
+          "lineEnd": 81,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": ".agents/skills/ws-ship-pr/scripts/verify.cjs",
+          "lineStart": 118,
+          "lineEnd": 131,
+          "sha256": "da6212dd4d3445448a64a97be26fa1d975bf4f76d36f0708fdd693fa49c318e8"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 1,
+          "lineEnd": 108,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 35,
+          "lineEnd": 73,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 38,
+          "lineEnd": 72,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 68,
+          "lineEnd": 73,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        },
+        {
+          "path": "test/test-ship-verify-empty-aliases.js",
+          "lineStart": 75,
+          "lineEnd": 96,
+          "sha256": "96555e02558a792f7fc26852120b92bc04a471c2bb8662218a7af41ca67bf8af"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "fe084d6c",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-ship-verify-empty-aliases: ok",
+          "sourceFile": "test/test-ship-verify-empty-aliases.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-28T02:29:20.504Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "commit-us446-step5",
+        "verify-us446-step5"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Given a config whose aliases are all empty, `sh()` is never invoked with an empty string; the test fails if an empty command reaches the spawn stub.",
+      "tests": [
+        {
+          "name": "test-ship-verify-empty-aliases: ok",
+          "sourceFile": "test/test-ship-verify-empty-aliases.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-28T02:29:20.504Z"
+        }
+      ],
+      "linkEventIds": [
+        "commit-us446-step5",
+        "sabotage-us446-step5",
+        "verify-us446-step5"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Given a non-empty alias mapped to a failing command, `verify.cjs` exits 1; the test fails if the new skip guard swallows a real non-zero exit.",
+      "tests": [
+        {
+          "name": "test-ship-verify-empty-aliases: ok",
+          "sourceFile": "test/test-ship-verify-empty-aliases.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-28T02:29:20.505Z"
+        }
+      ],
+      "linkEventIds": [
+        "commit-us446-step5",
+        "verify-us446-step5"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Given `backendTest: \"   \"` (whitespace only), the alias is treated as not configured and skipped rather than executed.",
+      "tests": [
+        {
+          "name": "test-ship-verify-empty-aliases: ok",
+          "sourceFile": "test/test-ship-verify-empty-aliases.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-28T02:29:20.505Z"
+        }
+      ],
+      "linkEventIds": [
+        "commit-us446-step5",
+        "verify-us446-step5"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 10,
+    "earnedUnits": 60,
+    "totalUnits": 60,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "deficiencies": [],
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-28T02:36:58.545Z",
+    "writer": "ac_ledger.cjs score",
+    "ledgerHash": "2e5c1da5a8363318a0d52001de9d3f168cc2feaa6f0e35df30aa11631ada6ba8"
+  }
+}

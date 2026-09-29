@@ -298,7 +298,9 @@
     "_comment_enforceSpecPrefixOrdering": "When true, new spec-of-record writes and organizer apply NNNN-{slug}.spec.md under {specsDir}. Omitted, non-boolean, or missing config safely resolves to false. ws-spec-write persists this exact key when it is absent (seed true if the board already uses NNNN- files).",
     "enforceSpecPrefixOrdering": false,
     "_comment_statusSubfolders": "When true, new specs resolve under {specsDir}/pending/ and the organizer files specs into pending/, completed/, archived/ by status. Default false keeps flat boards.",
-    "statusSubfolders": false
+    "statusSubfolders": false,
+    "_comment_autoOrganizeByStatus": "When true (and statusSubfolders is true), organize_specs.cjs with no --dry-run and no --slug applies --by-status --apply from frontmatter status, then index.PRD Archive/Done log/[x] (this beats issueState: open), then issueState. Default false keeps filing explicit.",
+    "autoOrganizeByStatus": false
   },
 
   "reviews": {

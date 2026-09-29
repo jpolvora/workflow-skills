@@ -1,0 +1,18 @@
+{
+  "status": "running",
+  "completedPages": [],
+  "lastFile": ".agents/specs/wiki/delivery/spec-to-pr-pipeline.md",
+  "findings": [
+    {
+      "id": "spec-lifecycle-status-order",
+      "page": ".agents/specs/wiki/specs/spec-lifecycle.md",
+      "statement": "by-status reads frontmatter status, then index.PRD completion, then issueState; index [x] files to completed even when issueState is open",
+      "class": "confirmed",
+      "evidence": ".agents/skills/ws-spec-organizer/scripts/organize_specs.cjs statusOfSpec",
+      "decision": "keep"
+    }
+  ],
+  "startedAt": "2026-09-29T11:52:00Z",
+  "updatedAt": "2026-09-29T11:52:00Z",
+  "note": "Walk started. Remaining pages are not classified. Do not treat status as audited."
+}

@@ -1,15 +1,17 @@
 {
   "schemaVersion": 1,
+  "revision": 16,
+  "generatedAt": "2026-09-28T02:39:36Z",
   "workflows": [
     {
       "workflowId": "reduce-spec-to-pr-tokens-20260927T043013Z",
       "slug": "reduce-spec-to-pr-tokens",
       "pipeline": "standard",
       "statePath": ".agents/plans/reduce-spec-to-pr-tokens/reduce-spec-to-pr-tokens-20260927T043013Z.state.md",
-      "stateSha256": "bc336365037f4d93b2e4f55e27af2de61361178e30a6d907099140da1789a718",
+      "stateSha256": "b853b25f9b4670fb0c1e8affb7be12ee132d0368e2599e176f072e2c09143520",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-09-27T06:40:52Z",
+      "updatedAt": "2026-09-27T06:38:39Z",
       "runPath": ".agents/plans/reduce-spec-to-pr-tokens/reduce-spec-to-pr-tokens-20260927T043013Z.state.json"
     },
     {
@@ -17,7 +19,7 @@
       "slug": "restore-automode-continuous-orchestration",
       "pipeline": "standard",
       "statePath": ".agents/plans/restore-automode-continuous-orchestration/restore-automode-continuous-orchestration-20260927T023632Z.state.md",
-      "stateSha256": "dc7de39323a9325f2fa38fab4a5fa6cac5f570fff91960d2d699c43c671a0ffc",
+      "stateSha256": "fbfe3a623d0531f175fd1169b50f083ea030a18a748a5884f60caeaa77a2418f",
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-09-27T03:08:41Z",
@@ -28,13 +30,77 @@
       "slug": "simplify-skill-versioning",
       "pipeline": "standard",
       "statePath": ".agents/plans/simplify-skill-versioning/simplify-skill-versioning-20260927T015020Z.state.md",
-      "stateSha256": "95f956522034e19c44467a79b51e71d20f8334835bcf2dd0386be71d6692eccf",
+      "stateSha256": "43116292f73d8022bee7a87b47e112e5569c3bd4c18a5cda9a22199d91c7ae1f",
       "status": "completed",
       "currentStep": 9,
       "updatedAt": "2026-09-27T02:19:57Z",
       "runPath": ".agents/plans/simplify-skill-versioning/simplify-skill-versioning-20260927T015020Z.state.json"
+    },
+    {
+      "workflowId": "us-436-20260927T190308Z",
+      "slug": "us-436",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/us-436/us-436-20260927T190308Z.state.md",
+      "stateSha256": "3d1df1b48df266e63c7893fbeea4d88e291a7aab03e66f38b0a4389503d31d36",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-27T19:37:17Z",
+      "runPath": ".agents/plans/us-436/us-436-20260927T190308Z.state.json"
+    },
+    {
+      "workflowId": "us-439-20260927T170000Z",
+      "slug": "us-439",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/us-439/us-439-20260927T170000Z.state.md",
+      "stateSha256": "1d1d1516a73ff2604871a4e23439cccdd11404f29bfa793d375e187c0d6081a4",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-27T18:55:17Z",
+      "runPath": ".agents/plans/us-439/us-439-20260927T170000Z.state.json"
+    },
+    {
+      "workflowId": "us-440-20260927T162130Z",
+      "slug": "us-440",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/us-440/us-440-20260927T162130Z.state.md",
+      "stateSha256": "e28217df5eaa65a90cbf617979ec1659643944845a2b0ba61706e00236d06c3b",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-27T16:45:41Z",
+      "runPath": ".agents/plans/us-440/us-440-20260927T162130Z.state.json"
+    },
+    {
+      "workflowId": "us-446-20260928T021400Z",
+      "slug": "us-446",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/us-446/us-446-20260928T021400Z.state.md",
+      "stateSha256": "4b20de4188050641259e4cc68ca5995697e138019d6d94adba3f5b885f6a6f72",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-28T02:39:36Z",
+      "runPath": ".agents/plans/us-446/us-446-20260928T021400Z.state.json"
+    },
+    {
+      "workflowId": "us-448-20260928T011143Z",
+      "slug": "us-448",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/us-448/us-448-20260928T011143Z.state.md",
+      "stateSha256": "5e9d417247f7a241fa4b9d7bc16333f0ade53e4f8973b8a76345b1ed7d80dff5",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-28T02:01:25Z",
+      "runPath": ".agents/plans/us-448/us-448-20260928T011143Z.state.json"
+    },
+    {
+      "workflowId": "ws-spec-to-pr-distributed",
+      "slug": "ws-spec-to-pr-distributed",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/ws-spec-to-pr-distributed/ws-spec-to-pr-distributed.state.md",
+      "stateSha256": "48e6db1113679332d05c5b47f373653e911af45180cbf0d08a2dab994af3fbe6",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-27T16:10:36Z",
+      "runPath": ".agents/plans/ws-spec-to-pr-distributed/ws-spec-to-pr-distributed.state.json"
     }
-  ],
-  "revision": 24,
-  "generatedAt": "2026-09-27T06:40:52Z"
+  ]
 }

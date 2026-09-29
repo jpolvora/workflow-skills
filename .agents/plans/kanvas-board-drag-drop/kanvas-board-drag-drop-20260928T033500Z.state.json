@@ -1,0 +1,16 @@
+{
+  "stateVersion": 1,
+  "schemaVersion": 1,
+  "workflowId": "kanvas-board-drag-drop-20260928T033500Z",
+  "slug": "kanvas-board-drag-drop",
+  "workflowType": "standard",
+  "status": "completed",
+  "currentStep": 8,
+  "baseBranch": "develop",
+  "shipStatus": "shipped",
+  "prNumber": 452,
+  "prUrl": "https://github.com/jpolvora/workflow-skills/pull/452",
+  "mergeCommit": "32f5cd400b3e783ae85f8477dbe124b586d4f181",
+  "checksStatus": "success",
+  "activeThreads": 0
+}

@@ -1384,6 +1384,7 @@ function Populate-Sections {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'plans' -Key 'useWorktrees' -LabelText 'Use Git Worktrees for Step 4' -Type 'bool' -DefaultVal $false
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'plans' -Key 'enforceSpecPrefixOrdering' -LabelText 'Enforce NNNN- Spec Prefix Ordering' -Type 'bool' -DefaultVal $false
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'plans' -Key 'statusSubfolders' -LabelText 'File Specs into pending/completed/archived Subfolders' -Type 'bool' -DefaultVal $false
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'plans' -Key 'autoOrganizeByStatus' -LabelText 'Auto-apply status subfolder filing (organize_specs --by-status --apply)' -Type 'bool' -DefaultVal $false
 
                 Add-SectionHeader -ParentPanel $page -YOffset $y -Title 'Code Reviews' -Subtitle 'Local review report output directory.'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'reviews' -Key 'dir' -LabelText 'Code Reviews Directory' -Type 'path-folder' -DefaultVal '.agents/codereviews'

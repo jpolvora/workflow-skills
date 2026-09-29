@@ -9,7 +9,7 @@ name: Agentic Code Review
 #
 #   gh variable set AGENTIC_CODE_REVIEWERS_ENGINE --repo jpolvora/workflow-skills --body "opencode"
 #   gh variable set AGENTIC_CODE_REVIEWERS_MODEL  --repo jpolvora/workflow-skills --body "opencode-go/muse-spark-1.2-contributor"
-#   gh variable set AGENTIC_CODE_REVIEWERS_VARIANT --repo jpolvora/workflow-skills --body "medium"
+#   gh variable set AGENTIC_CODE_REVIEWERS_VARIANT --repo jpolvora/workflow-skills --body "high"
 #
 # Engine examples: "opencode" (uses OPENCODE_API_KEY secret) or "cursor-sdk"
 # (uses CURSOR_API_KEY secret). Model/variant examples: see
@@ -37,7 +37,7 @@ concurrency:
 env:
   REVIEW_ENGINE: ${{ vars.AGENTIC_CODE_REVIEWERS_ENGINE || 'opencode' }}
   REVIEW_MODEL: ${{ vars.AGENTIC_CODE_REVIEWERS_MODEL || 'opencode-go/muse-spark-1.2-contributor' }}
-  REVIEW_VARIANT: ${{ vars.AGENTIC_CODE_REVIEWERS_VARIANT || 'low' }}
+  REVIEW_VARIANT: ${{ vars.AGENTIC_CODE_REVIEWERS_VARIANT || 'high' }}
 
 jobs:
   review:

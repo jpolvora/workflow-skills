@@ -505,6 +505,11 @@
           "type": "boolean",
           "default": false,
           "description": "When true, new spec-of-record writes resolve under {specsDir}/pending/ and ws-spec-organizer may file specs into pending/, completed/, or archived/ by status. When false (default), boards stay flat under {specsDir}/."
+        },
+        "autoOrganizeByStatus": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true and plans.statusSubfolders is true, organize_specs.cjs with no --dry-run and no --slug runs as --by-status --apply (file by frontmatter status, then index.PRD Archive/Done log/[x] — this beats issueState: open — then issueState). Explicit --dry-run stays a preview. When false (default), filing stays an explicit --by-status --apply."
         }
       }
     },
