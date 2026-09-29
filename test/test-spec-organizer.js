@@ -17,7 +17,7 @@ const TRACK_SCRIPT = path.join(REPO, '.agents/skills/ws-spec-index/scripts/track
 
 console.log('--- Testing ws-spec-organizer status subfolders ---');
 
-function createTempProject({ enforce = false, statusSubfolders = false } = {}) {
+function createTempProject({ enforce = false, statusSubfolders = false, autoOrganizeByStatus = false } = {}) {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ws-status-test-'));
   const shared = path.join(tmp, '.ws');
   fs.mkdirSync(shared, { recursive: true });
@@ -33,6 +33,7 @@ function createTempProject({ enforce = false, statusSubfolders = false } = {}) {
       specsDir: '.agents/specs',
       enforceSpecPrefixOrdering: enforce,
       statusSubfolders,
+      autoOrganizeByStatus,
     },
   };
   fs.writeFileSync(path.join(shared, 'config.json'), JSON.stringify(config, null, 2), 'utf8');
@@ -60,6 +61,10 @@ console.log('1. Checking plans.statusSubfolders schema and example');
 
   const configExample = fs.readFileSync(path.join(REPO, '.agents/skills/ws-shared/templates/config.json.example'), 'utf8');
   assert.match(configExample, /"statusSubfolders":\s*false/, 'config.json.example seeds statusSubfolders false');
+  assert.ok(schema.properties.plans.properties.autoOrganizeByStatus, 'schema defines plans.autoOrganizeByStatus');
+  assert.strictEqual(schema.properties.plans.properties.autoOrganizeByStatus.type, 'boolean');
+  assert.strictEqual(schema.properties.plans.properties.autoOrganizeByStatus.default, false);
+  assert.match(configExample, /"autoOrganizeByStatus":\s*false/, 'config.json.example seeds autoOrganizeByStatus false');
 }
 
 // 2. resolve_spec_path subfolder search (AC2)
@@ -317,6 +322,34 @@ console.log('10. Testing prefix-mode regression');
   assert.strictEqual(data.mode, 'prefix');
   assert.strictEqual(data.specsCount, 1, 'prefix mode scans root only');
   assert.ok(data.renames.every((r) => !r.from.includes('/') && !r.to.includes('/')), 'no subfolder renames in prefix mode');
+}
+
+// 11. autoOrganizeByStatus applies by-status without extra flags
+console.log('11. Testing plans.autoOrganizeByStatus');
+{
+  const proj = createTempProject({ statusSubfolders: true, autoOrganizeByStatus: true });
+  writeSpec(proj.specs, 'done-one.spec.md', { slug: 'done-one', title: 'Done One', status: 'completed' });
+  const res = spawnSync(
+    process.execPath,
+    [ORGANIZE_SCRIPT, '--repo-root', proj.tmp, '--json'],
+    { encoding: 'utf8' }
+  );
+  assert.strictEqual(res.status, 0, res.stderr);
+  const data = JSON.parse(res.stdout);
+  assert.strictEqual(data.mode, 'by-status');
+  assert.strictEqual(data.dryRun, false);
+  assert.ok(fs.existsSync(path.join(proj.specs, 'completed', 'done-one.spec.md')), 'auto switch filed completed spec');
+
+  const preview = createTempProject({ statusSubfolders: true, autoOrganizeByStatus: true });
+  writeSpec(preview.specs, 'done-two.spec.md', { slug: 'done-two', title: 'Done Two', status: 'completed' });
+  const dry = spawnSync(
+    process.execPath,
+    [ORGANIZE_SCRIPT, '--repo-root', preview.tmp, '--dry-run', '--json'],
+    { encoding: 'utf8' }
+  );
+  assert.strictEqual(dry.status, 0, dry.stderr);
+  assert.strictEqual(JSON.parse(dry.stdout).dryRun, true);
+  assert.ok(fs.existsSync(path.join(preview.specs, 'done-two.spec.md')), '--dry-run does not move');
 }
 
 console.log('--- All ws-spec-organizer status-subfolder tests PASSED ---');

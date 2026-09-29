@@ -51,6 +51,7 @@ function parseArgs(argv) {
   const options = {
     repoRoot: null,
     apply: false,
+    dryRunExplicit: false,
     json: false,
     byStatus: false,
     slug: null,
@@ -69,6 +70,7 @@ function parseArgs(argv) {
       options.apply = true;
     } else if (arg === '--dry-run') {
       options.apply = false;
+      options.dryRunExplicit = true;
     } else if (arg === '--by-status') {
       options.byStatus = true;
     } else if (arg === '--slug') {
@@ -561,6 +563,16 @@ function organizeSpecs(options) {
   const plans = config.plans || {};
   const specsRel = plans.specsDir || '.agents/specs';
   const specsDir = path.resolve(context.repoRoot, specsRel);
+
+  if (
+    plans.autoOrganizeByStatus === true
+    && plans.statusSubfolders === true
+    && options.slug == null
+    && !options.dryRunExplicit
+  ) {
+    options.byStatus = true;
+    options.apply = true;
+  }
 
   const emptyResult = (mode) => ({
     ok: true,

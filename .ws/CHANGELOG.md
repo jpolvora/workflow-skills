@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-09-29 07:25] Agent: agent
+- **Prompt**: add ws-spec-organizer auto switch for by-status apply
+- **Done**: Added plans.autoOrganizeByStatus (default false; this repo true)
+- **Result**: Bare organize_specs.cjs applies --by-status --apply when the switch and statusSubfolders are both true; --dry-run still previews
+
+### [2026-09-29 07:09] Agent: agent
+- **Prompt**: C:/Program Files/Git/ws-spec-manager sync
+- **Done**: Marked pre-ship-doc-sync and kanvas-board-drag-drop done in index.PRD from step-08 evidence
+- **Result**: Checkboxes and Done log updated; completed/ move skipped because organize_specs refuses dirty index.PRD
+
 ### [2026-09-27 23:33] Agent: agent
 - **Prompt**: kanvas-board-drag-drop ws-spec-multi child
 - **Done**: POST /api/move, board DnD, tests

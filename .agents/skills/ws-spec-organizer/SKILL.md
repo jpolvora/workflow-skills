@@ -25,7 +25,8 @@ In `config.json`:
   "plans": {
     "specsDir": ".agents/specs",
     "enforceSpecPrefixOrdering": false,
-    "statusSubfolders": false
+    "statusSubfolders": false,
+    "autoOrganizeByStatus": false
   }
 }
 ```
@@ -38,7 +39,11 @@ In `config.json`:
   - `false`: Boards stay flat; existing paths under `pending/`, `completed/`, or `archived/` still resolve, and new specs resolve to `{specsDir}/[NNNN-]{slug}.spec.md`.
   - `true`: New specs resolve to `{specsDir}/pending/[NNNN-]{slug}.spec.md`; boards may be filed into `pending/`, `completed/`, `archived/` via `--by-status`.
   - Sequence prefixes stay globally unique: `NNNN` is `max(prefixes across root and all status subfolders) + 1`.
-  - No automatic migration: enabling the flag never moves existing files; run `organize_specs.cjs --by-status --apply` explicitly.
+  - No automatic migration: enabling `statusSubfolders` never moves existing files.
+- `plans.autoOrganizeByStatus` (boolean, default: `false`):
+  - Requires `plans.statusSubfolders: true`. When that is false, this switch is ignored.
+  - `true`: `organize_specs.cjs` with no `--slug` and no `--dry-run` runs as `--by-status --apply`. Classification is frontmatter `status:`, then `issueState:`, then `index.PRD` (`[x]`, Done log, Archive). `--dry-run` stays a preview of that filing.
+  - `false`: filing still requires an explicit `organize_specs.cjs --by-status --apply`.
 
 **Invariants:**
 - Frontmatter `slug` is always unprefixed (`slug: {slug}`).

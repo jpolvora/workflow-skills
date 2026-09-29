@@ -179,9 +179,9 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Run-state and telemetry integrity: fail-closed preset resolution, ship writeback, Step 9 round artifacts, truthful skip semantics (`spec: completed/0127-us-414-run-state-integrity.spec.md`) — PR #422 MERGED
 - [x] Monitor accuracy: step-membership artifact expectations, legacy terminal tolerance, transcript correlation windows, discovery budget (`spec: completed/0128-us-412-418-monitor-accuracy.spec.md`) — [PR #423](https://github.com/jpolvora/workflow-skills/pull/423) MERGED
 - [x] Observer-log follow-ups (us-412-413 run): intra-root enumeration edge, missing agentTranscripts marker, G2 plans-index hash staleness, compactOutputs no-op (`spec: completed/0129-us-419.spec.md`) — PR #424 MERGED
-- [ ] Pre-ship documentation-sync gate (configurable) (`spec: pending/0129-pre-ship-doc-sync.spec.md`)
+- [x] Pre-ship documentation-sync gate (configurable) (`spec: pending/0129-pre-ship-doc-sync.spec.md`)
 - [x] Kanvas board — packaged local kanban visualizer for spec and workflow state (`spec: completed/0130-kanvas-board.spec.md`) — [PR #425](https://github.com/jpolvora/workflow-skills/pull/425)
-- [ ] Kanvas board phase 2 — drag-and-drop columns with status update on move (`spec: pending/0131-kanvas-board-drag-drop.spec.md`)
+- [x] Kanvas board phase 2 — drag-and-drop columns with status update on move (`spec: pending/0131-kanvas-board-drag-drop.spec.md`)
 - [x] ws-configure-project should initialize .ws/ local project directory with basic minimal required files (`spec: completed/0132-us-429.spec.md`) — [PR #431](https://github.com/jpolvora/workflow-skills/pull/431) MERGED
 - [x] Score 10 on first verify: run format and full test aliases in implement, and do not cap on baseline-dirty (`spec: completed/0133-us-430.spec.md`) — [PR #432](https://github.com/jpolvora/workflow-skills/pull/432)
 - [x] Organize specifications into status subfolders (pending, completed, archived) (`spec: completed/0135-spec-organizer-status-subfolders.spec.md`) — `4d0365eb` on develop
@@ -462,11 +462,11 @@ All Next-specs closed.
 
 | 133 | `us-419` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Observer-log follow-ups (us-412-413 run): intra-root enumeration edge, missing agentTranscripts marker, G2 plans-index hash staleness, compactOutputs no-op |
 
-| 134 | `pre-ship-doc-sync` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Pre-ship documentation-sync gate (configurable) |
+| 134 | `pre-ship-doc-sync` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Pre-ship documentation-sync gate (configurable) |
 
 | 135 | `kanvas-board` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Kanvas board — packaged local kanban visualizer for spec and workflow state |
 
-| 136 | `kanvas-board-drag-drop` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Kanvas board phase 2 — drag-and-drop columns with status update on move |
+| 136 | `kanvas-board-drag-drop` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Kanvas board phase 2 — drag-and-drop columns with status update on move |
 
 | 137 | `us-429` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-configure-project should initialize .ws/ local project directory with basic minimal required files |
 
@@ -511,6 +511,8 @@ All Next-specs closed.
 
 | Date | Slug | Title | PR / Commit |
 |------|------|-------|-------------|
+| 2026-09-28 | `pre-ship-doc-sync` | Pre-ship documentation-sync gate (configurable) | [PR #453](https://github.com/jpolvora/workflow-skills/pull/453), `9d840fe4` |
+| 2026-09-28 | `kanvas-board-drag-drop` | Kanvas board phase 2 — drag-and-drop columns with status update on move | [PR #452](https://github.com/jpolvora/workflow-skills/pull/452) |
 | 2026-09-28 | `us-446` | ws-ship-pr/scripts/verify.cjs: skip empty verification aliases instead of executing them | `412e3f37` delivery commit |
 | 2026-09-28 | `us-448` | ws-spec-multi stores run state in a skill-named shared directory instead of a per-run directory | `75e8f6b7` on develop |
 | 2026-07-13 | `spec-provider-skills` | Provider skills for spec-to-pr (GitHub, Azure DevOps, local specs) | Implemented |
