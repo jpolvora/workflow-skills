@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "871be415dc39687af1b08021a5e1df3af5e793e89030783d9a926dcf0c72bcb9",
+  "fullPackageDigest": "7665153369903a182260c2cef15bc8fcd4515aae3022e7853594bf58589ea1ee",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -16,7 +16,7 @@
       "runtime/ac-ledger.schema.json": "e8c3c57067f5c45dfbd11dc0c47698fd56ad503ad1f75f8c2150b1ebce80292c",
       "runtime/autoload.md": "0f71cb82d93825188680a731ad86d311d6c6335395a5822b7fcb7445ab950c46",
       "runtime/config-resolution.md": "f2c9f85072cd28912b1bbc252d282acdc7a61e3b245b818a8da128ed1d0c1e91",
-      "runtime/config.schema.json": "2f07b1d3b7c960ab023642e3d79b3a72c38bc0072f99184f12be3b041b1bd3ed",
+      "runtime/config.schema.json": "659530060e823a83df52e171c0bc1f5e0e62b081d6cfd940c892ba7bb5eab957",
       "runtime/evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
       "runtime/gates.md": "fa993d9009beae41e1a3abb23a4c152705b5fa78982df77c206d7e6dc763cb9c",
       "runtime/git-ownership.md": "fbf0703a2c89a799e054877ce948fe335458ffbfbca54035b0ad23b6837c2a8f",
@@ -64,10 +64,10 @@
       "templates/CHANGELOG.md.template": "3f9535d6e840680728635eac5d4af32536493b119c408273bfb047197e251804",
       "templates/MEMORY.md.template": "1a604cb2184c9c54cfb24a2da547d3664bc5d4d8e713ffa937c3c3083c21340d",
       "templates/STACK.md.example": "829b7d3fce62b8167905fc1d921ee744db1d7e8ef895b0e7eb969f089973bebd",
-      "templates/config.json.example": "5bf3615203ac206d4bad09e2ee86508365abf0ac02e5ad0394081ffc3e337245",
+      "templates/config.json.example": "7065f80acb4d6052a3db5c993295af9865798aee1ebb12db0e1583181368321a",
       "version.json": "ea71edc51f9955ddb9e2e56407f1680b32c253f79e84fba55a9e671d624a59dd"
     },
-    "skillDigest": "25636207e88332b5044e20744167fb5a3b559b0d0acb43a9f4b56e192dbc739a"
+    "skillDigest": "0185d03836c4cf5c5aa432ebef88fa1bb768457f1f40c19894e8bdba8d6f24cb"
   },
   "package": {
     "files": {

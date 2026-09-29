@@ -299,7 +299,7 @@
     "enforceSpecPrefixOrdering": false,
     "_comment_statusSubfolders": "When true, new specs resolve under {specsDir}/pending/ and the organizer files specs into pending/, completed/, archived/ by status. Default false keeps flat boards.",
     "statusSubfolders": false,
-    "_comment_autoOrganizeByStatus": "When true (and statusSubfolders is true), organize_specs.cjs with no --dry-run and no --slug applies --by-status --apply from frontmatter status, issueState, and index.PRD. Default false keeps filing explicit.",
+    "_comment_autoOrganizeByStatus": "When true (and statusSubfolders is true), organize_specs.cjs with no --dry-run and no --slug applies --by-status --apply from frontmatter status, then index.PRD Archive/Done log/[x] (this beats issueState: open), then issueState. Default false keeps filing explicit.",
     "autoOrganizeByStatus": false
   },
 

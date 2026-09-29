@@ -509,7 +509,7 @@
         "autoOrganizeByStatus": {
           "type": "boolean",
           "default": false,
-          "description": "When true and plans.statusSubfolders is true, organize_specs.cjs with no --dry-run and no --slug runs as --by-status --apply (file by frontmatter status, issueState, and index.PRD). Explicit --dry-run stays a preview. When false (default), filing stays an explicit --by-status --apply."
+          "description": "When true and plans.statusSubfolders is true, organize_specs.cjs with no --dry-run and no --slug runs as --by-status --apply (file by frontmatter status, then index.PRD Archive/Done log/[x] — this beats issueState: open — then issueState). Explicit --dry-run stays a preview. When false (default), filing stays an explicit --by-status --apply."
         }
       }
     },
