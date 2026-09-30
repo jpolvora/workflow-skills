@@ -215,7 +215,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] ws-monitor: worker-session-stall warns while the state/telemetry clock advances (stale session-source reference) (`spec: pending/0162-us-477.spec.md`)
 - [ ] ws-monitor: stale-parent-row warns during the normal child-close to parent-propagate window (`spec: pending/0163-us-476.spec.md`)
 - [ ] Shared-head multi-spec runs need an executable foreign-commit guard (`spec: pending/0164-us-475.spec.md`)
-- [ ] Shipped spec can stay under pending/ while index marks done (`spec: pending/0165-us-474.spec.md`)
+- [x] Shipped spec can stay under pending/ while index marks done (`spec: completed/0165-us-474.spec.md`)
 - [ ] Workflow defect (context-mismatch) detected by ws-monitor (`spec: pending/0166-us-473.spec.md`)
 - [ ] ws-doctor: path-error section reports widespread false positives (citation base, link text, prose) (`spec: pending/0167-us-469.spec.md`)
 - [ ] ws-monitor: slug-scoped scan drops canonical runId-foldered ws-spec-multi batch state (`spec: pending/0168-us-464.spec.md`)
@@ -574,7 +574,7 @@ All Next-specs closed.
 
 | 169 | `us-475` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Shared-head multi-spec runs need an executable foreign-commit guard |
 
-| 170 | `us-474` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Shipped spec can stay under pending/ while index marks done |
+| 170 | `us-474` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Shipped spec can stay under pending/ while index marks done |
 
 | 171 | `us-473` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Workflow defect [context-mismatch] detected by ws-monitor |
 
@@ -749,6 +749,7 @@ All Next-specs closed.
 | 2026-09-27 | `us-440` | skillLoader: adopt token-centered skill loading at inline body-load sites | [PR #443](https://github.com/jpolvora/workflow-skills/pull/443) MERGED (`7ee4dd57`) |
 | 2026-09-27 | `us-439` | [Spec] Create a new skill ws-spec-to-issue | [PR #444](https://github.com/jpolvora/workflow-skills/pull/444) MERGED (`0d2337df`) |
 | 2026-09-27 | `us-436` | features to be emphasized in website and detailed in wiki | [PR #445](https://github.com/jpolvora/workflow-skills/pull/445) MERGED (`fbb69019`) |
+| 2026-09-30 | `us-474` | Shipped spec can stay under pending/ while index marks done | 896bbd29f9c5ff77cdf7c3a8747d9820d9a4ece1 |
 
 ## 11. Maintenance checklist
 

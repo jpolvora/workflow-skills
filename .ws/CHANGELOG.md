@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-30 15:54] Agent: opencode/deepseek-v4.1-flash (batch us-474)
+- **Prompt**: Implement issue 474: spec-index sync must file a shipped spec to completed/ (with sidecars and rewritten spec: refs) or report the filing outstanding; Step 8 close verification fails closed naming a stale pending/ path; harness flags index [x] rows pointing under pending/.
+- **Done**: Added deterministic ws-spec-index sync_index.cjs (files first, then indexes; outstanding on failure), verify_close_filing.cjs close check, and ws-check-harness check_spec_filing.cjs gate wired into Phase 5a; Step 8 close prose updated; test/test-spec-index-filing.js covers AC1-AC7 and NS.
+- **Result**: PR on develop->main; npm test 154/154 green; harness 0 findings; Step 5 score 10/10; 5/5 fresh-verify fault injections killed the suite.
+
 ### [2026-09-30 11:02] Agent: agent
 - **Prompt**: ws-spec-multi batch 0154-0160 (7 specs, all standard, stay-on-develop)
 - **Done**: 7/7 items shipped and merged: PRs #465, #466, #467, #468, #470, #471, #472; per-item fable-judge VERIFIED audits with fresh full-suite re-runs 147-153 green; run ms-20260930T043638Z completed
