@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-30 18:45] Agent: agent
+- **Prompt**: fix ws-monitor slug-scoped scan dropping canonical runId-foldered ws-spec-multi batch state (us-464)
+- **Done**: slug-scoped discovery selects on state-derived slug independently of plan folder/layout; --workflow-id authoritative; unmatched slug returns zero
+- **Result**: 156/156 tests pass; verify 10/10; fresh-verify 7/7; version 0.5.27; PR develop->main
+
 ### [2026-09-30 17:56] Agent: agent
 - **Prompt**: Fix PR #480 review threads (CRITICAL cross-slug foreign-commit baseline, WARNING duplicate invariant numbering).
 - **Done**: foreign_commit_guard.cjs checkAdvance falls back to the most recent dispatch baseline for a new slug; renumbered ws-spec-multi invariant 7->8; added cross-slug regression tests.

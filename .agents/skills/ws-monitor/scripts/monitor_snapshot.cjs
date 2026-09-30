@@ -410,6 +410,31 @@ function readState(file) {
   return { state, stateFile: markdown };
 }
 
+// us-464: the discovered run's slug must be derived from the state, exactly as
+// the workflow record reports it, so slug-scoped discovery and the printed slug
+// can never disagree. Discovery previously matched the plan folder name first,
+// which silently dropped the canonical `{plansDir}/{runId}/{runId}.state.md`
+// ws-spec-multi layout (folder == runId, state carries no `slug`).
+function stateDerivedSlug(state, stateFile) {
+  if (!state || typeof state !== 'object' || Array.isArray(state)) return null;
+  if (state.workflowType === 'ws-spec-multi') {
+    return String(state.slug || 'ws-spec-multi');
+  }
+  const dirName = stateFile ? path.basename(path.dirname(stateFile)) : '';
+  const derived = state.slug || state.us || dirName;
+  return derived === undefined || derived === null || derived === '' ? null : String(derived);
+}
+
+// us-464 AC1/AC2: select on the state-derived slug only (folder/newer layouts no
+// longer matter). A batch state may still carry a queue row for the slug even
+// when its own top-level slug differs, so that stays a secondary union.
+function stateFileMatchesSlug(state, stateFile, slug) {
+  if (!state) return false;
+  const target = String(slug);
+  if (stateDerivedSlug(state, stateFile) === target) return true;
+  return Array.isArray(state.items) && state.items.some((item) => item && String(item.slug) === target);
+}
+
 function listStateFiles(plansDir) {
   if (!fs.existsSync(plansDir)) return [];
   let directories;
@@ -1646,15 +1671,13 @@ function snapshot(options) {
     );
   }
   let stateFiles = listStateFiles(plansDir);
-  if (options.slug) {
+  // us-464 AC6: a supplied `--workflow-id` is the authoritative selector and must
+  // return the matching run regardless of any slug filter, so slug scoping only
+  // applies when no workflow id is supplied.
+  if (options.slug && !options.workflowId) {
     stateFiles = stateFiles.filter((file) => {
-      if (path.basename(path.dirname(file)) === options.slug) return true;
       const loaded = readState(file);
-      const st = loaded.state;
-      if (!st) return false;
-      if (st.slug === options.slug || st.us === options.slug) return true;
-      if (Array.isArray(st.items) && st.items.some((item) => item.slug === options.slug)) return true;
-      return false;
+      return stateFileMatchesSlug(loaded.state, loaded.stateFile, options.slug);
     });
   }
   const workflows = [];
@@ -2124,6 +2147,8 @@ if (require.main === module) {
 
 module.exports = {
   parseArgs,
+  stateDerivedSlug,
+  stateFileMatchesSlug,
   expectedArtifacts,
   expectedChildArtifacts,
   classifyWorkflow,
