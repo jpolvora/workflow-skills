@@ -925,13 +925,21 @@ function getGitContext(repoRoot) {
 
 function detectContextMismatch(state, gitContext, repoRoot = '.') {
   const findings = [];
+  // us-473: the branch comparison detects live-run drift, where the ambient
+  // checkout is the run's context. A run that has already closed cannot
+  // disagree with the live checkout, so a terminal run's historical branch
+  // difference is informational; only a non-terminal run stays critical. The
+  // resolved run status is named so severity and liveness never diverge.
+  const derivedTerminal = deriveTerminalStatus(state);
+  const terminal = Boolean(derivedTerminal) || TERMINAL_RUN_STATUSES.has(String(state?.status));
+  const runStatus = derivedTerminal ? derivedTerminal.status : String(state?.status || 'unknown');
   const stateBranch = state.branch || state.workingBranch || null;
   if (stateBranch && gitContext?.branch && stateBranch !== gitContext.branch) {
     addFinding(
       findings,
-      'critical',
+      terminal ? 'info' : 'critical',
       'context-mismatch',
-      `state branch ${stateBranch} differs from active branch ${gitContext.branch}`,
+      `state branch ${stateBranch} differs from active branch ${gitContext.branch} (run status: ${runStatus})`,
       [toRepoRelative(repoRoot, repoRoot, { allowOutside: true })],
     );
   }
