@@ -238,6 +238,13 @@ function main() {
   };
   if (args.emitRecord && verdict.status === 'adequate') {
     const out = path.resolve(args.emitRecord);
+    try {
+      toRepoRelative(repoRoot, out);
+    } catch {
+      console.error(`refusing to emit outside the repository: ${args.emitRecord}`);
+      process.exitCode = 2;
+      return 2;
+    }
     fs.mkdirSync(path.dirname(out), { recursive: true });
     fs.writeFileSync(out, `${JSON.stringify({ ...record, status: 'adequate' }, null, 2)}\n`, 'utf8');
     verdict.emitted = path.relative(repoRoot, out).replace(/\\/g, '/');

@@ -241,6 +241,33 @@ function validateTest(test, context) {
   };
 }
 
+function resolveAdequacyHelper() {
+  const candidates = [path.join(__dirname, '..', '..', 'ws-implement-tasks', 'scripts', 'check_test_adequacy.cjs')];
+  const globalDir = process.env.WORKFLOW_SKILLS_GLOBAL_DIR;
+  const globalRoot = globalDir && String(globalDir).trim() ? path.resolve(String(globalDir).trim()) : path.join(require('os').homedir(), '.agents', 'skills');
+  candidates.push(path.join(globalRoot, 'ws-implement-tasks', 'scripts', 'check_test_adequacy.cjs'));
+  for (const candidate of candidates) {
+    try {
+      if (fs.statSync(candidate).isFile()) return candidate;
+    } catch {
+      // Try the next candidate.
+    }
+  }
+  throw new Error('adequacy validator unavailable: check_test_adequacy.cjs not found');
+}
+
+function runAdequacyHelper(helperPath, recordPath, repoRoot) {
+  const proc = spawnSync('node', [helperPath, '--record', recordPath, '--repo-root', repoRoot], { encoding: 'utf8' });
+  if (proc.status !== 0 && proc.status !== 1) throw new Error(`adequacy validator failed (exit ${proc.status}): ${String(proc.stderr || '').trim().slice(0, 200)}`);
+  try {
+    const verdict = JSON.parse(String(proc.stdout || ''));
+    if (!verdict || (verdict.status !== 'adequate' && verdict.status !== 'inadequate')) throw new Error('bad verdict');
+    return verdict;
+  } catch {
+    throw new Error('adequacy validator returned an unreadable verdict');
+  }
+}
+
 function link(options, context) {
   if (!options.ledger || !options.eventId) throw new Error('link requires --ledger and --event-id');
   const acIds = options.ac || [];
@@ -302,6 +329,12 @@ function link(options, context) {
       || !Array.isArray(parsed.acs) || !parsed.acs.length
       || !Array.isArray(parsed.bindings) || !Array.isArray(parsed.litmus)) {
       throw new Error('adequacy record malformed: schemaVersion 1 with taskId, status adequate|inadequate, acs, bindings, and litmus required');
+    }
+    const helperPath = resolveAdequacyHelper();
+    const verdict = runAdequacyHelper(helperPath, recordPath, context.repoRoot);
+    if (verdict.status !== parsed.status) {
+      const gaps = Array.isArray(verdict.gaps) ? verdict.gaps.slice(0, 3).join('; ') : '';
+      throw new Error(`adequacy record status mismatch: claimed ${parsed.status}, validator computed ${verdict.status}; gaps: ${gaps || 'none'}`);
     }
     adequacyRecord = parsed;
     adequacySource = { text, path: recordPath };
@@ -800,7 +833,7 @@ function ledgerHelpText(command) {
         + '--negative, --alias-result, --test-surface-skip, --gap, or --plan-index). --file ranges use the\n'
         + 'path:Lstart-Lend shape. --plan-index backfills taskIds, planSectionIds, and expected test names.\n'
         + '--files-touched persists modified paths for defect scoping. --adequacy-file attaches a validated per-task\n'
-        + 'adequacy record to each --ac target (record must cover the AC; inadequate status fails closed).\n'
+        + 'adequacy record to each --ac target (record must cover the AC; claimed status must match the helper verdict; inadequate status fails closed).\n'
         + 'provide CLI fallbacks for alias results.\n'
         + 'Persist: link recomputes scoreState (--score-boundary wins; else pre-step6 when commits exist,\n'
         + 'else step5), so re-score only when the next gate expects a different boundary.\n'

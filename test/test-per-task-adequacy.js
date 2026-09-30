@@ -253,4 +253,24 @@ for (const phrase of ['negative test', 'negativeScenarios', 'skipReason: baselin
 }
 assert.match(implement, /Derive `addedTests` from the task diff/, 'CR-003: recipe derives addedTests from the diff');
 
+// --- Fix-PR round 1 anti-regression (review threads T1-T2) --------------------
+{
+  const snapshot = fs.readFileSync(path.join(root, 'ac-ledger.json'));
+  const lying = writeRecord('t1-lying.json', baseRecord({ litmus: [] }));
+  const lied = ledger(['link', '--ledger', 'ac-ledger.json', '--event-id', 'fixpr-lying', '--ac', 'AC1', '--adequacy-file', lying]);
+  assert.notStrictEqual(lied.status, 0, 'T1: adequate-claimed but helper-inadequate record fails');
+  assert.match(`${lied.stdout}${lied.stderr}`, /status mismatch/, 'T1: failure names the status mismatch');
+  assert.ok(fs.readFileSync(path.join(root, 'ac-ledger.json')).equals(snapshot), 'T1: rejected link leaves the ledger unchanged');
+  const modest = writeRecord('t1-modest.json', baseRecord({ status: 'inadequate' }));
+  const moaned = ledger(['link', '--ledger', 'ac-ledger.json', '--event-id', 'fixpr-modest', '--ac', 'AC1', '--adequacy-file', modest]);
+  assert.notStrictEqual(moaned.status, 0, 'T1: inadequate-claimed but helper-adequate record fails');
+}
+{
+  const outside = path.resolve(root, '..', 'fixpr-evil.json');
+  const refused = helper(['--record', writeRecord('t2-in.json', baseRecord()), '--emit-record', outside]);
+  assert.strictEqual(refused.status, 2, 'T2: emit outside the repository exits 2');
+  assert.match(`${refused.stdout}${refused.stderr}`, /outside the repository/, 'T2: refusal names the cause');
+  assert.ok(!fs.existsSync(outside), 'T2: refused emit writes nothing');
+}
+
 console.log('test-per-task-adequacy: ok');
