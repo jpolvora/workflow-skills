@@ -469,6 +469,9 @@
       "test/test-spec-organizer.js"
     ],
     [
+      "test/test-spec-index-filing.js"
+    ],
+    [
       "test/test-ws-spec-manager.js"
     ],
     [

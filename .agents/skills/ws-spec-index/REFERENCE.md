@@ -34,10 +34,14 @@ If no mapping exists: return `updated: []` and `skipped: "No matching index row 
 When E1 is satisfied **and** `config.json` → `plans.statusSubfolders` is explicit `true`, `sync` additionally files the spec of record into `completed/`:
 
 ```bash
-node {skillsRoot}/ws-spec-organizer/scripts/organize_specs.cjs --slug {slug} --status completed --apply
+node {skillsRoot}/ws-spec-index/scripts/sync_index.cjs --specs-dir {specsDir} --slug {slug} --delivery-commit <sha>
 ```
 
-The helper moves the `*.spec.md` plus companion `*.context.md` and `*.assets/` sidecars, rewrites `index.PRD` `spec:` references to the subfolder-relative path, and fails closed on dirty overlapping paths. When `plans.statusSubfolders` is omitted or `false`, specs stay in place (flat boards are never restructured by `sync`). Record the move in `updated[]` (e.g. `moved: pending/{file} → completed/{file}`); if the helper reports no renames (already filed), proceed with the checkbox/Done-log update only.
+The deterministic helper (`sync_index.cjs`) updates the index status and delegates filing to `organize_specs.cjs --slug {slug} --status completed --apply`, which moves the `*.spec.md` plus companion `*.context.md` and `*.assets/` sidecars and rewrites `index.PRD` `spec:` references to the subfolder-relative path in the same apply; it fails closed when filing cannot complete. When `plans.statusSubfolders` is omitted or `false`, specs stay in place (flat boards are never restructured by `sync`). Record the move in `updated[]` (e.g. `moved: pending/{file} → completed/{file}`); if the helper reports no renames (already filed), proceed with the checkbox/Done-log update only.
+
+`sync_index.cjs` output (JSON): `{ status: synced|outstanding|skipped|error, slug, updated[], moved[], filingOutstanding, stalePendingPath?, reason? }`. `status: outstanding` (non-zero exit) means the filing did not happen — surface it, never treat it as success.
+
+**Close verification:** `verify_close_filing.cjs --specs-dir {specsDir} --slug {slug}` exits non-zero when the index marks the slug completed but the spec still resolves under `pending/`, naming the stale path. Wire it into the Step 8 close phase (fail closed) and mirror it with the harness gate `ws-check-harness/scripts/check_spec_filing.cjs`.
 
 ## Minimum Index Contract & Accepted Dialects
 

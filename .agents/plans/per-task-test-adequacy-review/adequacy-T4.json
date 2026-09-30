@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "taskId": "T4",
+  "acs": [
+    "AC5"
+  ],
+  "status": "adequate",
+  "bindings": [
+    {
+      "ac": "AC5",
+      "test": "AC5: verify documents observed adequacy",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 224,
+      "lineEnd": 224
+    }
+  ],
+  "litmus": [
+    {
+      "test": "AC5: verify documents observed adequacy",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC5: verify documents observed adequacy\" unproven); post-edit run exit 0"
+    }
+  ],
+  "addedTests": [],
+  "orphansRemoved": [],
+  "falsePositives": [],
+  "checkedAt": "2026-09-30T08:40:00.000Z"
+}

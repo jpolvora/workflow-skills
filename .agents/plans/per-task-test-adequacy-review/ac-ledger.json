@@ -1,0 +1,805 @@
+{
+  "schemaVersion": 1,
+  "revision": 65,
+  "workflowId": "per-task-test-adequacy-review-20260930T081414Z",
+  "slug": "per-task-test-adequacy-review",
+  "specPath": ".agents/plans/per-task-test-adequacy-review/step-00-per-task-test-adequacy-review.spec.md",
+  "planIndexPath": ".agents/plans/per-task-test-adequacy-review/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "Every task completed in build mode carries an adequacy record mapping each task AC to at least one covering test with file:line evidence.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-implement-tasks/SKILL.md:L49-L50",
+        ".agents/skills/ws-implement-tasks/scripts/check_test_adequacy.cjs:L105-L137",
+        ".agents/skills/ws-implement-tasks/scripts/check_test_adequacy.cjs:L105-L141"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006",
+        "section-008"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-implement-tasks/scripts/check_test_adequacy.cjs",
+          "lineStart": 105,
+          "lineEnd": 137,
+          "sha256": "01a4dcbfcc068193b3801959ad5371cfd4a906f35ff8afaf54838987cb4cc705"
+        },
+        {
+          "path": ".agents/skills/ws-implement-tasks/scripts/check_test_adequacy.cjs",
+          "lineStart": 105,
+          "lineEnd": 141,
+          "sha256": "01a4dcbfcc068193b3801959ad5371cfd4a906f35ff8afaf54838987cb4cc705"
+        },
+        {
+          "path": ".agents/skills/ws-implement-tasks/SKILL.md",
+          "lineStart": 49,
+          "lineEnd": 50,
+          "sha256": "44e5b3f654333e2353e29642d6b1867a80762adcab5ca1f5cfcb9b641853ca95"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "f4cfd836474cb575289aa6f657b2fcc01becd5ac",
+          "step": 5
+        },
+        {
+          "sha": "e56d7a0c6f8a036bc406e270b8a999226046d989",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC1: full binding map validates adequate",
+          "sourceFile": "test/test-per-task-adequacy.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T08:44:37.199Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "adequacy-fix1",
+        "adequacy-t1",
+        "adequacy-t2",
+        "adequacy-t5",
+        "corrected-ac1-0",
+        "g2-commit-e56d7a0c6f8a036bc406e270b8a999226046d989",
+        "g2-commit-f4cfd836474cb575289aa6f657b2fcc01becd5ac",
+        "refresh-ac1-0",
+        "refresh-ac1-1",
+        "verify-ac1",
+        "verify-ac1-f0",
+        "verify-ac1-f1"
+      ],
+      "adequacy": {
+        "status": "adequate",
+        "taskId": "FIX1",
+        "acs": [
+          "AC1",
+          "AC3",
+          "AC5"
+        ],
+        "bindings": 6,
+        "litmus": 6,
+        "orphansRemoved": 0,
+        "recordPath": ".agents/plans/per-task-test-adequacy-review/adequacy-FIX1.json",
+        "recordSha256": "27e219695b2e86c39e424f4e66bc47a343fc01e729c3a9f44013c7ed25125f52",
+        "checkedAt": "2026-09-30T08:55:00.000Z"
+      },
+      "adequacyHistory": [
+        {
+          "status": "adequate",
+          "taskId": "FIX1",
+          "acs": [
+            "AC1",
+            "AC3",
+            "AC5"
+          ],
+          "bindings": 6,
+          "litmus": 6,
+          "orphansRemoved": 0,
+          "recordPath": ".agents/plans/per-task-test-adequacy-review/adequacy-FIX1.json",
+          "recordSha256": "27e219695b2e86c39e424f4e66bc47a343fc01e729c3a9f44013c7ed25125f52",
+          "checkedAt": "2026-09-30T08:55:00.000Z",
+          "linkEventId": "adequacy-fix1"
+        }
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "Each mapped test passes a non-shallow litmus showing its key assertion fails under a wrong implementation, recorded as an inversion run or a documented wrong-code run with test name and exit code.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-implement-tasks/SKILL.md:L51-L51",
+        ".agents/skills/ws-implement-tasks/scripts/check_test_adequacy.cjs:L140-L164",
+        ".agents/skills/ws-implement-tasks/scripts/check_test_adequacy.cjs:L144-L168"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-implement-tasks/scripts/check_test_adequacy.cjs",
+          "lineStart": 140,
+          "lineEnd": 164,
+          "sha256": "01a4dcbfcc068193b3801959ad5371cfd4a906f35ff8afaf54838987cb4cc705"
+        },
+        {
+          "path": ".agents/skills/ws-implement-tasks/scripts/check_test_adequacy.cjs",
+          "lineStart": 144,
+          "lineEnd": 168,
+          "sha256": "01a4dcbfcc068193b3801959ad5371cfd4a906f35ff8afaf54838987cb4cc705"
+        },
+        {
+          "path": ".agents/skills/ws-implement-tasks/SKILL.md",
+          "lineStart": 51,
+          "lineEnd": 51,
+          "sha256": "44e5b3f654333e2353e29642d6b1867a80762adcab5ca1f5cfcb9b641853ca95"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "f4cfd836474cb575289aa6f657b2fcc01becd5ac",
+          "step": 5
+        },
+        {
+          "sha": "e56d7a0c6f8a036bc406e270b8a999226046d989",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC2: documented wrong-code run is acceptable litmus",
+          "sourceFile": "test/test-per-task-adequacy.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T08:44:37.242Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "adequacy-t1",
+        "adequacy-t2",
+        "adequacy-t5",
+        "corrected-ac2-0",
+        "g2-commit-e56d7a0c6f8a036bc406e270b8a999226046d989",
+        "g2-commit-f4cfd836474cb575289aa6f657b2fcc01becd5ac",
+        "refresh-ac2-0",
+        "refresh-ac2-1",
+        "verify-ac2",
+        "verify-ac2-f0",
+        "verify-ac2-f1"
+      ],
+      "adequacy": {
+        "status": "adequate",
+        "taskId": "T5",
+        "acs": [
+          "AC1",
+          "AC2",
+          "AC3",
+          "AC4",
+          "AC5",
+          "AC6",
+          "AC7"
+        ],
+        "bindings": 7,
+        "litmus": 7,
+        "orphansRemoved": 0,
+        "recordPath": ".agents/plans/per-task-test-adequacy-review/adequacy-T5.json",
+        "recordSha256": "216f8f31c3ac07d248fb4a14919441dc2a97f51d190faea5f189ae80106dbb14",
+        "checkedAt": "2026-09-30T08:40:00.000Z"
+      }
+    },
+    {
+      "id": "AC3",
+      "text": "Every test added by the task maps back to a task AC or a spec negative scenario; orphan tests with no requirement are removed or remapped before handoff.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-implement-tasks/SKILL.md:L52-L52",
+        ".agents/skills/ws-implement-tasks/scripts/check_test_adequacy.cjs:L166-L187",
+        ".agents/skills/ws-implement-tasks/scripts/check_test_adequacy.cjs:L170-L191"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-implement-tasks/scripts/check_test_adequacy.cjs",
+          "lineStart": 166,
+          "lineEnd": 187,
+          "sha256": "01a4dcbfcc068193b3801959ad5371cfd4a906f35ff8afaf54838987cb4cc705"
+        },
+        {
+          "path": ".agents/skills/ws-implement-tasks/scripts/check_test_adequacy.cjs",
+          "lineStart": 170,
+          "lineEnd": 191,
+          "sha256": "01a4dcbfcc068193b3801959ad5371cfd4a906f35ff8afaf54838987cb4cc705"
+        },
+        {
+          "path": ".agents/skills/ws-implement-tasks/SKILL.md",
+          "lineStart": 52,
+          "lineEnd": 52,
+          "sha256": "44e5b3f654333e2353e29642d6b1867a80762adcab5ca1f5cfcb9b641853ca95"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "f4cfd836474cb575289aa6f657b2fcc01becd5ac",
+          "step": 5
+        },
+        {
+          "sha": "e56d7a0c6f8a036bc406e270b8a999226046d989",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC3: removed orphan validates adequate",
+          "sourceFile": "test/test-per-task-adequacy.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T08:44:37.300Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "adequacy-fix1",
+        "adequacy-t1",
+        "adequacy-t2",
+        "adequacy-t5",
+        "corrected-ac3-0",
+        "g2-commit-e56d7a0c6f8a036bc406e270b8a999226046d989",
+        "g2-commit-f4cfd836474cb575289aa6f657b2fcc01becd5ac",
+        "refresh-ac3-0",
+        "refresh-ac3-1",
+        "verify-ac3",
+        "verify-ac3-f0",
+        "verify-ac3-f1"
+      ],
+      "adequacy": {
+        "status": "adequate",
+        "taskId": "FIX1",
+        "acs": [
+          "AC1",
+          "AC3",
+          "AC5"
+        ],
+        "bindings": 6,
+        "litmus": 6,
+        "orphansRemoved": 0,
+        "recordPath": ".agents/plans/per-task-test-adequacy-review/adequacy-FIX1.json",
+        "recordSha256": "27e219695b2e86c39e424f4e66bc47a343fc01e729c3a9f44013c7ed25125f52",
+        "checkedAt": "2026-09-30T08:55:00.000Z"
+      },
+      "adequacyHistory": [
+        {
+          "status": "adequate",
+          "taskId": "FIX1",
+          "acs": [
+            "AC1",
+            "AC3",
+            "AC5"
+          ],
+          "bindings": 6,
+          "litmus": 6,
+          "orphansRemoved": 0,
+          "recordPath": ".agents/plans/per-task-test-adequacy-review/adequacy-FIX1.json",
+          "recordSha256": "27e219695b2e86c39e424f4e66bc47a343fc01e729c3a9f44013c7ed25125f52",
+          "checkedAt": "2026-09-30T08:55:00.000Z",
+          "linkEventId": "adequacy-fix1"
+        }
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "Tasks failing adequacy return to the TDD cycle and re-enter review until adequate or the existing implement retry bound Pause path triggers.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-implement-tasks/SKILL.md:L54-L55"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-implement-tasks/SKILL.md",
+          "lineStart": 54,
+          "lineEnd": 55,
+          "sha256": "44e5b3f654333e2353e29642d6b1867a80762adcab5ca1f5cfcb9b641853ca95"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "f4cfd836474cb575289aa6f657b2fcc01becd5ac",
+          "step": 5
+        },
+        {
+          "sha": "e56d7a0c6f8a036bc406e270b8a999226046d989",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC4: recipe requires TDD re-entry",
+          "sourceFile": "test/test-per-task-adequacy.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T08:44:37.356Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "adequacy-t1",
+        "adequacy-t5",
+        "g2-commit-e56d7a0c6f8a036bc406e270b8a999226046d989",
+        "g2-commit-f4cfd836474cb575289aa6f657b2fcc01becd5ac",
+        "refresh-ac4-0",
+        "verify-ac4",
+        "verify-ac4-f0"
+      ],
+      "adequacy": {
+        "status": "adequate",
+        "taskId": "T5",
+        "acs": [
+          "AC1",
+          "AC2",
+          "AC3",
+          "AC4",
+          "AC5",
+          "AC6",
+          "AC7"
+        ],
+        "bindings": 7,
+        "litmus": 7,
+        "orphansRemoved": 0,
+        "recordPath": ".agents/plans/per-task-test-adequacy-review/adequacy-T5.json",
+        "recordSha256": "216f8f31c3ac07d248fb4a14919441dc2a97f51d190faea5f189ae80106dbb14",
+        "checkedAt": "2026-09-30T08:40:00.000Z"
+      }
+    },
+    {
+      "id": "AC5",
+      "text": "Adequacy records are returned in step-output evidence and linked into `ac-ledger.json` so Step 5 scores observed adequacy instead of asserted coverage.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-implement-tasks/SKILL.md:L113-L114",
+        ".agents/skills/ws-plan-verify/SKILL.md:L53-L53",
+        ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L365-L378",
+        ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L365-L381",
+        ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L646-L649",
+        ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L649-L652"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-implement-tasks/SKILL.md",
+          "lineStart": 113,
+          "lineEnd": 114,
+          "sha256": "44e5b3f654333e2353e29642d6b1867a80762adcab5ca1f5cfcb9b641853ca95"
+        },
+        {
+          "path": ".agents/skills/ws-plan-verify/SKILL.md",
+          "lineStart": 53,
+          "lineEnd": 53,
+          "sha256": "13582febe8f49a4901547c971fd1d42695b83462ff07ca9860112a5ed73e0dab"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+          "lineStart": 365,
+          "lineEnd": 378,
+          "sha256": "60c947aa5d7e697602bbcb2ffd55bc0007cf242521dede9f3126ca5a6d80f0ab"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+          "lineStart": 365,
+          "lineEnd": 381,
+          "sha256": "60c947aa5d7e697602bbcb2ffd55bc0007cf242521dede9f3126ca5a6d80f0ab"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+          "lineStart": 646,
+          "lineEnd": 649,
+          "sha256": "60c947aa5d7e697602bbcb2ffd55bc0007cf242521dede9f3126ca5a6d80f0ab"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+          "lineStart": 649,
+          "lineEnd": 652,
+          "sha256": "60c947aa5d7e697602bbcb2ffd55bc0007cf242521dede9f3126ca5a6d80f0ab"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "f4cfd836474cb575289aa6f657b2fcc01becd5ac",
+          "step": 5
+        },
+        {
+          "sha": "e56d7a0c6f8a036bc406e270b8a999226046d989",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC5: link attaches row.adequacy",
+          "sourceFile": "test/test-per-task-adequacy.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T08:44:37.409Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "adequacy-fix1",
+        "adequacy-t1",
+        "adequacy-t3",
+        "adequacy-t4",
+        "adequacy-t5",
+        "corrected-ac5-0",
+        "corrected-ac5-1",
+        "g2-commit-e56d7a0c6f8a036bc406e270b8a999226046d989",
+        "g2-commit-f4cfd836474cb575289aa6f657b2fcc01becd5ac",
+        "refresh-ac5-0",
+        "refresh-ac5-1",
+        "refresh-ac5-2",
+        "refresh-ac5-3",
+        "testing-sabotage",
+        "verify-ac5",
+        "verify-ac5-f0",
+        "verify-ac5-f1",
+        "verify-ac5-f2",
+        "verify-ac5-f3",
+        "verify-sabotage-ac5"
+      ],
+      "adequacy": {
+        "status": "adequate",
+        "taskId": "FIX1",
+        "acs": [
+          "AC1",
+          "AC3",
+          "AC5"
+        ],
+        "bindings": 6,
+        "litmus": 6,
+        "orphansRemoved": 0,
+        "recordPath": ".agents/plans/per-task-test-adequacy-review/adequacy-FIX1.json",
+        "recordSha256": "27e219695b2e86c39e424f4e66bc47a343fc01e729c3a9f44013c7ed25125f52",
+        "checkedAt": "2026-09-30T08:55:00.000Z"
+      },
+      "adequacyHistory": [
+        {
+          "status": "adequate",
+          "taskId": "FIX1",
+          "acs": [
+            "AC1",
+            "AC3",
+            "AC5"
+          ],
+          "bindings": 6,
+          "litmus": 6,
+          "orphansRemoved": 0,
+          "recordPath": ".agents/plans/per-task-test-adequacy-review/adequacy-FIX1.json",
+          "recordSha256": "27e219695b2e86c39e424f4e66bc47a343fc01e729c3a9f44013c7ed25125f52",
+          "checkedAt": "2026-09-30T08:55:00.000Z",
+          "linkEventId": "adequacy-fix1"
+        }
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "The review rejects assertions that pass on unmodified code (false-positive hazard) as inadequate without requiring a full litmus run.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-implement-tasks/SKILL.md:L53-L53",
+        ".agents/skills/ws-implement-tasks/scripts/check_test_adequacy.cjs:L189-L199",
+        ".agents/skills/ws-implement-tasks/scripts/check_test_adequacy.cjs:L193-L203"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-implement-tasks/scripts/check_test_adequacy.cjs",
+          "lineStart": 189,
+          "lineEnd": 199,
+          "sha256": "01a4dcbfcc068193b3801959ad5371cfd4a906f35ff8afaf54838987cb4cc705"
+        },
+        {
+          "path": ".agents/skills/ws-implement-tasks/scripts/check_test_adequacy.cjs",
+          "lineStart": 193,
+          "lineEnd": 203,
+          "sha256": "01a4dcbfcc068193b3801959ad5371cfd4a906f35ff8afaf54838987cb4cc705"
+        },
+        {
+          "path": ".agents/skills/ws-implement-tasks/SKILL.md",
+          "lineStart": 53,
+          "lineEnd": 53,
+          "sha256": "44e5b3f654333e2353e29642d6b1867a80762adcab5ca1f5cfcb9b641853ca95"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "f4cfd836474cb575289aa6f657b2fcc01becd5ac",
+          "step": 5
+        },
+        {
+          "sha": "e56d7a0c6f8a036bc406e270b8a999226046d989",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC6: pass-on-unmodified-code exits 1 with zero litmus entries",
+          "sourceFile": "test/test-per-task-adequacy.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T08:44:37.457Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "adequacy-t1",
+        "adequacy-t2",
+        "adequacy-t5",
+        "corrected-ac6-0",
+        "g2-commit-e56d7a0c6f8a036bc406e270b8a999226046d989",
+        "g2-commit-f4cfd836474cb575289aa6f657b2fcc01becd5ac",
+        "refresh-ac6-0",
+        "refresh-ac6-1",
+        "verify-ac6",
+        "verify-ac6-f0",
+        "verify-ac6-f1"
+      ],
+      "adequacy": {
+        "status": "adequate",
+        "taskId": "T5",
+        "acs": [
+          "AC1",
+          "AC2",
+          "AC3",
+          "AC4",
+          "AC5",
+          "AC6",
+          "AC7"
+        ],
+        "bindings": 7,
+        "litmus": 7,
+        "orphansRemoved": 0,
+        "recordPath": ".agents/plans/per-task-test-adequacy-review/adequacy-T5.json",
+        "recordSha256": "216f8f31c3ac07d248fb4a14919441dc2a97f51d190faea5f189ae80106dbb14",
+        "checkedAt": "2026-09-30T08:40:00.000Z"
+      }
+    },
+    {
+      "id": "AC7",
+      "text": "Fix mode applies the same adequacy review to anti-regression tests added per fixed finding.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-implement-tasks/SKILL.md:L84-L85"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-008"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-implement-tasks/SKILL.md",
+          "lineStart": 84,
+          "lineEnd": 85,
+          "sha256": "44e5b3f654333e2353e29642d6b1867a80762adcab5ca1f5cfcb9b641853ca95"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "f4cfd836474cb575289aa6f657b2fcc01becd5ac",
+          "step": 5
+        },
+        {
+          "sha": "e56d7a0c6f8a036bc406e270b8a999226046d989",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC7: finding-derived task record validates",
+          "sourceFile": "test/test-per-task-adequacy.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T08:44:37.502Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "adequacy-t1",
+        "adequacy-t5",
+        "g2-commit-e56d7a0c6f8a036bc406e270b8a999226046d989",
+        "g2-commit-f4cfd836474cb575289aa6f657b2fcc01becd5ac",
+        "refresh-ac7-0",
+        "verify-ac7",
+        "verify-ac7-f0"
+      ],
+      "adequacy": {
+        "status": "adequate",
+        "taskId": "T5",
+        "acs": [
+          "AC1",
+          "AC2",
+          "AC3",
+          "AC4",
+          "AC5",
+          "AC6",
+          "AC7"
+        ],
+        "bindings": 7,
+        "litmus": 7,
+        "orphansRemoved": 0,
+        "recordPath": ".agents/plans/per-task-test-adequacy-review/adequacy-T5.json",
+        "recordSha256": "216f8f31c3ac07d248fb4a14919441dc2a97f51d190faea5f189ae80106dbb14",
+        "checkedAt": "2026-09-30T08:40:00.000Z"
+      }
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "A task whose test passes on unmodified code is flagged inadequate and re-enters the TDD cycle instead of marking done.",
+      "tests": [
+        {
+          "name": "AC6: pass-on-unmodified-code exits 1 with zero litmus entries",
+          "sourceFile": "test/test-per-task-adequacy.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T08:44:38.334Z"
+        }
+      ],
+      "linkEventIds": [
+        "verify-ns1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "A test with no backing task AC or negative scenario is removed or remapped before handoff, never shipped as-is.",
+      "tests": [
+        {
+          "name": "AC3: removed orphan validates adequate",
+          "sourceFile": "test/test-per-task-adequacy.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T08:44:38.400Z"
+        }
+      ],
+      "linkEventIds": [
+        "verify-ns2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "A mapped test whose key assertion survives the wrong-implementation run fails adequacy with the surviving assertion named.",
+      "tests": [
+        {
+          "name": "AC2: mapped test without litmus exits 1",
+          "sourceFile": "test/test-per-task-adequacy.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T08:44:38.451Z"
+        }
+      ],
+      "linkEventIds": [
+        "verify-ns3"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "Adequacy evidence missing from step-output fails the implement step handoff validation.",
+      "tests": [
+        {
+          "name": "NS4: empty bindings/litmus exits 1",
+          "sourceFile": "test/test-per-task-adequacy.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T08:44:38.496Z"
+        }
+      ],
+      "linkEventIds": [
+        "verify-ns4"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "ship",
+    "score": 10,
+    "earnedUnits": 70,
+    "totalUnits": 70,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "deficiencies": [],
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-30T09:25:32.998Z",
+    "writer": "ac_ledger.cjs score",
+    "ledgerHash": "e627e40209f1dd2a5396c24ca503784b614cfba41a1e5303a87bf9b72299ac37"
+  }
+}

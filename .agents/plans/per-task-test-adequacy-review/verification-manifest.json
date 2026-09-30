@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-09-30T08:41:27.222Z",
+  "filesTouched": {
+    "created": [
+      ".agents/plans/per-task-test-adequacy-review/ac-ledger.json",
+      ".agents/plans/per-task-test-adequacy-review/step-00-per-task-test-adequacy-review.spec.md",
+      ".agents/plans/per-task-test-adequacy-review/step-01-per-task-test-adequacy-review.plan.md",
+      ".agents/plans/per-task-test-adequacy-review/step-02-per-task-test-adequacy-review.plan-interview.md",
+      ".agents/plans/per-task-test-adequacy-review/step-02-per-task-test-adequacy-review.plan.refined.md",
+      ".agents/plans/per-task-test-adequacy-review/step-03-per-task-test-adequacy-review.plan.exec.md"
+    ],
+    "modified": [],
+    "deleted": []
+  },
+  "filesHash": "82ea965fbfe9f12703ef6334e10433087adbe4e730e397e9a7f71b56c3d0d5a0",
+  "aliasResults": [],
+  "sabotage": "not-required",
+  "reuse": "Steps 5/6/7 re-run alias/stack/sabotage commands only if files_touched changed; AC scoring, review, and tests still run. Compare current workflowManifest sorted hash to filesHash; match means reuse aliasResults/sabotage, mismatch means re-run."
+}

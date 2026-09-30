@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-09-30T14:28:11.192Z",
+  "filesTouched": {
+    "created": [
+      ".agents/plans/explicit-knowledge-chain/ac-ledger.json",
+      ".agents/plans/explicit-knowledge-chain/step-00-explicit-knowledge-chain.classify.md",
+      ".agents/plans/explicit-knowledge-chain/step-00-explicit-knowledge-chain.spec.md",
+      ".agents/plans/explicit-knowledge-chain/step-01-explicit-knowledge-chain.plan.md",
+      ".agents/plans/explicit-knowledge-chain/step-03-explicit-knowledge-chain.plan.exec.md"
+    ],
+    "modified": [],
+    "deleted": []
+  },
+  "filesHash": "bbba0b8bb280a28cad40245b0b23adff99e91fd8508903bec41172d346065e18",
+  "aliasResults": [],
+  "sabotage": "not-required",
+  "reuse": "Steps 5/6/7 re-run alias/stack/sabotage commands only if files_touched changed; AC scoring, review, and tests still run. Compare current workflowManifest sorted hash to filesHash; match means reuse aliasResults/sabotage, mismatch means re-run."
+}

@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "taskId": "T1",
+  "acs": [
+    "AC1",
+    "AC2",
+    "AC3",
+    "AC4",
+    "AC5",
+    "AC6",
+    "AC7"
+  ],
+  "status": "adequate",
+  "bindings": [
+    {
+      "ac": "AC1",
+      "test": "AC1: recipe names the review step",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 203,
+      "lineEnd": 203
+    },
+    {
+      "ac": "AC2",
+      "test": "AC2: recipe names wrong-code runs",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 206,
+      "lineEnd": 206
+    },
+    {
+      "ac": "AC3",
+      "test": "AC3: recipe carries the orphan rule",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 208,
+      "lineEnd": 208
+    },
+    {
+      "ac": "AC4",
+      "test": "AC4: recipe requires TDD re-entry",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 209,
+      "lineEnd": 209
+    },
+    {
+      "ac": "AC5",
+      "test": "AC5: recipe links records via the ledger verb",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 211,
+      "lineEnd": 211
+    },
+    {
+      "ac": "AC5",
+      "test": "AC5: step-output carries the adequacy block",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 210,
+      "lineEnd": 210
+    },
+    {
+      "ac": "AC6",
+      "test": "AC6: recipe rejects pass-on-unmodified-code",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 212,
+      "lineEnd": 212
+    },
+    {
+      "ac": "AC7",
+      "test": "AC7: fix mode reviews anti-regression tests",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 214,
+      "lineEnd": 214
+    }
+  ],
+  "litmus": [
+    {
+      "test": "AC1: recipe names the review step",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC1: recipe names the review step\" unproven); post-edit run exit 0"
+    },
+    {
+      "test": "AC2: recipe names wrong-code runs",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC2: recipe names wrong-code runs\" unproven); post-edit run exit 0"
+    },
+    {
+      "test": "AC3: recipe carries the orphan rule",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC3: recipe carries the orphan rule\" unproven); post-edit run exit 0"
+    },
+    {
+      "test": "AC4: recipe requires TDD re-entry",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC4: recipe requires TDD re-entry\" unproven); post-edit run exit 0"
+    },
+    {
+      "test": "AC5: recipe links records via the ledger verb",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC5: recipe links records via the ledger verb\" unproven); post-edit run exit 0"
+    },
+    {
+      "test": "AC5: step-output carries the adequacy block",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC5: step-output carries the adequacy block\" unproven); post-edit run exit 0"
+    },
+    {
+      "test": "AC6: recipe rejects pass-on-unmodified-code",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC6: recipe rejects pass-on-unmodified-code\" unproven); post-edit run exit 0"
+    },
+    {
+      "test": "AC7: fix mode reviews anti-regression tests",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC7: fix mode reviews anti-regression tests\" unproven); post-edit run exit 0"
+    }
+  ],
+  "addedTests": [],
+  "orphansRemoved": [],
+  "falsePositives": [],
+  "checkedAt": "2026-09-30T08:40:00.000Z"
+}

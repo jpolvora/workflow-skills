@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "taskId": "FIX1",
+  "acs": [
+    "AC1",
+    "AC3",
+    "AC5"
+  ],
+  "status": "adequate",
+  "bindings": [
+    {
+      "ac": "AC1",
+      "test": "CR-002: out-of-range binding exits 1",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 245,
+      "lineEnd": 245
+    },
+    {
+      "ac": "AC1",
+      "test": "CR-002: gap names the false range",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 246,
+      "lineEnd": 246
+    },
+    {
+      "ac": "AC3",
+      "test": "CR-003: recipe derives addedTests from the diff",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 254,
+      "lineEnd": 254
+    },
+    {
+      "ac": "AC5",
+      "test": "CR-001: multi-task links append history",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 237,
+      "lineEnd": 237
+    },
+    {
+      "ac": "AC5",
+      "test": "CR-001: latest record governs the row",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 238,
+      "lineEnd": 238
+    },
+    {
+      "ac": "AC5",
+      "test": "CR-001: history preserves every task",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 239,
+      "lineEnd": 239
+    }
+  ],
+  "litmus": [
+    {
+      "test": "CR-002: out-of-range binding exits 1",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-fix HEAD helper on the false-range record exited 0 adequate (false pass); post-fix exits 1; \"CR-002: out-of-range binding exits 1\" unproven pre-fix"
+    },
+    {
+      "test": "CR-002: gap names the false range",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-fix HEAD helper emitted no range gap (exit 0); post-fix names it; \"CR-002: gap names the false range\" unproven pre-fix"
+    },
+    {
+      "test": "CR-003: recipe derives addedTests from the diff",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-fix SKILL has no derive-addedTests sentence (grep miss exit 1); post-fix present; \"CR-003: recipe derives addedTests from the diff\" unproven pre-fix"
+    },
+    {
+      "test": "CR-001: multi-task links append history",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-fix HEAD ledger left adequacyHistory ABSENT after two links; post-fix keeps 2 entries; \"CR-001: multi-task links append history\" unproven pre-fix"
+    },
+    {
+      "test": "CR-001: latest record governs the row",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-fix HEAD ledger latest-only with no history; post-fix latest governs with history kept; \"CR-001: latest record governs the row\" unproven pre-fix"
+    },
+    {
+      "test": "CR-001: history preserves every task",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-fix HEAD ledger dropped the T-A summary (latest T-B only); post-fix preserves both; \"CR-001: history preserves every task\" unproven pre-fix"
+    }
+  ],
+  "addedTests": [
+    "CR-002: out-of-range binding exits 1",
+    "CR-002: gap names the false range",
+    "CR-003: recipe derives addedTests from the diff",
+    "CR-001: multi-task links append history",
+    "CR-001: latest record governs the row",
+    "CR-001: history preserves every task"
+  ],
+  "orphansRemoved": [],
+  "falsePositives": [],
+  "checkedAt": "2026-09-30T08:55:00.000Z"
+}

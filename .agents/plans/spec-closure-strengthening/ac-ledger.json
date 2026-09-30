@@ -1,0 +1,671 @@
+{
+  "schemaVersion": 1,
+  "revision": 31,
+  "workflowId": "spec-closure-strengthening",
+  "slug": "spec-closure-strengthening",
+  "specPath": ".agents/plans/spec-closure-strengthening/step-00-spec-closure-strengthening.spec.md",
+  "planIndexPath": ".agents/plans/spec-closure-strengthening/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "Authoring validation accepts only ACs matching a documented EARS pattern and rejects free-form AC bullets naming the offending AC id.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-format/scripts/validate_spec.cjs:L304-L315",
+        ".agents/skills/ws-spec-format/scripts/validate_spec.cjs:L56-L68",
+        ".agents/skills/ws-spec-format/scripts/validate_spec.cjs:L57-L69"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-008",
+        "section-009",
+        "section-011"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-format/scripts/validate_spec.cjs",
+          "lineStart": 56,
+          "lineEnd": 68,
+          "sha256": "b54368535f8e8a12154009c6c3c094fbc07ca87e683f0271a20277f8db37db3b"
+        },
+        {
+          "path": ".agents/skills/ws-spec-format/scripts/validate_spec.cjs",
+          "lineStart": 57,
+          "lineEnd": 69,
+          "sha256": "b54368535f8e8a12154009c6c3c094fbc07ca87e683f0271a20277f8db37db3b"
+        },
+        {
+          "path": ".agents/skills/ws-spec-format/scripts/validate_spec.cjs",
+          "lineStart": 304,
+          "lineEnd": 315,
+          "sha256": "b54368535f8e8a12154009c6c3c094fbc07ca87e683f0271a20277f8db37db3b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e37dcc6fb223d88bc9777ce24e159a783800ab23",
+          "step": 5
+        },
+        {
+          "sha": "003cc765c48efba11141aea1c6b605e4fb4234a1",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "EARS accept:",
+          "sourceFile": "test/test-spec-closure-ears.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T10:33:34.581Z"
+        },
+        {
+          "name": "EARS reject names AC1",
+          "sourceFile": "test/test-spec-closure-ears.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T10:33:34.581Z"
+        },
+        {
+          "name": "EARS reject: bare imperative fails authoring",
+          "sourceFile": "test/test-spec-closure-ears.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T10:33:34.581Z"
+        },
+        {
+          "name": "EARS tolerance: trailing detail passes",
+          "sourceFile": "test/test-spec-closure-ears.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T10:33:34.581Z"
+        },
+        {
+          "name": "V17",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-003cc765c48efba11141aea1c6b605e4fb4234a1",
+        "g2-commit-e37dcc6fb223d88bc9777ce24e159a783800ab23",
+        "refresh-ac1-0",
+        "refresh-ac1-1",
+        "verify-ac1",
+        "verify-plan-index"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "Authoring validation requires the `## Out of Scope` table to carry at least one substantive data row and rejects empty or placeholder-only tables.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-format/scripts/validate_spec.cjs:L256-L263"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-005",
+        "section-008",
+        "section-009",
+        "section-011"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-format/scripts/validate_spec.cjs",
+          "lineStart": 256,
+          "lineEnd": 263,
+          "sha256": "b54368535f8e8a12154009c6c3c094fbc07ca87e683f0271a20277f8db37db3b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e37dcc6fb223d88bc9777ce24e159a783800ab23",
+          "step": 5
+        },
+        {
+          "sha": "003cc765c48efba11141aea1c6b605e4fb4234a1",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC2: N/A-because row passes",
+          "sourceFile": "test/test-spec-closure-ears.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T10:33:43.024Z"
+        },
+        {
+          "name": "AC2: placeholder-only table fails",
+          "sourceFile": "test/test-spec-closure-ears.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T10:33:43.017Z"
+        },
+        {
+          "name": "AC2: zero-row table fails",
+          "sourceFile": "test/test-spec-closure-ears.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T10:33:43.017Z"
+        },
+        {
+          "name": "V17",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-003cc765c48efba11141aea1c6b605e4fb4234a1",
+        "g2-commit-e37dcc6fb223d88bc9777ce24e159a783800ab23",
+        "refresh-ac2-0",
+        "verify-ac2",
+        "verify-plan-index"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "The out-of-scope table finder locates the table inside the canonical `## Out of Scope` section and ignores bullet lists or tables in other sections.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-format/scripts/validate_spec.cjs:L256-L257",
+        ".agents/skills/ws-spec-format/scripts/validate_spec.cjs:L324-L325",
+        ".agents/skills/ws-spec-format/scripts/validate_spec.cjs:L80-L100"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-006",
+        "section-009",
+        "section-011"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-format/scripts/validate_spec.cjs",
+          "lineStart": 80,
+          "lineEnd": 100,
+          "sha256": "b54368535f8e8a12154009c6c3c094fbc07ca87e683f0271a20277f8db37db3b"
+        },
+        {
+          "path": ".agents/skills/ws-spec-format/scripts/validate_spec.cjs",
+          "lineStart": 256,
+          "lineEnd": 257,
+          "sha256": "b54368535f8e8a12154009c6c3c094fbc07ca87e683f0271a20277f8db37db3b"
+        },
+        {
+          "path": ".agents/skills/ws-spec-format/scripts/validate_spec.cjs",
+          "lineStart": 324,
+          "lineEnd": 325,
+          "sha256": "b54368535f8e8a12154009c6c3c094fbc07ca87e683f0271a20277f8db37db3b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e37dcc6fb223d88bc9777ce24e159a783800ab23",
+          "step": 5
+        },
+        {
+          "sha": "003cc765c48efba11141aea1c6b605e4fb4234a1",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC3: other-section table does not satisfy an empty canonical table",
+          "sourceFile": "test/test-spec-closure-ears.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T10:33:43.516Z"
+        },
+        {
+          "name": "AC3: verbatim duplicate heading does not shadow the canonical table",
+          "sourceFile": "test/test-spec-closure-ears.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T10:33:43.516Z"
+        },
+        {
+          "name": "AC3: verbatim-only section fails closed",
+          "sourceFile": "test/test-spec-closure-ears.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T10:33:43.516Z"
+        },
+        {
+          "name": "V17",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "g2-commit-003cc765c48efba11141aea1c6b605e4fb4234a1",
+        "g2-commit-e37dcc6fb223d88bc9777ce24e159a783800ab23",
+        "refresh-ac3-0",
+        "testing-sabotage",
+        "verify-ac3",
+        "verify-plan-index"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "`classify.cjs` reports open questions when any heading variant containing the open-questions phrase (including the canonical assumptions heading) carries unresolved content, case-insensitively.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-classify-complexity/scripts/classify.cjs:L286-L308"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001",
+        "section-002",
+        "section-011",
+        "section-013"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-classify-complexity/scripts/classify.cjs",
+          "lineStart": 286,
+          "lineEnd": 308,
+          "sha256": "f98811a1fbd6540194a08104e60e3e4172d861e94c3ca00a13195fea8790602a"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "5117abca7f8cd8c306b05c9489cde6bf2111eabc",
+          "step": 0
+        }
+      ],
+      "tests": [
+        {
+          "name": "canonical unconfirmed row triggers interview",
+          "sourceFile": "test/test-classify-open-questions.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T10:33:50.549Z"
+        },
+        {
+          "name": "legacy section with item triggers interview",
+          "sourceFile": "test/test-classify-open-questions.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T10:33:50.550Z"
+        },
+        {
+          "name": "V17",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-baseline-ac4-ac5",
+        "verify-ac4",
+        "verify-plan-index"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "`classify.cjs` still reports no open questions when the section is absent or contains only an explicit none marker.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-classify-complexity/scripts/classify.cjs:L286-L308"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001",
+        "section-002",
+        "section-011",
+        "section-013"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-classify-complexity/scripts/classify.cjs",
+          "lineStart": 286,
+          "lineEnd": 308,
+          "sha256": "f98811a1fbd6540194a08104e60e3e4172d861e94c3ca00a13195fea8790602a"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "5117abca7f8cd8c306b05c9489cde6bf2111eabc",
+          "step": 0
+        }
+      ],
+      "tests": [
+        {
+          "name": "legacy section with None stays silent",
+          "sourceFile": "test/test-classify-open-questions.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T10:33:50.987Z"
+        },
+        {
+          "name": "missing section stays silent",
+          "sourceFile": "test/test-classify-open-questions.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T10:33:50.986Z"
+        },
+        {
+          "name": "V17",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-baseline-ac4-ac5",
+        "verify-ac5",
+        "verify-plan-index"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "Existing specs that pass compat validation keep passing compat validation; the new rules apply to authoring mode only.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-format/scripts/validate_spec.cjs:L321-L332"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001",
+        "section-002",
+        "section-003",
+        "section-006",
+        "section-011"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-format/scripts/validate_spec.cjs",
+          "lineStart": 321,
+          "lineEnd": 332,
+          "sha256": "b54368535f8e8a12154009c6c3c094fbc07ca87e683f0271a20277f8db37db3b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e37dcc6fb223d88bc9777ce24e159a783800ab23",
+          "step": 5
+        },
+        {
+          "sha": "003cc765c48efba11141aea1c6b605e4fb4234a1",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC6 mode split: free-form spec passes compat",
+          "sourceFile": "test/test-spec-closure-ears.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T10:33:58.902Z"
+        },
+        {
+          "name": "V17",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-003cc765c48efba11141aea1c6b605e4fb4234a1",
+        "g2-commit-e37dcc6fb223d88bc9777ce24e159a783800ab23",
+        "refresh-ac6-0",
+        "verify-ac6",
+        "verify-plan-index"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "`ws-spec-write` and `ws-spec-format` guidance document the EARS patterns with one example per pattern.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-format/FORMAT.md:L116-L128",
+        ".agents/skills/ws-spec-format/FORMAT.md:L160-L160",
+        ".agents/skills/ws-spec-format/SKILL.md:L31-L31",
+        ".agents/skills/ws-spec-write/SKILL.md:L55-L60"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-007",
+        "section-009"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-format/FORMAT.md",
+          "lineStart": 116,
+          "lineEnd": 128,
+          "sha256": "564dec7391a3cceb77e5c3c721b2f56424503c6b729eb4e6b8b98e60d5e08273"
+        },
+        {
+          "path": ".agents/skills/ws-spec-format/FORMAT.md",
+          "lineStart": 160,
+          "lineEnd": 160,
+          "sha256": "564dec7391a3cceb77e5c3c721b2f56424503c6b729eb4e6b8b98e60d5e08273"
+        },
+        {
+          "path": ".agents/skills/ws-spec-format/SKILL.md",
+          "lineStart": 31,
+          "lineEnd": 31,
+          "sha256": "6a0b1f09a1e7aad7b8730b5ae58458e6e21bd190652e1d253aa2c304429751a6"
+        },
+        {
+          "path": ".agents/skills/ws-spec-write/SKILL.md",
+          "lineStart": 55,
+          "lineEnd": 60,
+          "sha256": "a43c4a92fc9aaeb4d767ba3f39fafd77435bcbafa1f4adf7f5f0dc4506ac9a48"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "e37dcc6fb223d88bc9777ce24e159a783800ab23",
+          "step": 5
+        },
+        {
+          "sha": "003cc765c48efba11141aea1c6b605e4fb4234a1",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "V17",
+          "sourceFile": null,
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": null
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-003cc765c48efba11141aea1c6b605e4fb4234a1",
+        "g2-commit-e37dcc6fb223d88bc9777ce24e159a783800ab23",
+        "verify-ac7",
+        "verify-plan-index"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "A free-form AC bullet fails authoring validation with the AC id named instead of passing silently.",
+      "tests": [
+        {
+          "name": "EARS reject: bare imperative fails authoring",
+          "sourceFile": "test/test-spec-closure-ears.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T10:34:11.507Z"
+        }
+      ],
+      "linkEventIds": [
+        "verify-ns1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "A verbatim bullet list in issue context no longer satisfies or shadows the canonical out-of-scope table check.",
+      "tests": [
+        {
+          "name": "AC3: verbatim duplicate heading does not shadow the canonical table",
+          "sourceFile": "test/test-spec-closure-ears.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T10:34:11.575Z"
+        }
+      ],
+      "linkEventIds": [
+        "verify-ns2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "A canonical `## Assumptions & Open Questions` section with unresolved rows reports open questions true instead of false.",
+      "tests": [
+        {
+          "name": "canonical unconfirmed row triggers interview",
+          "sourceFile": "test/test-classify-open-questions.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T10:34:12.007Z"
+        }
+      ],
+      "linkEventIds": [
+        "verify-ns3"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "A spec relying on compat mode passes unchanged after the authoring-only rules land.",
+      "tests": [
+        {
+          "name": "AC6 mode split: free-form spec passes compat",
+          "sourceFile": "test/test-spec-closure-ears.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T10:34:12.080Z"
+        }
+      ],
+      "linkEventIds": [
+        "verify-ns4"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "ship",
+    "score": 9,
+    "earnedUnits": 68,
+    "totalUnits": 70,
+    "knownDefect": false,
+    "missingEvidence": true,
+    "deficiencies": [
+      "AC7: no mapped tests (need {name, sourceFile} with the name present in the file; ship boundary needs phase observed with exitCode 0)"
+    ],
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-30T11:29:06.235Z",
+    "writer": "ac_ledger.cjs score",
+    "ledgerHash": "7961ba05fb3425f9bc4756fb2a77a22ee55549f81f3c379426f37196bb7a78e6"
+  }
+}

@@ -1,0 +1,560 @@
+{
+  "schemaVersion": 1,
+  "revision": 30,
+  "workflowId": "fresh-worker-verifier-step-20260930T062223Z",
+  "slug": "fresh-worker-verifier-step",
+  "specPath": ".agents/plans/fresh-worker-verifier-step/step-00-fresh-worker-verifier-step.spec.md",
+  "planIndexPath": ".agents/plans/fresh-worker-verifier-step/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "The verifier dispatches as a fresh worker receiving only the spec, the plan of record, the compact handoff, and the product tree, with no prior full step outputs injected.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-fresh-verify/scripts/build_fresh_dispatch.cjs:L20-L36"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006",
+        "section-008"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-fresh-verify/scripts/build_fresh_dispatch.cjs",
+          "lineStart": 20,
+          "lineEnd": 36,
+          "sha256": "252ca6cc65c719b07e1bdde86ba355b6190188f9bab68dcfe1f6eabff4ef4e14"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "fcc2b4a743aadd4e7d02cf53aea103e29b4ce744",
+          "step": 5
+        },
+        {
+          "sha": "12905aa4f607be99c67caaee3c8cbf20032d773b",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC1: handoff carries only spec/plan/tree/AC list",
+          "sourceFile": "test/test-fresh-verify.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T07:27:59.458Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "g2-commit-12905aa4f607be99c67caaee3c8cbf20032d773b",
+        "g2-commit-fcc2b4a743aadd4e7d02cf53aea103e29b4ce744",
+        "testing-sabotage",
+        "verify-ac1",
+        "verify-ac1-refresh"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "The verifier re-derives an independent pass or fail verdict for every spec AC and records file:line evidence for each pass.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-fresh-verify/scripts/write_fresh_report.cjs:L72-L76"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-fresh-verify/scripts/write_fresh_report.cjs",
+          "lineStart": 72,
+          "lineEnd": 76,
+          "sha256": "92fcdbf703c5c096b0d30a938f4a72323fa83709d66612f52100277313f07e5c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "fcc2b4a743aadd4e7d02cf53aea103e29b4ce744",
+          "step": 5
+        },
+        {
+          "sha": "12905aa4f607be99c67caaee3c8cbf20032d773b",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC2: pass evidence + red scores 1",
+          "sourceFile": "test/test-fresh-verify.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T07:13:09.393Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-12905aa4f607be99c67caaee3c8cbf20032d773b",
+        "g2-commit-fcc2b4a743aadd4e7d02cf53aea103e29b4ce744",
+        "verify-ac2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "The verifier injects one fault per AC on a scratch worktree and records the expected red signal (failing test name plus exit code) for each injection.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-fresh-verify/scripts/run_fresh_injection.cjs:L206-L217",
+        ".agents/skills/ws-fresh-verify/scripts/run_fresh_injection.cjs:L211-L222",
+        ".agents/skills/ws-fresh-verify/scripts/run_fresh_injection.cjs:L217-L230"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-fresh-verify/scripts/run_fresh_injection.cjs",
+          "lineStart": 206,
+          "lineEnd": 217,
+          "sha256": "3c9cb0b1228c96a350f4a704c04f9cbedf6b4f7f27a264d37d368e3476375fa9"
+        },
+        {
+          "path": ".agents/skills/ws-fresh-verify/scripts/run_fresh_injection.cjs",
+          "lineStart": 211,
+          "lineEnd": 222,
+          "sha256": "3c9cb0b1228c96a350f4a704c04f9cbedf6b4f7f27a264d37d368e3476375fa9"
+        },
+        {
+          "path": ".agents/skills/ws-fresh-verify/scripts/run_fresh_injection.cjs",
+          "lineStart": 217,
+          "lineEnd": 230,
+          "sha256": "3c9cb0b1228c96a350f4a704c04f9cbedf6b4f7f27a264d37d368e3476375fa9"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "fcc2b4a743aadd4e7d02cf53aea103e29b4ce744",
+          "step": 5
+        },
+        {
+          "sha": "12905aa4f607be99c67caaee3c8cbf20032d773b",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC3: failing test name recorded",
+          "sourceFile": "test/test-fresh-verify.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T07:29:24.860Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "g2-commit-12905aa4f607be99c67caaee3c8cbf20032d773b",
+        "g2-commit-fcc2b4a743aadd4e7d02cf53aea103e29b4ce744",
+        "verify-ac3",
+        "verify-ac3-refresh",
+        "verify-ac3-refresh2",
+        "verify-ac3-refresh3"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "Any AC without pass evidence or without a fault-injection red scores zero and is listed as a defect with the missing evidence named.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-fresh-verify/scripts/write_fresh_report.cjs:L163-L185"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-fresh-verify/scripts/write_fresh_report.cjs",
+          "lineStart": 163,
+          "lineEnd": 185,
+          "sha256": "92fcdbf703c5c096b0d30a938f4a72323fa83709d66612f52100277313f07e5c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "fcc2b4a743aadd4e7d02cf53aea103e29b4ce744",
+          "step": 5
+        },
+        {
+          "sha": "12905aa4f607be99c67caaee3c8cbf20032d773b",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC4: defect names both gaps",
+          "sourceFile": "test/test-fresh-verify.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T07:13:15.289Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-12905aa4f607be99c67caaee3c8cbf20032d773b",
+        "g2-commit-fcc2b4a743aadd4e7d02cf53aea103e29b4ce744",
+        "verify-ac4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "Defects route to a bounded fix loop of at most 3 implement-plus-reverify rounds, after which the orchestrator Pauses with residual defects listed.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-fresh-verify/scripts/write_fresh_report.cjs:L186-L188"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-fresh-verify/scripts/write_fresh_report.cjs",
+          "lineStart": 186,
+          "lineEnd": 188,
+          "sha256": "92fcdbf703c5c096b0d30a938f4a72323fa83709d66612f52100277313f07e5c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "fcc2b4a743aadd4e7d02cf53aea103e29b4ce744",
+          "step": 5
+        },
+        {
+          "sha": "12905aa4f607be99c67caaee3c8cbf20032d773b",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC5/NS4: round 3 pauses",
+          "sourceFile": "test/test-fresh-verify.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T07:13:21.023Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-12905aa4f607be99c67caaee3c8cbf20032d773b",
+        "g2-commit-fcc2b4a743aadd4e7d02cf53aea103e29b4ce744",
+        "verify-ac5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "The verifier writes `{us-dir}/step-05b-{slug}.fresh-verify.md` carrying the per-AC verdict table, evidence links, injection results, and round history.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/ARTIFACTS.md:L41-L44"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/ARTIFACTS.md",
+          "lineStart": 41,
+          "lineEnd": 44,
+          "sha256": "46d654d2ecb4f3bfabffc9afbdcec9f05b72eed859c03449643ed6f1f989ba9b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "fcc2b4a743aadd4e7d02cf53aea103e29b4ce744",
+          "step": 5
+        },
+        {
+          "sha": "12905aa4f607be99c67caaee3c8cbf20032d773b",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC6: report carries all sections",
+          "sourceFile": "test/test-fresh-verify.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T07:13:21.094Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-12905aa4f607be99c67caaee3c8cbf20032d773b",
+        "g2-commit-fcc2b4a743aadd4e7d02cf53aea103e29b4ce744",
+        "verify-ac6"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "The stage runs after Step 6 review and before Step 7 testing in standard runs, with explicit skip rules when the run has no product tree changes.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L108-L110"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+          "lineStart": 108,
+          "lineEnd": 110,
+          "sha256": "0c0ee5c51c0aa0e04b24b4095f31c1a4a1e175c1da2e5cd8410abc707f07df9e"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "fcc2b4a743aadd4e7d02cf53aea103e29b4ce744",
+          "step": 5
+        },
+        {
+          "sha": "12905aa4f607be99c67caaee3c8cbf20032d773b",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC7: skip marker exits 0",
+          "sourceFile": "test/test-fresh-verify.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T07:13:28.219Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-12905aa4f607be99c67caaee3c8cbf20032d773b",
+        "g2-commit-fcc2b4a743aadd4e7d02cf53aea103e29b4ce744",
+        "verify-ac7"
+      ]
+    },
+    {
+      "id": "AC8",
+      "text": "Scratch worktrees are removed after the stage and the primary branch content is byte-identical before and after fault injection.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-fresh-verify/scripts/run_fresh_injection.cjs:L218-L243",
+        ".agents/skills/ws-fresh-verify/scripts/run_fresh_injection.cjs:L234-L253"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006",
+        "section-008"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-fresh-verify/scripts/run_fresh_injection.cjs",
+          "lineStart": 218,
+          "lineEnd": 243,
+          "sha256": "3c9cb0b1228c96a350f4a704c04f9cbedf6b4f7f27a264d37d368e3476375fa9"
+        },
+        {
+          "path": ".agents/skills/ws-fresh-verify/scripts/run_fresh_injection.cjs",
+          "lineStart": 234,
+          "lineEnd": 253,
+          "sha256": "3c9cb0b1228c96a350f4a704c04f9cbedf6b4f7f27a264d37d368e3476375fa9"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "fcc2b4a743aadd4e7d02cf53aea103e29b4ce744",
+          "step": 5
+        },
+        {
+          "sha": "12905aa4f607be99c67caaee3c8cbf20032d773b",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC8: primary bytes identical",
+          "sourceFile": "test/test-fresh-verify.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T07:29:24.944Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-12905aa4f607be99c67caaee3c8cbf20032d773b",
+        "g2-commit-fcc2b4a743aadd4e7d02cf53aea103e29b4ce744",
+        "verify-ac8",
+        "verify-ac8-refresh",
+        "verify-ac8-refresh2"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "An AC whose tests pass under the injected fault is recorded as a defect with the non-failing injection named, not as a pass.",
+      "tests": [
+        {
+          "name": "NS1: passing-under-fault exits 1",
+          "sourceFile": "test/test-fresh-verify.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T06:48:03.875Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-ns1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "An AC with no pass evidence scores zero even when the ledger-derived Step 5 score already passed.",
+      "tests": [
+        {
+          "name": "AC4/NS2: zero-evidence AC scores zero",
+          "sourceFile": "test/test-fresh-verify.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T06:48:11.670Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-ns2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Fault injection that fails to restore byte-identical content aborts the stage before any fix dispatch.",
+      "tests": [
+        {
+          "name": "NS3: restore failure exits 1",
+          "sourceFile": "test/test-fresh-verify.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T06:48:11.742Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-ns3"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "Three fix rounds with residual defects Pause the workflow with the residual list instead of advancing.",
+      "tests": [
+        {
+          "name": "NS4: exhausted rounds exit 1",
+          "sourceFile": "test/test-fresh-verify.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T06:48:11.807Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-ns4"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "ship",
+    "score": 10,
+    "earnedUnits": 80,
+    "totalUnits": 80,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "deficiencies": [],
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-30T07:55:44.762Z",
+    "writer": "ac_ledger.cjs score",
+    "ledgerHash": "eb185ab7fc362a8be1cb10b3c1cd53ddaff5beb4fdfd8a20aabd3f11f140517d"
+  }
+}

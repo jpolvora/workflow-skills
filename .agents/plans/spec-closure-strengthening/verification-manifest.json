@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-09-30T10:28:51.372Z",
+  "filesTouched": {
+    "created": [
+      ".agents/plans/spec-closure-strengthening/ac-ledger.json",
+      ".agents/plans/spec-closure-strengthening/step-00-spec-closure-strengthening.spec.md",
+      ".agents/plans/spec-closure-strengthening/step-01-spec-closure-strengthening.plan.md",
+      ".agents/plans/spec-closure-strengthening/step-02-spec-closure-strengthening.plan-interview.md",
+      ".agents/plans/spec-closure-strengthening/step-02-spec-closure-strengthening.plan.refined.md",
+      ".agents/plans/spec-closure-strengthening/step-03-spec-closure-strengthening.plan.exec.md"
+    ],
+    "modified": [],
+    "deleted": []
+  },
+  "filesHash": "1069ca00a5e5e5c10405f4ce395a2c0a9ca591df063f1559d0af0968cc38709e",
+  "aliasResults": [],
+  "sabotage": "not-required",
+  "reuse": "Steps 5/6/7 re-run alias/stack/sabotage commands only if files_touched changed; AC scoring, review, and tests still run. Compare current workflowManifest sorted hash to filesHash; match means reuse aliasResults/sabotage, mismatch means re-run."
+}

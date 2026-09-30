@@ -1,3 +1,12 @@
+---
+step: 8
+slug: per-task-test-adequacy-review
+workflowId: per-task-test-adequacy-review-20260930T081414Z
+status: completed
+startedAt: "2026-09-30T08:14:18.000Z"
+endedAt: "2026-09-30T09:25:08.353Z"
+acRefs: []
+---
 # per-task-test-adequacy-review — Delivery Result
 
 ## Expected

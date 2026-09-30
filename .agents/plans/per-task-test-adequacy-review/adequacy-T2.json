@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "taskId": "T2",
+  "acs": [
+    "AC1",
+    "AC2",
+    "AC3",
+    "AC6"
+  ],
+  "status": "adequate",
+  "bindings": [
+    {
+      "ac": "AC1",
+      "test": "AC1: full binding map validates adequate",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 72,
+      "lineEnd": 72
+    },
+    {
+      "ac": "AC2",
+      "test": "AC2: documented wrong-code run is acceptable litmus",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 83,
+      "lineEnd": 83
+    },
+    {
+      "ac": "AC3",
+      "test": "AC3: removed orphan validates adequate",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 100,
+      "lineEnd": 100
+    },
+    {
+      "ac": "AC6",
+      "test": "AC6: pass-on-unmodified-code exits 1 with zero litmus entries",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 114,
+      "lineEnd": 114
+    }
+  ],
+  "litmus": [
+    {
+      "test": "AC1: full binding map validates adequate",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC1: full binding map validates adequate\" unproven); post-edit run exit 0"
+    },
+    {
+      "test": "AC2: documented wrong-code run is acceptable litmus",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC2: documented wrong-code run is acceptable litmus\" unproven); post-edit run exit 0"
+    },
+    {
+      "test": "AC3: removed orphan validates adequate",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC3: removed orphan validates adequate\" unproven); post-edit run exit 0"
+    },
+    {
+      "test": "AC6: pass-on-unmodified-code exits 1 with zero litmus entries",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC6: pass-on-unmodified-code exits 1 with zero litmus entries\" unproven); post-edit run exit 0"
+    }
+  ],
+  "addedTests": [],
+  "orphansRemoved": [],
+  "falsePositives": [],
+  "checkedAt": "2026-09-30T08:40:00.000Z"
+}

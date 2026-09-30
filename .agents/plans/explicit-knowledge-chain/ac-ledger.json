@@ -1,0 +1,787 @@
+{
+  "schemaVersion": 1,
+  "revision": 13,
+  "workflowId": "explicit-knowledge-chain-20260930T140853Z",
+  "slug": "explicit-knowledge-chain",
+  "specPath": ".agents/plans/explicit-knowledge-chain/step-00-explicit-knowledge-chain.spec.md",
+  "planIndexPath": ".agents/plans/explicit-knowledge-chain/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "016215c5c28c3f13ffdf614a4d52f8d9141ce274918e5d3e276b2b12efa7165b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "Research guidance defines the ordered knowledge chain codebase, then project docs, then MCP sources, then web, with earlier links preferred over later ones.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-fable-judge/SKILL.md:L28-L35",
+        ".agents/skills/ws-fable-judge/SKILL.md:L28-L37",
+        ".agents/skills/ws-fable-judge/references/REPORT.md:L18-L24",
+        ".agents/skills/ws-fable-method/SKILL.md:L37-L43",
+        ".agents/skills/ws-fable-method/SKILL.md:L55-L59"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-fable-judge/references/REPORT.md",
+          "lineStart": 18,
+          "lineEnd": 24,
+          "sha256": "378ddb4af5dd75384ec6bf6c20cad316a48faa9817bf359a20d75469fdba7a91"
+        },
+        {
+          "path": ".agents/skills/ws-fable-judge/SKILL.md",
+          "lineStart": 28,
+          "lineEnd": 37,
+          "sha256": "958afe7ef3d543b54e606f6141729256c219cc7f1cc38a7f797d7ceaf5522dc7"
+        },
+        {
+          "path": ".agents/skills/ws-fable-judge/SKILL.md",
+          "lineStart": 28,
+          "lineEnd": 35,
+          "sha256": "958afe7ef3d543b54e606f6141729256c219cc7f1cc38a7f797d7ceaf5522dc7"
+        },
+        {
+          "path": ".agents/skills/ws-fable-method/SKILL.md",
+          "lineStart": 37,
+          "lineEnd": 43,
+          "sha256": "f1007fab6ab7c7df4325296acb2dd81285e5cbcfa91476a0a6833b0b3e90ac00"
+        },
+        {
+          "path": ".agents/skills/ws-fable-method/SKILL.md",
+          "lineStart": 55,
+          "lineEnd": 59,
+          "sha256": "f1007fab6ab7c7df4325296acb2dd81285e5cbcfa91476a0a6833b0b3e90ac00"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "2edacd4a857a337f8e5757f9b237b81135a8281a",
+          "step": 5
+        },
+        {
+          "sha": "73b484a169db59284e8620e276a8a41f37cc2c4f",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-explicit-knowledge-chain: ok",
+          "sourceFile": "test/test-explicit-knowledge-chain.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T14:33:34.075Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-2edacd4a857a337f8e5757f9b237b81135a8281a",
+        "g2-commit-73b484a169db59284e8620e276a8a41f37cc2c4f",
+        "verify-ac-all",
+        "verify-ac-refresh",
+        "verify-ac-refresh2"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "Every factual claim in findings cites the chain link that grounds it with a path, document, or URL reference.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-fable-judge/SKILL.md:L28-L35",
+        ".agents/skills/ws-fable-judge/SKILL.md:L28-L37",
+        ".agents/skills/ws-fable-judge/references/REPORT.md:L18-L24",
+        ".agents/skills/ws-fable-method/SKILL.md:L37-L43",
+        ".agents/skills/ws-fable-method/SKILL.md:L55-L59"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-fable-judge/references/REPORT.md",
+          "lineStart": 18,
+          "lineEnd": 24,
+          "sha256": "378ddb4af5dd75384ec6bf6c20cad316a48faa9817bf359a20d75469fdba7a91"
+        },
+        {
+          "path": ".agents/skills/ws-fable-judge/SKILL.md",
+          "lineStart": 28,
+          "lineEnd": 37,
+          "sha256": "958afe7ef3d543b54e606f6141729256c219cc7f1cc38a7f797d7ceaf5522dc7"
+        },
+        {
+          "path": ".agents/skills/ws-fable-judge/SKILL.md",
+          "lineStart": 28,
+          "lineEnd": 35,
+          "sha256": "958afe7ef3d543b54e606f6141729256c219cc7f1cc38a7f797d7ceaf5522dc7"
+        },
+        {
+          "path": ".agents/skills/ws-fable-method/SKILL.md",
+          "lineStart": 37,
+          "lineEnd": 43,
+          "sha256": "f1007fab6ab7c7df4325296acb2dd81285e5cbcfa91476a0a6833b0b3e90ac00"
+        },
+        {
+          "path": ".agents/skills/ws-fable-method/SKILL.md",
+          "lineStart": 55,
+          "lineEnd": 59,
+          "sha256": "f1007fab6ab7c7df4325296acb2dd81285e5cbcfa91476a0a6833b0b3e90ac00"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "2edacd4a857a337f8e5757f9b237b81135a8281a",
+          "step": 5
+        },
+        {
+          "sha": "73b484a169db59284e8620e276a8a41f37cc2c4f",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-explicit-knowledge-chain: ok",
+          "sourceFile": "test/test-explicit-knowledge-chain.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T14:33:34.076Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-2edacd4a857a337f8e5757f9b237b81135a8281a",
+        "g2-commit-73b484a169db59284e8620e276a8a41f37cc2c4f",
+        "verify-ac-all",
+        "verify-ac-refresh",
+        "verify-ac-refresh2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "Claims with no grounding chain source carry an explicit uncertain flag and are never presented as observed fact.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-fable-judge/SKILL.md:L28-L35",
+        ".agents/skills/ws-fable-judge/SKILL.md:L28-L37",
+        ".agents/skills/ws-fable-judge/references/REPORT.md:L18-L24",
+        ".agents/skills/ws-fable-method/SKILL.md:L37-L43",
+        ".agents/skills/ws-fable-method/SKILL.md:L55-L59"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-fable-judge/references/REPORT.md",
+          "lineStart": 18,
+          "lineEnd": 24,
+          "sha256": "378ddb4af5dd75384ec6bf6c20cad316a48faa9817bf359a20d75469fdba7a91"
+        },
+        {
+          "path": ".agents/skills/ws-fable-judge/SKILL.md",
+          "lineStart": 28,
+          "lineEnd": 37,
+          "sha256": "958afe7ef3d543b54e606f6141729256c219cc7f1cc38a7f797d7ceaf5522dc7"
+        },
+        {
+          "path": ".agents/skills/ws-fable-judge/SKILL.md",
+          "lineStart": 28,
+          "lineEnd": 35,
+          "sha256": "958afe7ef3d543b54e606f6141729256c219cc7f1cc38a7f797d7ceaf5522dc7"
+        },
+        {
+          "path": ".agents/skills/ws-fable-method/SKILL.md",
+          "lineStart": 37,
+          "lineEnd": 43,
+          "sha256": "f1007fab6ab7c7df4325296acb2dd81285e5cbcfa91476a0a6833b0b3e90ac00"
+        },
+        {
+          "path": ".agents/skills/ws-fable-method/SKILL.md",
+          "lineStart": 55,
+          "lineEnd": 59,
+          "sha256": "f1007fab6ab7c7df4325296acb2dd81285e5cbcfa91476a0a6833b0b3e90ac00"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "2edacd4a857a337f8e5757f9b237b81135a8281a",
+          "step": 5
+        },
+        {
+          "sha": "73b484a169db59284e8620e276a8a41f37cc2c4f",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-explicit-knowledge-chain: ok",
+          "sourceFile": "test/test-explicit-knowledge-chain.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T14:33:34.076Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-2edacd4a857a337f8e5757f9b237b81135a8281a",
+        "g2-commit-73b484a169db59284e8620e276a8a41f37cc2c4f",
+        "verify-ac-all",
+        "verify-ac-refresh",
+        "verify-ac-refresh2"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "Anti-fabrication rules explicitly forbid inventing APIs, paths, numbers, versions, or tool output, and require stating gaps when the lookup budget is spent.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-fable-judge/SKILL.md:L28-L35",
+        ".agents/skills/ws-fable-judge/SKILL.md:L28-L37",
+        ".agents/skills/ws-fable-judge/references/REPORT.md:L18-L24",
+        ".agents/skills/ws-fable-method/SKILL.md:L37-L43",
+        ".agents/skills/ws-fable-method/SKILL.md:L55-L59"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-fable-judge/references/REPORT.md",
+          "lineStart": 18,
+          "lineEnd": 24,
+          "sha256": "378ddb4af5dd75384ec6bf6c20cad316a48faa9817bf359a20d75469fdba7a91"
+        },
+        {
+          "path": ".agents/skills/ws-fable-judge/SKILL.md",
+          "lineStart": 28,
+          "lineEnd": 37,
+          "sha256": "958afe7ef3d543b54e606f6141729256c219cc7f1cc38a7f797d7ceaf5522dc7"
+        },
+        {
+          "path": ".agents/skills/ws-fable-judge/SKILL.md",
+          "lineStart": 28,
+          "lineEnd": 35,
+          "sha256": "958afe7ef3d543b54e606f6141729256c219cc7f1cc38a7f797d7ceaf5522dc7"
+        },
+        {
+          "path": ".agents/skills/ws-fable-method/SKILL.md",
+          "lineStart": 37,
+          "lineEnd": 43,
+          "sha256": "f1007fab6ab7c7df4325296acb2dd81285e5cbcfa91476a0a6833b0b3e90ac00"
+        },
+        {
+          "path": ".agents/skills/ws-fable-method/SKILL.md",
+          "lineStart": 55,
+          "lineEnd": 59,
+          "sha256": "f1007fab6ab7c7df4325296acb2dd81285e5cbcfa91476a0a6833b0b3e90ac00"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "2edacd4a857a337f8e5757f9b237b81135a8281a",
+          "step": 5
+        },
+        {
+          "sha": "73b484a169db59284e8620e276a8a41f37cc2c4f",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-explicit-knowledge-chain: ok",
+          "sourceFile": "test/test-explicit-knowledge-chain.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T14:33:34.078Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-2edacd4a857a337f8e5757f9b237b81135a8281a",
+        "g2-commit-73b484a169db59284e8620e276a8a41f37cc2c4f",
+        "verify-ac-all",
+        "verify-ac-refresh",
+        "verify-ac-refresh2"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "The report step emits a per-claim source table carrying claim, chain link, reference, and uncertain marker.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-fable-judge/SKILL.md:L28-L35",
+        ".agents/skills/ws-fable-judge/SKILL.md:L28-L37",
+        ".agents/skills/ws-fable-judge/references/REPORT.md:L18-L24",
+        ".agents/skills/ws-fable-method/SKILL.md:L37-L43",
+        ".agents/skills/ws-fable-method/SKILL.md:L55-L59"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-fable-judge/references/REPORT.md",
+          "lineStart": 18,
+          "lineEnd": 24,
+          "sha256": "378ddb4af5dd75384ec6bf6c20cad316a48faa9817bf359a20d75469fdba7a91"
+        },
+        {
+          "path": ".agents/skills/ws-fable-judge/SKILL.md",
+          "lineStart": 28,
+          "lineEnd": 37,
+          "sha256": "958afe7ef3d543b54e606f6141729256c219cc7f1cc38a7f797d7ceaf5522dc7"
+        },
+        {
+          "path": ".agents/skills/ws-fable-judge/SKILL.md",
+          "lineStart": 28,
+          "lineEnd": 35,
+          "sha256": "958afe7ef3d543b54e606f6141729256c219cc7f1cc38a7f797d7ceaf5522dc7"
+        },
+        {
+          "path": ".agents/skills/ws-fable-method/SKILL.md",
+          "lineStart": 37,
+          "lineEnd": 43,
+          "sha256": "f1007fab6ab7c7df4325296acb2dd81285e5cbcfa91476a0a6833b0b3e90ac00"
+        },
+        {
+          "path": ".agents/skills/ws-fable-method/SKILL.md",
+          "lineStart": 55,
+          "lineEnd": 59,
+          "sha256": "f1007fab6ab7c7df4325296acb2dd81285e5cbcfa91476a0a6833b0b3e90ac00"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "2edacd4a857a337f8e5757f9b237b81135a8281a",
+          "step": 5
+        },
+        {
+          "sha": "73b484a169db59284e8620e276a8a41f37cc2c4f",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-explicit-knowledge-chain: ok",
+          "sourceFile": "test/test-explicit-knowledge-chain.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T14:33:34.078Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-2edacd4a857a337f8e5757f9b237b81135a8281a",
+        "g2-commit-73b484a169db59284e8620e276a8a41f37cc2c4f",
+        "verify-ac-all",
+        "verify-ac-refresh",
+        "verify-ac-refresh2"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "`ws-fable-judge` audits check chain compliance and flag unsourced or mis-sourced claims in the verdict.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-fable-judge/SKILL.md:L28-L35",
+        ".agents/skills/ws-fable-judge/SKILL.md:L28-L37",
+        ".agents/skills/ws-fable-judge/references/REPORT.md:L18-L24",
+        ".agents/skills/ws-fable-method/SKILL.md:L37-L43",
+        ".agents/skills/ws-fable-method/SKILL.md:L55-L59"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-fable-judge/references/REPORT.md",
+          "lineStart": 18,
+          "lineEnd": 24,
+          "sha256": "378ddb4af5dd75384ec6bf6c20cad316a48faa9817bf359a20d75469fdba7a91"
+        },
+        {
+          "path": ".agents/skills/ws-fable-judge/SKILL.md",
+          "lineStart": 28,
+          "lineEnd": 37,
+          "sha256": "958afe7ef3d543b54e606f6141729256c219cc7f1cc38a7f797d7ceaf5522dc7"
+        },
+        {
+          "path": ".agents/skills/ws-fable-judge/SKILL.md",
+          "lineStart": 28,
+          "lineEnd": 35,
+          "sha256": "958afe7ef3d543b54e606f6141729256c219cc7f1cc38a7f797d7ceaf5522dc7"
+        },
+        {
+          "path": ".agents/skills/ws-fable-method/SKILL.md",
+          "lineStart": 37,
+          "lineEnd": 43,
+          "sha256": "f1007fab6ab7c7df4325296acb2dd81285e5cbcfa91476a0a6833b0b3e90ac00"
+        },
+        {
+          "path": ".agents/skills/ws-fable-method/SKILL.md",
+          "lineStart": 55,
+          "lineEnd": 59,
+          "sha256": "f1007fab6ab7c7df4325296acb2dd81285e5cbcfa91476a0a6833b0b3e90ac00"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "2edacd4a857a337f8e5757f9b237b81135a8281a",
+          "step": 5
+        },
+        {
+          "sha": "73b484a169db59284e8620e276a8a41f37cc2c4f",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-explicit-knowledge-chain: ok",
+          "sourceFile": "test/test-explicit-knowledge-chain.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T14:33:34.079Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-2edacd4a857a337f8e5757f9b237b81135a8281a",
+        "g2-commit-73b484a169db59284e8620e276a8a41f37cc2c4f",
+        "verify-ac-all",
+        "verify-ac-refresh",
+        "verify-ac-refresh2"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "The existing max-2 lookup rounds budget is preserved; the chain orders lookups without adding rounds.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-fable-judge/SKILL.md:L28-L35",
+        ".agents/skills/ws-fable-judge/SKILL.md:L28-L37",
+        ".agents/skills/ws-fable-judge/references/REPORT.md:L18-L24",
+        ".agents/skills/ws-fable-method/SKILL.md:L37-L43",
+        ".agents/skills/ws-fable-method/SKILL.md:L55-L59"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001",
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-fable-judge/references/REPORT.md",
+          "lineStart": 18,
+          "lineEnd": 24,
+          "sha256": "378ddb4af5dd75384ec6bf6c20cad316a48faa9817bf359a20d75469fdba7a91"
+        },
+        {
+          "path": ".agents/skills/ws-fable-judge/SKILL.md",
+          "lineStart": 28,
+          "lineEnd": 37,
+          "sha256": "958afe7ef3d543b54e606f6141729256c219cc7f1cc38a7f797d7ceaf5522dc7"
+        },
+        {
+          "path": ".agents/skills/ws-fable-judge/SKILL.md",
+          "lineStart": 28,
+          "lineEnd": 35,
+          "sha256": "958afe7ef3d543b54e606f6141729256c219cc7f1cc38a7f797d7ceaf5522dc7"
+        },
+        {
+          "path": ".agents/skills/ws-fable-method/SKILL.md",
+          "lineStart": 37,
+          "lineEnd": 43,
+          "sha256": "f1007fab6ab7c7df4325296acb2dd81285e5cbcfa91476a0a6833b0b3e90ac00"
+        },
+        {
+          "path": ".agents/skills/ws-fable-method/SKILL.md",
+          "lineStart": 55,
+          "lineEnd": 59,
+          "sha256": "f1007fab6ab7c7df4325296acb2dd81285e5cbcfa91476a0a6833b0b3e90ac00"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "2edacd4a857a337f8e5757f9b237b81135a8281a",
+          "step": 5
+        },
+        {
+          "sha": "73b484a169db59284e8620e276a8a41f37cc2c4f",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-explicit-knowledge-chain: ok",
+          "sourceFile": "test/test-explicit-knowledge-chain.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T14:33:34.079Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-2edacd4a857a337f8e5757f9b237b81135a8281a",
+        "g2-commit-73b484a169db59284e8620e276a8a41f37cc2c4f",
+        "verify-ac-all",
+        "verify-ac-refresh",
+        "verify-ac-refresh2"
+      ]
+    },
+    {
+      "id": "AC8",
+      "text": "`ws-fable-method` and `ws-fable-judge` skill prose carry the chain, the flag, and the anti-fabrication rules verbatim-testable by grep.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-fable-judge/SKILL.md:L28-L35",
+        ".agents/skills/ws-fable-judge/SKILL.md:L28-L37",
+        ".agents/skills/ws-fable-judge/references/REPORT.md:L18-L24",
+        ".agents/skills/ws-fable-method/SKILL.md:L37-L43",
+        ".agents/skills/ws-fable-method/SKILL.md:L55-L59"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-fable-judge/references/REPORT.md",
+          "lineStart": 18,
+          "lineEnd": 24,
+          "sha256": "378ddb4af5dd75384ec6bf6c20cad316a48faa9817bf359a20d75469fdba7a91"
+        },
+        {
+          "path": ".agents/skills/ws-fable-judge/SKILL.md",
+          "lineStart": 28,
+          "lineEnd": 37,
+          "sha256": "958afe7ef3d543b54e606f6141729256c219cc7f1cc38a7f797d7ceaf5522dc7"
+        },
+        {
+          "path": ".agents/skills/ws-fable-judge/SKILL.md",
+          "lineStart": 28,
+          "lineEnd": 35,
+          "sha256": "958afe7ef3d543b54e606f6141729256c219cc7f1cc38a7f797d7ceaf5522dc7"
+        },
+        {
+          "path": ".agents/skills/ws-fable-method/SKILL.md",
+          "lineStart": 37,
+          "lineEnd": 43,
+          "sha256": "f1007fab6ab7c7df4325296acb2dd81285e5cbcfa91476a0a6833b0b3e90ac00"
+        },
+        {
+          "path": ".agents/skills/ws-fable-method/SKILL.md",
+          "lineStart": 55,
+          "lineEnd": 59,
+          "sha256": "f1007fab6ab7c7df4325296acb2dd81285e5cbcfa91476a0a6833b0b3e90ac00"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "2edacd4a857a337f8e5757f9b237b81135a8281a",
+          "step": 5
+        },
+        {
+          "sha": "73b484a169db59284e8620e276a8a41f37cc2c4f",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "test-explicit-knowledge-chain: ok",
+          "sourceFile": "test/test-explicit-knowledge-chain.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T14:33:34.079Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-2edacd4a857a337f8e5757f9b237b81135a8281a",
+        "g2-commit-73b484a169db59284e8620e276a8a41f37cc2c4f",
+        "verify-ac-all",
+        "verify-ac-refresh",
+        "verify-ac-refresh2"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "A finding with an unsourced factual claim and no uncertain flag fails the judge sourcing check.",
+      "tests": [
+        {
+          "name": "test-explicit-knowledge-chain: ok",
+          "sourceFile": "test/test-explicit-knowledge-chain.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T14:27:29.215Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-ns"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "A claim citing the web when the codebase grounds it is flagged as a skipped-link violation.",
+      "tests": [
+        {
+          "name": "test-explicit-knowledge-chain: ok",
+          "sourceFile": "test/test-explicit-knowledge-chain.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T14:27:29.215Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-ns"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "An invented API path with no chain reference fails the anti-fabrication check instead of passing as a finding.",
+      "tests": [
+        {
+          "name": "test-explicit-knowledge-chain: ok",
+          "sourceFile": "test/test-explicit-knowledge-chain.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T14:27:29.215Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-ns"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "A report without the per-claim source table is returned for completion before the audit counts.",
+      "tests": [
+        {
+          "name": "test-explicit-knowledge-chain: ok",
+          "sourceFile": "test/test-explicit-knowledge-chain.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T14:27:29.215Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-ns"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 10,
+    "earnedUnits": 80,
+    "totalUnits": 80,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "deficiencies": [],
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-30T14:34:29.192Z",
+    "writer": "ac_ledger.cjs score",
+    "ledgerHash": "cbe2e8e19e3e40117c9de43aff3fb5fbb6d3908f4e2a1de02bdc893025da2111"
+  }
+}

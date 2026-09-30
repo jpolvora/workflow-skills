@@ -1,8 +1,63 @@
 {
   "schemaVersion": 1,
-  "revision": 10,
-  "generatedAt": "2026-09-29T20:20:40Z",
+  "revision": 21,
+  "generatedAt": "2026-09-30T14:54:52Z",
   "workflows": [
+    {
+      "workflowId": "benchmark-publish-fixed-models-20260930T114235Z",
+      "slug": "benchmark-publish-fixed-models",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/benchmark-publish-fixed-models/benchmark-publish-fixed-models-20260930T114235Z.state.md",
+      "stateSha256": "95de5c4993f64fdf37c2e7a3915581af97116e716f156afa730328d62d831ecf",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-30T12:43:55Z",
+      "runPath": ".agents/plans/benchmark-publish-fixed-models/benchmark-publish-fixed-models-20260930T114235Z.state.json"
+    },
+    {
+      "workflowId": "explicit-knowledge-chain-20260930T140853Z",
+      "slug": "explicit-knowledge-chain",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/explicit-knowledge-chain/explicit-knowledge-chain-20260930T140853Z.state.md",
+      "stateSha256": "2caa36e4d8880ee183d615af6c1e039dcfbc9502a3a7692de73def7a2b83b624",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-30T14:54:52Z",
+      "runPath": ".agents/plans/explicit-knowledge-chain/explicit-knowledge-chain-20260930T140853Z.state.json"
+    },
+    {
+      "workflowId": "fresh-worker-verifier-step-20260930T062223Z",
+      "slug": "fresh-worker-verifier-step",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/fresh-worker-verifier-step/fresh-worker-verifier-step-20260930T062223Z.state.md",
+      "stateSha256": "de8e7ca7aebf2957b7020041511376ea91ce3ad28e159ef6af34762fecd1c15f",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-30T08:00:57Z",
+      "runPath": ".agents/plans/fresh-worker-verifier-step/fresh-worker-verifier-step-20260930T062223Z.state.json"
+    },
+    {
+      "workflowId": "per-step-context-budgets-20260930T125526Z",
+      "slug": "per-step-context-budgets",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/per-step-context-budgets/per-step-context-budgets-20260930T125526Z.state.md",
+      "stateSha256": "74baf51e5e7648f5ae1e7482347aa1acacc814140247c1fcbbc4af755fae3945",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-30T14:00:44Z",
+      "runPath": ".agents/plans/per-step-context-budgets/per-step-context-budgets-20260930T125526Z.state.json"
+    },
+    {
+      "workflowId": "per-task-test-adequacy-review-20260930T081414Z",
+      "slug": "per-task-test-adequacy-review",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/per-task-test-adequacy-review/per-task-test-adequacy-review-20260930T081414Z.state.md",
+      "stateSha256": "3172f8d09a2b07716b726f3ce911415288ff1d99df971b8d24cda845e22b217e",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-30T09:42:34Z",
+      "runPath": ".agents/plans/per-task-test-adequacy-review/per-task-test-adequacy-review-20260930T081414Z.state.json"
+    },
     {
       "workflowId": "reduce-spec-to-pr-tokens-20260927T043013Z",
       "slug": "reduce-spec-to-pr-tokens",
@@ -35,6 +90,17 @@
       "currentStep": 9,
       "updatedAt": "2026-09-27T02:19:57Z",
       "runPath": ".agents/plans/simplify-skill-versioning/simplify-skill-versioning-20260927T015020Z.state.json"
+    },
+    {
+      "workflowId": "spec-closure-strengthening-20260930T095034Z",
+      "slug": "spec-closure-strengthening",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/spec-closure-strengthening/spec-closure-strengthening-20260930T095034Z.state.md",
+      "stateSha256": "7f2934b05245944fb28ce33105d9ddd727e46bef628e3bbb29316f7e3317e3ea",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-30T11:32:51Z",
+      "runPath": ".agents/plans/spec-closure-strengthening/spec-closure-strengthening-20260930T095034Z.state.json"
     },
     {
       "workflowId": "us-436-20260927T190308Z",

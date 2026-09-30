@@ -199,8 +199,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] features to be emphasized in website and detailed in wiki (`spec: completed/0146-us-436.spec.md`) - [PR #445](https://github.com/jpolvora/workflow-skills/pull/445) MERGED (`fbb69019` implementation)
 - [x] ws-ship-pr/scripts/verify.cjs: skip empty verification aliases instead of executing them (`spec: completed/0147-us-446.spec.md`) — `412e3f37` delivery commit
 - [x] ws-spec-multi stores run state in a skill-named shared directory instead of a per-run directory (`spec: completed/0148-us-448.spec.md`) — `75e8f6b7` on develop
-- [ ] add a simple skill to show version and directory of the skill file (`spec: pending/0149-us-455.spec.md`)
-- [ ] Resolve missing local skills from the global install; do not junction them into the repo (`spec: pending/0150-us-457.spec.md`)
+- [x] add a simple skill to show version and directory of the skill file (`spec: completed/0149-us-455.spec.md`) - [PR #456](https://github.com/jpolvora/workflow-skills/pull/456) MERGED (`0e1039ff` implementation)
+- [x] Resolve missing local skills from the global install; do not junction them into the repo (`spec: completed/0150-us-457.spec.md`) — `27637568` on develop
 - [ ] autoMode should mean unattended: no yield at internal checkpoints (`spec: pending/0151-us-458.spec.md`)
 - [x] ws-kanvas board: add phase color coding and replace hardcoded grey/transparent styling (`spec: completed/0152-us-459.spec.md`)
 - [x] kanvas modal option to show full spec content in .md rendered (`spec: completed/0153-us-461.spec.md`)
@@ -211,6 +211,22 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Publish fixed-model comparison benchmark (`spec: completed/0158-benchmark-publish-fixed-models.spec.md`) — `d49597f4` delivery commit
 - [x] Per-step context budgets in dispatch contracts (`spec: completed/0159-per-step-context-budgets.spec.md`) — `c62e5d09` delivery commit
 - [x] Explicit knowledge chain in research guidance (`spec: completed/0160-explicit-knowledge-chain.spec.md`) — `ba1b4fc1` delivery commit
+- [ ] ws-monitor: issue-proposal body embeds a host session id while claiming anonymized; workflow count wording contradicts the report (`spec: pending/0161-us-478.spec.md`)
+- [ ] ws-monitor: worker-session-stall warns while the state/telemetry clock advances (stale session-source reference) (`spec: pending/0162-us-477.spec.md`)
+- [ ] ws-monitor: stale-parent-row warns during the normal child-close to parent-propagate window (`spec: pending/0163-us-476.spec.md`)
+- [ ] Shared-head multi-spec runs need an executable foreign-commit guard (`spec: pending/0164-us-475.spec.md`)
+- [x] Shipped spec can stay under pending/ while index marks done (`spec: completed/0165-us-474.spec.md`)
+- [ ] Workflow defect (context-mismatch) detected by ws-monitor (`spec: pending/0166-us-473.spec.md`)
+- [ ] ws-doctor: path-error section reports widespread false positives (citation base, link text, prose) (`spec: pending/0167-us-469.spec.md`)
+- [ ] ws-monitor: slug-scoped scan drops canonical runId-foldered ws-spec-multi batch state (`spec: pending/0168-us-464.spec.md`)
+
+
+
+
+
+
+
+
 
 
 
@@ -526,9 +542,9 @@ All Next-specs closed.
 
 | 153 | `us-448` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-multi stores run state in a skill-named shared directory instead of a per-run directory (`75e8f6b7` on develop) |
 
-| 154 | `us-455` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | add a simple skill to show version and directory of the skill file |
+| 154 | `us-455` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | add a simple skill to show version and directory of the skill file |
 
-| 155 | `us-457` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Resolve missing local skills from the global install; do not junction them into the repo |
+| 155 | `us-457` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Resolve missing local skills from the global install; do not junction them into the repo |
 
 | 156 | `us-458` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | autoMode should mean unattended: no yield at internal checkpoints |
 
@@ -550,6 +566,22 @@ All Next-specs closed.
 
 | 165 | `explicit-knowledge-chain` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Explicit knowledge chain in research guidance |
 
+| 166 | `us-478` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor: issue-proposal body embeds a host session id while claiming anonymized; workflow count wording contradicts the report |
+
+| 167 | `us-477` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor: worker-session-stall warns while the state/telemetry clock advances (stale session-source reference) |
+
+| 168 | `us-476` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor: stale-parent-row warns during the normal child-close to parent-propagate window |
+
+| 169 | `us-475` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Shared-head multi-spec runs need an executable foreign-commit guard |
+
+| 170 | `us-474` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Shipped spec can stay under pending/ while index marks done |
+
+| 171 | `us-473` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Workflow defect [context-mismatch] detected by ws-monitor |
+
+| 172 | `us-469` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-doctor: path-error section reports widespread false positives (citation base, link text, prose) |
+
+| 173 | `us-464` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor: slug-scoped scan drops canonical runId-foldered ws-spec-multi batch state |
+
 ## 9. Inbox
 
 - Advanced multi-repository orchestrator support
@@ -566,6 +598,8 @@ All Next-specs closed.
 | 2026-09-30 | `benchmark-publish-fixed-models` | Publish fixed-model comparison benchmark | `d49597f4` delivery commit |
 | 2026-09-30 | `per-step-context-budgets` | Per-step context budgets in dispatch contracts | `c62e5d09` delivery commit |
 | 2026-09-30 | `explicit-knowledge-chain` | Explicit knowledge chain in research guidance | `ba1b4fc1` delivery commit |
+| 2026-09-29 | `us-455` | add a simple skill to show version and directory of the skill file | [PR #456](https://github.com/jpolvora/workflow-skills/pull/456) MERGED |
+| 2026-09-29 | `us-457` | Resolve missing local skills from the global install; do not junction them into the repo | `27637568` delivery commit |
 | 2026-09-29 | `us-459` | ws-kanvas board: add phase color coding and replace hardcoded grey/transparent styling | `d6b451b7` delivery commit |
 | 2026-09-29 | `us-461` | kanvas modal option to show full spec content in .md rendered | `55cf318f` delivery commit |
 | 2026-09-28 | `pre-ship-doc-sync` | Pre-ship documentation-sync gate (configurable) | [PR #453](https://github.com/jpolvora/workflow-skills/pull/453), `9d840fe4` |
@@ -715,6 +749,7 @@ All Next-specs closed.
 | 2026-09-27 | `us-440` | skillLoader: adopt token-centered skill loading at inline body-load sites | [PR #443](https://github.com/jpolvora/workflow-skills/pull/443) MERGED (`7ee4dd57`) |
 | 2026-09-27 | `us-439` | [Spec] Create a new skill ws-spec-to-issue | [PR #444](https://github.com/jpolvora/workflow-skills/pull/444) MERGED (`0d2337df`) |
 | 2026-09-27 | `us-436` | features to be emphasized in website and detailed in wiki | [PR #445](https://github.com/jpolvora/workflow-skills/pull/445) MERGED (`fbb69019`) |
+| 2026-09-30 | `us-474` | Shipped spec can stay under pending/ while index marks done | 896bbd29f9c5ff77cdf7c3a8747d9820d9a4ece1 |
 
 ## 11. Maintenance checklist
 

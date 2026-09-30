@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-09-30T13:17:36.346Z",
+  "filesTouched": {
+    "created": [
+      ".agents/plans/per-step-context-budgets/ac-ledger.json",
+      ".agents/plans/per-step-context-budgets/step-00-per-step-context-budgets.spec.md",
+      ".agents/plans/per-step-context-budgets/step-01-per-step-context-budgets.plan.md",
+      ".agents/plans/per-step-context-budgets/step-02-per-step-context-budgets.plan-interview.md",
+      ".agents/plans/per-step-context-budgets/step-02-per-step-context-budgets.plan.refined.md",
+      ".agents/plans/per-step-context-budgets/step-03-per-step-context-budgets.plan.exec.md"
+    ],
+    "modified": [
+      ".agents/plans/per-step-context-budgets/step-01-per-step-context-budgets.plan.md"
+    ],
+    "deleted": []
+  },
+  "filesHash": "1d663fabd6913a92238f11939a362dc906655a7df2cf0b7d6f47424b8656902e",
+  "aliasResults": [],
+  "sabotage": "not-required",
+  "reuse": "Steps 5/6/7 re-run alias/stack/sabotage commands only if files_touched changed; AC scoring, review, and tests still run. Compare current workflowManifest sorted hash to filesHash; match means reuse aliasResults/sabotage, mismatch means re-run."
+}

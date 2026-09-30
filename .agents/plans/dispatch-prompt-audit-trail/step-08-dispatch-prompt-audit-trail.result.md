@@ -1,3 +1,12 @@
+---
+step: 8
+slug: dispatch-prompt-audit-trail
+workflowId: dispatch-prompt-audit-trail-20260930T043902Z
+status: completed
+startedAt: "2026-09-30T05:53:15.960Z"
+endedAt: "2026-09-30T05:53:15.960Z"
+acRefs: []
+---
 # dispatch-prompt-audit-trail — Delivery Result
 
 ## Expected

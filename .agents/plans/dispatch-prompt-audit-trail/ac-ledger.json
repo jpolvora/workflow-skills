@@ -1,0 +1,687 @@
+{
+  "schemaVersion": 1,
+  "revision": 39,
+  "workflowId": "dispatch-prompt-audit-trail-20260930T043902Z",
+  "slug": "dispatch-prompt-audit-trail",
+  "specPath": ".agents/plans/dispatch-prompt-audit-trail/step-00-dispatch-prompt-audit-trail.spec.md",
+  "planIndexPath": ".agents/plans/dispatch-prompt-audit-trail/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "Standard orch persists each dispatched step prompt to `{us-dir}/step-{NN}-{slug}.prompt.md` before the dispatch completes, where NN is the zero-padded step number.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/write_dispatch_prompt_audit.cjs:L186-L196"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006",
+        "section-008"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/write_dispatch_prompt_audit.cjs",
+          "lineStart": 186,
+          "lineEnd": 196,
+          "sha256": "219d58372519eff869c3c29057c04ac363489c9e03d6f4bd22c5627654cc494c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "260c47fffe08cea8830c2449147883031bfec7b2",
+          "step": 5
+        },
+        {
+          "sha": "089d44b9f1f0d25693f922bb18d721f8c2caed1a",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC1: prompt markdown exists",
+          "sourceFile": "test/test-dispatch-prompt-audit.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T05:11:38.962Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-089d44b9f1f0d25693f922bb18d721f8c2caed1a",
+        "g2-commit-260c47fffe08cea8830c2449147883031bfec7b2",
+        "verify-ac1"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "Each prompt markdown has a sibling `{us-dir}/step-{NN}-{slug}.prompt.json` manifest carrying step, slug, sourceSkill, acRefs, budgetBytes, fixedPreambleBytes, mandatoryBytes, totalBytes, memoryBytes, promptSha256, createdAt, dispatchMode, and revision.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/write_dispatch_prompt_audit.cjs:L163-L181"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/write_dispatch_prompt_audit.cjs",
+          "lineStart": 163,
+          "lineEnd": 181,
+          "sha256": "219d58372519eff869c3c29057c04ac363489c9e03d6f4bd22c5627654cc494c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "260c47fffe08cea8830c2449147883031bfec7b2",
+          "step": 5
+        },
+        {
+          "sha": "089d44b9f1f0d25693f922bb18d721f8c2caed1a",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC2: manifest carries",
+          "sourceFile": "test/test-dispatch-prompt-audit.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T05:11:39.039Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-089d44b9f1f0d25693f922bb18d721f8c2caed1a",
+        "g2-commit-260c47fffe08cea8830c2449147883031bfec7b2",
+        "verify-ac2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "Prompt file bytes equal the exact `build_dispatch_context.cjs` output for that dispatch, manifest promptSha256 matches the file, and totalBytes plus fixedPreambleBytes respect the configured budget caps.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/write_dispatch_prompt_audit.cjs:L182-L189"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/write_dispatch_prompt_audit.cjs",
+          "lineStart": 182,
+          "lineEnd": 189,
+          "sha256": "219d58372519eff869c3c29057c04ac363489c9e03d6f4bd22c5627654cc494c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "260c47fffe08cea8830c2449147883031bfec7b2",
+          "step": 5
+        },
+        {
+          "sha": "089d44b9f1f0d25693f922bb18d721f8c2caed1a",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC3: prompt bytes equal the exact builder output",
+          "sourceFile": "test/test-dispatch-prompt-audit.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T05:11:39.099Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-089d44b9f1f0d25693f922bb18d721f8c2caed1a",
+        "g2-commit-260c47fffe08cea8830c2449147883031bfec7b2",
+        "verify-ac3"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "The `state.stepDispatches[]` entry and the `telemetry.jsonl` dispatch event for the step record promptPath and promptSha256.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1729-L1742"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1729,
+          "lineEnd": 1742,
+          "sha256": "64bde9012e5220b6e8a98a24acdf622eb522ebc87bb8ec00c3dd9ae04442dd9e"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "260c47fffe08cea8830c2449147883031bfec7b2",
+          "step": 5
+        },
+        {
+          "sha": "089d44b9f1f0d25693f922bb18d721f8c2caed1a",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC4: entry records promptPath",
+          "sourceFile": "test/test-dispatch-prompt-audit.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T05:11:39.158Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ac4-refresh",
+        "ac4-refresh2",
+        "g2-commit-089d44b9f1f0d25693f922bb18d721f8c2caed1a",
+        "g2-commit-260c47fffe08cea8830c2449147883031bfec7b2",
+        "verify-ac4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "Parallel DAG dispatches write per-node prompts as `step-04-{slug}.prompt.{node}.md` plus a matching per-node manifest without overwriting sibling nodes.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/write_dispatch_prompt_audit.cjs:L104-L110"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/write_dispatch_prompt_audit.cjs",
+          "lineStart": 104,
+          "lineEnd": 110,
+          "sha256": "219d58372519eff869c3c29057c04ac363489c9e03d6f4bd22c5627654cc494c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "260c47fffe08cea8830c2449147883031bfec7b2",
+          "step": 5
+        },
+        {
+          "sha": "089d44b9f1f0d25693f922bb18d721f8c2caed1a",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC5: both per-node pairs exist",
+          "sourceFile": "test/test-dispatch-prompt-audit.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T05:11:39.220Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-089d44b9f1f0d25693f922bb18d721f8c2caed1a",
+        "g2-commit-260c47fffe08cea8830c2449147883031bfec7b2",
+        "verify-ac5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "Re-dispatch (Replay, Refine, Previous) overwrites the step prompt pair, bumps manifest revision, and appends a re-dispatch telemetry event preserving the prior sha.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1735-L1745",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1738-L1741"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1735,
+          "lineEnd": 1745,
+          "sha256": "64bde9012e5220b6e8a98a24acdf622eb522ebc87bb8ec00c3dd9ae04442dd9e"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 1738,
+          "lineEnd": 1741,
+          "sha256": "64bde9012e5220b6e8a98a24acdf622eb522ebc87bb8ec00c3dd9ae04442dd9e"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "260c47fffe08cea8830c2449147883031bfec7b2",
+          "step": 5
+        },
+        {
+          "sha": "089d44b9f1f0d25693f922bb18d721f8c2caed1a",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC6: revision bumps on overwrite",
+          "sourceFile": "test/test-dispatch-prompt-audit.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T05:11:49.055Z"
+        },
+        {
+          "name": "CR-001: fixPrPlan substep inherits",
+          "sourceFile": "test/test-dispatch-prompt-audit.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T05:29:14.135Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "ac6-fix1",
+        "ac6-refresh",
+        "ac6-refresh2",
+        "ac6-refresh3",
+        "g2-commit-089d44b9f1f0d25693f922bb18d721f8c2caed1a",
+        "g2-commit-260c47fffe08cea8830c2449147883031bfec7b2",
+        "verify-ac6"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "Prompt pairs are registered in `ARTIFACTS.md`, preserved by Phase A and Phase B cleanup, never staged by G2-code, and excluded from the default Step 8 delivery set.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/ARTIFACTS.md:L45-L48"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/ARTIFACTS.md",
+          "lineStart": 45,
+          "lineEnd": 48,
+          "sha256": "6f243f6e9e57ba7fdca6ddbb76771323f80ac3662f0536b07159b9050418297c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "260c47fffe08cea8830c2449147883031bfec7b2",
+          "step": 5
+        },
+        {
+          "sha": "089d44b9f1f0d25693f922bb18d721f8c2caed1a",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC7: registry lists the prompt markdown",
+          "sourceFile": "test/test-dispatch-prompt-audit.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T05:11:49.135Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-089d44b9f1f0d25693f922bb18d721f8c2caed1a",
+        "g2-commit-260c47fffe08cea8830c2449147883031bfec7b2",
+        "verify-ac7"
+      ]
+    },
+    {
+      "id": "AC8",
+      "text": "Lite inline steps write the same prompt pair with dispatchMode inline at each executed step boundary, or a skip marker entry when the step is skipped.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/write_dispatch_prompt_audit.cjs:L118-L140"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/write_dispatch_prompt_audit.cjs",
+          "lineStart": 118,
+          "lineEnd": 140,
+          "sha256": "219d58372519eff869c3c29057c04ac363489c9e03d6f4bd22c5627654cc494c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "260c47fffe08cea8830c2449147883031bfec7b2",
+          "step": 5
+        },
+        {
+          "sha": "089d44b9f1f0d25693f922bb18d721f8c2caed1a",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC8: lite pair uses dispatchMode inline",
+          "sourceFile": "test/test-dispatch-prompt-audit.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T05:11:49.195Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-089d44b9f1f0d25693f922bb18d721f8c2caed1a",
+        "g2-commit-260c47fffe08cea8830c2449147883031bfec7b2",
+        "verify-ac8"
+      ]
+    },
+    {
+      "id": "AC9",
+      "text": "A missing or hash-mismatched prompt pair fails the next pre-advance validation with the offending step number named in the error.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L2140-L2185"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-006",
+        "section-007"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+          "lineStart": 2140,
+          "lineEnd": 2185,
+          "sha256": "64bde9012e5220b6e8a98a24acdf622eb522ebc87bb8ec00c3dd9ae04442dd9e"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "260c47fffe08cea8830c2449147883031bfec7b2",
+          "step": 5
+        },
+        {
+          "sha": "089d44b9f1f0d25693f922bb18d721f8c2caed1a",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC9: missing pair fails pre-advance",
+          "sourceFile": "test/test-dispatch-prompt-audit.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T05:11:49.263Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "ac9-refresh",
+        "ac9-refresh2",
+        "g2-commit-089d44b9f1f0d25693f922bb18d721f8c2caed1a",
+        "g2-commit-260c47fffe08cea8830c2449147883031bfec7b2",
+        "testing-sabotage2",
+        "verify-ac9"
+      ]
+    },
+    {
+      "id": "AC10",
+      "text": "The audit writer adds no secrets, tokens, PATs, or private hostnames beyond the already-inlined MEMORY slice and config pointers present in the dispatch output.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/write_dispatch_prompt_audit.cjs:L163-L181"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-005",
+        "section-006",
+        "section-007",
+        "section-008"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/write_dispatch_prompt_audit.cjs",
+          "lineStart": 163,
+          "lineEnd": 181,
+          "sha256": "219d58372519eff869c3c29057c04ac363489c9e03d6f4bd22c5627654cc494c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "260c47fffe08cea8830c2449147883031bfec7b2",
+          "step": 5
+        },
+        {
+          "sha": "089d44b9f1f0d25693f922bb18d721f8c2caed1a",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC10: manifest has no secret shape",
+          "sourceFile": "test/test-dispatch-prompt-audit.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T05:11:49.318Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-089d44b9f1f0d25693f922bb18d721f8c2caed1a",
+        "g2-commit-260c47fffe08cea8830c2449147883031bfec7b2",
+        "verify-ac10"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Dispatch completes but the prompt pair is absent: next pre-advance fails naming the step instead of silently continuing.",
+      "tests": [
+        {
+          "name": "test-dispatch-prompt-audit.js",
+          "sourceFile": "test/test-dispatch-prompt-audit.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T05:03:12.640Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-ns"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Prompt markdown edited after dispatch: sha check fails on the next gate with a hash-mismatch error.",
+      "tests": [
+        {
+          "name": "test-dispatch-prompt-audit.js",
+          "sourceFile": "test/test-dispatch-prompt-audit.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T05:03:12.641Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-ns"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Two DAG nodes dispatch concurrently: both per-node prompt pairs exist with distinct node suffixes and neither overwrites the other.",
+      "tests": [
+        {
+          "name": "test-dispatch-prompt-audit.js",
+          "sourceFile": "test/test-dispatch-prompt-audit.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T05:03:12.641Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-ns"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "Dispatch exceeding the configured budget still fails closed in the builder before any prompt pair is written.",
+      "tests": [
+        {
+          "name": "test-dispatch-prompt-audit.js",
+          "sourceFile": "test/test-dispatch-prompt-audit.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T05:03:12.641Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-ns"
+      ]
+    },
+    {
+      "id": "NS5",
+      "text": "Phase B temp delete runs: prompt pairs survive while listed temp artifacts are removed.",
+      "tests": [
+        {
+          "name": "test-dispatch-prompt-audit.js",
+          "sourceFile": "test/test-dispatch-prompt-audit.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T05:03:12.642Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-ns"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "ship",
+    "score": 10,
+    "earnedUnits": 100,
+    "totalUnits": 100,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "deficiencies": [],
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-30T06:04:14.586Z",
+    "writer": "ac_ledger.cjs score",
+    "ledgerHash": "3b430e69d692fabd7a4b9e8df6c2cafde398b64d9972576cb7ed02f2f827e247"
+  }
+}
