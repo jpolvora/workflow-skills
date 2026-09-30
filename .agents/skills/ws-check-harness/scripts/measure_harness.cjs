@@ -47,6 +47,17 @@ const ENHANCING = [
   'ws-tdah',
   'ws-self-learning',
 ];
+const STEP_BY_SKILL = {
+  'ws-spec-write': 0,
+  'ws-plan-write': 1,
+  'ws-plan-interview': 2,
+  'ws-implement-tasks': 4,
+  'ws-plan-verify': 5,
+  'ws-code-review': 6,
+  'ws-testing': 7,
+  'ws-ship-pr': 8,
+  'ws-goal-fix-pr': 9,
+};
 
 function argsOf(argv) {
   const options = { scenario: 'standard', json: false };
@@ -133,6 +144,17 @@ function main() {
   const indexedBytes = indexedArtifactBytes(context, options.planIndex);
   const targetBytes = targetSources.reduce((sum, item) => sum + item.bytes, 0);
   const completeDispatchBytes = dispatches ? Math.ceil((fixedPreambleBytes * dispatches + targetBytes + indexedBytes) / dispatches) : 0;
+  const globalBudgetBytes = Number(context.config?.defaults?.contextBudget || 32000);
+  const stepOverrides = context.config?.defaults?.stepContextBudgets || {};
+  const indexedShare = dispatches ? Math.ceil(indexedBytes / dispatches) : 0;
+  const stepRows = targetSources.map((item) => {
+    const step = STEP_BY_SKILL[item.skill];
+    const override = step !== undefined && Object.prototype.hasOwnProperty.call(stepOverrides, String(step)) ? Number(stepOverrides[String(step)]) : null;
+    const budgetBytes = override === null ? globalBudgetBytes : override;
+    const dispatchBytes = fixedPreambleBytes + item.bytes + indexedShare;
+    return { step, skill: item.skill, dispatchBytes, budgetBytes, budgetSource: override === null ? 'global' : 'step', pass: dispatchBytes <= budgetBytes };
+  });
+  const perStepPass = stepRows.every((row) => row.pass);
   const totalHarnessBytes = options.scenario === 'standard'
     ? fixedPreambleBytes * dispatches + targetBytes + indexedBytes
     : 18000;
@@ -155,6 +177,7 @@ function main() {
     fixedPreambleLimit: 18000,
     dispatches,
     completeDispatchBytes,
+    stepBudgets: { globalBudgetBytes, overrides: stepOverrides, steps: stepRows, perStepPass },
     totalHarnessBytes,
     baselineHarnessBytes: BASELINE_HARNESS,
     harnessReductionPct: Number(harnessReductionPct.toFixed(2)),
@@ -164,7 +187,7 @@ function main() {
     gateGranularity: granularity,
     blockingGates,
     mandatorySleepSec,
-    pass: fixedPreambleBytes <= 18000 && harnessReductionPct >= 45 && artifactReductionPct >= 40 && (granularity !== 'phase' || blockingGates <= 5),
+    pass: fixedPreambleBytes <= 18000 && harnessReductionPct >= 45 && artifactReductionPct >= 40 && (granularity !== 'phase' || blockingGates <= 5) && perStepPass,
   };
   if (options.json) process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
   else process.stdout.write([
@@ -174,6 +197,7 @@ function main() {
     `Artifact re-reads: ${artifactRereadBytes} bytes (${report.artifactReductionPct}% reduction)`,
     `Mandatory sleep: ${mandatorySleepSec}s`,
     `Blocking gates: ${blockingGates}`,
+    `Per-step budgets: ${stepRows.filter((row) => row.pass).length}/${stepRows.length} steps within their caps`,
   ].join('\n') + '\n');
   process.exitCode = report.pass ? 0 : 1;
 }

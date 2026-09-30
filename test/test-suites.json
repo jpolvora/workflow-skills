@@ -208,6 +208,9 @@
     ],
     [
       "test/test-benchmark-comparison-publish.js"
+    ],
+    [
+      "test/test-step-context-budgets.js"
     ]
   ],
   "remote": [

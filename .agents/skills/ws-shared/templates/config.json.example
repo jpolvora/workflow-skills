@@ -155,6 +155,8 @@
     "_comment_projectRootFolderToSave": "Evidence output folder for the post-completion proof-of-work step. Supports {projectRoot} and {slug} tokens. The evidence folder is never committed unless separately asked.",
     "contextBudget": 32000,
     "_comment_contextBudget": "Maximum UTF-8 bytes in one complete standard subagent dispatch; fixed contract preamble remains capped at 18000 and MEMORY at 4000.",
+    "stepContextBudgets": {},
+    "_comment_stepContextBudgets": "Optional per-step byte-budget overrides keyed by step number, e.g. {\"4\": 28000}; a step override wins over contextBudget and every value keeps the 18000 floor. Empty map preserves global behavior.",
     "parallelVerifyReview": false,
     "_comment_parallelVerifyReview": "When true, standard Steps 5 and 6 may run concurrently as read-only reviewers after an immutable product commit; default false.",
     "gateGranularity": "step",

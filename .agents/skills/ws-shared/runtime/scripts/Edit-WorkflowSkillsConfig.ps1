@@ -1324,6 +1324,7 @@ function Populate-Sections {
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'skipMutationTesting' -LabelText 'Skip Step 7 Mutation Testing' -Type 'bool' -DefaultVal $true
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'parallelVerifyReview' -LabelText 'Parallel Verify & Review (Steps 5 & 6)' -Type 'bool' -DefaultVal $false
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'contextBudget' -LabelText 'Subagent Context Budget (UTF-8 Bytes)' -Type 'int' -MinVal 18000 -MaxVal 128000 -DefaultVal 32000
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'stepContextBudgets' -LabelText 'Per-Step Context Budgets (JSON step to bytes)' -Type 'json' -Placeholder '{"4":28000}'
                 Add-SectionHeader -ParentPanel $page -YOffset $y -Title 'Step Baton Runners' -Subtitle 'Runner map and table for multi-CLI step handoff.'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'stepRunners' -LabelText 'Step Baton Runner Map (JSON step to runner id)' -Type 'json' -Placeholder '{"4":"runner-a"}'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'defaults' -Key 'runners' -LabelText 'Step Baton Runner Table (JSON id to command entry)' -Type 'json' -Placeholder '{"runner-a":{"command":"node worker.cjs --prompt {prompt}","timeoutSeconds":600}}'

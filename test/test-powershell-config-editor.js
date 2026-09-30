@@ -538,6 +538,10 @@ assert.match(
   guiScript,
   /-Key\s+['"]runners['"][\s\S]*?-Type\s+['"]json['"]/,
   'defaults.runners row must use -Type json'
+);assert.match(
+  guiScript,
+  /-Key\s+['"]stepContextBudgets['"][\s\S]*?-Type\s+['"]json['"]/,
+  'defaults.stepContextBudgets row must use -Type json'
 );
 console.log('  PASS: No structured schema node is bound as a plain string row; baton rows use json.');
 

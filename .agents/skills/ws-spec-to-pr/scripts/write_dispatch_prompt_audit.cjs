@@ -76,13 +76,16 @@ function readBuilderManifest(file) {
   } catch (error) {
     throw new Error(`builder manifest unreadable: ${file} (${error.message})`);
   }
-  for (const key of ['budgetBytes', 'fixedPreambleBytes', 'mandatoryBytes', 'totalBytes', 'memoryBytes', 'sourceSkill']) {
+  for (const key of ['budgetBytes', 'budgetSource', 'fixedPreambleBytes', 'mandatoryBytes', 'totalBytes', 'memoryBytes', 'sourceSkill']) {
     if (parsed[key] === undefined) throw new Error(`builder manifest missing required key: ${key}`);
   }
   if (!Number.isInteger(parsed.budgetBytes) || !Number.isInteger(parsed.fixedPreambleBytes)
     || !Number.isInteger(parsed.mandatoryBytes) || !Number.isInteger(parsed.totalBytes)
     || !Number.isInteger(parsed.memoryBytes)) {
     throw new Error('builder manifest byte counters must be integers');
+  }
+  if (parsed.budgetSource !== 'step' && parsed.budgetSource !== 'global') {
+    throw new Error('builder manifest budgetSource must be step or global');
   }
   return parsed;
 }
@@ -123,6 +126,7 @@ function main() {
       sourceSkill: null,
       acRefs: [],
       budgetBytes: null,
+      budgetSource: null,
       fixedPreambleBytes: null,
       mandatoryBytes: null,
       totalBytes: null,
@@ -167,6 +171,7 @@ function main() {
     sourceSkill: builder.sourceSkill,
     acRefs: Array.isArray(builder.acRefs) ? builder.acRefs : [],
     budgetBytes: builder.budgetBytes,
+    budgetSource: builder.budgetSource,
     fixedPreambleBytes: builder.fixedPreambleBytes,
     mandatoryBytes: builder.mandatoryBytes,
     totalBytes: builder.totalBytes,

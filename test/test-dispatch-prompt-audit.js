@@ -32,7 +32,7 @@ process.on('exit', () => { try { fs.rmSync(tempRoot, { recursive: true, force: t
 
 function builderManifest(overrides = {}) {
   return {
-    schemaVersion: 1, budgetBytes: 32000, fixedPreambleBytes: 9000, mandatoryBytes: 12000,
+    schemaVersion: 1, budgetBytes: 32000, budgetSource: 'global', fixedPreambleBytes: 9000, mandatoryBytes: 12000,
     totalBytes: 14000, memoryBytes: 500, acRefs: ['AC1', 'AC2'], sourceSkill: 'ws-plan-write/SKILL.md',
     ...overrides,
   };
@@ -89,7 +89,7 @@ const jsonFile = path.join(unitDir, `step-01-${slug}.prompt.json`);
 assert.ok(fs.existsSync(mdFile), 'AC1: prompt markdown exists');
 assert.ok(fs.readFileSync(mdFile).equals(promptBytes), 'AC3: prompt bytes equal the exact builder output');
 const manifest = JSON.parse(fs.readFileSync(jsonFile, 'utf8'));
-for (const field of ['step', 'slug', 'sourceSkill', 'acRefs', 'budgetBytes', 'fixedPreambleBytes', 'mandatoryBytes', 'totalBytes', 'memoryBytes', 'promptSha256', 'createdAt', 'dispatchMode', 'revision']) {
+for (const field of ['step', 'slug', 'sourceSkill', 'acRefs', 'budgetBytes', 'budgetSource', 'fixedPreambleBytes', 'mandatoryBytes', 'totalBytes', 'memoryBytes', 'promptSha256', 'createdAt', 'dispatchMode', 'revision']) {
   assert.ok(manifest[field] !== undefined, `AC2: manifest carries ${field}`);
 }
 assert.strictEqual(manifest.step, 1);
