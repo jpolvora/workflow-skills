@@ -179,7 +179,7 @@ Transcripts provide secondary evidence to diagnose why a subagent or orchestrato
 | Rejected/unavailable model inside a dispatch record in a transcript | Warning | Dispatch should fall back to the active session model |
 | `turn_ended` before handoff | Warning | A host turn may have interrupted execution |
 | Telemetry ahead of selected state (`stale-state`) | Critical or warning | The monitor must not report an older step as current without explaining the state-source mismatch |
-| State branch/HEAD/worktree differs from active checkout (`context-mismatch`) | Critical or warning | Orchestrator and monitor resolved different local/global roots, or config changed mid-run |
+| State branch/HEAD/worktree differs from active checkout (`context-mismatch`) | Branch: critical for non-terminal runs, info for terminal runs; HEAD/worktree: warning | A non-terminal run's recorded branch must match the live checkout; a terminal run's historical branch drift is informational, so severity follows run liveness (us-473). HEAD/worktree differences stay warning |
 | Local config present but unreadable (`config-unreadable`) | Critical | Report candidate paths; never silently fall back to the global hub |
 | Generic dispatch where named projection was expected (`generic-dispatch`) | Warning | Host supports named subagents but dispatch used generic fallback without explanation (embed-inline is healthy when host lacks named-agent binding) |
 | Multi-spec queue item failed (`multi-spec-failed-item`) | Warning | A spec within the batch run encountered a terminal failure |

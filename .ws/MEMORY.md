@@ -15,6 +15,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **DO NOT**: Pass gitignored plan/runtime artifacts as `--created`; write arbitrary files under `.runtime/`; re-link a changed evidence file with the same event-id or a shifted line range; assume a `;`-chained `update_state` call succeeded without checking `$?`.
 - **INSTEAD DO**: Finish Step 3 with `--noop "<reason>"` (the helper still stamps the artifact); keep scratch logs outside `.runtime/`; re-link a changed file with a NEW event-id but the SAME path+lineStart+lineEnd so the entry is replaced with a fresh sha256; re-score the boundary the next gate expects (`pre-step6` before Step 6, `step5` before Steps 7/8, `ship` before Step 9) then re-run `validate_state.cjs --pre-advance N`.
 
+### [2026-09-30] Re-hit: monitor severity must key off the status literal, not run shape
+- **Layer**: `domain`
+- **Module**: `ws-monitor / detectContextMismatch`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs, test/test-ws-monitor-us*.js`
+- **Scenario / Context**: Implementing us-473 (scope the branch `context-mismatch` to non-terminal runs), the first cut OR-ed the shape-derived `deriveTerminalStatus(state)` into the severity decision. That would soften a terminal-shaped run still reporting `active` to `info`, re-hitting the existing 2026-09-25 trap "Monitor severity contract: status-literal beats shape-derived" which the round-1 `read-memory` consult did not surface because the implementation started before the memory sweep. Caught during the close-time MEMORY sweep; fixed by keying severity off `TERMINAL_RUN_STATUSES.has(String(state.status))` only, with a regression assertion that a terminal-shaped `active` run stays `critical`.
+- **DO NOT**: Feed `terminalShape` / `deriveTerminalStatus` into a finding-severity decision; start a `ws-monitor` severity edit before consulting `.ws/memory/` for the monitor traps.
+- **INSTEAD DO**: Gate severity on the literal `status` (the terminal set), keep shape-derived handling informational (`terminal-run-active`) only, and run `read-memory` (or `self_learning.cjs --match-paths <file>`) before the first edit on `monitor_snapshot.cjs`.
+
 ### [2026-09-30] Foreign-commit guard keyed by current slug misses the previous dispatch baseline
 - **Layer**: `infrastructure`
 - **Module**: `ws-spec-multi / foreign_commit_guard`

@@ -216,7 +216,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] ws-monitor: stale-parent-row warns during the normal child-close to parent-propagate window (`spec: pending/0163-us-476.spec.md`)
 - [x] Shared-head multi-spec runs need an executable foreign-commit guard (`spec: completed/0164-us-475.spec.md`)
 - [x] Shipped spec can stay under pending/ while index marks done (`spec: completed/0165-us-474.spec.md`)
-- [ ] Workflow defect (context-mismatch) detected by ws-monitor (`spec: pending/0166-us-473.spec.md`)
+- [x] Workflow defect (context-mismatch) detected by ws-monitor (`spec: completed/0166-us-473.spec.md`)
 - [ ] ws-doctor: path-error section reports widespread false positives (citation base, link text, prose) (`spec: pending/0167-us-469.spec.md`)
 - [x] ws-monitor: slug-scoped scan drops canonical runId-foldered ws-spec-multi batch state (`spec: completed/0168-us-464.spec.md`)
 
@@ -576,7 +576,7 @@ All Next-specs closed.
 
 | 170 | `us-474` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Shipped spec can stay under pending/ while index marks done |
 
-| 171 | `us-473` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Workflow defect [context-mismatch] detected by ws-monitor |
+| 171 | `us-473` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Workflow defect [context-mismatch] detected by ws-monitor |
 
 | 172 | `us-469` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-doctor: path-error section reports widespread false positives (citation base, link text, prose) |
 
@@ -752,6 +752,7 @@ All Next-specs closed.
 | 2026-09-30 | `us-474` | Shipped spec can stay under pending/ while index marks done | 896bbd29f9c5ff77cdf7c3a8747d9820d9a4ece1 |
 | 2026-09-30 | `us-475` | Shared-head multi-spec runs need an executable foreign-commit guard | 703c99decb5ac47ec5e4efa54054f293a8a432c8 |
 | 2026-09-30 | `us-464` | ws-monitor: slug-scoped scan drops canonical runId-foldered ws-spec-multi batch state | c1c37461 |
+| 2026-09-30 | `us-473` | Workflow defect [context-mismatch] detected by ws-monitor | 83572714f0a7dd13d3896d8d3d9433dd495269ba |
 
 ## 11. Maintenance checklist
 

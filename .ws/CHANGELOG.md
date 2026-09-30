@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-30 19:20] Agent: agent
+- **Prompt**: Fix ws-monitor context-mismatch so branch severity follows run liveness (us-473)
+- **Done**: Scoped detectContextMismatch branch finding to non-terminal runs; terminal runs report info and the message names the run status; added test-ws-monitor-us473.js
+- **Result**: 157/157 tests green, verify 10/10, review clean, harness 0 findings
+
 ### [2026-09-30 18:45] Agent: agent
 - **Prompt**: fix ws-monitor slug-scoped scan dropping canonical runId-foldered ws-spec-multi batch state (us-464)
 - **Done**: slug-scoped discovery selects on state-derived slug independently of plan folder/layout; --workflow-id authoritative; unmatched slug returns zero
