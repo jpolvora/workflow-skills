@@ -596,6 +596,9 @@
     ],
     [
       "test/test-code-review-round-2.js"
+    ],
+    [
+      "test/test-foreign-commit-guard.js"
     ]
   ]
 }

@@ -76,6 +76,24 @@ leave them on disk and loadable through every step; never stage, stash,
 revert, or clean them. Verify with `git status --porcelain -- <foreign>` and
 `git diff --stat -- <foreign>` before and after the run's own commit/push.
 
+## 4b. Foreign-commit guard for shared heads
+
+On a shared-head batch (every child ships one branch), a commit landing on the
+branch from outside the batch silently joins the next item's range. The batch owns
+an executable guard — `{skillsRoot}/ws-spec-multi/scripts/foreign_commit_guard.cjs`:
+
+- `record-baseline` stores the local and `origin/{branch}` tips; its only write is the
+  run-dir baseline store `foreign-commits.json`.
+- `check-advance` returns quiet on unchanged tips or pauses (exit non-zero) with
+  Resume / Skip / Abort when a tip advances unexpectedly, naming the new commits.
+- `check-convergence` refuses a merge whose PR head differs from the local tip.
+- `list-foreign` lists range commits not in the batch's own set for the PR body and
+  audit notes.
+
+The guard is git-read-only. It never blocks, reverts, rebases, or rewrites another
+writer's commits — it pauses or refuses. The quiet path (no foreign commit) adds no
+gate to the sequential single-writer path. Guard wiring: [`ws-spec-multi/PROTOCOL.md`](../../ws-spec-multi/PROTOCOL.md).
+
 ## Scope
 
 Local git ownership only: same-worktree / same-repo concurrent writers. Out of

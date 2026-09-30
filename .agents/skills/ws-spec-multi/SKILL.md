@@ -34,6 +34,7 @@ Aliases: [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md). Param
 | Blank-scan inventory | `Shell` | `node {skillsRoot}/ws-spec-multi/scripts/list_pending_specs.cjs --specs-dir {specsDir} --plans-dir {plansDir} --json` |
 | SCM / state probe | `Shell` | SCM query & file probes; parse worker `step-output` |
 | Outcome transition | `Shell` | `node {skillsRoot}/ws-spec-multi/scripts/record_child_outcome.cjs --run {plansDir}/{runId}/{runId}.state.md --slug {slug} --status shipped\|failed\|skipped [--pr-number N --pr-url U --reason TEXT]` — the executable guarded row transition (fails closed on a `shipped` row lacking child state/`step-01`) |
+| Foreign-commit guard | `Shell` | `node {skillsRoot}/ws-spec-multi/scripts/foreign_commit_guard.cjs record-baseline\|check-advance\|check-convergence\|list-foreign ...` — batch-owned shared-head guard (git-read-only): baseline local + remote run-branch tips before each dispatch, pause on unexpected advance, refuse a PR-head/local-tip mismatch at convergence, list foreign commits for the PR body |
 | State persistence | `write-to-file` | Update `{plansDir}/{runId}/{runId}.state.md`; resume also accepts the legacy flat path |
 
 ## Goals & Invariants
@@ -44,6 +45,7 @@ Aliases: [`../ws-shared/runtime/tools.md`](../ws-shared/runtime/tools.md). Param
 4. **End-to-End Closure per Spec:** Every PR must undergo `ws-goal-fix-pr` convergence (`activeThreads == 0`) and explicit SCM merge (`state: MERGED`) before dispatching next spec.
 5. **Isolation & State:** Fresh worker context per spec; update `{plansDir}/{runId}/{runId}.state.md`. Legacy flat state files remain resumable.
 6. **Pause on Failure:** No silent continue on worker error; prompt user gate (Resume, Skip, Abort).
+7. **Foreign-commit guard (shared head):** On shared-head runs, record a per-dispatch baseline of the local + `origin` run-branch tips and check it before the next dispatch; an unexpected advance pauses (Resume, Skip, Abort) naming the new commits, convergence refuses a PR head that differs from the local tip, and foreign commits that ride a PR range are listed in the PR body and audit notes. The quiet path (no foreign commit) adds no gate. Guard: [`scripts/foreign_commit_guard.cjs`](scripts/foreign_commit_guard.cjs); contract: [`../ws-shared/runtime/git-ownership.md`](../ws-shared/runtime/git-ownership.md).
 7. **Keyed, Idempotent Queue Writes:** Every state transition updates the single existing row for that spec (`specPath`, fallback `slug`) in place — the queue never gains a second row for the same spec. The reported item count is frozen at the Phase 2 selection length (`totalItems`), and a write that would duplicate a row index or a `slug` fails closed (surface the conflict, do not write). A superseding run records `supersedesRunId` and retires that run (`cancelled` / `superseded`) deterministically via `scripts/retire_superseded_run.cjs`, and a child worker's terminal state propagates to its parent row plus the parent `updatedAt`. Re-applying a close or ship transition is idempotent (no new rows, no terminal-status regression). Invariant detail: [`STATE.md`](STATE.md) § Queue invariants.
 
 ## Triggers
