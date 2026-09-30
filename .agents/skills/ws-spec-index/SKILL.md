@@ -41,7 +41,17 @@ Manage project spec index (`index.PRD`) and linked `*.spec.md` feature specifica
 - Support consumer `index.PRD` table dialects (e.g. Next-specs headers `# | Status | Spec file` as well as `# | Spec | Status | Target Phase | Notes`).
 - Match backtick `*.spec.md` filename or `slug` anywhere in Feature map bullets (`- [ ]`) and Next-specs table.
 - If E1 satisfied: update status checkboxes to `[x]`, move completed rows to Done log, optionally set spec frontmatter `status: completed`.
-- Never auto-write `Verified:`. Idempotent (re-applying `[x]` is safe).
+- **Deterministic helper (preferred for CI):**
+
+  ```bash
+  node {skillsRoot}/ws-spec-index/scripts/sync_index.cjs \
+    --specs-dir {specsDir} --slug {slug} \
+    [--delivery-commit <sha>] [--pr-url <url>] [--result step-08-{slug}.result.md] [--json]
+  ```
+
+  It updates the index checkbox / Next-specs status / Done log, and when `plans.statusSubfolders` is `true` files the spec + `.context.md` + `.assets/` sidecars into `completed/` via `ws-spec-organizer/scripts/organize_specs.cjs`, which rewrites the `index.PRD` `spec:` refs in the same apply. If filing cannot complete it prints `{ "status": "outstanding", "filingOutstanding": true, "stalePendingPath": "..." }` and exits non-zero — never a silent partial success. Already-filed specs stay untouched (quiet path).
+- **Close verification:** `node {skillsRoot}/ws-spec-index/scripts/verify_close_filing.cjs --specs-dir {specsDir} --slug {slug}` exits non-zero and names the stale `pending/` path when the index marks the slug done but the spec still resolves under `pending/`. Step 8 close runs it and fails closed.
+- Never auto-write `Verified:`. Idempotent (re-applying `[x]` is safe; no duplicate Done-log row).
 - **Parallel writers:** touch only owned rows (your slug's bullet, Next-specs row, Done-log row); foreign rows stay byte-identical. `track` re-reads before writing so concurrent appends are preserved. See [`git-ownership.md`](../ws-shared/runtime/git-ownership.md) §5 (`shared-artifact-writing`).
 - If unmapped or no evidence: return `updated: []` and `skipped: <reason>` without editing files.
 - **Done when:** index / spec status updated per E1 or skipped cleanly.
