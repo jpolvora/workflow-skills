@@ -199,6 +199,9 @@
     ],
     [
       "test/test-fresh-verify.js"
+    ],
+    [
+      "test/test-per-task-adequacy.js"
     ]
   ],
   "remote": [
