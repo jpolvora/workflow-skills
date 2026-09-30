@@ -47,6 +47,7 @@ A finite state machine that carries one feature from an idea to a merged pull re
 | 4 | Implementation (`ws-implement-tasks`) with memory consult proof | code + build/test verification |
 | 5 | Spec-compliance scoring 0–10 (`ws-plan-verify`); **advances only at ≥ `defaults.minVerifyScore`** (default 9); below-bar refinement is a telemetry-backed `scoreAndRefine` substep | `step-05-{slug}.plan.report.md` |
 | 6 | Local code review of `{base}...HEAD` (`ws-code-review`) with a fix → re-review loop | `step-06-{slug}.review.md` (+ `.fix.report.md`) |
+| 6b | Fresh-worker re-verification (`ws-fresh-verify`): independent AC re-derivation, one fault per AC on a scratch worktree, evidence-or-zero plus a bounded fix loop | `step-05b-{slug}.fresh-verify.md` |
 | 7 | Test battery (`ws-testing`): unit, integration, E2E, coverage, optional mutation, regression sabotage | `step-07-{slug}.testing.*` |
 | 8 | Close implementation (result, G2-delivery, MEMORY, changelog, `status: completed`), then quiet-preflight ship gate, non-blocking preview dry-run, push/PR (`ws-ship-pr`) with PR-body `Closes #{id}` auto-close, tracker comment | `step-08-{slug}.result.md` |
 | 9 | PR thread convergence (`ws-goal-fix-pr` orchestrator): session owns the loop inline, each Act-round/standalone batch runs in a fresh worker with one gate-only `fixPrPlan` then `fixPrExec`, then merge | plan gate + resolved threads / merge |
@@ -105,6 +106,7 @@ The suite's central claim is that nothing ships on an agent's word alone. Every 
 | **Configurable verify bar (`defaults.minVerifyScore`)** | Default 9, range 1–10, omitted → 9. Below the bar it re-implements flagged tasks and re-scores (max 3 rounds, then Pause). Optional Reach-10 user-gate when effort is low. | `ws-plan-verify` |
 | **Score & refine** | When a score is already ≥ `minVerifyScore` and `defaults.scoreAndRefine` is on, the user is offered a second polish pass: task-by-task score analysis plus a wide-context overengineering sweep (simplify ACs; remove unused workflow-introduced files/tests/methods/classes). | `ws-plan-verify` |
 | **Fix → re-review** | Critical or Warning findings trigger fix rounds (max 3). Residual findings Pause the run instead of advancing. | `ws-code-review` |
+| **Fresh verify → re-verify** | Evidence-or-zero defects (missing pass evidence or missing red signal) trigger fix plus re-verify rounds (max 3). Round 3 with residual defects Pauses with the residual list. | `ws-fresh-verify` |
 | **Commit before review** | Product files must be committed before a review is dispatched, so the review always diffs a real `{base}...HEAD`. Uncommitted product files STOP the step. | `gates.md` (G2-code) |
 | **Regression sabotage** | When mutation testing is unset, Step 7 deliberately breaks assertions to confirm the suite actually catches regressions. | `ws-testing` (`run_sabotage.cjs`) |
 | **Mutation threshold** | Optional. When `verification.mutationTest` is set and `skipMutationTesting` is false, a score below `mutationThreshold` (default 80) fails Step 7. | `ws-testing` |
@@ -411,6 +413,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-implement-tasks`](.agents/skills/ws-implement-tasks/SKILL.md) | W | Build features from the DAG, or apply surgical review fixes |
 | [`ws-plan-verify`](.agents/skills/ws-plan-verify/SKILL.md) | W | Score spec compliance 0–10; gate at ≥ `defaults.minVerifyScore` (default 9) |
 | [`ws-code-review`](.agents/skills/ws-code-review/SKILL.md) | W | Two-phase local review with fix → re-review loops |
+| [`ws-fresh-verify`](.agents/skills/ws-fresh-verify/SKILL.md) | W | Fresh-worker AC re-derivation plus per-AC fault injection on a scratch worktree |
 | [`ws-testing`](.agents/skills/ws-testing/SKILL.md) | W | Unit, integration, E2E, coverage, mutation, sabotage |
 | [`ws-ship-pr`](.agents/skills/ws-ship-pr/SKILL.md) | W | Prepare checklist, push, create PR, wait for CI |
 | [`ws-fix-pr`](.agents/skills/ws-fix-pr/SKILL.md) | W | One batch-wide reviewer-plan then execution pass; dirty-tree OK (`preExistingDirty` stays unstashed); surgical `git add --` only; durable gate, amendment-before-deviation, proactive same-class sweep, verification, resolution comments that describe the correction (not hash-only), learning, push |

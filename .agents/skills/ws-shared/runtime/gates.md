@@ -342,6 +342,12 @@ When the loop is active (score below `defaults.minVerifyScore`, or `scoreAndRefi
 
 ---
 
+## Fresh-verify fix loop (standard Step 6b)
+
+After Step 6 review and before Step 7 testing, `ws-fresh-verify` re-derives every AC verdict with fresh eyes and injects one fault per AC on a scratch worktree. Defects listed in `step-05b-{slug}.fresh-verify.md` route to `ws-implement-tasks` fix plus re-verify. Max **3** rounds per stage visit; log `fresh-verify | round={n}/3`. Round 3 with residual defects: **Pause** with the residual list (fail closed). Resume continues the loop. Never advance to Step 7 with unlisted defects. No product tree changes → `--skip no-product-changes` marker (no loop).
+
+---
+
 ## Safety gates to keep
 
 | Gate | Where |
@@ -369,6 +375,7 @@ When the loop is active (score below `defaults.minVerifyScore`, or `scoreAndRefi
 | Score Analysis gate (`scoreAndRefine`) | Proceed with Second Pass Refinement |
 | Check-implementation below minVerifyScore | scoreAndRefine until ≥ `defaults.minVerifyScore` (default 9) (max 3); Pause on residual (no auto-approve) |
 | Review findings (full Step 6 / lite Step 3) | Autofix → re-review (max 3); Pause on residual Critical/Warning |
+| Fresh-verify defects (standard Step 6b) | Autofix → re-verify (max 3); Pause on residual |
 | Testing plan (full Step 7) | Approve without browser (or skip if `skipTesting`); mutation runs only when configured and not `skipMutationTesting` |
 | Post-verify G2-code (standard after Step 5 / lite after Step 2) | Commit when stage set non-empty; skip when empty |
 | Post-review-fix G2-code | Commit when stage set non-empty; skip when empty |

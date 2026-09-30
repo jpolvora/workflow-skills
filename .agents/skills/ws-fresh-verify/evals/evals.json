@@ -1,0 +1,27 @@
+{
+  "skill_name": "ws-fresh-verify",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Run the fresh-verify stage for this workflow.",
+      "expected_output": "Agent builds the fresh dispatch, re-derives every AC verdict from the spec, injects one fault per AC on a scratch worktree, and writes step-05b-{slug}.fresh-verify.md with evidence-or-zero scores.",
+      "assertions": [
+        "Agent loads ws-fresh-verify before acting",
+        "Dispatch carries only spec, plan of record, compact handoff, and product tree",
+        "Every pass verdict cites file:line evidence",
+        "Every injection records failing test name plus exit code",
+        "Scratch worktree is removed and the primary tree is byte-identical"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "An AC has no pass evidence. What does the stage report?",
+      "expected_output": "The AC scores zero and appears as a defect naming the missing evidence; with rounds left the loop continues, at round 3 it pauses with residuals.",
+      "assertions": [
+        "Zero-evidence AC scores 0, never pass",
+        "Defect entry names the missing evidence",
+        "Fix loop bounded at 3 rounds then Pause"
+      ]
+    }
+  ]
+}

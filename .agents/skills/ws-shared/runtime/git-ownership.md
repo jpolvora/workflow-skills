@@ -38,11 +38,15 @@ here with no call site anywhere in the shipped workflow surface:
   restoring, counts as whole-tree even when wrapped in a helper)
 - force-push of a shared branch (`git push --force`, `git push -f`)
 
-Not whole-tree verbs (explicitly allowed in their scoped form): per-path
+Not whole-tree verbs (explicitly allowed in their scoped form): scoped `git worktree add --detach <dir> HEAD` / `git worktree remove --force <dir>` for one fresh-verify scratch dir per injection call (created and removed inside the call; primary tree untouched), per-path
 `git restore --staged -- <path>` / `git restore -- <path>`, scoped
 `git reset --mixed <tag>` to a workflow checkpoint tag, `git checkout -b` /
 `git checkout <branch>`, `uswf/*`-namespaced tag/branch/worktree cleanup in
 `cleanup_workflow_git.cjs`, and `git apply --cached` hunk staging.
+
+## 2b. Scratch worktrees stay scoped and temporary (fresh-verify)
+
+`ws-fresh-verify` fault injection runs on a scratch worktree under `{worktrees-dir}/fresh-verify/` (one directory per injection call). The call creates the worktree, inverts bytes there, runs the configured test alias, restores snapshot bytes, verifies byte-identity, and removes the worktree — on every path including failures. The primary branch content is byte-identical before and after injection; `git worktree list` shows no leftover. Never run injection on the primary worktree.
 
 ## 3. Advance the baseline instead of resetting
 
@@ -114,6 +118,7 @@ class. Every orchestrator follows this table; a skill absent from it fails
 | `ws-fable-judge` | read-only | audit report is an owned output |
 | `ws-fable-method` | read-only | investigation loop; edits are the session's own work |
 | `ws-fix-pr` | git-mutating | batch fix commits + push; path-scoped staging |
+| `ws-fresh-verify` | git-mutating | scratch worktree lifecycle + invert patches; byte-identical restore, always removed |
 | `ws-goal-fix-pr` | git-mutating | convergence loop over fix-pr batches |
 | `ws-goal-loop` | read-only | convergence primitive; no direct writes |
 | `ws-implement-tasks` | read-only | product code written is the session's own `files_touched` |

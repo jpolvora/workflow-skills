@@ -11,7 +11,7 @@ flowchart LR
   F0[F0 Bootstrap<br/>step 0] --> F1[F1 Planning<br/>steps 1–3]
   F1 --> F2[F2 Implement<br/>step 4]
   F2 --> F3[F3 Check<br/>step 5 then G2-code]
-  F3 --> F4[F4 Review<br/>step 6 fix→re-review then G2-code]
+  F3 --> F4[F4 Review<br/>step 6 fix→re-review then G2-code, 6b fresh-verify]
   F4 --> F5[F5 Testing<br/>step 7]
   F5 --> F6[F6 Ship + Fix-PR<br/>steps 8–9]
 ```
@@ -39,8 +39,11 @@ flowchart TD
   C1 --> S6[6 Code-review]
   S6 -->|findings| Fix[Fix substep<br/>ws-implement-tasks]
   Fix --> C2[G2-code review fixes]
-  C2 --> S7[7 Testing]
-  S6 -->|clean| S7
+  C2 --> FV[6b Fresh-verify]
+  S6 -->|clean| FV
+  FV -->|defects| FVFix[Fix + re-verify substep<br/>max 3, then Pause]
+  FVFix --> FV
+  FV -->|clean / skip| S7[7 Testing]
   S7 --> S8[8 Ship<br/>delivery + push/PR]
   S8 --> S9[9 Fix-PR]
 ```
@@ -74,6 +77,7 @@ flowchart TD
 | 4 / 6-fix | `ws-implement-tasks` | `ws-implement-tasks` |
 | 5 | `ws-plan-verify` | `ws-plan-verify` |
 | 6 | `ws-code-review` | `ws-code-review` |
+| 6b | `ws-fresh-verify` | `ws-fresh-verify` |
 | 7 | `ws-testing` | `ws-testing` |
 | 8 | `ws-ship-pr` | `ws-ship-pr` |
 | 9 | `ws-fix-pr` / `ws-goal-fix-pr` | `ws-fix-pr` / `ws-goal-fix-pr` |

@@ -40,7 +40,7 @@ Before the first Step 4 `dispatch-agent`, unless `--skip-gates` / `skipQualityGa
 | 3 | `defaults.enableDag: false` → `finish --status skipped` (`dag-disabled`, no stubs); do **not** `dispatch-agent` `ws-plan-to-tasks`. `true` → `dispatch-agent` `ws-plan-to-tasks`. `completed` requires both files. | exec plan + dag (only when enabled) |
 | 4 | Pre-advance `validate_state.cjs --pre-advance 4` (≠0 → HS-5); then `check_memory_conflict.cjs --json` (0 proceed; 2 inject traps; 1 HS-5). `dispatch-agent` `ws-implement-tasks` mode build with `plan_index.cjs read --ac AC{n}` slices; confirm sibling sweep ran. `finish` requires `files_touched` or `--noop`. Write `verification-manifest.json`. | verification |
 | 5 | `dispatch-agent` `ws-plan-verify` (quick-score; full matrix if `< minVerifyScore` or `--strict`). Below bar → `scoreAndRefine` rounds, re-verify, then Reach-10 offer; then G2-code after Step 5 (`commit_g2_code.cjs --step 5`). | `step-05 report` + `scoreAndRefine` |
-| 6 | Dirty preflight; `dispatch-agent` `ws-code-review` (`git diff {base}...HEAD`). Jury size 2–3 → parallel reviews + `merge_review_jury.cjs`. Critical/Warning → fix → re-review (max 3); G2-code if dirty. | `step-06 review` (+ fix report) |
+| 6 | Dirty preflight; `dispatch-agent` `ws-code-review` (`git diff {base}...HEAD`). Jury size 2–3 → parallel reviews + `merge_review_jury.cjs`. Critical/Warning → fix → re-review (max 3); G2-code if dirty. Then Step 6b fresh-verify before Step 7. | `step-06 review` (+ fix report) + `step-05b fresh-verify` |
 | 7 | Probe `probe_test_surface.cjs`; skip only on `skipTesting` or no surface + green aliases. Else `dispatch-agent` `ws-testing`. Mutation (Regression Sabotage via `run_sabotage.cjs`) only when configured; fail-closed below threshold. | `step-07 testing` |
 | 8 | Close then ship per [`gates.md`](../ws-shared/runtime/gates.md) § Step 8: delivery result → gate → close (`status: completed`) → ship via `ws-ship-pr` (`workflowMode:true`). | `step-08 result` |
 | 9 | `dispatch-agent` `ws-goal-fix-pr` (default) or `ws-fix-pr` after PR exists; converge to `activeThreads == 0`, then merge. | PR threads / merge |
@@ -104,6 +104,10 @@ Contract: [`gates.md`](../ws-shared/runtime/gates.md) § Check-implementation ga
 | Residual | Pause; never Advance with open findings |
 
 Fix logs `review-fix | round={n}/3` (no `completedSteps` entry). Never dispatch review with uncommitted product files. Contract: [`ws-code-review`](../ws-code-review/SKILL.md).
+
+### Step 6b — Fresh-worker verify (substep)
+
+After Step 6 review completes and before Step 7 testing: `dispatch-agent` `ws-fresh-verify` with the spec, the plan of record, and the compact handoff only (dispatch construction per `build_fresh_dispatch.cjs` — prior full step outputs are refused). The verifier re-derives every AC verdict, injects one fault per AC on a scratch worktree, and writes `step-05b-{slug}.fresh-verify.md` (evidence-or-zero). Defects → fix → re-verify (max 3 rounds); round 3 with residual defects Pauses with the residual list. No product tree changes → `--skip no-product-changes` marker, no verdicts. Never dispatch 7 until the 05b report or skip marker exists. Contract: [`ws-fresh-verify`](../ws-fresh-verify/SKILL.md) · gate: [`gates.md`](../ws-shared/runtime/gates.md) § Fresh-verify fix loop.
 
 ### Step 8 — Close implementation, then ship
 
