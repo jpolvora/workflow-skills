@@ -207,7 +207,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Dispatch prompt audit trail (`spec: completed/0154-dispatch-prompt-audit-trail.spec.md`) — `c7ba4cd5` delivery commit
 - [x] Fresh-worker verifier step (`spec: completed/0155-fresh-worker-verifier-step.spec.md`) — `045a1991` delivery commit
 - [x] Per-task Test Adequacy review in implement (`spec: completed/0156-per-task-test-adequacy-review.spec.md`) — `6d86dd5a` delivery commit
-- [ ] Spec closure strengthening (`spec: pending/0157-spec-closure-strengthening.spec.md`)
+- [x] Spec closure strengthening (`spec: completed/0157-spec-closure-strengthening.spec.md`) — `17571a3` delivery commit
 - [ ] Publish fixed-model comparison benchmark (`spec: pending/0158-benchmark-publish-fixed-models.spec.md`)
 - [ ] Per-step context budgets in dispatch contracts (`spec: pending/0159-per-step-context-budgets.spec.md`)
 - [ ] Explicit knowledge chain in research guidance (`spec: pending/0160-explicit-knowledge-chain.spec.md`)
@@ -542,7 +542,7 @@ All Next-specs closed.
 
 | 161 | `per-task-test-adequacy-review` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Per-task Test Adequacy review in implement |
 
-| 162 | `spec-closure-strengthening` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Spec closure strengthening |
+| 162 | `spec-closure-strengthening` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Spec closure strengthening |
 
 | 163 | `benchmark-publish-fixed-models` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Publish fixed-model comparison benchmark |
 
@@ -562,6 +562,7 @@ All Next-specs closed.
 | 2026-09-30 | `dispatch-prompt-audit-trail` | Dispatch prompt audit trail | `c7ba4cd5` delivery commit |
 | 2026-09-30 | `fresh-worker-verifier-step` | Fresh-worker verifier step | `045a1991` delivery commit |
 | 2026-09-30 | `per-task-test-adequacy-review` | Per-task Test Adequacy review in implement | `6d86dd5a` delivery commit |
+| 2026-09-30 | `spec-closure-strengthening` | Spec closure strengthening | `17571a3` delivery commit |
 | 2026-09-29 | `us-459` | ws-kanvas board: add phase color coding and replace hardcoded grey/transparent styling | `d6b451b7` delivery commit |
 | 2026-09-29 | `us-461` | kanvas modal option to show full spec content in .md rendered | `55cf318f` delivery commit |
 | 2026-09-28 | `pre-ship-doc-sync` | Pre-ship documentation-sync gate (configurable) | [PR #453](https://github.com/jpolvora/workflow-skills/pull/453), `9d840fe4` |
