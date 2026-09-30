@@ -39,7 +39,7 @@ Living synthesis of specs 0001–0150. The delta since adds empty-alias verify s
 
 ## Domain: quality
 
-- [Verification & Review](quality/verification-and-review.md): Derived verify scores, adversarial review, testing/mutation gates, and fix-PR convergence.
+- [Verification & Review](quality/verification-and-review.md): Derived verify scores, adversarial review, testing/mutation gates, per-task test adequacy, and fix-PR convergence.
 
 ## Domain: memory
 
