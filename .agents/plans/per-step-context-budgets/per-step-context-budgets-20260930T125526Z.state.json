@@ -1,0 +1,1220 @@
+{
+  "acImplemented": 8,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/config.schema.json:L193-L197",
+          ".agents/skills/ws-shared/templates/config.json.example:L158-L159"
+        ],
+        "files": [
+          {
+            "lineEnd": 197,
+            "lineStart": 193,
+            "path": ".agents/skills/ws-shared/runtime/config.schema.json",
+            "sha256": "466771c19e2deb185c10c3a173703845e91173cc41aa00d9f6b2c5883eac5083"
+          },
+          {
+            "lineEnd": 159,
+            "lineStart": 158,
+            "path": ".agents/skills/ws-shared/templates/config.json.example",
+            "sha256": "a88268dd8e9318bf5547da19d7c43400f79a6f472865e6b7eb09d5b97fbae89a"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "g2-commit-a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+          "verify-ac1"
+        ],
+        "planSections": [
+          "section-002",
+          "section-006",
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1: schema defaults.stepContextBudgets is object",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:19:34.453Z"
+          }
+        ],
+        "text": "Configuration supports `defaults.stepContextBudgets` mapping step numbers to byte budgets, following the existing per-step override convention.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs:L250-L253"
+        ],
+        "files": [
+          {
+            "lineEnd": 253,
+            "lineStart": 250,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs",
+            "sha256": "b58a6da5d380e231c919fc20fca7238f7fb7d39fbf0fe2cac347824a14ba962b"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "g2-commit-a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+          "testing-sabotage",
+          "verify-ac2"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-006",
+          "section-007"
+        ],
+        "sabotage": {
+          "exitCode": 0,
+          "required": true,
+          "status": "passed"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2: step override wins",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:19:34.512Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2: unmatched step falls back to global",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:19:34.513Z"
+          }
+        ],
+        "text": "The dispatch builder resolves the effective budget per dispatch as the step override when present, else the global `defaults.contextBudget`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs:L245-L249"
+        ],
+        "files": [
+          {
+            "lineEnd": 249,
+            "lineStart": 245,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs",
+            "sha256": "b58a6da5d380e231c919fc20fca7238f7fb7d39fbf0fe2cac347824a14ba962b"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "g2-commit-a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+          "verify-ac3"
+        ],
+        "planSections": [
+          "section-002",
+          "section-006",
+          "section-007"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC3: invalid override rejected",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:19:41.594Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC3: rejection names the offending key",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:19:41.595Z"
+          }
+        ],
+        "text": "Every configured budget value enforces the 18000-byte floor and rejects non-integer or below-floor values with the offending key named.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs:L268-L269",
+          ".agents/skills/ws-spec-to-pr/scripts/write_dispatch_prompt_audit.cjs:L173-L174"
+        ],
+        "files": [
+          {
+            "lineEnd": 269,
+            "lineStart": 268,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs",
+            "sha256": "b58a6da5d380e231c919fc20fca7238f7fb7d39fbf0fe2cac347824a14ba962b"
+          },
+          {
+            "lineEnd": 174,
+            "lineStart": 173,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/write_dispatch_prompt_audit.cjs",
+            "sha256": "61b7d2c3400279042c1d95d8c09c352953c3fbbb38485281ea746e881d69b641"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "g2-commit-a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+          "verify-ac4"
+        ],
+        "planSections": [
+          "section-002",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC4: manifest source is step on override",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:19:41.682Z"
+          }
+        ],
+        "text": "The dispatch manifest records the effective budget bytes plus whether the source was the step override or the global default.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs:L254-L254"
+        ],
+        "files": [
+          {
+            "lineEnd": 254,
+            "lineStart": 254,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs",
+            "sha256": "b58a6da5d380e231c919fc20fca7238f7fb7d39fbf0fe2cac347824a14ba962b"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "g2-commit-a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+          "verify-ac5"
+        ],
+        "planSections": [
+          "section-002",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC5: over-budget mandatory content fails",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:19:47.237Z"
+          }
+        ],
+        "text": "Mandatory dispatch content exceeding the effective step budget fails closed before any prompt is emitted.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-check-harness/scripts/measure_harness.cjs:L150-L157",
+          ".agents/skills/ws-check-harness/scripts/measure_harness.cjs:L180-L180"
+        ],
+        "files": [
+          {
+            "lineEnd": 157,
+            "lineStart": 150,
+            "path": ".agents/skills/ws-check-harness/scripts/measure_harness.cjs",
+            "sha256": "e1d64eb4d297c36d01dc6f4ea65c475a074c3c68ab632af3fbf4a315123d3216"
+          },
+          {
+            "lineEnd": 180,
+            "lineStart": 180,
+            "path": ".agents/skills/ws-check-harness/scripts/measure_harness.cjs",
+            "sha256": "e1d64eb4d297c36d01dc6f4ea65c475a074c3c68ab632af3fbf4a315123d3216"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "g2-commit-a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+          "verify-ac6"
+        ],
+        "planSections": [
+          "section-002",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC6: report carries a stepBudgets block",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:19:47.312Z"
+          }
+        ],
+        "text": "The harness measurement report accounts per-step budgets so each step is audited against its own effective cap.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/config.schema.json:L193-L197",
+          ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1:L1327-L1327"
+        ],
+        "files": [
+          {
+            "lineEnd": 197,
+            "lineStart": 193,
+            "path": ".agents/skills/ws-shared/runtime/config.schema.json",
+            "sha256": "466771c19e2deb185c10c3a173703845e91173cc41aa00d9f6b2c5883eac5083"
+          },
+          {
+            "lineEnd": 1327,
+            "lineStart": 1327,
+            "path": ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
+            "sha256": "e8679a807a8bbd322b47e028323bf6c889a46678f14d5b6c01d19c3518d8ff26"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [
+          "g2-commit-a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+          "verify-ac7"
+        ],
+        "planSections": [
+          "section-002",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC7: stepContextBudgets row uses -Type json",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:19:54.203Z"
+          }
+        ],
+        "text": "The config schema, config example, and desktop config GUI editor expose the per-step map with matching floor validation.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs:L250-L253"
+        ],
+        "files": [
+          {
+            "lineEnd": 253,
+            "lineStart": 250,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs",
+            "sha256": "b58a6da5d380e231c919fc20fca7238f7fb7d39fbf0fe2cac347824a14ba962b"
+          }
+        ],
+        "findings": [],
+        "id": "AC8",
+        "linkEventIds": [
+          "g2-commit-a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+          "verify-ac8"
+        ],
+        "planSections": [
+          "section-002",
+          "section-006",
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC8: empty map is byte-identical to absent map",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:19:54.254Z"
+          }
+        ],
+        "text": "Runs without any step override behave byte-identically to the current global-budget behavior.",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      }
+    ],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "impl-ns"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC3: invalid override rejected",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:17:12.649Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC5: over-budget mandatory content fails",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:17:12.649Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC8: empty map is byte-identical to absent map",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:17:12.657Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS: writer rejects a manifest without budgetSource",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:17:12.657Z"
+          }
+        ],
+        "text": "A step override below 18000 or non-integer fails the dispatch with the offending key named."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "impl-ns"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC3: invalid override rejected",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:17:12.657Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC5: over-budget mandatory content fails",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:17:12.657Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC8: empty map is byte-identical to absent map",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:17:12.657Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS: writer rejects a manifest without budgetSource",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:17:12.657Z"
+          }
+        ],
+        "text": "Mandatory content exceeding the effective step budget fails closed before any prompt bytes are emitted."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "impl-ns"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC3: invalid override rejected",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:17:12.657Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC5: over-budget mandatory content fails",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:17:12.657Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC8: empty map is byte-identical to absent map",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:17:12.658Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS: writer rejects a manifest without budgetSource",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:17:12.658Z"
+          }
+        ],
+        "text": "A run with no step overrides produces byte-identical dispatch output to the pre-change global behavior."
+      },
+      {
+        "id": "NS4",
+        "linkEventIds": [
+          "impl-ns"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC3: invalid override rejected",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:17:12.658Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC5: over-budget mandatory content fails",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:17:12.658Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC8: empty map is byte-identical to absent map",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:17:12.658Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS: writer rejects a manifest without budgetSource",
+            "phase": "observed",
+            "sourceFile": "test/test-step-context-budgets.js",
+            "timestamp": "2026-09-30T13:17:12.658Z"
+          }
+        ],
+        "text": "A manifest missing the budget source field fails manifest validation."
+      }
+    ],
+    "planIndexPath": ".agents/plans/per-step-context-budgets/.runtime/plan.index.json",
+    "revision": 17,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "step5",
+      "computedAt": "2026-09-30T13:35:56.690Z",
+      "deficiencies": [],
+      "earnedUnits": 80,
+      "errors": [],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "ledgerHash": "af0c063a626d33ff65c6a2ccac139873fac132e18223ab856eb19011a62d896b",
+      "missingEvidence": false,
+      "score": 10,
+      "totalUnits": 80,
+      "writer": "ac_ledger.cjs score"
+    },
+    "slug": "per-step-context-budgets",
+    "specPath": ".agents/plans/per-step-context-budgets/step-00-per-step-context-budgets.spec.md",
+    "testingSkip": null,
+    "workflowId": "per-step-context-budgets-20260930T125526Z"
+  },
+  "acTotal": 8,
+  "agentTranscripts": {
+    "reason": "no-matching-session",
+    "recordedAt": "2026-09-30T12:56:00Z",
+    "status": "transcript-unavailable"
+  },
+  "baseBranch": "main",
+  "baselineCommit": "bb7711941db70edd9023e9a95ffcc0e8b228a161",
+  "baselineSourceRef": "develop",
+  "batchItem": "6 of 7",
+  "batchRun": "ms-20260930T043638Z",
+  "branch": "develop",
+  "branchStrategy": "stay",
+  "commits": [
+    {
+      "sha": "a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+      "step": 5
+    }
+  ],
+  "completedSteps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "currentModel": "current",
+  "currentStep": 9,
+  "endedAt": "2026-09-30T13:47:38Z",
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/per-step-context-budgets/step-00-per-step-context-budgets.spec.md",
+        ".agents/plans/per-step-context-budgets/ac-ledger.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "per-step-context-budgets",
+      "status": "completed",
+      "step": 0,
+      "summary": "Finished step 0",
+      "workflowId": "per-step-context-budgets-20260930T125526Z",
+      "workflowType": "standard"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/per-step-context-budgets/step-01-per-step-context-budgets.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "per-step-context-budgets",
+      "status": "completed",
+      "step": 1,
+      "summary": "Step 1 plan written covering AC1-AC8; plan index built (9 sections, 8 ACs); memory conflict check exit 0; translate-companion skipped (autoMode, non-blocking).",
+      "workflowId": "per-step-context-budgets-20260930T125526Z",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/per-step-context-budgets/step-02-per-step-context-budgets.plan-interview.md",
+        ".agents/plans/per-step-context-budgets/step-02-per-step-context-budgets.plan.refined.md",
+        ".agents/plans/per-step-context-budgets/step-01-per-step-context-budgets.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "per-step-context-budgets",
+      "status": "completed",
+      "step": 2,
+      "summary": "Step 2 interview complete: 7 gaps registered (1 blocking, 6 non-blocking), all closed with project evidence or auto defaults; blocking_open 0; shared_understanding confirmed; refined plan written; index rebuilt on refined plan; no AC overrides.",
+      "workflowId": "per-step-context-budgets-20260930T125526Z",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/per-step-context-budgets/step-03-per-step-context-budgets.plan.exec.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "per-step-context-budgets",
+      "status": "completed",
+      "step": 3,
+      "summary": "Step 3 DAG complete: execMode parallel (8 steps/10 files/2 layers exceed thresholds); 6 tasks in 4 levels with per-file byte-budget HARD exit criteria; no file collision within levels. Artifacts are gitignored by design; recorded via fallback.",
+      "workflowId": "per-step-context-budgets-20260930T125526Z",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [
+        "test/test-step-context-budgets.js",
+        ".agents/skills/ws-shared/runtime/config.schema.json",
+        ".agents/skills/ws-shared/templates/config.json.example",
+        ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
+        ".agents/skills/ws-spec-to-pr/PROTOCOLS.md",
+        ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs",
+        ".agents/skills/ws-check-harness/scripts/measure_harness.cjs",
+        ".agents/skills/ws-spec-to-pr/scripts/write_dispatch_prompt_audit.cjs",
+        "bin/skill-integrity.json",
+        "test/test-dispatch-prompt-audit.js",
+        "test/test-powershell-config-editor.js",
+        "test/test-suites.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "per-step-context-budgets",
+      "status": "completed",
+      "step": 4,
+      "summary": "TDD red baseline observed (AC1 schema), then implemented T1/T6/T2/T4/T3/T5 in DAG level order. All per-file byte budgets met (T1 +862/1200, T6 +95 normalized/96, T2 ~+1000/2500, T4 ~+1309/3500, T3 +239/1200, test 10174/12000). Sibling sweep exemptions: PHASES.md:491 (stays accurate), INTERVIEW.md (scoped out), auto_configure (stepModels precedent: no seed), workflow_state.cjs:2143 (generic consumer), RESEARCH.md:231 (generic note), FEATURES.md (ship-time sync). Stack scan 0 issues; npm run test ",
+      "workflowId": "per-step-context-budgets-20260930T125526Z",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/per-step-context-budgets/step-05-per-step-context-budgets.plan.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "per-step-context-budgets",
+      "status": "completed",
+      "step": 5,
+      "summary": "Step 5 full US verification: score 10/10 (80/80 units, knownDefect false, zero deficiencies) at bar 9. G2-code committed a467d395 (12 files, all ACs linked). Stack scan 0 issues; suite 152/152; integrity OK; sabotage skipped (feature work); fable verdict VERIFIED.",
+      "workflowId": "per-step-context-budgets-20260930T125526Z",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/per-step-context-budgets/step-06-per-step-context-budgets.review.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "per-step-context-budgets",
+      "status": "completed",
+      "step": 6,
+      "summary": "Step 6 review round 1: clean, no Critical/Warning/Suggestion (11 hypotheses triaged and dropped with proof). Stack scan 0 issues; memory sweep clean; no fix round; no G2 (tree unchanged since a467d395).",
+      "workflowId": "per-step-context-budgets-20260930T125526Z",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/per-step-context-budgets/step-07-per-step-context-budgets.testing.plan.md",
+        ".agents/plans/per-step-context-budgets/step-07-per-step-context-budgets.testing.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "per-step-context-budgets",
+      "status": "completed",
+      "step": 7,
+      "summary": "Step 7 testing: PASS. Full suite 152/152 exit 0; sabotage passed (inversion caught, byte-identical restore); mutation skipped per policy (skipMutationTesting true + empty runner); no DB/API/UI surface.",
+      "workflowId": "per-step-context-budgets-20260930T125526Z",
+      "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/per-step-context-budgets/step-08-per-step-context-budgets.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "per-step-context-budgets",
+      "status": "completed",
+      "step": 8,
+      "summary": "Step 8 close: delivery result written with Timing (2248s, +206 LOC); release 0.5.23 committed (27debc32); delivery artifacts committed (c62e5d09); memory trap recorded + changelog appended (left dirty: files carry foreign baseline entries). Ship phase next.",
+      "workflowId": "per-step-context-budgets-20260930T125526Z",
+      "workflowType": "standard"
+    },
+    "9": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "per-step-context-budgets",
+      "status": "completed",
+      "step": 9,
+      "summary": "Step 9 converged: 1 round (CI test failures, 0 threads). Diff-regression fixed test-only (993db5d9), all 3 checks green, threads 0. Merge handoff to master (no merge by worker). Learning: Fixture-repoRoot spawns must not rely on ambient global skills.",
+      "workflowId": "per-step-context-budgets-20260930T125526Z",
+      "workflowType": "standard"
+    }
+  },
+  "nextAction": "Run step 9",
+  "prNumber": "471",
+  "prUrl": "https://github.com/jpolvora/workflow-skills/pull/471",
+  "preExistingDirtyCount": 101,
+  "revision": 24,
+  "shipStatus": "pr-open",
+  "skippedSteps": [],
+  "slug": "per-step-context-budgets",
+  "startedAt": "2026-09-30T12:55:26Z",
+  "statePath": ".agents/plans/per-step-context-budgets/per-step-context-budgets-20260930T125526Z.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-30T12:56:05Z",
+      "model": "current",
+      "step": 0
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-30T12:56:37Z",
+      "model": "current",
+      "step": 1
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-30T13:00:19Z",
+      "model": "current",
+      "step": 2
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-30T13:02:29Z",
+      "model": "current",
+      "step": 3
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-30T13:04:38Z",
+      "model": "current",
+      "step": 4
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-30T13:18:22Z",
+      "model": "current",
+      "step": 5
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-30T13:26:29Z",
+      "model": "current",
+      "step": 6
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-30T13:28:44Z",
+      "model": "current",
+      "step": 7
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-30T13:36:04Z",
+      "model": "current",
+      "step": 8
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-09-30T13:57:23Z",
+      "model": "current",
+      "step": 9,
+      "substep": "fixPrExec"
+    }
+  ],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "completed",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed",
+    "9": "completed"
+  },
+  "telemetry": {
+    "steps": [
+      {
+        "N": 0,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-30T12:56:05Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/per-step-context-budgets/step-00-per-step-context-budgets.spec.md",
+            ".agents/plans/per-step-context-budgets/ac-ledger.json"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-30T12:56:05Z",
+        "label": "Spec",
+        "model": "current",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 1,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-30T12:56:37Z",
+        "elapsedSec": 191,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/per-step-context-budgets/step-01-per-step-context-budgets.plan.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-30T12:59:48Z",
+        "label": "Planning",
+        "model": "current",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-30T13:00:19Z",
+        "elapsedSec": 106,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/per-step-context-budgets/step-02-per-step-context-budgets.plan-interview.md",
+            ".agents/plans/per-step-context-budgets/step-02-per-step-context-budgets.plan.refined.md"
+          ],
+          "deleted": [],
+          "modified": [
+            ".agents/plans/per-step-context-budgets/step-01-per-step-context-budgets.plan.md"
+          ]
+        },
+        "finishedAt": "2026-09-30T13:02:05Z",
+        "label": "Interview",
+        "model": "current",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-30T13:02:29Z",
+        "elapsedSec": 114,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/per-step-context-budgets/step-03-per-step-context-budgets.plan.exec.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-30T13:04:23Z",
+        "label": "Plan to tasks",
+        "model": "current",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-30T13:04:38Z",
+        "elapsedSec": 814,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            "test/test-step-context-budgets.js"
+          ],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-shared/runtime/config.schema.json",
+            ".agents/skills/ws-shared/templates/config.json.example",
+            ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
+            ".agents/skills/ws-spec-to-pr/PROTOCOLS.md",
+            ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs",
+            ".agents/skills/ws-check-harness/scripts/measure_harness.cjs",
+            ".agents/skills/ws-spec-to-pr/scripts/write_dispatch_prompt_audit.cjs",
+            "bin/skill-integrity.json",
+            "test/test-dispatch-prompt-audit.js",
+            "test/test-powershell-config-editor.js",
+            "test/test-suites.json"
+          ]
+        },
+        "finishedAt": "2026-09-30T13:18:12Z",
+        "label": "Implement",
+        "model": "current",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-30T13:18:22Z",
+        "elapsedSec": 474,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/per-step-context-budgets/step-05-per-step-context-budgets.plan.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-30T13:26:16Z",
+        "label": "Verify",
+        "model": "current",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 6,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-30T13:26:29Z",
+        "elapsedSec": 123,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/per-step-context-budgets/step-06-per-step-context-budgets.review.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-30T13:28:32Z",
+        "label": "Code review",
+        "model": "current",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 7,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-30T13:28:44Z",
+        "elapsedSec": 426,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/per-step-context-budgets/step-07-per-step-context-budgets.testing.plan.md",
+            ".agents/plans/per-step-context-budgets/step-07-per-step-context-budgets.testing.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-30T13:35:50Z",
+        "label": "Testing",
+        "model": "current",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-30T13:36:04Z",
+        "elapsedSec": 694,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/per-step-context-budgets/step-08-per-step-context-budgets.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-30T13:47:38Z",
+        "label": "Ship",
+        "model": "current",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 9,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-30T13:57:23Z",
+        "elapsedSec": 201,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-30T14:00:44Z",
+        "label": "Fix PR",
+        "model": "current",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 3143,
+    "totalTokens": 0
+  },
+  "verificationScore": 10,
+  "workflowId": "per-step-context-budgets-20260930T125526Z",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/per-step-context-budgets/ac-ledger.json",
+      ".agents/plans/per-step-context-budgets/step-00-per-step-context-budgets.spec.md",
+      ".agents/plans/per-step-context-budgets/step-01-per-step-context-budgets.plan.md",
+      ".agents/plans/per-step-context-budgets/step-02-per-step-context-budgets.plan-interview.md",
+      ".agents/plans/per-step-context-budgets/step-02-per-step-context-budgets.plan.refined.md",
+      ".agents/plans/per-step-context-budgets/step-03-per-step-context-budgets.plan.exec.md",
+      ".agents/plans/per-step-context-budgets/step-05-per-step-context-budgets.plan.report.md",
+      ".agents/plans/per-step-context-budgets/step-06-per-step-context-budgets.review.md",
+      ".agents/plans/per-step-context-budgets/step-07-per-step-context-budgets.testing.plan.md",
+      ".agents/plans/per-step-context-budgets/step-07-per-step-context-budgets.testing.report.md",
+      ".agents/plans/per-step-context-budgets/step-08-per-step-context-budgets.result.md",
+      "test/test-step-context-budgets.js"
+    ],
+    "deleted": [],
+    "modified": [
+      ".agents/plans/per-step-context-budgets/step-01-per-step-context-budgets.plan.md",
+      ".agents/skills/ws-check-harness/scripts/measure_harness.cjs",
+      ".agents/skills/ws-shared/runtime/config.schema.json",
+      ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
+      ".agents/skills/ws-shared/templates/config.json.example",
+      ".agents/skills/ws-spec-to-pr/PROTOCOLS.md",
+      ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs",
+      ".agents/skills/ws-spec-to-pr/scripts/write_dispatch_prompt_audit.cjs",
+      "bin/skill-integrity.json",
+      "test/test-dispatch-prompt-audit.js",
+      "test/test-powershell-config-editor.js",
+      "test/test-suites.json"
+    ]
+  },
+  "workflowType": "standard"
+}

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-09-30T12:11:36.653Z",
+  "filesTouched": {
+    "created": [
+      ".agents/plans/benchmark-publish-fixed-models/ac-ledger.json",
+      ".agents/plans/benchmark-publish-fixed-models/step-00-benchmark-publish-fixed-models.spec.md",
+      ".agents/plans/benchmark-publish-fixed-models/step-01-benchmark-publish-fixed-models.plan.md",
+      ".agents/plans/benchmark-publish-fixed-models/step-03-benchmark-publish-fixed-models.plan.exec.md"
+    ],
+    "modified": [],
+    "deleted": []
+  },
+  "filesHash": "6648c1cb521eebc6cfbf31934554678604b1ab256c6bc84edc53fdf65202b17c",
+  "aliasResults": [],
+  "sabotage": "not-required",
+  "reuse": "Steps 5/6/7 re-run alias/stack/sabotage commands only if files_touched changed; AC scoring, review, and tests still run. Compare current workflowManifest sorted hash to filesHash; match means reuse aliasResults/sabotage, mismatch means re-run."
+}

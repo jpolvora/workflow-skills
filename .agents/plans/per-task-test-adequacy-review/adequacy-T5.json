@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "taskId": "T5",
+  "acs": [
+    "AC1",
+    "AC2",
+    "AC3",
+    "AC4",
+    "AC5",
+    "AC6",
+    "AC7"
+  ],
+  "status": "adequate",
+  "bindings": [
+    {
+      "ac": "AC1",
+      "test": "AC1: full binding map validates adequate",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 72,
+      "lineEnd": 72
+    },
+    {
+      "ac": "AC2",
+      "test": "AC2: documented wrong-code run is acceptable litmus",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 83,
+      "lineEnd": 83
+    },
+    {
+      "ac": "AC3",
+      "test": "AC3: removed orphan validates adequate",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 100,
+      "lineEnd": 100
+    },
+    {
+      "ac": "AC4",
+      "test": "AC4: recipe requires TDD re-entry",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 209,
+      "lineEnd": 209
+    },
+    {
+      "ac": "AC5",
+      "test": "AC5: link attaches row.adequacy",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 161,
+      "lineEnd": 161
+    },
+    {
+      "ac": "AC6",
+      "test": "AC6: pass-on-unmodified-code exits 1 with zero litmus entries",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 114,
+      "lineEnd": 114
+    },
+    {
+      "ac": "AC7",
+      "test": "AC7: finding-derived task record validates",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 140,
+      "lineEnd": 140
+    }
+  ],
+  "litmus": [
+    {
+      "test": "AC1: full binding map validates adequate",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC1: full binding map validates adequate\" unproven); post-edit run exit 0"
+    },
+    {
+      "test": "AC2: documented wrong-code run is acceptable litmus",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC2: documented wrong-code run is acceptable litmus\" unproven); post-edit run exit 0"
+    },
+    {
+      "test": "AC3: removed orphan validates adequate",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC3: removed orphan validates adequate\" unproven); post-edit run exit 0"
+    },
+    {
+      "test": "AC4: recipe requires TDD re-entry",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC4: recipe requires TDD re-entry\" unproven); post-edit run exit 0"
+    },
+    {
+      "test": "AC5: link attaches row.adequacy",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC5: link attaches row.adequacy\" unproven); post-edit run exit 0"
+    },
+    {
+      "test": "AC6: pass-on-unmodified-code exits 1 with zero litmus entries",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC6: pass-on-unmodified-code exits 1 with zero litmus entries\" unproven); post-edit run exit 0"
+    },
+    {
+      "test": "AC7: finding-derived task record validates",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC7: finding-derived task record validates\" unproven); post-edit run exit 0"
+    }
+  ],
+  "addedTests": [
+    "AC1: full binding map validates adequate",
+    "AC2: documented wrong-code run is acceptable litmus",
+    "AC3: removed orphan validates adequate",
+    "AC4: recipe requires TDD re-entry",
+    "AC5: link attaches row.adequacy",
+    "AC6: pass-on-unmodified-code exits 1 with zero litmus entries",
+    "AC7: finding-derived task record validates"
+  ],
+  "orphansRemoved": [],
+  "falsePositives": [],
+  "checkedAt": "2026-09-30T08:40:00.000Z"
+}

@@ -1,3 +1,12 @@
+---
+step: 8
+slug: explicit-knowledge-chain
+workflowId: explicit-knowledge-chain-20260930T140853Z
+status: completed
+startedAt: "2026-09-30T14:42:45.218Z"
+endedAt: "2026-09-30T14:42:45.218Z"
+acRefs: []
+---
 # explicit-knowledge-chain — Delivery Result
 
 ## Expected

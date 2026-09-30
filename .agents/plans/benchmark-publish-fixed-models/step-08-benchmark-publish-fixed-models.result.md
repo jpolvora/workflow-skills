@@ -1,3 +1,12 @@
+---
+step: 8
+slug: benchmark-publish-fixed-models
+workflowId: benchmark-publish-fixed-models-20260930T114235Z
+status: completed
+startedAt: "2026-09-30T11:42:35Z"
+endedAt: "2026-09-30T12:31:01.873Z"
+acRefs: []
+---
 # benchmark-publish-fixed-models — Delivery Result
 
 ## Expected

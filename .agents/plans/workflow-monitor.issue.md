@@ -2,26 +2,31 @@
 
 Detected by `ws-monitor` live watch (read-only observer). Filed to fix the workflow/harness contract that produced the failure class below.
 
-- Generated: 2026-09-29T20:33:08.136Z
+- Generated: 2026-09-30T15:01:59.631Z
 - Project: workflow-skills
-- Session id: ses_f118937d5ffe11Jx3M4vo9DWs0
-- Agent: opencode
+- Agent: muse code
 - SCM provider: github
-- Command: node {skillsRoot}/ws-monitor/scripts/monitor_snapshot.cjs --watch --interval 60 --until-terminal --follow-transcript --session-id ses_f118937d5ffe11Jx3M4vo9DWs0 --agent opencode --open-issue
+- Command: node {skillsRoot}/ws-monitor/scripts/monitor_snapshot.cjs --watch --interval 60 --until-terminal --follow-transcript --open-issue
 
 ## Summary
 
-1 actionable finding(s) across 1 workflow(s).
+4 actionable finding(s) across 24 workflow(s).
 
-Codes: model-fallback
+Codes: context-mismatch
 
 ## Failure classes
 
-### `model-fallback` (warning)
+### `context-mismatch` (critical)
 
-- Transcript contains a rejected or unavailable model identifier
-  - Evidence: session.jsonl
-- Suspected contract to update: modelsPreset / stepModels resolution (model resolution)
+- state branch feature/us-436 differs from active branch develop
+  - Evidence: .
+- state branch feature/us-439 differs from active branch develop
+  - Evidence: .
+- state branch feature/us-440 differs from active branch develop
+  - Evidence: .
+- state branch feature/ws-spec-to-pr-distributed differs from active branch develop
+  - Evidence: .
+- Suspected contract to update: config-resolution.md / workflow bootstrap (config/branch resolution)
 
 ## Expected contract
 

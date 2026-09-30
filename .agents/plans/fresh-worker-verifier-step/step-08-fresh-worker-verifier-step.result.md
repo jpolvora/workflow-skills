@@ -7,7 +7,6 @@ startedAt: "2026-09-30T07:30:00Z"
 endedAt: "2026-09-30T07:30:00Z"
 acRefs: []
 ---
-
 # fresh-worker-verifier-step — Delivery Result
 
 ## Expected

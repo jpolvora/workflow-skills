@@ -1,0 +1,636 @@
+{
+  "schemaVersion": 1,
+  "revision": 17,
+  "workflowId": "per-step-context-budgets-20260930T125526Z",
+  "slug": "per-step-context-budgets",
+  "specPath": ".agents/plans/per-step-context-budgets/step-00-per-step-context-budgets.spec.md",
+  "planIndexPath": ".agents/plans/per-step-context-budgets/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "Configuration supports `defaults.stepContextBudgets` mapping step numbers to byte budgets, following the existing per-step override convention.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/config.schema.json:L193-L197",
+        ".agents/skills/ws-shared/templates/config.json.example:L158-L159"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006",
+        "section-008"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/config.schema.json",
+          "lineStart": 193,
+          "lineEnd": 197,
+          "sha256": "466771c19e2deb185c10c3a173703845e91173cc41aa00d9f6b2c5883eac5083"
+        },
+        {
+          "path": ".agents/skills/ws-shared/templates/config.json.example",
+          "lineStart": 158,
+          "lineEnd": 159,
+          "sha256": "a88268dd8e9318bf5547da19d7c43400f79a6f472865e6b7eb09d5b97fbae89a"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC1: schema defaults.stepContextBudgets is object",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:19:34.453Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+        "verify-ac1"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "The dispatch builder resolves the effective budget per dispatch as the step override when present, else the global `defaults.contextBudget`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs:L250-L253"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-006",
+        "section-007"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs",
+          "lineStart": 250,
+          "lineEnd": 253,
+          "sha256": "b58a6da5d380e231c919fc20fca7238f7fb7d39fbf0fe2cac347824a14ba962b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC2: step override wins",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:19:34.512Z"
+        },
+        {
+          "name": "AC2: unmatched step falls back to global",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:19:34.513Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": true,
+        "status": "passed",
+        "exitCode": 0
+      },
+      "linkEventIds": [
+        "g2-commit-a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+        "testing-sabotage",
+        "verify-ac2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "Every configured budget value enforces the 18000-byte floor and rejects non-integer or below-floor values with the offending key named.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs:L245-L249"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006",
+        "section-007"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs",
+          "lineStart": 245,
+          "lineEnd": 249,
+          "sha256": "b58a6da5d380e231c919fc20fca7238f7fb7d39fbf0fe2cac347824a14ba962b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC3: invalid override rejected",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:19:41.594Z"
+        },
+        {
+          "name": "AC3: rejection names the offending key",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:19:41.595Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+        "verify-ac3"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "The dispatch manifest records the effective budget bytes plus whether the source was the step override or the global default.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs:L268-L269",
+        ".agents/skills/ws-spec-to-pr/scripts/write_dispatch_prompt_audit.cjs:L173-L174"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs",
+          "lineStart": 268,
+          "lineEnd": 269,
+          "sha256": "b58a6da5d380e231c919fc20fca7238f7fb7d39fbf0fe2cac347824a14ba962b"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/write_dispatch_prompt_audit.cjs",
+          "lineStart": 173,
+          "lineEnd": 174,
+          "sha256": "61b7d2c3400279042c1d95d8c09c352953c3fbbb38485281ea746e881d69b641"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC4: manifest source is step on override",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:19:41.682Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+        "verify-ac4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "Mandatory dispatch content exceeding the effective step budget fails closed before any prompt is emitted.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs:L254-L254"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs",
+          "lineStart": 254,
+          "lineEnd": 254,
+          "sha256": "b58a6da5d380e231c919fc20fca7238f7fb7d39fbf0fe2cac347824a14ba962b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC5: over-budget mandatory content fails",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:19:47.237Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+        "verify-ac5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "The harness measurement report accounts per-step budgets so each step is audited against its own effective cap.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-check-harness/scripts/measure_harness.cjs:L150-L157",
+        ".agents/skills/ws-check-harness/scripts/measure_harness.cjs:L180-L180"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-check-harness/scripts/measure_harness.cjs",
+          "lineStart": 150,
+          "lineEnd": 157,
+          "sha256": "e1d64eb4d297c36d01dc6f4ea65c475a074c3c68ab632af3fbf4a315123d3216"
+        },
+        {
+          "path": ".agents/skills/ws-check-harness/scripts/measure_harness.cjs",
+          "lineStart": 180,
+          "lineEnd": 180,
+          "sha256": "e1d64eb4d297c36d01dc6f4ea65c475a074c3c68ab632af3fbf4a315123d3216"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC6: report carries a stepBudgets block",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:19:47.312Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+        "verify-ac6"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "The config schema, config example, and desktop config GUI editor expose the per-step map with matching floor validation.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-shared/runtime/config.schema.json:L193-L197",
+        ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1:L1327-L1327"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-shared/runtime/config.schema.json",
+          "lineStart": 193,
+          "lineEnd": 197,
+          "sha256": "466771c19e2deb185c10c3a173703845e91173cc41aa00d9f6b2c5883eac5083"
+        },
+        {
+          "path": ".agents/skills/ws-shared/runtime/scripts/Edit-WorkflowSkillsConfig.ps1",
+          "lineStart": 1327,
+          "lineEnd": 1327,
+          "sha256": "e8679a807a8bbd322b47e028323bf6c889a46678f14d5b6c01d19c3518d8ff26"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC7: stepContextBudgets row uses -Type json",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:19:54.203Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+        "verify-ac7"
+      ]
+    },
+    {
+      "id": "AC8",
+      "text": "Runs without any step override behave byte-identically to the current global-budget behavior.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs:L250-L253"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-006",
+        "section-008"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-to-pr/scripts/build_dispatch_context.cjs",
+          "lineStart": 250,
+          "lineEnd": 253,
+          "sha256": "b58a6da5d380e231c919fc20fca7238f7fb7d39fbf0fe2cac347824a14ba962b"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "AC8: empty map is byte-identical to absent map",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:19:54.254Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-a467d395cbe4a6c86ff43258749d7bc0a2a101d0",
+        "verify-ac8"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "A step override below 18000 or non-integer fails the dispatch with the offending key named.",
+      "tests": [
+        {
+          "name": "AC3: invalid override rejected",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:17:12.649Z"
+        },
+        {
+          "name": "AC5: over-budget mandatory content fails",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:17:12.649Z"
+        },
+        {
+          "name": "AC8: empty map is byte-identical to absent map",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:17:12.657Z"
+        },
+        {
+          "name": "NS: writer rejects a manifest without budgetSource",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:17:12.657Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-ns"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Mandatory content exceeding the effective step budget fails closed before any prompt bytes are emitted.",
+      "tests": [
+        {
+          "name": "AC3: invalid override rejected",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:17:12.657Z"
+        },
+        {
+          "name": "AC5: over-budget mandatory content fails",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:17:12.657Z"
+        },
+        {
+          "name": "AC8: empty map is byte-identical to absent map",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:17:12.657Z"
+        },
+        {
+          "name": "NS: writer rejects a manifest without budgetSource",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:17:12.657Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-ns"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "A run with no step overrides produces byte-identical dispatch output to the pre-change global behavior.",
+      "tests": [
+        {
+          "name": "AC3: invalid override rejected",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:17:12.657Z"
+        },
+        {
+          "name": "AC5: over-budget mandatory content fails",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:17:12.657Z"
+        },
+        {
+          "name": "AC8: empty map is byte-identical to absent map",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:17:12.658Z"
+        },
+        {
+          "name": "NS: writer rejects a manifest without budgetSource",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:17:12.658Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-ns"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "A manifest missing the budget source field fails manifest validation.",
+      "tests": [
+        {
+          "name": "AC3: invalid override rejected",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:17:12.658Z"
+        },
+        {
+          "name": "AC5: over-budget mandatory content fails",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:17:12.658Z"
+        },
+        {
+          "name": "AC8: empty map is byte-identical to absent map",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:17:12.658Z"
+        },
+        {
+          "name": "NS: writer rejects a manifest without budgetSource",
+          "sourceFile": "test/test-step-context-budgets.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T13:17:12.658Z"
+        }
+      ],
+      "linkEventIds": [
+        "impl-ns"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 10,
+    "earnedUnits": 80,
+    "totalUnits": 80,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "deficiencies": [],
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-30T13:35:56.690Z",
+    "writer": "ac_ledger.cjs score",
+    "ledgerHash": "af0c063a626d33ff65c6a2ccac139873fac132e18223ab856eb19011a62d896b"
+  }
+}

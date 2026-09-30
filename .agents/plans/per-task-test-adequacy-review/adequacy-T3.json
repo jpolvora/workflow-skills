@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "taskId": "T3",
+  "acs": [
+    "AC5"
+  ],
+  "status": "adequate",
+  "bindings": [
+    {
+      "ac": "AC5",
+      "test": "AC5: link attaches row.adequacy",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 161,
+      "lineEnd": 161
+    },
+    {
+      "ac": "AC5",
+      "test": "AC5: inadequate adequacy sets knownDefect",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 169,
+      "lineEnd": 169
+    },
+    {
+      "ac": "AC5",
+      "test": "AC5: deficiency names the inadequate AC",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 171,
+      "lineEnd": 171
+    },
+    {
+      "ac": "AC5",
+      "test": "AC5: failed link leaves the ledger unchanged",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 176,
+      "lineEnd": 176
+    },
+    {
+      "ac": "AC5",
+      "test": "AC5: one record attaches to every --ac target",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 193,
+      "lineEnd": 193
+    },
+    {
+      "ac": "AC5",
+      "test": "AC5: link help documents the verb",
+      "file": "test/test-per-task-adequacy.js",
+      "lineStart": 198,
+      "lineEnd": 198
+    }
+  ],
+  "litmus": [
+    {
+      "test": "AC5: link attaches row.adequacy",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC5: link attaches row.adequacy\" unproven); post-edit run exit 0"
+    },
+    {
+      "test": "AC5: inadequate adequacy sets knownDefect",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC5: inadequate adequacy sets knownDefect\" unproven); post-edit run exit 0"
+    },
+    {
+      "test": "AC5: deficiency names the inadequate AC",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC5: deficiency names the inadequate AC\" unproven); post-edit run exit 0"
+    },
+    {
+      "test": "AC5: failed link leaves the ledger unchanged",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC5: failed link leaves the ledger unchanged\" unproven); post-edit run exit 0"
+    },
+    {
+      "test": "AC5: one record attaches to every --ac target",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC5: one record attaches to every --ac target\" unproven); post-edit run exit 0"
+    },
+    {
+      "test": "AC5: link help documents the verb",
+      "kind": "wrong-code-run",
+      "exitCode": 1,
+      "evidence": "wrong-code run: pre-edit tree run of test-per-task-adequacy.js exited 1 (red baseline, \"AC5: link help documents the verb\" unproven); post-edit run exit 0"
+    }
+  ],
+  "addedTests": [],
+  "orphansRemoved": [],
+  "falsePositives": [],
+  "checkedAt": "2026-09-30T08:40:00.000Z"
+}
