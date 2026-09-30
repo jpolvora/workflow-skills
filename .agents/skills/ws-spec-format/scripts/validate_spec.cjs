@@ -53,6 +53,20 @@ function compositeReason(text) {
   return '';
 }
 
+
+const EARS_PATTERNS = [
+  { name: 'ubiquitous', re: /^the\s+.+\s+shall\s+.+/i },
+  { name: 'event-driven', re: /^when\s+.+,\s*the\s+.+\s+shall\s+.+/i },
+  { name: 'state-driven', re: /^while\s+.+,\s*the\s+.+\s+shall\s+.+/i },
+  { name: 'optional-feature', re: /^where\s+.+,\s*the\s+.+\s+shall\s+.+/i },
+  { name: 'unwanted-behavior', re: /^if\s+.+,\s*then\s+the\s+.+\s+shall\s+.+/i },
+];
+
+function earsViolation(acText) {
+  const body = String(acText || '').trim();
+  if (EARS_PATTERNS.some((pattern) => pattern.re.test(body))) return '';
+  return 'AC does not match a documented EARS pattern (expected: The/When/While/Where/If <trigger> ... the <system> shall <response>).';
+}
 function headingPresent(text, heading) {
   return new RegExp(`^${heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`, 'm').test(text);
 }
@@ -60,6 +74,32 @@ function headingPresent(text, heading) {
 function tableAfterHeading(text, heading) {
   const start = text.search(new RegExp(`^${heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`, 'm'));
   if (start < 0) return [];
+  return tableRowsAfter(text, start);
+}
+
+function lastHeadingIndex(text, heading) {
+  const lines = text.split('\n');
+  let last = -1;
+  let offset = 0;
+  for (const line of lines) {
+    if (line === heading || (line.startsWith(heading) && /^\s*$/.test(line.slice(heading.length)))) last = offset;
+    offset += line.length + 1;
+  }
+  return last;
+}
+
+// Canonical-section lookup: the LAST heading match wins. Canonical skeleton
+// sections follow ## Original Issue Context, so a verbatim duplicate pasted inside
+// issue context always precedes the canonical section. Limitation: a spec whose
+// only match is verbatim still reads that section (and fails closed when, as with
+// realistic verbatim bullets, no table follows).
+function tableAfterCanonicalHeading(text, heading) {
+  const start = lastHeadingIndex(text, heading);
+  if (start < 0) return [];
+  return tableRowsAfter(text, start);
+}
+
+function tableRowsAfter(text, start) {
   const rest = text.slice(start).split('\n').slice(1);
   const rows = [];
   let inTable = false;
@@ -214,10 +254,11 @@ function closureFindings(text) {
     warnings.push(item);
   }
   if (hasOut) {
-    const rows = tableAfterHeading(text, '## Out of Scope');
+    const rows = tableAfterCanonicalHeading(text, '## Out of Scope');
     const data = rows.slice(1);
-    if (!data.length) {
-      errors.push({ code: 'out-of-scope-empty', message: 'Out of Scope must include at least one data row.' });
+    const substantive = data.filter((cells) => cells.some((cell) => !isPlaceholder(cell)));
+    if (!substantive.length) {
+      errors.push({ code: 'out-of-scope-empty', message: 'Out of Scope must include at least one substantive data row.' });
     }
   }
   if (hasAssumptions) {
@@ -267,6 +308,10 @@ function validate(text, options) {
     if (Number(row[2]) !== expected) errors.push({ code: 'ac-sequence', ac: row[1], message: `Expected AC${expected}, found ${row[1]}.` });
     const reason = compositeReason(row[3]);
     if (reason) errors.push({ code: 'composite-ac', ac: row[1], message: `${row[1]} is composite: ${reason}.` });
+    if (options.mode === 'authoring') {
+      const ears = earsViolation(row[3]);
+      if (ears) errors.push({ code: 'ac-ears', ac: row[1], message: ears });
+    }
   });
   const description = text.match(/## Description\s*\n([\s\S]*?)(?=\n## )/)?.[1] || '';
   const modification = options.modification || /\b(?:modify|modification|bug\s*fix|bugfix|existing\s+(?:feature|workflow|behavior)|refactor|upgrade)\b/i.test(description);
@@ -277,7 +322,7 @@ function validate(text, options) {
   else {
     for (const warning of [...closure.warnings, ...readiness.warnings]) warnings.push(warning);
     if (headingPresent(text, '## Out of Scope')) {
-      const data = tableAfterHeading(text, '## Out of Scope').slice(1);
+      const data = tableAfterCanonicalHeading(text, '## Out of Scope').slice(1);
       if (!data.length) warnings.push({ code: 'out-of-scope-empty', message: 'Out of Scope has zero data rows.' });
     }
     if (headingPresent(text, '## Assumptions & Open Questions')) {

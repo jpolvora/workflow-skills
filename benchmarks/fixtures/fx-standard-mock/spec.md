@@ -41,6 +41,6 @@ Large standard-orch fixture exercising plan.index, ac-ledger, and negative scena
 
 ## Acceptance Criteria
 
-- AC1: Add `lib/mock.cjs` exporting `mockValue` returning 42.
-- AC2: Add `test/mock-value-behavior.test.cjs` with test `mock-value-behavior` asserting mockValue is 42.
-- AC3: Link negative scenario NS1 to an observed failing test in ac-ledger for verify score 9/10 path.
+- AC1: The worker shall add `lib/mock.cjs` exporting `mockValue` returning 42.
+- AC2: The worker shall add `test/mock-value-behavior.test.cjs` with test `mock-value-behavior` asserting mockValue is 42.
+- AC3: The worker shall link negative scenario NS1 to an observed failing test in ac-ledger for verify score 9/10 path.

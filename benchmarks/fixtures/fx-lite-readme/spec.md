@@ -41,4 +41,4 @@ Create a single markdown readme for a fictitious mini project. This fixture exer
 
 ## Acceptance Criteria
 
-- AC1: Create README.md containing the project title "Benchmark Mini App".
+- AC1: The worker shall create README.md containing the project title "Benchmark Mini App".

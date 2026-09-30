@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "4feaf2eb25d20380dc13ef4bece415a6b9ab7fb1698135628761b1258818ffbd",
+  "fullPackageDigest": "e12315ced1bef1d7bfeb3f279af5d030dc6b05e48db9e8bcfbed2120e2e11d8d",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -449,12 +449,12 @@
     },
     "ws-spec-format": {
       "files": {
-        "FORMAT.md": "05852a705f08772e5a68d52571808cec2b003fbbfd521e57d902b7e6b970ed1e",
-        "SKILL.md": "e586b3e4ead5203eacca1cc9c13e7efa74376e2a912b21baaf09733736b37f9b",
+        "FORMAT.md": "626ce15d38de3c4908d16a87c43bafe6574e40afe0e27942cf88f3a0e7c1e9a4",
+        "SKILL.md": "6a0b1f09a1e7aad7b8730b5ae58458e6e21bd190652e1d253aa2c304429751a6",
         "evals/evals.json": "8e46f00ac900804789f2e263d1feb0cb37edb484c37ffe9f2b8d806355047c1e",
-        "scripts/validate_spec.cjs": "9bdc4432af1c0987d765f8d378d24f85c901940388a73839a8430b13534c9dcc"
+        "scripts/validate_spec.cjs": "22e3ebd292191820eca5ba48847c013a83aefe52cd77c17a1e693c9d637d2033"
       },
-      "skillDigest": "3379ef420eb8908a87479bf12495a44e1fa74cca813bc3c281ae47b77390559c"
+      "skillDigest": "e82a3e3d4dcf20ecae240543e188a1f7b9a4925e91019c062f6e9bd2171fb14b"
     },
     "ws-spec-from-provider": {
       "files": {
@@ -646,10 +646,10 @@
     },
     "ws-spec-write": {
       "files": {
-        "SKILL.md": "cc0869c1e783d58fff909c299f41223d5ed4469fab4e5d069c81ac8950ea37dc",
+        "SKILL.md": "a43c4a92fc9aaeb4d767ba3f39fafd77435bcbafa1f4adf7f5f0dc4506ac9a48",
         "evals/evals.json": "78a994ee05d916fe2c383ead18506b3ce6690805cdd42f156b45b87dc2a79dc5"
       },
-      "skillDigest": "4ed9a3c98c929c27eb97d274fdc5e813f5de88ec7ddf64760efc19f97be8ef60"
+      "skillDigest": "87a6a1333fda7b804116f0b17e38582085b38345bbe07d54d9fbfaac7be38fae"
     },
     "ws-task-lifecycle": {
       "files": {

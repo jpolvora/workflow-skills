@@ -156,6 +156,9 @@
       "test/test-classify-open-questions.js"
     ],
     [
+      "test/test-spec-closure-ears.js"
+    ],
+    [
       "test/test-spec-validation.js"
     ],
     [

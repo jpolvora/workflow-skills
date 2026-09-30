@@ -54,13 +54,13 @@ Build a small Node CLI that deep-merges two JSON config files (base + overlay), 
 
 ## Acceptance Criteria
 
-- AC1: Add `bin/merge-config.cjs` as the CLI entry (shebang optional; must run with `node bin/merge-config.cjs`).
-- AC2: Add `lib/merge.cjs` exporting `merge(base, overlay)` that deep-merges plain objects; for a non-object overlay value, overlay replaces base (`result[key] = overlay[key]`).
-- AC3: Nested plain objects merge recursively (overlay does not wipe sibling keys that exist only on base).
-- AC4: When overlay has an array at a key, that array replaces the base value (no element-wise concat).
-- AC5: CLI reads `--base <file>` and `--overlay <file>` as UTF-8 JSON objects and writes merged JSON to `--out <file>` with 2-space indent and a trailing newline.
-- AC6: Merged object must include string keys `name` and `version`; if either is missing after merge, exit 1 and print `missing required key` to stderr (do not write `--out`).
-- AC7: Invalid JSON in `--base` or `--overlay` exits 1 and prints `invalid json` to stderr (do not write `--out`).
-- AC8: `--help` exits 0 and prints usage including `--base`, `--overlay`, and `--out`.
-- AC9: Add `test/merge-config.test.cjs` with tests named `merge-overlay-wins`, `merge-nested-objects`, `merge-array-replace`, `merge-missing-required`, and `merge-invalid-json`.
-- AC10: Add `README.md` documenting the three flags, overlay-wins leaf rule, and array-replace rule.
+- AC1: The worker shall add `bin/merge-config.cjs` as the CLI entry (shebang optional; must run with `node bin/merge-config.cjs`).
+- AC2: The worker shall add `lib/merge.cjs` exporting `merge(base, overlay)` that deep-merges plain objects; for a non-object overlay value, overlay replaces base (`result[key] = overlay[key]`).
+- AC3: The `merge(base, overlay)` shall merge nested plain objects recursively (overlay does not wipe sibling keys that exist only on base).
+- AC4: When overlay has an array at a key, the merge shall replace the base value with that array (no element-wise concat).
+- AC5: The CLI shall read `--base <file>` and `--overlay <file>` as UTF-8 JSON objects and write merged JSON to `--out <file>` with 2-space indent and a trailing newline.
+- AC6: The merged object shall include string keys `name` and `version`; if either is missing after merge, the CLI shall exit 1 and print `missing required key` to stderr (do not write `--out`).
+- AC7: If `--base` or `--overlay` holds invalid JSON, then the CLI shall exit 1 and print `invalid json` to stderr (do not write `--out`).
+- AC8: The CLI shall exit 0 on `--help` and print usage including `--base`, `--overlay`, and `--out`.
+- AC9: The worker shall add `test/merge-config.test.cjs` with tests named `merge-overlay-wins`, `merge-nested-objects`, `merge-array-replace`, `merge-missing-required`, and `merge-invalid-json`.
+- AC10: The worker shall add `README.md` documenting the three flags, overlay-wins leaf rule, and array-replace rule.
