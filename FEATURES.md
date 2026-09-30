@@ -300,12 +300,13 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.5.14)
+## 12. Recent evolution (0.3.22 → 0.5.26)
 
-Derived from recent commits on `develop` (2026-08-16 → 2026-09-29).
+Derived from recent commits on `develop` (2026-08-16 → 2026-09-30).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.5.26** | Sep 30 | **Executable foreign-commit guard for shared-head batches:** `ws-spec-multi/scripts/foreign_commit_guard.cjs` records a per-dispatch baseline of the local + `origin` run-branch tips (`{plansDir}/{runId}/foreign-commits.json`), pauses (Resume / Skip / Abort) and names the new commits on an unexpected advance, refuses a convergence merge whose PR head differs from the local tip, and lists foreign commits that ride a PR range for the PR body and audit notes. Git-read-only (only `rev-parse` / `log`); the quiet path adds no gate. Wired in `ws-spec-multi` `PROTOCOL.md` / `STATE.md` / `SKILL.md` and the shared `git-ownership.md` contract |
 | **0.5.13–0.5.14** | Sep 29 | **`ws-version` (`us-455`, PR #456):** read-only install snapshot — `installScope` (`global` vs `project-local`), absolute loaded skill directory, `packageVersion` from `.agents/skills/ws-shared/version.json`, stored `.ws/config.json` path tokens. **Global fallback without junctions (`us-457`):** `resolve_skill_path.cjs` reads a missing repo-relative skill path from `{globalSkillsRoot}` instead of creating a junction, symlink, or copy in the consumer repo; local real files win, both-missing or traversal/absolute paths fail closed. **autoMode same-turn Step 5→6:** Step 5 exit in `autoMode` skips Pass 1 and Reach-10 and dispatches Step 6 in the same turn; `ws-check-workflows` covers `autoMode` ON (unattended internal checkpoints + canonical stop list) and OFF (per-step / `gateGranularity`). `us-458` (fully unattended `autoMode`, no yield at internal checkpoints) remains in flight |
 | **0.5.10–0.5.12** | Sep 28–29 | **Skip empty verification aliases (`us-446`):** `ws-ship-pr/scripts/verify.cjs` skips configured aliases with an empty command instead of executing them. **Per-run batch state (`us-448`):** `ws-spec-multi` writes `{plansDir}/{runId}/{runId}.state.md`, drops the `RESERVED_PLAN_DIRS` guards, and resumes legacy flat `{plansDir}/ws-spec-multi/*.state.md` files. **`ws-kanvas` drag-and-drop (0131, #452):** `POST /api/move` with atomic writes and byte-limited body; abandoning a tracked runless spec files it as Abandoned. **Pre-ship doc-sync delivery records** plus `plans.autoOrganizeByStatus` by-status filing; agentic code review runs the `high` variant (PRs #449–#451, #453–#454) |
 | **0.5.8–0.5.9** | Sep 27–28 | **Bump on every shipped PR:** `ws-ship-pr` owns the patch bump — no docs/hub/catalog exception — with integrity regen in the same change. Wiki `update`/`sync`/`from-code` read the effective `rules.changelogFile`; `ws-spec-organizer` prioritizes index completion over `issueState` when filing specs |

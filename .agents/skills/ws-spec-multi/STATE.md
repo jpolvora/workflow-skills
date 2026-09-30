@@ -101,6 +101,39 @@ mirroring the monitor `missing-artifact` class. `ws-monitor` surfaces the same b
 spot as the `missing-child-state` finding when a multi-spec item advances without
 child state.
 
+## Foreign-commit guard baseline (shared head)
+
+`scripts/foreign_commit_guard.cjs` is the executable guard for shared-head runs. Its only
+write is the baseline store `{plansDir}/{runId}/foreign-commits.json` (batch state under the
+run's plan folder; never committed):
+
+```json
+{
+  "schemaVersion": 1,
+  "runId": "ms-20260725T220000Z",
+  "branch": "develop",
+  "records": [
+    { "slug": "01-docker-compose", "localTip": "<sha>", "remoteTip": "<sha|null>", "recordedAt": "<ISO>" }
+  ]
+}
+```
+
+| Subcommand | Exit | Meaning |
+|------------|------|---------|
+| `record-baseline` | 0 | Upsert `{slug, localTip, remoteTip, recordedAt}` for the run branch (local + `origin/{branch}`; `remoteTip: null` when no remote). |
+| `check-advance` | 0 / 1 / 2 | `0` quiet (tips unchanged — no gate) · `1` unexpected advance (names new commits) · `2` missing baseline (fail closed). |
+| `check-convergence` | 0 / 1 | `0` PR head equals the local tip · `1` mismatch (refuse merge; names both heads). |
+| `list-foreign` | 0 / 1 | `0` lists range commits minus `--own` as foreign (+ markdown block) · `1` usage error. |
+
+Invariants:
+- One baseline record per `{slug}`; a re-dispatch overwrites its record (idempotent).
+- The guard is **git-read-only**: it runs only `git rev-parse` / `git log` and never stages,
+  commits, pushes, resets, checks out, or cleans.
+- Quiet path (unchanged tips, equal heads, no foreign commit) adds no pause, refusal, or gate.
+- An unexpected advance pauses with Resume / Skip / Abort (Phase 4); a convergence mismatch
+  refuses the merge (Phase 4b). Contract: [`PROTOCOL.md`](PROTOCOL.md) · shared rule:
+  [`../ws-shared/runtime/git-ownership.md`](../ws-shared/runtime/git-ownership.md).
+
 ## Already-Implemented Probe
 
 Before evaluating flow mode or dispatching a worker, run the probe check:

@@ -67,6 +67,11 @@ Evaluate the target `*.spec.md` file:
   - This guarantees every feature branch starts from an up-to-date base containing all PRs merged by previous specs in the batch or external commits.
   - On merge/rebase conflict: pause with Phase 5 `user-gate` (Resume after resolving, Skip, Abort).
   - **Baseline advancement (base moves mid-batch):** refresh each in-flight child's `baselineCommit` to the new tip and re-integrate forward — never reset back: `node {skillsRoot}/ws-spec-to-pr/scripts/refresh_baseline.cjs --state {plansDir}/{slug}/{child-workflow-id}.state.json --base-ref origin/{baseBranch}`, then `git fetch` + `git rebase {newTip}` (merge-forward where rebase is disallowed). Overlap on foreign paths → STOP per [`git-ownership.md`](../ws-shared/runtime/git-ownership.md).
+  - **Foreign-commit guard (shared-head):** order every dispatch as **check → (pause) → record → dispatch**. First run `node {skillsRoot}/ws-spec-multi/scripts/foreign_commit_guard.cjs check-advance --run {plansDir}/{runId}/{runId}.state.md --slug {slug}` against the baseline recorded at the previous dispatch: exit `0` = quiet (tips unchanged — no gate), exit `1` = unexpected advance (the helper names the new commits), exit `2` = no baseline yet (first dispatch — proceed). On exit `0` (and on the first-dispatch exit `2`) record the fresh baseline `... record-baseline --run {plansDir}/{runId}/{runId}.state.md --slug {slug}` (local + `origin/{branch}` tips into `{plansDir}/{runId}/foreign-commits.json`) **before** dispatching, so the push the current item performs does not itself look like a foreign advance. On exit `1` present the Phase 5 failure pause **naming the new commits** (do not record a new baseline until the pause is resolved):
+    - **Resume (Recommended):** accept the advance, re-record the baseline, and continue with the pending item.
+    - **Skip:** record the item `skipped` with `reason: foreign-advance` and continue to the next item.
+    - **Abort run:** set the run `status: paused` and exit to Phase 6.
+    The guard only reads refs and writes the baseline sidecar; it never blocks, reverts, or rewrites a foreign push.
 - Transition the **existing** row for `{specPath}` (fallback `{slug}`) to `status: in_progress`, `flowMode: {lite|standard}` — a keyed in-place update, never a new appended row. Before writing, run the fail-closed duplicate guard (no duplicate `#`, no duplicate `slug`/`specPath`); on conflict, do not write and surface it. Set the row `updatedAt` and run frontmatter `updatedAt` to the current UTC timestamp. The item count stays at `totalItems`.
 - **Required child artifact set (dispatch contract):** the dispatched worker is a
   full child orchestrator (`ws-spec-to-pr` / `ws-spec-to-pr-lite`) and MUST persist
@@ -93,7 +98,9 @@ Every created PR MUST complete full code-review convergence, merge, and post-mer
    - Poll thread status (`list-threads`) and resolve review threads until `activeThreads == 0`.
    - Verify required CI checks are green (`checksStatus == green`).
 3. **Execute PR Merge & Close**:
-   - Once threads are 0 and checks green, master MUST execute PR merge via SCM provider: `gh pr merge {prNumber} --merge` (or SCM merge API) to merge and close the PR into `baseBranch`.
+   - **Pre-merge convergence guard (shared-head):** before merging, run `node {skillsRoot}/ws-spec-multi/scripts/foreign_commit_guard.cjs check-convergence --pr-head {PR head SHA} --local-tip {local run-branch tip}`; exit `0` = converged, exit `1` = mismatch → **refuse the merge** and pause (Resume after head drift is resolved, Skip, Abort), naming both heads. Never merge a PR whose head differs from the reviewed local tip.
+   - **Foreign-commit audit (shared-head):** run `node {skillsRoot}/ws-spec-multi/scripts/foreign_commit_guard.cjs list-foreign --base {PR base SHA} --head {PR head SHA} --own {batch commit SHAs} --markdown` and append the emitted `### Foreign commits in range` block to the PR body and to the audit notes — foreign commits are disclosed automatically, never only by manual diligence.
+   - Once threads are 0, checks green, and the convergence guard is exit `0`, master MUST execute PR merge via SCM provider: `gh pr merge {prNumber} --merge` (or SCM merge API) to merge and close the PR into `baseBranch`.
    - If merge fails due to base branch drift, master syncs the branch with `baseBranch` (`git merge {baseBranch}`), pushes, and retries merge until state is `MERGED`.
    - Confirm PR status is `state: MERGED` (`merged: true`).
 4. **Post-Merge Base Branch Synchronization**:

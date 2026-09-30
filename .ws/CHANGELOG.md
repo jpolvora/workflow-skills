@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-09-30 17:56] Agent: agent
+- **Prompt**: Fix PR #480 review threads (CRITICAL cross-slug foreign-commit baseline, WARNING duplicate invariant numbering).
+- **Done**: foreign_commit_guard.cjs checkAdvance falls back to the most recent dispatch baseline for a new slug; renumbered ws-spec-multi invariant 7->8; added cross-slug regression tests.
+- **Result**: Cross-slug foreign commit now pauses (exit 1) instead of silently proceeding; genuine first dispatch still exit 2. Tests 155/155, harness clean.
+
+### [2026-09-30 16:58] Agent: agent
+- **Prompt**: us-475: shared-head multi-spec batches need an executable foreign-commit guard
+- **Done**: Added ws-spec-multi/scripts/foreign_commit_guard.cjs (record-baseline / check-advance / check-convergence / list-foreign) plus PROTOCOL/STATE/SKILL and git-ownership wiring and test/test-foreign-commit-guard.js
+- **Result**: Guard records per-dispatch local+remote tips, pauses Resume/Skip/Abort naming new commits, refuses a convergence mismatch, and lists foreign commits for the PR body; quiet path unchanged. Bumped 0.5.26.
+
 ### [2026-09-30 15:54] Agent: opencode/deepseek-v4.1-flash (batch us-474)
 - **Prompt**: Implement issue 474: spec-index sync must file a shipped spec to completed/ (with sidecars and rewritten spec: refs) or report the filing outstanding; Step 8 close verification fails closed naming a stale pending/ path; harness flags index [x] rows pointing under pending/.
 - **Done**: Added deterministic ws-spec-index sync_index.cjs (files first, then indexes; outstanding on failure), verify_close_filing.cjs close check, and ws-check-harness check_spec_filing.cjs gate wired into Phase 5a; Step 8 close prose updated; test/test-spec-index-filing.js covers AC1-AC7 and NS.
