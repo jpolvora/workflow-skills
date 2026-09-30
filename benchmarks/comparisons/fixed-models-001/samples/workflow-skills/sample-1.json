@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-30T12:05:44.381Z",
+  "timestamp": "2026-09-30T12:18:34.824Z",
   "models": {
     "executor": "none (deterministic static execution; no inference)"
   },
@@ -13,7 +13,7 @@
     "C7": 1
   },
   "evidenceRefs": [
-    "benchmarks/runs/static-2026-09-30T120255122Z-fx-node-helper/report.json",
+    "benchmarks/comparisons/fixed-models-001/samples/workflow-skills/sample-1/engine-report.json",
     "benchmarks/comparisons/fixed-models-001/samples/workflow-skills/sample-1/procedure.log"
   ]
 }

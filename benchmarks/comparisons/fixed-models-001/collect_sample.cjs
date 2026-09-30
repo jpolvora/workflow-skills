@@ -90,6 +90,9 @@ function main() {
   if (!fs.existsSync(engineAbs)) throw new Error(`engine report missing: ${engineAbs}`);
   const engine = JSON.parse(fs.readFileSync(engineAbs, 'utf8'));
 
+  if (!fs.existsSync(path.join(runDir, 'prd.md'))) {
+    throw new Error(`refusing sample collection: ${runDir} is not a comparison run dir (prd.md missing)`);
+  }
   const repoRoot = path.resolve(runDir, '..', '..', '..');
   const sampleDir = path.join(runDir, 'samples', 'workflow-skills', `sample-${sampleN}`);
   fs.rmSync(sampleDir, { recursive: true, force: true });
@@ -138,8 +141,10 @@ function main() {
   note(`engine verdict=${engine.verdict} index=${engine.index && engine.index.value}`);
   note(`checks=${JSON.stringify(checks)}`);
 
-  const relEngine = path.relative(repoRoot, engineAbs).replace(/\\/g, '/');
+  fs.copyFileSync(engineAbs, path.join(sampleDir, 'engine-report.json'));
+  note(`vendored engine report from ${path.relative(repoRoot, engineAbs)}`);
   const relSample = path.relative(repoRoot, sampleDir).replace(/\\/g, '/');
+  const relEngine = `${relSample}/engine-report.json`;
   const sample = {
     timestamp: new Date().toISOString(),
     models: { executor: EXECUTOR_MODEL },

@@ -1,6 +1,6 @@
 # Fixed-Model Comparison — fixed-models-001
 
-**Generated:** 2026-09-30T12:06:18.049Z  
+**Generated:** 2026-09-30T12:18:39.975Z  
 **PRD sha256:** `c777322b54c00df5961aa9608ea53d3a59bc9e93f194981f76ee91511740313c`  
 **Judge sha256:** `8bec03c694dd3f3cc8b70c1fcd5a9ff97b7839971108fd80a5aa7eab3f1e0745`  
 **Run dir:** `benchmarks/comparisons/fixed-models-001`
@@ -15,9 +15,9 @@
 
 | Harness | Sample | C1 | C2 | C3 | C4 | C5 | C6 | C7 | Total | Timestamp |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---|
-| workflow-skills | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 7 | 2026-09-30T12:05:44.381Z |
-| workflow-skills | 2 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 7 | 2026-09-30T12:05:44.578Z |
-| workflow-skills | 3 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 7 | 2026-09-30T12:05:44.786Z |
+| workflow-skills | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 7 | 2026-09-30T12:18:34.824Z |
+| workflow-skills | 2 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 7 | 2026-09-30T12:18:35.040Z |
+| workflow-skills | 3 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 7 | 2026-09-30T12:18:35.243Z |
 
 ## Aggregate scores
 

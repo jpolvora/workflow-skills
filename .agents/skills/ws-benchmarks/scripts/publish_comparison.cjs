@@ -72,8 +72,23 @@ function readJson(filePath, label) {
   }
 }
 
+function canonicalize(value) {
+  if (Array.isArray(value)) return `[${value.map(canonicalize).join(',')}]`;
+  if (value && typeof value === 'object') {
+    const keys = Object.keys(value).sort();
+    return `{${keys.map((key) => `${JSON.stringify(key)}:${canonicalize(value[key])}`).join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
 function stableDeepEqual(a, b) {
-  return JSON.stringify(a) === JSON.stringify(b);
+  return canonicalize(a) === canonicalize(b);
+}
+
+function assertSafeRunId(runId) {
+  if (!/^[\w][\w.-]*$/.test(String(runId || ''))) {
+    throw new Error(`run manifest runId is not a safe filename segment: ${JSON.stringify(runId)}`);
+  }
 }
 
 function validateColumn(column, checkIds, exceptions) {
@@ -241,11 +256,19 @@ function ensureEvolutionLink(resultsDir, runId, reportFile) {
   }
   const existing = fs.readFileSync(evoPath, 'utf8');
   if (existing.includes(row)) return { created: false, path: evoPath, unchanged: true };
-  if (existing.includes(COMPARISON_SECTION)) {
-    fs.writeFileSync(evoPath, `${existing.replace(/\s*$/, '')}\n${row}\n`, 'utf8');
+  const eol = existing.includes('\r\n') ? '\r\n' : '\n';
+  const norm = existing.replace(/\r\n/g, '\n');
+  if (norm.includes(COMPARISON_SECTION)) {
+    const lines = norm.split('\n');
+    const headIdx = lines.findIndex((line) => line.includes(COMPARISON_SECTION));
+    let insertAt = headIdx + 1;
+    while (insertAt < lines.length && (lines[insertAt].trim() === '' || lines[insertAt].startsWith('- ['))) insertAt += 1;
+    lines.splice(insertAt, 0, row);
+    fs.writeFileSync(evoPath, `${lines.join(eol).replace(/(\r?\n)*$/, '')}${eol}`, 'utf8');
     return { created: false, path: evoPath };
   }
-  fs.writeFileSync(evoPath, `${existing.replace(/\s*$/, '')}\n\n${COMPARISON_SECTION}\n\n${row}\n`, 'utf8');
+  const fresh = `${norm.replace(/\s*$/, '')}\n\n${COMPARISON_SECTION}\n\n${row}\n`.replace(/\n/g, eol);
+  fs.writeFileSync(evoPath, fresh, 'utf8');
   return { created: false, path: evoPath };
 }
 
@@ -264,6 +287,7 @@ function publishComparison({ runDir, resultsDir, repoRoot }) {
   const judgeHash = sha256Hex(judgeBytes);
   const { data: manifest } = readJson(path.join(resolvedRun, 'run-manifest.json'), 'run manifest');
   if (!manifest.runId) throw new Error('run manifest is missing runId');
+  assertSafeRunId(manifest.runId);
   if (manifest.prdSha256 !== prdHash) {
     throw new Error(`PRD drift: manifest prdSha256 ${manifest.prdSha256} does not match frozen bytes ${prdHash}`);
   }
@@ -272,8 +296,24 @@ function publishComparison({ runDir, resultsDir, repoRoot }) {
   }
   const checkIds = (judge.checks || []).map((check) => check.id);
   if (!checkIds.length) throw new Error('judge definition declares no checks');
+  if (new Set(checkIds).size !== checkIds.length) throw new Error('judge definition declares duplicate check ids');
   const columns = Array.isArray(manifest.columns) ? manifest.columns : [];
   if (!columns.length) throw new Error('run declares no scored columns');
+  const harnessNames = columns.map((column) => column.harness);
+  if (new Set(harnessNames).size !== harnessNames.length) {
+    throw new Error('run declares duplicate harness names; one scored column per harness');
+  }
+  columns.forEach((column) => {
+    (Array.isArray(column.samples) ? column.samples : []).forEach((sample, idx) => {
+      const sampleFile = path.join(resolvedRun, 'samples', String(column.harness), `sample-${idx + 1}.json`);
+      if (fs.existsSync(sampleFile)) {
+        const onDisk = JSON.parse(fs.readFileSync(sampleFile, 'utf8'));
+        if (!stableDeepEqual(onDisk, sample)) {
+          throw new Error(`column ${column.harness}: manifest sample ${idx + 1} diverges from ${path.relative(resolvedRoot, sampleFile)}`);
+        }
+      }
+    });
+  });
   const exceptions = Array.isArray(manifest.protocolExceptions) ? manifest.protocolExceptions : [];
   for (const item of exceptions) {
     if (!columns.some((col) => col.harness === item.harness)) {
