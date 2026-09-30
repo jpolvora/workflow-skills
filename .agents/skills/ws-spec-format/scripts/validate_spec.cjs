@@ -53,7 +53,6 @@ function compositeReason(text) {
   return '';
 }
 
-
 const EARS_PATTERNS = [
   { name: 'ubiquitous', re: /^the\s+.+\s+shall\s+.+/i },
   { name: 'event-driven', re: /^when\s+.+,\s*the\s+.+\s+shall\s+.+/i },
@@ -67,6 +66,7 @@ function earsViolation(acText) {
   if (EARS_PATTERNS.some((pattern) => pattern.re.test(body))) return '';
   return 'AC does not match a documented EARS pattern (expected: The/When/While/Where/If <trigger> ... the <system> shall <response>).';
 }
+
 function headingPresent(text, heading) {
   return new RegExp(`^${heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`, 'm').test(text);
 }
