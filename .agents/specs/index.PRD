@@ -211,6 +211,22 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Publish fixed-model comparison benchmark (`spec: completed/0158-benchmark-publish-fixed-models.spec.md`) — `d49597f4` delivery commit
 - [x] Per-step context budgets in dispatch contracts (`spec: completed/0159-per-step-context-budgets.spec.md`) — `c62e5d09` delivery commit
 - [x] Explicit knowledge chain in research guidance (`spec: completed/0160-explicit-knowledge-chain.spec.md`) — `ba1b4fc1` delivery commit
+- [ ] ws-monitor: issue-proposal body embeds a host session id while claiming anonymized; workflow count wording contradicts the report (`spec: pending/0161-us-478.spec.md`)
+- [ ] ws-monitor: worker-session-stall warns while the state/telemetry clock advances (stale session-source reference) (`spec: pending/0162-us-477.spec.md`)
+- [ ] ws-monitor: stale-parent-row warns during the normal child-close to parent-propagate window (`spec: pending/0163-us-476.spec.md`)
+- [ ] Shared-head multi-spec runs need an executable foreign-commit guard (`spec: pending/0164-us-475.spec.md`)
+- [ ] Shipped spec can stay under pending/ while index marks done (`spec: pending/0165-us-474.spec.md`)
+- [ ] Workflow defect (context-mismatch) detected by ws-monitor (`spec: pending/0166-us-473.spec.md`)
+- [ ] ws-doctor: path-error section reports widespread false positives (citation base, link text, prose) (`spec: pending/0167-us-469.spec.md`)
+- [ ] ws-monitor: slug-scoped scan drops canonical runId-foldered ws-spec-multi batch state (`spec: pending/0168-us-464.spec.md`)
+
+
+
+
+
+
+
+
 
 
 
@@ -549,6 +565,22 @@ All Next-specs closed.
 | 164 | `per-step-context-budgets` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Per-step context budgets in dispatch contracts |
 
 | 165 | `explicit-knowledge-chain` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Explicit knowledge chain in research guidance |
+
+| 166 | `us-478` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor: issue-proposal body embeds a host session id while claiming anonymized; workflow count wording contradicts the report |
+
+| 167 | `us-477` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor: worker-session-stall warns while the state/telemetry clock advances (stale session-source reference) |
+
+| 168 | `us-476` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor: stale-parent-row warns during the normal child-close to parent-propagate window |
+
+| 169 | `us-475` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Shared-head multi-spec runs need an executable foreign-commit guard |
+
+| 170 | `us-474` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Shipped spec can stay under pending/ while index marks done |
+
+| 171 | `us-473` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Workflow defect [context-mismatch] detected by ws-monitor |
+
+| 172 | `us-469` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-doctor: path-error section reports widespread false positives (citation base, link text, prose) |
+
+| 173 | `us-464` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor: slug-scoped scan drops canonical runId-foldered ws-spec-multi batch state |
 
 ## 9. Inbox
 

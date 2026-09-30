@@ -1,0 +1,156 @@
+---
+id: 473
+slug: us-473
+title: "Workflow defect [context-mismatch] detected by ws-monitor"
+source: github
+specDate: 2026-09-30
+issueState: open
+issueUrl: "https://github.com/jpolvora/workflow-skills/issues/473"
+labels:
+  - bug
+step: 0
+workflowId: us-473
+status: completed
+startedAt: "2026-09-30T18:49:02.944Z"
+endedAt: "2026-09-30T18:49:02.944Z"
+acRefs: []
+---
+# Specification — Workflow defect [context-mismatch] detected by ws-monitor
+
+**State:** open
+**Labels:** bug
+
+## Description
+
+`ws-monitor` raises `context-mismatch` (critical) by comparing a run's recorded state branch against the ambient checkout branch. For runs that closed days ago, the recorded branch (`feature/*`) is compared to the current checkout (`develop`), so the run is reported as a live context mismatch even though the ambient HEAD simply moved after it closed.
+
+During one watch over 27 runs, all four criticals were historical terminal runs (status `completed`, steps 0-9 terminal, shipped earlier). No live-run mismatch was observed, and the finding list stayed byte-identical across every tick, the signature of comparing frozen historical state to a moving checkout. These criticals dominated the report headline and pushed genuinely live signals (`stale-parent-row`, `worker-session-stall`) out of the proposal list at different ticks.
+
+The fix is to scope the branch-based comparison to non-terminal runs, so `context-mismatch` can fire only when an orchestrator and the monitor can actually disagree about the live checkout: terminal runs either report the difference as `info` or drop it. The state-HEAD and state-worktree comparisons stay unchanged. Logic lives in `detectContextMismatch` in `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs`.
+
+### Design Intent
+
+The branch comparison was written for live-run drift detection, where the ambient checkout is the run's context. Comparing historical terminal state to the current checkout was never a supported case; the detector simply lacked a status guard. The intended contract is that severity follows run liveness.
+
+## Acceptance Criteria
+
+- AC1: When a run's recorded state branch differs from the active checkout and the run is non-terminal, the monitor shall report `context-mismatch` at critical severity.
+- AC2: While a run's status is terminal, the monitor shall report a branch-based `context-mismatch` as `info` or omit it.
+- AC3: The monitor shall name the run status used for the severity decision in the `context-mismatch` finding message.
+- AC4: The monitor shall leave the state-HEAD and state-worktree `context-mismatch` comparisons unchanged.
+- AC5: When the recorded state branch matches the active checkout, the monitor shall not report a branch-based `context-mismatch`.
+- AC6: The monitor shall keep the `context-mismatch` finding code and its defect contract mapping unchanged.
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Comparing against a run's own recorded lineage instead of ambient HEAD | Alternative direction; the status guard is the chosen fix |
+| Changing the state-HEAD or state-worktree comparisons | Not part of the reported failure class |
+| Rewriting historic run state branches | Observer is read-only |
+| Changing other monitor finding codes | Separate concerns |
+
+## Assumptions & Open Questions
+
+| Assumption | Chosen default | Rationale | Confirmed |
+|------------|----------------|-----------|-----------|
+| Terminal status set | Existing terminal run statuses used by the monitor | Reuses the monitor's status classification | y |
+| Terminal handling | Downgrade to `info` (keep visibility) | Lets an operator still see historical drift | y |
+| Scope | Branch comparison only | HEAD/worktree comparisons are not implicated | y |
+| Input validation, auth, concurrency, data lifecycle, idempotency | N/A because the observer is read-only with no network or stored state | Those dimensions do not apply | y |
+
+## Definition of Ready (DoR)
+
+| Readiness Item | Requirement | Verification Method |
+|----------------|-------------|---------------------|
+| Bounded scope | `detectContextMismatch` branch comparison only | Spec Out of Scope + diff review |
+| Atomic criteria | AC1–AC6 each have a pass/fail observation | Authoring validator + implementation check |
+| Failure modes | Missing status stays non-fatal; no new crashes | AC1, AC3 |
+| Stack invariant | Read-only Node helper, launched with `node`, no state writes | `ws-check-harness` + read-only contract |
+| Observation telemetry | Named `findings[code=context-mismatch]` severity per run status | Validation notes below |
+| Open blockers | None | Prior-work sweep found no open PR for issue 473 |
+
+## Validation & Observation Notes
+
+### Telemetry & Observable Signals
+
+- A terminal run with a differing state branch reports `info` (or no branch finding), while a live run reports critical.
+- The finding message names the run status.
+- `node .agents/skills/ws-spec-format/scripts/validate_spec.cjs --mode=authoring` on this spec exits 0 before register.
+
+### Negative & Failing Test Scenarios
+
+- A `completed` run whose state branch is `feature/x` while the checkout is `develop` must not produce a critical-severity `context-mismatch`.
+- An active run whose state branch differs from the active checkout must still produce a critical-severity `context-mismatch`.
+- A run whose state branch matches the checkout must not produce any branch-based `context-mismatch`.
+
+## Original Issue Context
+
+# Workflow defect report
+
+Detected by `ws-monitor` live watch (read-only observer). Filed to fix the workflow/harness contract that produced the failure class below.
+
+- Generated: 2026-09-30T15:01:59.631Z
+- Project: workflow-skills
+- Agent: muse code
+- SCM provider: github
+- Command: node {skillsRoot}/ws-monitor/scripts/monitor_snapshot.cjs --watch --interval 60 --until-terminal --follow-transcript --open-issue
+
+## Summary
+
+4 actionable finding(s) across 24 workflow(s).
+
+Codes: context-mismatch
+
+## Failure classes
+
+### `context-mismatch` (critical)
+
+- state branch feature/us-436 differs from active branch develop
+  - Evidence: .
+- state branch feature/us-439 differs from active branch develop
+  - Evidence: .
+- state branch feature/us-440 differs from active branch develop
+  - Evidence: .
+- state branch feature/ws-spec-to-pr-distributed differs from active branch develop
+  - Evidence: .
+- Suspected contract to update: config-resolution.md / workflow bootstrap (config/branch resolution)
+
+## Expected contract
+
+A live workflow must either progress to a terminal state or record an explicit turn-boundary pause, with telemetry and step artifacts consistent with the state file. The contracts above should make the observed failure class deterministic-free.
+
+## Reproduction shape
+
+- Install scope: project-local or global skills install (state the scope when filing).
+- A workflow run reaching the step named in the evidence with the reported signal.
+- Re-run the command above with `--json` to reproduce the finding list.
+
+## Scope checklist
+
+- [ ] Observer did not modify product code or workflow state
+- [ ] Body anonymized (no consumer secrets, customer data, or absolute machine paths)
+
+- **jpolvora:** ## Context from the full live watch that produced this issue (enhancement)
+
+Filed from a `--watch --interval 60 --until-terminal` session over 27 runs (~2.5 h, exit 0, batch closed 7/7 shipped). Extra evidence that narrows the failure class:
+
+- **All 4 criticals are historical, terminal runs** (status `completed`, steps 0-9 terminal, shipped days ago) whose recorded state branch (`feature/*`) is compared against the *current* checkout branch (`develop`). The runs are not live; the ambient HEAD moved after they closed.
+- **No live-run mismatch:** the batch run and every child worker observed during the watch recorded branches matching the active checkout. The finding list stayed byte-identical across every tick, i.e. the signal does not change as work progresses — a signature of comparing frozen historical state to a moving checkout.
+- **Noise impact:** these 4 criticals dominate the report headline (`2 classes` in the proposal title at intermediate ticks) and push genuinely live signals (`stale-parent-row`, `worker-session-stall`) out of the issue-proposal code list at different ticks — proposal contents flap depending on which findings happen to be actionable at exit.
+
+## Suggested contract refinement (observer did not patch)
+
+- Scope the branch comparison to **non-terminal** runs: `status` active/blocked/in_progress → critical; terminal runs → `info` (historical branch context) or drop entirely.
+- Or compare the state branch against the run's own recorded lineage (`baseBranch` / `branchPolicy` / delivery commit) instead of the ambient `HEAD`.
+- Deterministic rule: `context-mismatch` should be able to fire only when an orchestrator and the monitor can actually disagree about the live checkout — not after the run closed.
+
+Reproduce: `node {skillsRoot}/ws-monitor/scripts/monitor_snapshot.cjs --json` and inspect `findings[code=context-mismatch]` against each cited run's `status`.
+
+### Prior Work Sweep
+
+No open pull request references issue 473. Keyword search (`context-mismatch`, `branch`, `#473`) returned only merged PRs (#309 stale monitor guards, #350 baton handoffs, #432 alias classification). None add a status guard to the branch comparison. Design-intent note: the comparison was written for live-run drift and lacks a terminal-run case.
+
+## Notes
+
+Lookup: `detectContextMismatch` and the `context-mismatch` defect-contract mapping are in `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs`. Stack file is the Node 22 skill package. MEMORY had no trap that changes this fix.
