@@ -364,7 +364,7 @@ function link(options, context) {
     }
     if (adequacyRecord) {
       if (!adequacyRecord.acs.includes(ac)) throw new Error(`adequacy record does not cover ${ac}`);
-      row.adequacy = {
+      const summary = {
         status: adequacyRecord.status,
         taskId: adequacyRecord.taskId,
         acs: [...adequacyRecord.acs].sort(),
@@ -375,6 +375,9 @@ function link(options, context) {
         recordSha256: sha256(adequacySource.text),
         checkedAt: adequacyRecord.checkedAt || null,
       };
+      row.adequacyHistory ||= [];
+      row.adequacyHistory = [...row.adequacyHistory.filter((entry) => entry.linkEventId !== options.eventId), { ...summary, linkEventId: options.eventId }];
+      row.adequacy = summary;
     }
     if (!row.linkEventIds.includes(options.eventId)) {
       row.linkEventIds.push(options.eventId);

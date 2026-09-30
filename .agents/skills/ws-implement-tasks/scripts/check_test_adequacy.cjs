@@ -134,6 +134,10 @@ function checkBindings(record, repoRoot, gaps) {
       continue;
     }
     if (!content.includes(binding.test)) gaps.push(`${label}: test name not present in ${binding.file}: ${binding.test}`);
+    else {
+      const slice = content.split('\n').slice(binding.lineStart - 1, binding.lineEnd).join('\n');
+      if (!slice.includes(binding.test)) gaps.push(`${label}: test name outside declared range ${binding.file}:L${binding.lineStart}-L${binding.lineEnd}: ${binding.test}`);
+    }
   }
 }
 

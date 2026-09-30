@@ -226,4 +226,31 @@ for (const phrase of ['negative test', 'negativeScenarios', 'skipReason: baselin
   assert.ok(verify.includes(phrase), `verify locked phrase survives: ${phrase}`);
 }
 
+// --- Fix round 1 anti-regression (CR-001..CR-003) ------------------------------
+{
+  assert.strictEqual(ledger(['init', '--spec', 'feature.spec.md', '--plan-index', 'plan.index.json', '--output', 'ac-ledger-cr001.json', '--workflow-id', 'wf-fix', '--slug', 'feature']).status, 0);
+  const recA = writeRecord('cr001-a.json', baseRecord({ taskId: 'T-A' }));
+  const recB = writeRecord('cr001-b.json', baseRecord({ taskId: 'T-B' }));
+  assert.strictEqual(ledger(['link', '--ledger', 'ac-ledger-cr001.json', '--event-id', 'fix-a', '--ac', 'AC1', '--adequacy-file', recA]).status, 0);
+  assert.strictEqual(ledger(['link', '--ledger', 'ac-ledger-cr001.json', '--event-id', 'fix-b', '--ac', 'AC1', '--adequacy-file', recB]).status, 0);
+  const row = JSON.parse(fs.readFileSync(path.join(root, 'ac-ledger-cr001.json'), 'utf8')).acceptanceCriteria.find((r) => r.id === 'AC1');
+  assert.strictEqual(row.adequacyHistory.length, 2, 'CR-001: multi-task links append history');
+  assert.strictEqual(row.adequacy.taskId, 'T-B', 'CR-001: latest record governs the row');
+  assert.deepStrictEqual(row.adequacyHistory.map((e) => e.taskId), ['T-A', 'T-B'], 'CR-001: history preserves every task');
+}
+{
+  const outside = helper(['--record', writeRecord('cr002-outside.json', baseRecord({
+    bindings: [{ ac: 'AC1', test: 'first behavior rejects wrong code', file: 'feature.test.js', lineStart: 2, lineEnd: 2 }],
+  }))]);
+  assert.strictEqual(outside.status, 1, 'CR-002: out-of-range binding exits 1');
+  assert.match(outside.stdout, /outside declared range/, 'CR-002: gap names the false range');
+  const absent = helper(['--record', writeRecord('cr002-absent.json', baseRecord({
+    bindings: [{ ac: 'AC1', test: 'no such test anywhere', file: 'feature.test.js', lineStart: 1, lineEnd: 1 }],
+    litmus: [],
+  }))]);
+  assert.strictEqual(absent.status, 1, 'CR-002: absent name still exits 1');
+  assert.match(absent.stdout, /not present/, 'CR-002: absent name keeps its message');
+}
+assert.match(implement, /Derive `addedTests` from the task diff/, 'CR-003: recipe derives addedTests from the diff');
+
 console.log('test-per-task-adequacy: ok');
