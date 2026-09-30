@@ -1,5 +1,45 @@
 # Changelog
 
+### [2026-09-30 11:02] Agent: agent
+- **Prompt**: ws-spec-multi batch 0154-0160 (7 specs, all standard, stay-on-develop)
+- **Done**: 7/7 items shipped and merged: PRs #465, #466, #467, #468, #470, #471, #472; per-item fable-judge VERIFIED audits with fresh full-suite re-runs 147-153 green; run ms-20260930T043638Z completed
+- **Result**: all PRs MERGED with 0 threads and green checks; versions 0.5.18-0.5.24 released; batch residue (result frontmatter, memory, changelog, untracked child artifacts) left dirty per precedent
+
+### [2026-09-30 10:42] Agent: agent
+- **Prompt**: Implement explicit knowledge chain (0160) via standard spec-to-pr pipeline
+- **Done**: Shipped explicit-knowledge-chain: chain order + UNCERTAIN flag + fabrication ban in fable-method, judge Step 1b compliance check + report section, AGENTS.md mirror, regression suite; verify 10/10; review clean round 2
+- **Result**: Implementation complete, PR pending (Step 8 ship phase)
+
+### [2026-09-30 09:44] Agent: agent
+- **Prompt**: Implement per-step context budgets (0159) via standard spec-to-pr pipeline
+- **Done**: Shipped per-step-context-budgets: stepContextBudgets config, builder resolution, manifest provenance, per-step audit, GUI parity, suite; verify 10/10; release 0.5.23
+- **Result**: Implementation complete, PR pending (Step 8 ship phase)
+
+### [2026-09-30 08:30] Agent: agent
+- **Prompt**: Run ws-spec-to-pr standard pipeline for benchmark-publish-fixed-models (batch ms-20260930T043638Z item 5)
+- **Done**: Published fixed-model comparison benchmark: publisher, frozen PRD, binary judge, 3 samples, report, evolution link; verify 10/10; review clean round 2
+- **Result**: Shipped via develop->main PR; implementation status completed
+
+### [2026-09-30 07:14] Agent: agent
+- **Prompt**: Run spec-closure-strengthening (batch ms-20260930T043638Z item 4): enforce EARS ACs, substantive Out of Scope, canonical-section finder
+- **Done**: validate_spec.cjs authoring rules + EARS docs + fixture reshapes + regression suite; verify 9/10; review clean; tests 150/150
+- **Result**: Shipped: EARS enforcement authoring-only, compat frozen (0/159 diff), docs carry 5 patterns with examples
+
+### [2026-09-30 05:09] Agent: agent
+- **Prompt**: Run ws-spec-to-pr standard pipeline for per-task-test-adequacy-review (0156)
+- **Done**: Per-task Test Adequacy review in ws-implement-tasks: recipe step 5, check_test_adequacy.cjs helper, ac_ledger --adequacy-file verb + score rule, verify note, regression suite; verify 10/10, review clean after 1 fix round, testing pass with sabotage bite
+- **Result**: Shipped as PR develop to main; 7/7 ACs implemented
+
+### [2026-09-30 03:43] Agent: agent
+- **Prompt**: Implement fresh-worker verifier stage (standard pipeline Step 6b)
+- **Done**: New ws-fresh-verify skill with compact dispatch builder, per-AC fault injection on scratch worktrees, and evidence-or-zero reporting; Step 6b contracts, registration, and regression tests
+- **Result**: Shipped: verify 10/10, review round 2 clean, 148/148 tests green, sabotage passed
+
+### [2026-09-30 01:53] Agent: agent
+- **Prompt**: ws-spec-multi batch ms-20260930T043638Z item 1: dispatch prompt audit trail (standard pipeline)
+- **Done**: Writer script, dispatch/finish provenance, schemas, pre-advance gate, recipe+registry docs, 10-AC regression suite, review-fix CR-001, release 0.5.18
+- **Result**: Shipped: verify 10/10, review clean, 147/147 tests green, sabotage passed
+
 ### [2026-09-29 22:40] Agent: agent
 - **Prompt**: Create one spec per enhancement item (6 items)
 - **Done**: Wrote specs 0155-0160 + 1 context companion, all authoring PASS, all tracked in index.PRD

@@ -6,6 +6,87 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-09-30] Site feature cards regenerate from the build-site template
+- **Layer**: `DevOps`
+- **Module**: `bin`
+- **Severity**: `Medium`
+- **PathPattern**: `docs/index.html, bin/build-site.js`
+- **Scenario / Context**: A hand edit to a feature card in `docs/index.html` was silently wiped by `npm run build-site:bump`, which regenerates card blocks from the `efficiencyFeatureBlock` template inside `bin/build-site.js`.
+- **DO NOT**: Hand-edit feature-card markup directly in `docs/index.html` and assume a later site rebuild preserves it.
+- **INSTEAD DO**: Edit the card source in the `bin/build-site.js` template block, then rebuild (`npm run build-site`), then grep the generated `docs/index.html` for the new sentence to confirm it survived before committing.
+
+### [2026-09-30] Shared-head batches absorb foreign develop commits into PR ranges
+- **Layer**: `devops`
+- **Module**: `ws-spec-multi / stay-on-develop`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/plans/ms-*/ms-*.state.md`, `develop`
+- **Scenario / Context**: During a 7-spec stay-on-develop batch, two foreign commits landed on `develop`: one commit+amend swept the master's own staging mid-preflight (satisfying the WIP-first gate as a superset), and a human CI-config commit landed between a worker's pushed commits mid-batch, riding that item's PR range to `main`.
+- **DO NOT**: Assume `develop` is batch-exclusive during a shared-head run; rebase, amend, or otherwise rewrite the pushed range to exclude a foreign commit; treat a clean `git status` as proof no foreign writer is active.
+- **INSTEAD DO**: Re-scan before every dispatch (`git status`, no active foreign child states, `develop..origin/develop` empty); let foreign commits ride the range untouched per git-ownership and disclose them in the PR body and audit notes; sync post-merge with fetch + `--ff-only` only; verify `gh pr head == local develop` at each Phase 4b.
+
+### [2026-09-30] Ledger-linked test names must be literal strings
+- **Layer**: `Tests`
+- **Module**: `test/test-*.js (suites linked via ac_ledger.cjs link --test)`
+- **Severity**: `Medium`
+- **PathPattern**: `test/test-*.js`
+- **Scenario / Context**: `ac_ledger.cjs link --test` validates the name with a literal `file.includes(name)` substring check. A loop asserting `` `AC3: ${name} override rejected` `` has no literal whole-message match, so every link attempt failed with "test name not found" until the loop was unrolled into literal messages.
+- **DO NOT**: Build `assert(..., message)` strings with template interpolation in suites whose assertions will be ledger-linked, nor retry a "test name not found" link failure with more quoting.
+- **INSTEAD DO**: Use literal message strings for linkable assertions (unroll interpolation loops or hoist a shared literal via a helper); keep the exact message text stable for `--test name=...` linkage.
+
+### [2026-09-30] Ledger link verbs must re-validate evidence claims, never trust self-reported status
+- **Layer**: `Domain`
+- **Module**: `ws-spec-to-pr / ac_ledger.cjs`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs`
+- **Scenario / Context**: The first `--adequacy-file` verb shape-validated the record but trusted its claimed `status`, so an adequate-claimed record that would fail the deterministic validator linked cleanly and scoring never failed closed. A PR reviewer caught it; the fix shells to the validator and rejects claimed/computed verdict mismatches.
+- **DO NOT**: Attach a worker-authored evidence record to the ledger on structural validity alone while its pass/fail claim goes unchecked.
+- **INSTEAD DO**: Re-run the deterministic validator inside the link verb and require the claimed status to equal the computed verdict in both directions (adequate-claimed-but-failing and inadequate-claimed-but-passing both throw with the ledger unchanged); cover both mismatches with assertions.
+
+### [2026-09-30] Ledger file evidence needs same-range refresh after line-shifting fixes
+- **Layer**: `Domain`
+- **Module**: `ws-spec-to-pr / ac_ledger.cjs`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs`
+- **Scenario / Context**: `link` is append-only (same path+lines replaces the file-level hash; no unlink verb). A review-fix round that shifts lines leaves Step 5 entries hash-stale; linking new ranges keeps both, so pre-advance fails until the original ranges are re-linked for hash refresh.
+- **DO NOT**: Link only new post-fix ranges and expect pre-advance to pass, or hand-edit `ac-ledger.json` to delete stale entries.
+- **INSTEAD DO**: After a line-shifting fix, re-link every original range (same path+lines) to refresh hashes via the sanctioned writer, then re-run `score` at the gate boundary; document the old→new pointer map in the fix report as authoritative.
+
+### [2026-09-30] G2 review-fix commit misses fix-round new files
+- **Layer**: `Devops`
+- **Module**: `ws-spec-to-pr / commit_g2_code.cjs`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/commit_g2_code.cjs`
+- **Scenario / Context**: Step 6 fix round added new files (vendored evidence) not present in the Step 4 `files_touched` snapshot; the Step 6 G2 commit staged from the stale snapshot and left the new files untracked, requiring a follow-up straggler commit.
+- **DO NOT**: Assume the Step 6 G2 commit covers fix-round work without checking; new files created after `finish --step 4` are outside the staged snapshot.
+- **INSTEAD DO**: After the fix round and before/after the Step 6 G2 commit, run `git status --porcelain` scoped to the workflow paths; commit any in-scope untracked/modified stragglers explicitly with a scoped message.
+
+### [2026-09-30] Fixture-repoRoot spawns must not rely on ambient global skills
+- **Layer**: `Tests`
+- **Module**: `test/test-*.js (suites spawning skill-body-resolving scripts)`
+- **Severity**: `High`
+- **PathPattern**: `test/test-*.js`
+- **Scenario / Context**: A new suite spawned `build_dispatch_context.cjs` and `measure_harness.cjs` with temp-fixture `--repo-root`s carrying only `.ws/config.json`. Skill-body resolution is repoRoot-local else machine-global, so CI (no ambient global install) failed with `SKILL.md not found` while the author machine global masked it locally.
+- **DO NOT**: Spawn builder/measure scripts against fixture repoRoots without pinning skill-body resolution, nor trust a local green when the machine has a global skills install CI lacks.
+- **INSTEAD DO**: Set `WORKFLOW_SKILLS_GLOBAL_DIR` to the repo skills tree for such spawns (precedent: `test-hybrid-consumer-root.js`), and verify the suite once with an empty ambient global to simulate CI.
+
+### [2026-09-30] File:line evidence validators must slice-check name containment
+- **Layer**: `Tests`
+- **Module**: `ws-implement-tasks / check_test_adequacy.cjs`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/*/scripts/*.cjs`
+- **Scenario / Context**: The first version of the adequacy binding check verified file existence, range well-formedness, and test-name presence anywhere in the file — a binding pointing at the wrong line still validated adequate. Review caught it; the fix requires the name within the sliced [lineStart, lineEnd] range.
+- **DO NOT**: Validate a file:line binding with whole-file name presence alone, or treat a well-formed range as proof the pointer is true.
+- **INSTEAD DO**: Slice `content.split('\n').slice(lineStart - 1, lineEnd)` and require the test name within the slice, with a distinct gap message for name-absent-anywhere vs name-outside-range; cover both with assertions.
+
+### [2026-09-30] CLI `--flag=value` slice offsets must count the `=`
+- **Layer**: `Tests`
+- **Module**: `ws-fresh-verify`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/*/scripts/*.cjs`
+- **Scenario / Context**: `--invert-patch=<path>` silently dropped the value's first character because the parser sliced 16 for a 15-character prefix (copied from the same latent line in `run_sabotage.cjs`); the space-separated form worked, so the suite stayed green until review probed the `=` form.
+- **DO NOT**: Copy a `startsWith('--x=')` + `slice(n)` branch without recounting the prefix length, or ship a CLI whose `=` forms have no regression assertion.
+- **INSTEAD DO**: Verify every `=`-branch offset arithmetically (prefix length includes `=`) and cover each documented `=` form with an assertion that the parsed value took effect; when the same line exists in a sibling script outside the change scope, name the exemption with path + reason instead of widening the diff.
+
 ### [2026-09-30] Classifier detectors must match canonical spec headings
 - **Layer**: `application`
 - **Module**: `ws-classify-complexity`
@@ -14,6 +95,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **Scenario / Context**: `hasOpenQuestions` matched only the legacy `## Open Questions` heading, but `ws-spec-write` emits the canonical `## Assumptions & Open Questions` table per `ws-spec-format`. `runInterview` silently stayed `false` for repo-written specs (us-459, us-461 skipped Step 2 with `interview-not-required` despite unconfirmed rows).
 - **DO NOT**: Write spec-section detectors against a guessed or legacy heading, or treat canonical-section presence alone as open (the section is required and always has rows).
 - **INSTEAD DO**: Match the canonical `## Assumptions & Open Questions` heading plus the legacy variant; derive open from the `Confirmed` column (any `n`/`no` row); pin both shapes in `test/test-classify-open-questions.js`.
+
+### [2026-09-30] ac_ledger --gap declares a defect; sabotage links need an AC target
+- **Layer**: `Tests`
+- **Module**: `ws-spec-to-pr`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/plans/**/ac-ledger.json`
+- **Scenario / Context**: Step 7 linked a passing sabotage run via `ac_ledger.cjs link --sabotage-exit 0 --gap "<note>"`, intending the gap text as a note. Any entry in `declaredGaps` sets `knownDefect`, capping the derived score at 8 and failing `--pre-advance 8`, and no CLI removes a declared gap.
+- **DO NOT**: Pass `--gap` as a free-text note when linking sabotage exits or other non-AC evidence; a declared gap is a scored defect, not a comment.
+- **INSTEAD DO**: Link sabotage evidence to its AC (`link --ac ACn --sabotage-exit 0` with no `--gap`). If a bogus gap was already declared, remove that exact string from `declaredGaps` and immediately re-run `ac_ledger.cjs score --boundary <expected>` to re-persist scoreState, then disclose the correction in the delivery result.
 
 ### [2026-09-29] Version bump and integrity manifest must ship in one commit
 - **Layer**: `Release verification`
