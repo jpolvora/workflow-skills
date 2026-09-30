@@ -1732,10 +1732,15 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
       dispatch.promptSha256 = promptRef.promptSha256;
     }
     const priorDispatch = state.stepDispatches.find((item) => Number(item.step) === Number(step));
-    if (priorDispatch && priorDispatch.promptSha256 && !dispatch.promptSha256) {
+    if (!promptRef && priorDispatch && priorDispatch.promptPath && priorDispatch.promptSha256 && PROMPT_INHERIT_SUBSTEPS.has(String(options.substep || ''))) {
+      dispatch.promptPath = String(priorDispatch.promptPath);
+      dispatch.promptSha256 = String(priorDispatch.promptSha256);
+      options.promptPath = dispatch.promptPath;
+      options.promptSha256 = dispatch.promptSha256;
+    } else if (priorDispatch && priorDispatch.promptSha256 && !dispatch.promptSha256) {
       throw new Error(`cannot dispatch step ${step}: the prior dispatch recorded a prompt audit; pass --prompt-path/--prompt-sha256 from write_dispatch_prompt_audit.cjs (re-running the writer keeps the audit chain)`);
     }
-    if (priorDispatch && priorDispatch.promptSha256 && dispatch.promptSha256) {
+    if (promptRef && priorDispatch && priorDispatch.promptSha256) {
       options.priorPromptSha256 = String(priorDispatch.promptSha256);
     }
     state.stepDispatches = [...state.stepDispatches.filter((item) => Number(item.step) !== step), dispatch].sort((a, b) => a.step - b.step);
@@ -2101,6 +2106,7 @@ function artifactMetadata(file, expectedStep, state) {
 }
 
 const PROMPT_FIXED_PREAMBLE_CAP = 18000;
+const PROMPT_INHERIT_SUBSTEPS = new Set(['scoreAndRefine', 'reviewFix', 'fixPrPlan', 'fixPrExec']);
 
 function normalizePromptRef(options) {
   const hasPath = options.promptPath !== undefined && options.promptPath !== null && String(options.promptPath).trim() !== '';

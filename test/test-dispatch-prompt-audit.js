@@ -157,6 +157,16 @@ assert.strictEqual(validateNode(events1[0], telemetrySchema, 'telemetry.jsonl[0]
 // Re-dispatch without prompt flags fails closed (audit chain cannot silently drop).
 const d1bare = run(UPDATE_STATE, ['dispatch', path.relative(repoB, stateB).replace(/\\/g, '/'), '--step', '1'], { cwd: repoB });
 assert.notStrictEqual(d1bare.status, 0, 're-dispatch without prompt flags fails closed');
+// CR-001: internal retry substeps inherit the recorded prompt; dag nodes must audit.
+const dSub = run(UPDATE_STATE, ['dispatch', path.relative(repoB, stateB).replace(/\\/g, '/'), '--step', '1', '--substep', 'fixPrPlan'], { cwd: repoB });
+assert.strictEqual(dSub.status, 0, `CR-001: fixPrPlan substep inherits (${dSub.stderr})`);
+const stSub = stateJsonFor(stateB);
+assert.strictEqual(stSub.stepDispatches[0].promptSha256, wqOut.promptSha256, 'CR-001: inherited entry keeps the sha');
+const evSub = telemetryFor(usB).at(-1);
+assert.strictEqual(evSub.promptSha256, wqOut.promptSha256, 'CR-001: inherited event carries the sha');
+assert.strictEqual(evSub.priorPromptSha256, undefined, 'CR-001: inherited dispatch sets no prior sha');
+const dDag = run(UPDATE_STATE, ['dispatch', path.relative(repoB, stateB).replace(/\\/g, '/'), '--step', '1', '--substep', 'dag'], { cwd: repoB });
+assert.notStrictEqual(dDag.status, 0, 'CR-001: dag node dispatch without flags fails closed');
 
 // --- AC6: re-dispatch overwrites, bumps revision, preserves prior sha ---
 write(path.join(usB, 'prompt-src.md'), '# dispatch one revised\n');
@@ -170,9 +180,9 @@ assert.strictEqual(man2.priorPromptSha256, wqOut.promptSha256, 'AC6: manifest pr
 const d1b = run(UPDATE_STATE, ['dispatch', stateB, '--step', '1', '--prompt-path', wq2Out.promptPath, '--prompt-sha256', wq2Out.promptSha256, '--jsonl-out', path.join(usB, 'telemetry.jsonl')], { cwd: repoB });
 assert.strictEqual(d1b.status, 0, d1b.stderr);
 const events2 = telemetryFor(usB);
-assert.strictEqual(events2.length, 2);
-assert.strictEqual(events2[1].priorPromptSha256, wqOut.promptSha256, 'AC6: re-dispatch event preserves the prior sha');
-assert.strictEqual(validateNode(events2[1], telemetrySchema, 'telemetry.jsonl[1]').length, 0, 'AC6: re-dispatch event validates');
+assert.strictEqual(events2.length, 3);
+assert.strictEqual(events2[2].priorPromptSha256, wqOut.promptSha256, 'AC6: re-dispatch event preserves the prior sha');
+assert.strictEqual(validateNode(events2[2], telemetrySchema, 'telemetry.jsonl[2]').length, 0, 'AC6: re-dispatch event validates');
 // Finish backfill must reject a prompt that differs from the dispatch record.
 const f1bad = run(UPDATE_STATE, ['finish', path.relative(repoB, stateB).replace(/\\/g, '/'), '--step', '1', '--prompt-path', wq2Out.promptPath, '--prompt-sha256', 'd'.repeat(64)], { cwd: repoB });
 assert.notStrictEqual(f1bad.status, 0, 'finish backfill rejects a divergent sha');
