@@ -95,7 +95,7 @@ When Advance crosses **F1→F2** (after Step 3, before Step 4) or **F3→F4** (a
 
 ### Step Dispatch & Isolation
 
-Orch calls **`dispatch-agent`** — never inline step impl (Step 3 only when `defaults.enableDag` is true).
+Orch calls **`dispatch-agent`** — never inline step impl (Step 3 only if `defaults.enableDag`).
 
 ```yaml
 dispatch-agent:
@@ -104,9 +104,10 @@ dispatch-agent:
   run_in_background: false
 ```
 
-Anchor: `uswf/{workflow-id}/before-step-{N} @ {sha}`. Max 1 worktree. Audit `stepDispatches[]`.
+Anchor `uswf/{workflow-id}/before-step-{N} @ {sha}`; 1 worktree max; audit `stepDispatches[]`.
+Cap per step: `stepContextBudgets[N]` else `contextBudget` (floor 18000); manifest records `budgetBytes`+`budgetSource`.
 
-**Step 4:** sequential → single `ws-implement-tasks` build with AC slices; parallel → DAG ≤3 concurrent, no file overlap.
+**Step 4:** sequential → one `ws-implement-tasks` build with AC slices; parallel → DAG ≤3, disjoint files.
 
 ### Check-implementation score gate (Step 5)
 

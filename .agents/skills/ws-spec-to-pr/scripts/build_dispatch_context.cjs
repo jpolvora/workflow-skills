@@ -240,21 +240,33 @@ function main() {
   const mandatory = `${fixed}\n${targetSections}\n${plan}\n${state}\n${handoff}`;
   const configured = Number(context.config?.defaults?.contextBudget || DEFAULT_LIMIT);
   if (!Number.isInteger(configured) || configured < FIXED_LIMIT) throw new Error('defaults.contextBudget must be an integer at least 18000');
-  if (bytes(mandatory) > configured) throw new Error(`mandatory dispatch context exceeds configured ${configured}-byte budget`);
+  const overrides = context.config?.defaults?.stepContextBudgets || {};
+  if (overrides === null || typeof overrides !== 'object' || Array.isArray(overrides)) throw new Error('defaults.stepContextBudgets must be a step-number to byte-budget map');
+  for (const key of Object.keys(overrides)) {
+    if (!/^[0-9]$/.test(key)) throw new Error(`defaults.stepContextBudgets["${key}"] must use a step number 0-9 as its key`);
+    const value = Number(overrides[key]);
+    if (!Number.isInteger(value) || value < FIXED_LIMIT) throw new Error(`defaults.stepContextBudgets["${key}"] must be an integer at least 18000`);
+  }
+  const stepKey = options.step === undefined || options.step === null ? null : String(options.step);
+  const stepOverride = stepKey !== null && Object.prototype.hasOwnProperty.call(overrides, stepKey) ? Number(overrides[stepKey]) : null;
+  const budgetBytes = stepOverride === null ? configured : stepOverride;
+  const budgetSource = stepOverride === null ? 'global' : 'step';
+  if (bytes(mandatory) > budgetBytes) throw new Error(`mandatory dispatch context exceeds configured ${budgetBytes}-byte budget`);
 
   const included = [];
   const omitted = [];
   let output = mandatory;
   for (const [name, content] of [['memory', memory], ['stack', stack], ['history', history]]) {
     if (!content) continue;
-    if (bytes(output + content) <= configured) {
+    if (bytes(output + content) <= budgetBytes) {
       output += `\n${content}`;
       included.push({ name, bytes: bytes(content) });
     } else omitted.push({ name, bytes: bytes(content), reason: 'context-budget' });
   }
   const manifest = {
     schemaVersion: 1,
-    budgetBytes: configured,
+    budgetBytes,
+    budgetSource,
     fixedPreambleBytes: bytes(fixed),
     mandatoryBytes: bytes(mandatory),
     totalBytes: bytes(output),

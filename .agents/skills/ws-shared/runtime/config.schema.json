@@ -190,6 +190,11 @@
           "default": 32000,
           "description": "Maximum UTF-8 bytes in one complete standard subagent dispatch."
         },
+        "stepContextBudgets": {
+          "type": "object",
+          "additionalProperties": { "type": "integer", "minimum": 18000 },
+          "description": "Per-step dispatch byte-budget overrides keyed by step number (\"0\"-\"9\"; lite reuses 0-5), mirroring the stepModels convention. A step override wins over contextBudget; the 18000 floor applies to every value."
+        },
         "parallelVerifyReview": {
           "type": "boolean",
           "default": false,
