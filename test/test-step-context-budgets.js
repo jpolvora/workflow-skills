@@ -24,6 +24,11 @@ const SKILL = path.join(repoRoot, '.agents/skills/ws-implement-tasks/SKILL.md');
 
 const tempRoot = temp('ws-step-budgets-');
 process.on('exit', () => { try { fs.rmSync(tempRoot, { recursive: true, force: true }); } catch { /* ignore */ } });
+// Hermetic skill-body resolution: fixture repos carry only .ws/config.json, so
+// enhancing/target SKILL.md lookups must not depend on the ambient machine
+// global install (absent on CI). Point spawned builders at this repo's own
+// skills tree as the global fallback (repoRoot-local wins where present).
+process.env.WORKFLOW_SKILLS_GLOBAL_DIR = path.join(repoRoot, '.agents/skills');
 
 function fixtureRepo(name, defaults) {
   const root = path.join(tempRoot, name);
