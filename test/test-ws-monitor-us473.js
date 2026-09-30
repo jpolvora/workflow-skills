@@ -73,7 +73,9 @@ for (const status of ['cancelled', 'failed', 'superseded', 'stopped']) {
   }
 }
 
-// AC2: a terminal-shaped run still reporting `active` is derived terminal -> info.
+// Shape-derived handling must never soften the branch finding: a terminal-shaped
+// run still reporting `active` keeps the literal status, so it stays critical
+// (see MEMORY: monitor severity keys off the status literal, not the shape).
 {
   const shaped = activeState({
     status: 'active',
@@ -82,8 +84,8 @@ for (const status of ['cancelled', 'failed', 'superseded', 'stopped']) {
     stepStatus: { 0: 'completed', 1: 'completed', 2: 'skipped', 3: 'completed', 4: 'completed', 5: 'completed', 6: 'completed', 7: 'skipped', 8: 'completed' },
   });
   const finding = branchFinding(detectContextMismatch(shaped, checkout, '/repo'));
-  if (!finding || finding.severity !== 'info') {
-    throw new Error(`terminal-shaped run must be info, got ${JSON.stringify(finding)}`);
+  if (!finding || finding.severity !== 'critical') {
+    throw new Error(`terminal-shaped active run must stay critical, got ${JSON.stringify(finding)}`);
   }
 }
 
