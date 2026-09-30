@@ -31,6 +31,8 @@ For each collected claim, verify knowledge-chain compliance:
 - A claim citing a later link when an earlier link grounds it is a **skipped-link** violation.
 - A claim with no grounding chain source must carry the `UNCERTAIN` marker; an unmarked unsourced claim presented as fact fails the sourcing check.
 - An invented API, path, number, version, or tool output with no chain reference fails the anti-fabrication check.
+- Do not confuse `UNCERTAIN` (no chain source grounds the claim) with `UNVERIFIABLE` (a verification that cannot be re-run); the two markers are never interchangeable.
+- A report without the per-claim source table is returned for completion before the audit counts.
 
 ### Step 2 — Establish Ground Truth (`git diff`)
 - Execute `git diff` and `git status` (or file comparison against target baseline).

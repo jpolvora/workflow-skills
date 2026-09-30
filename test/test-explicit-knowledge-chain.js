@@ -26,6 +26,8 @@ assert.match(method, /Claim\s*\|\s*Chain link\s*\|\s*Reference\s*\|\s*Uncertain/
 assert.match(judge, /chain compliance/i);
 assert.match(judge, /skipped-link/);
 assert.match(judge, /UNCERTAIN/);
+assert.match(judge, /never interchangeable/);
+assert.match(judge, /returned for completion before the audit counts/);
 assert.match(report, /Source Chain Compliance/);
 // AC7: max-2 lookup rounds budget preserved verbatim.
 assert.match(method, /max \*\*2\*\* lookup rounds then state gaps/);
