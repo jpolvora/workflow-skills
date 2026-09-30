@@ -196,6 +196,9 @@
     ],
     [
       "test/test-dispatch-prompt-audit.js"
+    ],
+    [
+      "test/test-fresh-verify.js"
     ]
   ],
   "remote": [

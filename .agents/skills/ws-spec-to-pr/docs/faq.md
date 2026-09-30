@@ -156,6 +156,10 @@ flowchart TD
     *   **Fix → re-review**: If Critical or Warning findings are present, runs `ws-implement-tasks` `mode=fix`, then re-reviews (max 3 rounds; `autoMode` autofix). Records traps/gaps in state/memory each round. Advance only when clean; Pause on residual after max rounds.
     *   **Review-fix commit**: After the loop, a **second** G2-code commit of workflow-touched product files if any changed (one commit for all fix rounds). Skip if review was clean with no extra product files.
 
+### Step 6b: Fresh-worker verify
+*   **Executor**: Fresh verifier subagent (`ws-fresh-verify`) receiving only the spec, the plan of record, and the compact handoff.
+*   **Role**: Re-derives every AC verdict from the spec plus the product tree, injects one fault per AC on a scratch worktree (removed after; primary byte-identical), and writes `step-05b-{slug}.fresh-verify.md` (evidence-or-zero). Defects route to fix plus re-verify (max 3 rounds, then Pause with residuals). No product tree changes → `--skip no-product-changes` marker. Never advance to Step 7 until the 05b report or skip marker exists.
+
 ### Step 7: Testing
 *   **Executor**: Verifier subagent (`ws-testing` / `ws-testing`).
 *   **Role**: Writes a test plan and executes unit, integration, and optionally browser verification. Optional **mutation testing** runs after green suite checks when `verification.mutationTest` is set and `defaults.skipMutationTesting` is false; score below `verification.mutationThreshold` fails Step 7 (strengthen tests before Advance). Lite has no Step 7 — mutation is standard-only.
@@ -178,7 +182,7 @@ flowchart TD
 | Level | Allowed Operations | Trigger Phase |
 | :--- | :--- | :--- |
 | **G0** | Read codebase, fetch issue metadata, output reports | Steps 0, 1, 2, 3, 5, 6, 7 (plan) |
-| **G1** | Modify workspace files, update state files, draft plans | Step 4, Step 6 (fix), Step 7 (fix) |
+| **G1** | Modify workspace files, update state files, draft plans | Step 4, Step 6 (fix), Step 6b (scratch worktree only), Step 7 (fix) |
 | **G2-code** | Commit workflow-touched product files only (`files_touched`; never `{plansDir}`, never `git add -A`) | After Step 5 (required); after Step 6 review-fix if files remain; Step 7 fix. Lite: after Step 2 and after Step 3 fixes. |
 | **G2-delivery** | Commit configured delivery artifacts only (`defaults.deliveryCommitArtifacts`) | Step 8 delivery checkpoint |
 | **G3** | Run `git push`, create remote PR, merge PR | Step 8 ship action / Step 9 |

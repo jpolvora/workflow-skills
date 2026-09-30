@@ -38,6 +38,10 @@ Canonical artifacts under `{us-dir}`. `read-artifacts-registry` resolves one nam
 | Plan index | `.runtime/plan.index.json` | Step 1 (`plan_index.cjs build`; rebuild after Step 2; root fallback) | No |
 | AC ledger | `ac-ledger.json` | Step 0 (`ac_ledger.cjs init`) | No |
 | Check-implementation report | `step-05-{slug}.plan.report.md` | Step 5 | **Yes (Step 8)** when `includeCheckReport` |
+| Fresh-verify report | `step-05b-{slug}.fresh-verify.md` | Step 6b (`ws-fresh-verify`) | No |
+| Fresh-verify dispatch | `step-05b-{slug}.fresh-dispatch.json` | Step 6b (`ws-fresh-verify`) | No |
+| Fresh-verify verdicts | `step-05b-{slug}.fresh-verdicts.json` | Step 6b (`ws-fresh-verify`) | No |
+| Fresh-verify injections | `step-05b-{slug}.fresh-injections.json` | Step 6b (`ws-fresh-verify`) | No |
 | Code review | `step-06-{slug}.review.md` | Step 6 | **Yes (Step 8)** when `includeCodeReview` |
 | Review fix report | `step-06-{slug}.fix.report.md` | Step 6 fix → re-review loop | No |
 | Testing plan | `step-07-{slug}.testing.plan.md` | Step 7 | No |
@@ -60,7 +64,7 @@ Minimum on-disk artifacts required before **advance to step N** (standard FSM). 
 | 4 | plan of record + `.runtime/plan.index.json` (plus `step-03-{slug}.plan.exec.md` when `enableDag` is true; sequential mode skips Step 3 with `dag-disabled`, no stubs written; a `completed` Step 3 finish requires both exec files on disk, fail-closed) |
 | 5 | plan or refined plan + implementation tree (state manifest `created` / `artifacts` non-empty, or `dryRun`) |
 | 6 | `step-05-{slug}.plan.report.md` |
-| 7 | `step-06-{slug}.review.md` when code review ran |
+| 7 | `step-06-{slug}.review.md` when code review ran + `step-05b-{slug}.fresh-verify.md` (report or `no-product-changes` skip marker) once Step 6 completes — orch-dispatched substep requirement, doc-enforced (not a validator gate; same posture as `reviewFix`) |
 | 8 | `step-07-{slug}.testing.report.md` when Step 7 completed (not skipped `testing-disabled` / `no-test-surface`) |
 | 9 | `step-08-{slug}.result.md` + PR exists (ship evidence) |
 
@@ -173,6 +177,7 @@ One JSON object per line in `{us-dir}/telemetry.jsonl` (append-only):
 | 4 | `ws-implement-tasks` (build) |
 | 5 | `ws-plan-verify` |
 | 6 | `ws-code-review` (+ `ws-implement-tasks` fix → re-review, max 3) |
+| 6b | `ws-fresh-verify` (fresh re-derivation + fault injection + bounded fix loop) |
 | 7 | `ws-testing` (Testing) |
 | 8 | `ws-ship-pr` (delivery + push/PR; no terminal goal-fix) |
 | 9 | `ws-fix-pr` / `ws-goal-fix-pr` |

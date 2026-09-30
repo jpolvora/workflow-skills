@@ -184,6 +184,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 | `ws-implement-tasks` | 4, 6 (fix substep) | Build / review fix (runs pre-completion static scan `scan_stack_invariants.cjs`) |
 | `ws-plan-verify` | 5 | Check-implementation (advance at `defaults.minVerifyScore` (default 9); uncovered `negativeScenarios` cap 8; critical stack invariant violations cap at 7); product commit before review |
 | `ws-code-review` | 6 | Local review of committed diff vs base (two-phase adversarial model, stack rule pack, `localReviewCommand` dry-run, fix → re-review, max 3; then product commit) |
+| `ws-fresh-verify` | 6b | Fresh-worker re-derivation of every AC verdict plus one fault injection per AC on a scratch worktree; evidence-or-zero report (`step-05b-{slug}.fresh-verify.md`); defect fix plus re-verify loop, max 3 rounds then Pause |
 | `ws-testing` | 7 | Testing (unit/integration/coverage; optional mutation score gate) |
 | `ws-ship-pr` | 8 | Push/PR after close (G2-delivery at close; product already committed) |
 | `ws-fix-pr` | 9 | Batch gate-only plan → execute/proactive fix |

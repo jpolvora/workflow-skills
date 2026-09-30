@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "packageVersion": "0.5.18",
+  "packageVersion": "0.5.19",
   "upstream": {
     "repo": "jpolvora/workflow-skills",
     "url": "https://github.com/jpolvora/workflow-skills",
@@ -55,6 +55,7 @@
         "ws-plan-verify",
         "ws-code-review",
         "ws-testing",
+        "ws-fresh-verify",
         "ws-ship-pr",
         "ws-fix-pr",
         "ws-goal-fix-pr",
@@ -127,6 +128,7 @@
       "ws-plan-verify",
       "ws-code-review",
       "ws-testing",
+      "ws-fresh-verify",
       "ws-ship-pr",
       "ws-fix-pr",
       "ws-goal-fix-pr",
@@ -179,6 +181,7 @@
       "ws-plan-verify",
       "ws-code-review",
       "ws-testing",
+      "ws-fresh-verify",
       "ws-ship-pr",
       "ws-fix-pr",
       "ws-goal-fix-pr",

@@ -42,6 +42,7 @@ Path tokens: expand via [`tools.md`](tools.md) before tool calls.
 | 04 | `ws-implement-tasks` | `.agents/skills/ws-implement-tasks/SKILL.md` |
 | 05 | `ws-plan-verify` | `.agents/skills/ws-plan-verify/SKILL.md` |
 | 06 | `ws-code-review` | `.agents/skills/ws-code-review/SKILL.md` |
+| 6b | `ws-fresh-verify` | `.agents/skills/ws-fresh-verify/SKILL.md` |
 | 07 | `ws-testing` | `.agents/skills/ws-testing/SKILL.md` |
 | 08 | `ws-ship-pr` | `.agents/skills/ws-ship-pr/SKILL.md` |
 | 09 | `ws-fix-pr` | `.agents/skills/ws-fix-pr/SKILL.md` |
@@ -114,6 +115,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Verify / check-implementation / verify score | `ws-plan-verify` (advance at `defaults.minVerifyScore` (default 9); `scoreAndRefine` below) |
 | SCM intent contract / GitHub vs Azure parity | [`scm-provider-contract.md`](scm-provider-contract.md) — then one provider skill |
 | Local code review | `ws-code-review` |
+| Fresh-worker re-verification / fault injection | `ws-fresh-verify` |
 | Secrets / leaks | `ws-secrets-leak-review` |
 | Adversarial audit / fraud scan | `ws-fable-judge` |
 | Fable Method 7-step loop | `ws-fable-method` (on-demand; defer when the orch owns the session) |

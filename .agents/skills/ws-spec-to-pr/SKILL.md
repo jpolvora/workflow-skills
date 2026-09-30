@@ -72,7 +72,7 @@ Semantics per [`observer-instructions.md`](../ws-shared/runtime/observer-instruc
 | F1 Planning | 1–3 | Planner | 1–3 |
 | F2 Implementation | 4 | Coder (sequential default; DAG ≤3 parallel when `enableDag: true`) | 4 |
 | F3 Verification | 5 | Verifier (product-tree readonly; Shell required) | 5 |
-| F4 Review + Fix | 6 (+ fix) | Reviewer + Coder | 6 |
+| F4 Review + Fix | 6 (+ fix) + 6b | Reviewer + Coder | 6 |
 | F5 Testing | 7 | Verifier + optional browser | 7 |
 | F6 Ship + Fix-PR | 8–9 | Orch + shell (+ fix-pr) | 8 (ship) / 9 (fix-pr complete) |
 
