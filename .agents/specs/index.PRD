@@ -204,6 +204,20 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] autoMode should mean unattended: no yield at internal checkpoints (`spec: pending/0151-us-458.spec.md`)
 - [x] ws-kanvas board: add phase color coding and replace hardcoded grey/transparent styling (`spec: completed/0152-us-459.spec.md`)
 - [x] kanvas modal option to show full spec content in .md rendered (`spec: completed/0153-us-461.spec.md`)
+- [ ] Dispatch prompt audit trail (`spec: pending/0154-dispatch-prompt-audit-trail.spec.md`)
+- [ ] Fresh-worker verifier step (`spec: pending/0155-fresh-worker-verifier-step.spec.md`)
+- [ ] Per-task Test Adequacy review in implement (`spec: pending/0156-per-task-test-adequacy-review.spec.md`)
+- [ ] Spec closure strengthening (`spec: pending/0157-spec-closure-strengthening.spec.md`)
+- [ ] Publish fixed-model comparison benchmark (`spec: pending/0158-benchmark-publish-fixed-models.spec.md`)
+- [ ] Per-step context budgets in dispatch contracts (`spec: pending/0159-per-step-context-budgets.spec.md`)
+- [ ] Explicit knowledge chain in research guidance (`spec: pending/0160-explicit-knowledge-chain.spec.md`)
+
+
+
+
+
+
+
 
 
 
@@ -521,6 +535,20 @@ All Next-specs closed.
 | 157 | `us-459` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-kanvas board: add phase color coding and replace hardcoded grey/transparent styling |
 
 | 158 | `us-461` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | kanvas modal option to show full spec content in .md rendered |
+
+| 159 | `dispatch-prompt-audit-trail` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Dispatch prompt audit trail |
+
+| 160 | `fresh-worker-verifier-step` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Fresh-worker verifier step |
+
+| 161 | `per-task-test-adequacy-review` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Per-task Test Adequacy review in implement |
+
+| 162 | `spec-closure-strengthening` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Spec closure strengthening |
+
+| 163 | `benchmark-publish-fixed-models` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Publish fixed-model comparison benchmark |
+
+| 164 | `per-step-context-budgets` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Per-step context budgets in dispatch contracts |
+
+| 165 | `explicit-knowledge-chain` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Explicit knowledge chain in research guidance |
 
 ## 9. Inbox
 

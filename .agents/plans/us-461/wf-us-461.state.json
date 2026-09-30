@@ -1,0 +1,1450 @@
+{
+  "acImplemented": 7,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "90bac02bb9f48baddd87e743548202aa357ed59e",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-kanvas/refs/board.html:L190-L216",
+          ".agents/skills/ws-kanvas/refs/board.html:L250-L264",
+          "test/test-kanvas-spec-viewer.js:L195-L200"
+        ],
+        "files": [
+          {
+            "lineEnd": 216,
+            "lineStart": 190,
+            "path": ".agents/skills/ws-kanvas/refs/board.html",
+            "sha256": "717d8db86b0bc8211700295c71dc130a8b56b97fd0a6b233937cd770a42317a2"
+          },
+          {
+            "lineEnd": 264,
+            "lineStart": 250,
+            "path": ".agents/skills/ws-kanvas/refs/board.html",
+            "sha256": "717d8db86b0bc8211700295c71dc130a8b56b97fd0a6b233937cd770a42317a2"
+          },
+          {
+            "lineEnd": 200,
+            "lineStart": 195,
+            "path": "test/test-kanvas-spec-viewer.js",
+            "sha256": "bf6c7ba076a56df51761e14c5e4041994ec5817491f5486e5e6de5195b031edf"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "g2-commit-90bac02bb9f48baddd87e743548202aa357ed59e",
+          "impl-ac1-a2",
+          "impl-ac1-b",
+          "impl-ac1-c"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003",
+          "section-004",
+          "section-006",
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "renderer is exposed for automation",
+            "phase": "observed",
+            "sourceFile": "test/test-kanvas-spec-viewer.js",
+            "timestamp": "2026-09-29T20:00:45.489Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "The card popup offers a control (toggle button/link) that, when activated, displays the full text of that card's spec of record inside the modal and, when deactivated, hides it; pass when both states are observed with no page reload and no navigation away from the board.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "90bac02bb9f48baddd87e743548202aa357ed59e",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-kanvas/scripts/collect.cjs:L155-L176",
+          ".agents/skills/ws-kanvas/scripts/server.cjs:L283-L296",
+          "test/test-kanvas-spec-viewer.js:L75-L99"
+        ],
+        "files": [
+          {
+            "lineEnd": 176,
+            "lineStart": 155,
+            "path": ".agents/skills/ws-kanvas/scripts/collect.cjs",
+            "sha256": "f37b6c012c994a1273b9b3398c92c55fc627246acfb2805e5b9ef2c02703f5d4"
+          },
+          {
+            "lineEnd": 296,
+            "lineStart": 283,
+            "path": ".agents/skills/ws-kanvas/scripts/server.cjs",
+            "sha256": "13a67fc81a657c09f8fc9ea2f08b521276af3808fa3af7f3eca59800ca657ae7"
+          },
+          {
+            "lineEnd": 99,
+            "lineStart": 75,
+            "path": "test/test-kanvas-spec-viewer.js",
+            "sha256": "bf6c7ba076a56df51761e14c5e4041994ec5817491f5486e5e6de5195b031edf"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "g2-commit-90bac02bb9f48baddd87e743548202aa357ed59e",
+          "impl-ac2-a2",
+          "impl-ac2-b",
+          "impl-ac2-c"
+        ],
+        "planSections": [
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "known slug returns 200",
+            "phase": "observed",
+            "sourceFile": "test/test-kanvas-spec-viewer.js",
+            "timestamp": "2026-09-29T20:00:45.554Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "`GET /api/spec?slug={slug}` returns HTTP 200 with JSON `{ slug, path, markdown }` for a known slug and a typed not-found response for an unknown slug; pass when both responses are observed (`path` is the repo-relative spec path; `markdown` is the file text).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "90bac02bb9f48baddd87e743548202aa357ed59e",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-kanvas/scripts/collect.cjs:L129-L147",
+          ".agents/skills/ws-kanvas/scripts/collect.cjs:L155-L176",
+          "test/test-kanvas-spec-viewer.js:L101-L142"
+        ],
+        "files": [
+          {
+            "lineEnd": 147,
+            "lineStart": 129,
+            "path": ".agents/skills/ws-kanvas/scripts/collect.cjs",
+            "sha256": "f37b6c012c994a1273b9b3398c92c55fc627246acfb2805e5b9ef2c02703f5d4"
+          },
+          {
+            "lineEnd": 176,
+            "lineStart": 155,
+            "path": ".agents/skills/ws-kanvas/scripts/collect.cjs",
+            "sha256": "f37b6c012c994a1273b9b3398c92c55fc627246acfb2805e5b9ef2c02703f5d4"
+          },
+          {
+            "lineEnd": 142,
+            "lineStart": 101,
+            "path": "test/test-kanvas-spec-viewer.js",
+            "sha256": "bf6c7ba076a56df51761e14c5e4041994ec5817491f5486e5e6de5195b031edf"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "g2-commit-90bac02bb9f48baddd87e743548202aa357ed59e",
+          "impl-ac3-a2",
+          "impl-ac3-b",
+          "impl-ac3-c"
+        ],
+        "planSections": [
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "inside probe refuses an outside path",
+            "phase": "observed",
+            "sourceFile": "test/test-kanvas-spec-viewer.js",
+            "timestamp": "2026-09-29T20:00:45.612Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "The endpoint reads only inside `{specsDir}`; a slug that would resolve outside it (path traversal segment, absolute path, or a symlinked escape) is refused with a typed error and the file is never read; pass when crafted traversal slugs return an error and no content is returned.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "90bac02bb9f48baddd87e743548202aa357ed59e",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-kanvas/refs/board.html:L81-L169",
+          "test/test-kanvas-spec-viewer.js:L159-L179"
+        ],
+        "files": [
+          {
+            "lineEnd": 169,
+            "lineStart": 81,
+            "path": ".agents/skills/ws-kanvas/refs/board.html",
+            "sha256": "717d8db86b0bc8211700295c71dc130a8b56b97fd0a6b233937cd770a42317a2"
+          },
+          {
+            "lineEnd": 179,
+            "lineStart": 159,
+            "path": "test/test-kanvas-spec-viewer.js",
+            "sha256": "bf6c7ba076a56df51761e14c5e4041994ec5817491f5486e5e6de5195b031edf"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "g2-commit-90bac02bb9f48baddd87e743548202aa357ed59e",
+          "impl-ac4-a2",
+          "impl-ac4-b"
+        ],
+        "planSections": [
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "renderer emits fenced code blocks",
+            "phase": "observed",
+            "sourceFile": "test/test-kanvas-spec-viewer.js",
+            "timestamp": "2026-09-29T20:00:45.690Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "The rendered view shows Markdown structure — headings, emphasis, inline code, fenced code blocks, links, unordered and ordered lists, and paragraphs — as HTML; pass when a fixture spec containing each construct renders each as its corresponding element.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "90bac02bb9f48baddd87e743548202aa357ed59e",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-kanvas/refs/board.html:L81-L169",
+          "test/test-kanvas-spec-viewer.js:L180-L193"
+        ],
+        "files": [
+          {
+            "lineEnd": 169,
+            "lineStart": 81,
+            "path": ".agents/skills/ws-kanvas/refs/board.html",
+            "sha256": "717d8db86b0bc8211700295c71dc130a8b56b97fd0a6b233937cd770a42317a2"
+          },
+          {
+            "lineEnd": 193,
+            "lineStart": 180,
+            "path": "test/test-kanvas-spec-viewer.js",
+            "sha256": "bf6c7ba076a56df51761e14c5e4041994ec5817491f5486e5e6de5195b031edf"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "g2-commit-90bac02bb9f48baddd87e743548202aa357ed59e",
+          "impl-ac5-a2",
+          "impl-ac5-b"
+        ],
+        "planSections": [
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "injected script tag never survives",
+            "phase": "observed",
+            "sourceFile": "test/test-kanvas-spec-viewer.js",
+            "timestamp": "2026-09-29T20:00:45.750Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "Rendering HTML-escapes the spec text before formatting, so a spec containing `<script>` or other raw HTML tags renders them as visible escaped text and never executes; pass when an injected `<script>` fixture yields no script node and displays the tags as text.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "90bac02bb9f48baddd87e743548202aa357ed59e",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "test/test-kanvas-spec-viewer.js:L144-L154",
+          "test/test-suites.json:L185-L190"
+        ],
+        "files": [
+          {
+            "lineEnd": 154,
+            "lineStart": 144,
+            "path": "test/test-kanvas-spec-viewer.js",
+            "sha256": "bf6c7ba076a56df51761e14c5e4041994ec5817491f5486e5e6de5195b031edf"
+          },
+          {
+            "lineEnd": 190,
+            "lineStart": 185,
+            "path": "test/test-suites.json",
+            "sha256": "2ac5271df85ee249526087e8d7e6120fb6802e4bcfddf91d2b00d6057d6504d1"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "g2-commit-90bac02bb9f48baddd87e743548202aa357ed59e",
+          "impl-ac6-a2",
+          "impl-ac6-b2",
+          "impl-ac6-c2",
+          "impl-ac6-d"
+        ],
+        "planSections": [
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "board contract keeps columns and cards",
+            "phase": "observed",
+            "sourceFile": "test/test-kanvas-spec-viewer.js",
+            "timestamp": "2026-09-29T20:00:45.810Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "skill scripts import with no side effects",
+            "phase": "observed",
+            "sourceFile": "test/test-kanvas-board.js",
+            "timestamp": "2026-09-29T20:00:45.861Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "unknown slug is 404",
+            "phase": "observed",
+            "sourceFile": "test/test-kanvas-drag-drop.js",
+            "timestamp": "2026-09-29T20:00:45.916Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "Existing behavior is preserved — the collect/card/move APIs, board columns, and drag-and-drop are unchanged, and `node test/test-kanvas-board.js` plus `node test/test-kanvas-drag-drop.js` pass; pass when both suites are green and the diff touches only `refs/board.html`, `scripts/server.cjs`, optional `scripts/collect.cjs`, and new/updated kanvas tests.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "90bac02bb9f48baddd87e743548202aa357ed59e",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          "test/test-kanvas-spec-viewer.js:L202-L209"
+        ],
+        "files": [
+          {
+            "lineEnd": 209,
+            "lineStart": 202,
+            "path": "test/test-kanvas-spec-viewer.js",
+            "sha256": "bf6c7ba076a56df51761e14c5e4041994ec5817491f5486e5e6de5195b031edf"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [
+          "g2-commit-90bac02bb9f48baddd87e743548202aa357ed59e",
+          "impl-ac7-a2"
+        ],
+        "planSections": [
+          "section-002",
+          "section-004",
+          "section-006",
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "board page loads no remote scripts",
+            "phase": "observed",
+            "sourceFile": "test/test-kanvas-spec-viewer.js",
+            "timestamp": "2026-09-29T20:00:45.982Z"
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V1",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V2",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V3",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V4",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V5",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V6",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          },
+          {
+            "alias": null,
+            "exitCode": null,
+            "name": "V7",
+            "phase": "planned",
+            "sourceFile": null,
+            "timestamp": null
+          }
+        ],
+        "text": "No new runtime dependency is introduced; pass when `package.json` dependencies are unchanged and the server requires no module beyond Node 22 stdlib and the existing relative helpers.",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      }
+    ],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "impl-ns1b"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "inside probe refuses an outside path",
+            "phase": "observed",
+            "sourceFile": "test/test-kanvas-spec-viewer.js",
+            "timestamp": "2026-09-29T20:00:46.050Z"
+          }
+        ],
+        "text": "Traversal: `/api/spec?slug=..%2f..%2fetc%2fpasswd` (and variants) must be refused with a typed error and must not read outside `{specsDir}` (covers AC3)."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "impl-ns2b"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "injected script tag never survives",
+            "phase": "observed",
+            "sourceFile": "test/test-kanvas-spec-viewer.js",
+            "timestamp": "2026-09-29T20:00:46.102Z"
+          }
+        ],
+        "text": "XSS: a spec body containing `<script>alert(1)</script>` and `<img onerror=...>` must render as escaped text, and no script/event handler node may be created (covers AC5)."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "impl-ns3b"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "unknown slug is non-200",
+            "phase": "observed",
+            "sourceFile": "test/test-kanvas-spec-viewer.js",
+            "timestamp": "2026-09-29T20:00:46.152Z"
+          }
+        ],
+        "text": "Unknown slug: `/api/spec?slug=us-does-not-exist` returns a typed not-found (non-200), never a 200 with empty content (covers AC2)."
+      },
+      {
+        "id": "NS4",
+        "linkEventIds": [
+          "impl-ns4b"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "renderer is exposed for automation",
+            "phase": "observed",
+            "sourceFile": "test/test-kanvas-spec-viewer.js",
+            "timestamp": "2026-09-29T20:00:46.203Z"
+          }
+        ],
+        "text": "Missing file: a card whose `links.spec` file was removed shows a bounded \"spec unavailable\" message, not a crash or an unhandled promise rejection (covers AC1/AC6)."
+      },
+      {
+        "id": "NS5",
+        "linkEventIds": [
+          "impl-ns5b"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "board contract keeps columns and cards",
+            "phase": "observed",
+            "sourceFile": "test/test-kanvas-spec-viewer.js",
+            "timestamp": "2026-09-29T20:00:46.259Z"
+          }
+        ],
+        "text": "Behavior guard: any hunk touching board columns, drag-and-drop, or the move API payload shape fails the AC6 visual-only/behavior-preserved rule."
+      },
+      {
+        "id": "NS6",
+        "linkEventIds": [
+          "impl-ns6b"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "skill scripts import with no side effects",
+            "phase": "observed",
+            "sourceFile": "test/test-kanvas-board.js",
+            "timestamp": "2026-09-29T20:00:46.316Z"
+          }
+        ],
+        "text": "Suite regression: a failing run of either existing kanvas suite blocks the change until behavior is restored."
+      },
+      {
+        "id": "NS7",
+        "linkEventIds": [
+          "impl-ns7b"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "board page loads no remote scripts",
+            "phase": "observed",
+            "sourceFile": "test/test-kanvas-spec-viewer.js",
+            "timestamp": "2026-09-29T20:00:46.367Z"
+          }
+        ],
+        "text": "Dependency guard: adding a runtime dependency to `package.json` fails AC7."
+      }
+    ],
+    "planIndexPath": ".agents/plans/us-461/.runtime/plan.index.json",
+    "revision": 34,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "ship",
+      "computedAt": "2026-09-29T20:18:18.496Z",
+      "deficiencies": [],
+      "earnedUnits": 70,
+      "errors": [],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "ledgerHash": "330860f171ecd199495f925b7d9741dede6ba2d56c2175a41cd1e66476ec46c4",
+      "missingEvidence": false,
+      "score": 10,
+      "totalUnits": 70,
+      "writer": "ac_ledger.cjs score"
+    },
+    "slug": "us-461",
+    "specPath": ".agents/plans/us-461/step-00-us-461.spec.md",
+    "testingSkip": null,
+    "workflowId": "wf-us-461"
+  },
+  "acTotal": 7,
+  "agentTranscripts": {
+    "reason": "no-matching-session",
+    "recordedAt": "2026-09-29T19:45:02.594Z",
+    "status": "transcript-unavailable"
+  },
+  "baseBranch": "main",
+  "baselineCommit": "6b5cf76f4302d2d89c33d65262d96a56c2f4fe5e",
+  "baselineSourceRef": "develop",
+  "branch": "develop",
+  "branchStrategy": "stay",
+  "commits": [
+    {
+      "sha": "90bac02bb9f48baddd87e743548202aa357ed59e",
+      "step": 5
+    }
+  ],
+  "completedSteps": [
+    0,
+    1,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "currentModel": "muse-spark",
+  "currentStep": 9,
+  "endedAt": "2026-09-29T20:18:13Z",
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-461/step-00-us-461.spec.md",
+        ".agents/plans/us-461/ac-ledger.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "us-461",
+      "status": "completed",
+      "step": 0,
+      "summary": "Step 0 spec adopted from batch import; ledger initialized",
+      "workflowId": "wf-us-461",
+      "workflowType": "standard"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-461/step-01-us-461.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "us-461",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "wf-us-461",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "us-461",
+      "status": "skipped",
+      "step": 2,
+      "summary": "Finished step 2",
+      "workflowId": "wf-us-461",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-461/step-03-us-461.plan.exec.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "us-461",
+      "status": "completed",
+      "step": 3,
+      "summary": "Finished step 3",
+      "workflowId": "wf-us-461",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/skills/ws-kanvas/scripts/collect.cjs",
+        ".agents/skills/ws-kanvas/scripts/server.cjs",
+        ".agents/skills/ws-kanvas/refs/board.html",
+        "test/test-kanvas-spec-viewer.js",
+        "test/test-suites.json",
+        "bin/skill-integrity.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "us-461",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "wf-us-461",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-461/step-05-us-461.plan.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "us-461",
+      "status": "completed",
+      "step": 5,
+      "summary": "Finished step 5",
+      "workflowId": "wf-us-461",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-461/step-06-us-461.review.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "us-461",
+      "status": "completed",
+      "step": 6,
+      "summary": "Finished step 6",
+      "workflowId": "wf-us-461",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-461/step-07-us-461.testing.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "us-461",
+      "status": "completed",
+      "step": 7,
+      "summary": "Finished step 7",
+      "workflowId": "wf-us-461",
+      "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-461/step-08-us-461.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-461",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "wf-us-461",
+      "workflowType": "standard"
+    },
+    "9": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-461",
+      "status": "completed",
+      "step": 9,
+      "summary": "Finished step 9",
+      "workflowId": "wf-us-461",
+      "workflowType": "standard"
+    }
+  },
+  "modelsPreset": "default",
+  "nextAction": "Run step 9",
+  "prNumber": "463",
+  "prUrl": "https://github.com/jpolvora/workflow-skills/pull/463",
+  "revision": 10,
+  "shipStatus": "stopped",
+  "skippedSteps": [
+    {
+      "evidence": "",
+      "reason": "interview-not-required",
+      "step": 2
+    }
+  ],
+  "slug": "us-461",
+  "startedAt": "2026-09-29T19:45:02.594Z",
+  "statePath": ".agents/plans/us-461/wf-us-461.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "skipped",
+    "3": "completed",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed",
+    "9": "completed"
+  },
+  "telemetry": {
+    "steps": [
+      {
+        "N": 1,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-461/step-01-us-461.plan.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-29T19:46:03Z",
+        "label": "Planning",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-29T19:46:16Z",
+        "label": "Interview",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-461/step-03-us-461.plan.exec.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-29T19:46:51Z",
+        "label": "Plan to tasks",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-kanvas/scripts/collect.cjs",
+            ".agents/skills/ws-kanvas/scripts/server.cjs",
+            ".agents/skills/ws-kanvas/refs/board.html",
+            "test/test-kanvas-spec-viewer.js",
+            "test/test-suites.json",
+            "bin/skill-integrity.json"
+          ]
+        },
+        "finishedAt": "2026-09-29T19:58:12Z",
+        "label": "Implement",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-461/step-05-us-461.plan.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-29T20:02:12Z",
+        "label": "Verify",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 6,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-461/step-06-us-461.review.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-29T20:03:36Z",
+        "label": "Code review",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 7,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-461/step-07-us-461.testing.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-29T20:08:07Z",
+        "label": "Testing",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-461/step-08-us-461.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-29T20:18:13Z",
+        "label": "Ship",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 9,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-29T20:20:40Z",
+        "label": "Fix PR",
+        "model": "muse-spark",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 0,
+    "totalTokens": 0
+  },
+  "verificationScore": 10,
+  "workflowId": "wf-us-461",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/us-461/ac-ledger.json",
+      ".agents/plans/us-461/step-00-us-461.spec.md",
+      ".agents/plans/us-461/step-01-us-461.plan.md",
+      ".agents/plans/us-461/step-03-us-461.plan.exec.md",
+      ".agents/plans/us-461/step-05-us-461.plan.report.md",
+      ".agents/plans/us-461/step-06-us-461.review.md",
+      ".agents/plans/us-461/step-07-us-461.testing.report.md",
+      ".agents/plans/us-461/step-08-us-461.result.md"
+    ],
+    "deleted": [],
+    "modified": [
+      ".agents/skills/ws-kanvas/refs/board.html",
+      ".agents/skills/ws-kanvas/scripts/collect.cjs",
+      ".agents/skills/ws-kanvas/scripts/server.cjs",
+      "bin/skill-integrity.json",
+      "test/test-kanvas-spec-viewer.js",
+      "test/test-suites.json"
+    ]
+  },
+  "workflowType": "standard"
+}

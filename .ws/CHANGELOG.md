@@ -1,5 +1,20 @@
 # Changelog
 
+### [2026-09-29 22:40] Agent: agent
+- **Prompt**: Create one spec per enhancement item (6 items)
+- **Done**: Wrote specs 0155-0160 + 1 context companion, all authoring PASS, all tracked in index.PRD
+- **Result**: Six pending specs ready for workflow start; no code changed
+
+### [2026-09-29 22:40] Agent: agent
+- **Prompt**: ws-spec-write fix: interview trigger misses the Assumptions & Open Questions heading variant, runInterview silently stays false
+- **Done**: Fixed hasOpenQuestions in ws-classify-complexity to detect canonical heading with Confirmed:n rows; updated SKILL contract; added test-classify-open-questions.js (9 cases) and suite registration; regenerated integrity
+- **Result**: runInterview now true for unconfirmed specs (verified on us-459); adjacent suites green; harness-clean 0 findings
+
+### [2026-09-29 22:22] Agent: agent
+- **Prompt**: Audit subagent prompts per step; save prompt near step artifacts
+- **Done**: Wrote spec 0154-dispatch-prompt-audit-trail + context companion, authoring PASS, index.PRD tracked
+- **Result**: Durable step-NN prompt pair contract specified; no code changed
+
 ### [2026-09-29 16:12] Agent: ws-spec-to-pr
 - **Prompt**: Execute standard Spec-to-PR for us-461: kanvas modal spec-content viewer
 - **Done**: Read-only GET /api/spec endpoint plus escape-first Markdown renderer and popup toggle in ws-kanvas; bumped 0.5.17, regenerated integrity, synced site/wiki/index.PRD

@@ -1,6 +1,6 @@
 ---
 slug: us-461
-title: "kanvas modal option to show full spec content in .md rendered"
+title: kanvas modal option to show full spec content in .md rendered
 status: completed
 step: 8
 workflowId: wf-us-461

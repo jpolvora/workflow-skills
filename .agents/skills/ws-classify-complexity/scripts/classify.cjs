@@ -267,9 +267,44 @@ function isDocsTestOnlyRef(ref) {
   return /(^|\/)(docs\/|test\/|tests\/|\.agents\/specs\/|\.agents\/plans\/|wiki\/)|readme\.md$|\.md$/i.test(ref);
 }
 
+function sectionAfterHeading(body, headingRe) {
+  const lines = body.split('\n');
+  const start = lines.findIndex((line) => headingRe.test(line));
+  if (start < 0) return null;
+  const rest = lines.slice(start + 1);
+  const end = rest.findIndex((line) => /^##\s+/.test(line));
+  return (end < 0 ? rest : rest.slice(0, end)).join('\n');
+}
+
+function splitTableRow(line) {
+  const cells = line.split('|').map((cell) => cell.trim());
+  if (cells.length && cells[0] === '') cells.shift();
+  if (cells.length && cells[cells.length - 1] === '') cells.pop();
+  return cells;
+}
+
+function hasLegacyOpenQuestions(body) {
+  const section = sectionAfterHeading(body, /^##\s+Open Questions\s*$/i);
+  if (section === null) return false;
+  const first = section.split('\n').map((line) => line.trim()).find((line) => line.length > 0);
+  if (!first) return false;
+  return !/^(?:none|n\/a|-\s*\[x\])/i.test(first);
+}
+
+function hasCanonicalOpenQuestions(body) {
+  const section = sectionAfterHeading(body, /^##\s+Assumptions\s*&\s*Open Questions\s*$/i);
+  if (section === null) return false;
+  const tableLines = section.split('\n').map((line) => line.trim()).filter((line) => line.startsWith('|'));
+  if (!tableLines.length) return false;
+  const header = splitTableRow(tableLines[0]);
+  const dataRows = tableLines.slice(1).filter((line) => !/^\|[\s\-|:]+\|$/.test(line));
+  let confirmedIdx = header.findIndex((cell) => /^confirmed$/i.test(cell));
+  if (confirmedIdx < 0) confirmedIdx = header.length - 1;
+  return dataRows.some((line) => /^n(o)?$/i.test(splitTableRow(line)[confirmedIdx] || ''));
+}
+
 function hasOpenQuestions(body) {
-  if (!/##\s+Open Questions[\s\S]*?(?:^##\s+|$)/mi.test(body)) return false;
-  return !/##\s+Open Questions\s*\n\s*(?:none|n\/a|-\s*\[x\])/i.test(body);
+  return hasLegacyOpenQuestions(body) || hasCanonicalOpenQuestions(body);
 }
 
 function hasSchemaApiTenancy(body) {

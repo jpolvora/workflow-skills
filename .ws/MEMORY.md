@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-09-30] Classifier detectors must match canonical spec headings
+- **Layer**: `application`
+- **Module**: `ws-classify-complexity`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-classify-complexity/scripts/classify.cjs`, `test/test-classify-open-questions.js`
+- **Scenario / Context**: `hasOpenQuestions` matched only the legacy `## Open Questions` heading, but `ws-spec-write` emits the canonical `## Assumptions & Open Questions` table per `ws-spec-format`. `runInterview` silently stayed `false` for repo-written specs (us-459, us-461 skipped Step 2 with `interview-not-required` despite unconfirmed rows).
+- **DO NOT**: Write spec-section detectors against a guessed or legacy heading, or treat canonical-section presence alone as open (the section is required and always has rows).
+- **INSTEAD DO**: Match the canonical `## Assumptions & Open Questions` heading plus the legacy variant; derive open from the `Confirmed` column (any `n`/`no` row); pin both shapes in `test/test-classify-open-questions.js`.
+
 ### [2026-09-29] Version bump and integrity manifest must ship in one commit
 - **Layer**: `Release verification`
 - **Module**: `generate-skill-integrity / ship + fix-pr commit scope`
