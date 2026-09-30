@@ -932,6 +932,15 @@ function commonEvent(state, pipeline, step, type, timestamp, options, context) {
   if (options.subagentId && String(options.subagentId).trim()) {
     event.subagentId = String(options.subagentId).trim();
   }
+  if (options.promptPath && String(options.promptPath).trim()) {
+    event.promptPath = String(options.promptPath).trim();
+  }
+  if (options.promptSha256 && String(options.promptSha256).trim()) {
+    event.promptSha256 = String(options.promptSha256).trim();
+  }
+  if (options.priorPromptSha256 && String(options.priorPromptSha256).trim()) {
+    event.priorPromptSha256 = String(options.priorPromptSha256).trim();
+  }
   const activePreset = isNonEmptyModel(options.preset)
     ? String(options.preset).trim()
     : (isNonEmptyModel(state.modelsPreset) ? String(state.modelsPreset).trim() : null);
@@ -1717,6 +1726,18 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     if (options.subagentId && String(options.subagentId).trim()) {
       dispatch.subagentId = String(options.subagentId).trim();
     }
+    const promptRef = normalizePromptRef(options);
+    if (promptRef) {
+      dispatch.promptPath = promptRef.promptPath;
+      dispatch.promptSha256 = promptRef.promptSha256;
+    }
+    const priorDispatch = state.stepDispatches.find((item) => Number(item.step) === Number(step));
+    if (priorDispatch && priorDispatch.promptSha256 && !dispatch.promptSha256) {
+      throw new Error(`cannot dispatch step ${step}: the prior dispatch recorded a prompt audit; pass --prompt-path/--prompt-sha256 from write_dispatch_prompt_audit.cjs (re-running the writer keeps the audit chain)`);
+    }
+    if (priorDispatch && priorDispatch.promptSha256 && dispatch.promptSha256) {
+      options.priorPromptSha256 = String(priorDispatch.promptSha256);
+    }
     state.stepDispatches = [...state.stepDispatches.filter((item) => Number(item.step) !== step), dispatch].sort((a, b) => a.step - b.step);
     state.currentModel = modelDetails.model;
     if (modelDetails.configuredModel) {
@@ -1735,6 +1756,16 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     if (dispatch) {
       if (!options.agentType && dispatch.agentType) options.agentType = dispatch.agentType;
       if (!options.subagentId && dispatch.subagentId) options.subagentId = dispatch.subagentId;
+    }
+    const finishPromptRef = normalizePromptRef(options);
+    if (finishPromptRef && dispatch) {
+      if (!dispatch.promptPath && !dispatch.promptSha256) {
+        dispatch.promptPath = finishPromptRef.promptPath;
+        dispatch.promptSha256 = finishPromptRef.promptSha256;
+      } else if (String(dispatch.promptPath || '') !== finishPromptRef.promptPath
+        || String(dispatch.promptSha256 || '') !== finishPromptRef.promptSha256) {
+        throw new Error(`cannot finish step ${step}: --prompt-path/--prompt-sha256 differ from the dispatch record (re-dispatch with the new prompt instead of backfilling at finish)`);
+      }
     }
     dispatchedAt = String(options.dispatchedAt || dispatchTimestamp(dispatch));
     const finishedAt = timestamp;
@@ -1973,6 +2004,8 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
         if (item.model && String(item.model).trim()) row.model = String(item.model).trim();
         if (item.agentType && String(item.agentType).trim()) row.agentType = String(item.agentType).trim();
         if (item.subagentId && String(item.subagentId).trim()) row.subagentId = String(item.subagentId).trim();
+        if (item.promptPath && String(item.promptPath).trim()) row.promptPath = String(item.promptPath).trim();
+        if (item.promptSha256 && String(item.promptSha256).trim()) row.promptSha256 = String(item.promptSha256).trim();
         return dispatchedAt ? row : null;
       })
       .filter(Boolean)
@@ -2065,6 +2098,82 @@ function artifactMetadata(file, expectedStep, state) {
   const acRefs = parsed.acRefs || [];
   if (!Array.isArray(acRefs) || new Set(acRefs).size !== acRefs.length) throw new Error(`artifact acRefs invalid: ${file}`);
   return parsed;
+}
+
+const PROMPT_FIXED_PREAMBLE_CAP = 18000;
+
+function normalizePromptRef(options) {
+  const hasPath = options.promptPath !== undefined && options.promptPath !== null && String(options.promptPath).trim() !== '';
+  const hasSha = options.promptSha256 !== undefined && options.promptSha256 !== null && String(options.promptSha256).trim() !== '';
+  if (!hasPath && !hasSha) return null;
+  if (!hasPath || !hasSha) throw new Error('--prompt-path and --prompt-sha256 must be passed together');
+  const promptPath = String(options.promptPath).trim().replace(/\\/g, '/');
+  const promptSha256 = String(options.promptSha256).trim().toLowerCase();
+  if (path.isAbsolute(promptPath) || promptPath.split('/').includes('..')) {
+    throw new Error('--prompt-path must be repo-relative without .. segments');
+  }
+  if (!/^[a-f0-9]{64}$/.test(promptSha256)) throw new Error('--prompt-sha256 must be 64 lowercase hex characters');
+  return { promptPath, promptSha256 };
+}
+
+function promptPairError({ repoRoot, usDir, step, promptPath, expectedSha }) {
+  const absolute = path.resolve(repoRoot, promptPath);
+  if (!inside(absolute, path.resolve(usDir))) return `dispatch prompt audit for step ${step} escapes the workflow dir: ${promptPath}`;
+  if (!fs.existsSync(absolute) || !fs.statSync(absolute).isFile()) return `dispatch prompt audit missing for step ${step}: ${promptPath}`;
+  const manifestFile = absolute.replace(/\.md$/, '.json');
+  if (!fs.existsSync(manifestFile)) return `dispatch prompt audit manifest missing for step ${step}: ${toRepoRelative(repoRoot, manifestFile, { allowOutside: true })}`;
+  let manifest;
+  try {
+    manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8'));
+  } catch {
+    return `dispatch prompt audit manifest unreadable for step ${step}: ${toRepoRelative(repoRoot, manifestFile, { allowOutside: true })}`;
+  }
+  const actual = crypto.createHash('sha256').update(fs.readFileSync(absolute)).digest('hex');
+  if (manifest.promptSha256 !== actual) return `dispatch prompt audit mismatch for step ${step}: manifest sha differs from ${promptPath} bytes`;
+  if (expectedSha && expectedSha !== actual) return `dispatch prompt audit mismatch for step ${step}: dispatch record sha differs from ${promptPath} bytes`;
+  if (Number.isInteger(manifest.fixedPreambleBytes) && manifest.fixedPreambleBytes > PROMPT_FIXED_PREAMBLE_CAP) {
+    return `dispatch prompt audit for step ${step} exceeds the fixed-preamble cap: ${manifest.fixedPreambleBytes} > ${PROMPT_FIXED_PREAMBLE_CAP}`;
+  }
+  if (Number.isInteger(manifest.totalBytes) && Number.isInteger(manifest.budgetBytes) && manifest.totalBytes > manifest.budgetBytes) {
+    return `dispatch prompt audit for step ${step} exceeds its budget: totalBytes ${manifest.totalBytes} > budgetBytes ${manifest.budgetBytes}`;
+  }
+  return null;
+}
+
+function validatePromptAudit({ repoRoot, usDir, flow, next, state }) {
+  const errors = [];
+  const slug = state.slug || state.us;
+  if (!slug || !Number.isInteger(Number(next)) || Number(next) < 1) return errors;
+  const completed = new Set((state.completedSteps || []).map(Number));
+  const skipped = new Set((state.skippedSteps || []).map((row) => Number(row.step)));
+  const dispatches = Array.isArray(state.stepDispatches) ? state.stepDispatches : [];
+  for (let step = 1; step < Number(next); step += 1) {
+    if (!completed.has(step) || skipped.has(step)) continue;
+    const entry = dispatches.find((item) => Number(item.step) === step);
+    if (!entry || !entry.promptPath) continue; // Grandfathered: dispatched before prompt audits existed.
+    const problem = promptPairError({ repoRoot, usDir, step, promptPath: entry.promptPath, expectedSha: entry.promptSha256 });
+    if (problem) errors.push(problem);
+    if (flow === 'standard' && step === 4) {
+      const prefix = `step-04-${slug}.prompt.`;
+      let names = [];
+      try {
+        names = fs.readdirSync(usDir).filter((name) => name.startsWith(prefix) && name.endsWith('.md'));
+      } catch {
+        names = [];
+      }
+      for (const name of names) {
+        const nodeProblem = promptPairError({
+          repoRoot,
+          usDir,
+          step,
+          promptPath: toRepoRelative(repoRoot, path.join(usDir, name), { allowOutside: true }),
+          expectedSha: null,
+        });
+        if (nodeProblem) errors.push(nodeProblem);
+      }
+    }
+  }
+  return errors;
 }
 
 function validateRuntime(usDir) {
@@ -2253,6 +2362,7 @@ function validateSnapshot({ stateFile, indexFile, context, maxStep, preAdvance, 
     }
     const ledgerFile = path.join(path.dirname(mdPath), 'ac-ledger.json');
     if (next >= 1 && !state.acLedger && !fs.existsSync(ledgerFile)) errors.push('ac-ledger.json is required before advance');
+    errors.push(...validatePromptAudit({ repoRoot: context.repoRoot, usDir: path.dirname(mdPath), flow, next, state }));
     if (Number(next) === 4 && flow === 'standard') {
       const slug = state.slug || state.us;
       const usDir = path.dirname(mdPath);
@@ -2337,14 +2447,14 @@ function validateSnapshot({ stateFile, indexFile, context, maxStep, preAdvance, 
 function updateHelpText(operation) {
   switch (operation) {
     case 'dispatch':
-      return 'Usage: update_state.cjs dispatch <state> --step N [--model <id>] [--agent-type <type>] [--subagent-id <id>] [--step-output <json>] [--transcript-paths <csv>]\n'
+      return 'Usage: update_state.cjs dispatch <state> --step N [--model <id>] [--agent-type <type>] [--subagent-id <id>] [--step-output <json>] [--transcript-paths <csv>] [--prompt-path <path>] [--prompt-sha256 <sha>]\n'
         + 'Open step execution (records dispatch telemetry, advances currentStep). <state> is the .state.md path or workflow id.\n'
         + 'Dispatch also records the state.agentTranscripts marker once (available paths from --transcript-paths, else the explicit absent marker).\n'
         + 'Example: node update_state.cjs dispatch .agents/plans/slug/wf.state.md --step 4\n';
     case 'finish':
       return 'Usage: update_state.cjs finish <state> --step N [--status completed|failed|skipped] [--reason "<text>"]\n'
         + '  [--created <path> ...] [--modified <path> ...] [--deleted <path> ...] [--noop "<reason>"]\n'
-        + '  [--step-output <json>] [--verification-score N] [--commit <sha>] [--gate-decision ...] [--model <id>]\n'
+        + '  [--step-output <json>] [--verification-score N] [--commit <sha>] [--gate-decision ...] [--model <id>] [--prompt-path <path>] [--prompt-sha256 <sha>]\n'
         + '  [--ship-status pending|skipped|pushed|pr-open|merged|stopped] [--pr-number <n>] [--pr-url <url>]\n'
         + 'Close step execution. File flags are repeatable; --step-output auto-discovers {us-dir}/.runtime/step-{N}-output.json.\n'
         + 'A completed mutating step requires non-empty filesTouched or an explicit --noop reason. Every listed path\n'
@@ -2587,6 +2697,8 @@ module.exports = {
   resolvePhaseModel,
   resolveFixPrDispatchMode,
   validateSnapshot,
+  normalizePromptRef,
+  validatePromptAudit,
   runUpdateCli,
   runValidateCli,
 };

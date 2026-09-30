@@ -43,6 +43,8 @@ Canonical artifacts under `{us-dir}`. `read-artifacts-registry` resolves one nam
 | Testing plan | `step-07-{slug}.testing.plan.md` | Step 7 | No |
 | Testing report | `step-07-{slug}.testing.report.md` | Step 7 | **Yes (Step 8)** when `includeTestingReport` |
 | Delivery result | `step-08-{slug}.result.md` | Step 8 | **Yes (Step 8)** when `includeDeliveryResult` |
+| Dispatch prompt | `step-{NN}-{slug}.prompt.md` (DAG: `step-04-{slug}.prompt.{node}.md`) | Every standard dispatch | No |
+| Dispatch prompt manifest | `step-{NN}-{slug}.prompt.json` (DAG per-node) | `write_dispatch_prompt_audit.cjs` | No |
 
 **Do not write obsolete names:** `step-06-*.plan.report.md`, `step-10-*.report.md`, `step-11-*.integration-test.*`, `step-12-*.result.md`, `run.json`, `RUN.md`.
 
@@ -61,6 +63,8 @@ Minimum on-disk artifacts required before **advance to step N** (standard FSM). 
 | 7 | `step-06-{slug}.review.md` when code review ran |
 | 8 | `step-07-{slug}.testing.report.md` when Step 7 completed (not skipped `testing-disabled` / `no-test-surface`) |
 | 9 | `step-08-{slug}.result.md` + PR exists (ship evidence) |
+
+**Dispatch prompt gate:** every completed non-skipped step whose dispatch recorded `promptPath` must also present its `step-{NN}-{slug}.prompt.*` pair with matching sha at the next `--pre-advance` (fail closed, step named; steps dispatched before prompt audits are exempt). DAG Step 4 additionally verifies each per-node pair.
 
 **Plan index read contract:** Steps 3–7 resolve plan text through `{us-dir}/.runtime/plan.index.json` (`plan_index.cjs read --ac AC{n}` or `build_dispatch_context.cjs`; legacy root `{us-dir}/plan.index.json` read as fallback only, never written). Do not read a `superseded: true` `step-01` body. Rebuild the index after Step 2 stamps `--draft` on step-01.
 
@@ -103,7 +107,7 @@ Stage **only** artifacts enabled by `config.json` → `defaults.deliveryCommitAr
 5. `git add` only resolved paths under `{us-dir}`; commit message may say “configured delivery artifacts” (do not hardcode “plan and result”).
 6. Product/source staging remains separate (`commit-code`: path-scoped workflow `files_touched`, not directory roots).
 
-**Still never staged** (unless a future toggle is explicitly added): `{workflow-id}.state.md`, `{workflow-id}.state.json`, `step-00-{slug}.issue.json`, `step-00-{slug}.classify.md`, exec/DAG files, `.runtime/plan.index.json`, `ac-ledger.json`, `run.json`, telemetry, worktrees, review fix reports, testing plans, and other runtime artifacts.
+**Still never staged** (unless a future toggle is explicitly added): `{workflow-id}.state.md`, `{workflow-id}.state.json`, `step-00-{slug}.issue.json`, `step-00-{slug}.classify.md`, exec/DAG files, `.runtime/plan.index.json`, `ac-ledger.json`, `run.json`, telemetry, worktrees, review fix reports, testing plans, `step-{NN}-{slug}.prompt.*` (dispatch prompt pairs, incl. DAG per-node), and other runtime artifacts.
 
 Result file may still be **written** for orch evidence when `includeDeliveryResult` is false — it simply is not staged.
 

@@ -33,6 +33,7 @@ Host mode: resolve the host-tool binding once at bootstrap per [`host-dispatch.m
 9. **MEMORY Consult:** In Steps 1, 2, and 3: route through [`tools.md`](../ws-shared/runtime/tools.md) **`read-memory`** for 3–8 plan/spec keywords before coding; record `memory_consult` in step outputs.
 10. **Verbose preview:** When `defaults.verboseMode` is explicit `true`, the session model must **analyze this run** and print `Starting step {N} ({Label}):` plus 4–8 `*` bullets before any tool call — then immediately continue with tool calls in the same response; never end the turn after the preview. Format per [`gates.md`](../ws-shared/runtime/gates.md) § Verbose step preview. Omitted/`false` → silent.
 11. **Harness benchmark forbidden:** do not load `ws-run-benchmark`, and do not run `npm run benchmark`, `npm run benchmark:static`, or `scripts/harness-benchmark`.
+12. **Prompt audit:** at each executed inline boundary, build the prompt (`build_dispatch_context.cjs` + `--manifest`), persist it (`write_dispatch_prompt_audit.cjs --dispatch-mode inline`), pass the result to `finish --prompt-path`/`--prompt-sha256`; skipped steps write `--skip-marker`. Pairs per [`ARTIFACTS.md`](../ws-spec-to-pr/ARTIFACTS.md); never staged.
 
 ## Steps 0–5 Index
 

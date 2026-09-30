@@ -132,7 +132,9 @@
           "configuredModel": { "type": "string", "minLength": 1 },
           "model": { "type": "string", "minLength": 1 },
           "agentType": { "type": "string", "minLength": 1 },
-          "subagentId": { "type": "string", "minLength": 1 }
+          "subagentId": { "type": "string", "minLength": 1 },
+          "promptPath": { "type": "string", "minLength": 1 },
+          "promptSha256": { "type": "string", "minLength": 1 }
         }
       }
     },

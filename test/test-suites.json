@@ -193,6 +193,9 @@
     ],
     [
       "test/test-check-workflows-automode.js"
+    ],
+    [
+      "test/test-dispatch-prompt-audit.js"
     ]
   ],
   "remote": [
