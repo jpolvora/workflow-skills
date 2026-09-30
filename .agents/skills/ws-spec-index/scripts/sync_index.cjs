@@ -278,6 +278,34 @@ function sync(options) {
   }
 
   const title = readTitle(specPath) || options.slug;
+
+  // File first: the index is only marked done once the spec + sidecars are
+  // actually under completed/ (and the organizer rewrote the spec: refs). A
+  // failed filing leaves the index untouched and is reported outstanding, so
+  // status and tree never disagree silently.
+  let moved = [];
+  if (plans.statusSubfolders === true) {
+    const specRel = specRelOf(specsDir, specPath);
+    if (!specRel.startsWith('completed/')) {
+      try {
+        const renames = fileViaOrganizer({ repoRoot, slug: options.slug });
+        moved = renames
+          .filter((r) => r.type === 'spec' || r.type === 'context' || r.type === 'assets')
+          .map((r) => `${r.from} -> ${r.to}`);
+      } catch (error) {
+        return {
+          status: 'outstanding',
+          slug: options.slug,
+          updated: [],
+          moved: [],
+          filingOutstanding: true,
+          stalePendingPath: specRel,
+          reason: error.message,
+        };
+      }
+    }
+  }
+
   const release = acquireFileLock(indexPath, { prefix: 'ws-index' });
   let updated = [];
   try {
@@ -289,37 +317,6 @@ function sync(options) {
     release();
   }
 
-  let moved = [];
-  let filingOutstanding = false;
-  let outstandingReason = null;
-  let stalePendingPath = null;
-  if (plans.statusSubfolders === true) {
-    const specRel = specRelOf(specsDir, specPath);
-    if (!specRel.startsWith('completed/')) {
-      try {
-        const renames = fileViaOrganizer({ repoRoot, slug: options.slug });
-        moved = renames
-          .filter((r) => r.type === 'spec' || r.type === 'context' || r.type === 'assets')
-          .map((r) => `${r.from} -> ${r.to}`);
-      } catch (error) {
-        filingOutstanding = true;
-        outstandingReason = error.message;
-        stalePendingPath = specRel;
-      }
-    }
-  }
-
-  if (filingOutstanding) {
-    return {
-      status: 'outstanding',
-      slug: options.slug,
-      updated,
-      moved,
-      filingOutstanding: true,
-      stalePendingPath,
-      reason: outstandingReason,
-    };
-  }
   const status = updated.length || moved.length ? 'synced' : 'skipped';
   return {
     status,

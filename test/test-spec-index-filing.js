@@ -98,6 +98,7 @@ function testSyncReportsOutstandingWhenFilingFails() {
   assert.strictEqual(out.stalePendingPath, 'pending/0005-us-474.spec.md');
   assert.match(String(out.reason), /dirty overlapping/);
   assert.ok(fs.existsSync(path.join(tmp, '.agents/specs/pending/0005-us-474.spec.md')), 'spec not moved on failure');
+  assert.strictEqual(fs.readFileSync(path.join(tmp, '.agents/specs/index.PRD'), 'utf8'), INDEX, 'index untouched when filing outstanding');
 }
 
 // AC4 + AC5 + NS1: close verification fails closed naming the stale path.
