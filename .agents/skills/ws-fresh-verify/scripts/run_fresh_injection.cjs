@@ -79,7 +79,7 @@ function parseArgs(argv) {
     else if (a === '--simulate-restore-failure') o.simulateRestoreFailure = true;
     else if (a.startsWith('--ac=')) o.ac = a.slice(5);
     else if (a.startsWith('--test=')) o.test = a.slice(7);
-    else if (a.startsWith('--invert-patch=')) o.invertPatch = a.slice(16);
+    else if (a.startsWith('--invert-patch=')) o.invertPatch = a.slice(15);
     else if (a.startsWith('--worktree-dir=')) o.worktreeDir = a.slice(15);
     else if (a.startsWith('--fail-pattern=')) o.failPattern = a.slice(15);
     else if (a.startsWith('--repo-root=')) o.repoRoot = a.slice(12);
@@ -90,6 +90,13 @@ function parseArgs(argv) {
   if (!o.paths.length) return fail('argument --paths is required');
   if (!o.invertPatch) return fail('argument --invert-patch is required');
   if (!o.worktreeDir) return fail('argument --worktree-dir is required');
+  if (o.failPattern !== null) {
+    try {
+      new RegExp(o.failPattern, 'm');
+    } catch {
+      return fail('argument --fail-pattern: invalid regular expression');
+    }
+  }
   return o;
 }
 
@@ -169,6 +176,10 @@ function main() {
   }
   const worktreeDir = path.resolve(args.worktreeDir);
   if (fs.existsSync(worktreeDir)) return failOut('worktree-dir-exists', { paths: relPaths, path: String(args.worktreeDir) });
+  const dirtyCheck = spawnSync('git', ['status', '--porcelain', '--', ...relPaths], { cwd: String(repoRoot), encoding: 'utf8' });
+  if (dirtyCheck.status === 0 && (dirtyCheck.stdout || '').trim() !== '') {
+    return failOut('paths-dirty-vs-head', { paths: relPaths, dirty: (dirtyCheck.stdout || '').trim().split('\n').map((line) => line.trim()) });
+  }
 
   let exitCode = 0;
   let reason = 'test-failed-as-expected';
@@ -205,6 +216,11 @@ function main() {
     }
     const proc = spawnSync(args.test, { shell: true, cwd: String(worktreeDir), encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
     testExitCode = proc.status;
+    if (testExitCode === null || testExitCode === undefined) {
+      reason = 'test-execution-failed';
+      exitCode = 1;
+      return exitCode;
+    }
     if (proc.status === 0) {
       reason = 'test-passed-with-inverted-code';
       exitCode = 1;

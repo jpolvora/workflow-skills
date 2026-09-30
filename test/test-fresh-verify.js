@@ -55,6 +55,12 @@ for (const refused of ['step-05-probe.plan.report.md', 'step-03-probe.exec.dag.j
 }
 const allowedPlan = runNode(BUILD, ['--spec', specPath, '--plan', planPath, '--product-tree', treeDir, '--output', handoffPath, '--prior-output', planPath]);
 assert(allowedPlan.status === 0, 'AC1: plan of record passes the allowlist');
+const deniedCase = runNode(BUILD, ['--spec', specPath, '--plan', planPath, '--product-tree', treeDir, '--output', handoffPath, '--prior-output', 'STEP-05-PROBE.PLAN.REPORT.MD']);
+assert(deniedCase.status === 1, 'CR-004: case-variant prior output refused');
+const scopedSpec = write(path.join(specFile, 'scoped.spec.md'), '---\nslug: probe\n---\n\n## Acceptance Criteria\n\n- AC1: Real.\n\n## Notes\n\n- AC9: quoted mention.\n');
+const scopedOut = path.join(specFile, 'scoped-dispatch.json');
+assert(runNode(BUILD, ['--spec', scopedSpec, '--plan', planPath, '--product-tree', treeDir, '--output', scopedOut]).status === 0, 'CR-005: scoped spec builds');
+assert(JSON.parse(fs.readFileSync(scopedOut, 'utf8')).acList.map((row) => row.id).join(',') === 'AC1', 'CR-005: AC list scoped to the criteria section');
 
 // ---- Injection fixture (git repo; test fails only when invert bites) ----
 function makeFixture() {
@@ -105,6 +111,42 @@ const injectTame = runNode(INJECT, ['--ac', 'AC2', '--test', 'node check_pass.cj
 assert(injectTame.status === 1, 'NS1: passing-under-fault exits 1');
 assert(lastJson(injectTame.stdout).reason === 'test-passed-with-inverted-code', 'NS1: non-failing injection named');
 assert(!/wt-tame/.test(worktreeList(fixture)), 'NS1: tame worktree removed');
+
+// ---- CR-001: =-form flags parse ----
+const injectEq = runNode(INJECT, ['--ac=AC1', '--test', 'node check_pass.cjs', '--paths', 'sample.txt', `--invert-patch=${path.join(fixture, 'invert.patch')}`, '--worktree-dir', path.join(fixture, 'wt-eq'), `--repo-root=${fixture}`], fixture);
+assert(injectEq.status === 0, 'CR-001: =-form flags parse without mangling');
+assert(!/wt-eq/.test(worktreeList(fixture)), 'CR-001: =-form worktree removed');
+
+// ---- CR-003: dirty declared paths fail closed ----
+const dirtyFixture = makeFixture();
+fs.appendFileSync(path.join(dirtyFixture, 'sample.txt'), 'DIRTY\n');
+const injectDirty = runNode(INJECT, ['--ac', 'AC1', '--test', 'node check_pass.cjs', '--paths', 'sample.txt', '--invert-patch', path.join(dirtyFixture, 'invert.patch'), '--worktree-dir', path.join(dirtyFixture, 'wt-dirty'), '--repo-root', dirtyFixture], dirtyFixture);
+assert(injectDirty.status === 1, 'CR-003: dirty paths fail closed');
+assert(lastJson(injectDirty.stdout).reason === 'paths-dirty-vs-head', 'CR-003: dirty reason named');
+
+// ---- CR-007: invalid --fail-pattern is a usage error ----
+const badPattern = runNode(INJECT, ['--ac', 'AC1', '--test', 'node check_pass.cjs', '--paths', 'sample.txt', '--invert-patch', path.join(fixture, 'invert.patch'), '--worktree-dir', path.join(fixture, 'wt-badpat'), '--repo-root', fixture, '--fail-pattern', '([invalid'], fixture);
+assert(badPattern.status === 2, 'CR-007: invalid fail pattern exits 2');
+
+// ---- CR-006: unparseable red signal fails ----
+const quietFixture = makeFixture();
+write(path.join(quietFixture, '.ws', 'config.json'), JSON.stringify({ verification: { backendTest: 'node quiet_fail.cjs' } }));
+write(path.join(quietFixture, 'quiet_fail.cjs'), 'process.exit(3);\n');
+cp.spawnSync('git', ['add', 'quiet_fail.cjs', '.ws/config.json'], { cwd: quietFixture, encoding: 'utf8' });
+cp.spawnSync('git', ['commit', '-m', 'quiet', '--quiet'], { cwd: quietFixture, encoding: 'utf8' });
+const injectQuiet = runNode(INJECT, ['--ac', 'AC1', '--test', 'node quiet_fail.cjs', '--paths', 'sample.txt', '--invert-patch', path.join(quietFixture, 'invert.patch'), '--worktree-dir', path.join(quietFixture, 'wt-quiet'), '--repo-root', quietFixture], quietFixture);
+assert(injectQuiet.status === 1, 'CR-006: unparseable red exits 1');
+assert(lastJson(injectQuiet.stdout).reason === 'red-signal-unparseable', 'CR-006: unparseable reason named');
+
+// ---- CR-002: null test status fails closed ----
+const floodFixture = makeFixture();
+write(path.join(floodFixture, '.ws', 'config.json'), JSON.stringify({ verification: { backendTest: 'node flood.cjs' } }));
+write(path.join(floodFixture, 'flood.cjs'), 'console.log("x".repeat(20 * 1024 * 1024));\n');
+cp.spawnSync('git', ['add', 'flood.cjs', '.ws/config.json'], { cwd: floodFixture, encoding: 'utf8' });
+cp.spawnSync('git', ['commit', '-m', 'flood', '--quiet'], { cwd: floodFixture, encoding: 'utf8' });
+const injectFlood = runNode(INJECT, ['--ac', 'AC1', '--test', 'node flood.cjs', '--paths', 'sample.txt', '--invert-patch', path.join(floodFixture, 'invert.patch'), '--worktree-dir', path.join(floodFixture, 'wt-flood'), '--repo-root', floodFixture], floodFixture);
+assert(injectFlood.status === 1, 'CR-002: null test status exits 1');
+assert(lastJson(injectFlood.stdout).reason === 'test-execution-failed', 'CR-002: execution failure named');
 
 // ---- NS3: unrestored injection aborts before any fix dispatch ----
 const injectCorrupt = runNode(INJECT, ['--ac', 'AC1', '--test', 'node check_pass.cjs', '--paths', 'sample.txt', '--invert-patch', path.join(fixture, 'invert.patch'), '--worktree-dir', path.join(fixture, 'wt-corrupt'), '--repo-root', fixture, '--simulate-restore-failure'], fixture);

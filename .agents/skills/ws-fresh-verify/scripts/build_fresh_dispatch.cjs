@@ -69,15 +69,20 @@ function parseArgs(argv) {
 }
 
 function isRefused(basename) {
-  return REFUSED_PATTERNS.some((pattern) => pattern.test(basename));
+  return REFUSED_PATTERNS.some((pattern) => pattern.test(String(basename).toLowerCase()));
 }
 
-// AC ids from `- ACn:` bullets anywhere in the spec (the authoring format
-// guarantees one line per criterion).
+// AC ids from `- ACn:` bullets inside the `## Acceptance Criteria` section
+// only (the authoring format guarantees one line per criterion there;
+// `- ACn:` mentions quoted elsewhere must not pollute the handoff).
 function extractAcList(specText) {
   const out = [];
+  let inSection = false;
   for (const line of specText.split('\n')) {
-    const match = /^-\s+(AC\d+):\s*(.*)$/.exec(line.trim());
+    const trimmed = line.trim();
+    if (/^##\s+/.test(trimmed)) inSection = /^##\s+Acceptance Criteria\s*$/.test(trimmed);
+    if (!inSection) continue;
+    const match = /^-\s+(AC\d+):\s*(.*)$/.exec(trimmed);
     if (match) out.push({ id: match[1], text: match[2].trim() });
   }
   return out;
