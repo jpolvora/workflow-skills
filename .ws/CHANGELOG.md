@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-30 17:56] Agent: agent
+- **Prompt**: Fix PR #480 review threads (CRITICAL cross-slug foreign-commit baseline, WARNING duplicate invariant numbering).
+- **Done**: foreign_commit_guard.cjs checkAdvance falls back to the most recent dispatch baseline for a new slug; renumbered ws-spec-multi invariant 7->8; added cross-slug regression tests.
+- **Result**: Cross-slug foreign commit now pauses (exit 1) instead of silently proceeding; genuine first dispatch still exit 2. Tests 155/155, harness clean.
+
 ### [2026-09-30 16:58] Agent: agent
 - **Prompt**: us-475: shared-head multi-spec batches need an executable foreign-commit guard
 - **Done**: Added ws-spec-multi/scripts/foreign_commit_guard.cjs (record-baseline / check-advance / check-convergence / list-foreign) plus PROTOCOL/STATE/SKILL and git-ownership wiring and test/test-foreign-commit-guard.js

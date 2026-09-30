@@ -5,6 +5,9 @@
  *   AC1 record-baseline stores local + origin run-branch tips.
  *   AC2/NS1 a commit landing between dispatches makes check-advance pause (exit 1)
  *           and name the new commit.
+ *   AC2b/NS1b a commit landing between dispatches of *different* slugs on the
+ *           shared head is detected against the previous dispatch baseline
+ *           (exit 1, not exit 2); a genuine first dispatch stays exit 2.
  *   AC3 the protocol surface offers Resume / Skip / Abort on the advance pause.
  *   AC4 check-convergence passes when the PR head equals the local tip.
  *   AC5/NS2 check-convergence refuses (exit 1) on a mismatch, naming both heads.
@@ -110,6 +113,38 @@ function testAdvanceNamesNewCommits() {
   fs.rmSync(s.tmp, { recursive: true, force: true });
 }
 
+function testCrossSlugAdvanceIsDetected() {
+  const s = scenario();
+  guard(['record-baseline', '--run', s.runState, '--slug', 'us-a', '--repo', s.repo, '--json']);
+  const c2 = s.addCommit('b.txt', 'foreign across slugs');
+  const advanced = guard(['check-advance', '--run', s.runState, '--slug', 'us-b', '--repo', s.repo, '--json']);
+  assert.strictEqual(advanced.status, 1, 'AC2b cross-slug advance exits 1 (pause), not exit 2');
+  const parsed = jsonOf(advanced);
+  assert.strictEqual(parsed.advanced, true, 'AC2b cross-slug advance detected');
+  assert.strictEqual(parsed.baselineSlug, 'us-a', 'AC2b compares against the previous dispatch baseline');
+  assert.strictEqual(parsed.local.newCommits.length, 1, 'AC2b names the cross-slug new commit');
+  assert.strictEqual(parsed.local.newCommits[0].sha, c2, 'AC2b names the correct sha');
+  assert.match(parsed.local.newCommits[0].subject, /foreign across slugs/, 'AC2b names the commit subject');
+  fs.rmSync(s.tmp, { recursive: true, force: true });
+}
+
+function testCrossSlugQuietWhenUnchanged() {
+  const s = scenario();
+  guard(['record-baseline', '--run', s.runState, '--slug', 'us-a', '--repo', s.repo, '--json']);
+  const quiet = guard(['check-advance', '--run', s.runState, '--slug', 'us-b', '--repo', s.repo, '--json']);
+  assert.strictEqual(quiet.status, 0, 'AC2b cross-slug quiet path exits 0');
+  assert.strictEqual(jsonOf(quiet).advanced, false, 'AC2b cross-slug quiet reports no advance');
+  fs.rmSync(s.tmp, { recursive: true, force: true });
+}
+
+function testFirstDispatchStillHasNoBaseline() {
+  const s = scenario();
+  const fresh = guard(['check-advance', '--run', s.runState, '--slug', 'us-new', '--repo', s.repo, '--json']);
+  assert.strictEqual(fresh.status, 2, 'AC first dispatch with an empty store stays exit 2');
+  assert.strictEqual(jsonOf(fresh).reason, 'no-baseline', 'AC first dispatch reports no-baseline');
+  fs.rmSync(s.tmp, { recursive: true, force: true });
+}
+
 function testConvergencePassesOnEqualHead() {
   const s = scenario();
   const converged = guard(['check-convergence', '--pr-head', s.c1, '--local-tip', s.c1, '--repo', s.repo, '--json']);
@@ -159,6 +194,9 @@ function testGuardIsGitReadOnly() {
 testRecordsBaselineLocalAndRemoteTips();
 testQuietAdvanceNoGate();
 testAdvanceNamesNewCommits();
+testCrossSlugAdvanceIsDetected();
+testCrossSlugQuietWhenUnchanged();
+testFirstDispatchStillHasNoBaseline();
 testConvergencePassesOnEqualHead();
 testConvergenceRefusesOnMismatch();
 testListForeignExcludesOwnCommits();

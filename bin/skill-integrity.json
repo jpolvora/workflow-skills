@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "2bd7357f72ee8768b5c013bec17a058e20fc7d4e8a7584cf8c7e8a15a4c32772",
+  "fullPackageDigest": "98ef510306dfabf9d76e4f1297f311049b1677fd9055a30060b9ecc48aaa6876",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -509,16 +509,16 @@
       "files": {
         "EXAMPLES.md": "7fbf26aa240694a2c24e386bde3a782f82f1edbc0bbcf1f08b2a947e4bbebc33",
         "PROTOCOL.md": "6c3843098ef2ce0986ff7b877e7312d2b262f74eb22361c57c18054e106875e2",
-        "SKILL.md": "6d02b8eb3d8b61cbb6101e996fb5ee3a8371df49b9909b9d4d49642c61fa8021",
+        "SKILL.md": "e2fab9883b4c13812eb68a7793d6c82b8fa8e17f2aa9019b601e43a793c79170",
         "STATE.md": "be589e5f490af99cd99ee282579f308c7d84dc0111b3d669cfaa98b3917c275d",
         "evals/evals.json": "f9f7363999e22b50ff13fc1304132b600d6d2426357983d84a690120fe69ef86",
-        "scripts/foreign_commit_guard.cjs": "b1c3e4a6bd803029c6af63424bc6f8bbf0c49dae21b1f94eb451978596616579",
+        "scripts/foreign_commit_guard.cjs": "dafb932859cb06673dc37a6db726234e682ff05f0c34b90da597f4883946791e",
         "scripts/list_pending_specs.cjs": "cee46e3114f38502fcd2ca0e441c8bd3384e638283c33b4fdd35c84113119341",
         "scripts/record_child_outcome.cjs": "3a4ac9caa6bcc2234b1de59ca9ec724a51166a9b5ca8e329489136cdc9b485b2",
         "scripts/retire_superseded_run.cjs": "ef7bd0064aabd290a524a5b1b153ba77a30294111941ef573a9882228c7002e2",
         "scripts/verify_child_artifacts.cjs": "d7ebf67e9d89f5b2c7f476b965fa0c26b557e3eb1bf521104a5c37d5738f699d"
       },
-      "skillDigest": "cdc0788386f8f50d91e0993b090a95b49b906ff0345895b8f005bdb023bd8809"
+      "skillDigest": "a6595edfa90df0079383721de1bee0ba6a4194eff12c3b219f1ab8479e17ca6f"
     },
     "ws-spec-organizer": {
       "files": {

@@ -15,6 +15,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **DO NOT**: Pass gitignored plan/runtime artifacts as `--created`; write arbitrary files under `.runtime/`; re-link a changed evidence file with the same event-id or a shifted line range; assume a `;`-chained `update_state` call succeeded without checking `$?`.
 - **INSTEAD DO**: Finish Step 3 with `--noop "<reason>"` (the helper still stamps the artifact); keep scratch logs outside `.runtime/`; re-link a changed file with a NEW event-id but the SAME path+lineStart+lineEnd so the entry is replaced with a fresh sha256; re-score the boundary the next gate expects (`pre-step6` before Step 6, `step5` before Steps 7/8, `ship` before Step 9) then re-run `validate_state.cjs --pre-advance N`.
 
+### [2026-09-30] Foreign-commit guard keyed by current slug misses the previous dispatch baseline
+- **Layer**: `infrastructure`
+- **Module**: `ws-spec-multi / foreign_commit_guard`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-multi/scripts/foreign_commit_guard.cjs, test/test-foreign-commit-guard.js`
+- **Scenario / Context**: In a shared-head multi-spec batch (one run branch, `branchPolicy: stay-on-develop`), every dispatch records a baseline keyed by its own slug. `checkAdvance` looked up `data.records.find(item => item.slug === currentSlug)`, so the next, different spec (new slug) always missed → returned exit `2` (`no-baseline`). PROTOCOL treats exit `2` as "first dispatch — proceed", so a foreign commit landing between two different slugs was silently swept into the next spec's PR range, violating AC2/AC7. The existing regression test only exercised same-slug record→check. The doc (PROTOCOL.md) already said "compared against the baseline recorded at the previous dispatch" — only the code was per-slug keyed.
+- **DO NOT**: Key the shared-head advance check solely by the current slug; treat exit `2` (`no-baseline`) as "proceed" for a new slug when the store already holds an earlier dispatch record.
+- **INSTEAD DO**: Compare against the most recent dispatch record (run-level `data.records[data.records.length - 1]`) when the current slug has no record of its own; reserve exit `2` for a genuinely empty store (real first dispatch). Add a cross-slug regression: record baseline for slug-A, advance the branch, then `check-advance --slug slug-B` MUST exit `1` naming the advance (not exit `2`).
+
 ### [2026-09-25] Monitor severity contract: status-literal beats shape-derived
 - **Layer**: `domain`
 - **Module**: `ws-monitor`

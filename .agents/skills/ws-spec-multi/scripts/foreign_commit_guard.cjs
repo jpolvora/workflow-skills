@@ -183,7 +183,14 @@ function checkAdvance(options) {
   const file = baselineFile(runFile);
 
   const data = loadBaseline(file);
-  const record = data.records.find((item) => item.slug === slug);
+  let record = data.records.find((item) => item.slug === slug);
+  // Shared-head batches compare against the previous dispatch on the one run
+  // branch, not against a record keyed by the current slug. A new item in the
+  // batch has no record of its own yet; fall back to the most recent dispatch
+  // baseline so a foreign commit between different slugs is still detected.
+  if (!record && data.records.length > 0) {
+    record = data.records[data.records.length - 1];
+  }
   if (!record) {
     return {
       payload: { error: `no baseline recorded for ${slug}; call record-baseline before check-advance`, reason: 'no-baseline' },
@@ -203,6 +210,7 @@ function checkAdvance(options) {
         subcommand: 'check-advance',
         advanced: false,
         slug,
+        baselineSlug: record.slug,
         branch,
         localTip: currentLocal,
         remoteTip: currentRemote,
@@ -222,6 +230,7 @@ function checkAdvance(options) {
       subcommand: 'check-advance',
       advanced: true,
       slug,
+      baselineSlug: record.slug,
       branch,
       reason: 'unexpected-advance',
       local: { from: record.localTip, to: currentLocal, newCommits: newLocal },
