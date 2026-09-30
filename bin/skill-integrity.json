@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "1ce1797c9232c4415254bd7d6dd6d59d904d7cf75ab88f789a3e537242b958f6",
+  "fullPackageDigest": "eb6a56c5d200226e641c1f54ac6d1960f78867e17b8e4d12ca4f44390c5a45e4",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -261,10 +261,11 @@
     },
     "ws-implement-tasks": {
       "files": {
-        "SKILL.md": "e2435647e5f6faff87d9e2e611165ad08147f8aafc873779e2975e94103f1a5f",
-        "evals/evals.json": "86e574825c0d3729712a279c84e23f8143eacd41a1c8bb8aeff2ba32ad14cb69"
+        "SKILL.md": "6432e1898a1d19c13e5b17a35c66fee482d98bd7a6eda47aa8d9f4d67961511c",
+        "evals/evals.json": "86e574825c0d3729712a279c84e23f8143eacd41a1c8bb8aeff2ba32ad14cb69",
+        "scripts/check_test_adequacy.cjs": "656c703946cc86de67eabc51874afc11108ef81f841537e8df31720dc7c4b6ed"
       },
-      "skillDigest": "823e6522ffb52294d74cb79ae48d48617d6669225d0ed62048b76c07308f4ea7"
+      "skillDigest": "592b355ad7338c0f6509d4469b0db7a6aa0558477fb1673fb38e095f047638dc"
     },
     "ws-kanvas": {
       "files": {
@@ -341,11 +342,11 @@
     },
     "ws-plan-verify": {
       "files": {
-        "SKILL.md": "ce3cc0054846cedd212c80b6b07addd81d2d44c4f667714e9f81cc64703aec7e",
+        "SKILL.md": "13582febe8f49a4901547c971fd1d42695b83462ff07ca9860112a5ed73e0dab",
         "TEMPLATE.md": "b21c8434669b14c9ea808da6f9d29a75e4d04a026908a67c846f4eeeda08cbb8",
         "evals/evals.json": "e661409d737ca37bd03d663ecb0f80c9d374942157ac62aafcbed4ffe6100b04"
       },
-      "skillDigest": "a22f4b3dd890d5f7ccb703f601403e5900ff9599af6c20852f8e012520bf0a46"
+      "skillDigest": "3b99b1e62d3aaedcd2b6755500b48d55042436e48130bb7799be178773c37d8a"
     },
     "ws-plan-write": {
       "files": {
@@ -584,7 +585,7 @@
         "protocols/delivery-result.md": "c55d864d0d8eece086cc7863661574a9761fb8b947f2a7968b9648ebc4145173",
         "protocols/progress-board.md": "70b39d7711dbb8c3d8868b37e125a9630c63e4e22dff7923c51af9f5ab89ba58",
         "protocols/state-hygiene.md": "75c0a80323bf1be621ac2894abb6f826749378b0d26b7fe596305511f9f6d304",
-        "scripts/ac_ledger.cjs": "7627f64ff0da7c3b09c2cd594ed4330d8c3a08cd0a3b94f487f01dd7034d77da",
+        "scripts/ac_ledger.cjs": "ead6a4ae873ce70b7fd63a563f0103e5a84cc0270edd10eae05bd33051045483",
         "scripts/ado-workitem-to-spec.cjs": "6cd06147f60a2aee095b94502ccc4d9f95c0da65071946432c828f4d4e81c3b5",
         "scripts/build_dispatch_context.cjs": "466589db885babc6d805777369794e07519e9142b8e7c6eeac9aa9a7359f5762",
         "scripts/check_memory_conflict.cjs": "403a507a26b1394b41e0c84abab1c9a4a12b02c15992754daf5368d451c83c22",
@@ -607,7 +608,7 @@
         "scripts/write_verification_manifest.cjs": "d2c2420752e063b604e438ce5a4b4398fb456ba4e5be71f45b00e20523b7c89d",
         "ws-spec-to-pr-run-test.md": "417b103bc5ea94cd83dbaaa71aa973cbf23e29f73d7ca567667b2870be914560"
       },
-      "skillDigest": "b4c5fb107802ebbc6c3cb0e39d8efa69e2e1565645eaedcfd50b7ba7ace9e20f"
+      "skillDigest": "1163dda578278c010c25744b7958957156402b6ac72ec652f28bb3d4e161dab4"
     },
     "ws-spec-to-pr-distributed": {
       "files": {

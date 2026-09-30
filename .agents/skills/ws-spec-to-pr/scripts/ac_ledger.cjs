@@ -278,6 +278,34 @@ function link(options, context) {
       }
     }
   }
+  let adequacyRecord = null;
+  let adequacySource = null;
+  if (options.adequacyFile) {
+    if (!acIds.length) throw new Error('adequacy-file requires at least one --ac');
+    const recordPath = path.isAbsolute(options.adequacyFile) ? options.adequacyFile : path.resolve(context.repoRoot, options.adequacyFile);
+    let text;
+    try {
+      text = fs.readFileSync(recordPath, 'utf8');
+    } catch {
+      throw new Error(`adequacy record unreadable: ${options.adequacyFile}`);
+    }
+    let parsed;
+    try {
+      parsed = JSON.parse(text);
+    } catch {
+      throw new Error('adequacy record malformed: invalid JSON');
+    }
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)
+      || parsed.schemaVersion !== 1
+      || typeof parsed.taskId !== 'string' || !parsed.taskId
+      || !['adequate', 'inadequate'].includes(parsed.status)
+      || !Array.isArray(parsed.acs) || !parsed.acs.length
+      || !Array.isArray(parsed.bindings) || !Array.isArray(parsed.litmus)) {
+      throw new Error('adequacy record malformed: schemaVersion 1 with taskId, status adequate|inadequate, acs, bindings, and litmus required');
+    }
+    adequacyRecord = parsed;
+    adequacySource = { text, path: recordPath };
+  }
   const targetAcs = acIds.map((id) => (ledger.acceptanceCriteria || []).find((row) => row.id === id)).filter(Boolean);
   const targetNs = nsIds.map((id) => (ledger.negativeScenarios || []).find((row) => row.id === id)).filter(Boolean);
   const hasExplicitTargets = targetAcs.length > 0 || targetNs.length > 0;
@@ -333,6 +361,20 @@ function link(options, context) {
     if (options.sabotageExit !== undefined) {
       const exitCode = Number(options.sabotageExit);
       row.sabotage = { required: true, status: exitCode === 0 ? 'passed' : 'failed', exitCode };
+    }
+    if (adequacyRecord) {
+      if (!adequacyRecord.acs.includes(ac)) throw new Error(`adequacy record does not cover ${ac}`);
+      row.adequacy = {
+        status: adequacyRecord.status,
+        taskId: adequacyRecord.taskId,
+        acs: [...adequacyRecord.acs].sort(),
+        bindings: adequacyRecord.bindings.length,
+        litmus: adequacyRecord.litmus.length,
+        orphansRemoved: Array.isArray(adequacyRecord.orphansRemoved) ? adequacyRecord.orphansRemoved.length : 0,
+        recordPath: toRepoRelative(context.repoRoot, adequacySource.path),
+        recordSha256: sha256(adequacySource.text),
+        checkedAt: adequacyRecord.checkedAt || null,
+      };
     }
     if (!row.linkEventIds.includes(options.eventId)) {
       row.linkEventIds.push(options.eventId);
@@ -601,6 +643,10 @@ function scoreLedger(ledger, boundary, context, options = {}) {
     if (row.tasks.length || row.planSections.length) earned += 1;
     else deficiencies.push(`${row.id}: no tasks or planSections`);
     if (row.sabotage.required && row.sabotage.status !== 'passed') knownDefect = true;
+    if (row.adequacy && row.adequacy.status === 'inadequate') {
+      knownDefect = true;
+      deficiencies.push(`${row.id}: inadequate test adequacy (observed, not asserted)`);
+    }
     if (row.findings.some((finding) => finding.state === 'open' && ['Critical', 'Warning'].includes(finding.severity))) knownDefect = true;
     if (boundary === 'pre-step6' && !row.commits.length) errors.push(`${row.id}: product commit linkage required before step 6`);
   }
@@ -744,13 +790,14 @@ function ledgerHelpText(command) {
       return 'Usage: ac_ledger.cjs link --ledger <ledger> --event-id <id> [--ac ACn ...] [--negative NSn ...]\n'
         + '  [--status Implemented|ImplementedDifferently|NotImplemented|Pending] [--file <path:Lstart-Lend> ...]\n'
         + '  [--test <name=N,sourceFile=F,phase=planned|observed,exitCode=C> ...] [--commit <sha=S,step=N> ...]\n'
-        + '  [--verdict ...] [--finding ...] [--sabotage-exit N] [--gap <text>] [--plan-index <index>]\n'
+        + '  [--verdict ...] [--finding ...] [--sabotage-exit N] [--adequacy-file <path>] [--gap <text>] [--plan-index <index>]\n'
         + '  [--alias-result ...] [--test-surface-skip ...] [--invariant-violation ...] [--score-boundary <label>]\n'
         + '  [--files-touched <path> ...] [--failing-paths <path> ...] [--product-failure [true|false]]\n'
         + 'Attach evidence to AC rows. Requires --ledger and --event-id plus at least one target (--ac,\n'
         + '--negative, --alias-result, --test-surface-skip, --gap, or --plan-index). --file ranges use the\n'
         + 'path:Lstart-Lend shape. --plan-index backfills taskIds, planSectionIds, and expected test names.\n'
-        + '--files-touched persists modified paths for defect scoping. --failing-paths / --product-failure\n'
+        + '--files-touched persists modified paths for defect scoping. --adequacy-file attaches a validated per-task\n'
+        + 'adequacy record to each --ac target (record must cover the AC; inadequate status fails closed).\n'
         + 'provide CLI fallbacks for alias results.\n'
         + 'Persist: link recomputes scoreState (--score-boundary wins; else pre-step6 when commits exist,\n'
         + 'else step5), so re-score only when the next gate expects a different boundary.\n'
