@@ -205,6 +205,9 @@
     ],
     [
       "test/test-per-task-adequacy.js"
+    ],
+    [
+      "test/test-benchmark-comparison-publish.js"
     ]
   ],
   "remote": [

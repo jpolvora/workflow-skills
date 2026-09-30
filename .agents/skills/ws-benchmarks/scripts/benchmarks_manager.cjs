@@ -281,6 +281,20 @@ function writeComparisonFile(filePath, markdown) {
   return { wrote: true, path: filePath };
 }
 
+function extractComparisonSection(md) {
+  const idx = String(md || '').indexOf('## Fixed-Model Comparison Runs');
+  if (idx === -1) return '';
+  return String(md).slice(idx).replace(/\s*$/, '');
+}
+
+function preserveComparisonSection(existingMd, freshMd) {
+  const section = extractComparisonSection(existingMd);
+  if (!section) return freshMd;
+  if (String(freshMd).includes('## Fixed-Model Comparison Runs')) return freshMd;
+  const head = String(freshMd).replace(/\s*$/, '');
+  return head + '\n\n' + section + '\n';
+}
+
 function updateComparisonFiles(repoRoot, options = {}) {
   const baselinesRoot = path.join(repoRoot, 'benchmarks', 'baselines');
   const resultsRoot = options.resultsDir
@@ -289,8 +303,9 @@ function updateComparisonFiles(repoRoot, options = {}) {
   fs.mkdirSync(resultsRoot, { recursive: true });
 
   const baselines = listBaselines(baselinesRoot);
-  const markdown = renderEvolutionMarkdown(baselines, options);
   const evolutionFile = path.join(resultsRoot, 'BENCHMARK_EVOLUTION.md');
+  const existingEvo = fs.existsSync(evolutionFile) ? fs.readFileSync(evolutionFile, 'utf8') : '';
+  const markdown = preserveComparisonSection(existingEvo, renderEvolutionMarkdown(baselines, options));
   const written = [];
   const skipped = [];
   const evoWrite = writeComparisonFile(evolutionFile, markdown);
@@ -376,6 +391,16 @@ function main() {
     return;
   }
 
+  if (options.publishComparison) {
+    const pubScript = path.join(repoRoot, '.agents', 'skills', 'ws-benchmarks', 'scripts', 'publish_comparison.cjs');
+    const args = [];
+    if (options.run) args.push('--run', options.run);
+    if (options.resultsDir) args.push('--results-dir', options.resultsDir);
+    if (options.repoRoot) args.push('--repo-root', options.repoRoot);
+    const result = spawnSync(process.execPath, [pubScript, ...args], { cwd: repoRoot, stdio: 'inherit' });
+    process.exitCode = result.status === null || result.status === undefined ? 0 : result.status;
+    return;
+  }
   if (options.updateComparison) {
     const res = updateComparisonFiles(repoRoot, options);
     process.stdout.write(`Updated benchmark comparison files (${res.snapshotCount} snapshots across versions: ${res.versions.join(', ')}):\n`);
@@ -429,6 +454,7 @@ function main() {
     'Usage:',
     '  node .agents/skills/ws-benchmarks/scripts/benchmarks_manager.cjs --evolution',
     '  node .agents/skills/ws-benchmarks/scripts/benchmarks_manager.cjs --update-comparison',
+    '  node .agents/skills/ws-benchmarks/scripts/benchmarks_manager.cjs --publish-comparison --run benchmarks/comparisons/<runId>',
     '  node .agents/skills/ws-benchmarks/scripts/benchmarks_manager.cjs --check',
     '  node .agents/skills/ws-benchmarks/scripts/benchmarks_manager.cjs --list [--include-runs] [--json]',
     '  node .agents/skills/ws-benchmarks/scripts/benchmarks_manager.cjs --compare --from <base> --to <target>',
@@ -442,6 +468,7 @@ module.exports = {
   listRecentRuns,
   renderEvolutionMarkdown,
   comparisonFingerprint,
+  preserveComparisonSection,
   writeComparisonFile,
   updateComparisonFiles,
   formatWallSec,

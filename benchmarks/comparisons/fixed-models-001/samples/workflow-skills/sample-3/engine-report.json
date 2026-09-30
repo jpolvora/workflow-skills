@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "packageVersion": "0.5.21",
+    "gitSha": "8665aab7f6f8f980011110e4c0cfc55a62cb795c",
+    "fixtureId": "fx-node-helper",
+    "mode": "static",
+    "orch": "lite",
+    "dryRun": true,
+    "timestamp": "2026-09-30T12:03:10.042Z"
+  },
+  "dimensions": {
+    "completeness": 10,
+    "verifyScore": null,
+    "judge": null,
+    "discrimination": null,
+    "efficiency": 10,
+    "time": null,
+    "honesty": null
+  },
+  "index": {
+    "value": 100,
+    "weights": {
+      "completeness": 20,
+      "verifyScore": 20,
+      "judge": 15,
+      "discrimination": 15,
+      "efficiency": 15,
+      "time": 10,
+      "honesty": 5
+    }
+  },
+  "perAc": [
+    {
+      "id": "AC1",
+      "score": 10,
+      "evidence": "spec AC present"
+    },
+    {
+      "id": "AC2",
+      "score": 10,
+      "evidence": "spec AC present"
+    }
+  ],
+  "sensor": {
+    "required": false,
+    "injected": 0,
+    "killed": 0,
+    "porcelainOk": true,
+    "verdict": "SKIP"
+  },
+  "diffRange": {
+    "fromSha": "8665aab7f6f8f980011110e4c0cfc55a62cb795c",
+    "toSha": "8665aab7f6f8f980011110e4c0cfc55a62cb795c"
+  },
+  "verdict": "PASS"
+}

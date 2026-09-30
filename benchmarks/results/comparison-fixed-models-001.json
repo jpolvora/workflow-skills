@@ -1,0 +1,177 @@
+{
+  "runId": "fixed-models-001",
+  "prdSha256": "c777322b54c00df5961aa9608ea53d3a59bc9e93f194981f76ee91511740313c",
+  "judgeSha256": "8bec03c694dd3f3cc8b70c1fcd5a9ff97b7839971108fd80a5aa7eab3f1e0745",
+  "judge": {
+    "checks": [
+      {
+        "evidence": "sample artifact: lib/duration.cjs exports formatDuration",
+        "id": "C1",
+        "text": "Duration helper module exists and formats (AC1)"
+      },
+      {
+        "evidence": "sample artifact: formatDuration(-1) throws RangeError",
+        "id": "C2",
+        "text": "Negative input throws RangeError (AC2)"
+      },
+      {
+        "evidence": "sample artifact: behavior test for formatDuration(125) passes",
+        "id": "C3",
+        "text": "125 formats as 2m 5s (AC3)"
+      },
+      {
+        "evidence": "sample artifact: behavior test for formatDuration(-1) passes",
+        "id": "C4",
+        "text": "Negative-throw behavior test passes (AC4)"
+      },
+      {
+        "evidence": "sample artifact: behavior test command exit code is 0",
+        "id": "C5",
+        "text": "Behavior tests exit 0 (AC5)"
+      },
+      {
+        "evidence": "sample artifact: inverted AC3 implementation fails the AC3 test",
+        "id": "C6",
+        "text": "Wrong-format implementation fails AC3 test (NS1)"
+      },
+      {
+        "evidence": "sample artifact: non-throwing AC4 implementation fails the AC4 test",
+        "id": "C7",
+        "text": "Non-throwing implementation fails AC4 test (NS2)"
+      }
+    ],
+    "version": 1
+  },
+  "columns": [
+    {
+      "harness": "workflow-skills",
+      "version": "0.5.21",
+      "settings": {
+        "mode": "static",
+        "fixture": "fx-node-helper",
+        "procedure": "collect_sample.cjs",
+        "packageVersion": "0.5.21",
+        "gitSha": "8665aab"
+      },
+      "models": {
+        "executor": "none (deterministic static execution; no inference)"
+      },
+      "samples": [
+        {
+          "timestamp": "2026-09-30T12:18:34.824Z",
+          "models": {
+            "executor": "none (deterministic static execution; no inference)"
+          },
+          "checks": {
+            "C1": 1,
+            "C2": 1,
+            "C3": 1,
+            "C4": 1,
+            "C5": 1,
+            "C6": 1,
+            "C7": 1
+          },
+          "evidenceRefs": [
+            "benchmarks/comparisons/fixed-models-001/samples/workflow-skills/sample-1/engine-report.json",
+            "benchmarks/comparisons/fixed-models-001/samples/workflow-skills/sample-1/procedure.log"
+          ]
+        },
+        {
+          "timestamp": "2026-09-30T12:18:35.040Z",
+          "models": {
+            "executor": "none (deterministic static execution; no inference)"
+          },
+          "checks": {
+            "C1": 1,
+            "C2": 1,
+            "C3": 1,
+            "C4": 1,
+            "C5": 1,
+            "C6": 1,
+            "C7": 1
+          },
+          "evidenceRefs": [
+            "benchmarks/comparisons/fixed-models-001/samples/workflow-skills/sample-2/engine-report.json",
+            "benchmarks/comparisons/fixed-models-001/samples/workflow-skills/sample-2/procedure.log"
+          ]
+        },
+        {
+          "timestamp": "2026-09-30T12:18:35.243Z",
+          "models": {
+            "executor": "none (deterministic static execution; no inference)"
+          },
+          "checks": {
+            "C1": 1,
+            "C2": 1,
+            "C3": 1,
+            "C4": 1,
+            "C5": 1,
+            "C6": 1,
+            "C7": 1
+          },
+          "evidenceRefs": [
+            "benchmarks/comparisons/fixed-models-001/samples/workflow-skills/sample-3/engine-report.json",
+            "benchmarks/comparisons/fixed-models-001/samples/workflow-skills/sample-3/procedure.log"
+          ]
+        }
+      ],
+      "perSample": [
+        7,
+        7,
+        7
+      ],
+      "aggregate": {
+        "perCheck": {
+          "C1": {
+            "passed": 3,
+            "total": 3,
+            "rate": 1
+          },
+          "C2": {
+            "passed": 3,
+            "total": 3,
+            "rate": 1
+          },
+          "C3": {
+            "passed": 3,
+            "total": 3,
+            "rate": 1
+          },
+          "C4": {
+            "passed": 3,
+            "total": 3,
+            "rate": 1
+          },
+          "C5": {
+            "passed": 3,
+            "total": 3,
+            "rate": 1
+          },
+          "C6": {
+            "passed": 3,
+            "total": 3,
+            "rate": 1
+          },
+          "C7": {
+            "passed": 3,
+            "total": 3,
+            "rate": 1
+          }
+        },
+        "total": 21,
+        "mean": 7,
+        "maxPerSample": 7,
+        "sampleCount": 3
+      }
+    }
+  ],
+  "protocolExceptions": [],
+  "pendingComparators": [
+    {
+      "harness": "external-comparator",
+      "reason": "no evidence-backed samples available in this sandbox; column excluded from scoring rather than fabricated",
+      "rerun": "execute prd.md unchanged at documented defaults, record 3 binary samples, append a scored column, re-publish"
+    }
+  ],
+  "publishedAt": "2026-09-30T12:18:39.976Z"
+}

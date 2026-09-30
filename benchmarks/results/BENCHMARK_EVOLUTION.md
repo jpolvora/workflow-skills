@@ -73,3 +73,7 @@
   - `fx-config-merge`: Mid-high standard orchestrator fixture with 10 ACs.
   - `fx-lite-readme`: Fast lite single-file documentation fixture.
   - `fx-incomplete`: Negative test case ensuring incomplete runs cannot achieve full score.
+
+## Fixed-Model Comparison Runs
+
+- [fixed-models-001](./comparison-fixed-models-001.md)

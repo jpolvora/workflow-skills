@@ -23,6 +23,7 @@ Interactive suite for inspecting, executing, and reporting harness benchmarks in
 /ws-benchmarks
 /ws-benchmarks --evolution
 /ws-benchmarks --update-comparison
+/ws-benchmarks --publish-comparison --run benchmarks/comparisons/<runId>
 /ws-benchmarks --mode static
 /ws-benchmarks --mode live --fixture fx-node-helper
 ```
@@ -42,7 +43,8 @@ Interactive suite for inspecting, executing, and reporting harness benchmarks in
    3. **Update Comparison .md by Version** — Refresh `benchmarks/results/BENCHMARK_EVOLUTION.md` and per-version summary tables. Skip files whose scores are unchanged; do not bump `**Generated:**` alone.
    4. **Compare Baselines / Check Regressions** — Compare two baselines or evaluate an uncommitted run against a baseline.
    5. **Promote Run to Baseline (Snapshot)** — Snapshot a recent run from `benchmarks/runs/` to `benchmarks/baselines/`.
-   6. **Export Summary to Spec-Memo Vault** — Log benchmark evolution summary into the external `spec-memo` memory vault (when available).
+   6. **Publish Fixed-Model Comparison** — Validate a comparison run dir (`prd.md` + `judge.json` + `run-manifest.json`), score binary samples, and publish the report under `benchmarks/results/` with an evolution link.
+   7. **Export Summary to Spec-Memo Vault** — Log benchmark evolution summary into the external `spec-memo` memory vault (when available).
 
    Dismiss / Cancel → STOP immediately without executing mutations.
    - Done when: user selection is confirmed, or execution stops on cancel.
@@ -69,6 +71,11 @@ Interactive suite for inspecting, executing, and reporting harness benchmarks in
      node {skillsRoot}/ws-benchmarks/scripts/benchmarks_manager.cjs --update-comparison
      ```
      Writes only `BENCHMARK_EVOLUTION.md` and `table-<version>.md` files whose table body changed. Unchanged version tables keep their prior Generated stamp.
+   - **Publish Comparison**:
+     ```bash
+     node {skillsRoot}/ws-benchmarks/scripts/benchmarks_manager.cjs --publish-comparison --run benchmarks/comparisons/{runId}
+     ```
+     Gates: frozen PRD and judge hashes, fixed models per role, ≥3 binary samples per harness column, comparator defaults pinned (deviations logged). Writes `benchmarks/results/comparison-{runId}.md` (+ `.json` twin) and links the run from `BENCHMARK_EVOLUTION.md`; re-publishing unchanged inputs skips the rewrite.
    - **Compare Baselines**:
      ```bash
      node scripts/harness-benchmark/cli.cjs compare --from {fromBaseline} --to {toBaseline}
