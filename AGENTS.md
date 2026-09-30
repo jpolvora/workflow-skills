@@ -241,13 +241,15 @@ ask → 0 Classify → 1 Done → 2 Evidence → 3 Decide → 4 Act → 5 Verify
 |------|-----------|
 | **0** | Question (findings + 1 rec, no edits) · Task (verified change) · Plan-First (plan + named checks, **STOP**). Tie-break: plan-first. |
 | **1** | 1–2 sentences + named check (test/build/log cite). |
-| **2** | Orient (glob) → primary sources → parallel lookups; max **2** rounds then state gaps. |
+| **2** | Orient (glob) → knowledge chain in order (codebase → project docs → MCP sources → web) → parallel lookups; max **2** rounds then state gaps. |
 | **3** | One primary recommendation + surgical blast radius. |
 | **4** | Surgical edits; stop after 3 failed verify retries. |
 | **5** | Observed re-run / diff; `git diff` matches scope. |
-| **6** | Outcome first → evidence → honest caveats. |
+| **6** | Outcome first → evidence → honest caveats + per-claim source table (`Claim | Chain link | Reference | Uncertain`). |
 
 Subcommands: default = full loop; `plan` = 0–3 then STOP; `audit` = live `ws-fable-judge` only when asked; `report` = outcome-first with caveats.
+
+**Knowledge chain:** every factual claim cites its chain link with a path, document, or URL reference; ungrounded claims carry `UNCERTAIN` and are never presented as observed fact. Never invent APIs, paths, numbers, versions, or tool output.
 
 ### 3. Reply shape (`ws-tdah`)
 

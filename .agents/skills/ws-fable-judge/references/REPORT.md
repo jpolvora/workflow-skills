@@ -15,6 +15,13 @@
 - **Scope Creep:** [None detected | Files outside blast radius]
 - **Unauthorized Actions:** [None detected | Details]
 
+## Source Chain Compliance
+| Claim | Chain link | Reference | Uncertain |
+|-------|-----------|-----------|-----------|
+| [Claim text] | [codebase / project docs / MCP / web / none] | [path, document, or URL] | [yes / no] |
+- **Skipped-link violations:** [None | Details]
+- **Unsourced claims:** [None | Details]
+
 ## Action Items
 - [Specific remediation required if REFUTED or CAVEATED]
 - **Self-Learning Action**: [Required for REFUTED / CAVEATS — record memory entry in `{memoryDir}/memory/YYYY-MM-DD-fable-[slug].md` and compile `MEMORY.md` | N/A if VERIFIED]

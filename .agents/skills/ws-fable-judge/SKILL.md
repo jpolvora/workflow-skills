@@ -25,6 +25,15 @@ Extract all explicit and implicit claims from the work report or conversation tr
 - What verifications supposedly passed ("tests green", "build passes").
 - What scope was supposedly left untouched.
 
+### Step 1b — Check Source Chain Compliance
+For each collected claim, verify knowledge-chain compliance:
+- The claim cites the chain link that grounds it (codebase → project docs → MCP sources → web) with a path, document, or URL reference.
+- A claim citing a later link when an earlier link grounds it is a **skipped-link** violation.
+- A claim with no grounding chain source must carry the `UNCERTAIN` marker; an unmarked unsourced claim presented as fact fails the sourcing check.
+- An invented API, path, number, version, or tool output with no chain reference fails the anti-fabrication check.
+- Do not confuse `UNCERTAIN` (no chain source grounds the claim) with `UNVERIFIABLE` (a verification that cannot be re-run); the two markers are never interchangeable.
+- A report without the per-claim source table is returned for completion before the audit counts.
+
 ### Step 2 — Establish Ground Truth (`git diff`)
 - Execute `git diff` and `git status` (or file comparison against target baseline).
 - The diff is ground truth; human or model reports are unverified claims.
@@ -56,6 +65,8 @@ Summarize audit results into one of three official verdicts:
 - **`VERIFIED`**: All claims match ground truth diff, all verifications re-ran green, 0 frauds detected.
 - **`VERIFIED WITH CAVEATS`**: Core claims match and verifications pass, but ≥1 item is UNVERIFIABLE or listed under Action Items (non-fraud).
 - **`REFUTED`**: One or more classic frauds detected, verifications failed, or implementation contradicts ground truth diff.
+
+Sourcing flags ride the existing verdict: unsourced or mis-sourced claims land under Action Items (caveat) or drive `REFUTED` when they constitute a classic fraud.
 
 The shipping policy is a strict tri-state: `false`, `"refuted"` (packaged default), or `"caveats"`. `REFUTED` is an unconditional safety floor and always blocks. `"caveats"` additionally blocks `VERIFIED WITH CAVEATS`; `false` and `"refuted"` do not block caveated outcomes. Callers consume the normalized policy from the shared workflow runtime rather than reimplementing legacy boolean checks.
 

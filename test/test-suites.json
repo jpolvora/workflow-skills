@@ -211,6 +211,9 @@
     ],
     [
       "test/test-step-context-budgets.js"
+    ],
+    [
+      "test/test-explicit-knowledge-chain.js"
     ]
   ],
   "remote": [
