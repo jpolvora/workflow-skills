@@ -153,6 +153,9 @@
       "test/test-classifier-history.js"
     ],
     [
+      "test/test-classify-open-questions.js"
+    ],
+    [
       "test/test-spec-validation.js"
     ],
     [
@@ -190,6 +193,9 @@
     ],
     [
       "test/test-check-workflows-automode.js"
+    ],
+    [
+      "test/test-dispatch-prompt-audit.js"
     ]
   ],
   "remote": [

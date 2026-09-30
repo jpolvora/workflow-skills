@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 8,
-  "generatedAt": "2026-09-29T20:08:07Z",
+  "revision": 10,
+  "generatedAt": "2026-09-29T20:20:40Z",
   "workflows": [
     {
       "workflowId": "reduce-spec-to-pr-tokens-20260927T043013Z",
@@ -129,10 +129,10 @@
       "slug": "us-461",
       "pipeline": "standard",
       "statePath": ".agents/plans/us-461/wf-us-461.state.md",
-      "stateSha256": "0c8c4f4d0674a2f1ba18562da573ea720e47a344691992b4ca114cb4f11b5be1",
-      "status": "active",
-      "currentStep": 8,
-      "updatedAt": "2026-09-29T20:08:07Z",
+      "stateSha256": "59bd74f6a81a443d2405c86514aa695d7783eda3b67150dc9ccc259fe3a83e7f",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-09-29T20:20:40Z",
       "runPath": ".agents/plans/us-461/wf-us-461.state.json"
     },
     {

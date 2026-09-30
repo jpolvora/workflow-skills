@@ -366,7 +366,7 @@ const efficiencyFeatureBlock = `  <!-- efficiency-verifiability:start -->
         <div class="role-card-icon">KB</div>
         <h4 class="role-card-title">Context budgets and progressive disclosure</h4>
       </div>
-      <p class="role-card-desc">Dispatches use bounded subagent contracts and indexed plan slices: an 18 KB fixed preamble, a 4 KB matched MEMORY slice, and a configurable 32 KB total context budget.</p>
+      <p class="role-card-desc">Dispatches use bounded subagent contracts and indexed plan slices: an 18 KB fixed preamble, a 4 KB matched MEMORY slice, and a configurable 32 KB total context budget. Every dispatch persists a durable prompt audit pair beside the step artifacts, linked from dispatch provenance and verified by pre-advance gates.</p>
     </div>
     <div class="role-matrix-card">
       <div class="role-card-header">

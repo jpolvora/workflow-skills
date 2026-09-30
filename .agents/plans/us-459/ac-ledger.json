@@ -1,0 +1,754 @@
+{
+  "schemaVersion": 1,
+  "revision": 5,
+  "workflowId": "wf-us-459",
+  "slug": "us-459",
+  "specPath": ".agents/plans/us-459/step-00-us-459.spec.md",
+  "planIndexPath": ".agents/plans/us-459/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "Each of the six board columns (backlog, sprint, development, staging, production, abandoned) has a distinct visual color cue (header accent, border, or equivalent) keyed to its phase; pass when all six cues are pairwise distinguishable in both light and dark rendering.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-kanvas/refs/board.html:L18-L26",
+        ".agents/skills/ws-kanvas/refs/board.html:L24-L27",
+        ".agents/skills/ws-kanvas/refs/board.html:L25-L33",
+        ".agents/skills/ws-kanvas/refs/board.html:L7-L43"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-006",
+        "section-008"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-kanvas/refs/board.html",
+          "lineStart": 7,
+          "lineEnd": 43,
+          "sha256": "b0837aa279446d23814aa48c86255db6f7c590aeebb14ec5279e09e2d6405b7c"
+        },
+        {
+          "path": ".agents/skills/ws-kanvas/refs/board.html",
+          "lineStart": 18,
+          "lineEnd": 26,
+          "sha256": "b0837aa279446d23814aa48c86255db6f7c590aeebb14ec5279e09e2d6405b7c"
+        },
+        {
+          "path": ".agents/skills/ws-kanvas/refs/board.html",
+          "lineStart": 24,
+          "lineEnd": 27,
+          "sha256": "b0837aa279446d23814aa48c86255db6f7c590aeebb14ec5279e09e2d6405b7c"
+        },
+        {
+          "path": ".agents/skills/ws-kanvas/refs/board.html",
+          "lineStart": 25,
+          "lineEnd": 33,
+          "sha256": "b0837aa279446d23814aa48c86255db6f7c590aeebb14ec5279e09e2d6405b7c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "4eef4fee76a03dbd290d8bb89ca816cff4d4f717",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "V1",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.509Z"
+        },
+        {
+          "name": "V2",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.510Z"
+        },
+        {
+          "name": "V3",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.510Z"
+        },
+        {
+          "name": "V4",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.510Z"
+        },
+        {
+          "name": "V5",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.511Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-4eef4fee76a03dbd290d8bb89ca816cff4d4f717",
+        "verify-acs"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "Card and column surfaces use theme-aware colors with no remaining `#888` or `transparent` literals in the board `<style>` block for card, column, or popup surfaces; pass when a literal search for `#888` and `background: transparent` inside `<style>` returns zero matches.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-kanvas/refs/board.html:L18-L26",
+        ".agents/skills/ws-kanvas/refs/board.html:L24-L27",
+        ".agents/skills/ws-kanvas/refs/board.html:L25-L33",
+        ".agents/skills/ws-kanvas/refs/board.html:L7-L43"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-kanvas/refs/board.html",
+          "lineStart": 7,
+          "lineEnd": 43,
+          "sha256": "b0837aa279446d23814aa48c86255db6f7c590aeebb14ec5279e09e2d6405b7c"
+        },
+        {
+          "path": ".agents/skills/ws-kanvas/refs/board.html",
+          "lineStart": 18,
+          "lineEnd": 26,
+          "sha256": "b0837aa279446d23814aa48c86255db6f7c590aeebb14ec5279e09e2d6405b7c"
+        },
+        {
+          "path": ".agents/skills/ws-kanvas/refs/board.html",
+          "lineStart": 24,
+          "lineEnd": 27,
+          "sha256": "b0837aa279446d23814aa48c86255db6f7c590aeebb14ec5279e09e2d6405b7c"
+        },
+        {
+          "path": ".agents/skills/ws-kanvas/refs/board.html",
+          "lineStart": 25,
+          "lineEnd": 33,
+          "sha256": "b0837aa279446d23814aa48c86255db6f7c590aeebb14ec5279e09e2d6405b7c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "4eef4fee76a03dbd290d8bb89ca816cff4d4f717",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "V1",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.511Z"
+        },
+        {
+          "name": "V2",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.511Z"
+        },
+        {
+          "name": "V3",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.511Z"
+        },
+        {
+          "name": "V4",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.511Z"
+        },
+        {
+          "name": "V5",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.511Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-4eef4fee76a03dbd290d8bb89ca816cff4d4f717",
+        "verify-acs"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "Body text meets WCAG AA contrast (>= 4.5:1) against its card/column background in both light and dark themes, and the phase label text still names each column so color is not the only differentiator; pass when measured contrast passes in both schemes and every column header keeps its text label.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-kanvas/refs/board.html:L18-L26",
+        ".agents/skills/ws-kanvas/refs/board.html:L24-L27",
+        ".agents/skills/ws-kanvas/refs/board.html:L25-L33",
+        ".agents/skills/ws-kanvas/refs/board.html:L7-L43"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-kanvas/refs/board.html",
+          "lineStart": 7,
+          "lineEnd": 43,
+          "sha256": "b0837aa279446d23814aa48c86255db6f7c590aeebb14ec5279e09e2d6405b7c"
+        },
+        {
+          "path": ".agents/skills/ws-kanvas/refs/board.html",
+          "lineStart": 18,
+          "lineEnd": 26,
+          "sha256": "b0837aa279446d23814aa48c86255db6f7c590aeebb14ec5279e09e2d6405b7c"
+        },
+        {
+          "path": ".agents/skills/ws-kanvas/refs/board.html",
+          "lineStart": 24,
+          "lineEnd": 27,
+          "sha256": "b0837aa279446d23814aa48c86255db6f7c590aeebb14ec5279e09e2d6405b7c"
+        },
+        {
+          "path": ".agents/skills/ws-kanvas/refs/board.html",
+          "lineStart": 25,
+          "lineEnd": 33,
+          "sha256": "b0837aa279446d23814aa48c86255db6f7c590aeebb14ec5279e09e2d6405b7c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "4eef4fee76a03dbd290d8bb89ca816cff4d4f717",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "V1",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.512Z"
+        },
+        {
+          "name": "V2",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.512Z"
+        },
+        {
+          "name": "V3",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.513Z"
+        },
+        {
+          "name": "V4",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.513Z"
+        },
+        {
+          "name": "V5",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.513Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-4eef4fee76a03dbd290d8bb89ca816cff4d4f717",
+        "verify-acs"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "The drop-target highlight and the popup (panel plus backdrop) use colors consistent with the new palette and remain legible in both themes; pass when the drop-target state and an open popup render with palette-consistent, AA-legible styling in light and dark.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-kanvas/refs/board.html:L18-L26",
+        ".agents/skills/ws-kanvas/refs/board.html:L24-L27",
+        ".agents/skills/ws-kanvas/refs/board.html:L25-L33",
+        ".agents/skills/ws-kanvas/refs/board.html:L7-L43"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-kanvas/refs/board.html",
+          "lineStart": 7,
+          "lineEnd": 43,
+          "sha256": "b0837aa279446d23814aa48c86255db6f7c590aeebb14ec5279e09e2d6405b7c"
+        },
+        {
+          "path": ".agents/skills/ws-kanvas/refs/board.html",
+          "lineStart": 18,
+          "lineEnd": 26,
+          "sha256": "b0837aa279446d23814aa48c86255db6f7c590aeebb14ec5279e09e2d6405b7c"
+        },
+        {
+          "path": ".agents/skills/ws-kanvas/refs/board.html",
+          "lineStart": 24,
+          "lineEnd": 27,
+          "sha256": "b0837aa279446d23814aa48c86255db6f7c590aeebb14ec5279e09e2d6405b7c"
+        },
+        {
+          "path": ".agents/skills/ws-kanvas/refs/board.html",
+          "lineStart": 25,
+          "lineEnd": 33,
+          "sha256": "b0837aa279446d23814aa48c86255db6f7c590aeebb14ec5279e09e2d6405b7c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "4eef4fee76a03dbd290d8bb89ca816cff4d4f717",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "V1",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.513Z"
+        },
+        {
+          "name": "V2",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.513Z"
+        },
+        {
+          "name": "V3",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.513Z"
+        },
+        {
+          "name": "V4",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.513Z"
+        },
+        {
+          "name": "V5",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.513Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-4eef4fee76a03dbd290d8bb89ca816cff4d4f717",
+        "verify-acs"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "No behavior change to the board script or the collect/move/card APIs; pass when the `board.html` diff touches only the `<style>` block and the existing kanvas suites (`test-kanvas-board.js`, `test-kanvas-drag-drop.js`) still pass.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-kanvas/refs/board.html:L18-L26",
+        ".agents/skills/ws-kanvas/refs/board.html:L24-L27",
+        ".agents/skills/ws-kanvas/refs/board.html:L25-L33",
+        ".agents/skills/ws-kanvas/refs/board.html:L7-L43"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006",
+        "section-008"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-kanvas/refs/board.html",
+          "lineStart": 7,
+          "lineEnd": 43,
+          "sha256": "b0837aa279446d23814aa48c86255db6f7c590aeebb14ec5279e09e2d6405b7c"
+        },
+        {
+          "path": ".agents/skills/ws-kanvas/refs/board.html",
+          "lineStart": 18,
+          "lineEnd": 26,
+          "sha256": "b0837aa279446d23814aa48c86255db6f7c590aeebb14ec5279e09e2d6405b7c"
+        },
+        {
+          "path": ".agents/skills/ws-kanvas/refs/board.html",
+          "lineStart": 24,
+          "lineEnd": 27,
+          "sha256": "b0837aa279446d23814aa48c86255db6f7c590aeebb14ec5279e09e2d6405b7c"
+        },
+        {
+          "path": ".agents/skills/ws-kanvas/refs/board.html",
+          "lineStart": 25,
+          "lineEnd": 33,
+          "sha256": "b0837aa279446d23814aa48c86255db6f7c590aeebb14ec5279e09e2d6405b7c"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "4eef4fee76a03dbd290d8bb89ca816cff4d4f717",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "V1",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.514Z"
+        },
+        {
+          "name": "V2",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.514Z"
+        },
+        {
+          "name": "V3",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.514Z"
+        },
+        {
+          "name": "V4",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.514Z"
+        },
+        {
+          "name": "V5",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "planned",
+          "alias": null,
+          "exitCode": null,
+          "timestamp": "2026-09-29T19:07:13.514Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-4eef4fee76a03dbd290d8bb89ca816cff4d4f717",
+        "verify-acs"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Palette rejection: a candidate palette that fails the 4.5:1 body-text check in either scheme must be rejected and reworked before the change ships (covers AC3).",
+      "tests": [
+        {
+          "name": "scan_stack_invariants.cjs",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T19:07:32.060Z"
+        },
+        {
+          "name": "V2",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T19:07:32.053Z"
+        },
+        {
+          "name": "V3",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T19:07:32.053Z"
+        },
+        {
+          "name": "V5",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T19:07:32.060Z"
+        }
+      ],
+      "linkEventIds": [
+        "verify-ns"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Literal regression: reintroducing a `#888` or `transparent` surface literal in `<style>` fails the AC2 literal search.",
+      "tests": [
+        {
+          "name": "scan_stack_invariants.cjs",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T19:07:32.061Z"
+        },
+        {
+          "name": "V2",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T19:07:32.061Z"
+        },
+        {
+          "name": "V3",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T19:07:32.061Z"
+        },
+        {
+          "name": "V5",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T19:07:32.061Z"
+        }
+      ],
+      "linkEventIds": [
+        "verify-ns"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Behavior guard: any hunk touching the board `<script>` block or API payload shapes fails the AC5 visual-only rule.",
+      "tests": [
+        {
+          "name": "scan_stack_invariants.cjs",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T19:07:32.061Z"
+        },
+        {
+          "name": "V2",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T19:07:32.061Z"
+        },
+        {
+          "name": "V3",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T19:07:32.061Z"
+        },
+        {
+          "name": "V5",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T19:07:32.061Z"
+        }
+      ],
+      "linkEventIds": [
+        "verify-ns"
+      ]
+    },
+    {
+      "id": "NS4",
+      "text": "Suite regression: a failing run of either kanvas suite after the restyle blocks the change until the behavior is restored.",
+      "tests": [
+        {
+          "name": "scan_stack_invariants.cjs",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T19:07:32.062Z"
+        },
+        {
+          "name": "V2",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T19:07:32.061Z"
+        },
+        {
+          "name": "V3",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T19:07:32.061Z"
+        },
+        {
+          "name": "V5",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T19:07:32.062Z"
+        }
+      ],
+      "linkEventIds": [
+        "verify-ns"
+      ]
+    },
+    {
+      "id": "NS5",
+      "text": "Stack safety: any new `scan_stack_invariants.cjs` finding fails the change, since a `<style>`-only diff must not introduce invariant violations.",
+      "tests": [
+        {
+          "name": "scan_stack_invariants.cjs",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T19:07:32.062Z"
+        },
+        {
+          "name": "V2",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T19:07:32.062Z"
+        },
+        {
+          "name": "V3",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T19:07:32.062Z"
+        },
+        {
+          "name": "V5",
+          "sourceFile": ".agents/plans/us-459/step-01-us-459.plan.md",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-29T19:07:32.062Z"
+        }
+      ],
+      "linkEventIds": [
+        "verify-ns"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 10,
+    "earnedUnits": 50,
+    "totalUnits": 50,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "deficiencies": [],
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-29T19:10:01.611Z",
+    "writer": "ac_ledger.cjs score",
+    "ledgerHash": "740756ac149e324d48ccfd300be9a8c28fbd41ae689ccb8f635a44a3ab6781f6"
+  }
+}
