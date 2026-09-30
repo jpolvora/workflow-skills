@@ -41,5 +41,5 @@ Add a small Node helper module and a test named in this spec. Exercises lite orc
 
 ## Acceptance Criteria
 
-- AC1: Add `lib/greet.cjs` exporting a `greet(name)` function returning `Hello, {name}!`.
-- AC2: Add `test/helper-greet-behavior.test.cjs` with a test named `helper-greet-behavior` asserting greet output.
+- AC1: The worker shall add `lib/greet.cjs` exporting a `greet(name)` function returning `Hello, {name}!`.
+- AC2: The worker shall add `test/helper-greet-behavior.test.cjs` with a test named `helper-greet-behavior` asserting greet output.

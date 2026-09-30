@@ -17,13 +17,13 @@ Create a small feature.
 ### Design Intent
 Keep the behavior explicit.
 ## Acceptance Criteria
-- AC1: Emit one deterministic result.
-- AC2: Validate the result with a named test.
+- AC1: The validator shall emit one deterministic result.
+- AC2: The validator shall validate the result with a named test.
 `);
 assert.strictEqual(run(script, [valid, '--modification']).status, 0, 'valid specification should pass');
 
 const composite = write(path.join(root, 'composite.spec.md'), fs.readFileSync(valid, 'utf8').replace(
-  '- AC1: Emit one deterministic result.',
+  '- AC1: The validator shall emit one deterministic result.',
   '- AC1: **Emit** one result and **validate** another result.',
 ));
 const result = run(script, [composite, '--modification', '--json']);

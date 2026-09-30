@@ -18,7 +18,7 @@ Create a small feature.
 ### Design Intent
 Keep the behavior explicit.
 ## Acceptance Criteria
-- AC1: Emit one deterministic result.
+- AC1: The validator shall emit one deterministic result.
 `;
 
 const closure = `

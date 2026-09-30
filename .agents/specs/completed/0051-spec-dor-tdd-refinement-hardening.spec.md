@@ -26,15 +26,15 @@ This enhancement extends `ws-spec-format` and `ws-write-spec` to require Definit
 
 ## Acceptance Criteria
 
-- AC1: `ws-spec-format/FORMAT.md` documents required `## Definition of Ready (DoR)` and `## Validation & Observation Notes` sections with standard table schemas and checklist items.
-- AC2: `ws-spec-format/scripts/validate_spec.cjs` in `--mode=authoring` validates that new specs include non-empty `## Definition of Ready (DoR)` and `## Validation & Observation Notes` sections.
-- AC3: `ws-write-spec/SKILL.md` Agentic Reformulation Protocol instructs agents to draft atomic ACs, negative failure scenarios, observation notes, and DoR readiness checklists.
-- AC4: `ws-interview/SKILL.md` grilling protocol audits draft plans against the spec Definition of Ready, registering gaps when tasks lack failing test baselines.
-- AC5: `ws-implement-tasks/SKILL.md` build mode executes the TDD cycle by authoring failing tests first before applying minimal code corrections.
-- AC6: `ws-verify-plan/SKILL.md` verifies both positive acceptance criteria compliance and negative test scenario coverage prior to advancing the pipeline.
-- AC7: `ws-spec-format/scripts/validate_spec.cjs` preserves `--mode=compat` for historical specs without breaking backwards compatibility.
-- AC8: Unit and integration tests in `test/test-spec-dor-tdd.js` and `test/test-validate-spec.js` verify authoring validation, DoR checking, and TDD execution rules.
-- AC9: Harness integrity checks (`ws-check-harness` and `npm test`) pass with zero errors across all updated skills and test suites.
+- AC1: The `ws-spec-format/FORMAT.md` shall document required `## Definition of Ready (DoR)` and `## Validation & Observation Notes` sections with standard table schemas and checklist items.
+- AC2: The `ws-spec-format/scripts/validate_spec.cjs` shall validate in `--mode=authoring` that new specs include non-empty `## Definition of Ready (DoR)` and `## Validation & Observation Notes` sections.
+- AC3: The `ws-write-spec/SKILL.md` Agentic Reformulation Protocol shall instruct agents to draft atomic ACs, negative failure scenarios, observation notes, and DoR readiness checklists.
+- AC4: The `ws-interview/SKILL.md` grilling protocol shall audit draft plans against the spec Definition of Ready, registering gaps when tasks lack failing test baselines.
+- AC5: The `ws-implement-tasks/SKILL.md` build mode shall execute the TDD cycle by authoring failing tests first before applying minimal code corrections.
+- AC6: The `ws-verify-plan/SKILL.md` shall verify both positive acceptance criteria compliance and negative test scenario coverage prior to advancing the pipeline.
+- AC7: The `ws-spec-format/scripts/validate_spec.cjs` shall preserve `--mode=compat` for historical specs without breaking backwards compatibility.
+- AC8: The unit and integration tests in `test/test-spec-dor-tdd.js` and `test/test-validate-spec.js` shall verify authoring validation, DoR checking, and TDD execution rules.
+- AC9: The harness integrity checks (`ws-check-harness` and `npm test`) shall pass with zero errors across all updated skills and test suites.
 
 ## Definition of Ready (DoR)
 

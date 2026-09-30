@@ -41,4 +41,4 @@ Deliberately weak spec with minimal acceptance criteria. Oracle caps completenes
 
 ## Acceptance Criteria
 
-- AC1: Do something useful.
+- AC1: The worker shall do something useful.

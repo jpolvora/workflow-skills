@@ -38,8 +38,8 @@ specDate: 2026-07-02
 
 ## Acceptance Criteria
 
-- AC1: (unambiguous, deterministic, testable criterion)
-- AC2: (clear pass/fail condition with edge cases)
+- AC1: The <system> shall <response> (unambiguous, deterministic, testable)
+- AC2: When <trigger>, the <system> shall <response> (clear pass/fail condition)
 
 ## Original Issue Context
 
@@ -113,6 +113,20 @@ Markdown table with columns **Feature** and **Reason**. At least one data row. N
 
 Markdown table with columns **Assumption**, **Chosen default**, **Rationale**, and **Confirmed**. At least one data row. Every data row must have a non-empty, non-placeholder Chosen default and Rationale. Collapse dimensions that do not apply into one row whose Chosen default or Rationale starts with `N/A because`.
 
+### EARS-shaped Acceptance Criteria
+
+Every `- AC{N}: ...` bullet must match one documented EARS pattern. Authoring validation
+rejects free-form ACs naming the offending AC id. The `- AC{N}:` prefix and trailing
+testability detail after the core clause are tolerated.
+
+| Pattern | Shape | Example |
+|---------|-------|---------|
+| ubiquitous | `The <system> shall <response>` | `- AC1: The validator shall reject free-form AC bullets.` |
+| event-driven | `When <trigger>, the <system> shall <response>` | `- AC2: When authoring validation runs, the validator shall name the offending AC id.` |
+| state-driven | `While <state>, the <system> shall <response>` | `- AC3: While compat mode is active, the validator shall warn without failing.` |
+| optional-feature | `Where <feature>, the <system> shall <response>` | `- AC4: Where a tracker source is set, the writer shall include a Prior Work Sweep.` |
+| unwanted-behavior | `If <trigger>, then the <system> shall <response>` | `- AC5: If the table is placeholder-only, then the validator shall exit non-zero.` |
+
 ### Implicit-requirement dimensions
 
 Cover dimensions that are obviously present for the feature as ACs, or collapse the rest into one Assumptions `N/A because` row (do not invent ACs for absent dimensions).
@@ -143,7 +157,7 @@ Gray area with two or more valid product options → `{specsDir}/{slug}.context.
 
 ## Validation
 
-1. ACs enumerable, deterministic, and testable — one line per AC (`- AC{N}: ...`).
+1. ACs enumerable, deterministic, and testable — one line per AC (`- AC{N}: ...`). New specs: each AC matches a documented EARS pattern (see `### EARS-shaped Acceptance Criteria`); authoring validation rejects free-form ACs.
 2. `source: local` → author drafts complete ACs from free-text requirements.
 3. `source: github` | `source: azure-devops` → `ws-spec-write` reformulates and enhances raw issue into agentic ACs while preserving human text in `## Original Issue Context`; **`### Prior Work Sweep` required** after sweep before plan/code.
 4. Modification / bugfix specs → `### Design Intent` required (or documented skip for greenfield).

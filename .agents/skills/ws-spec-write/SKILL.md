@@ -52,6 +52,12 @@ When writing a spec derived from a remote tracker issue or raw human description
 2. **Deterministic & Testable Acceptance Criteria (`## Acceptance Criteria`):**
    - Unpack ambiguous or loose requirements into atomic, unambiguous, testable ACs (`- AC1: ...`, `- AC2: ...`).
    - Every AC must have clear pass/fail conditions suitable for agentic coding and verification.
+   - Shape every AC as EARS (authoring validation rejects free-form ACs) — one pattern per AC:
+     - ubiquitous: `The <system> shall <response>` — e.g. `The validator shall reject free-form AC bullets.`
+     - event-driven: `When <trigger>, the <system> shall <response>` — e.g. `When authoring validation runs, the validator shall name the offending AC id.`
+     - state-driven: `While <state>, the <system> shall <response>` — e.g. `While compat mode is active, the validator shall warn without failing.`
+     - optional-feature: `Where <feature>, the <system> shall <response>` — e.g. `Where a tracker source is set, the writer shall include a Prior Work Sweep.`
+     - unwanted-behavior: `If <trigger>, then the <system> shall <response>` — e.g. `If the table is placeholder-only, then the validator shall exit non-zero.`
    - Detail error handling, edge cases, input validation, and boundary conditions explicitly.
    - Draft at least one **negative failure** scenario per feature (expected red test or error state).
 3. **Validation & Observation Notes & Negative Scenarios:**
