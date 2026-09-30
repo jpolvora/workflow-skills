@@ -34,6 +34,14 @@ Structured problem-solving loop: accuracy via structure, evidence, honesty. Foll
 - Inference only → say so; low-confidence; do not dress as rigorous
 - Recurring domain → `ws-fable-domain` adapter when that Extra skill is installed
 
+## Knowledge chain & anti-fabrication
+
+Walk the knowledge chain in order for every factual claim: codebase → project docs → MCP sources → web. Earlier links are preferred over later ones: citing a later link when an earlier link grounds the claim is a skipped-link violation. An unreachable MCP server is a stated gap, not a skipped link.
+
+Every factual claim cites the chain link that grounds it with a path, document, or URL reference. Claims with no grounding chain source carry the `UNCERTAIN` marker and are never presented as observed fact.
+
+Never invent APIs, paths, numbers, versions, or tool output; state gaps when the lookup budget is spent; mark every inference as inference.
+
 ## Loop
 
 ```
@@ -44,8 +52,8 @@ ask → 0 Classify → 1 Done → 2 Evidence → 3 Decide → 4 Act → 5 Verify
 |------|-----------|
 | **0 Classify** | Shape picked: **Question** (findings + 1 rec, no edits) · **Task** (verified change) · **Plan-First** (plan + named verifications, **STOP**). Tie-break: plan-first beats task; unsure → plan-first. |
 | **1 Define Done** | 1–2 sentences + named check before work (test/build/log cite; or plan artifact). |
-| **2 Evidence** | Orient (glob) → primary sources → parallel independent lookups → narrow search; max **2** lookup rounds then state gaps. |
+| **2 Evidence** | Orient (glob) → knowledge chain in order (codebase → project docs → MCP sources → web) → parallel independent lookups → narrow search; max **2** lookup rounds then state gaps. |
 | **3 Decide** | One primary recommendation + surgical blast radius. |
 | **4 Act** | Surgical edits only; stop after 3 failed verify retries. |
 | **5 Verify** | Observed re-run / diff; `git diff` matches scope. |
-| **6 Report** | Outcome first → evidence → honest caveats. |
+| **6 Report** | Outcome first → evidence → honest caveats + per-claim source table (`Claim | Chain link | Reference | Uncertain`, one row per factual claim; a report without the table is returned for completion). |
