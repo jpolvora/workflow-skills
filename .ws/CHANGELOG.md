@@ -1,5 +1,20 @@
 # Changelog
 
+### [2026-10-01 16:49] Agent: agent
+- **Prompt**: ws-spec-to-pr Step 9 fix-pr for us-488 (PR #489)
+- **Done**: Resolved reviewer WARNING: partial uninstall now deletes per-skill physical gemini copies; fixed CI (version bump commit + wiki source/html sync)
+- **Result**: PR #489 merged (4caed17a), issue #488 closed; v0.5.34
+
+### [2026-10-01 16:26] Agent: agent
+- **Prompt**: ws-spec-to-pr: deliver GitHub issue #488 (gemini physical-copy projection + regex include_only)
+- **Done**: Implemented + verified installer gemini target fix; standard pipeline steps 0-7, score 10/10, review clean, testing green
+- **Result**: bin/install-rules.js + bin/cli.js + test/test-install.js; version 0.5.34; PR pending
+
+### [2026-10-01 12:38] Agent: agent
+- **Prompt**: Import GitHub issue #488 into local specs (ws-spec-from-provider)
+- **Done**: Reformulated + registered us-488 spec; tracked in index.PRD
+- **Result**: Spec at .agents/specs/pending/0169-us-488.spec.md; step-00 at .agents/plans/us-488/
+
 ### [2026-10-01 00:12] Agent: agent
 - **Prompt**: Update wiki from latest 10 merged PRs (us-464/473/476/477/478, us-474/475, benchmark publish, context budgets, knowledge chain)
 - **Done**: Synced 6 wiki source pages + rebuilt docs/wiki HTML; advanced Sync Baseline f62e45fa -> 8d1e310c

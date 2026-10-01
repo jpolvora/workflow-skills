@@ -33,6 +33,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **DO NOT**: Finish a mutating step with gitignored `{plansDir}` artifacts as `filesTouched`; re-run `ac_ledger link` with the same `--event-id` after editing a linked file and expect the sha to refresh; run the suite before `npm run generate-integrity` when hashed skill content changed.
 - **INSTEAD DO**: Use `finish --noop "<reason>"` for a step whose only artifacts are gitignored runtime files (step-03 exec/dag, issue.json, .runtime). After any post-Step-5 product edit, re-link each AC with a fresh `--event-id` (e.g. `impl-ac1-r2`) pointing at the same `--file` ranges so the sha is recomputed, then `ac_ledger score --boundary step5` before `--pre-advance`. Regenerate integrity (`npm run generate-integrity`) before the verification run whenever `.agents/skills/**` changed.
 
+### [2026-10-01] Gemini target must project physical copies on Windows and use regex include_only
+- **Layer**: `infrastructure`
+- **Module**: `installer (gemini secondary target uninstall)`
+- **Severity**: `High`
+- **PathPattern**: `bin/cli.js, bin/install-rules.js`
+- **Scenario / Context**: After the gemini target began projecting physical `ws-*` directory copies on Windows, `removeSkillsFromSecondaryTargets` still only touched `skills.json` plus a links-only `cleanupLegacyGeminiSkills` on partial uninstall. Removing one skill left an orphan physical `~/.gemini/config/skills/ws-<removed>` directory the target still discovers. CI code review flagged it (7/10, fix-code).
+- **DO NOT**: Rely on a links-only sweep (or the bulk `includePhysical` sweep reserved for full uninstall) to remove physical copies on a **partial** uninstall.
+- **INSTEAD DO**: On partial uninstall (`geminiKeepEntry`), delete the physical copy of each removed `ws-*` skill specifically (`pathLexists` + `!lstatSync().isSymbolicLink()`), before the links-only sweep; keep `includePhysical: true` as the full-uninstall bulk sweep. Cover with a test that seeds physical copies and asserts removed-vs-kept separation.
+
 ### [2026-10-01] Editing the source wiki requires rebuilding the generated site wiki
 - **Layer**: `devops`
 - **Module**: `bin/build-site, ws-wiki`
@@ -41,6 +50,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **Scenario / Context**: After editing a living wiki source page under `.agents/specs/wiki/` (e.g. `harness/diagnostics-and-benchmarks.md`), the committed `docs/wiki/*.html` copy is stale. CI runs `node bin/build-site.js --check`, which fails with `docs/wiki stale harness/<page>.html` even though the markdown is correct; `npm run test` locally still passes, so the break only appears in CI.
 - **DO NOT**: change a wiki source page and push without regenerating the site mirror; do not rely on `npm run test` alone to catch wiki drift.
 - **INSTEAD DO**: after editing `.agents/specs/wiki/**`, run `node bin/build-site.js` (no `--bump`) and commit the regenerated `docs/wiki/**/*.html`; verify with `node bin/build-site.js --check` (exit 0) before pushing.
+
+### [2026-10-01] Editing hashed `bin/**` invalidates bin/skill-integrity.json and fails the suite's Phase 0b gate
+- **Layer**: `devops`
+- **Module**: `workflow-skills package tests / bin/skill-integrity.json`
+- **Severity**: `Medium`
+- **PathPattern**: `bin/cli.js, bin/install-rules.js, bin/skill-integrity.json, test/test-install.js`
+- **Scenario / Context**: `bin/skill-integrity.json` hashes every packaged file including `bin/**`; `test/test-install.js` Phase 0b runs `generate-skill-integrity.js --check` and fails closed with "bin/skill-integrity.json is stale vs current tree" as soon as an implementation edits `bin/install-rules.js` or `bin/cli.js`. A second failure mode in the same change: adding a test helper variable (`danglingTarget`) collided with an existing declaration in the 3600-line `test/test-install.js` and only surfaced at `node --check`.
+- **DO NOT**: Treat the Phase 0b integrity staleness as a product regression, and do not declare `npm run test` failed without regenerating the manifest after bin/ edits.
+- **INSTEAD DO**: Run `npm run generate-integrity` + `npm run verify-integrity` after any `bin/**` (or hashed) edit before running `npm run test`; the derived manifest is regenerated, not hand-edited. Run `node --check test/test-install.js` after adding top-level helper/const names to catch scope collisions early.
 
 ### [2026-10-01] ac_ledger linked-file sha goes stale after a review-fix edit
 - **Layer**: `application`
