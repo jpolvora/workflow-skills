@@ -15,6 +15,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **DO NOT**: Finish a mutating step with gitignored `{plansDir}` artifacts as `filesTouched`; re-run `ac_ledger link` with the same `--event-id` after editing a linked file and expect the sha to refresh; run the suite before `npm run generate-integrity` when hashed skill content changed.
 - **INSTEAD DO**: Use `finish --noop "<reason>"` for a step whose only artifacts are gitignored runtime files (step-03 exec/dag, issue.json, .runtime). After any post-Step-5 product edit, re-link each AC with a fresh `--event-id` (e.g. `impl-ac1-r2`) pointing at the same `--file` ranges so the sha is recomputed, then `ac_ledger score --boundary step5` before `--pre-advance`. Regenerate integrity (`npm run generate-integrity`) before the verification run whenever `.agents/skills/**` changed.
 
+### [2026-10-01] ac_ledger linked-file sha goes stale after a review-fix edit
+- **Layer**: `application`
+- **Module**: `ws-monitor monitor_snapshot.cjs`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs`
+- **Scenario / Context**: New run-advancing evidence read a possibly-missing `stateMtimeMs` with `Number(...)`, which coerces `null` to `0` (finite) and would treat an absent stat as an epoch timestamp. Same null-to-zero class as `2026-09-19-guard-null-zero-coercion.md`.
+- **DO NOT**: Treat `Number(null) === 0` as a valid timestamp in monitor evidence builders.
+- **INSTEAD DO**: Guard `Number.isFinite(raw) && raw > 0 ? raw : NaN` before combining mtimes, and route unknown to the conservative branch.
+
 ### [2026-09-30] Spec-to-PR inline (Tier 3) state, finish and ledger traps
 - **Layer**: `infrastructure`
 - **Module**: `ws-spec-to-pr / update_state / ac_ledger`

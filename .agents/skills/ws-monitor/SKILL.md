@@ -61,7 +61,7 @@ activates the **default watch profile**. When any part of that phrasing appears,
 | agent <name> (optional) | `--agent <name>` | Annotates the report/issue with the observed agent; no filtering side effects |
 | follow transcript | `--follow-transcript` (alias of `--discover-host-transcripts`) | Enables bounded host-session discovery |
 | open SCM provider issue | `--open-issue` | Proposes an enriched defect issue and writes the body; the skill runs the configured provider `create-issue` intent at terminal |
-| detect stall or hung up stopwatch | `--stall-window <sec>` (default 600) | `worker-session-stall` (idle session) / `stalled-workflow` (hung state/telemetry clock); `stopwatch` reports idle vs threshold |
+| detect stall or hung up stopwatch | `--stall-window <sec>` (default 600) | `worker-session-stall` (idle session) / `stalled-workflow` (hung state/telemetry clock); `stopwatch` reports idle vs threshold. Also bounds the `stale-parent-row` child-terminal propagation grace |
 | show report when workflow finished | `--report <path>` | Writes the final Markdown report when the watch exits |
 
 Profile flags stay explicit: nothing changes unless the phrasing or the flags are present. `--dry-run` keeps `--open-issue` advisory (proposal only, no tracker mutation).
@@ -122,7 +122,7 @@ The live watch exists to catch **workflow misbehavior**: failed operations, work
   - `multi-spec-failed-item`: an item failed; inspect `reason` to diagnose child worker failure.
   - `multi-spec-concurrency`: multiple items marked `in_progress` simultaneously (batch execution is strictly sequential).
   - `missing-child-state`: a queue item that advanced (`in_progress` / `shipped` / `failed`) has no valid child machine state (a parseable `*.state.json` carrying the workflow-identity fields and the item's own slug) under `{plansDir}/{slug}/`. Complements `stale-parent-row` (which requires a child that already closed); this one is the silent blind spot where the child left no state at all. Derived from the multi-spec `expectedArtifacts` model instead of a parallel detector.
-  - `stale-parent-row`: a queue row is non-terminal while its child worker (same slug) is terminal, the run itself is terminal, or a newer active run claims the same `in_progress` slug (supersede never retired). The parent row did not propagate the child close.
+  - `stale-parent-row`: a queue row is non-terminal while its lineage is dead. The child worker (same slug) has been terminal beyond the propagation grace (default: the `--stall-window`, 600s) with no row transition, the run itself is terminal, or a newer active run claims the same `in_progress` slug (supersede never retired). A child terminal inside the grace window while the run is still advancing is reported as **info** (propagation pending), not a warning, so a healthy child-close -> parent-propagate window is not a defect. The finding message carries the measured child-terminal age and last row-transition age so the grace can be tuned from real runs.
   - `terminal-run-active`: a run whose steps through the close step are all terminal still reports an active status with no `endedAt`. The observer derives a terminal reported status (never counted live) and flags the stale state file.
 
 ## Terminal-state observation
@@ -186,7 +186,7 @@ Transcripts provide secondary evidence to diagnose why a subagent or orchestrato
 | Generic dispatch where named projection was expected (`generic-dispatch`) | Warning | Host supports named subagents but dispatch used generic fallback without explanation (embed-inline is healthy when host lacks named-agent binding) |
 | Multi-spec queue item failed (`multi-spec-failed-item`) | Warning | A spec within the batch run encountered a terminal failure |
 | Multi-spec queue active with no progress (`multi-spec-idle`) | Info | Batch run is active but all queue items are processed or none pending |
-| Multi-spec queue row stale vs child/lineage (`stale-parent-row`) | Warning | A non-terminal row never transitioned: the child worker closed, the run is terminal, or a superseding run claims the same slug |
+| Multi-spec queue row stale vs child/lineage (`stale-parent-row`) | Warning (Info inside grace) | A non-terminal row never transitioned: the child worker has been terminal beyond the propagation grace, the run is terminal, or a superseding run claims the same slug. A child terminal inside the grace window while the run keeps advancing is **Info** (propagation pending) |
 | Multi-spec item advanced without child state (`missing-child-state`) | Warning | An `in_progress`/`shipped`/`failed` queue row has no child machine state (`*.state.json`) under `{plansDir}/{slug}/`; the child run is unobservable/resumable, or the state writer was skipped |
 | Terminal-shaped run still active (`terminal-run-active`) | Warning | All steps through the close step are terminal but the state file still reports active with no `endedAt`; reported status is derived terminal |
 | Memory vault records active workflow missing on disk (`vault-unreconciled-workflow`) | Info | Memory vault lists an active workflow that does not exist in local plans |

@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-30 21:33] Agent: agent
+- **Prompt**: us-476: ws-monitor stale-parent-row false positive during the normal child-close to parent-propagate window
+- **Done**: Time-bounded detectStaleParentRows with a child-terminal-age grace (default --stall-window), info propagation-pending inside grace while the run advances, warning beyond; finding carries both measured ages; snapshot threads grace + run-advance mtime; docs, FEATURES, test-ws-monitor-us476 registered
+- **Result**: Full suite 158/158 green; harness 0 findings; integrity OK 0.5.30; fault injections caught; PR #484 develop->main
+
 ### [2026-09-30 20:43] Agent: agent
 - **Prompt**: ws-monitor: worker-session-stall warns while the state/telemetry clock advances (issue #477)
 - **Done**: Rewrote the ws-monitor session-source stopwatch to re-read the correlated session file each tick, prefer the state-recorded driver session over an unrelated --session-id root, suppress/downgrade worker-session-stall to info while state/telemetry advances, mark stale references, and report sessionRef; updated docs and liveness fixtures
