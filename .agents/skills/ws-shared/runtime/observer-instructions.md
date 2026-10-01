@@ -49,6 +49,16 @@ stall warning requires an active workflow, an available correlated
 session, and **no** pause marker. The step's terminating `finish` clears
 the marker, after which stall detection applies again.
 
+The session source **feeds, not overrides**, the state/telemetry clock: the
+correlated session-file mtime is re-read every tick, and when `state` or
+`telemetry.jsonl` was written within the stall window — or the correlation is
+weak (only the supplied `--session-id` matched, not the state-recorded driver)
+— `worker-session-stall` is downgraded to `info` (reason: session correlation
+stale/not-driver; state/telemetry advancing). The warning fires only when both
+the session and the state/telemetry clock are idle beyond the threshold. The
+report records the session id/file used and a `weak` flag so a non-driver
+correlation is diagnosable.
+
 When no correlated session is available, the same pause marker also
 suppresses `stalled-workflow` (warning): the local state/telemetry clock
 is idle beyond the threshold while the run is active — a possible hang.

@@ -117,7 +117,8 @@ function run(args, cwd) {
 {
   const { root, fakeHome } = makeRoot();
   const slug = 'us-wp-window';
-  makeWorkflow(root, slug, 'wf-wp-window');
+  const { file: windowStateFile } = makeWorkflow(root, slug, 'wf-wp-window');
+  age(windowStateFile, 20);
   const sessionFile = path.join(fakeHome, '.local', 'share', 'muse', 'sessions', '2026', '09', '24', 'sess-window', 'session.jsonl');
   write(sessionFile, `wf-wp-window ${slug} worker activity\n`);
   age(sessionFile, 20);

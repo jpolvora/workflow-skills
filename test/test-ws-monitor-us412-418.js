@@ -276,6 +276,9 @@ const NO_TELEMETRY = { events: [], errors: [] };
     write(path.join(plansDir, artifact), 'artifact\n');
   }
   const oldMs = Date.now() - 48 * 60 * 60 * 1000;
+  // us-477 AC2: age the state clock so the idle session is a real state-idle
+  // stall (warning); a fresh state clock would now downgrade it to info.
+  fs.utimesSync(path.join(plansDir, 'wf-us-live-stallcombo.state.json'), new Date(oldMs), new Date(oldMs));
   for (let day = 0; day < 3; day += 1) {
     for (let index = 0; index < 4; index += 1) {
       const filler = path.join(root, 'history', `2026-09-2${day}`, ` nest-${index}`, 'subagent', `filler-${index}.jsonl`);

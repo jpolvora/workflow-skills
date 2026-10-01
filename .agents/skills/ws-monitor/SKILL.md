@@ -90,6 +90,8 @@ When watching a live running workflow in the background or during paired session
 - **Stall & drift detection:**
   - `stale-state`: telemetry timestamp is newer than state file mtime (> 5 seconds), indicating delayed state flush or revision race.
   - Pause vs stall: a workflow whose state carries `state.turnPause` is **paused at a turn boundary** — report `worker-session-paused` (info) and never `worker-session-stall` for it; the stall warning applies only to an active workflow with an available, idle session and **no** pause marker.
+  - Stall defers to the workflow clock: the session source feeds, not overrides, the state/telemetry clock. The correlated session file mtime is re-read every tick; when `state` or `telemetry.jsonl` was written within the stall window, when the correlation is weak (only the supplied `--session-id` matched, not the state-recorded driver), or when the cached session reference is stale, `worker-session-stall` is downgraded to **info** (with an explicit stale/not-driver reason) instead of warning. The warning applies only when both the session and the state/telemetry clock are idle beyond the threshold.
+  - Session reference: each workflow exposes `sessionRef` (`id`, `file`, `weak`, `stale`) naming the session id/file the stopwatch used, so a mismatch with the driver session is diagnosable.
   - Stalled turn: if a transcript indicates `turn_ended` without a corresponding workflow handoff or state update.
   - Stopwatch: each active workflow exposes `stopwatch` (`lastActivityAt`, `idleMs`, `thresholdMs`, `stalled`, `source`); `--stall-window <seconds>` overrides the default 600s threshold.
   - Hung workflow: no correlated session and the state/telemetry clock has not advanced beyond the threshold → `stalled-workflow` (warning). A turn-boundary pause marker suppresses both stall signals.
@@ -189,7 +191,7 @@ Transcripts provide secondary evidence to diagnose why a subagent or orchestrato
 | Terminal-shaped run still active (`terminal-run-active`) | Warning | All steps through the close step are terminal but the state file still reports active with no `endedAt`; reported status is derived terminal |
 | Memory vault records active workflow missing on disk (`vault-unreconciled-workflow`) | Info | Memory vault lists an active workflow that does not exist in local plans |
 | Transcript contains an unhandled error with a stack trace (`subagent-error`) | Warning | Subagent or worker crashed or threw an unhandled exception |
-| Worker session idle while workflow is active (`worker-session-stall`) | Warning | The correlated session shows no recent activity and the state carries no turn-boundary pause marker; possible stall |
+| Worker session idle while workflow is active (`worker-session-stall`) | Warning | Both the correlated session and the state/telemetry clock are idle beyond the threshold (no pause marker); possible stall. Downgraded to **Info** when state/telemetry advanced within the window, the correlation is weak (not the driver), or the session reference is stale |
 | Workflow paused at a turn boundary (`worker-session-paused`) | Info | `state.turnPause` is present: the host turn ended mid-step; awaiting continuation. Replaces `worker-session-stall` while set |
 | Workflow active but state/telemetry clock idle beyond the threshold (`stalled-workflow`) | Warning | No correlated session and no state/telemetry progress; possible hang. Suppressed by a turn-boundary pause marker |
 

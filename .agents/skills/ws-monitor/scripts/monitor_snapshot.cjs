@@ -1468,6 +1468,10 @@ function resolveStateTranscriptSource(stateTx, repoRoot) {
       adapter: guessTranscriptAdapter(primary),
       locationClass: classifyLocation(repoRootResolved, absolute),
       sessionMtime,
+      file: absolute,
+      sessionId: null,
+      weak: false,
+      driver: true,
       pathCount: stateTx.paths.length,
       source: 'state-recorded',
     };
@@ -1495,6 +1499,12 @@ function normalizeTurnPause(value) {
   return { step, reason, at, ...(nextAction ? { nextAction } : {}) };
 }
 
+// us-477: per-workflow session-reference memory across watch ticks. Node keeps
+// the module loaded between `snapshot()` calls in a single watch process, so a
+// strictly increasing idle with a freshly written file exposes a stale
+// reference (AC3) without persisting anything to disk.
+const sessionReferenceTracker = new Map();
+
 function resolveTranscriptSource(workflow, scannedFiles, discoveryEnabled, repoRoot, scanMeta = {}) {
   if (!discoveryEnabled) {
     return { status: 'transcript-unavailable', reason: 'discovery-disabled' };
@@ -1518,12 +1528,22 @@ function resolveTranscriptSource(workflow, scannedFiles, discoveryEnabled, repoR
     };
   }
   candidates.sort((a, b) => (b.mtimeMs || 0) - (a.mtimeMs || 0));
-  const best = candidates[0];
+  // us-477 AC4/AC5: a match driven only by the supplied `--session-id` (no
+  // workflow-id/slug correlation) is a weak correlation, not proof the
+  // session drives this workflow. Strong (wf/slug) matches win the pick.
+  const strongCorrelation = { slug: correlation.slug, workflowId: correlation.workflowId };
+  const strong = candidates.filter((item) => transcriptCorrelates(item.file, item.tail, strongCorrelation));
+  const best = strong[0] || candidates[0];
+  const weak = strong.length === 0 && Boolean(correlation.sessionId);
   return {
     status: 'available',
     adapter: guessTranscriptAdapter(best.file),
     locationClass: classifyLocation(repoRootResolved, best.file),
     sessionMtime: best.mtimeMs ? new Date(best.mtimeMs).toISOString() : null,
+    file: best.file,
+    sessionId: correlation.sessionId || null,
+    weak,
+    driver: false,
   };
 }
 
@@ -1853,24 +1873,67 @@ function snapshot(options) {
     );
     const source = workflow.transcriptSource;
     const isActive = ['active', 'blocked', 'in_progress'].includes(workflow.status);
-    // Stopwatch: liveness clock for an active workflow. When a correlated
-    // session is available its mtime drives the clock; otherwise the local
-    // state/telemetry files do (a hung workflow with no transcript).
-    let lastActivityMs = null;
-    if (source.status === 'available' && source.sessionMtime) {
-      const parsed = Date.parse(source.sessionMtime);
-      if (Number.isFinite(parsed)) lastActivityMs = parsed;
-    } else {
-      for (const rel of [workflow.statePath, workflow.telemetry.path]) {
-        if (!rel) continue;
-        try {
-          const abs = path.isAbsolute(rel) ? rel : path.join(context.repoRoot, rel);
-          const mtimeMs = fs.statSync(abs).mtimeMs;
-          if (Number.isFinite(mtimeMs)) lastActivityMs = lastActivityMs === null ? mtimeMs : Math.max(lastActivityMs, mtimeMs);
-        } catch {
-          // Unreadable file: remaining evidence still drives the stopwatch.
-        }
+    // us-477 AC1: re-read the correlated session file mtime on every tick.
+    // Never trust the scanned/cached reference — a frozen timestamp is a bug,
+    // not a stall.
+    const sessionFile = source && source.file ? source.file : null;
+    let sessionMtimeMs = null;
+    if (sessionFile) {
+      try {
+        const abs = path.isAbsolute(sessionFile) ? sessionFile : path.join(context.repoRoot, sessionFile);
+        const mtimeMs = fs.statSync(abs).mtimeMs;
+        if (Number.isFinite(mtimeMs)) sessionMtimeMs = mtimeMs;
+      } catch {
+        // Unreadable file: fall back to the scanned reference below.
       }
+    }
+    if (sessionMtimeMs === null && source && source.sessionMtime) {
+      const parsed = Date.parse(source.sessionMtime);
+      if (Number.isFinite(parsed)) sessionMtimeMs = parsed;
+    }
+    const hasSession = source.status === 'available' && sessionMtimeMs !== null;
+    // us-477 AC2/AC7: the state/telemetry clock is computed independently of
+    // the session source and always available for the suppression decision.
+    let stateTelemetryMtimeMs = null;
+    for (const rel of [workflow.statePath, workflow.telemetry.path]) {
+      if (!rel) continue;
+      try {
+        const abs = path.isAbsolute(rel) ? rel : path.join(context.repoRoot, rel);
+        const mtimeMs = fs.statSync(abs).mtimeMs;
+        if (Number.isFinite(mtimeMs)) stateTelemetryMtimeMs = stateTelemetryMtimeMs === null ? mtimeMs : Math.max(stateTelemetryMtimeMs, mtimeMs);
+      } catch {
+        // Unreadable file: remaining evidence still drives the stopwatch.
+      }
+    }
+    // us-477 AC3: a cached session reference is stale when the file was written
+    // within the window yet the reported idle would strictly increase.
+    let sessionStale = false;
+    if (hasSession) {
+      const previous = sessionReferenceTracker.get(workflow.workflowId);
+      const sessionAgeMs = snapshotNow - sessionMtimeMs;
+      if (previous && sessionMtimeMs > previous.mtimeMs && sessionAgeMs < stallWindowMs) sessionStale = true;
+      sessionReferenceTracker.set(workflow.workflowId, { mtimeMs: sessionMtimeMs, idleMs: sessionAgeMs });
+    }
+    // us-477 AC5: record the session id/file the stopwatch used and whether the
+    // correlation is weak (not the state-recorded driver).
+    workflow.sessionRef = hasSession
+      ? {
+        id: source.sessionId || options.sessionId || null,
+        file: toRepoRelative(context.repoRoot, sessionFile, { allowOutside: true }),
+        weak: Boolean(source.weak),
+        stale: sessionStale,
+      }
+      : null;
+    // Stopwatch: liveness clock for an active workflow. When a correlated
+    // session is available its (re-read) mtime drives the clock; otherwise the
+    // local state/telemetry files do (a hung workflow with no transcript).
+    let lastActivityMs = null;
+    let stopwatchSource = 'state-telemetry';
+    if (hasSession) {
+      lastActivityMs = sessionMtimeMs;
+      stopwatchSource = 'session';
+    } else {
+      lastActivityMs = stateTelemetryMtimeMs;
     }
     if (isActive && lastActivityMs !== null) {
       const idleMs = snapshotNow - lastActivityMs;
@@ -1879,7 +1942,7 @@ function snapshot(options) {
         idleMs,
         thresholdMs: stallWindowMs,
         stalled: idleMs > stallWindowMs,
-        source: source.status === 'available' && source.sessionMtime ? 'session' : 'state-telemetry',
+        source: stopwatchSource,
       };
     } else {
       workflow.stopwatch = null;
@@ -1897,16 +1960,32 @@ function snapshot(options) {
         'workflow paused at a turn boundary; awaiting continuation',
         [workflow.statePath],
       );
-    } else if (source.status === 'available' && isActive && source.sessionMtime) {
-      const idleMs = snapshotNow - Date.parse(source.sessionMtime);
-      if (Number.isFinite(idleMs) && idleMs > stallWindowMs) {
-        addFinding(
-          workflow.findings,
-          'warning',
-          'worker-session-stall',
-          `worker session shows no recent activity while the workflow is active (possible stall; stopwatch ${stopwatchLabel})`,
-          [workflow.statePath],
-        );
+    } else if (hasSession && isActive) {
+      const sessionIdleMs = snapshotNow - sessionMtimeMs;
+      if (sessionIdleMs > stallWindowMs) {
+        // us-477 AC2/AC3/AC4/AC5: the session source feeds, not overrides, the
+        // state/telemetry clock. Downgrade to info when the workflow is
+        // demonstrably advancing, when the correlation is weak (not the
+        // driver), or when the session reference is stale.
+        const stateIdleMs = stateTelemetryMtimeMs === null ? Infinity : snapshotNow - stateTelemetryMtimeMs;
+        const advancing = stateIdleMs <= stallWindowMs;
+        if (advancing || source.weak || sessionStale) {
+          addFinding(
+            workflow.findings,
+            'info',
+            'worker-session-stall',
+            `session correlation ${sessionStale ? 'stale' : source.weak ? 'not-driver' : 'not-driver'}; state/telemetry advancing, not a stall (stopwatch ${stopwatchLabel})`,
+            [workflow.statePath],
+          );
+        } else {
+          addFinding(
+            workflow.findings,
+            'warning',
+            'worker-session-stall',
+            `worker session shows no recent activity while the workflow is active (possible stall; stopwatch ${stopwatchLabel})`,
+            [workflow.statePath],
+          );
+        }
       }
     } else if (isActive && workflow.stopwatch && workflow.stopwatch.stalled) {
       // Hung workflow: no correlated session and the local state/telemetry
@@ -2030,6 +2109,9 @@ function markdownReport(report) {
     '- Stopwatch: ' + (workflow.stopwatch
       ? `${Math.max(1, Math.round(workflow.stopwatch.idleMs / 60000))}m idle / ${Math.max(1, Math.round(workflow.stopwatch.thresholdMs / 60000))}m threshold (${workflow.stopwatch.source})${workflow.stopwatch.stalled ? ' - STALLED' : ''}`
       : 'not active'),
+    '- Session reference: ' + (workflow.sessionRef
+      ? `${workflow.sessionRef.id || 'unknown id'} (${workflow.sessionRef.file})${workflow.sessionRef.weak ? ' - weak correlation (not the driver)' : ''}${workflow.sessionRef.stale ? ' - stale reference' : ''}`
+      : 'none'),
       '',
       'Expected artifacts:',
     );
