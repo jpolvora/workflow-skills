@@ -217,7 +217,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Shared-head multi-spec runs need an executable foreign-commit guard (`spec: completed/0164-us-475.spec.md`)
 - [x] Shipped spec can stay under pending/ while index marks done (`spec: completed/0165-us-474.spec.md`)
 - [x] Workflow defect (context-mismatch) detected by ws-monitor (`spec: completed/0166-us-473.spec.md`)
-- [ ] ws-doctor: path-error section reports widespread false positives (citation base, link text, prose) (`spec: pending/0167-us-469.spec.md`)
+- [x] ws-doctor: path-error section reports widespread false positives (citation base, link text, prose) (`spec: completed/0167-us-469.spec.md`)
 - [x] ws-monitor: slug-scoped scan drops canonical runId-foldered ws-spec-multi batch state (`spec: completed/0168-us-464.spec.md`)
 
 
@@ -578,7 +578,7 @@ All Next-specs closed.
 
 | 171 | `us-473` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Workflow defect [context-mismatch] detected by ws-monitor |
 
-| 172 | `us-469` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-doctor: path-error section reports widespread false positives (citation base, link text, prose) |
+| 172 | `us-469` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-doctor: path-error section reports widespread false positives (citation base, link text, prose) |
 
 | 173 | `us-464` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor: slug-scoped scan drops canonical runId-foldered ws-spec-multi batch state |
 
@@ -756,6 +756,7 @@ All Next-specs closed.
 | 2026-10-01 | `us-477` | ws-monitor: worker-session-stall warns while the state/telemetry clock advances (stale session-source reference) | 9abcbc0d |
 | 2026-10-01 | `us-476` | ws-monitor: stale-parent-row warns during the normal child-close to parent-propagate window | https://github.com/jpolvora/workflow-skills/pull/484 |
 | 2026-10-01 | `us-478` | ws-monitor: issue-proposal body embeds a host session id while claiming anonymized; workflow count wording contradicts the report | 03fd6e7fc1b2c19759814da4067fc6a1519fd4b5 |
+| 2026-10-01 | `us-469` | ws-doctor: path-error section reports widespread false positives (citation base, link text, prose) | 994f47fff58b735eae61d8cf44a0df3ffa86f5e5 |
 
 ## 11. Maintenance checklist
 

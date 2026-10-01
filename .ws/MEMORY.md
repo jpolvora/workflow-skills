@@ -15,6 +15,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **DO NOT**: Run `npm run tests` as the ship/quality gate right after a version bump (or any change while the pack is stale); treat the resulting install-fixture failure as a product regression.
 - **INSTEAD DO**: Use `npm test` (which runs `pretests: npm pack`) after a bump, or run `npm pack` manually before `npm run tests`; the tarball ref in `test/package.json` must match `package.json` version.
 
+### [2026-10-01] Parallel workflow state writes race and lose an update
+- **Layer**: `infrastructure`
+- **Module**: `ws-spec-to-pr / workflow_state`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/plans/**/*.state.json`
+- **Scenario / Context**: Running two `update_state.cjs finish` calls for consecutive steps in the same shell turn (or two parallel tool calls) reads the same base revision and each writes revision+1; the second write silently overwrites the first, so a step's completion and `skippedSteps` record are lost while the file still looks valid.
+- **DO NOT**: fire multiple `update_state.cjs` dispatch/finish/checkpoint mutations concurrently (parallel tool calls or a shared `&&` batch) against the same `{workflow-id}.state.json`.
+- **INSTEAD DO**: run state mutations strictly sequentially, one tool call per mutation, and re-read `completedSteps`/`skippedSteps` (or the returned `revision`) before the next; a lost step shows as an un-incremented revision.
+
 ### [2026-10-01] Inline G2 review-fix invalidates ac-ledger file hashes; gitignored step-03 finish needs --noop
 - **Layer**: `domain`
 - **Module**: `ws-spec-to-pr / ac_ledger + update_state finish`
@@ -23,6 +32,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **Scenario / Context**: Running us-477 inline, three failures hit before green. (1) `finish --step 3 --created step-03-*.plan.exec.md --created step-03-*.exec.dag.json` failed: `.gitignore` ignores `step-03-*.plan.exec.md` / `*.exec.dag.json`, so `update_state` rejects them as phantom filesTouched. (2) After the Step 6 review-fix edited the product file, `validate_state --pre-advance 7` failed with `linked file hash changed` for every AC and `boundary "pre-step6" instead of "step5"`. Re-running `ac_ledger link` with the same `--event-id` is a no-op (`event-id already applied; skipping link payload`), so the stale sha stayed. (3) The first `npm run test` failed at entry 1 because `bin/skill-integrity.json` was stale after the skill edit.
 - **DO NOT**: Finish a mutating step with gitignored `{plansDir}` artifacts as `filesTouched`; re-run `ac_ledger link` with the same `--event-id` after editing a linked file and expect the sha to refresh; run the suite before `npm run generate-integrity` when hashed skill content changed.
 - **INSTEAD DO**: Use `finish --noop "<reason>"` for a step whose only artifacts are gitignored runtime files (step-03 exec/dag, issue.json, .runtime). After any post-Step-5 product edit, re-link each AC with a fresh `--event-id` (e.g. `impl-ac1-r2`) pointing at the same `--file` ranges so the sha is recomputed, then `ac_ledger score --boundary step5` before `--pre-advance`. Regenerate integrity (`npm run generate-integrity`) before the verification run whenever `.agents/skills/**` changed.
+
+### [2026-10-01] Editing the source wiki requires rebuilding the generated site wiki
+- **Layer**: `devops`
+- **Module**: `bin/build-site, ws-wiki`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/specs/wiki/**/*.md, docs/wiki/**/*.html`
+- **Scenario / Context**: After editing a living wiki source page under `.agents/specs/wiki/` (e.g. `harness/diagnostics-and-benchmarks.md`), the committed `docs/wiki/*.html` copy is stale. CI runs `node bin/build-site.js --check`, which fails with `docs/wiki stale harness/<page>.html` even though the markdown is correct; `npm run test` locally still passes, so the break only appears in CI.
+- **DO NOT**: change a wiki source page and push without regenerating the site mirror; do not rely on `npm run test` alone to catch wiki drift.
+- **INSTEAD DO**: after editing `.agents/specs/wiki/**`, run `node bin/build-site.js` (no `--bump`) and commit the regenerated `docs/wiki/**/*.html`; verify with `node bin/build-site.js --check` (exit 0) before pushing.
 
 ### [2026-10-01] ac_ledger linked-file sha goes stale after a review-fix edit
 - **Layer**: `application`
