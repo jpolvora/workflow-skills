@@ -33,6 +33,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **DO NOT**: Finish a mutating step with gitignored `{plansDir}` artifacts as `filesTouched`; re-run `ac_ledger link` with the same `--event-id` after editing a linked file and expect the sha to refresh; run the suite before `npm run generate-integrity` when hashed skill content changed.
 - **INSTEAD DO**: Use `finish --noop "<reason>"` for a step whose only artifacts are gitignored runtime files (step-03 exec/dag, issue.json, .runtime). After any post-Step-5 product edit, re-link each AC with a fresh `--event-id` (e.g. `impl-ac1-r2`) pointing at the same `--file` ranges so the sha is recomputed, then `ac_ledger score --boundary step5` before `--pre-advance`. Regenerate integrity (`npm run generate-integrity`) before the verification run whenever `.agents/skills/**` changed.
 
+### [2026-10-01] Editing the source wiki requires rebuilding the generated site wiki
+- **Layer**: `devops`
+- **Module**: `bin/build-site, ws-wiki`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/specs/wiki/**/*.md, docs/wiki/**/*.html`
+- **Scenario / Context**: After editing a living wiki source page under `.agents/specs/wiki/` (e.g. `harness/diagnostics-and-benchmarks.md`), the committed `docs/wiki/*.html` copy is stale. CI runs `node bin/build-site.js --check`, which fails with `docs/wiki stale harness/<page>.html` even though the markdown is correct; `npm run test` locally still passes, so the break only appears in CI.
+- **DO NOT**: change a wiki source page and push without regenerating the site mirror; do not rely on `npm run test` alone to catch wiki drift.
+- **INSTEAD DO**: after editing `.agents/specs/wiki/**`, run `node bin/build-site.js` (no `--bump`) and commit the regenerated `docs/wiki/**/*.html`; verify with `node bin/build-site.js --check` (exit 0) before pushing.
+
 ### [2026-10-01] ac_ledger linked-file sha goes stale after a review-fix edit
 - **Layer**: `application`
 - **Module**: `ws-monitor monitor_snapshot.cjs`

@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-30 23:36] Agent: agent
+- **Prompt**: us-469 follow-up: CI red after wiki source edit
+- **Done**: Regenerated docs/wiki mirror (stale harness/diagnostics-and-benchmarks.html); recorded wiki-source/site-mirror trap
+- **Result**: CI test+review green on PR #486; 0 review threads
+
 ### [2026-09-30 23:29] Agent: agent
 - **Prompt**: us-469: ws-doctor path-error section reports ~205 false positives on a healthy install (citation base, link text, prose)
 - **Done**: Fixed doctor.js path scanner: root-relative resolution, Markdown href validation, fenced/prose/placeholder skips, {globalSkillsRoot} fallback, own-dir root-first, archived/example exclusion, install-citation report gate; added test-ws-doctor.js fixtures AC1-AC7/NS1-NS3
