@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-01 00:12] Agent: agent
+- **Prompt**: Update wiki from latest 10 merged PRs (us-464/473/476/477/478, us-474/475, benchmark publish, context budgets, knowledge chain)
+- **Done**: Synced 6 wiki source pages + rebuilt docs/wiki HTML; advanced Sync Baseline f62e45fa -> 8d1e310c
+- **Result**: validate_wiki 12 pages PASS; test-wiki, test-site-wiki, test-doc-sync, test-shared-hub-paths green; integrity v0.5.32 OK; harness-clean 0 findings
+
 ### [2026-09-30 23:36] Agent: agent
 - **Prompt**: us-469 follow-up: CI red after wiki source edit
 - **Done**: Regenerated docs/wiki mirror (stale harness/diagnostics-and-benchmarks.html); recorded wiki-source/site-mirror trap
