@@ -219,7 +219,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Workflow defect (context-mismatch) detected by ws-monitor (`spec: completed/0166-us-473.spec.md`)
 - [x] ws-doctor: path-error section reports widespread false positives (citation base, link text, prose) (`spec: completed/0167-us-469.spec.md`)
 - [x] ws-monitor: slug-scoped scan drops canonical runId-foldered ws-spec-multi batch state (`spec: completed/0168-us-464.spec.md`)
-- [ ] fix(installer): use physical folder copy for Antigravity IDE on Windows and fix regex filter in skills.json (`spec: pending/0169-us-488.spec.md`)
+- [x] fix(installer): use physical folder copy for Antigravity IDE on Windows and fix regex filter in skills.json (`spec: completed/0169-us-488.spec.md`)
 
 
 
@@ -584,7 +584,7 @@ All Next-specs closed.
 
 | 173 | `us-464` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor: slug-scoped scan drops canonical runId-foldered ws-spec-multi batch state |
 
-| 174 | `us-488` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | fix(installer): use physical folder copy for Antigravity IDE on Windows and fix regex filter in skills.json |
+| 174 | `us-488` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | fix(installer): use physical folder copy for Antigravity IDE on Windows and fix regex filter in skills.json |
 
 ## 9. Inbox
 
@@ -762,6 +762,7 @@ All Next-specs closed.
 | 2026-10-01 | `us-478` | ws-monitor: issue-proposal body embeds a host session id while claiming anonymized; workflow count wording contradicts the report | 03fd6e7fc1b2c19759814da4067fc6a1519fd4b5 |
 | 2026-10-01 | `us-469` | ws-doctor: path-error section reports widespread false positives (citation base, link text, prose) | 994f47fff58b735eae61d8cf44a0df3ffa86f5e5 |
 | 2026-10-01 | `us-458` | autoMode should mean unattended: no yield at internal checkpoints | 8b449b9d |
+| 2026-10-01 | `us-488` | fix(installer): use physical folder copy for Antigravity IDE on Windows and fix regex filter in skills.json | 7cb436be59246b2ecddfb8d5079c780e354df4db |
 
 ## 11. Maintenance checklist
 

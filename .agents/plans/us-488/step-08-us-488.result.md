@@ -1,3 +1,12 @@
+---
+step: 8
+slug: us-488
+workflowId: us-488-20261001T164503Z
+status: completed
+startedAt: "2026-10-01T16:45:03Z"
+endedAt: "2026-10-01T20:27:04.614Z"
+acRefs: []
+---
 # us-488 — Delivery Result
 
 ## Expected
