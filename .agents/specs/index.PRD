@@ -219,6 +219,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Workflow defect (context-mismatch) detected by ws-monitor (`spec: completed/0166-us-473.spec.md`)
 - [x] ws-doctor: path-error section reports widespread false positives (citation base, link text, prose) (`spec: completed/0167-us-469.spec.md`)
 - [x] ws-monitor: slug-scoped scan drops canonical runId-foldered ws-spec-multi batch state (`spec: completed/0168-us-464.spec.md`)
+- [ ] fix(installer): use physical folder copy for Antigravity IDE on Windows and fix regex filter in skills.json (`spec: pending/0169-us-488.spec.md`)
+
 
 
 
@@ -581,6 +583,8 @@ All Next-specs closed.
 | 172 | `us-469` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-doctor: path-error section reports widespread false positives (citation base, link text, prose) |
 
 | 173 | `us-464` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor: slug-scoped scan drops canonical runId-foldered ws-spec-multi batch state |
+
+| 174 | `us-488` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | fix(installer): use physical folder copy for Antigravity IDE on Windows and fix regex filter in skills.json |
 
 ## 9. Inbox
 
