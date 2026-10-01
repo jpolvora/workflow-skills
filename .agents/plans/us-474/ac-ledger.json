@@ -1,0 +1,491 @@
+{
+  "schemaVersion": 1,
+  "revision": 22,
+  "workflowId": "us-474-20260930T192724Z",
+  "slug": "us-474",
+  "specPath": ".agents/plans/us-474/step-00-us-474.spec.md",
+  "planIndexPath": ".agents/plans/us-474/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "When the spec-index sync marks a spec done, the sync shall file the spec under `completed/` together with its `.context.md` and assets sidecars.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-index/scripts/sync_index.cjs:L238-L320"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-index/scripts/sync_index.cjs",
+          "lineStart": 238,
+          "lineEnd": 320,
+          "sha256": "7714e84d7aada9340fd3ad04c7412200afbfe87a08494e6533af8119e5ea8f12"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "f49dce7670b1a36c9656fbc66fa876ae07fa4a2d",
+          "step": 5
+        },
+        {
+          "sha": "c6a5823d3229ac3dc2c92a13f6c7dc33ad5db15c",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "testSyncFilesSpecAndSidecarsToCompleted",
+          "sourceFile": "test/test-spec-index-filing.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T19:53:07.623Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-c6a5823d3229ac3dc2c92a13f6c7dc33ad5db15c",
+        "g2-commit-f49dce7670b1a36c9656fbc66fa876ae07fa4a2d",
+        "impl-ac1",
+        "impl-ac1-r2"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "When the sync files the spec, the sync shall rewrite the index `spec:` references to the filed location in the same operation.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-index/scripts/sync_index.cjs:L185-L236",
+        ".agents/skills/ws-spec-organizer/scripts/organize_specs.cjs:L540-L555"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-index/scripts/sync_index.cjs",
+          "lineStart": 185,
+          "lineEnd": 236,
+          "sha256": "7714e84d7aada9340fd3ad04c7412200afbfe87a08494e6533af8119e5ea8f12"
+        },
+        {
+          "path": ".agents/skills/ws-spec-organizer/scripts/organize_specs.cjs",
+          "lineStart": 540,
+          "lineEnd": 555,
+          "sha256": "a7eac59f272d99e38a829376723a0c68676351816c33e00885aecad2437831cd"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "f49dce7670b1a36c9656fbc66fa876ae07fa4a2d",
+          "step": 5
+        },
+        {
+          "sha": "c6a5823d3229ac3dc2c92a13f6c7dc33ad5db15c",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "testSyncFilesSpecAndSidecarsToCompleted",
+          "sourceFile": "test/test-spec-index-filing.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T19:53:08.504Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-c6a5823d3229ac3dc2c92a13f6c7dc33ad5db15c",
+        "g2-commit-f49dce7670b1a36c9656fbc66fa876ae07fa4a2d",
+        "impl-ac2",
+        "impl-ac2-r2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "If the sync cannot file the spec, then the sync shall report the filing as outstanding instead of succeeding silently.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-index/scripts/sync_index.cjs:L296-L335"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-index/scripts/sync_index.cjs",
+          "lineStart": 296,
+          "lineEnd": 335,
+          "sha256": "7714e84d7aada9340fd3ad04c7412200afbfe87a08494e6533af8119e5ea8f12"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "f49dce7670b1a36c9656fbc66fa876ae07fa4a2d",
+          "step": 5
+        },
+        {
+          "sha": "c6a5823d3229ac3dc2c92a13f6c7dc33ad5db15c",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "testSyncReportsOutstandingWhenFilingFails",
+          "sourceFile": "test/test-spec-index-filing.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T19:53:09.165Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-c6a5823d3229ac3dc2c92a13f6c7dc33ad5db15c",
+        "g2-commit-f49dce7670b1a36c9656fbc66fa876ae07fa4a2d",
+        "impl-ac3",
+        "impl-ac3-r2"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "When the tracked spec for a completed run still resolves under `pending/`, the Step 8 close verification shall fail closed.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-index/scripts/verify_close_filing.cjs:L105-L135",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md:L125-L125"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-index/scripts/verify_close_filing.cjs",
+          "lineStart": 105,
+          "lineEnd": 135,
+          "sha256": "1bfc90cf00730a7712df45665ca1156359e8dfb3215198c30361b0744c2689fd"
+        },
+        {
+          "path": ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+          "lineStart": 125,
+          "lineEnd": 125,
+          "sha256": "1c3d525aae9bbfe12b060f711fb5fb522e35c99dd2e689116e3a88a5464a3c3f"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "f49dce7670b1a36c9656fbc66fa876ae07fa4a2d",
+          "step": 5
+        },
+        {
+          "sha": "c6a5823d3229ac3dc2c92a13f6c7dc33ad5db15c",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "testCloseVerifyFailsClosedOnPendingSpec",
+          "sourceFile": "test/test-spec-index-filing.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T19:48:49.258Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-c6a5823d3229ac3dc2c92a13f6c7dc33ad5db15c",
+        "g2-commit-f49dce7670b1a36c9656fbc66fa876ae07fa4a2d",
+        "impl-ac4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "If the close verification fails closed, then the error shall name the stale `pending/` path.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-index/scripts/verify_close_filing.cjs:L138-L146"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-index/scripts/verify_close_filing.cjs",
+          "lineStart": 138,
+          "lineEnd": 146,
+          "sha256": "1bfc90cf00730a7712df45665ca1156359e8dfb3215198c30361b0744c2689fd"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "f49dce7670b1a36c9656fbc66fa876ae07fa4a2d",
+          "step": 5
+        },
+        {
+          "sha": "c6a5823d3229ac3dc2c92a13f6c7dc33ad5db15c",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "testCloseVerifyFailsClosedOnPendingSpec",
+          "sourceFile": "test/test-spec-index-filing.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T19:48:49.386Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-c6a5823d3229ac3dc2c92a13f6c7dc33ad5db15c",
+        "g2-commit-f49dce7670b1a36c9656fbc66fa876ae07fa4a2d",
+        "impl-ac5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "The harness check shall flag any index `[x]` row whose `spec:` reference points under `pending/`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-check-harness/PHASES.md:L492-L492",
+        ".agents/skills/ws-check-harness/scripts/check_spec_filing.cjs:L101-L150"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-check-harness/PHASES.md",
+          "lineStart": 492,
+          "lineEnd": 492,
+          "sha256": "4e1fc3e57bab49d613de21449ca226c4dcb64b4e0a2c5f441e44f2c0540d12e4"
+        },
+        {
+          "path": ".agents/skills/ws-check-harness/scripts/check_spec_filing.cjs",
+          "lineStart": 101,
+          "lineEnd": 150,
+          "sha256": "5d95c2ac0e2c9d76772ca38baaaf3a4934a3f8a7ca8a5b71fc8c6555e0572591"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "f49dce7670b1a36c9656fbc66fa876ae07fa4a2d",
+          "step": 5
+        },
+        {
+          "sha": "c6a5823d3229ac3dc2c92a13f6c7dc33ad5db15c",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "testHarnessFlagsDoneRowWithPendingRef",
+          "sourceFile": "test/test-spec-index-filing.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T19:48:49.538Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-c6a5823d3229ac3dc2c92a13f6c7dc33ad5db15c",
+        "g2-commit-f49dce7670b1a36c9656fbc66fa876ae07fa4a2d",
+        "impl-ac6"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "When the spec file and the index already agree, the workflow shall not re-file the spec or add a gate.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-index/scripts/sync_index.cjs:L296-L328"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-index/scripts/sync_index.cjs",
+          "lineStart": 296,
+          "lineEnd": 328,
+          "sha256": "7714e84d7aada9340fd3ad04c7412200afbfe87a08494e6533af8119e5ea8f12"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "f49dce7670b1a36c9656fbc66fa876ae07fa4a2d",
+          "step": 5
+        },
+        {
+          "sha": "c6a5823d3229ac3dc2c92a13f6c7dc33ad5db15c",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "testSyncQuietWhenAlreadyFiled",
+          "sourceFile": "test/test-spec-index-filing.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T19:53:09.897Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-c6a5823d3229ac3dc2c92a13f6c7dc33ad5db15c",
+        "g2-commit-f49dce7670b1a36c9656fbc66fa876ae07fa4a2d",
+        "impl-ac7",
+        "impl-ac7-r2"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Mark a spec done in the index while it stays under `pending/`: close verification must fail closed and name the path.",
+      "tests": [
+        {
+          "name": "testCloseVerifyFailsClosedOnPendingSpec",
+          "sourceFile": "test/test-spec-index-filing.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T19:48:49.777Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Run the harness on an index `[x]` row whose `spec:` ref points under `pending/`: the check must flag it.",
+      "tests": [
+        {
+          "name": "testHarnessFlagsDoneRowWithPendingRef",
+          "sourceFile": "test/test-spec-index-filing.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T19:48:49.880Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Sync a spec already under `completed/`: the run must not re-file it or add a gate.",
+      "tests": [
+        {
+          "name": "testRejectsUnsafeSlug",
+          "sourceFile": "test/test-spec-index-filing.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T19:48:50.009Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns3"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 10,
+    "earnedUnits": 70,
+    "totalUnits": 70,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "deficiencies": [],
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-30T19:53:10.447Z",
+    "writer": "ac_ledger.cjs score",
+    "ledgerHash": "219bb1fa55f98ef121cb3cc5ad664847580345e4a1e50bb96308a517e24b0bf8"
+  }
+}

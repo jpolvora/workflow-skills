@@ -1,0 +1,22 @@
+{
+  "step": "6b",
+  "slug": "us-469",
+  "workflowId": "us-469-20261001T024600Z",
+  "sourceCommit": "994f47fff58b735eae61d8cf44a0df3ffa86f5e5",
+  "mode": "fresh-worker",
+  "restored": true,
+  "verdicts": [
+    { "id": "AC1", "verdict": "VERIFIED", "injection": "M1", "detected": true },
+    { "id": "AC2", "verdict": "VERIFIED", "injection": "M2", "detected": true },
+    { "id": "AC3", "verdict": "VERIFIED", "injection": "M3", "detected": true },
+    { "id": "AC4", "verdict": "VERIFIED", "injection": "M4", "detected": true },
+    { "id": "AC5", "verdict": "VERIFIED", "injection": "M1", "detected": true },
+    { "id": "AC6", "verdict": "VERIFIED", "injection": "M5", "detected": true },
+    { "id": "AC7", "verdict": "VERIFIED", "injection": "M1", "detected": true },
+    { "id": "NS1", "verdict": "VERIFIED", "injection": "M6", "detected": true },
+    { "id": "NS2", "verdict": "VERIFIED", "injection": "M6", "detected": true },
+    { "id": "NS3", "verdict": "VERIFIED", "injection": "M3", "detected": true }
+  ],
+  "signalBefore": { "pathErrors": 205, "missingScripts": 5 },
+  "signalAfter": { "pathErrors": 0, "missingScripts": 0 }
+}

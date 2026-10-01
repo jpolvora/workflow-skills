@@ -9,7 +9,7 @@ issueUrl: "https://github.com/jpolvora/workflow-skills/issues/477"
 labels:
   - bug
 step: 0
-workflowId: us-477
+workflowId: us-477-20260930T235947Z
 status: completed
 startedAt: "2026-09-30T18:49:01.132Z"
 endedAt: "2026-09-30T18:49:01.132Z"

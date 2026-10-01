@@ -1,0 +1,459 @@
+{
+  "schemaVersion": 1,
+  "revision": 16,
+  "workflowId": "us-464-20260930T220628Z",
+  "slug": "us-464",
+  "specPath": ".agents/plans/us-464/step-00-us-464.spec.md",
+  "planIndexPath": ".agents/plans/us-464/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": "2026-09-30T22:23:42Z",
+      "endedAt": "2026-09-30T22:27:42Z",
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "When `--slug <value>` is supplied, the monitor shall select every discovered run whose state-derived slug equals the value.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1677-L1682",
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L418-L439"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 418,
+          "lineEnd": 439,
+          "sha256": "a74c78c543a52f884f2ab3783c28ad2d6f8ca8a094123c4be475ca8b8f361a89"
+        },
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1677,
+          "lineEnd": 1682,
+          "sha256": "a74c78c543a52f884f2ab3783c28ad2d6f8ca8a094123c4be475ca8b8f361a89"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "dbf18d62a41ccc9cffeb77f229b26a73e8768b85",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testSlugSelectsCanonicalLayout",
+          "sourceFile": "test/test-ws-monitor-us464.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T22:14:27.891Z"
+        },
+        {
+          "name": "testSlugSelectsCanonicalRunIdRun",
+          "sourceFile": "test/test-ws-monitor-us464.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T22:14:27.884Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-dbf18d62a41ccc9cffeb77f229b26a73e8768b85",
+        "impl-ac1"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "The monitor shall select slug-scoped runs independent of the plan folder name and the state-file layout.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L418-L439"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 418,
+          "lineEnd": 439,
+          "sha256": "a74c78c543a52f884f2ab3783c28ad2d6f8ca8a094123c4be475ca8b8f361a89"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "dbf18d62a41ccc9cffeb77f229b26a73e8768b85",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testSlugIndependentOfFolderName",
+          "sourceFile": "test/test-ws-monitor-us464.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T22:14:28.342Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-dbf18d62a41ccc9cffeb77f229b26a73e8768b85",
+        "impl-ac2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "When a run is stored under the canonical runId-folder layout, the monitor shall include it in the slug-scoped scan.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1677-L1682"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1677,
+          "lineEnd": 1682,
+          "sha256": "a74c78c543a52f884f2ab3783c28ad2d6f8ca8a094123c4be475ca8b8f361a89"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "dbf18d62a41ccc9cffeb77f229b26a73e8768b85",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testSlugSelectsCanonicalLayout",
+          "sourceFile": "test/test-ws-monitor-us464.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T22:14:28.834Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-dbf18d62a41ccc9cffeb77f229b26a73e8768b85",
+        "impl-ac3"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "When a run is stored under a slug-named plan folder, the monitor shall include it in the slug-scoped scan.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L418-L439"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 418,
+          "lineEnd": 439,
+          "sha256": "a74c78c543a52f884f2ab3783c28ad2d6f8ca8a094123c4be475ca8b8f361a89"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "dbf18d62a41ccc9cffeb77f229b26a73e8768b85",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testSlugSelectsSlugNamedFolder",
+          "sourceFile": "test/test-ws-monitor-us464.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T22:14:29.338Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-dbf18d62a41ccc9cffeb77f229b26a73e8768b85",
+        "impl-ac4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "When a run is stored under the legacy flat state file, the monitor shall include it in the slug-scoped scan.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L418-L439"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 418,
+          "lineEnd": 439,
+          "sha256": "a74c78c543a52f884f2ab3783c28ad2d6f8ca8a094123c4be475ca8b8f361a89"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "dbf18d62a41ccc9cffeb77f229b26a73e8768b85",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testSlugSelectsLegacyFlatFile",
+          "sourceFile": "test/test-ws-monitor-us464.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T22:14:29.716Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-dbf18d62a41ccc9cffeb77f229b26a73e8768b85",
+        "impl-ac5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "When `--workflow-id` is supplied, the monitor shall return the matching run regardless of any slug filter.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1675-L1678"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1675,
+          "lineEnd": 1678,
+          "sha256": "a74c78c543a52f884f2ab3783c28ad2d6f8ca8a094123c4be475ca8b8f361a89"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "dbf18d62a41ccc9cffeb77f229b26a73e8768b85",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testWorkflowIdBypassesSlugFilter",
+          "sourceFile": "test/test-ws-monitor-us464.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T22:14:30.190Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-dbf18d62a41ccc9cffeb77f229b26a73e8768b85",
+        "impl-ac6"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "When no discovered run's state-derived slug matches the filter, the monitor shall return a zero workflow count.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L431-L436"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 431,
+          "lineEnd": 436,
+          "sha256": "a74c78c543a52f884f2ab3783c28ad2d6f8ca8a094123c4be475ca8b8f361a89"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "dbf18d62a41ccc9cffeb77f229b26a73e8768b85",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testUnmatchedSlugReturnsZero",
+          "sourceFile": "test/test-ws-monitor-us464.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T22:14:30.634Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-dbf18d62a41ccc9cffeb77f229b26a73e8768b85",
+        "impl-ac7"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "A canonical `{plansDir}/{runId}/{runId}.state.md` run with `slug: ws-spec-multi` must appear in `--slug ws-spec-multi` output; dropping it fails.",
+      "tests": [
+        {
+          "name": "testSlugSelectsCanonicalRunIdRun",
+          "sourceFile": "test/test-ws-monitor-us464.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T22:14:31.093Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "A `--slug` value matching no state-derived slug must return a zero count, not the unfiltered set.",
+      "tests": [
+        {
+          "name": "testUnmatchedSlugReturnsZero",
+          "sourceFile": "test/test-ws-monitor-us464.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T22:14:31.613Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "A slug-named-folder run and a legacy flat-file run must both remain in scope after the change.",
+      "tests": [
+        {
+          "name": "testSlugSelectsLegacyFlatFile",
+          "sourceFile": "test/test-ws-monitor-us464.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T22:14:32.193Z"
+        },
+        {
+          "name": "testSlugSelectsSlugNamedFolder",
+          "sourceFile": "test/test-ws-monitor-us464.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T22:14:32.191Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns3"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 10,
+    "earnedUnits": 70,
+    "totalUnits": 70,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "deficiencies": [],
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-30T22:30:09.194Z",
+    "writer": "ac_ledger.cjs score",
+    "ledgerHash": "828f9c4d9ea9b3683e37373c4336350c941e82db8890b72b92b2921d05528ac8"
+  },
+  "filesTouched": [
+    ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+    "test/test-suites.json",
+    "test/test-ws-monitor-us464.js"
+  ]
+}

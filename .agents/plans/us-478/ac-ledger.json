@@ -1,0 +1,405 @@
+{
+  "schemaVersion": 1,
+  "revision": 16,
+  "workflowId": "us-478-20261001T014700Z",
+  "slug": "us-478",
+  "specPath": ".agents/plans/us-478/step-00-us-478.spec.md",
+  "planIndexPath": ".agents/plans/us-478/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "The proposal builder shall omit any host session identifier from the generated issue body.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1688-L1691",
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1730-L1732"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001",
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1688,
+          "lineEnd": 1691,
+          "sha256": "1c880d948cb1ea36624295795a40b88968536b335896553b6f6ee1e314358988"
+        },
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1730,
+          "lineEnd": 1732,
+          "sha256": "1c880d948cb1ea36624295795a40b88968536b335896553b6f6ee1e314358988"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "da5dfc49cb49cea2e0c27c8d305775f23ed9e18d",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "us-478 AC1 session id omitted from body",
+          "sourceFile": "test/test-ws-monitor-us478.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-10-01T01:54:27.900Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-da5dfc49cb49cea2e0c27c8d305775f23ed9e18d",
+        "impl-ac1"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "When a session id was supplied, the proposal builder shall render the reproduction command with the literal placeholder `--session-id <redacted>`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1691-L1691"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1691,
+          "lineEnd": 1691,
+          "sha256": "1c880d948cb1ea36624295795a40b88968536b335896553b6f6ee1e314358988"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "da5dfc49cb49cea2e0c27c8d305775f23ed9e18d",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "us-478 AC2 command redaction placeholder",
+          "sourceFile": "test/test-ws-monitor-us478.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-10-01T01:54:28.544Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-da5dfc49cb49cea2e0c27c8d305775f23ed9e18d",
+        "impl-ac2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "When no session id was supplied, the proposal builder shall omit the session-id metadata line entirely.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1688-L1688"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1688,
+          "lineEnd": 1688,
+          "sha256": "1c880d948cb1ea36624295795a40b88968536b335896553b6f6ee1e314358988"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "da5dfc49cb49cea2e0c27c8d305775f23ed9e18d",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "us-478 AC3 no session id omits metadata line",
+          "sourceFile": "test/test-ws-monitor-us478.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-10-01T01:54:28.985Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-da5dfc49cb49cea2e0c27c8d305775f23ed9e18d",
+        "impl-ac3"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "The proposal summary shall label the finding count with both the run unit and the distinct-slug unit.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1695-L1695"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1695,
+          "lineEnd": 1695,
+          "sha256": "1c880d948cb1ea36624295795a40b88968536b335896553b6f6ee1e314358988"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "da5dfc49cb49cea2e0c27c8d305775f23ed9e18d",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "us-478 AC4 summary labels run and slug units",
+          "sourceFile": "test/test-ws-monitor-us478.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-10-01T01:54:29.509Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-da5dfc49cb49cea2e0c27c8d305775f23ed9e18d",
+        "impl-ac4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "If a session id, transcript path, or `--session-id` value would appear in the body, then the builder shall redact the value before writing the body.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1654-L1658",
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1730-L1730"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1654,
+          "lineEnd": 1658,
+          "sha256": "1c880d948cb1ea36624295795a40b88968536b335896553b6f6ee1e314358988"
+        },
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1730,
+          "lineEnd": 1730,
+          "sha256": "1c880d948cb1ea36624295795a40b88968536b335896553b6f6ee1e314358988"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "da5dfc49cb49cea2e0c27c8d305775f23ed9e18d",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "us-478 AC5 session id value redacted",
+          "sourceFile": "test/test-ws-monitor-us478.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-10-01T01:54:30.089Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-da5dfc49cb49cea2e0c27c8d305775f23ed9e18d",
+        "impl-ac5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "The anonymization checklist item shall remain checked only when the builder's output contains no session identifier.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1731-L1732"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-001",
+        "section-002",
+        "section-003",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1731,
+          "lineEnd": 1732,
+          "sha256": "1c880d948cb1ea36624295795a40b88968536b335896553b6f6ee1e314358988"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "da5dfc49cb49cea2e0c27c8d305775f23ed9e18d",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "us-478 AC6 checklist checked only when clean",
+          "sourceFile": "test/test-ws-monitor-us478.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-10-01T01:54:30.618Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-da5dfc49cb49cea2e0c27c8d305775f23ed9e18d",
+        "impl-ac6"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Run the builder with `--session-id abc-123`: the body must not contain `abc-123` anywhere; a body containing it fails.",
+      "tests": [
+        {
+          "name": "us-478 NS1 supplied session id absent",
+          "sourceFile": "test/test-ws-monitor-us478.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-10-01T01:54:31.042Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Run the builder without a session id: a `Session id:` line must be absent; a present line fails.",
+      "tests": [
+        {
+          "name": "us-478 NS2 no session id omits metadata line",
+          "sourceFile": "test/test-ws-monitor-us478.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-10-01T01:54:31.503Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Feed workflows whose rows share one slug across two runs: the summary must not report a slug-derived number as the run count.",
+      "tests": [
+        {
+          "name": "us-478 NS3 shared slug uses run count",
+          "sourceFile": "test/test-ws-monitor-us478.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-10-01T01:54:31.971Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns3"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 10,
+    "earnedUnits": 60,
+    "totalUnits": 60,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "deficiencies": [],
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-10-01T02:12:49.387Z",
+    "writer": "ac_ledger.cjs score",
+    "ledgerHash": "9ec7757cf14a60ae104a961c2246b9586f30261fe245c9db932ff8b48d3501f0"
+  }
+}

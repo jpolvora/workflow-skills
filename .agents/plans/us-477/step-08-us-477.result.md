@@ -1,3 +1,12 @@
+---
+step: 8
+slug: us-477
+workflowId: us-477-20260930T235947Z
+status: completed
+startedAt: "2026-09-30T23:59:47Z"
+endedAt: "2026-10-01T00:44:24.793Z"
+acRefs: []
+---
 # us-477 — Delivery Result
 
 ## Expected
