@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-30 23:29] Agent: agent
+- **Prompt**: us-469: ws-doctor path-error section reports ~205 false positives on a healthy install (citation base, link text, prose)
+- **Done**: Fixed doctor.js path scanner: root-relative resolution, Markdown href validation, fenced/prose/placeholder skips, {globalSkillsRoot} fallback, own-dir root-first, archived/example exclusion, install-citation report gate; added test-ws-doctor.js fixtures AC1-AC7/NS1-NS3
+- **Result**: Path errors 205->0 with real breaks still reported; score 10/10; npm run test 159/159; harness 0 findings; bumped 0.5.32; PR develop->main opened
+
 ### [2026-09-30 22:33] Agent: agent
 - **Prompt**: ws-monitor issue-proposal embeds a raw session id while claiming anonymized; workflow count wording contradicts the report
 - **Done**: Sanitized buildIssueProposal by construction (redacted/omitted session id, --session-id <redacted> placeholder, unit-labelled summary, truthful checklist); added test-ws-monitor-us478.js

@@ -15,6 +15,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **DO NOT**: Run `npm run tests` as the ship/quality gate right after a version bump (or any change while the pack is stale); treat the resulting install-fixture failure as a product regression.
 - **INSTEAD DO**: Use `npm test` (which runs `pretests: npm pack`) after a bump, or run `npm pack` manually before `npm run tests`; the tarball ref in `test/package.json` must match `package.json` version.
 
+### [2026-10-01] Parallel workflow state writes race and lose an update
+- **Layer**: `infrastructure`
+- **Module**: `ws-spec-to-pr / workflow_state`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/plans/**/*.state.json`
+- **Scenario / Context**: Running two `update_state.cjs finish` calls for consecutive steps in the same shell turn (or two parallel tool calls) reads the same base revision and each writes revision+1; the second write silently overwrites the first, so a step's completion and `skippedSteps` record are lost while the file still looks valid.
+- **DO NOT**: fire multiple `update_state.cjs` dispatch/finish/checkpoint mutations concurrently (parallel tool calls or a shared `&&` batch) against the same `{workflow-id}.state.json`.
+- **INSTEAD DO**: run state mutations strictly sequentially, one tool call per mutation, and re-read `completedSteps`/`skippedSteps` (or the returned `revision`) before the next; a lost step shows as an un-incremented revision.
+
 ### [2026-10-01] Inline G2 review-fix invalidates ac-ledger file hashes; gitignored step-03 finish needs --noop
 - **Layer**: `domain`
 - **Module**: `ws-spec-to-pr / ac_ledger + update_state finish`
