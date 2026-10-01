@@ -3427,6 +3427,15 @@ child.on('close', async (code) => {
       }
     }
     ok('bare update backfills new skills to all recorded targets');
+    // 11b. Partial uninstall removes the Windows physical gemini copies of only
+    // the removed skills, leaving physical copies of kept skills intact (NS4).
+    const geminiPhysicalDir = path.join(mockHome, '.gemini', 'config', 'skills');
+    fs.mkdirSync(path.join(geminiPhysicalDir, 'ws-plan-write'), { recursive: true });
+    fs.writeFileSync(path.join(geminiPhysicalDir, 'ws-plan-write', 'SKILL.md'), '# physical removed');
+    fs.mkdirSync(path.join(geminiPhysicalDir, 'ws-tdah'), { recursive: true });
+    fs.writeFileSync(path.join(geminiPhysicalDir, 'ws-tdah', 'SKILL.md'), '# physical kept');
+    fs.mkdirSync(path.join(geminiPhysicalDir, 'custom-user-skill'), { recursive: true });
+    fs.writeFileSync(path.join(geminiPhysicalDir, 'custom-user-skill', 'SKILL.md'), '# third party');
     const uninstallMerge = cp.spawnSync(
       process.execPath,
       [cliPath, 'uninstall', '--skills', 'ws-plan-write', '--global', '--yes'],
@@ -3443,6 +3452,16 @@ child.on('close', async (code) => {
       }
     }
     ok('uninstall cleans merged projections across all recorded targets');
+    if (fs.existsSync(path.join(geminiPhysicalDir, 'ws-plan-write'))) {
+      fail('Partial uninstall left orphan physical gemini copy of removed skill (NS4)');
+    }
+    if (!fs.existsSync(path.join(geminiPhysicalDir, 'ws-tdah', 'SKILL.md'))) {
+      fail('Partial uninstall removed physical gemini copy of a kept skill (NS4)');
+    }
+    if (!fs.existsSync(path.join(geminiPhysicalDir, 'custom-user-skill', 'SKILL.md'))) {
+      fail('Partial uninstall removed a non-ws-* physical gemini skill (NS4)');
+    }
+    ok('partial uninstall removes physical gemini copies of removed skills only (NS4)');
 
     // Cleanup
     fs.rmSync(mockHome, { recursive: true, force: true });

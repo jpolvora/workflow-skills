@@ -679,6 +679,26 @@ function removeSkillsFromSecondaryTargets(
           if (res.removed) {
             removedCount++;
           }
+        } else {
+          // Partial uninstall: physical ws-* copies projected on win32 are not
+          // owned by the links-only sweep below, so remove the copies of only
+          // the skills being uninstalled. Links stay for the sweep; kept skills
+          // and third-party entries are never touched.
+          const skillsDir = path.join(homeDir, '.gemini', 'config', 'skills');
+          for (const skillName of skillNames) {
+            if (!skillName.startsWith('ws-')) continue;
+            const physSkill = path.join(skillsDir, skillName);
+            try {
+              if (fs.existsSync(physSkill) && !fs.lstatSync(physSkill).isSymbolicLink()) {
+                fs.rmSync(physSkill, { recursive: true, force: true });
+                removedCount++;
+              }
+            } catch (err) {
+              if (err?.code !== 'ENOENT') {
+                console.log(`    Note: Could not remove '${skillName}' physical copy from [gemini]: ${err.message}`);
+              }
+            }
+          }
         }
         removedCount += cleanupLegacyGeminiSkills(homeDir, { includePhysical: geminiIncludePhysical });
       } catch (err) {
