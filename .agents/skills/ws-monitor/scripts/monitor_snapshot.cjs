@@ -879,8 +879,11 @@ function detectStaleParentRows(workflow, allWorkflows, options = {}) {
   const runCreatedAt = Date.parse(workflow.multiSpec?.createdAt || '');
   const runUpdatedAt = Date.parse(workflow.multiSpec?.updatedAt || '');
   // us-476 AC2: the batch state file write is the strongest "run advanced"
-  // signal; it is supplied by snapshot() as a numeric mtime.
-  const stateMtimeMs = Number(workflow.multiSpec?.stateMtimeMs);
+  // signal; it is supplied by snapshot() as a numeric mtime. A missing stat
+  // arrives as null (which Number() coerces to 0), so only a positive finite
+  // mtime counts.
+  const stateMtimeRaw = Number(workflow.multiSpec?.stateMtimeMs);
+  const stateMtimeMs = Number.isFinite(stateMtimeRaw) && stateMtimeRaw > 0 ? stateMtimeRaw : NaN;
   const activeMulti = allWorkflows.filter((other) => other.multiSpec
     && other !== workflow
     && ACTIVE_RUN_STATUSES.has(String(other.status)));
