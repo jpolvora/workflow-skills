@@ -213,7 +213,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Explicit knowledge chain in research guidance (`spec: completed/0160-explicit-knowledge-chain.spec.md`) — `ba1b4fc1` delivery commit
 - [ ] ws-monitor: issue-proposal body embeds a host session id while claiming anonymized; workflow count wording contradicts the report (`spec: pending/0161-us-478.spec.md`)
 - [x] ws-monitor: worker-session-stall warns while the state/telemetry clock advances (stale session-source reference) (`spec: completed/0162-us-477.spec.md`)
-- [ ] ws-monitor: stale-parent-row warns during the normal child-close to parent-propagate window (`spec: pending/0163-us-476.spec.md`)
+- [x] ws-monitor: stale-parent-row warns during the normal child-close to parent-propagate window (`spec: completed/0163-us-476.spec.md`)
 - [x] Shared-head multi-spec runs need an executable foreign-commit guard (`spec: completed/0164-us-475.spec.md`)
 - [x] Shipped spec can stay under pending/ while index marks done (`spec: completed/0165-us-474.spec.md`)
 - [x] Workflow defect (context-mismatch) detected by ws-monitor (`spec: completed/0166-us-473.spec.md`)
@@ -570,7 +570,7 @@ All Next-specs closed.
 
 | 167 | `us-477` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor: worker-session-stall warns while the state/telemetry clock advances (stale session-source reference) |
 
-| 168 | `us-476` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor: stale-parent-row warns during the normal child-close to parent-propagate window |
+| 168 | `us-476` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor: stale-parent-row warns during the normal child-close to parent-propagate window |
 
 | 169 | `us-475` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Shared-head multi-spec runs need an executable foreign-commit guard |
 
@@ -754,6 +754,7 @@ All Next-specs closed.
 | 2026-09-30 | `us-464` | ws-monitor: slug-scoped scan drops canonical runId-foldered ws-spec-multi batch state | c1c37461 |
 | 2026-09-30 | `us-473` | Workflow defect [context-mismatch] detected by ws-monitor | 83572714f0a7dd13d3896d8d3d9433dd495269ba |
 | 2026-10-01 | `us-477` | ws-monitor: worker-session-stall warns while the state/telemetry clock advances (stale session-source reference) | 9abcbc0d |
+| 2026-10-01 | `us-476` | ws-monitor: stale-parent-row warns during the normal child-close to parent-propagate window | https://github.com/jpolvora/workflow-skills/pull/484 |
 
 ## 11. Maintenance checklist
 
