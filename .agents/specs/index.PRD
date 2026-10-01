@@ -211,7 +211,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Publish fixed-model comparison benchmark (`spec: completed/0158-benchmark-publish-fixed-models.spec.md`) — `d49597f4` delivery commit
 - [x] Per-step context budgets in dispatch contracts (`spec: completed/0159-per-step-context-budgets.spec.md`) — `c62e5d09` delivery commit
 - [x] Explicit knowledge chain in research guidance (`spec: completed/0160-explicit-knowledge-chain.spec.md`) — `ba1b4fc1` delivery commit
-- [ ] ws-monitor: issue-proposal body embeds a host session id while claiming anonymized; workflow count wording contradicts the report (`spec: pending/0161-us-478.spec.md`)
+- [x] ws-monitor: issue-proposal body embeds a host session id while claiming anonymized; workflow count wording contradicts the report (`spec: completed/0161-us-478.spec.md`)
 - [x] ws-monitor: worker-session-stall warns while the state/telemetry clock advances (stale session-source reference) (`spec: completed/0162-us-477.spec.md`)
 - [x] ws-monitor: stale-parent-row warns during the normal child-close to parent-propagate window (`spec: completed/0163-us-476.spec.md`)
 - [x] Shared-head multi-spec runs need an executable foreign-commit guard (`spec: completed/0164-us-475.spec.md`)
@@ -566,7 +566,7 @@ All Next-specs closed.
 
 | 165 | `explicit-knowledge-chain` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Explicit knowledge chain in research guidance |
 
-| 166 | `us-478` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor: issue-proposal body embeds a host session id while claiming anonymized; workflow count wording contradicts the report |
+| 166 | `us-478` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor: issue-proposal body embeds a host session id while claiming anonymized; workflow count wording contradicts the report |
 
 | 167 | `us-477` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor: worker-session-stall warns while the state/telemetry clock advances (stale session-source reference) |
 
@@ -755,6 +755,7 @@ All Next-specs closed.
 | 2026-09-30 | `us-473` | Workflow defect [context-mismatch] detected by ws-monitor | 83572714f0a7dd13d3896d8d3d9433dd495269ba |
 | 2026-10-01 | `us-477` | ws-monitor: worker-session-stall warns while the state/telemetry clock advances (stale session-source reference) | 9abcbc0d |
 | 2026-10-01 | `us-476` | ws-monitor: stale-parent-row warns during the normal child-close to parent-propagate window | https://github.com/jpolvora/workflow-skills/pull/484 |
+| 2026-10-01 | `us-478` | ws-monitor: issue-proposal body embeds a host session id while claiming anonymized; workflow count wording contradicts the report | 03fd6e7fc1b2c19759814da4067fc6a1519fd4b5 |
 
 ## 11. Maintenance checklist
 
