@@ -15,7 +15,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '..');
 const script = path.join(repoRoot, '.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs');
 const require = createRequire(import.meta.url);
-const { scanTranscriptRoots, resolveTranscriptSource, TRANSCRIPT_LIMITS } = require(script);
+const { scanTranscriptRoots, resolveTranscriptSource, snapshot, TRANSCRIPT_LIMITS } = require(script);
 
 const tempRoots = [];
 
@@ -194,7 +194,10 @@ function writeFlood(root, dirName, count) {
   const { root, fakeHome } = makeRoot();
   const slug = 'us-live-stall';
   const workflowId = 'wf-live-stall';
-  makeWorkflow(root, slug, workflowId);
+  const stateDir = makeWorkflow(root, slug, workflowId);
+  // us-477 AC2: age the state clock so this is a genuine state-idle stall.
+  const aged = new Date(Date.now() - 60 * 60_000);
+  fs.utimesSync(path.join(stateDir, `wf-${slug}.state.json`), aged, aged);
   writeMuseSession(fakeHome, 'session-stall', `${workflowId} ${slug} worker activity\n`, Date.now() - 20 * 60_000);
   writeConfig(root, fakeHome, { discoverHostTranscripts: true });
   const result = run(['--repo-root', root, '--slug', slug, '--json'], root);
@@ -235,6 +238,10 @@ function writeFlood(root, dirName, count) {
   const state = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
   delete state.turnPause;
   write(stateFile, JSON.stringify(state, null, 2));
+  // us-477 AC2: re-age the state clock before the resume check so the cleared
+  // pause marker restores a genuine state-idle stall.
+  const resumedAge = new Date(Date.now() - 60 * 60_000);
+  fs.utimesSync(stateFile, resumedAge, resumedAge);
   const resumed = run(['--repo-root', root, '--slug', slug, '--json'], root);
   assert.equal(resumed.status, 0, resumed.stderr || resumed.stdout);
   const resumedWorkflow = JSON.parse(resumed.stdout).workflows.find((item) => item.slug === slug);
@@ -308,6 +315,89 @@ function writeFlood(root, dirName, count) {
   const workflow = report.workflows.find((item) => item.slug === slug);
   assert.equal(workflow.transcriptSource.status, 'available');
   console.log('M9 per-root slice truncation reports capped honestly: ok');
+}
+
+// M10 - us-477 AC2/NS1: when the state clock advanced within the stall window,
+// an idle correlated session no longer raises a warning-severity stall.
+{
+  const { root, fakeHome } = makeRoot();
+  const slug = 'us-live-advancing';
+  const workflowId = 'wf-live-advancing';
+  makeWorkflow(root, slug, workflowId);
+  writeMuseSession(fakeHome, 'session-advancing', `${workflowId} ${slug} worker activity\n`, Date.now() - 20 * 60_000);
+  writeConfig(root, fakeHome, { discoverHostTranscripts: true });
+  const result = run(['--repo-root', root, '--slug', slug, '--json'], root);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  const workflow = JSON.parse(result.stdout).workflows.find((item) => item.slug === slug);
+  const stall = workflow.findings.find((item) => item.code === 'worker-session-stall');
+  assert.ok(!stall || stall.severity !== 'warning', `advancing state clock must suppress the warning stall, got ${JSON.stringify(stall)}`);
+  console.log('us-477 AC2 advancing state clock suppresses warning stall: ok');
+}
+
+// M11 - us-477 AC4/AC5: the state-recorded driver session wins over an
+// unrelated supplied --session-id root; a non-driver match reports weak.
+{
+  const { root, fakeHome } = makeRoot();
+  const slug = 'us-live-driver';
+  const workflowId = 'wf-live-driver';
+  const driverFile = path.join(root, 'driver-sessions', 'driver-session', 'session.jsonl');
+  write(driverFile, `${workflowId} ${slug} driver output\n`);
+  makeWorkflow(root, slug, workflowId, { agentTranscripts: { status: 'available', paths: [driverFile] } });
+  const otherRoot = path.join(root, 'other-sessions');
+  const otherFile = path.join(otherRoot, 'session.jsonl');
+  write(otherFile, 'worker line for ses-unrelated only\n');
+  const aged = new Date(Date.now() - 60 * 60_000);
+  fs.utimesSync(path.join(root, '.agents', 'plans', slug, `wf-${slug}.state.json`), aged, aged);
+  fs.utimesSync(otherFile, aged, aged);
+  const result = run([
+    '--repo-root', root, '--slug', slug, '--session-id', 'ses-unrelated',
+    '--discover-host-transcripts', '--transcript-root', otherRoot, '--json',
+  ], root);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  const workflow = JSON.parse(result.stdout).workflows.find((item) => item.slug === slug);
+  assert.equal(workflow.transcriptSource.driver, true, 'state-recorded driver session is preferred');
+  assert.equal(workflow.sessionRef.weak, false, 'driver correlation is not weak');
+  assert.ok(String(workflow.sessionRef.file).includes('driver-session'), `session ref names the driver file, got ${workflow.sessionRef.file}`);
+
+  const weakSlug = 'us-live-weak';
+  const weakWorkflowId = 'wf-live-weak';
+  makeWorkflow(root, weakSlug, weakWorkflowId);
+  const weakRoot = path.join(root, 'weak-sessions');
+  const weakFile = path.join(weakRoot, 'session.jsonl');
+  write(weakFile, 'worker line for ses-weak-only only\n');
+  fs.utimesSync(path.join(root, '.agents', 'plans', weakSlug, `wf-${weakSlug}.state.json`), aged, aged);
+  fs.utimesSync(weakFile, aged, aged);
+  const weak = run([
+    '--repo-root', root, '--slug', weakSlug, '--session-id', 'ses-weak-only',
+    '--discover-host-transcripts', '--transcript-root', weakRoot, '--json',
+  ], root);
+  assert.equal(weak.status, 0, weak.stderr || weak.stdout);
+  const weakWf = JSON.parse(weak.stdout).workflows.find((item) => item.slug === weakSlug);
+  assert.equal(weakWf.sessionRef.weak, true, 'a supplied non-driver session is reported weak');
+  const weakStall = weakWf.findings.find((item) => item.code === 'worker-session-stall');
+  assert.ok(!weakStall || weakStall.severity !== 'warning', 'a weak correlation is not a warning stall');
+  console.log('us-477 AC4/AC5 driver preferred and weak correlation reported: ok');
+}
+
+// M12 - us-477 AC3: a cached session reference is marked stale when the
+// correlated file was written within the window while the cached idle grows.
+{
+  const { root, fakeHome } = makeRoot();
+  const slug = 'us-live-stale';
+  const workflowId = 'wf-live-stale';
+  makeWorkflow(root, slug, workflowId);
+  writeConfig(root, fakeHome, { discoverHostTranscripts: true });
+  const sessionRoot = path.join(root, 'stale-sessions');
+  const sessionFile = path.join(sessionRoot, 'session.jsonl');
+  write(sessionFile, `${workflowId} ${slug} worker activity\n`);
+  fs.utimesSync(sessionFile, new Date(Date.now() - 20 * 60_000), new Date(Date.now() - 20 * 60_000));
+  const options = { repoRoot: root, slug, workflowId, discoverHostTranscripts: true, transcriptRoots: [sessionRoot] };
+  snapshot(options);
+  write(sessionFile, `${workflowId} ${slug} worker activity resumed\n`);
+  const report = snapshot(options);
+  const workflow = report.workflows.find((item) => item.slug === slug);
+  assert.ok(workflow.sessionRef && workflow.sessionRef.stale === true, `stale reference expected, got ${JSON.stringify(workflow.sessionRef)}`);
+  console.log('us-477 AC3 stale session reference marked: ok');
 }
 
 for (const directory of tempRoots) fs.rmSync(directory, { recursive: true, force: true });

@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-30 20:43] Agent: agent
+- **Prompt**: ws-monitor: worker-session-stall warns while the state/telemetry clock advances (issue #477)
+- **Done**: Rewrote the ws-monitor session-source stopwatch to re-read the correlated session file each tick, prefer the state-recorded driver session over an unrelated --session-id root, suppress/downgrade worker-session-stall to info while state/telemetry advances, mark stale references, and report sessionRef; updated docs and liveness fixtures
+- **Result**: score 10/10; npm run test 157/157; harness 0 findings; version 0.5.29
+
 ### [2026-09-30 19:20] Agent: agent
 - **Prompt**: Fix ws-monitor context-mismatch so branch severity follows run liveness (us-473)
 - **Done**: Scoped detectContextMismatch branch finding to non-terminal runs; terminal runs report info and the message names the run status; added test-ws-monitor-us473.js

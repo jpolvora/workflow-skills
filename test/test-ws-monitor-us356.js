@@ -229,6 +229,10 @@ const museSessionsDir = path.join(fakeHome, '.local', 'share', 'muse', 'sessions
 const sessionFile = path.join(museSessionsDir, slug, 'session.jsonl');
 write(sessionFile, `${workflowId} ${slug} recent worker activity line\nturn_ended before workflow handoff\n`);
 fs.utimesSync(sessionFile, new Date(Date.now() - 3600_000), new Date(Date.now() - 3600_000));
+// us-477 AC2: age the demo state clock too, so the idle session is a genuine
+// state-idle stall (worker-session-stall warning) and not the advancing-clock
+// case that is now downgraded to info.
+fs.utimesSync(path.join(root, '.agents', 'plans', slug, `wf-${slug}.state.json`), new Date(Date.now() - 3600_000), new Date(Date.now() - 3600_000));
 
 // AC3: default runs perform zero host-store reads; sources stay disabled.
 {

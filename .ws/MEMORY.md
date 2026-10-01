@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-10-01] Inline G2 review-fix invalidates ac-ledger file hashes; gitignored step-03 finish needs --noop
+- **Layer**: `domain`
+- **Module**: `ws-spec-to-pr / ac_ledger + update_state finish`
+- **Severity**: `High`
+- **PathPattern**: `.agents/plans/*/ac-ledger.json, .agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs, .agents/skills/ws-spec-to-pr/scripts/update_state.cjs`
+- **Scenario / Context**: Running us-477 inline, three failures hit before green. (1) `finish --step 3 --created step-03-*.plan.exec.md --created step-03-*.exec.dag.json` failed: `.gitignore` ignores `step-03-*.plan.exec.md` / `*.exec.dag.json`, so `update_state` rejects them as phantom filesTouched. (2) After the Step 6 review-fix edited the product file, `validate_state --pre-advance 7` failed with `linked file hash changed` for every AC and `boundary "pre-step6" instead of "step5"`. Re-running `ac_ledger link` with the same `--event-id` is a no-op (`event-id already applied; skipping link payload`), so the stale sha stayed. (3) The first `npm run test` failed at entry 1 because `bin/skill-integrity.json` was stale after the skill edit.
+- **DO NOT**: Finish a mutating step with gitignored `{plansDir}` artifacts as `filesTouched`; re-run `ac_ledger link` with the same `--event-id` after editing a linked file and expect the sha to refresh; run the suite before `npm run generate-integrity` when hashed skill content changed.
+- **INSTEAD DO**: Use `finish --noop "<reason>"` for a step whose only artifacts are gitignored runtime files (step-03 exec/dag, issue.json, .runtime). After any post-Step-5 product edit, re-link each AC with a fresh `--event-id` (e.g. `impl-ac1-r2`) pointing at the same `--file` ranges so the sha is recomputed, then `ac_ledger score --boundary step5` before `--pre-advance`. Regenerate integrity (`npm run generate-integrity`) before the verification run whenever `.agents/skills/**` changed.
+
 ### [2026-09-30] Spec-to-PR inline (Tier 3) state, finish and ledger traps
 - **Layer**: `infrastructure`
 - **Module**: `ws-spec-to-pr / update_state / ac_ledger`
