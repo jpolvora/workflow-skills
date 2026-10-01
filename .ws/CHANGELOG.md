@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-09-30 22:33] Agent: agent
+- **Prompt**: ws-monitor issue-proposal embeds a raw session id while claiming anonymized; workflow count wording contradicts the report
+- **Done**: Sanitized buildIssueProposal by construction (redacted/omitted session id, --session-id <redacted> placeholder, unit-labelled summary, truthful checklist); added test-ws-monitor-us478.js
+- **Result**: All ACs verified (score 10/10); npm run test 159/159; harness clean; bumped 0.5.31; PR develop->main opened
+
 ### [2026-09-30 21:33] Agent: agent
 - **Prompt**: us-476: ws-monitor stale-parent-row false positive during the normal child-close to parent-propagate window
 - **Done**: Time-bounded detectStaleParentRows with a child-terminal-age grace (default --stall-window), info propagation-pending inside grace while the run advances, warning beyond; finding carries both measured ages; snapshot threads grace + run-advance mtime; docs, FEATURES, test-ws-monitor-us476 registered

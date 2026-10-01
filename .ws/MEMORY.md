@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-10-01] version bump invalidates the packed tarball; `npm run tests` skips the re-pack
+- **Layer**: `devops`
+- **Module**: `workflow-skills package tests / bin/build-site.js --bump`
+- **Severity**: `High`
+- **PathPattern**: `package.json, test/package.json, test/test-subagent-dispatch.js, test/test-install.js`
+- **Scenario / Context**: After `npm run build-site:bump` (0.5.30 -> 0.5.31), `npm run tests` (`node test/run-tests.cjs`) failed at `test/test-subagent-dispatch.js` because the install fixtures still referenced the previously packed `workflow-skills-0.5.30.tgz` while `package.json`/`test/package.json` already pointed at 0.5.31. `npm test` passes because its `pretests` script runs `npm pack` first and refreshes the tarball.
+- **DO NOT**: Run `npm run tests` as the ship/quality gate right after a version bump (or any change while the pack is stale); treat the resulting install-fixture failure as a product regression.
+- **INSTEAD DO**: Use `npm test` (which runs `pretests: npm pack`) after a bump, or run `npm pack` manually before `npm run tests`; the tarball ref in `test/package.json` must match `package.json` version.
+
 ### [2026-10-01] Inline G2 review-fix invalidates ac-ledger file hashes; gitignored step-03 finish needs --noop
 - **Layer**: `domain`
 - **Module**: `ws-spec-to-pr / ac_ledger + update_state finish`
