@@ -201,7 +201,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] ws-spec-multi stores run state in a skill-named shared directory instead of a per-run directory (`spec: completed/0148-us-448.spec.md`) — `75e8f6b7` on develop
 - [x] add a simple skill to show version and directory of the skill file (`spec: completed/0149-us-455.spec.md`) - [PR #456](https://github.com/jpolvora/workflow-skills/pull/456) MERGED (`0e1039ff` implementation)
 - [x] Resolve missing local skills from the global install; do not junction them into the repo (`spec: completed/0150-us-457.spec.md`) — `27637568` on develop
-- [ ] autoMode should mean unattended: no yield at internal checkpoints (`spec: pending/0151-us-458.spec.md`)
+- [x] autoMode should mean unattended: no yield at internal checkpoints (`spec: completed/0151-us-458.spec.md`)
 - [x] ws-kanvas board: add phase color coding and replace hardcoded grey/transparent styling (`spec: completed/0152-us-459.spec.md`)
 - [x] kanvas modal option to show full spec content in .md rendered (`spec: completed/0153-us-461.spec.md`)
 - [x] Dispatch prompt audit trail (`spec: completed/0154-dispatch-prompt-audit-trail.spec.md`) — `c7ba4cd5` delivery commit
@@ -546,7 +546,7 @@ All Next-specs closed.
 
 | 155 | `us-457` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Resolve missing local skills from the global install; do not junction them into the repo |
 
-| 156 | `us-458` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | autoMode should mean unattended: no yield at internal checkpoints |
+| 156 | `us-458` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | autoMode should mean unattended: no yield at internal checkpoints |
 
 | 157 | `us-459` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-kanvas board: add phase color coding and replace hardcoded grey/transparent styling |
 
@@ -757,6 +757,7 @@ All Next-specs closed.
 | 2026-10-01 | `us-476` | ws-monitor: stale-parent-row warns during the normal child-close to parent-propagate window | https://github.com/jpolvora/workflow-skills/pull/484 |
 | 2026-10-01 | `us-478` | ws-monitor: issue-proposal body embeds a host session id while claiming anonymized; workflow count wording contradicts the report | 03fd6e7fc1b2c19759814da4067fc6a1519fd4b5 |
 | 2026-10-01 | `us-469` | ws-doctor: path-error section reports widespread false positives (citation base, link text, prose) | 994f47fff58b735eae61d8cf44a0df3ffa86f5e5 |
+| 2026-10-01 | `us-458` | autoMode should mean unattended: no yield at internal checkpoints | 8b449b9d |
 
 ## 11. Maintenance checklist
 
