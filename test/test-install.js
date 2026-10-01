@@ -2941,8 +2941,8 @@ child.on('close', async (code) => {
     );
     upsertGeminiSkillsJsonEntry(regexHome);
     const afterRegexUpsert = readGeminiSkillsJson(regexJsonPath);
-    if (!afterRegexUpsert.entries[0].include_only.includes('^ws-.*')) {
-      fail('V3 seeded ws-* entry was not migrated to ^ws-.*');
+    if (JSON.stringify(afterRegexUpsert.entries[0].include_only) !== JSON.stringify(['^ws-.*'])) {
+      fail(`V3 seeded ws-* entry was not migrated to ["^ws-.*"]: ${JSON.stringify(afterRegexUpsert.entries[0].include_only)}`);
     }
     const regexRemove = removeGeminiSkillsJsonEntry(regexHome);
     if (!regexRemove.removed) fail('V3 remove did not remove the owned entry');

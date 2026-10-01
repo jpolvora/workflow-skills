@@ -601,7 +601,7 @@ function projectSkillsToSecondaryTargets(skillNames, secondaryTargets) {
         }
         const cleaned = cleanupLegacyGeminiSkills(homeDir);
         if (cleaned > 0) {
-          console.log(`    Cleaned up ${cleaned} legacy skill junction(s)/folder(s) from ~/.gemini/config/skills.`);
+          console.log(`    Cleaned up ${cleaned} legacy skill link(s) from ~/.gemini/config/skills.`);
         }
       } catch (err) {
         if (target.bestEffort === true) {

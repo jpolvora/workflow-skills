@@ -28,6 +28,8 @@ function readHubLayout() {
 export const HUB_LAYOUT = readHubLayout();
 export const HUB_LAYOUT_MANIFEST = 'runtime/hub-layout.json';
 
+const OWNED_GEMINI_PATTERNS = ['^ws-.*', 'ws-*'];
+
 const HUB_LAYOUT_CATEGORIES = [
   'runtime',
   'templates',
@@ -741,6 +743,7 @@ export function upsertGeminiSkillsJsonEntry(
   if (existingIndex >= 0) {
     const existing = data.entries[existingIndex];
     if (Array.isArray(existing.include_only)) {
+      existing.include_only = existing.include_only.filter((p) => !OWNED_GEMINI_PATTERNS.includes(p));
       for (const pat of targetPattern) {
         if (!existing.include_only.includes(pat)) {
           existing.include_only.push(pat);
@@ -788,9 +791,8 @@ export function removeGeminiSkillsJsonEntry(homeDir = getHomeDir(), targetPath =
   data.entries = data.entries.flatMap((e) => {
     if (!isMatch(e)) return [e];
     if (!Array.isArray(e.include_only)) return [e];
-    const ownedPatterns = ['^ws-.*', 'ws-*'];
-    if (!e.include_only.some((p) => ownedPatterns.includes(p))) return [e];
-    const kept = e.include_only.filter((p) => !ownedPatterns.includes(p));
+    if (!e.include_only.some((p) => OWNED_GEMINI_PATTERNS.includes(p))) return [e];
+    const kept = e.include_only.filter((p) => !OWNED_GEMINI_PATTERNS.includes(p));
     if (kept.length === 0) return [];
     return [{ ...e, include_only: kept }];
   });
