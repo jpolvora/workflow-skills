@@ -33,6 +33,7 @@ import {
   detectExistingSecondaryTargets,
   computeTargetPreselectIds,
   projectSkillToTarget,
+  shouldProjectGeminiAsCopy,
   getGeminiSkillsJsonPath,
   readGeminiSkillsJson,
   upsertGeminiSkillsJsonEntry,
@@ -586,7 +587,18 @@ function projectSkillsToSecondaryTargets(skillNames, secondaryTargets) {
         const entryPath = path.resolve(globalDir) === path.resolve(defaultDir)
           ? '~/.agents/skills'
           : globalDir;
-        upsertGeminiSkillsJsonEntry(homeDir, { path: entryPath, include_only: ['ws-*'] });
+        upsertGeminiSkillsJsonEntry(homeDir, { path: entryPath, include_only: ['^ws-.*'] });
+        if (shouldProjectGeminiAsCopy()) {
+          const skillsDir = path.join(homeDir, '.gemini', 'config', 'skills');
+          for (const skillName of skillNames) {
+            const srcSkill = path.join(targetSkillsDir, skillName);
+            if (!fs.existsSync(srcSkill)) continue;
+            projectSkillToTarget(srcSkill, path.join(skillsDir, skillName), {
+              symlink: false,
+              copyFn: (s, d) => syncManagedSkillDir(s, d),
+            });
+          }
+        }
         const cleaned = cleanupLegacyGeminiSkills(homeDir);
         if (cleaned > 0) {
           console.log(`    Cleaned up ${cleaned} legacy skill junction(s)/folder(s) from ~/.gemini/config/skills.`);
@@ -644,7 +656,11 @@ function projectSkillsToSecondaryTargets(skillNames, secondaryTargets) {
  * Removes uninstalled skills from secondary global targets (symlink or copy).
  * Only removes exact `<target>/<skillName>` entries; never touches the canonical tree.
  */
-function removeSkillsFromSecondaryTargets(skillNames, secondaryTargets) {
+function removeSkillsFromSecondaryTargets(
+  skillNames,
+  secondaryTargets,
+  { geminiKeepEntry = false, geminiIncludePhysical = false } = {}
+) {
   if (!Array.isArray(skillNames) || skillNames.length === 0) return 0;
   if (!Array.isArray(secondaryTargets) || secondaryTargets.length === 0) return 0;
   let removedCount = 0;
@@ -658,11 +674,13 @@ function removeSkillsFromSecondaryTargets(skillNames, secondaryTargets) {
         const entryPath = path.resolve(globalDir) === path.resolve(defaultDir)
           ? '~/.agents/skills'
           : globalDir;
-        const res = removeGeminiSkillsJsonEntry(homeDir, entryPath);
-        if (res.removed) {
-          removedCount++;
+        if (!geminiKeepEntry) {
+          const res = removeGeminiSkillsJsonEntry(homeDir, entryPath);
+          if (res.removed) {
+            removedCount++;
+          }
         }
-        removedCount += cleanupLegacyGeminiSkills(homeDir);
+        removedCount += cleanupLegacyGeminiSkills(homeDir, { includePhysical: geminiIncludePhysical });
       } catch (err) {
         console.log(`    Note: Could not remove gemini skills.json entry: ${err.message}`);
       }
@@ -2579,28 +2597,14 @@ async function runUninstall(_upstreamSkills, argv) {
     const recordedTargets = manifestForTargets?.globalTargets || [];
     if (recordedTargets.length > 0) {
       const remainingWsSkills = keep.filter((s) => s.startsWith('ws-'));
-      // Only remove gemini skills.json entry if no ws-* skills remain installed globally
-      const targetsToRemoveFrom = remainingWsSkills.length === 0
-        ? recordedTargets
-        : recordedTargets.filter((t) => t.id !== 'gemini');
-      const secondaryRemoved = removeSkillsFromSecondaryTargets(remove, targetsToRemoveFrom);
+      // Partial uninstall keeps the gemini skills.json entry and physical copies
+      // while still sweeping stale ws-* links; full uninstall removes the owned
+      // entry plus physical ws-* copies.
+      const secondaryRemoved = removeSkillsFromSecondaryTargets(remove, recordedTargets, {
+        geminiKeepEntry: remainingWsSkills.length > 0,
+        geminiIncludePhysical: remainingWsSkills.length === 0,
+      });
       console.log(`  Removed ${secondaryRemoved} secondary projection(s) from ${recordedTargets.length} recorded global target(s).`);
-      // Partial uninstall keeps the gemini skills.json entry, but legacy ws-*
-      // junctions under ~/.gemini/config/skills/ must still be swept to avoid
-      // duplicate discovery alongside the declarative entry.
-      if (remainingWsSkills.length > 0) {
-        let legacySwept = 0;
-        for (const t of recordedTargets) {
-          if (t && t.id === 'gemini') {
-            try {
-              legacySwept += cleanupLegacyGeminiSkills(resolveTargetHomeDir(t));
-            } catch {}
-          }
-        }
-        if (legacySwept > 0) {
-          console.log(`  Swept ${legacySwept} legacy Gemini ws-* junction(s) while preserving skills.json entry.`);
-        }
-      }
     }
   }
 

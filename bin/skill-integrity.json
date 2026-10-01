@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "748b140b0f3c190a90a5364b437784b60aab706d5f5e42cc1831efbb440dd331",
+  "fullPackageDigest": "0267b39c05c19cc5ad2a4a85f6de39cd77f1e4f45da90cf02649548dbf47a459",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -75,18 +75,18 @@
       "bin/build-site.js": "0bcfcb9b0713ba0469d9f23a670709e509aa4c3c3e863901f42aaf39b39c2b2e",
       "bin/build-wiki-site.js": "e8263272e9985e70ba776036ac09fc85f4c6acfd13c4d62f7f9860c475cc5e5a",
       "bin/canonical-version.js": "32b6cb957f5380393b751af92df57ea38e3d6019341f4f6d1f3670008a7fff3d",
-      "bin/cli.js": "48fe05698d0820fa43df569c43f90a10eb073c4cf12d9b77268a7bb939b88bac",
+      "bin/cli.js": "85ac2f9aef249e51173a0d3477f8b973a81b61b04f36c6c17f79bee580e5ce50",
       "bin/consumer-migration.js": "0e362e974e8c8fadb2246ece236b101eed27ea25384bb9ced830f85fea61646f",
       "bin/generate-skill-evals.js": "d47a03bcc93fa4260ab1596ef056fd8ca1211fc08429f3538fee89dcbaf608b5",
       "bin/generate-skill-integrity.js": "027677a2c4e1302e6d8abbab7450e5c59e6d6d71dc10bfa8417b00b820d72334",
       "bin/generate-telemetry-aggregate.cjs": "57fa865c30651ae60e90c37f1f10a29665508f0de3080252a84627b7740d3f8e",
-      "bin/install-rules.js": "a1f0eb407331f2928c4a3245d588e38dfb5def3ed7b72723f96562a99c949968",
+      "bin/install-rules.js": "ff85402b221aaeeae5aafcc605281b0ab7e01bc4933fa5dd29646cf025408e2c",
       "bin/review-dry-run.cjs": "d10349894105ef8381479d96e492f6531c6d4475620bd7fad73980aef86509ab",
       "bin/skill-dependencies.json": "0c3a01cf15850991df90d35c2c4709cb5ae4ed718b99b4248eaab0cf08b3d63c",
       "bin/skill-integrity-lib.js": "4475fdf7152bf4d8b0fdb64dbe18514d070ff29b264f79e6f5daf1ef0eda5152",
       "bin/validate-evals.cjs": "f95d4ccdc70335fa1c5857bd56a9367daf16ba6404f9dac5117bd51a1251a15e"
     },
-    "packageDigest": "28e3a195c50f94464777e10dba884f5a97da7d55d49369ca4209cb498cceec19"
+    "packageDigest": "47a887a9923b0d26f93ac86cbf0cc32360753e9cff370d9d801120fde009811a"
   },
   "packageVersion": "0.5.33",
   "skills": {
