@@ -1649,6 +1649,14 @@ function actionableFindings(findings) {
   return (findings || []).filter((finding) => finding.severity === 'critical' || finding.severity === 'warning');
 }
 
+// us-478: a host session/transcript identifier must never reach the proposed
+// issue body. Replace every occurrence of the supplied id with a stable token.
+function redactSessionIdentifiers(text, sessionId) {
+  const id = String(sessionId || '').trim();
+  if (!id) return String(text || '');
+  return String(text).split(id).join('<redacted>');
+}
+
 // Build an enriched, anonymized defect-issue proposal for the configured SCM
 // provider. The observer only proposes; the skill runs the provider
 // `create-issue` intent when the flag or default watch profile is active.
@@ -1659,6 +1667,8 @@ function buildIssueProposal(context, workflows, findings, options) {
   const scmProvider = resolveScmProvider(context.config);
   const codes = [...new Set(actionable.map((finding) => finding.code))].sort();
   const slugs = [...new Set(workflows.map((workflow) => workflow.slug).filter(Boolean))];
+  const suppliedSessionId = String(options.sessionId || '').trim();
+  const sessionSupplied = suppliedSessionId.length > 0;
   const projectName = String((context.config && context.config.project && context.config.project.name) || 'consumer project');
   const title = codes.length === 1
     ? `Workflow defect [${codes[0]}] detected by ws-monitor`
@@ -1675,14 +1685,14 @@ function buildIssueProposal(context, workflows, findings, options) {
     '',
     `- Generated: ${new Date().toISOString()}`,
     `- Project: ${projectName}`,
-    `- Session id: ${options.sessionId || 'not supplied'}`,
+    ...(sessionSupplied ? ['- Session id: <redacted>'] : []),
     `- Agent: ${options.agent || 'not supplied'}`,
     `- SCM provider: ${scmProvider || 'unresolved (set providers.scm in config)'}`,
-    `- Command: node {skillsRoot}/ws-monitor/scripts/monitor_snapshot.cjs ${options.slug ? `--slug ${options.slug} ` : ''}--watch --interval 60 --until-terminal --follow-transcript${options.sessionId ? ` --session-id ${options.sessionId}` : ''}${options.agent ? ` --agent ${options.agent}` : ''} --open-issue`,
+    `- Command: node {skillsRoot}/ws-monitor/scripts/monitor_snapshot.cjs ${options.slug ? `--slug ${options.slug} ` : ''}--watch --interval 60 --until-terminal --follow-transcript${sessionSupplied ? ' --session-id <redacted>' : ''}${options.agent ? ` --agent ${options.agent}` : ''} --open-issue`,
     '',
     '## Summary',
     '',
-    `${actionable.length} actionable finding(s) across ${slugs.length || 0} workflow(s).`,
+    `${actionable.length} actionable finding(s) across ${workflows.length} run(s) (${slugs.length} distinct slug(s)).`,
     '',
     `Codes: ${codes.join(', ')}`,
     '',
@@ -1716,13 +1726,14 @@ function buildIssueProposal(context, workflows, findings, options) {
     '## Scope checklist',
     '',
     '- [ ] Observer did not modify product code or workflow state',
-    '- [ ] Body anonymized (no consumer secrets, customer data, or absolute machine paths)',
-    '',
   );
+  const redactedBody = redactSessionIdentifiers(lines.join('\n'), suppliedSessionId);
+  const bodyHasSessionId = sessionSupplied && redactedBody.includes(suppliedSessionId);
+  const body = `${redactedBody}\n- [${bodyHasSessionId ? ' ' : 'x'}] Body anonymized (no consumer secrets, customer data, or absolute machine paths)\n`;
   return {
     provider: scmProvider,
     title,
-    body: lines.join('\n'),
+    body,
     codes,
     slugs,
     dryRun: Boolean(options.dryRun),
