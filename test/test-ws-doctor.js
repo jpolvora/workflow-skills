@@ -908,6 +908,197 @@ function testGlobalHybridUsesGlobalRuntimeSource() {
   );
 }
 
+function testRootRelativeCitationResolvesAtProjectRoot() {
+  console.log('\n--- testRootRelativeCitationResolvesAtProjectRoot ---');
+  const root = mkTmp('ws-doctor-root-rel-');
+  const { skillsRoot, sharedDir, doctorScript } = setupTmpDoctorProject(root);
+  fs.writeFileSync(
+    path.join(sharedDir, 'config.json'),
+    `${JSON.stringify({ project: { name: 'fixture', baseBranch: 'main' } }, null, 2)}\n`,
+    'utf8',
+  );
+  const fixtureDir = path.join(skillsRoot, 'ws-fixture');
+  fs.mkdirSync(fixtureDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(fixtureDir, 'SKILL.md'),
+    '# ws-fixture\n\nConfig: `.ws/config.json` and `.ws/STACK.md`.\n',
+    'utf8',
+  );
+  fs.writeFileSync(path.join(sharedDir, 'STACK.md'), '# Stack\n', 'utf8');
+
+  const { ok: exitedOk, report, error } = runDoctorJson(['--skill', 'ws-fixture'], {
+    cwd: root,
+    doctor: doctorScript,
+  });
+  assert(exitedOk, `root-relative fixture exits 0: ${error || ''}`);
+  if (!report) return;
+  const pe = report.sections.pathErrors || [];
+  assert(
+    !citedMatches(pe, /\.ws\/config\.json/) && !citedMatches(pe, /\.ws\/STACK\.md/),
+    'AC1/AC7: repo-root-relative .ws citations are not reported when present at the project root',
+  );
+}
+
+function testMarkdownLinkUsesHrefNotDisplayText() {
+  console.log('\n--- testMarkdownLinkUsesHrefNotDisplayText ---');
+  const root = mkTmp('ws-doctor-link-href-');
+  const { skillsRoot, doctorScript } = setupTmpDoctorProject(root);
+  const fixtureDir = path.join(skillsRoot, 'ws-fixture');
+  fs.mkdirSync(fixtureDir, { recursive: true });
+  fs.writeFileSync(path.join(fixtureDir, 'target.md'), '# Target\n', 'utf8');
+  fs.writeFileSync(
+    path.join(fixtureDir, 'SKILL.md'),
+    '# ws-fixture\n\nSee [' + '`.ws/nope.md`' + '](target.md).\n',
+    'utf8',
+  );
+
+  const { ok: exitedOk, report, error } = runDoctorJson(['--skill', 'ws-fixture'], {
+    cwd: root,
+    doctor: doctorScript,
+  });
+  assert(exitedOk, `markdown href fixture exits 0: ${error || ''}`);
+  if (!report) return;
+  const pe = report.sections.pathErrors || [];
+  const mr = report.sections.missingReferences || [];
+  assert(
+    !citedMatches(pe, /\.ws\/nope\.md/) && !citedMatches(mr, /\.ws\/nope\.md/),
+    'AC2: backticked Markdown link display text is not scanned when the href is a path',
+  );
+}
+
+function testProseAndPlaceholdersSkipped() {
+  console.log('\n--- testProseAndPlaceholdersSkipped ---');
+  const root = mkTmp('ws-doctor-prose-');
+  const { skillsRoot, doctorScript } = setupTmpDoctorProject(root);
+  const fixtureDir = path.join(skillsRoot, 'ws-fixture');
+  fs.mkdirSync(fixtureDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(fixtureDir, 'SKILL.md'),
+    '# ws-fixture\n\nExamples: `2>/dev/null`, `~/x`, `{true/false}`, `path/to/feature.spec.md`, `IDE/agent`.\n',
+    'utf8',
+  );
+
+  const { ok: exitedOk, report, error } = runDoctorJson(['--skill', 'ws-fixture'], {
+    cwd: root,
+    doctor: doctorScript,
+  });
+  assert(exitedOk, `prose fixture exits 0: ${error || ''}`);
+  if (!report) return;
+  const pe = report.sections.pathErrors || [];
+  for (const pattern of [/2>\/dev\/null/, /~\/x/, /\{true\/false\}/, /path\/to\/feature\.spec\.md/, /IDE\/agent/]) {
+    assert(
+      !citedMatches(pe, pattern),
+      `AC3/NS3: prose/placeholder ${pattern} is not reported as a broken path`,
+    );
+  }
+}
+
+function testBraceFallbackToGlobalSkillsRoot() {
+  console.log('\n--- testBraceFallbackToGlobalSkillsRoot ---');
+  const root = mkTmp('ws-doctor-global-fallback-');
+  const globalRoot = mkTmp('ws-doctor-global-fallback-skills-');
+  const { skillsRoot, doctorScript } = setupTmpDoctorProject(root);
+  fs.mkdirSync(path.join(globalRoot, 'ws-external'), { recursive: true });
+  fs.writeFileSync(path.join(globalRoot, 'ws-external', 'SKILL.md'), '# external\n', 'utf8');
+  const fixtureDir = path.join(skillsRoot, 'ws-fixture');
+  fs.mkdirSync(fixtureDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(fixtureDir, 'SKILL.md'),
+    '# ws-fixture\n\nExternal: `{skillsRoot}/ws-external/SKILL.md`.\n',
+    'utf8',
+  );
+
+  const { ok: exitedOk, report, error } = runDoctorJson(['--skill', 'ws-fixture'], {
+    cwd: root,
+    doctor: doctorScript,
+    env: { WORKFLOW_SKILLS_GLOBAL_DIR: globalRoot },
+  });
+  assert(exitedOk, `global fallback fixture exits 0: ${error || ''}`);
+  if (!report) return;
+  const pe = report.sections.pathErrors || [];
+  const mr = report.sections.missingReferences || [];
+  assert(
+    !citedMatches(pe, /ws-external\/SKILL\.md/) && !citedMatches(mr, /ws-external\/SKILL\.md/),
+    'AC4: {skillsRoot} citation with a {globalSkillsRoot} copy is resolvable',
+  );
+}
+
+function testOwnDirectoryCitationExpandsOnce() {
+  console.log('\n--- testOwnDirectoryCitationExpandsOnce ---');
+  const root = mkTmp('ws-doctor-own-dir-');
+  const { sharedDir, doctorScript } = setupTmpDoctorProject(root);
+  fs.writeFileSync(path.join(sharedDir, 'AGENTS.md'), '# Hub\n\nConsumer root: `.ws/`.\n', 'utf8');
+
+  const { ok: exitedOk, report, error } = runDoctorJson([], { cwd: root, doctor: doctorScript });
+  assert(exitedOk, `own-dir fixture exits 0: ${error || ''}`);
+  if (!report) return;
+  const pe = report.sections.pathErrors || [];
+  assert(
+    !citedMatches(pe, /\.ws\/\.ws/),
+    'AC5: a hub file citing its own directory is not expanded one level too deep',
+  );
+}
+
+function testArchiveAndExampleTreesExcluded() {
+  console.log('\n--- testArchiveAndExampleTreesExcluded ---');
+  const root = mkTmp('ws-doctor-archive-');
+  const { skillsRoot, doctorScript } = setupTmpDoctorProject(root);
+  const fixtureDir = path.join(skillsRoot, 'ws-fixture');
+  fs.mkdirSync(path.join(fixtureDir, 'runs', 'pr-1'), { recursive: true });
+  fs.writeFileSync(
+    path.join(fixtureDir, 'runs', 'pr-1', 'plan-gate.md'),
+    '# Gate\n\nBroken: `.agents/skills/ws-archived-missing/SKILL.md`.\n',
+    'utf8',
+  );
+  fs.writeFileSync(
+    path.join(fixtureDir, 'examples.md'),
+    '# Examples\n\nBroken: `.agents/skills/ws-example-missing/SKILL.md`.\n',
+    'utf8',
+  );
+  fs.writeFileSync(path.join(fixtureDir, 'SKILL.md'), '# ws-fixture\n', 'utf8');
+
+  const { ok: exitedOk, report, error } = runDoctorJson(['--skill', 'ws-fixture'], {
+    cwd: root,
+    doctor: doctorScript,
+  });
+  assert(exitedOk, `archive fixture exits 0: ${error || ''}`);
+  if (!report) return;
+  const pe = report.sections.pathErrors || [];
+  assert(
+    !citedMatches(pe, /ws-archived-missing/) && !citedMatches(pe, /ws-example-missing/),
+    'AC6: archived runs/pr-* and examples.md are excluded from live citations',
+  );
+}
+
+function testBrokenRealPathStillReported() {
+  console.log('\n--- testBrokenRealPathStillReported ---');
+  const root = mkTmp('ws-doctor-broken-');
+  const { skillsRoot, doctorScript } = setupTmpDoctorProject(root);
+  const fixtureDir = path.join(skillsRoot, 'ws-fixture');
+  fs.mkdirSync(fixtureDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(fixtureDir, 'SKILL.md'),
+    '# ws-fixture\n\nMissing: `.agents/skills/ws-missing/SKILL.md` and `{skillsRoot}/ws-missing/scripts/nope.cjs`.\n',
+    'utf8',
+  );
+
+  const { ok: exitedOk, report, error } = runDoctorJson(['--skill', 'ws-fixture'], {
+    cwd: root,
+    doctor: doctorScript,
+  });
+  assert(exitedOk, `broken-real-path fixture exits 0: ${error || ''}`);
+  if (!report) return;
+  const pe = report.sections.pathErrors || [];
+  assert(
+    citedMatches(pe, /ws-missing\/SKILL\.md/),
+    'NS1: a genuinely missing repo-root .agents skill path is still reported',
+  );
+  assert(
+    citedMatches(pe, /ws-missing\/scripts\/nope\.cjs/),
+    'NS2: a genuinely missing token/script path is still reported',
+  );
+}
+
 function testWsDoctorSuiteExitZero() {
   console.log('\n--- testWsDoctorSuiteExitZero ---');
   ok('suite process will exit 0 when all prior tests pass (AC8)');
@@ -944,6 +1135,13 @@ function main() {
     testSkillFolderBacktickDocsFallsBackToProjectRoot();
     testGlobalSkillFolderDocsFileRelative();
     testGlobalSkillFolderDocsDoesNotUseProjectRoot();
+    testRootRelativeCitationResolvesAtProjectRoot();
+    testMarkdownLinkUsesHrefNotDisplayText();
+    testProseAndPlaceholdersSkipped();
+    testBraceFallbackToGlobalSkillsRoot();
+    testOwnDirectoryCitationExpandsOnce();
+    testArchiveAndExampleTreesExcluded();
+    testBrokenRealPathStillReported();
     testWsDoctorSuiteExitZero();
   } finally {
     cleanup();

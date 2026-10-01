@@ -472,16 +472,23 @@ function isCitingFromPublishedSkillFolder(sourceFile, projectRoot, tokenMap) {
   return false;
 }
 
-function resolveCitedPath(cited, sourceFile, projectRoot, tokenMap) {
+function resolveCitedPath(cited, sourceFile, projectRoot, tokenMap, opts = {}) {
   // Token-expanded citations are project-root relative; plain markdown links stay file-relative.
+  const mode = opts.mode === 'link' ? 'link' : 'prose';
+  const raw = cited.trim();
   const hadToken = /\{[A-Za-z0-9_-]+\}/.test(cited);
-  const expanded = expandTokens(cited.trim(), tokenMap);
+  const hadPwd = /^\$(?:\{)?PWD(?:\})?[\\/]/.test(raw);
+  const hadHome = /^\$(?:\{)?HOME(?:\})?[\\/]/.test(raw) || /^~[\\/]/.test(raw);
+  if (hadHome) {
+    return { kind: 'template', expanded: raw, braces: ['home'] };
+  }
+  const expanded = expandTokens(raw, tokenMap);
   const braces = remainingBraces(expanded);
   if (braces.length > 0) {
     return { kind: 'template', expanded, braces };
   }
 
-  let candidate = expanded.replace(/\\/g, '/');
+  let candidate = stripLinkFragment(expanded.replace(/\\/g, '/'));
   // Shell cwd / home prefixes → normalize
   candidate = candidate
     .replace(/^\$PWD\//, '')
@@ -501,6 +508,7 @@ function resolveCitedPath(cited, sourceFile, projectRoot, tokenMap) {
     return { kind: 'template', expanded: candidate, braces: ['$'] };
   }
 
+  const explicitRelative = candidate.startsWith('../') || candidate.startsWith('./');
   let abs;
   // Slash-command style (/ship-pr) — not a filesystem absolute path
   if (/^\/[A-Za-z0-9_-]+$/.test(candidate)) {
@@ -508,33 +516,40 @@ function resolveCitedPath(cited, sourceFile, projectRoot, tokenMap) {
   }
   if (path.isAbsolute(candidate) || WIN_DRIVE_RE.test(candidate)) {
     abs = path.resolve(candidate);
-  } else if (
-    candidate.startsWith('.agents/') ||
-    candidate.startsWith('AGENTS.md') ||
-    candidate.startsWith('README.md') ||
-    candidate.startsWith('bin/') ||
-    (candidate.startsWith('docs/') &&
-      !isCitingFromPublishedSkillFolder(sourceFile, projectRoot, tokenMap)) ||
-    candidate.startsWith('specs/') ||
-    candidate.startsWith('test/') ||
-    /^ws-[a-z0-9-]+(\/|$)/i.test(candidate)
-  ) {
-    if (/^ws-[a-z0-9-]+(\/|$)/i.test(candidate)) {
-      candidate = `${tokenMap.skillsRoot}/${candidate}`.replace(/\/+/g, '/');
-    }
+  } else if (/^ws-[a-z0-9-]+(\/|$)/i.test(candidate) && !candidate.startsWith('.agents/')) {
+    candidate = `${tokenMap.skillsRoot}/${candidate}`.replace(/\/+/g, '/');
+    abs = path.resolve(projectRoot, candidate);
+  } else if (hadPwd || isRootRelativeCandidate(candidate, sourceFile, projectRoot, tokenMap)) {
+    // AC1: repo-root-relative citations resolve against the project root.
     abs = path.resolve(projectRoot, candidate);
   } else if (hadToken) {
     abs = path.resolve(projectRoot, candidate);
-  } else {
-    // Relative to citing file (markdown companion links)
+  } else if (explicitRelative || mode === 'link') {
+    // Explicit relative links and Markdown hrefs stay citing-file-relative.
     abs = path.resolve(path.dirname(sourceFile), candidate);
+  } else {
+    // AC7: prose/backtick citation — project root first, then citing file.
+    const rootAbs = path.resolve(projectRoot, candidate);
+    abs = exists(rootAbs) ? rootAbs : path.resolve(path.dirname(sourceFile), candidate);
+  }
+
+  let existsResult = exists(abs);
+  // AC4: {skillsRoot} citations fall back to the {globalSkillsRoot} install.
+  const absMap = tokenMap._abs || {};
+  if (!existsResult && absMap.skillsRoot && absMap.globalSkillsRoot) {
+    const localRoot = path.resolve(absMap.skillsRoot);
+    const resolvedAbs = path.resolve(abs);
+    if (resolvedAbs === localRoot || resolvedAbs.startsWith(`${localRoot}${path.sep}`)) {
+      const globalAlt = path.join(path.resolve(absMap.globalSkillsRoot), path.relative(localRoot, resolvedAbs));
+      if (exists(globalAlt)) existsResult = true;
+    }
   }
 
   return {
     kind: 'path',
     expanded: toPosix(path.relative(projectRoot, abs) || candidate),
     abs,
-    exists: exists(abs),
+    exists: existsResult,
   };
 }
 
@@ -563,6 +578,8 @@ function normalizeSkillId(id) {
 
 function collectMarkdownFiles(skillDir) {
   const out = [];
+  const isArchive = (fullPosix) =>
+    /(^|\/)runs\/pr-\d+(\/|$)/.test(fullPosix) || /(^|\/)runs\/pr-\d+[^/]*$/.test(fullPosix);
   function walk(dir) {
     let entries;
     try {
@@ -573,8 +590,14 @@ function collectMarkdownFiles(skillDir) {
     for (const ent of entries) {
       if (ent.name === 'node_modules' || ent.name === '__pycache__' || ent.name === '.git') continue;
       const full = path.join(dir, ent.name);
+      const fullPosix = toPosix(full);
+      // AC6: archived run fixtures and example files are not live citations.
+      if (isArchive(fullPosix)) continue;
       if (ent.isDirectory()) walk(full);
-      else if (ent.isFile() && /\.(md|mdc)$/i.test(ent.name)) out.push(full);
+      else if (ent.isFile() && /\.(md|mdc)$/i.test(ent.name)) {
+        if (/^examples?\.md$/i.test(ent.name) || /-run-test\.md$/i.test(ent.name)) continue;
+        out.push(full);
+      }
     }
   }
   walk(skillDir);
@@ -608,9 +631,193 @@ function extractLinks(content) {
   let m;
   const re = new RegExp(MD_LINK_RE.source, 'g');
   while ((m = re.exec(content)) !== null) {
-    links.push({ text: m[1], target: m[2], index: m.index });
+    links.push({
+      text: m[1],
+      target: m[2],
+      index: m.index,
+      textStart: m.index + 1,
+      textEnd: m.index + 1 + m[1].length,
+    });
   }
   return links;
+}
+
+/**
+ * Ranges of fenced code blocks (``` / ~~~). Citations inside fences are code
+ * samples, not live references (AC3).
+ */
+function fencedRanges(content) {
+  const ranges = [];
+  const lines = String(content).split('\n');
+  let offset = 0;
+  let open = null;
+  for (const line of lines) {
+    const match = line.match(/^\s*(`{3,}|~{3,})/);
+    if (match) {
+      const marker = match[1];
+      if (!open) {
+        open = { char: marker[0], len: marker.length, start: offset };
+      } else if (marker[0] === open.char && marker.length >= open.len) {
+        ranges.push([open.start, offset + line.length]);
+        open = null;
+      }
+    }
+    offset += line.length + 1;
+  }
+  if (open) ranges.push([open.start, String(content).length]);
+  return ranges;
+}
+
+function inRange(index, ranges) {
+  return ranges.some(([start, end]) => index >= start && index < end);
+}
+
+/**
+ * Prose / example fragments that look path-like but are not filesystem
+ * citations: shell redirects, home paths, parenthesized fragments, brace
+ * alternatives, example placeholders, source `file:line` refs, web routes,
+ * and regex literals (AC3).
+ */
+function isProseOrPlaceholder(value) {
+  const t = String(value).trim();
+  if (!t) return true;
+  if (/^\d?>/.test(t)) return true; // >/dev/null, 2>/dev/null
+  if (t.includes('>/dev/null')) return true;
+  if (/^~[\\/]/.test(t)) return true; // ~/home path
+  if (/^\$(?:\{)?HOME(?:\})?[\\/]/.test(t)) return true; // $HOME/...
+  if (t.startsWith('(') && t.endsWith(')')) return true; // (relative/path)
+  if (/\{[^}]*[\/|.,][^}]*\}/.test(t)) return true; // {true/false}, {specMemo.cli}, {a|b}
+  if (/^path\/to\//i.test(t)) return true;
+  if (/^origin\//.test(t)) return true; // origin/{ref}
+  if (/^<[^>]+>$/.test(t)) return true;
+  if (/\.[A-Za-z0-9]+:\d+/.test(t)) return true; // src/auth.ts:42
+  if (/^\/[A-Za-z0-9_.-]+(\/|$)/.test(t)) return true; // /api/..., /route
+  if (/^\/[^\s/]*[\\^$*+?()[\]{}|][^\s/]*\/?$/.test(t)) return true; // /regex/ literal
+  return false;
+}
+
+const ROOT_RELATIVE_DIR_PREFIXES = [
+  '.agents/',
+  '.ws/',
+  '.github/',
+  '.git/',
+  '.opencode/',
+  '.cursor/',
+  '.vscode/',
+  '.assets/',
+  '.system_generated/',
+  '.well-known/',
+  '.aws/',
+  'bin/',
+  'specs/',
+  'test/',
+];
+
+const ROOT_RELATIVE_FILES = [
+  'AGENTS.md',
+  'README.md',
+  'CATALOG.md',
+  'FEATURES.md',
+  'CHANGELOG.md',
+  'MEMORY.md',
+  'CONTRIBUTING.md',
+  'LICENSE',
+  'install-skills.sh',
+];
+
+function isRootRelativeCandidate(candidate, sourceFile, projectRoot, tokenMap) {
+  if (ROOT_RELATIVE_FILES.includes(candidate)) return true;
+  if (ROOT_RELATIVE_DIR_PREFIXES.some((prefix) => candidate.startsWith(prefix))) return true;
+  if (candidate === '.ws' || candidate === '.agents') return true;
+  if (
+    candidate.startsWith('docs/') &&
+    !isCitingFromPublishedSkillFolder(sourceFile, projectRoot, tokenMap)
+  ) {
+    return true;
+  }
+  return false;
+}
+
+/** Strip a Markdown link fragment/query before the existence check (AC2). */
+function stripLinkFragment(value) {
+  return String(value).replace(/[?#].*$/, '');
+}
+
+/**
+ * AC3 prose gate for backtick/prose citations: install references are token
+ * citations, explicit relative paths, `ws-*` skill refs, or repo-root layout
+ * paths. A bare relative path in prose (`identity/foo.md`, `src/x.ts`) is not
+ * an install path and is not reported.
+ */
+function isInstallCitation(raw) {
+  const t = String(raw).trim();
+  if (!t) return false;
+  if (/\{[A-Za-z0-9_-]+\}/.test(t)) return true;
+  if (/^(\.\/|\.\.\/)/.test(t)) return true;
+  if (/^ws-[a-z0-9-]+(\/|$)/i.test(t)) return true;
+  if (t.startsWith('docs/')) return true;
+  if (ROOT_RELATIVE_FILES.includes(t) || t === '.agents' || t === '.ws') return true;
+  if (ROOT_RELATIVE_DIR_PREFIXES.some((prefix) => t.startsWith(prefix))) return true;
+  if (WIN_DRIVE_RE.test(t)) return true;
+  return false;
+}
+
+const SKIP_SKILL_IDS = new Set(['shared', 'ws-project-patterns', 'ws-memo', 'ws-session-tracking']);
+
+/** Run-artifact, optional-hub, optional-host, and generated paths are advisory. */
+function isAdvisoryMissing(expanded, raw) {
+  const rel = toPosix(expanded);
+  // Run / review artifacts are transient, not install paths.
+  if (/^\.agents\/(plans|codereviews)\//.test(rel)) return true;
+  if (/^\{(plansDir|reviewsDir|specsDir|us-dir)\}/.test(String(raw).trim())) return true;
+  // Virtual/optional hub content that the hub never materializes.
+  if (/^\.ws\/(runtime|templates)(\/|$)/.test(rel)) return true;
+  if (/(^|\/)(host-capabilities|skill-dependencies)\.json$/.test(rel)) return true;
+  if (/^\.ws\/(installed-skills|skill-integrity-local)\.json$/.test(rel)) return true;
+  if (/(^|\/)ws-project-patterns(\/|$)/.test(rel)) return true;
+  if (rel === '.ws/runtime' || rel === '.ws/templates') return true;
+  // Legacy optional hub files documented as fallbacks.
+  if (/^\.agents\/skills\/ws-shared\/(MEMORY\.md|CHANGELOG\.md|memory)(\/|$)/.test(rel)) return true;
+  // Host-private / optional consumer dirs.
+  if (/^\.(cursor|opencode|system_generated|aws|vscode|assets|config)\//.test(rel)) return true;
+  if (['.assets', '.cursor', '.opencode', '.system_generated', '.aws'].includes(rel)) return true;
+  if (rel.startsWith('.agents/transcripts/') || rel === '.agents/transcripts') return true;
+  if (rel.startsWith('.agents/scripts/') || rel === '.agents/scripts') return true;
+  if (/^\.agents\/dev-harness(\/|$)/.test(rel)) return true;
+  if (rel === 'specs/AGENTS.md') return true;
+  // `../ws-shared/` prose shorthand for the shared hub.
+  if (/^\.\.\/ws-shared(\/|$)/.test(String(raw).trim())) return true;
+  // A skill dir that does not exist (example/generated/external ids).
+  const skill = rel.match(/^\.agents\/skills\/([^/]+)/);
+  if (skill) {
+    const id = skill[1];
+    if (SKIP_SKILL_IDS.has(id)) return true;
+    if (!/^ws-/.test(id)) return true;
+    // A skill has no own config.json; it is always a prose/legacy reference.
+    if (/^\.agents\/skills\/[^/]+\/config\.json$/.test(rel)) return true;
+  }
+  return false;
+}
+
+/**
+ * Whether an unresolved citation belongs in Path errors (AC1–AC7). Markdown
+ * hrefs are intentional links; prose citations must be install references.
+ */
+function shouldReportMissing({ cited, resolved, sourceFile, projectRoot, tokenMap, mode }) {
+  const raw = String(cited).trim();
+  if (isAdvisoryMissing(resolved.expanded, raw)) return false;
+  if (mode === 'link') return true;
+  // Skill-folder prose `docs/...` citations describe the audited project, not
+  // skill companions (markdown links stay strict file-relative).
+  if (raw.startsWith('docs/') && isCitingFromPublishedSkillFolder(sourceFile, projectRoot, tokenMap)) {
+    return false;
+  }
+  // External skill relative shorthand (`../ws-<id>/SKILL.md`) documents a fallback.
+  const extRel = raw.match(/^\.\.\/(ws-[a-z0-9-]+)\/(.+)$/i);
+  if (extRel && tokenMap._abs && exists(path.join(tokenMap._abs.skillsRoot, extRel[1], extRel[2]))) {
+    return false;
+  }
+  return isInstallCitation(raw);
 }
 
 function extractBackticks(content) {
@@ -735,13 +942,17 @@ function scanPathAndRefs(files, projectRoot, tokenMap, skillId) {
       continue;
     }
     const sourceRel = toPosix(path.relative(projectRoot, fileAbs));
+    const fences = fencedRanges(content);
+    const links = extractLinks(content);
 
     // Markdown links
-    for (const link of extractLinks(content)) {
+    for (const link of links) {
+      if (inRange(link.index, fences)) continue;
       const target = link.target.trim();
       if (isUrlOrAnchor(target)) continue;
       if (isTrivialCitation(target) || target.startsWith('-')) continue;
       if (isTemplateOrGlobPath(target)) continue;
+      if (isProseOrPlaceholder(target)) continue;
       if (/^\/[A-Za-z0-9_-]+$/.test(target)) continue; // /ws-tdah invoke names
       if (!looksLikeLinkTarget(target) && !/\{[A-Za-z0-9_-]+\}/.test(target)) continue;
 
@@ -750,7 +961,7 @@ function scanPathAndRefs(files, projectRoot, tokenMap, skillId) {
         linkTarget = `${tokenMap.skillsRoot}/${linkTarget}`.replace(/\/+/g, '/');
       }
 
-      const resolved = resolveCitedPath(linkTarget, fileAbs, projectRoot, tokenMap);
+      const resolved = resolveCitedPath(linkTarget, fileAbs, projectRoot, tokenMap, { mode: 'link' });
       if (resolved.kind === 'template') continue;
       if (isTemplateOrGlobPath(resolved.expanded)) continue;
 
@@ -761,6 +972,9 @@ function scanPathAndRefs(files, projectRoot, tokenMap, skillId) {
           cited: target,
           expanded: resolved.expanded,
         };
+        if (!shouldReportMissing({ cited: target, resolved, sourceFile: fileAbs, projectRoot, tokenMap, mode: 'link' })) {
+          continue;
+        }
         pathErrors.push(entry);
         // Companion-style refs (md/scripts) also go to missing references
         if (
@@ -775,7 +989,15 @@ function scanPathAndRefs(files, projectRoot, tokenMap, skillId) {
     // Brace / backtick path recipes
     for (const bt of extractBackticks(content)) {
       const val = bt.value;
+      if (inRange(bt.index, fences)) continue;
+      // AC2: backticked display text inside a Markdown link is prose when the
+      // href is itself a path reference (the href pass validates it instead).
+      const enclosingLink = links.find(
+        (link) => bt.index >= link.textStart && bt.index < link.textEnd,
+      );
+      if (enclosingLink && looksLikeLinkTarget(enclosingLink.target)) continue;
       if (isTrivialCitation(val)) continue;
+      if (isProseOrPlaceholder(val)) continue;
       if (!looksLikeBacktickPath(val) && !/\{[A-Za-z0-9_-]+\}/.test(val)) continue;
       if (isTemplateOrGlobPath(val)) continue;
 
@@ -804,8 +1026,17 @@ function scanPathAndRefs(files, projectRoot, tokenMap, skillId) {
           !isTemplateOrGlobPath(pathOnly) &&
           (SCRIPT_EXT_RE.test(pathOnly) || /\{skillsRoot\}/.test(pathOnly))
         ) {
-          const resolved = resolveCitedPath(pathOnly, fileAbs, projectRoot, tokenMap);
+          const resolved = resolveCitedPath(pathOnly, fileAbs, projectRoot, tokenMap, { mode: 'prose' });
           if (resolved.kind === 'path' && !resolved.exists) {
+            const reportable = shouldReportMissing({
+              cited: pathOnly,
+              resolved,
+              sourceFile: fileAbs,
+              projectRoot,
+              tokenMap,
+              mode: 'prose',
+            });
+            if (!reportable) continue;
             missingScripts.push({
               skillId,
               source: sourceRel,
@@ -841,6 +1072,7 @@ function scanPathAndRefs(files, projectRoot, tokenMap, skillId) {
         if (isTrivialCitation(pathCandidate)) continue;
         if (isUrlOrAnchor(pathCandidate)) continue;
         if (isTemplateOrGlobPath(pathCandidate)) continue;
+        if (isProseOrPlaceholder(pathCandidate)) continue;
         // Slash-command style (/ws-tdah) — not a filesystem path
         if (/^\/[A-Za-z0-9_-]+$/.test(pathCandidate)) continue;
         // Skill-relative companion cited from hub: ws-foo/FILE.md → skillsRoot
@@ -848,21 +1080,19 @@ function scanPathAndRefs(files, projectRoot, tokenMap, skillId) {
           pathCandidate = `${tokenMap.skillsRoot}/${pathCandidate}`.replace(/\/+/g, '/');
         }
 
-        const resolved = resolveCitedPath(pathCandidate, fileAbs, projectRoot, tokenMap);
+        const resolved = resolveCitedPath(pathCandidate, fileAbs, projectRoot, tokenMap, { mode: 'prose' });
         if (resolved.kind === 'template') continue;
         if (isTemplateOrGlobPath(resolved.expanded)) continue;
         if (resolved.kind === 'path' && !resolved.exists) {
-          // Skill-folder prose (backtick) citations of docs/... often describe
-          // the audited project's docs layout, not skill companions. Accept a
-          // project-root match before reporting a missing path (markdown links
-          // keep strict file-relative resolution).
-          if (
-            pathCandidate.startsWith('docs/') &&
-            isCitingFromPublishedSkillFolder(fileAbs, projectRoot, tokenMap) &&
-            exists(path.resolve(projectRoot, pathCandidate))
-          ) {
-            continue;
-          }
+          const reportable = shouldReportMissing({
+            cited: pathCandidate,
+            resolved,
+            sourceFile: fileAbs,
+            projectRoot,
+            tokenMap,
+            mode: 'prose',
+          });
+          if (!reportable) continue;
           pathErrors.push({
             skillId,
             source: sourceRel,
