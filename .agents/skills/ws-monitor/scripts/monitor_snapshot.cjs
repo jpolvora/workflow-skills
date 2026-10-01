@@ -1970,11 +1970,12 @@ function snapshot(options) {
         const stateIdleMs = stateTelemetryMtimeMs === null ? Infinity : snapshotNow - stateTelemetryMtimeMs;
         const advancing = stateIdleMs <= stallWindowMs;
         if (advancing || source.weak || sessionStale) {
+          const reason = sessionStale ? 'stale' : (source.weak ? 'not-driver' : 'state/telemetry-advancing');
           addFinding(
             workflow.findings,
             'info',
             'worker-session-stall',
-            `session correlation ${sessionStale ? 'stale' : source.weak ? 'not-driver' : 'not-driver'}; state/telemetry advancing, not a stall (stopwatch ${stopwatchLabel})`,
+            `session correlation ${reason}; not a stall (stopwatch ${stopwatchLabel})`,
             [workflow.statePath],
           );
         } else {
