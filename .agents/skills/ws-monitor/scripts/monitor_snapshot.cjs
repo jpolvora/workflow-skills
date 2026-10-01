@@ -854,14 +854,33 @@ function isNewerRun(workflow, other) {
   return String(other.workflowId) > String(workflow.workflowId);
 }
 
-function detectStaleParentRows(workflow, allWorkflows) {
+// us-476: human-readable age for stale-parent-row evidence. Unknown or negative
+// inputs are reported honestly rather than hidden.
+function formatAgeMs(ms) {
+  if (!Number.isFinite(ms) || ms < 0) return 'unknown';
+  if (ms < 60000) return `${Math.round(ms / 1000)}s`;
+  if (ms < 3600000) return `${Math.round(ms / 60000)}m`;
+  return `${Math.round(ms / 3600000)}h`;
+}
+
+function detectStaleParentRows(workflow, allWorkflows, options = {}) {
   const findings = [];
   const items = workflow.multiSpec?.items || [];
   const inProgress = items.filter((item) => item.status === 'in_progress' && item.slug);
   if (inProgress.length === 0) return findings;
+  const nowMs = Number.isFinite(options.nowMs) ? Number(options.nowMs) : Date.now();
+  // us-476 AC6: the propagation grace defaults to the configured stall window
+  // (already `--stall-window`-overridable) and stays overridable per call.
+  const graceMs = Number.isFinite(options.graceMs) && Number(options.graceMs) > 0
+    ? Number(options.graceMs)
+    : TRANSCRIPT_LIMITS.stallWindowMs;
   const terminalChildren = allWorkflows
     .filter((other) => !other.multiSpec && TERMINAL_RUN_STATUSES.has(String(other.status)));
   const runCreatedAt = Date.parse(workflow.multiSpec?.createdAt || '');
+  const runUpdatedAt = Date.parse(workflow.multiSpec?.updatedAt || '');
+  // us-476 AC2: the batch state file write is the strongest "run advanced"
+  // signal; it is supplied by snapshot() as a numeric mtime.
+  const stateMtimeMs = Number(workflow.multiSpec?.stateMtimeMs);
   const activeMulti = allWorkflows.filter((other) => other.multiSpec
     && other !== workflow
     && ACTIVE_RUN_STATUSES.has(String(other.status)));
@@ -880,13 +899,42 @@ function detectStaleParentRows(workflow, allWorkflows) {
       return childEndedAt >= reference;
     });
     if (child) {
-      addFinding(
-        findings,
-        'warning',
-        'stale-parent-row',
-        `queue row "${item.slug}" is in_progress but its child workflow is terminal; the parent row did not propagate the child close`,
-        [workflow.statePath],
+      const childEndedAt = Date.parse(child.endedAt || child.updatedAt || '');
+      const childTerminalAgeMs = nowMs - childEndedAt;
+      const lastRowTransitionMs = Number.isFinite(rowUpdatedAt) ? nowMs - rowUpdatedAt : null;
+      // AC1: carry both measured ages so an operator can tune the grace from
+      // real runs.
+      const transitionNote = lastRowTransitionMs === null ? 'unknown' : formatAgeMs(lastRowTransitionMs);
+      const ageNote = `child terminal for ${formatAgeMs(childTerminalAgeMs)}; last row transition ${transitionNote} ago`;
+      // us-476 AC2: the run is advancing when its state was written (or the row
+      // transitioned) within the grace window.
+      const lastAdvanceMs = Math.max(
+        Number.isFinite(runUpdatedAt) ? runUpdatedAt : -Infinity,
+        Number.isFinite(stateMtimeMs) ? stateMtimeMs : -Infinity,
+        Number.isFinite(rowUpdatedAt) ? rowUpdatedAt : -Infinity,
       );
+      const runAdvanced = Number.isFinite(lastAdvanceMs) && (nowMs - lastAdvanceMs) <= graceMs;
+      if (childTerminalAgeMs <= graceMs && runAdvanced) {
+        // AC2: inside the grace window with the run still advancing, the row is
+        // propagation-pending, not a defect; keep a visible info signal.
+        addFinding(
+          findings,
+          'info',
+          'stale-parent-row',
+          `queue row "${item.slug}" is in_progress while its child workflow is terminal; propagation pending (${ageNote})`,
+          [workflow.statePath],
+        );
+      } else {
+        // AC3: terminal beyond the grace window with no row transition is the
+        // persistent lineage defect (#395).
+        addFinding(
+          findings,
+          'warning',
+          'stale-parent-row',
+          `queue row "${item.slug}" is in_progress but its child workflow has been terminal beyond the grace window; the parent row did not propagate the child close (${ageNote})`,
+          [workflow.statePath],
+        );
+      }
       continue;
     }
     const newerRun = activeMulti.find((other) => {
@@ -1740,6 +1788,16 @@ function snapshot(options) {
           runId: state.runId || null,
           baseBranch: state.baseBranch || null,
           createdAt: state.createdAt || null,
+          // us-476 AC2: the last batch-state write is the "run advanced" signal
+          // used to keep a fresh child close in the propagation-pending window.
+          updatedAt: state.updatedAt || null,
+          stateMtimeMs: (() => {
+            try {
+              return fs.statSync(loaded.stateFile).mtimeMs;
+            } catch {
+              return null;
+            }
+          })(),
           itemCount: items.length,
           activeItem: inProgressItems[0] || null,
           pendingCount: pendingItems.length,
@@ -1812,10 +1870,17 @@ function snapshot(options) {
     });
   }
 
+  // us-476 AC6: one grace window drives both the liveness stopwatch and the
+  // stale-parent-row propagation grace; `--stall-window <seconds>` overrides.
+  const stallWindowMs = (() => {
+    const raw = Number(options.stallWindow);
+    return Number.isInteger(raw) && raw > 0 ? raw * 1000 : TRANSCRIPT_LIMITS.stallWindowMs;
+  })();
+
   // us-395: cross-workflow stale-parent-row detection needs the full set.
   for (const workflow of workflows) {
     if (!workflow.multiSpec) continue;
-    workflow.findings.push(...detectStaleParentRows(workflow, workflows));
+    workflow.findings.push(...detectStaleParentRows(workflow, workflows, { graceMs: stallWindowMs }));
   }
 
   const memoryVault = queryMemoryVault(context, options);
@@ -1845,11 +1910,6 @@ function snapshot(options) {
   // us-356: transcript source per workflow + worker-session liveness.
   const discoveryEnabled = Boolean(options.discoverHostTranscripts || context.config?.monitor?.discoverHostTranscripts);
   const snapshotNow = Date.now();
-  // `--stall-window <seconds>` overrides the default liveness threshold.
-  const stallWindowMs = (() => {
-    const raw = Number(options.stallWindow);
-    return Number.isInteger(raw) && raw > 0 ? raw * 1000 : TRANSCRIPT_LIMITS.stallWindowMs;
-  })();
   for (const workflow of workflows) {
     if (workflow.multiSpec) {
       workflow.transcriptSource = null;
