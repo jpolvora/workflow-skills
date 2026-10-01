@@ -775,7 +775,6 @@ function isAdvisoryMissing(expanded, raw) {
   if (/(^|\/)(host-capabilities|skill-dependencies)\.json$/.test(rel)) return true;
   if (/^\.ws\/(installed-skills|skill-integrity-local)\.json$/.test(rel)) return true;
   if (/(^|\/)ws-project-patterns(\/|$)/.test(rel)) return true;
-  if (rel === '.ws/runtime' || rel === '.ws/templates') return true;
   // Legacy optional hub files documented as fallbacks.
   if (/^\.agents\/skills\/ws-shared\/(MEMORY\.md|CHANGELOG\.md|memory)(\/|$)/.test(rel)) return true;
   // Host-private / optional consumer dirs.
