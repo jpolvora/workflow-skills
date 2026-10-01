@@ -1,0 +1,905 @@
+{
+  "acImplemented": 6,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "3f19b0906f963095b74d799f17c80a138ca62255",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L926-L945"
+        ],
+        "files": [
+          {
+            "lineEnd": 945,
+            "lineStart": 926,
+            "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            "sha256": "075158fa4a21271c4b5872f0482b2e6209592e1be9acc94186b17aad721c3e97"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "g2-commit-3f19b0906f963095b74d799f17c80a138ca62255",
+          "impl-ac1"
+        ],
+        "planSections": [
+          "section-002",
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testActiveRunBranchMismatchStaysCritical",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us473.js",
+            "timestamp": "2026-09-30T23:00:59.621Z"
+          }
+        ],
+        "text": "When a run's recorded state branch differs from the active checkout and the run is non-terminal, the monitor shall report `context-mismatch` at critical severity.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "3f19b0906f963095b74d799f17c80a138ca62255",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L933-L942"
+        ],
+        "files": [
+          {
+            "lineEnd": 942,
+            "lineStart": 933,
+            "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            "sha256": "075158fa4a21271c4b5872f0482b2e6209592e1be9acc94186b17aad721c3e97"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "g2-commit-3f19b0906f963095b74d799f17c80a138ca62255",
+          "impl-ac2"
+        ],
+        "planSections": [
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testTerminalRunBranchMismatchIsInfo",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us473.js",
+            "timestamp": "2026-09-30T23:00:59.797Z"
+          }
+        ],
+        "text": "While a run's status is terminal, the monitor shall report a branch-based `context-mismatch` as `info` or omit it.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "3f19b0906f963095b74d799f17c80a138ca62255",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L933-L943"
+        ],
+        "files": [
+          {
+            "lineEnd": 943,
+            "lineStart": 933,
+            "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            "sha256": "075158fa4a21271c4b5872f0482b2e6209592e1be9acc94186b17aad721c3e97"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "g2-commit-3f19b0906f963095b74d799f17c80a138ca62255",
+          "impl-ac3"
+        ],
+        "planSections": [
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testBranchMismatchMessageNamesStatus",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us473.js",
+            "timestamp": "2026-09-30T23:01:12.411Z"
+          }
+        ],
+        "text": "The monitor shall name the run status used for the severity decision in the `context-mismatch` finding message.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "3f19b0906f963095b74d799f17c80a138ca62255",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L946-L965"
+        ],
+        "files": [
+          {
+            "lineEnd": 965,
+            "lineStart": 946,
+            "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            "sha256": "075158fa4a21271c4b5872f0482b2e6209592e1be9acc94186b17aad721c3e97"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "g2-commit-3f19b0906f963095b74d799f17c80a138ca62255",
+          "impl-ac4"
+        ],
+        "planSections": [
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testHeadWorktreeComparisonsUnchanged",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us473.js",
+            "timestamp": "2026-09-30T23:01:00.187Z"
+          }
+        ],
+        "text": "The monitor shall leave the state-HEAD and state-worktree `context-mismatch` comparisons unchanged.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "3f19b0906f963095b74d799f17c80a138ca62255",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L936-L945"
+        ],
+        "files": [
+          {
+            "lineEnd": 945,
+            "lineStart": 936,
+            "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            "sha256": "075158fa4a21271c4b5872f0482b2e6209592e1be9acc94186b17aad721c3e97"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "g2-commit-3f19b0906f963095b74d799f17c80a138ca62255",
+          "impl-ac5"
+        ],
+        "planSections": [
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testMatchingBranchNoFinding",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us473.js",
+            "timestamp": "2026-09-30T23:01:00.334Z"
+          }
+        ],
+        "text": "When the recorded state branch matches the active checkout, the monitor shall not report a branch-based `context-mismatch`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "3f19b0906f963095b74d799f17c80a138ca62255",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1538-L1566",
+          ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L926-L945"
+        ],
+        "files": [
+          {
+            "lineEnd": 945,
+            "lineStart": 926,
+            "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            "sha256": "075158fa4a21271c4b5872f0482b2e6209592e1be9acc94186b17aad721c3e97"
+          },
+          {
+            "lineEnd": 1566,
+            "lineStart": 1538,
+            "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            "sha256": "075158fa4a21271c4b5872f0482b2e6209592e1be9acc94186b17aad721c3e97"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "g2-commit-3f19b0906f963095b74d799f17c80a138ca62255",
+          "impl-ac6"
+        ],
+        "planSections": [
+          "section-002",
+          "section-004",
+          "section-006"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testContextMismatchCodeMappingUnchanged",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us473.js",
+            "timestamp": "2026-09-30T23:01:00.482Z"
+          }
+        ],
+        "text": "The monitor shall keep the `context-mismatch` finding code and its defect contract mapping unchanged.",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+        "endedAt": "2026-09-30T23:06:00Z",
+        "exitCode": 0,
+        "startedAt": "2026-09-30T23:05:00Z"
+      }
+    ],
+    "declaredGaps": [],
+    "filesTouched": [
+      ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+      "test/test-suites.json",
+      "test/test-ws-monitor-us473.js"
+    ],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "ns1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testTerminalRunBranchMismatchIsInfo",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us473.js",
+            "timestamp": "2026-09-30T23:01:00.811Z"
+          }
+        ],
+        "text": "A `completed` run whose state branch is `feature/x` while the checkout is `develop` must not produce a critical-severity `context-mismatch`."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "ns2"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testActiveRunBranchMismatchStaysCritical",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us473.js",
+            "timestamp": "2026-09-30T23:01:01.417Z"
+          }
+        ],
+        "text": "An active run whose state branch differs from the active checkout must still produce a critical-severity `context-mismatch`."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "ns3"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "testMatchingBranchNoFinding",
+            "phase": "observed",
+            "sourceFile": "test/test-ws-monitor-us473.js",
+            "timestamp": "2026-09-30T23:01:02.062Z"
+          }
+        ],
+        "text": "A run whose state branch matches the checkout must not produce any branch-based `context-mismatch`."
+      }
+    ],
+    "planIndexPath": ".agents/plans/us-473/.runtime/plan.index.json",
+    "revision": 16,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "step5",
+      "computedAt": "2026-09-30T23:18:08.958Z",
+      "deficiencies": [],
+      "earnedUnits": 60,
+      "errors": [],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "ledgerHash": "e29acd133abc67ab52e0860efb89ce6c0f081537bf8632c62d64a5fc2f30a27e",
+      "missingEvidence": false,
+      "score": 10,
+      "totalUnits": 60,
+      "writer": "ac_ledger.cjs score"
+    },
+    "slug": "us-473",
+    "specPath": ".agents/plans/us-473/step-00-us-473.spec.md",
+    "testingSkip": null,
+    "workflowId": "us-473-20260930T225523Z"
+  },
+  "acTotal": 6,
+  "agentTranscripts": {
+    "reason": "no-matching-session",
+    "recordedAt": "2026-09-30T22:55:53Z",
+    "status": "transcript-unavailable"
+  },
+  "autoMode": true,
+  "baseBranch": "main",
+  "baselineCommit": "68d3530069841580f62d28ad4a351464ed3d485b",
+  "baselineSourceRef": "local",
+  "branch": "develop",
+  "branchStrategy": "stay",
+  "checkpoints": [],
+  "commits": [
+    {
+      "sha": "3f19b0906f963095b74d799f17c80a138ca62255",
+      "step": 5
+    },
+    {
+      "sha": "83572714f0a7dd13d3896d8d3d9433dd495269ba",
+      "step": 8
+    }
+  ],
+  "completedSteps": [
+    0,
+    1,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "completedTasks": [],
+  "currentModel": "deepseek-v4.1-flash",
+  "currentStep": 9,
+  "dryRun": false,
+  "endedAt": "2026-09-30T23:35:54Z",
+  "execMode": null,
+  "fullMode": true,
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-473/step-00-us-473.classify.md",
+        ".agents/plans/us-473/ac-ledger.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "us-473",
+      "status": "completed",
+      "step": 0,
+      "summary": "Finished step 0",
+      "workflowId": "us-473-20260930T225523Z",
+      "workflowType": "standard"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-473/step-01-us-473.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "us-473",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "us-473-20260930T225523Z",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "us-473",
+      "status": "skipped",
+      "step": 2,
+      "summary": "Finished step 2",
+      "workflowId": "us-473-20260930T225523Z",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-473/step-03-us-473.plan.exec.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "us-473",
+      "status": "completed",
+      "step": 3,
+      "summary": "Finished step 3",
+      "workflowId": "us-473-20260930T225523Z",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [
+        "test/test-ws-monitor-us473.js",
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+        "test/test-suites.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "us-473",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "us-473-20260930T225523Z",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-473/step-05-us-473.plan.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "us-473",
+      "status": "completed",
+      "step": 5,
+      "summary": "Finished step 5",
+      "workflowId": "us-473-20260930T225523Z",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-473/step-06-us-473.review.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "us-473",
+      "status": "completed",
+      "step": 6,
+      "summary": "Finished step 6",
+      "workflowId": "us-473-20260930T225523Z",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-473/step-07-us-473.testing.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "us-473",
+      "status": "completed",
+      "step": 7,
+      "summary": "Finished step 7",
+      "workflowId": "us-473-20260930T225523Z",
+      "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-473/step-08-us-473.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-473",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "us-473-20260930T225523Z",
+      "workflowType": "standard"
+    }
+  },
+  "modelsPreset": "default",
+  "nextAction": "Run step 9",
+  "prNumber": "482",
+  "prUrl": "https://github.com/jpolvora/workflow-skills/pull/482",
+  "preExistingDirty": [],
+  "revision": 18,
+  "scoreAndRefine": false,
+  "shipStatus": "pr-open",
+  "skipTesting": false,
+  "skipTests": false,
+  "skippedSteps": [
+    {
+      "evidence": "",
+      "reason": "interview-not-required",
+      "step": 2
+    }
+  ],
+  "slug": "us-473",
+  "specPath": ".agents/plans/us-473/step-00-us-473.spec.md",
+  "specSource": "github",
+  "startedAt": "2026-09-30T22:55:23Z",
+  "statePath": ".agents/plans/us-473/us-473-20260930T225523Z.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [
+    {
+      "agentType": "generic:Task",
+      "dispatchedAt": "2026-09-30T22:55:53Z",
+      "model": "deepseek-v4.1-flash",
+      "step": 0
+    },
+    {
+      "agentType": "generic:Task",
+      "dispatchedAt": "2026-09-30T22:57:40Z",
+      "model": "deepseek-v4.1-flash",
+      "step": 1
+    },
+    {
+      "agentType": "generic:Task",
+      "dispatchedAt": "2026-09-30T22:58:29Z",
+      "model": "deepseek-v4.1-flash",
+      "step": 3
+    },
+    {
+      "agentType": "generic:Task",
+      "dispatchedAt": "2026-09-30T23:00:25Z",
+      "model": "deepseek-v4.1-flash",
+      "step": 4
+    },
+    {
+      "agentType": "generic:Task",
+      "dispatchedAt": "2026-09-30T23:15:40Z",
+      "model": "deepseek-v4.1-flash",
+      "step": 5
+    },
+    {
+      "agentType": "generic:Task",
+      "dispatchedAt": "2026-09-30T23:16:54Z",
+      "model": "deepseek-v4.1-flash",
+      "step": 6
+    },
+    {
+      "agentType": "generic:Task",
+      "dispatchedAt": "2026-09-30T23:18:01Z",
+      "model": "deepseek-v4.1-flash",
+      "step": 7
+    },
+    {
+      "agentType": "generic:Task",
+      "dispatchedAt": "2026-09-30T23:35:13Z",
+      "model": "deepseek-v4.1-flash",
+      "step": 8
+    }
+  ],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "skipped",
+    "3": "completed",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed"
+  },
+  "telemetry": {
+    "loc": {},
+    "steps": [
+      {
+        "N": 0,
+        "agentType": "generic:Task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-30T22:55:53Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-473/step-00-us-473.classify.md",
+            ".agents/plans/us-473/ac-ledger.json"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-30T22:55:53Z",
+        "label": "Spec",
+        "model": "deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 1,
+        "agentType": "generic:Task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-30T22:57:40Z",
+        "elapsedSec": 7,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-473/step-01-us-473.plan.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-30T22:57:47Z",
+        "label": "Planning",
+        "model": "deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-30T22:58:29Z",
+        "label": "Interview",
+        "model": "deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": "generic:Task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-30T22:58:29Z",
+        "elapsedSec": 29,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-473/step-03-us-473.plan.exec.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-30T22:58:58Z",
+        "label": "Plan to tasks",
+        "model": "deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": "generic:Task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-30T23:00:25Z",
+        "elapsedSec": 1,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            "test/test-ws-monitor-us473.js"
+          ],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+            "test/test-suites.json"
+          ]
+        },
+        "finishedAt": "2026-09-30T23:00:26Z",
+        "label": "Implement",
+        "model": "deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": "generic:Task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-30T23:15:40Z",
+        "elapsedSec": 1,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-473/step-05-us-473.plan.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-30T23:15:41Z",
+        "label": "Verify",
+        "model": "deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 6,
+        "agentType": "generic:Task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-30T23:16:54Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-473/step-06-us-473.review.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-30T23:16:54Z",
+        "label": "Code review",
+        "model": "deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 7,
+        "agentType": "generic:Task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-30T23:18:01Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-473/step-07-us-473.testing.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-30T23:18:01Z",
+        "label": "Testing",
+        "model": "deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": "generic:Task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-09-30T23:35:13Z",
+        "elapsedSec": 41,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-473/step-08-us-473.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-09-30T23:35:54Z",
+        "label": "Ship",
+        "model": "deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 79,
+    "totalTokens": 0,
+    "workflowEndedAt": null,
+    "workflowStartedAt": "2026-09-30T22:55:23Z"
+  },
+  "us": 473,
+  "verificationScore": 10,
+  "workflowId": "us-473-20260930T225523Z",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/us-473/ac-ledger.json",
+      ".agents/plans/us-473/step-00-us-473.classify.md",
+      ".agents/plans/us-473/step-01-us-473.plan.md",
+      ".agents/plans/us-473/step-03-us-473.plan.exec.md",
+      ".agents/plans/us-473/step-05-us-473.plan.report.md",
+      ".agents/plans/us-473/step-06-us-473.review.md",
+      ".agents/plans/us-473/step-07-us-473.testing.report.md",
+      ".agents/plans/us-473/step-08-us-473.result.md",
+      "test/test-ws-monitor-us473.js"
+    ],
+    "deleted": [],
+    "modified": [
+      ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+      "test/test-suites.json"
+    ]
+  },
+  "workflowType": "standard"
+}

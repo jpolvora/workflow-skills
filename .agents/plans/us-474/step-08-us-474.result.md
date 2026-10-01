@@ -3,9 +3,10 @@ step: 8
 slug: us-474
 workflowId: us-474-20260930T192724Z
 status: completed
-acRefs: [AC1, AC2, AC3, AC4, AC5, AC6, AC7]
+acRefs: []
+startedAt: "2026-09-30T19:27:24Z"
+endedAt: "2026-09-30T20:07:01.990Z"
 ---
-
 # Delivery result — us-474
 
 ## Summary

@@ -1,0 +1,476 @@
+{
+  "schemaVersion": 1,
+  "revision": 21,
+  "workflowId": "us-475-20260930T210000Z",
+  "slug": "us-475",
+  "specPath": ".agents/plans/us-475/step-00-us-475.spec.md",
+  "planIndexPath": ".agents/plans/us-475/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": "2026-09-30T20:30:00Z",
+      "endedAt": "2026-09-30T20:33:00Z",
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "When a worker dispatch is about to run, the batch shall record the local `develop` tip and the `origin/develop` tip as a dispatch baseline.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-multi/scripts/foreign_commit_guard.cjs:L141-L176"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-005",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-multi/scripts/foreign_commit_guard.cjs",
+          "lineStart": 141,
+          "lineEnd": 176,
+          "sha256": "b1c3e4a6bd803029c6af63424bc6f8bbf0c49dae21b1f94eb451978596616579"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "266ad05cfade7a9da79d1e1309d29c5127d7a16d",
+          "step": 5
+        },
+        {
+          "sha": "17431a1bf1ab971ffbb1a7006365d4d2d24cb3b9",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "testRecordsBaselineLocalAndRemoteTips",
+          "sourceFile": "test/test-foreign-commit-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T20:40:50.149Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-17431a1bf1ab971ffbb1a7006365d4d2d24cb3b9",
+        "g2-commit-266ad05cfade7a9da79d1e1309d29c5127d7a16d",
+        "impl-ac1"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "When the recorded `develop` tip advances unexpectedly between dispatches, the batch shall pause and name the new commits.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-multi/scripts/foreign_commit_guard.cjs:L177-L216"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-005",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-multi/scripts/foreign_commit_guard.cjs",
+          "lineStart": 177,
+          "lineEnd": 216,
+          "sha256": "b1c3e4a6bd803029c6af63424bc6f8bbf0c49dae21b1f94eb451978596616579"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "266ad05cfade7a9da79d1e1309d29c5127d7a16d",
+          "step": 5
+        },
+        {
+          "sha": "17431a1bf1ab971ffbb1a7006365d4d2d24cb3b9",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "testAdvanceNamesNewCommits",
+          "sourceFile": "test/test-foreign-commit-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T20:40:50.289Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-17431a1bf1ab971ffbb1a7006365d4d2d24cb3b9",
+        "g2-commit-266ad05cfade7a9da79d1e1309d29c5127d7a16d",
+        "impl-ac2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "When the batch pauses on an unexpected advance, the batch shall offer Resume, Skip, and Abort.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-multi/PROTOCOL.md:L62-L80",
+        ".agents/skills/ws-spec-multi/PROTOCOL.md:L70-L103"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-005",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-multi/PROTOCOL.md",
+          "lineStart": 62,
+          "lineEnd": 80,
+          "sha256": "6c3843098ef2ce0986ff7b877e7312d2b262f74eb22361c57c18054e106875e2"
+        },
+        {
+          "path": ".agents/skills/ws-spec-multi/PROTOCOL.md",
+          "lineStart": 70,
+          "lineEnd": 103,
+          "sha256": "6c3843098ef2ce0986ff7b877e7312d2b262f74eb22361c57c18054e106875e2"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "266ad05cfade7a9da79d1e1309d29c5127d7a16d",
+          "step": 5
+        },
+        {
+          "sha": "17431a1bf1ab971ffbb1a7006365d4d2d24cb3b9",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "testDocOffersResumeSkipAbort",
+          "sourceFile": "test/test-foreign-commit-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T20:44:46.671Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-17431a1bf1ab971ffbb1a7006365d4d2d24cb3b9",
+        "g2-commit-266ad05cfade7a9da79d1e1309d29c5127d7a16d",
+        "impl-ac3",
+        "impl-ac3-fix",
+        "impl-ac3-r2"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "When delivery converges, the batch shall compare the PR head to the local `develop` tip before merge.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-multi/scripts/foreign_commit_guard.cjs:L237-L267"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-005",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-multi/scripts/foreign_commit_guard.cjs",
+          "lineStart": 237,
+          "lineEnd": 267,
+          "sha256": "b1c3e4a6bd803029c6af63424bc6f8bbf0c49dae21b1f94eb451978596616579"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "266ad05cfade7a9da79d1e1309d29c5127d7a16d",
+          "step": 5
+        },
+        {
+          "sha": "17431a1bf1ab971ffbb1a7006365d4d2d24cb3b9",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "testConvergencePassesOnEqualHead",
+          "sourceFile": "test/test-foreign-commit-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T20:40:50.512Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-17431a1bf1ab971ffbb1a7006365d4d2d24cb3b9",
+        "g2-commit-266ad05cfade7a9da79d1e1309d29c5127d7a16d",
+        "impl-ac4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "If the PR head differs from the local `develop` tip at convergence, then the batch shall refuse to merge.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-multi/scripts/foreign_commit_guard.cjs:L237-L267"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-005",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-multi/scripts/foreign_commit_guard.cjs",
+          "lineStart": 237,
+          "lineEnd": 267,
+          "sha256": "b1c3e4a6bd803029c6af63424bc6f8bbf0c49dae21b1f94eb451978596616579"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "266ad05cfade7a9da79d1e1309d29c5127d7a16d",
+          "step": 5
+        },
+        {
+          "sha": "17431a1bf1ab971ffbb1a7006365d4d2d24cb3b9",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "testConvergenceRefusesOnMismatch",
+          "sourceFile": "test/test-foreign-commit-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T20:40:50.630Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-17431a1bf1ab971ffbb1a7006365d4d2d24cb3b9",
+        "g2-commit-266ad05cfade7a9da79d1e1309d29c5127d7a16d",
+        "impl-ac5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "The batch shall list foreign commits that ride a PR range in the PR body and in the audit notes.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-multi/scripts/foreign_commit_guard.cjs:L271-L317"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-005",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-multi/scripts/foreign_commit_guard.cjs",
+          "lineStart": 271,
+          "lineEnd": 317,
+          "sha256": "b1c3e4a6bd803029c6af63424bc6f8bbf0c49dae21b1f94eb451978596616579"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "266ad05cfade7a9da79d1e1309d29c5127d7a16d",
+          "step": 5
+        },
+        {
+          "sha": "17431a1bf1ab971ffbb1a7006365d4d2d24cb3b9",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "testListForeignExcludesOwnCommits",
+          "sourceFile": "test/test-foreign-commit-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T20:40:50.745Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-17431a1bf1ab971ffbb1a7006365d4d2d24cb3b9",
+        "g2-commit-266ad05cfade7a9da79d1e1309d29c5127d7a16d",
+        "impl-ac6"
+      ]
+    },
+    {
+      "id": "AC7",
+      "text": "When no foreign commit exists, the batch shall not add gates to the sequential single-writer path.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-spec-multi/scripts/foreign_commit_guard.cjs:L177-L216"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-005",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-spec-multi/scripts/foreign_commit_guard.cjs",
+          "lineStart": 177,
+          "lineEnd": 216,
+          "sha256": "b1c3e4a6bd803029c6af63424bc6f8bbf0c49dae21b1f94eb451978596616579"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "266ad05cfade7a9da79d1e1309d29c5127d7a16d",
+          "step": 5
+        },
+        {
+          "sha": "17431a1bf1ab971ffbb1a7006365d4d2d24cb3b9",
+          "step": 6
+        }
+      ],
+      "tests": [
+        {
+          "name": "testQuietAdvanceNoGate",
+          "sourceFile": "test/test-foreign-commit-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T20:40:51.110Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "g2-commit-17431a1bf1ab971ffbb1a7006365d4d2d24cb3b9",
+        "g2-commit-266ad05cfade7a9da79d1e1309d29c5127d7a16d",
+        "impl-ac7"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "Simulate a commit landing on `develop` between two dispatches: the batch must pause and name the commit rather than proceeding silently.",
+      "tests": [
+        {
+          "name": "testAdvanceNamesNewCommits",
+          "sourceFile": "test/test-foreign-commit-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T20:40:51.513Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "Simulate a PR head that differs from the local `develop` tip at convergence: the guard must refuse the merge.",
+      "tests": [
+        {
+          "name": "testConvergenceRefusesOnMismatch",
+          "sourceFile": "test/test-foreign-commit-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T20:40:51.981Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "Run a foreign-commit-free sequential batch: no pause, refusal, or extra gate may appear on the quiet path.",
+      "tests": [
+        {
+          "name": "testQuietAdvanceNoGate",
+          "sourceFile": "test/test-foreign-commit-guard.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T20:40:52.640Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns3"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 10,
+    "earnedUnits": 70,
+    "totalUnits": 70,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "deficiencies": [],
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-30T20:45:30.842Z",
+    "writer": "ac_ledger.cjs score",
+    "ledgerHash": "5adc673c781d27548964125f0e53005c04c2065f4012eee8a0d751ff5bf886cb"
+  }
+}

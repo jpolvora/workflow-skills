@@ -1,6 +1,6 @@
 # Practices & Tooling (`engineering`)
 
-> Provenance: `SKILL_AUTHORING.md`, `.agents/skills/ws-senior-developer/SKILL.md`, `.agents/skills/ws-fable-method/SKILL.md`, `.agents/skills/ws-megabrain/SKILL.md`, `package.json` engines, living synthesis of specs 0008, 0011, 0025, 0042, 0055, 0058, 0063, 0072, 0074, 0084, 0085, 0086, 0090, 0099-us-358, 0110-us-378, 0112-us-381, 0114-patterns-generator-shared-hub-output.
+> Provenance: `SKILL_AUTHORING.md`, `.agents/skills/ws-senior-developer/SKILL.md`, `.agents/skills/ws-fable-method/SKILL.md`, `.agents/skills/ws-megabrain/SKILL.md`, `package.json` engines, living synthesis of specs 0008, 0011, 0025, 0042, 0055, 0058, 0063, 0072, 0074, 0084, 0085, 0086, 0090, 0099-us-358, 0110-us-378, 0112-us-381, 0114-patterns-generator-shared-hub-output, 0160-explicit-knowledge-chain.
 
 ## Feature
 
@@ -25,6 +25,8 @@ Single-session CLI-harness runs bind host capabilities once and never re-probe m
 Consumer projects gain their own generated skills without hand-writing boilerplate. A skill generator scaffolds a project-local skill from a short brief, seeds its body through `seed_generated_skill.cjs` under the shared hub output, and keeps the generated contract consistent with the harness layout so the new skill resolves through the same `{skillsRoot}` tokens. Self-learning feeds the same track: pattern runs compile into a stored project-patterns body under the shared hub, and later generations build on that persisted knowledge instead of starting blank.
 
 Every skill edit consults the dependency graph first. Before changing a skill contract, the author reads `bin/skill-dependencies.json` plus package membership to identify callers and callees, verifies their inputs, outputs, scripts, and file conventions still hold against the change, and either updates them atomically in the same change or records explicit follow-ups. Integrity data regenerates and the harness checks run over the whole affected skill set in the same effort, so a change to one skill cannot silently leave a dependent contract inconsistent.
+
+Investigations walk an explicit knowledge chain in order for every factual claim: codebase, then project docs, then MCP sources, then web. Earlier links are preferred over later ones, so citing a later link when an earlier link grounds the claim is a skipped-link violation, while an unreachable MCP server is a stated gap rather than a skipped link. Every factual claim cites the chain link that grounds it with a path, document, or URL reference; claims with no grounding source carry the `UNCERTAIN` marker and are never presented as observed fact. Reports close with a per-claim source table (`Claim | Chain link | Reference | Uncertain`), and a report without that table is returned for completion.
 
 ## Backend
 

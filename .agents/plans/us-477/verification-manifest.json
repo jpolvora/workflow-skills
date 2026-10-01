@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-10-01T00:10:14.978Z",
+  "filesTouched": {
+    "created": [
+      ".agents/plans/us-477/ac-ledger.json",
+      ".agents/plans/us-477/step-00-us-477.classify.md",
+      ".agents/plans/us-477/step-01-us-477.plan.md",
+      ".agents/plans/us-477/step-03-us-477.plan.exec.md"
+    ],
+    "modified": [
+      ".agents/skills/ws-monitor/SKILL.md",
+      ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+      ".agents/skills/ws-shared/runtime/observer-instructions.md",
+      "test/test-ws-monitor-liveness.js",
+      "test/test-ws-monitor-us356.js",
+      "test/test-ws-monitor-us412-418.js",
+      "test/test-ws-monitor-watch-profile.js"
+    ],
+    "deleted": []
+  },
+  "filesHash": "42ec9b4916fbc93fdb053ebe553f79adb2f8369d9efbb8f5c55309cc3c9b5531",
+  "aliasResults": [],
+  "sabotage": "not-required",
+  "reuse": "Steps 5/6/7 re-run alias/stack/sabotage commands only if files_touched changed; AC scoring, review, and tests still run. Compare current workflowManifest sorted hash to filesHash; match means reuse aliasResults/sabotage, mismatch means re-run."
+}

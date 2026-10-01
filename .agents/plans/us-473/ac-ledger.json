@@ -1,0 +1,396 @@
+{
+  "schemaVersion": 1,
+  "revision": 23,
+  "workflowId": "us-473-20260930T225523Z",
+  "slug": "us-473",
+  "specPath": ".agents/plans/us-473/step-00-us-473.spec.md",
+  "planIndexPath": ".agents/plans/us-473/.runtime/plan.index.json",
+  "declaredGaps": [],
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": "2026-09-30T23:05:00Z",
+      "endedAt": "2026-09-30T23:06:00Z",
+      "exitCode": 0
+    }
+  ],
+  "testingSkip": null,
+  "acceptanceCriteria": [
+    {
+      "id": "AC1",
+      "text": "When a run's recorded state branch differs from the active checkout and the run is non-terminal, the monitor shall report `context-mismatch` at critical severity.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L926-L945"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 926,
+          "lineEnd": 945,
+          "sha256": "822575d31df7a8fbc69fb59905782aa06aa99fd2897e5179bc2d2216e47fcbe4"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3f19b0906f963095b74d799f17c80a138ca62255",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testActiveRunBranchMismatchStaysCritical",
+          "sourceFile": "test/test-ws-monitor-us473.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T23:37:21.539Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "fix-ac1",
+        "g2-commit-3f19b0906f963095b74d799f17c80a138ca62255",
+        "impl-ac1"
+      ]
+    },
+    {
+      "id": "AC2",
+      "text": "While a run's status is terminal, the monitor shall report a branch-based `context-mismatch` as `info` or omit it.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L933-L942"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 933,
+          "lineEnd": 942,
+          "sha256": "822575d31df7a8fbc69fb59905782aa06aa99fd2897e5179bc2d2216e47fcbe4"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3f19b0906f963095b74d799f17c80a138ca62255",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testTerminalRunBranchMismatchIsInfo",
+          "sourceFile": "test/test-ws-monitor-us473.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T23:37:22.059Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "fix-ac2",
+        "g2-commit-3f19b0906f963095b74d799f17c80a138ca62255",
+        "impl-ac2"
+      ]
+    },
+    {
+      "id": "AC3",
+      "text": "The monitor shall name the run status used for the severity decision in the `context-mismatch` finding message.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L933-L943"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 933,
+          "lineEnd": 943,
+          "sha256": "822575d31df7a8fbc69fb59905782aa06aa99fd2897e5179bc2d2216e47fcbe4"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3f19b0906f963095b74d799f17c80a138ca62255",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testBranchMismatchMessageNamesStatus",
+          "sourceFile": "test/test-ws-monitor-us473.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T23:37:22.552Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "fix-ac3",
+        "g2-commit-3f19b0906f963095b74d799f17c80a138ca62255",
+        "impl-ac3"
+      ]
+    },
+    {
+      "id": "AC4",
+      "text": "The monitor shall leave the state-HEAD and state-worktree `context-mismatch` comparisons unchanged.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L946-L965"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 946,
+          "lineEnd": 965,
+          "sha256": "822575d31df7a8fbc69fb59905782aa06aa99fd2897e5179bc2d2216e47fcbe4"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3f19b0906f963095b74d799f17c80a138ca62255",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testHeadWorktreeComparisonsUnchanged",
+          "sourceFile": "test/test-ws-monitor-us473.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T23:37:23.036Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "fix-ac4",
+        "g2-commit-3f19b0906f963095b74d799f17c80a138ca62255",
+        "impl-ac4"
+      ]
+    },
+    {
+      "id": "AC5",
+      "text": "When the recorded state branch matches the active checkout, the monitor shall not report a branch-based `context-mismatch`.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L936-L945"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 936,
+          "lineEnd": 945,
+          "sha256": "822575d31df7a8fbc69fb59905782aa06aa99fd2897e5179bc2d2216e47fcbe4"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3f19b0906f963095b74d799f17c80a138ca62255",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testMatchingBranchNoFinding",
+          "sourceFile": "test/test-ws-monitor-us473.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T23:37:23.534Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "fix-ac5",
+        "g2-commit-3f19b0906f963095b74d799f17c80a138ca62255",
+        "impl-ac5"
+      ]
+    },
+    {
+      "id": "AC6",
+      "text": "The monitor shall keep the `context-mismatch` finding code and its defect contract mapping unchanged.",
+      "status": "Implemented",
+      "evidence": [
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L1538-L1566",
+        ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs:L926-L945"
+      ],
+      "tasks": [],
+      "planSections": [
+        "section-002",
+        "section-004",
+        "section-006"
+      ],
+      "files": [
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 926,
+          "lineEnd": 945,
+          "sha256": "822575d31df7a8fbc69fb59905782aa06aa99fd2897e5179bc2d2216e47fcbe4"
+        },
+        {
+          "path": ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+          "lineStart": 1538,
+          "lineEnd": 1566,
+          "sha256": "822575d31df7a8fbc69fb59905782aa06aa99fd2897e5179bc2d2216e47fcbe4"
+        }
+      ],
+      "commits": [
+        {
+          "sha": "3f19b0906f963095b74d799f17c80a138ca62255",
+          "step": 5
+        }
+      ],
+      "tests": [
+        {
+          "name": "testContextMismatchCodeMappingUnchanged",
+          "sourceFile": "test/test-ws-monitor-us473.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T23:37:24.053Z"
+        }
+      ],
+      "verdicts": [],
+      "findings": [],
+      "sabotage": {
+        "required": false,
+        "status": "not-required",
+        "exitCode": null
+      },
+      "linkEventIds": [
+        "fix-ac6",
+        "g2-commit-3f19b0906f963095b74d799f17c80a138ca62255",
+        "impl-ac6"
+      ]
+    }
+  ],
+  "negativeScenarios": [
+    {
+      "id": "NS1",
+      "text": "A `completed` run whose state branch is `feature/x` while the checkout is `develop` must not produce a critical-severity `context-mismatch`.",
+      "tests": [
+        {
+          "name": "testTerminalRunBranchMismatchIsInfo",
+          "sourceFile": "test/test-ws-monitor-us473.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T23:01:00.811Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns1"
+      ]
+    },
+    {
+      "id": "NS2",
+      "text": "An active run whose state branch differs from the active checkout must still produce a critical-severity `context-mismatch`.",
+      "tests": [
+        {
+          "name": "testActiveRunBranchMismatchStaysCritical",
+          "sourceFile": "test/test-ws-monitor-us473.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T23:01:01.417Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns2"
+      ]
+    },
+    {
+      "id": "NS3",
+      "text": "A run whose state branch matches the checkout must not produce any branch-based `context-mismatch`.",
+      "tests": [
+        {
+          "name": "testMatchingBranchNoFinding",
+          "sourceFile": "test/test-ws-monitor-us473.js",
+          "phase": "observed",
+          "alias": null,
+          "exitCode": 0,
+          "timestamp": "2026-09-30T23:01:02.062Z"
+        }
+      ],
+      "linkEventIds": [
+        "ns3"
+      ]
+    }
+  ],
+  "invariantViolations": [],
+  "scoreState": {
+    "boundary": "step5",
+    "score": 10,
+    "earnedUnits": 60,
+    "totalUnits": 60,
+    "knownDefect": false,
+    "missingEvidence": false,
+    "deficiencies": [],
+    "errors": [],
+    "invariantViolations": [],
+    "computedAt": "2026-09-30T23:37:24.589Z",
+    "writer": "ac_ledger.cjs score",
+    "ledgerHash": "7f2e625b8968115b9b4c0dac372134a31ea84339ff6c9a01b2a085a06a1fd760"
+  },
+  "filesTouched": [
+    ".agents/skills/ws-monitor/scripts/monitor_snapshot.cjs",
+    "test/test-suites.json",
+    "test/test-ws-monitor-us473.js"
+  ]
+}

@@ -19,10 +19,12 @@ produces no branch finding (AC5); the finding code and its defect-contract mappi
 
 ## Done
 
-- `detectContextMismatch` in `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs` now derives run
-  liveness from the existing `deriveTerminalStatus` / `TERMINAL_RUN_STATUSES`, sets the branch finding
-  to `info` for terminal runs and `critical` for non-terminal runs, and appends `(run status: <status>)`
-  to the message. HEAD/worktree findings unchanged.
+- `detectContextMismatch` in `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs` now keys the branch
+  finding off the run's literal status via the existing `TERMINAL_RUN_STATUSES` set: `info` for a
+  terminal status, `critical` otherwise, with `(run status: <status>)` appended to the message. It does
+  not use shape-derived terminal detection, so a terminal-shaped run still reporting `active` stays
+  critical (repo MEMORY: monitor severity keys off the status literal, not the shape). HEAD/worktree
+  findings unchanged.
 - Regression suite `test/test-ws-monitor-us473.js` (registered in `test/test-suites.json`) covers all
   AC1–AC6 and NS1–NS3; fault injection confirms it fails if severity is hardcoded.
 - Verify score 10/10 (boundary step5); code review clean (0 criticals/warnings); `npm run test`

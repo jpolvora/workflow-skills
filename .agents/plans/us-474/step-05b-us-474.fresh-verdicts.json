@@ -1,0 +1,22 @@
+{
+  "slug": "us-474",
+  "workflowId": "us-474-20260930T192724Z",
+  "boundary": "step-06b",
+  "method": "independent re-derivation + one fault injection per AC on the committed tree; patch -> run test/test-spec-index-filing.js -> git checkout restore",
+  "injections": [
+    { "ac": "AC1+AC2", "fault": "fileViaOrganizer returns [] (filing disabled)", "testExit": 1, "killed": true, "restored": true },
+    { "ac": "AC3", "fault": "catch returns status synced instead of outstanding", "testExit": 1, "killed": true, "restored": true },
+    { "ac": "AC4+AC5", "fault": "close verify ignores pending/ location", "testExit": 1, "killed": true, "restored": true },
+    { "ac": "AC6", "fault": "harness gate always returns ok:true", "testExit": 1, "killed": true, "restored": true },
+    { "ac": "AC7", "fault": "Done-log idempotency check removed (duplicate row)", "testExit": 1, "killed": true, "restored": true }
+  ],
+  "verdicts": [
+    { "ac": "AC1", "verdict": "VERIFIED", "evidence": "testSyncFilesSpecAndSidecarsToCompleted; fault injection killed test (exit 1)" },
+    { "ac": "AC2", "verdict": "VERIFIED", "evidence": "index spec: ref rewritten to completed/ (same test); organizer applyRenames; injection killed" },
+    { "ac": "AC3", "verdict": "VERIFIED", "evidence": "testSyncReportsOutstandingWhenFilingFails; index byte-unchanged on failure; injection killed" },
+    { "ac": "AC4", "verdict": "VERIFIED", "evidence": "testCloseVerifyFailsClosedOnPendingSpec (exit 2); injection killed" },
+    { "ac": "AC5", "verdict": "VERIFIED", "evidence": "stderr names pending/0005-us-474.spec.md; injection killed" },
+    { "ac": "AC6", "verdict": "VERIFIED", "evidence": "testHarnessFlagsDoneRowWithPendingRef (exit 1) + clean-board exit 0; repo gate 0 findings; injection killed" },
+    { "ac": "AC7", "verdict": "VERIFIED", "evidence": "testSyncQuietWhenAlreadyFiled (index byte-unchanged, no re-file); injection killed" }
+  ]
+}
