@@ -28,6 +28,8 @@ function readHubLayout() {
 export const HUB_LAYOUT = readHubLayout();
 export const HUB_LAYOUT_MANIFEST = 'runtime/hub-layout.json';
 
+const OWNED_GEMINI_PATTERNS = ['^ws-.*', 'ws-*'];
+
 const HUB_LAYOUT_CATEGORIES = [
   'runtime',
   'templates',
@@ -621,6 +623,18 @@ export function projectSkillToTarget(srcSkillPath, destSkillPath, options = {}) 
 }
 
 /**
+ * Whether the `gemini` target must be projected as physical directory copies
+ * instead of junctions/symlinks. The target host's scanner skips ReparsePoints
+ * on Windows, so physical copies are required there; POSIX scanners follow
+ * directory symlinks, so the declarative strategy is kept as-is.
+ * @param {string} [platform] - Node platform string (defaults to process.platform)
+ * @returns {boolean}
+ */
+export function shouldProjectGeminiAsCopy(platform = process.platform) {
+  return platform === 'win32';
+}
+
+/**
  * Resolves the absolute path to ~/.gemini/config/skills.json.
  * @param {string} [homeDir] - User home directory (defaults to getHomeDir())
  * @returns {string} Absolute path to skills.json
@@ -700,19 +714,19 @@ function normalizeGeminiPath(p, homeDir) {
  * @param {string} [homeDir] - User home directory (defaults to getHomeDir())
  * @param {Object} [entry] - Entry to upsert
  * @param {string} [entry.path='~/.agents/skills']
- * @param {Array<string>} [entry.include_only=['ws-*']]
+ * @param {Array<string>} [entry.include_only=['^ws-.*']]
  * @returns {{ path: string, entriesCount: number }}
  */
 export function upsertGeminiSkillsJsonEntry(
   homeDir = getHomeDir(),
-  entry = { path: '~/.agents/skills', include_only: ['ws-*'] }
+  entry = { path: '~/.agents/skills', include_only: ['^ws-.*'] }
 ) {
   const jsonPath = getGeminiSkillsJsonPath(homeDir);
   ensureWriteableDir(path.dirname(jsonPath));
   const data = readGeminiSkillsJson(jsonPath);
 
   const targetPath = entry.path || '~/.agents/skills';
-  const targetPattern = (entry.include_only && entry.include_only.length > 0) ? entry.include_only : ['ws-*'];
+  const targetPattern = (entry.include_only && entry.include_only.length > 0) ? entry.include_only : ['^ws-.*'];
 
   const isMatch = (e) => {
     if (!e || typeof e !== 'object' || !e.path) return false;
@@ -729,6 +743,7 @@ export function upsertGeminiSkillsJsonEntry(
   if (existingIndex >= 0) {
     const existing = data.entries[existingIndex];
     if (Array.isArray(existing.include_only)) {
+      existing.include_only = existing.include_only.filter((p) => !OWNED_GEMINI_PATTERNS.includes(p));
       for (const pat of targetPattern) {
         if (!existing.include_only.includes(pat)) {
           existing.include_only.push(pat);
@@ -776,8 +791,8 @@ export function removeGeminiSkillsJsonEntry(homeDir = getHomeDir(), targetPath =
   data.entries = data.entries.flatMap((e) => {
     if (!isMatch(e)) return [e];
     if (!Array.isArray(e.include_only)) return [e];
-    if (!e.include_only.includes('ws-*')) return [e];
-    const kept = e.include_only.filter((p) => p !== 'ws-*');
+    if (!e.include_only.some((p) => OWNED_GEMINI_PATTERNS.includes(p))) return [e];
+    const kept = e.include_only.filter((p) => !OWNED_GEMINI_PATTERNS.includes(p));
     if (kept.length === 0) return [];
     return [{ ...e, include_only: kept }];
   });
@@ -789,12 +804,17 @@ export function removeGeminiSkillsJsonEntry(homeDir = getHomeDir(), targetPath =
 }
 
 /**
- * Sweeps and cleans up legacy ws-* directory junctions, symlinks, or directories
- * from ~/.gemini/config/skills/ while leaving non-ws-* third-party skills intact.
+ * Sweeps legacy ws-* reparse points (junctions/symlinks, including dangling
+ * ones) from ~/.gemini/config/skills/. Physical ws-* directory copies are the
+ * deliberate Windows projection and are preserved by default; pass
+ * `includePhysical: true` (full uninstall) to remove them as well. Non-ws-*
+ * third-party skills are never touched.
  * @param {string} [homeDir] - User home directory (defaults to getHomeDir())
+ * @param {Object} [options]
+ * @param {boolean} [options.includePhysical=false] - Also remove physical ws-* dirs
  * @returns {number} Count of removed legacy skills
  */
-export function cleanupLegacyGeminiSkills(homeDir = getHomeDir()) {
+export function cleanupLegacyGeminiSkills(homeDir = getHomeDir(), { includePhysical = false } = {}) {
   const skillsDir = path.join(homeDir, '.gemini', 'config', 'skills');
   let cleanedCount = 0;
   if (!fs.existsSync(skillsDir)) {
@@ -810,16 +830,16 @@ export function cleanupLegacyGeminiSkills(homeDir = getHomeDir()) {
   try {
     const items = fs.readdirSync(skillsDir);
     for (const item of items) {
-      if (item.startsWith('ws-')) {
-        const itemPath = path.join(skillsDir, item);
-        try {
-          if (pathLexists(itemPath)) {
-            removeLexicalPath(itemPath);
-            cleanedCount++;
-          }
-        } catch {
-          /* ignore removal error */
-        }
+      if (!item.startsWith('ws-')) continue;
+      const itemPath = path.join(skillsDir, item);
+      try {
+        if (!pathLexists(itemPath)) continue;
+        const isReparsePoint = fs.lstatSync(itemPath).isSymbolicLink();
+        if (!isReparsePoint && !includePhysical) continue;
+        removeLexicalPath(itemPath);
+        cleanedCount++;
+      } catch {
+        /* ignore removal error */
       }
     }
   } catch {
