@@ -1,7 +1,19 @@
 {
-  "status": "running",
-  "completedPages": [],
-  "lastFile": ".agents/specs/wiki/delivery/spec-to-pr-pipeline.md",
+  "status": "audited",
+  "completedPages": [
+    ".agents/specs/wiki/delivery/spec-to-pr-pipeline.md",
+    ".agents/specs/wiki/documentation/website-and-hub.md",
+    ".agents/specs/wiki/documentation/ws-wiki.md",
+    ".agents/specs/wiki/engineering/practices-and-tooling.md",
+    ".agents/specs/wiki/harness/diagnostics-and-benchmarks.md",
+    ".agents/specs/wiki/harness/install-and-hub.md",
+    ".agents/specs/wiki/memory/knowledge-and-timesheet.md",
+    ".agents/specs/wiki/providers/scm-providers.md",
+    ".agents/specs/wiki/quality/verification-and-review.md",
+    ".agents/specs/wiki/specs/kanvas-board.md",
+    ".agents/specs/wiki/specs/spec-lifecycle.md"
+  ],
+  "lastFile": ".agents/specs/wiki/specs/spec-lifecycle.md",
   "findings": [
     {
       "id": "spec-lifecycle-status-order",
@@ -10,9 +22,96 @@
       "class": "confirmed",
       "evidence": ".agents/skills/ws-spec-organizer/scripts/organize_specs.cjs statusOfSpec",
       "decision": "keep"
+    },
+    {
+      "id": "spec-lifecycle-deterministic-filing",
+      "page": ".agents/specs/wiki/specs/spec-lifecycle.md",
+      "statement": "sync_index.cjs files the shipped spec into completed/ with its sidecars first and verify_close_filing.cjs fails the close when a stale pending/ path is still referenced",
+      "class": "confirmed",
+      "evidence": ".agents/skills/ws-spec-index/scripts/sync_index.cjs, .agents/skills/ws-spec-index/scripts/verify_close_filing.cjs",
+      "decision": "keep"
+    },
+    {
+      "id": "install-hub-gemini-windows-physical-copy",
+      "page": ".agents/specs/wiki/harness/install-and-hub.md",
+      "statement": "On Windows the installer projects every ws-* skill as a real physical directory copy under ~/.gemini/config/skills/ and configures skills.json with include_only: [\"^ws-.*\"]",
+      "class": "confirmed",
+      "evidence": "bin/install-rules.js shouldProjectGeminiAsCopy, OWNED_GEMINI_PATTERNS",
+      "decision": "keep"
+    },
+    {
+      "id": "delivery-fresh-verify-step-6b",
+      "page": ".agents/specs/wiki/delivery/spec-to-pr-pipeline.md",
+      "statement": "Fresh-worker verifier stage (ws-fresh-verify, Step 6b) runs after Step 6 review and before Step 7 testing, injecting one fault per AC on a scratch worktree",
+      "class": "confirmed",
+      "evidence": ".agents/skills/ws-fresh-verify/SKILL.md, .agents/skills/ws-spec-to-pr/STEP-DISPATCH.md line 110",
+      "decision": "keep"
+    },
+    {
+      "id": "quality-derived-verify-scores",
+      "page": ".agents/specs/wiki/quality/verification-and-review.md",
+      "statement": "Verify scores derive exclusively from ac-ledger.json produced by ac_ledger.cjs with known defects capping score below 9",
+      "class": "confirmed",
+      "evidence": ".agents/skills/ws-plan-verify/scripts/ac_ledger.cjs",
+      "decision": "keep"
+    },
+    {
+      "id": "documentation-wiki-validate",
+      "page": ".agents/specs/wiki/documentation/ws-wiki.md",
+      "statement": "Deterministic validation runs through validate_wiki.cjs with link resolution, index presence, and conditional heading checks",
+      "class": "confirmed",
+      "evidence": ".agents/skills/ws-wiki/scripts/validate_wiki.cjs",
+      "decision": "keep"
+    },
+    {
+      "id": "providers-parity-contract",
+      "page": ".agents/specs/wiki/providers/scm-providers.md",
+      "statement": "GitHub and Azure DevOps providers implement the same required intents tested by test-provider-parity.js",
+      "class": "confirmed",
+      "evidence": ".agents/skills/ws-shared/runtime/scm-provider-contract.md, test/test-provider-parity.js",
+      "decision": "keep"
+    },
+    {
+      "id": "memory-backends-matrix",
+      "page": ".agents/specs/wiki/memory/knowledge-and-timesheet.md",
+      "statement": "Project knowledge persists across sessions through local files (MEMORY.md) and external spec-memo vault with routing controlled by enableMemoryFiles and enableSpecMemoIntegration",
+      "class": "confirmed",
+      "evidence": ".agents/skills/ws-self-learning/SKILL.md, .ws/config.json specMemo",
+      "decision": "keep"
+    },
+    {
+      "id": "engineering-runtime-node-only",
+      "page": ".agents/specs/wiki/engineering/practices-and-tooling.md",
+      "statement": "Package helper scripts are Node 22 CommonJS .cjs with zero python runtime dependencies",
+      "class": "confirmed",
+      "evidence": "package.json engines, root AGENTS.md § Skill script runtime",
+      "decision": "keep"
+    },
+    {
+      "id": "kanvas-six-columns",
+      "page": ".agents/specs/wiki/specs/kanvas-board.md",
+      "statement": "Kanvas board populates six columns: Abandoned, Production, Staging, Development, Sprint, Backlog from spec and plan state",
+      "class": "confirmed",
+      "evidence": ".agents/skills/ws-kanvas/scripts/collect.cjs",
+      "decision": "keep"
+    },
+    {
+      "id": "website-deterministic-build",
+      "page": ".agents/specs/wiki/documentation/website-and-hub.md",
+      "statement": "bin/build-site.js rebuilds site and snapshots wiki markdown into docs/wiki/** with deterministic check",
+      "class": "confirmed",
+      "evidence": "bin/build-site.js, test/test-doc-sync.js, test/test-site-wiki.js",
+      "decision": "keep"
+    },
+    {
+      "id": "harness-doctor-contract",
+      "page": ".agents/specs/wiki/harness/diagnostics-and-benchmarks.md",
+      "statement": "ws-doctor provides read-only diagnostic inspection with --json emitting one object on stdout",
+      "class": "confirmed",
+      "evidence": ".agents/skills/ws-doctor/SKILL.md, .agents/skills/ws-doctor/scripts/doctor.js",
+      "decision": "keep"
     }
   ],
-  "startedAt": "2026-09-29T11:52:00Z",
-  "updatedAt": "2026-09-29T11:52:00Z",
-  "note": "Walk started. Remaining pages are not classified. Do not treat status as audited."
+  "startedAt": "2026-10-03T12:55:00.000Z",
+  "updatedAt": "2026-10-03T12:57:00.000Z"
 }
