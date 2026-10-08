@@ -167,6 +167,7 @@ node .agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs --inp
 /ws-spec-from-provider
 /ws-spec-from-provider --dry-run
 /ws-spec-from-provider --limit N
+/ws-spec-from-issue      # alias — identical behavior
 ```
 
 Importing backlog for `/ws-spec-list` or `/ws-spec-multi`.

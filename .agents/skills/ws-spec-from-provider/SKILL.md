@@ -5,6 +5,8 @@ disable-model-invocation: true
 invocation_names:
   - spec-from-provider
   - ws-spec-from-provider
+  - spec-from-issue
+  - ws-spec-from-issue
 ---
 # ws-spec-from-provider
 
@@ -22,6 +24,8 @@ Bulk-import remote work items into the local specs pipeline: agentic `{specsDir}
 /ws-spec-from-provider
 /ws-spec-from-provider --dry-run
 /ws-spec-from-provider --limit N
+
+# alias: /ws-spec-from-issue (identical behavior)
 ```
 
 | Flag | Effect |
