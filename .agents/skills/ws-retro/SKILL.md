@@ -78,7 +78,7 @@ Auto mode stops after step 5: proposals only, zero prompts, zero writes (the orc
 }
 ```
 
-Validation rules (enforced by `validate_candidates.cjs`): all fields non-empty; category from the closed enum; severity from the closed set; when `--repo-root` is supplied, file-shaped evidence artifacts must resolve inside the root. Stable rejection reasons: `field-required`, `category-invalid`, `evidence-required`, `evidence-unresolvable`.
+Validation rules (enforced by `validate_candidates.cjs`): all fields non-empty; category from the closed enum; severity from the closed set; with `--repo-root`, `evidence.artifact` must resolve repo-relative (run-local refs go in `evidence.ref`). Stable rejection reasons: `field-required`, `category-invalid`, `evidence-required`, `evidence-unresolvable`.
 
 ## Guardrails
 
