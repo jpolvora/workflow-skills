@@ -214,6 +214,9 @@
     ],
     [
       "test/test-explicit-knowledge-chain.js"
+    ],
+    [
+      "test/test-ws-retro.js"
     ]
   ],
   "remote": [

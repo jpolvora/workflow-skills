@@ -6,7 +6,7 @@ Path tokens: expand via [`tools.md`](tools.md) before tool calls.
 
 ## Skill catalog (layers)
 
-> **Scope note:** Full inventory for this install. Membership is [`skill-dependencies.json`](skill-dependencies.json) (`workflows` = 49, `extra` = 8). Extra rows are absent from Workflows-only installs. Ids in `externalSkills` (spec-memo companions, generator-managed consumer skills) are not packaged here. Consumer routes: [`AGENTS.md`](AGENTS.md).
+> **Scope note:** Full inventory for this install. Membership is [`skill-dependencies.json`](skill-dependencies.json) (`workflows` = 54, `extra` = 8). Extra rows are absent from Workflows-only installs. Ids in `externalSkills` (spec-memo companions, generator-managed consumer skills) are not packaged here. Consumer routes: [`AGENTS.md`](AGENTS.md).
 >
 > **Do not load this catalog as a work list** — it is an index. Load skills per [`AGENTS.md`](AGENTS.md) § Skill loading.
 
@@ -77,6 +77,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | `ws-classify-complexity` | `.agents/skills/ws-classify-complexity/SKILL.md` | Pipeline lite vs standard classifier |
 | `ws-self-learning` | `.agents/skills/ws-self-learning/SKILL.md` | Anti-regression memory engine |
 | `ws-changelog` | `.agents/skills/ws-changelog/SKILL.md` | Append-only task history |
+| `ws-retro` | `.agents/skills/ws-retro/SKILL.md` | Session retrospective → curated, evidence-linked environment proposals (propose-only; opt-in auto-run) |
 | `ws-configure-project` | `.agents/skills/ws-configure-project/SKILL.md` | Interactive config.json wizard |
 | `ws-goal-loop` | `.agents/skills/ws-goal-loop/SKILL.md` | Convergence loop primitive |
 | `ws-spec-index` | `.agents/skills/ws-spec-index/SKILL.md` | Project spec index init/sync/promote |
@@ -162,6 +163,7 @@ Install via `using-superpowers` / `find-skills` until routed here.
 | Audit harness | `ws-check-harness` |
 | Diagnose skills / doctor the harness | `ws-doctor` |
 | Show install scope / package version | `ws-version` |
+| Run a session retrospective on a completed run | `ws-retro` |
 | Check workflows | `ws-check-workflows` |
 | Grill plan vs docs | `grill-with-docs` |
 | Record learning | `ws-self-learning` (MEMORY consult before plan/code/fix; trap write on completion) |

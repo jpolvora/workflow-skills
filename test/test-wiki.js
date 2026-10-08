@@ -237,7 +237,9 @@ Missing Business Rules & Logic section!
     const runtimeCatalogPath = path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/CATALOG.md');
     const runtimeCatalog = fs.readFileSync(runtimeCatalogPath, 'utf8');
     assert(runtimeCatalog.includes('ws-wiki') && runtimeCatalog.includes('.agents/skills/ws-wiki/SKILL.md'), 'AC17: runtime/CATALOG.md registers ws-wiki');
-    assert(runtimeCatalog.includes('`workflows` = 49'), 'AC17: runtime/CATALOG.md scope note has workflows = 49');
+    const deps = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'bin/skill-dependencies.json'), 'utf8'));
+    const workflowCount = deps.packages.workflows.skills.length;
+    assert(runtimeCatalog.includes(`\`workflows\` = ${workflowCount}`), `AC17: runtime/CATALOG.md scope note has workflows = ${workflowCount}`);
 
     const autoloadPath = path.join(REPO_ROOT, '.ws/autoload.md');
     const autoload = fs.readFileSync(autoloadPath, 'utf8');

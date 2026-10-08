@@ -200,6 +200,7 @@ Commands + flags: [`README.md`](README.md) § Install, update, and uninstall (`n
 | `ws-benchmarks` | Utility | Harness benchmark management suite — interactive menu to inspect evolution results, run static/live benchmarks, and update comparison reports (Extra) |
 | `ws-monitor` | Utility | Read-only live observation of active workflow state, telemetry, artifacts, and configured transcripts |
 | `ws-version` | Utility | Read-only install scope, skill directory, and package version snapshot |
+| `ws-retro` | Utility | Session retrospective — curated, evidence-linked proposals for memory/directives/standards/checks (opt-in; propose-only) |
 
 ---
 

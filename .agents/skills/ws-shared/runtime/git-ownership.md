@@ -151,6 +151,7 @@ class. Every orchestrator follows this table; a skill absent from it fails
 | `ws-plan-write` | read-only | plan is an owned output |
 | `ws-pre-daily` | read-only | reads git history; digest is an owned output |
 | `ws-preview` | read-only | dry-run only |
+| `ws-retro` | read-only | retrospective proposals are owned outputs; approved edits are the session's own work |
 | `ws-run-benchmark` | read-only | benchmark runs; results are owned outputs |
 | `ws-secrets-leak-review` | read-only | reads staged diffs; never mutates |
 | `ws-self-learning` | shared-artifact-writing | `memory/*.md` sources + generated `MEMORY.md` |

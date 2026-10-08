@@ -1,5 +1,35 @@
 # Changelog
 
+### [2026-10-08 12:55] Agent: agent
+- **Prompt**: US us-490: add optional ws-retro retrospective skill (issue #490)
+- **Done**: New ws-retro package (SKILL.md, retro_hook.cjs, validate_candidates.cjs); opt-in retro.enabled post-convergence hook wired into standard+lite orchs, gates/artifacts; config schema/example/PS editor; both dependency manifests; test-v1-v16 suite + adequacy T01-T08; docs/site/integrity sync.
+- **Result**: Score 10/10; review CR-001 fixed (826d5738) and closed; fresh-verify 0 defects; harness 0 findings; PR open (batch master owns merge).
+
+### [2026-10-08 11:38] Agent: agent
+- **Prompt**: update spec index.prd (fill index gaps)
+- **Done**: Filled .agents/specs/index.PRD gaps: added 6 missing Done-log rows (0028 audit suggestions dec41b34, 0067 PR #285, 0079 PR #323, us-415-416 PR #421, us-414 PR #422, us-412-418 PR #423) and 3 missing Next-specs rows (us-324, us-328, us-344); 12 insertions, no other changes.
+- **Result**: check_spec_filing.cjs OK; test-ws-spec-index-track.js and test-spec-index-filing.js green; CRLF preserved.
+
+### [2026-10-08 10:40] Agent: agent
+- **Prompt**: Create GH issue for optional retro skill (ws-spec-to-issue); add ws-spec-from-issue alias; bulk-import issue #490 (ws-spec-from-provider)
+- **Done**: Opened issue #490 (retro skill: session retrospective to curated agent/harness/memory improvements); added spec-from-issue / ws-spec-from-issue aliases to ws-spec-from-provider SKILL.md + SPEC-MANAGEMENT.md, regenerated integrity; imported #490 via ws-spec-from-provider to a spec of record, step-00 workflow copy, and index.PRD track.
+- **Result**: verify-integrity OK; test-harness-clean.js 0 findings; validate_spec.cjs --mode=authoring PASS (10 ACs). npm test env-blocked (npm cache path) - recorded memory trap.
+
+### [2026-10-01 16:49] Agent: agent
+- **Prompt**: ws-spec-to-pr Step 9 fix-pr for us-488 (PR #489)
+- **Done**: Resolved reviewer WARNING: partial uninstall now deletes per-skill physical gemini copies; fixed CI (version bump commit + wiki source/html sync)
+- **Result**: PR #489 merged (4caed17a), issue #488 closed; v0.5.34
+
+### [2026-10-01 16:26] Agent: agent
+- **Prompt**: ws-spec-to-pr: deliver GitHub issue #488 (gemini physical-copy projection + regex include_only)
+- **Done**: Implemented + verified installer gemini target fix; standard pipeline steps 0-7, score 10/10, review clean, testing green
+- **Result**: bin/install-rules.js + bin/cli.js + test/test-install.js; version 0.5.34; PR pending
+
+### [2026-10-01 12:38] Agent: agent
+- **Prompt**: Import GitHub issue #488 into local specs (ws-spec-from-provider)
+- **Done**: Reformulated + registered us-488 spec; tracked in index.PRD
+- **Result**: Spec at .agents/specs/pending/0169-us-488.spec.md; step-00 at .agents/plans/us-488/
+
 ### [2026-10-01 00:12] Agent: agent
 - **Prompt**: Update wiki from latest 10 merged PRs (us-464/473/476/477/478, us-474/475, benchmark publish, context budgets, knowledge chain)
 - **Done**: Synced 6 wiki source pages + rebuilt docs/wiki HTML; advanced Sync Baseline f62e45fa -> 8d1e310c
