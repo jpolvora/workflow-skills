@@ -59,6 +59,7 @@
         "ws-ship-pr",
         "ws-fix-pr",
         "ws-goal-fix-pr",
+        "ws-retro",
         "ws-spec-provider-github",
         "ws-spec-provider-azure-devops",
         "ws-spec-provider-local",
@@ -146,7 +147,8 @@
       "ws-spec-index",
       "ws-wiki",
       "ws-senior-developer",
-      "ws-spec-translate-to-human"
+      "ws-spec-translate-to-human",
+      "ws-retro"
     ],
     "ws-spec-to-pr-lite": [
       "ws-spec-write",
@@ -168,7 +170,8 @@
       "ws-spec-index",
       "ws-wiki",
       "ws-senior-developer",
-      "ws-spec-translate-to-human"
+      "ws-spec-translate-to-human",
+      "ws-retro"
     ],
     "ws-spec-to-pr-distributed": [
       "ws-spec-to-pr",
@@ -239,6 +242,9 @@
     "ws-version": [],
     "ws-plan-verify": [
       "ws-fable-judge"
+    ],
+    "ws-retro": [
+      "ws-self-learning"
     ],
     "ws-ship-pr": [
       "ws-secrets-leak-review",

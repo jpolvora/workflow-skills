@@ -6,7 +6,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 
 ## Skill catalog (layers)
 
-> **Scope:** 52 workflow + 8 Extra; see [`bin/skill-dependencies.json`](bin/skill-dependencies.json). Routes: [`.ws/AGENTS.md`](.ws/AGENTS.md).
+> **Scope:** 54 workflow + 8 Extra; see [`bin/skill-dependencies.json`](bin/skill-dependencies.json). Routes: [`.ws/AGENTS.md`](.ws/AGENTS.md).
 >
 > **Index only.** Load skills per root `AGENTS.md` § Progressive disclosure.
 
@@ -75,6 +75,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | `ws-classify-complexity` | `.agents/skills/ws-classify-complexity/SKILL.md` | Pipeline lite vs standard classifier |
 | `ws-self-learning` | `.agents/skills/ws-self-learning/SKILL.md` | Anti-regression memory engine |
 | `ws-changelog` | `.agents/skills/ws-changelog/SKILL.md` | Append-only task history |
+| `ws-retro` | `.agents/skills/ws-retro/SKILL.md` | Session retrospective → curated, evidence-linked environment proposals (propose-only; opt-in auto-run) |
 | `ws-configure-project` | `.agents/skills/ws-configure-project/SKILL.md` | Interactive config.json wizard |
 | `ws-goal-loop` | `.agents/skills/ws-goal-loop/SKILL.md` | Convergence loop primitive |
 | `ws-spec-index` | `.agents/skills/ws-spec-index/SKILL.md` | Project spec index init/sync/promote |
@@ -162,6 +163,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | Diagnose skills / doctor the harness | `ws-doctor` |
 | Check workflows | `ws-check-workflows` |
 | Observe a live workflow | `ws-monitor` |
+| Run a session retrospective on a completed run | `ws-retro` |
 | Show install scope / package version | `ws-version` |
 | Grill plan vs docs | `grill-with-docs` |
 | Record learning | § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) |

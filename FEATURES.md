@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.5.14** · 60 skills (52 Workflows + 8 Extra) + the `ws-shared` consumer hub.
+Package version: **0.5.14** · 62 skills (54 Workflows + 8 Extra) + the `ws-shared` consumer hub.
 
 ### ws-shared hybrid configuration boundary
 
@@ -214,6 +214,7 @@ Meta-skills that keep the suite itself honest.
 | `ws-doctor` | Read-only diagnosis of path errors, tool recipes, config switches, and missing references across installed skills |
 | `ws-version` | Read-only snapshot of install scope (`global` vs `project-local`), absolute loaded `ws-version` skill directory, `packageVersion` from `.agents/skills/ws-shared/version.json`, and stored `.ws/config.json` path tokens |
 | `ws-monitor` | Read-only live observation of workflow state, telemetry, expected artifacts, and configured transcript roots; per-root discovery budget + one shared sanitized correlation window (honest `scan-capped`), `worker-session-paused` replaces the stall warning under a turn-boundary pause, `--watch --until-terminal` exits on a non-active scoped workflow; multi-spec runs derive child-state expectations from the queue and surface `missing-child-state`; the default live watch profile (`--watch --interval 60 --until-terminal --follow-transcript --session-id <id> --agent <name> --open-issue`) follows a session, detects stall/hang via a `stopwatch` (`worker-session-stall` / `stalled-workflow`, `--stall-window`; the session source defers to the state/telemetry clock — re-read each tick, driver session preferred, downgraded to info while state/telemetry advances), and proposes an enriched anonymized defect issue for the configured SCM provider `create-issue` intent |
+| `ws-retro` | Session retrospective for a completed run: ranks friction signals, validates evidence-linked candidates (closed category enum), and proposes environment improvements (memory, harness directives, reviewer standards, automated checks, navigation pointers, no-op deletions). Propose-only; opt-in auto-run via `retro.enabled` after the ship phase; never blocks close or ship |
 | `ws-show-harness` | Snapshot of the active session: loaded skills, rules, precedence hierarchy |
 | `ws-preview` | Consumer-configured local pipeline review dry-run (`preview.dryRunCommand`) without publishing PR threads |
 | `ws-write-a-skill` | Authoring and progressive-disclosure tuning protocol for new skills |
@@ -491,6 +492,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-spec-explain`](.agents/skills/ws-spec-explain/SKILL.md) | W | Spec/US status & delivery panorama |
 | [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) | W | Archive plan history into `index.PRD`; propose plan-dir cleanup |
 | [`ws-cleanup`](.agents/skills/ws-cleanup/SKILL.md) | W | Workflow leftover cleanup with confirm gate |
+| [`ws-retro`](.agents/skills/ws-retro/SKILL.md) | W | Session retrospective → curated, evidence-linked environment proposals (propose-only; opt-in auto-run; never blocks close/ship) |
 | [`ws-patterns-generator`](.agents/skills/ws-patterns-generator/SKILL.md) | W | Consumer project-patterns skill generator + seed script |
 
 ### Hub (not a skill)

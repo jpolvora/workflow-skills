@@ -681,6 +681,18 @@
         }
       }
     },
+    "retro": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Optional ws-retro post-convergence retrospective (issue #490). Explicit enabled true runs the advisory ws-retro skill once after the run's ship phase ends; omitted or false preserves existing close/ship behavior. The step never blocks close, ship, merge, or fix-PR convergence.",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Explicit true runs ws-retro automatically after the PR convergence/ship phase (standard after Step 9, lite after Step 5). Omitted or false skips the step."
+        }
+      }
+    },
     "ws-spec-translate-to-human": {
       "type": "object",
       "additionalProperties": true,

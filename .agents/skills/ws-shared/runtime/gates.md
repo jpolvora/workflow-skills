@@ -313,6 +313,19 @@ On Start: resolve the output folder from `defaults.projectRootFolderToSave` (`{p
 
 ---
 
+## Optional post-convergence retro step
+
+Orchestrator-owned, opt-in: `config.json` → `retro.enabled` explicit `true` (omitted, missing, or `false` → skipped with `retro | skipped:disabled|missing`). Runs strictly after the workflow reaches its finished state and **before** the optional post-completion proof-of-work step: standard after Step 9 convergence/stop (or Step 8 ship when Step 9 does not run); lite after Step 5 convergence/stop (or Step 4 ship when no fix-pr).
+
+Executable decision: `node {skillsRoot}/ws-retro/scripts/retro_hook.cjs should-run --config {sharedDir}/config.json --json` prints `{"run":boolean,"reason":"enabled|disabled|missing","key":"retro.enabled"}` (pure: reads one config file, writes nothing).
+
+- **On start (`run:true`):** run the [`ws-retro`](../../ws-retro/SKILL.md) contract in auto mode — proposals only (`{us-dir}/{workflow-id}.retro.md` + `.retro.json`), zero prompts, zero writes; log `retro | started:{artifact}`.
+- **On skip:** log `retro | skipped:{reason}`.
+
+Advisory only: never blocks close, ship, merge, or fix-PR convergence; failures are logged and ignored; `autoMode` never prompts for it and `fullMode`/close/ship behavior is unchanged when the key is absent.
+
+---
+
 ## Score & Refine gate (`scoreAndRefine`)
 
 Step 5 overall score **must be ≥ `defaults.minVerifyScore` (default 9)** to Advance. A score below `defaults.minVerifyScore` **always** runs this loop, even when `defaults.scoreAndRefine` is false.

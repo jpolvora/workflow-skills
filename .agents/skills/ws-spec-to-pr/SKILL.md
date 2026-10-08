@@ -102,3 +102,5 @@ Distributed multi-CLI execution is owned by the opt-in [`ws-spec-to-pr-distribut
 ## Exit & Handoff
 
 Complete when Step 8 **close** sets `status: completed` (implementation done). Shipping (push/PR) and Step 9 fix-pr may continue in the same run; `shipStatus` tracks shipping separately. After the run reaches its finished state, the optional post-completion proof-of-work step applies per [`gates.md`](../ws-shared/runtime/gates.md) § Optional post-completion proof-of-work step (explicit `defaults.enableOptionalProofOfWork: true` only; omitted/`false` changes nothing).
+
+**Optional post-convergence retro (opt-in):** after the ship phase ends and before the optional proof-of-work step, `node {skillsRoot}/ws-retro/scripts/retro_hook.cjs should-run --config {sharedDir}/config.json --json` (`retro.enabled` explicit true only; otherwise log `retro | skipped:{reason}`). Advisory only: `ws-retro` proposals never block close, ship, or fix-PR. Runbook: [`STEP-DISPATCH.md`](STEP-DISPATCH.md) § Optional post-convergence retro.

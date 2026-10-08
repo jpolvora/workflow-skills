@@ -1461,6 +1461,9 @@ Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'monitor' -Key 'autoS
 
                 Add-SectionHeader -ParentPanel $page -YOffset $y -Title 'Fix-PR Loop' -Subtitle 'Subagent dispatch for review-thread convergence.'
                 Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'ws-goal-fix-pr' -Key 'useSubAgents' -LabelText 'Fix-PR Loop: Dispatch Subagents Per Round (ws-goal-fix-pr.useSubAgents)' -Type 'bool' -DefaultVal $false
+
+                Add-SectionHeader -ParentPanel $page -YOffset $y -Title 'Retrospective' -Subtitle 'Optional post-convergence ws-retro proposals (propose-only; never blocks).'
+                Add-ConfigFieldRow -ParentPanel $page -YOffset $y -Section 'retro' -Key 'enabled' -LabelText 'Run ws-retro After the Ship Phase (retro.enabled)' -Type 'bool' -DefaultVal $false
             }
         }
 

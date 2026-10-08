@@ -47,6 +47,8 @@ Canonical artifacts under `{us-dir}`. `read-artifacts-registry` resolves one nam
 | Testing plan | `step-07-{slug}.testing.plan.md` | Step 7 | No |
 | Testing report | `step-07-{slug}.testing.report.md` | Step 7 | **Yes (Step 8)** when `includeTestingReport` |
 | Delivery result | `step-08-{slug}.result.md` | Step 8 | **Yes (Step 8)** when `includeDeliveryResult` |
+| Retro proposals | `{workflow-id}.retro.md` | Post-convergence `ws-retro` hook / standalone manual run | No |
+| Retro candidates | `{workflow-id}.retro.json` | Post-convergence `ws-retro` hook / standalone manual run (`validate_candidates.cjs`) | No |
 | Dispatch prompt | `step-{NN}-{slug}.prompt.md` (DAG: `step-04-{slug}.prompt.{node}.md`) | Every standard dispatch | No |
 | Dispatch prompt manifest | `step-{NN}-{slug}.prompt.json` (DAG per-node) | `write_dispatch_prompt_audit.cjs` | No |
 
