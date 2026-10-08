@@ -47,7 +47,7 @@ Living synthesis of specs 0001–0150. The delta since adds empty-alias verify s
 
 ## Domain: engineering
 
-- [Practices & Tooling](engineering/practices-and-tooling.md): Surgical scope, reply shape, investigate loop, Node-only runtime, megabrain, config editor.
+- [Practices & Tooling](engineering/practices-and-tooling.md): Surgical-diff engineering practices, toolchain uniformity, and the opt-in ws-retro retrospective loop
 
 ## Domain: documentation
 

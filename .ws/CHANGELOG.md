@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-08 12:55] Agent: agent
+- **Prompt**: US us-490: add optional ws-retro retrospective skill (issue #490)
+- **Done**: New ws-retro package (SKILL.md, retro_hook.cjs, validate_candidates.cjs); opt-in retro.enabled post-convergence hook wired into standard+lite orchs, gates/artifacts; config schema/example/PS editor; both dependency manifests; test-v1-v16 suite + adequacy T01-T08; docs/site/integrity sync.
+- **Result**: Score 10/10; review CR-001 fixed (826d5738) and closed; fresh-verify 0 defects; harness 0 findings; PR open (batch master owns merge).
+
 ### [2026-10-08 11:38] Agent: agent
 - **Prompt**: update spec index.prd (fill index gaps)
 - **Done**: Filled .agents/specs/index.PRD gaps: added 6 missing Done-log rows (0028 audit suggestions dec41b34, 0067 PR #285, 0079 PR #323, us-415-416 PR #421, us-414 PR #422, us-412-418 PR #423) and 3 missing Next-specs rows (us-324, us-328, us-344); 12 insertions, no other changes.

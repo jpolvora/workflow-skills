@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-10-08] Windows host: full-suite runner flake and sabotage/injection alias constraint
+- **Layer**: `devops`
+- **Module**: `test-runner / ws-testing / ws-fresh-verify`
+- **Severity**: `Medium`
+- **PathPattern**: `test/test-subagent-dispatch.js`, `test/run-tests.cjs`, `.agents/skills/ws-testing/scripts/run_sabotage.cjs`, `.agents/skills/ws-fresh-verify/scripts/run_fresh_injection.cjs`
+- **Scenario / Context**: On this Windows host, `npm run test` reaches 43/160 and then `test/test-subagent-dispatch.js` fails with `AssertionError: child started before the kill` (the timeout case gives the spawned child only a 400 ms window to write its alive marker; cold Node start under full-suite load exceeds it). The suite passes standalone repeatedly and is untouched by workflow changes. `run_sabotage.cjs` / `run_fresh_injection.cjs` only accept the configured `verification.*Test` alias (here `npm run test`), so a forced run records the flake as the "red" signal before ever reaching the injected assertion.
+- **DO NOT**: Treat the full-runner failure as a regression from the change under test; force equivalent sabotage/injection runs through the full-suite alias and attribute the mid-run flake as the fault-injection red signal.
+- **INSTEAD DO**: Run the affected suite standalone, run the remaining suite list individually (read `test/test-suites.json`), link the alias as `exitCode: 1` with `skipReason: "baseline-dirty"` + `failingPaths` for the untouched flaky path, and record inline wrong-code inversions (edit -> targeted suite -> byte-identical restore, green re-run) as the equivalent red-signal evidence with the deviation documented in the report and step-output.
+
 ### [2026-10-08] `npm test` blocked by npm cache path on this host
 - **Layer**: `devops`
 - **Module**: `test-runner / npm-pretests`
