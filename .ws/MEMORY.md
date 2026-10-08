@@ -15,6 +15,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **DO NOT**: Treat the full-runner failure as a regression from the change under test; force equivalent sabotage/injection runs through the full-suite alias and attribute the mid-run flake as the fault-injection red signal.
 - **INSTEAD DO**: Run the affected suite standalone, run the remaining suite list individually (read `test/test-suites.json`), link the alias as `exitCode: 1` with `skipReason: "baseline-dirty"` + `failingPaths` for the untouched flaky path, and record inline wrong-code inversions (edit -> targeted suite -> byte-identical restore, green re-run) as the equivalent red-signal evidence with the deviation documented in the report and step-output.
 
+### [2026-10-08] Stale process env hides fresh OS env vars; read the registry scope
+- **Layer**: `Environment / CI credentials`
+- **Module**: `.github/workflows/agentic-code-review.yml` (`OPENCODE_API_KEY`), host-agent process env`
+- **Severity**: `Medium`
+- **PathPattern**: `.github/workflows/agentic-code-review.yml`, `.ws/config.json` (`preview.dryRunCommand`)`
+- **Scenario / Context**: The Agentic Code Review job failed with upstream `401 Invalid credential` (`opencode.ai/zen/go/v1/responses`) while the OS-level `OPENCODE_API_KEY` had already been updated outside the running agent host. Shells spawned by the host inherit the stale process env, so `$env:OPENCODE_API_KEY` keeps the old value even in a fresh terminal.
+- **DO NOT**: Trust `$env:OPENCODE_API_KEY` (or any env var updated after the host started) to reflect the current OS value, and do not conclude the credential is still invalid from the process env alone.
+- **INSTEAD DO**: Read the persisted scope directly (`[Environment]::GetEnvironmentVariable('OPENCODE_API_KEY','User')`, fall back to `'Machine'`), compare fingerprints (length + SHA-256 prefix) instead of printing values, refresh the consumer (e.g. `gh secret set OPENCODE_API_KEY --body $value.Trim()`), then rerun the failed workflow job (`gh run rerun <run-id> --failed`) instead of pushing a new commit.
+
 ### [2026-10-08] `npm test` blocked by npm cache path on this host
 - **Layer**: `devops`
 - **Module**: `test-runner / npm-pretests`

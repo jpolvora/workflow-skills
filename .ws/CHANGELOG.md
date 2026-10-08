@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-08 13:23] Agent: agent
+- **Prompt**: ws-spec-multi batch ms-20261008T154414Z item us-490 (retro skill: session retrospective)
+- **Done**: Shipped us-490: new ws-retro skill package (SKILL.md + retro_hook/validate_candidates scripts), opt-in retro.enabled hook in standard+lite orchestrators, config trio (schema/example/PS editor), manifests, docs/site/wiki, test-ws-retro.js; verify 10/10, fresh-verify 0 defects, testing PASS, harness 0 findings. Merge held on agentic-review upstream 401; refreshed repo OPENCODE_API_KEY from the freshly updated OS value and reran: review + CI tests green. PR #491 merged (34903639); issue #490 closed; develop synced with main.
+- **Result**: Batch completed 1/1 shipped (standard flow); cleanup CLEAN (8 uswf tags removed); spec filed to completed/ with index.PRD synced; v0.5.35.
+
 ### [2026-10-08 12:55] Agent: agent
 - **Prompt**: US us-490: add optional ws-retro retrospective skill (issue #490)
 - **Done**: New ws-retro package (SKILL.md, retro_hook.cjs, validate_candidates.cjs); opt-in retro.enabled post-convergence hook wired into standard+lite orchs, gates/artifacts; config schema/example/PS editor; both dependency manifests; test-v1-v16 suite + adequacy T01-T08; docs/site/integrity sync.
