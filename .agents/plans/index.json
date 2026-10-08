@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 19,
-  "generatedAt": "2026-10-08T16:55:57Z",
+  "revision": 22,
+  "generatedAt": "2026-10-08T17:04:15Z",
   "workflows": [
     {
       "workflowId": "benchmark-publish-fixed-models-20260930T114235Z",
@@ -283,10 +283,10 @@
       "slug": "us-490",
       "pipeline": "standard",
       "statePath": ".agents/plans/us-490/us-490-20261008T155141Z.state.md",
-      "stateSha256": "a216e956ab9a2a5224bb36a9253c94d2cf5df69f984eb9fe6a81d242d6d6e067",
+      "stateSha256": "9ba7897153db7e46105f98e44bd6913c6e5ac9327c3e60d48d3cf9d2097cf799",
       "status": "completed",
       "currentStep": 9,
-      "updatedAt": "2026-10-08T16:55:57Z",
+      "updatedAt": "2026-10-08T17:04:15Z",
       "runPath": ".agents/plans/us-490/us-490-20261008T155141Z.state.json"
     },
     {
