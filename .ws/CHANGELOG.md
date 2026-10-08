@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-08 11:38] Agent: agent
+- **Prompt**: update spec index.prd (fill index gaps)
+- **Done**: Filled .agents/specs/index.PRD gaps: added 6 missing Done-log rows (0028 audit suggestions dec41b34, 0067 PR #285, 0079 PR #323, us-415-416 PR #421, us-414 PR #422, us-412-418 PR #423) and 3 missing Next-specs rows (us-324, us-328, us-344); 12 insertions, no other changes.
+- **Result**: check_spec_filing.cjs OK; test-ws-spec-index-track.js and test-spec-index-filing.js green; CRLF preserved.
+
 ### [2026-10-08 10:40] Agent: agent
 - **Prompt**: Create GH issue for optional retro skill (ws-spec-to-issue); add ws-spec-from-issue alias; bulk-import issue #490 (ws-spec-from-provider)
 - **Done**: Opened issue #490 (retro skill: session retrospective to curated agent/harness/memory improvements); added spec-from-issue / ws-spec-from-issue aliases to ws-spec-from-provider SKILL.md + SPEC-MANAGEMENT.md, regenerated integrity; imported #490 via ws-spec-from-provider to a spec of record, step-00 workflow copy, and index.PRD track.

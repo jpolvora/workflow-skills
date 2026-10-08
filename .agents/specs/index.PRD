@@ -590,6 +590,12 @@ All Next-specs closed.
 
 | 175 | `us-490` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Add optional retro skill (session retrospective to curated agent/harness/memory improvements) |
 
+| 176 | `us-324` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-wiki: verbosity/prose-style option + richer conditional page template |
+
+| 177 | `us-328` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Fix stale autoload keyword-map prose for scm-provider-contract path |
+
+| 178 | `us-344` | `[x]` done | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | change website cta / main slug/slogan |
+
 ## 9. Inbox
 
 - Advanced multi-repository orchestrator support
@@ -767,6 +773,12 @@ All Next-specs closed.
 | 2026-10-01 | `us-469` | ws-doctor: path-error section reports widespread false positives (citation base, link text, prose) | 994f47fff58b735eae61d8cf44a0df3ffa86f5e5 |
 | 2026-10-01 | `us-458` | autoMode should mean unattended: no yield at internal checkpoints | 8b449b9d |
 | 2026-10-01 | `us-488` | fix(installer): use physical folder copy for Antigravity IDE on Windows and fix regex filter in skills.json | 7cb436be59246b2ecddfb8d5079c780e354df4db |
+| 2026-08-22 | `audit-performance-correctness-and-reusable-scripts` | Runtime Audit Suggestions for Performance, Correctness, and Upstream Reusable Tooling | `dec41b34` delivery commit (0.3.32) |
+| 2026-09-06 | `reviewer-aligned-implementation-gates` | Reviewer-Aligned Implementation Gates & Pre-PR Defect Prevention | [PR #285](https://github.com/jpolvora/workflow-skills/pull/285) MERGED |
+| 2026-09-12 | `ws-wiki-from-code` | ws-wiki from-code genesis and progressive-disclosure split | [PR #323](https://github.com/jpolvora/workflow-skills/pull/323) MERGED |
+| 2026-09-24 | `us-415-416-script-ux-golden-path` | Workflow script UX and golden-path state commands: discoverable help, score diagnostics, boundary errors, exit codes, per-gate commands, tamper-evidence | [PR #421](https://github.com/jpolvora/workflow-skills/pull/421) MERGED |
+| 2026-09-25 | `us-414-run-state-integrity` | Run-state and telemetry integrity: fail-closed preset resolution, ship writeback, Step 9 round artifacts, truthful skip semantics | [PR #422](https://github.com/jpolvora/workflow-skills/pull/422) MERGED |
+| 2026-09-25 | `us-412-418-monitor-accuracy` | Monitor accuracy: step-membership artifact expectations, legacy terminal tolerance, transcript correlation windows, discovery budget | [PR #423](https://github.com/jpolvora/workflow-skills/pull/423) MERGED |
 
 ## 11. Maintenance checklist
 
