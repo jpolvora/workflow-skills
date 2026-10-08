@@ -6,95 +6,194 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
-### [2026-10-01] version bump invalidates the packed tarball; `npm run tests` skips the re-pack
+### [2026-10-08] `npm test` blocked by npm cache path on this host
 - **Layer**: `devops`
-- **Module**: `workflow-skills package tests / bin/build-site.js --bump`
-- **Severity**: `High`
-- **PathPattern**: `package.json, test/package.json, test/test-subagent-dispatch.js, test/test-install.js`
-- **Scenario / Context**: After `npm run build-site:bump` (0.5.30 -> 0.5.31), `npm run tests` (`node test/run-tests.cjs`) failed at `test/test-subagent-dispatch.js` because the install fixtures still referenced the previously packed `workflow-skills-0.5.30.tgz` while `package.json`/`test/package.json` already pointed at 0.5.31. `npm test` passes because its `pretests` script runs `npm pack` first and refreshes the tarball.
-- **DO NOT**: Run `npm run tests` as the ship/quality gate right after a version bump (or any change while the pack is stale); treat the resulting install-fixture failure as a product regression.
-- **INSTEAD DO**: Use `npm test` (which runs `pretests: npm pack`) after a bump, or run `npm pack` manually before `npm run tests`; the tarball ref in `test/package.json` must match `package.json` version.
-
-### [2026-10-01] Parallel workflow state writes race and lose an update
-- **Layer**: `infrastructure`
-- **Module**: `ws-spec-to-pr / workflow_state`
+- **Module**: `test-runner / npm-pretests`
 - **Severity**: `Medium`
-- **PathPattern**: `.agents/plans/**/*.state.json`
-- **Scenario / Context**: Running two `update_state.cjs finish` calls for consecutive steps in the same shell turn (or two parallel tool calls) reads the same base revision and each writes revision+1; the second write silently overwrites the first, so a step's completion and `skippedSteps` record are lost while the file still looks valid.
-- **DO NOT**: fire multiple `update_state.cjs` dispatch/finish/checkpoint mutations concurrently (parallel tool calls or a shared `&&` batch) against the same `{workflow-id}.state.json`.
-- **INSTEAD DO**: run state mutations strictly sequentially, one tool call per mutation, and re-read `completedSteps`/`skippedSteps` (or the returned `revision`) before the next; a lost step shows as an un-incremented revision.
+- **PathPattern**: `test/run-tests.cjs`, `package.json` (`pretests`), `bin/skill-integrity.json`
+- **Scenario / Context**: On this Windows host, `npm test` fails before any test runs: the `pretests` script (`npm pack`) errors `ENOENT: no such file or directory, mkdir '\\?'` because the npm cache resolves to `G:\packages\npm\_cache`. Running `node test/run-tests.cjs` directly also stops at test 1/159 (`test-install.js`) when it installs the packed tarball, for the same reason. Integrity and harness checks were unaffected.
+- **DO NOT**: Treat the `npm test` / `npm pack` failure as a regression from the change under test, and do not retry `npm test` repeatedly on this host.
+- **INSTEAD DO**: Validate package changes with `npm run generate-integrity` + `npm run verify-integrity` and `node test/test-harness-clean.js` (expect 0 findings), and report the environment-blocked full suite honestly. Point npm at a writable cache/tmp path (`npm config set cache <writable path>`) before expecting `npm test` to pass.
 
-### [2026-10-01] Inline G2 review-fix invalidates ac-ledger file hashes; gitignored step-03 finish needs --noop
-- **Layer**: `domain`
-- **Module**: `ws-spec-to-pr / ac_ledger + update_state finish`
-- **Severity**: `High`
-- **PathPattern**: `.agents/plans/*/ac-ledger.json, .agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs, .agents/skills/ws-spec-to-pr/scripts/update_state.cjs`
-- **Scenario / Context**: Running us-477 inline, three failures hit before green. (1) `finish --step 3 --created step-03-*.plan.exec.md --created step-03-*.exec.dag.json` failed: `.gitignore` ignores `step-03-*.plan.exec.md` / `*.exec.dag.json`, so `update_state` rejects them as phantom filesTouched. (2) After the Step 6 review-fix edited the product file, `validate_state --pre-advance 7` failed with `linked file hash changed` for every AC and `boundary "pre-step6" instead of "step5"`. Re-running `ac_ledger link` with the same `--event-id` is a no-op (`event-id already applied; skipping link payload`), so the stale sha stayed. (3) The first `npm run test` failed at entry 1 because `bin/skill-integrity.json` was stale after the skill edit.
-- **DO NOT**: Finish a mutating step with gitignored `{plansDir}` artifacts as `filesTouched`; re-run `ac_ledger link` with the same `--event-id` after editing a linked file and expect the sha to refresh; run the suite before `npm run generate-integrity` when hashed skill content changed.
-- **INSTEAD DO**: Use `finish --noop "<reason>"` for a step whose only artifacts are gitignored runtime files (step-03 exec/dag, issue.json, .runtime). After any post-Step-5 product edit, re-link each AC with a fresh `--event-id` (e.g. `impl-ac1-r2`) pointing at the same `--file` ranges so the sha is recomputed, then `ac_ledger score --boundary step5` before `--pre-advance`. Regenerate integrity (`npm run generate-integrity`) before the verification run whenever `.agents/skills/**` changed.
+### [2026-09-30] Site feature cards regenerate from the build-site template
+- **Layer**: `DevOps`
+- **Module**: `bin`
+- **Severity**: `Medium`
+- **PathPattern**: `docs/index.html, bin/build-site.js`
+- **Scenario / Context**: A hand edit to a feature card in `docs/index.html` was silently wiped by `npm run build-site:bump`, which regenerates card blocks from the `efficiencyFeatureBlock` template inside `bin/build-site.js`.
+- **DO NOT**: Hand-edit feature-card markup directly in `docs/index.html` and assume a later site rebuild preserves it.
+- **INSTEAD DO**: Edit the card source in the `bin/build-site.js` template block, then rebuild (`npm run build-site`), then grep the generated `docs/index.html` for the new sentence to confirm it survived before committing.
 
-### [2026-10-01] Gemini target must project physical copies on Windows and use regex include_only
-- **Layer**: `infrastructure`
-- **Module**: `installer (gemini secondary target uninstall)`
-- **Severity**: `High`
-- **PathPattern**: `bin/cli.js, bin/install-rules.js`
-- **Scenario / Context**: After the gemini target began projecting physical `ws-*` directory copies on Windows, `removeSkillsFromSecondaryTargets` still only touched `skills.json` plus a links-only `cleanupLegacyGeminiSkills` on partial uninstall. Removing one skill left an orphan physical `~/.gemini/config/skills/ws-<removed>` directory the target still discovers. CI code review flagged it (7/10, fix-code).
-- **DO NOT**: Rely on a links-only sweep (or the bulk `includePhysical` sweep reserved for full uninstall) to remove physical copies on a **partial** uninstall.
-- **INSTEAD DO**: On partial uninstall (`geminiKeepEntry`), delete the physical copy of each removed `ws-*` skill specifically (`pathLexists` + `!lstatSync().isSymbolicLink()`), before the links-only sweep; keep `includePhysical: true` as the full-uninstall bulk sweep. Cover with a test that seeds physical copies and asserts removed-vs-kept separation.
-
-### [2026-10-01] Editing the source wiki requires rebuilding the generated site wiki
+### [2026-09-30] Shared-head batches absorb foreign develop commits into PR ranges
 - **Layer**: `devops`
-- **Module**: `bin/build-site, ws-wiki`
+- **Module**: `ws-spec-multi / stay-on-develop`
 - **Severity**: `Medium`
-- **PathPattern**: `.agents/specs/wiki/**/*.md, docs/wiki/**/*.html`
-- **Scenario / Context**: After editing a living wiki source page under `.agents/specs/wiki/` (e.g. `harness/diagnostics-and-benchmarks.md`), the committed `docs/wiki/*.html` copy is stale. CI runs `node bin/build-site.js --check`, which fails with `docs/wiki stale harness/<page>.html` even though the markdown is correct; `npm run test` locally still passes, so the break only appears in CI.
-- **DO NOT**: change a wiki source page and push without regenerating the site mirror; do not rely on `npm run test` alone to catch wiki drift.
-- **INSTEAD DO**: after editing `.agents/specs/wiki/**`, run `node bin/build-site.js` (no `--bump`) and commit the regenerated `docs/wiki/**/*.html`; verify with `node bin/build-site.js --check` (exit 0) before pushing.
+- **PathPattern**: `.agents/plans/ms-*/ms-*.state.md`, `develop`
+- **Scenario / Context**: During a 7-spec stay-on-develop batch, two foreign commits landed on `develop`: one commit+amend swept the master's own staging mid-preflight (satisfying the WIP-first gate as a superset), and a human CI-config commit landed between a worker's pushed commits mid-batch, riding that item's PR range to `main`.
+- **DO NOT**: Assume `develop` is batch-exclusive during a shared-head run; rebase, amend, or otherwise rewrite the pushed range to exclude a foreign commit; treat a clean `git status` as proof no foreign writer is active.
+- **INSTEAD DO**: Re-scan before every dispatch (`git status`, no active foreign child states, `develop..origin/develop` empty); let foreign commits ride the range untouched per git-ownership and disclose them in the PR body and audit notes; sync post-merge with fetch + `--ff-only` only; verify `gh pr head == local develop` at each Phase 4b.
 
-### [2026-10-01] Editing hashed `bin/**` invalidates bin/skill-integrity.json and fails the suite's Phase 0b gate
-- **Layer**: `devops`
-- **Module**: `workflow-skills package tests / bin/skill-integrity.json`
+### [2026-09-30] Ledger-linked test names must be literal strings
+- **Layer**: `Tests`
+- **Module**: `test/test-*.js (suites linked via ac_ledger.cjs link --test)`
 - **Severity**: `Medium`
-- **PathPattern**: `bin/cli.js, bin/install-rules.js, bin/skill-integrity.json, test/test-install.js`
-- **Scenario / Context**: `bin/skill-integrity.json` hashes every packaged file including `bin/**`; `test/test-install.js` Phase 0b runs `generate-skill-integrity.js --check` and fails closed with "bin/skill-integrity.json is stale vs current tree" as soon as an implementation edits `bin/install-rules.js` or `bin/cli.js`. A second failure mode in the same change: adding a test helper variable (`danglingTarget`) collided with an existing declaration in the 3600-line `test/test-install.js` and only surfaced at `node --check`.
-- **DO NOT**: Treat the Phase 0b integrity staleness as a product regression, and do not declare `npm run test` failed without regenerating the manifest after bin/ edits.
-- **INSTEAD DO**: Run `npm run generate-integrity` + `npm run verify-integrity` after any `bin/**` (or hashed) edit before running `npm run test`; the derived manifest is regenerated, not hand-edited. Run `node --check test/test-install.js` after adding top-level helper/const names to catch scope collisions early.
+- **PathPattern**: `test/test-*.js`
+- **Scenario / Context**: `ac_ledger.cjs link --test` validates the name with a literal `file.includes(name)` substring check. A loop asserting `` `AC3: ${name} override rejected` `` has no literal whole-message match, so every link attempt failed with "test name not found" until the loop was unrolled into literal messages.
+- **DO NOT**: Build `assert(..., message)` strings with template interpolation in suites whose assertions will be ledger-linked, nor retry a "test name not found" link failure with more quoting.
+- **INSTEAD DO**: Use literal message strings for linkable assertions (unroll interpolation loops or hoist a shared literal via a helper); keep the exact message text stable for `--test name=...` linkage.
 
-### [2026-10-01] ac_ledger linked-file sha goes stale after a review-fix edit
+### [2026-09-30] Ledger link verbs must re-validate evidence claims, never trust self-reported status
+- **Layer**: `Domain`
+- **Module**: `ws-spec-to-pr / ac_ledger.cjs`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs`
+- **Scenario / Context**: The first `--adequacy-file` verb shape-validated the record but trusted its claimed `status`, so an adequate-claimed record that would fail the deterministic validator linked cleanly and scoring never failed closed. A PR reviewer caught it; the fix shells to the validator and rejects claimed/computed verdict mismatches.
+- **DO NOT**: Attach a worker-authored evidence record to the ledger on structural validity alone while its pass/fail claim goes unchecked.
+- **INSTEAD DO**: Re-run the deterministic validator inside the link verb and require the claimed status to equal the computed verdict in both directions (adequate-claimed-but-failing and inadequate-claimed-but-passing both throw with the ledger unchanged); cover both mismatches with assertions.
+
+### [2026-09-30] Ledger file evidence needs same-range refresh after line-shifting fixes
+- **Layer**: `Domain`
+- **Module**: `ws-spec-to-pr / ac_ledger.cjs`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs`
+- **Scenario / Context**: `link` is append-only (same path+lines replaces the file-level hash; no unlink verb). A review-fix round that shifts lines leaves Step 5 entries hash-stale; linking new ranges keeps both, so pre-advance fails until the original ranges are re-linked for hash refresh.
+- **DO NOT**: Link only new post-fix ranges and expect pre-advance to pass, or hand-edit `ac-ledger.json` to delete stale entries.
+- **INSTEAD DO**: After a line-shifting fix, re-link every original range (same path+lines) to refresh hashes via the sanctioned writer, then re-run `score` at the gate boundary; document the old→new pointer map in the fix report as authoritative.
+
+### [2026-09-30] G2 review-fix commit misses fix-round new files
+- **Layer**: `Devops`
+- **Module**: `ws-spec-to-pr / commit_g2_code.cjs`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/commit_g2_code.cjs`
+- **Scenario / Context**: Step 6 fix round added new files (vendored evidence) not present in the Step 4 `files_touched` snapshot; the Step 6 G2 commit staged from the stale snapshot and left the new files untracked, requiring a follow-up straggler commit.
+- **DO NOT**: Assume the Step 6 G2 commit covers fix-round work without checking; new files created after `finish --step 4` are outside the staged snapshot.
+- **INSTEAD DO**: After the fix round and before/after the Step 6 G2 commit, run `git status --porcelain` scoped to the workflow paths; commit any in-scope untracked/modified stragglers explicitly with a scoped message.
+
+### [2026-09-30] Fixture-repoRoot spawns must not rely on ambient global skills
+- **Layer**: `Tests`
+- **Module**: `test/test-*.js (suites spawning skill-body-resolving scripts)`
+- **Severity**: `High`
+- **PathPattern**: `test/test-*.js`
+- **Scenario / Context**: A new suite spawned `build_dispatch_context.cjs` and `measure_harness.cjs` with temp-fixture `--repo-root`s carrying only `.ws/config.json`. Skill-body resolution is repoRoot-local else machine-global, so CI (no ambient global install) failed with `SKILL.md not found` while the author machine global masked it locally.
+- **DO NOT**: Spawn builder/measure scripts against fixture repoRoots without pinning skill-body resolution, nor trust a local green when the machine has a global skills install CI lacks.
+- **INSTEAD DO**: Set `WORKFLOW_SKILLS_GLOBAL_DIR` to the repo skills tree for such spawns (precedent: `test-hybrid-consumer-root.js`), and verify the suite once with an empty ambient global to simulate CI.
+
+### [2026-09-30] File:line evidence validators must slice-check name containment
+- **Layer**: `Tests`
+- **Module**: `ws-implement-tasks / check_test_adequacy.cjs`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/*/scripts/*.cjs`
+- **Scenario / Context**: The first version of the adequacy binding check verified file existence, range well-formedness, and test-name presence anywhere in the file — a binding pointing at the wrong line still validated adequate. Review caught it; the fix requires the name within the sliced [lineStart, lineEnd] range.
+- **DO NOT**: Validate a file:line binding with whole-file name presence alone, or treat a well-formed range as proof the pointer is true.
+- **INSTEAD DO**: Slice `content.split('\n').slice(lineStart - 1, lineEnd)` and require the test name within the slice, with a distinct gap message for name-absent-anywhere vs name-outside-range; cover both with assertions.
+
+### [2026-09-30] CLI `--flag=value` slice offsets must count the `=`
+- **Layer**: `Tests`
+- **Module**: `ws-fresh-verify`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/*/scripts/*.cjs`
+- **Scenario / Context**: `--invert-patch=<path>` silently dropped the value's first character because the parser sliced 16 for a 15-character prefix (copied from the same latent line in `run_sabotage.cjs`); the space-separated form worked, so the suite stayed green until review probed the `=` form.
+- **DO NOT**: Copy a `startsWith('--x=')` + `slice(n)` branch without recounting the prefix length, or ship a CLI whose `=` forms have no regression assertion.
+- **INSTEAD DO**: Verify every `=`-branch offset arithmetically (prefix length includes `=`) and cover each documented `=` form with an assertion that the parsed value took effect; when the same line exists in a sibling script outside the change scope, name the exemption with path + reason instead of widening the diff.
+
+### [2026-09-30] Classifier detectors must match canonical spec headings
 - **Layer**: `application`
-- **Module**: `ws-monitor monitor_snapshot.cjs`
+- **Module**: `ws-classify-complexity`
 - **Severity**: `Medium`
-- **PathPattern**: `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs`
-- **Scenario / Context**: New run-advancing evidence read a possibly-missing `stateMtimeMs` with `Number(...)`, which coerces `null` to `0` (finite) and would treat an absent stat as an epoch timestamp. Same null-to-zero class as `2026-09-19-guard-null-zero-coercion.md`.
-- **DO NOT**: Treat `Number(null) === 0` as a valid timestamp in monitor evidence builders.
-- **INSTEAD DO**: Guard `Number.isFinite(raw) && raw > 0 ? raw : NaN` before combining mtimes, and route unknown to the conservative branch.
+- **PathPattern**: `.agents/skills/ws-classify-complexity/scripts/classify.cjs`, `test/test-classify-open-questions.js`
+- **Scenario / Context**: `hasOpenQuestions` matched only the legacy `## Open Questions` heading, but `ws-spec-write` emits the canonical `## Assumptions & Open Questions` table per `ws-spec-format`. `runInterview` silently stayed `false` for repo-written specs (us-459, us-461 skipped Step 2 with `interview-not-required` despite unconfirmed rows).
+- **DO NOT**: Write spec-section detectors against a guessed or legacy heading, or treat canonical-section presence alone as open (the section is required and always has rows).
+- **INSTEAD DO**: Match the canonical `## Assumptions & Open Questions` heading plus the legacy variant; derive open from the `Confirmed` column (any `n`/`no` row); pin both shapes in `test/test-classify-open-questions.js`.
 
-### [2026-09-30] Spec-to-PR inline (Tier 3) state, finish and ledger traps
-- **Layer**: `infrastructure`
-- **Module**: `ws-spec-to-pr / update_state / ac_ledger`
-- **Severity**: `High`
-- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/*.cjs, .agents/plans/*/.runtime/*`
-- **Scenario / Context**: Running the standard orchestrator inline (no subagent tool bound) in the upstream repo. Three mechanical traps cost retries: finishing Step 3 with `--created` pointing at the gitignored `step-03-*.plan.exec.md` / `.exec.dag.json` fails the phantom `files_touched` check; writing a scratch log under `{us-dir}/.runtime/` makes `validate_state.cjs` report `unknown .runtime residue` and blocks dispatch; after a review-fix edits an evidence-linked source file the `ac-ledger.json` file sha256 goes stale, and re-linking with the same event-id is a silent no-op while a shifted line range leaves the stale entry in place.
-- **DO NOT**: Pass gitignored plan/runtime artifacts as `--created`; write arbitrary files under `.runtime/`; re-link a changed evidence file with the same event-id or a shifted line range; assume a `;`-chained `update_state` call succeeded without checking `$?`.
-- **INSTEAD DO**: Finish Step 3 with `--noop "<reason>"` (the helper still stamps the artifact); keep scratch logs outside `.runtime/`; re-link a changed file with a NEW event-id but the SAME path+lineStart+lineEnd so the entry is replaced with a fresh sha256; re-score the boundary the next gate expects (`pre-step6` before Step 6, `step5` before Steps 7/8, `ship` before Step 9) then re-run `validate_state.cjs --pre-advance N`.
+### [2026-09-30] ac_ledger --gap declares a defect; sabotage links need an AC target
+- **Layer**: `Tests`
+- **Module**: `ws-spec-to-pr`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/plans/**/ac-ledger.json`
+- **Scenario / Context**: Step 7 linked a passing sabotage run via `ac_ledger.cjs link --sabotage-exit 0 --gap "<note>"`, intending the gap text as a note. Any entry in `declaredGaps` sets `knownDefect`, capping the derived score at 8 and failing `--pre-advance 8`, and no CLI removes a declared gap.
+- **DO NOT**: Pass `--gap` as a free-text note when linking sabotage exits or other non-AC evidence; a declared gap is a scored defect, not a comment.
+- **INSTEAD DO**: Link sabotage evidence to its AC (`link --ac ACn --sabotage-exit 0` with no `--gap`). If a bogus gap was already declared, remove that exact string from `declaredGaps` and immediately re-run `ac_ledger.cjs score --boundary <expected>` to re-persist scoreState, then disclose the correction in the delivery result.
 
-### [2026-09-30] Re-hit: monitor severity must key off the status literal, not run shape
-- **Layer**: `domain`
-- **Module**: `ws-monitor / detectContextMismatch`
+### [2026-09-29] Version bump and integrity manifest must ship in one commit
+- **Layer**: `Release verification`
+- **Module**: `generate-skill-integrity / ship + fix-pr commit scope`
 - **Severity**: `High`
-- **PathPattern**: `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs, test/test-ws-monitor-us*.js`
-- **Scenario / Context**: Implementing us-473 (scope the branch `context-mismatch` to non-terminal runs), the first cut OR-ed the shape-derived `deriveTerminalStatus(state)` into the severity decision. That would soften a terminal-shaped run still reporting `active` to `info`, re-hitting the existing 2026-09-25 trap "Monitor severity contract: status-literal beats shape-derived" which the round-1 `read-memory` consult did not surface because the implementation started before the memory sweep. Caught during the close-time MEMORY sweep; fixed by keying severity off `TERMINAL_RUN_STATUSES.has(String(state.status))` only, with a regression assertion that a terminal-shaped `active` run stays `critical`.
-- **DO NOT**: Feed `terminalShape` / `deriveTerminalStatus` into a finding-severity decision; start a `ws-monitor` severity edit before consulting `.ws/memory/` for the monitor traps.
-- **INSTEAD DO**: Gate severity on the literal `status` (the terminal set), keep shape-derived handling informational (`terminal-run-active`) only, and run `read-memory` (or `self_learning.cjs --match-paths <file>`) before the first edit on `monitor_snapshot.cjs`.
+- **PathPattern**: `bin/skill-integrity.json, package.json, bin/skill-dependencies.json, .agents/skills/ws-shared/version.json`
+- **Scenario / Context**: A fix-pr/ship round regenerated `bin/skill-integrity.json` from a working tree that still held an unrelated uncommitted version bump (and another session's skill edits), then committed the manifest alone. CI `verify-integrity` failed with `packageVersion drift: manifest=X canonical=Y`, and later the version bump landed without regenerating the manifest, failing the same gate the opposite way.
+- **DO NOT**: Run `generate-integrity` on a dirty tree carrying another session's uncommitted version bump or skill edits, and never commit `bin/skill-integrity.json` without the matching `package.json` / `bin/skill-dependencies.json` / `.agents/skills/ws-shared/version.json` change in the same commit.
+- **INSTEAD DO**: Bump the version and regenerate integrity in the same commit, from a tree whose hashed content matches what you are committing; if the working tree is polluted, generate in a clean `git worktree` at the target commit and copy the manifest back, then confirm `npm run verify-integrity` is green on the committed tree.
 
-### [2026-09-30] Foreign-commit guard keyed by current slug misses the previous dispatch baseline
-- **Layer**: `infrastructure`
-- **Module**: `ws-spec-multi / foreign_commit_guard`
+### [2026-09-29] Verbatim tracker headings and AC bullets break spec authoring validation
+- **Layer**: `specs`
+- **Module**: `ws-spec-format (validate_spec.cjs), ws-spec-write Original Issue Context`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/specs/**/*.spec.md`
+- **Scenario / Context**: Importing a tracker issue whose body held nested `##` headings and `- ACn:` bullets. Pasted verbatim into `## Original Issue Context`, authoring validation failed twice: `ac-sequence` errors because the AC bullet regex scans document-wide, and `out-of-scope-empty` because the table finder uses first-match so the verbatim bullet list shadowed the canonical table.
+- **DO NOT**: Paste tracker `- ACn:` bullets or `## <section>` headings verbatim into `## Original Issue Context`.
+- **INSTEAD DO**: Demote nested headings to bold text and unbullet AC lines (bare `ACn: ...`), noting the marker adjustment; keep wording intact, then re-run authoring validation.
+
+### [2026-09-29] Site stale after skill description edit
+- **Layer**: `harness`
+- **Module**: `docs/index.html`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-*/SKILL.md`
+- **Scenario / Context**: A skill description change is copied into the generated site. CI `build-site.js --check` fails when docs/index.html is not regenerated.
+- **DO NOT**: Commit a SKILL.md description or catalog wording change without regenerating the site.
+- **INSTEAD DO**: Run `node bin/build-site.js` (no extra bump if the version is already above the merge-base) and `node bin/build-site.js --check` before push.
+
+### [2026-09-29] New skill must join the git ownership matrix
+- **Layer**: `harness`
+- **Module**: `git-ownership.md`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-*/SKILL.md`
+- **Scenario / Context**: Adding a ws-* skill folder without a row in git-ownership.md section 5 fails test/test-git-ownership-contract.js.
+- **DO NOT**: Ship a new ws-* directory without a compatibility-matrix row.
+- **INSTEAD DO**: Add one row with the skill's git class (read-only when it does not mutate git) and regenerate integrity.
+
+### [2026-09-27] ws-spec-to-pr ac-ledger evidence linking (Step 5)
+- **Layer**: `devops`
+- **Module**: `workflow-skills / ac_ledger.cjs`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs, .agents/plans/*/ac-ledger.json`
+- **Scenario / Context**: Recording AC evidence for a standard run's Step 5 score. Three separate mistakes cost several retries: (1) `--file` is declared repeatable but the parser reads value-then-advance, so passing several `--file` flags in ONE `link` call silently attaches only the first path; (2) the `--file` range shape is `path:Lstart-Lend` with a literal `L` on BOTH bounds, so `path:1-1` is rejected with "file evidence must use path:Lstart-Lend"; (3) any later `link` with `--commit` re-scores the ledger at boundary `pre-step6`, so a subsequent `validate_state --pre-advance 7` fails with "ledger scoreState must match derived step5 score".
+- **DO NOT**: Pass multiple `--file`/`--test` values in a single `ac_ledger.cjs link` call expecting all to attach; use `path:1-1` or `path:L1-1` range syntax; leave the persisted boundary at `pre-step6` when the next gate is pre-advance 6+ (which expects `step5`).
+- **INSTEAD DO**: Issue ONE `link` call per file (`--event-id impl-acN-i --ac ACN --file path:Lstart-Lend`), verify `files`/`tests` counts in `ac-ledger.json` after attaching, and re-run `node {skillsRoot}/ws-spec-to-pr/scripts/ac_ledger.cjs score --ledger {ledger} --boundary step5` after any commit-linking `link` before running `validate_state --pre-advance` for steps 6+.
+
+### [2026-09-27] Step finish on gitignored disposable artifacts must use stamped fallback
+- **Layer**: `harness`
+- **Module**: `ws-spec-to-pr / commit_g2_code`
+- **Severity**: `Medium`
+- **PathPattern**: `docs/**;**/commit_g2_code.cjs`
+- **Scenario / Context**: A site-rebuilt HTML file showed `M` in `git status` (CRLF worktree line-ending churn, byte-identical after normalization) and was listed in Step 4 `files_touched`; `commit_g2_code.cjs` staged it via `git add`, normalization collapsed it to HEAD-identical, and the G2 commit silently contained 12 files instead of 13. A Step 6 reviewer flagged the mismatch as INFO-002.
+- **DO NOT**: Assume every `files_touched` path lands in the G2 commit, or treat CRLF-worktree `M` flags as content changes.
+- **INSTEAD DO**: After every G2-code commit, diff `git show <sha> --stat` against the declared `files_touched` set; line-ending phantoms that vanish on `git add` are correct exclusions — note them in the step handoff so reviewers do not chase them.
+
+### [2026-09-27] Status-folder migrations require reference sweeps
+- **Layer**: `Tests and documentation`
+- **Module**: `Spec fixtures, repository links, and harness checks`
 - **Severity**: `High`
-- **PathPattern**: `.agents/skills/ws-spec-multi/scripts/foreign_commit_guard.cjs, test/test-foreign-commit-guard.js`
-- **Scenario / Context**: In a shared-head multi-spec batch (one run branch, `branchPolicy: stay-on-develop`), every dispatch records a baseline keyed by its own slug. `checkAdvance` looked up `data.records.find(item => item.slug === currentSlug)`, so the next, different spec (new slug) always missed → returned exit `2` (`no-baseline`). PROTOCOL treats exit `2` as "first dispatch — proceed", so a foreign commit landing between two different slugs was silently swept into the next spec's PR range, violating AC2/AC7. The existing regression test only exercised same-slug record→check. The doc (PROTOCOL.md) already said "compared against the baseline recorded at the previous dispatch" — only the code was per-slug keyed.
-- **DO NOT**: Key the shared-head advance check solely by the current slug; treat exit `2` (`no-baseline`) as "proceed" for a new slug when the store already holds an earlier dispatch record.
-- **INSTEAD DO**: Compare against the most recent dispatch record (run-level `data.records[data.records.length - 1]`) when the current slug has no record of its own; reserve exit `2` for a genuinely empty store (real first dispatch). Add a cross-slug regression: record baseline for slug-A, advance the branch, then `check-advance --slug slug-B` MUST exit `1` naming the advance (not exit `2`).
+- **PathPattern**: `test/**/*.js`, `RESEARCH.md`, `.agents/specs/**/*.md`
+- **Scenario / Context**: A cleanup change moved numbered specs from `.agents/specs/` into `.agents/specs/completed/` but left live tests and a root-anchored documentation link pointing at the old paths. CI then failed with missing-file validation errors and the harness reported a broken link.
+- **DO NOT**: Move or delete status-folder specs without scanning tests and live documentation for hardcoded numbered spec paths.
+- **INSTEAD DO**: Run a repository-wide search for `.agents/specs/<number>-...spec.md`, update live references to the retained status-aware path, and run the full test suite plus the harness link check before pushing.
+
+### [2026-09-26] Fix-PR review defects: detection terminals, append EOL, hub path, dependency edges
+- **Layer**: `tests`
+- **Module**: `ws-check-harness/scripts/check_git_ownership.cjs, ws-changelog/scripts/append_changelog.cjs, bin/skill-dependencies.json`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/**/scripts/*.cjs, bin/skill-dependencies.json`
+- **Scenario / Context**: An agentic code review on a release PR raised 7 threads against shipped code: (1) `BROAD_STAGING` regexes used `(?:\s|$)` terminals, so `git add .;` / `git add . &&` escaped detection and `git add --all` was not covered at all; (2) `appendChangelog` read the file, split on `/\r?\n/`, and rejoined with `\n`, silently rewriting a CRLF consumer changelog to LF; (3) the legacy changelog fallback hardcoded `.ws` instead of the relocatable hub root; (4) a skill invoked another skill's script without a dependency-graph edge in `skill-dependencies.json`.
+- **DO NOT**: Ship a detection regex whose only terminal is whitespace/EOL; rewrite a consumer file by splitting and rejoining with a fixed EOL; hardcode the `.ws` hub path when `pathTokens.sharedDir` can relocate; call another skill's script without adding the dependency edge.
+- **INSTEAD DO**: Accept EOL and shell separators (`;`, `&`, `|`) as regex terminals and cover equivalent flags (`--all`); preserve the target file's dominant EOL on append (build LF, convert back); resolve hub paths through `context.sharedDir` / `resolve_hub_root.cjs`; add the edge to BOTH `bin/skill-dependencies.json` and `.agents/skills/ws-shared/runtime/skill-dependencies.json`, then regenerate integrity and rebuild the site.
+
+### [2026-09-26] Detector-terminal fixes must sweep every table and validate suggested diffs against combined flags
+- **Layer**: `tests`
+- **Module**: `ws-check-harness/scripts/check_git_ownership.cjs, test/test-git-ownership-contract.js`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-check-harness/scripts/*.cjs, test/test-*.js`
+- **Scenario / Context**: A release-PR review round fixed separator-aware terminals on the BROAD_STAGING detector table; the sibling DESTRUCTIVE table in the same file kept narrow terminals, so the next review round flagged the identical defect class again (4 threads). Separately, the reviewer's verbatim suggested diff for `destructive:clean-fd` (`(?:\s|$|;|&|\|)`) would have stopped matching the meaningful combined-flag variant `git clean -fdx` (the old un-terminated pattern matched it as a substring) — applying it verbatim trades one false-negative for a more destructive one.
+- **DO NOT**: Fix a detector-terminal defect on only the anchored table, or apply a suggested regex diff verbatim without checking what the old pattern matched that the new one drops.
+- **INSTEAD DO**: Sweep every detector table in the file for the same terminal class (plus the committed test mirror and its samples); diff old-vs-new match sets on separator-chained AND flag-combined variants (`git clean -fdx`, `git stash;`, `git reset --hard;`) before committing, and record any deliberate deviation as a gate amendment with evidence.
 
 ### [2026-09-25] Monitor severity contract: status-literal beats shape-derived
 - **Layer**: `domain`

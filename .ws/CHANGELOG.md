@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-08 10:40] Agent: agent
+- **Prompt**: Create GH issue for optional retro skill (ws-spec-to-issue); add ws-spec-from-issue alias; bulk-import issue #490 (ws-spec-from-provider)
+- **Done**: Opened issue #490 (retro skill: session retrospective to curated agent/harness/memory improvements); added spec-from-issue / ws-spec-from-issue aliases to ws-spec-from-provider SKILL.md + SPEC-MANAGEMENT.md, regenerated integrity; imported #490 via ws-spec-from-provider to a spec of record, step-00 workflow copy, and index.PRD track.
+- **Result**: verify-integrity OK; test-harness-clean.js 0 findings; validate_spec.cjs --mode=authoring PASS (10 ACs). npm test env-blocked (npm cache path) - recorded memory trap.
+
 ### [2026-10-01 16:49] Agent: agent
 - **Prompt**: ws-spec-to-pr Step 9 fix-pr for us-488 (PR #489)
 - **Done**: Resolved reviewer WARNING: partial uninstall now deletes per-skill physical gemini copies; fixed CI (version bump commit + wiki source/html sync)

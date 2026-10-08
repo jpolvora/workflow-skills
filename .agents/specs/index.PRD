@@ -220,6 +220,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] ws-doctor: path-error section reports widespread false positives (citation base, link text, prose) (`spec: completed/0167-us-469.spec.md`)
 - [x] ws-monitor: slug-scoped scan drops canonical runId-foldered ws-spec-multi batch state (`spec: completed/0168-us-464.spec.md`)
 - [x] fix(installer): use physical folder copy for Antigravity IDE on Windows and fix regex filter in skills.json (`spec: completed/0169-us-488.spec.md`)
+- [ ] Add optional retro skill (session retrospective to curated agent/harness/memory improvements) (`spec: pending/0170-us-490.spec.md`)
+
 
 
 
@@ -585,6 +587,8 @@ All Next-specs closed.
 | 173 | `us-464` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor: slug-scoped scan drops canonical runId-foldered ws-spec-multi batch state |
 
 | 174 | `us-488` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | fix(installer): use physical folder copy for Antigravity IDE on Windows and fix regex filter in skills.json |
+
+| 175 | `us-490` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Add optional retro skill (session retrospective to curated agent/harness/memory improvements) |
 
 ## 9. Inbox
 
