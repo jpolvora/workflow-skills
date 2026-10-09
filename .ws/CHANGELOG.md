@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-09 16:35] Agent: agent
+- **Prompt**: make always enabled spec-memo skill integration
+- **Done**: Persisted dual-mode specMemo flags (files+vault, hybrid) via configure_spec_memo.cjs; installed memo CLI 0.37.9 globally from stable checkout; added npm prefix bin to User PATH
+- **Result**: Preflight cli.available true, MCP bootstrap live (160 traps), vault write verified; doctor unhealthy is pre-existing vault-remote/token state
+
 ### [2026-10-09 16:09] Agent: agent
 - **Prompt**: /ws-spec-from-provider: bulk-import open GitHub issues, consolidate overlapping specs, mirror them to new tracker issues, update index.PRD
 - **Done**: Imported 5 open issues (#492-#496) as agentic specs, merged #493+#496 into us-497-link-integrity and #494+#495 into us-498-install-mode-reporting, renumbered us-492 from 0175 to 0173, created issues #497 and #498 from the merged specs, closed #493-#496 as superseded, registered step-00 copies and tracked all three specs in index.PRD

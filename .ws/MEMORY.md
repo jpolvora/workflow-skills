@@ -15,6 +15,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **DO NOT**: Build a PowerShell lookup table with bare numeric keys (`[ordered]@{ 496='0171' }`), assume `$dict[$key]` throws when the key type does not match, or blame string interpolation when a composed path comes out short.
 - **INSTEAD DO**: Quote the keys (`[ordered]@{ '496'='0171' }`) or use an array of pairs, and print the fully composed path **before** handing it to any script that writes, moves, or deletes. If a batch already produced wrong names, resolve the containing folder first, match the bad names explicitly, delete them individually (never a wildcard), and re-run with explicit concatenation.
 
+### [2026-10-09] Global npm install from git can link into prunable cache tmp; reinstall CLI from a stable checkout
+- **Layer**: `Tooling / spec-memo setup`
+- **Module**: `ws-spec-memo` setup (`memo` CLI availability gate in `configure_spec_memo.cjs`); global npm installs from git URLs`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-memo/**`, agent-composed global-install commands`
+- **Scenario / Context**: `npm install -g github:<org>/<pkg>` succeeded ("added 115 packages") but the global `node_modules/<pkg>` was a junction into the npm cache tmp git-clone dir, whose tracked files were later pruned — leaving only `node_modules/` behind and a shim pointing at a missing `dist/cli.js`. Separately, the npm prefix bin dir was absent from PATH (a stale entry for a different drive letter was present instead), and a freshly persisted User PATH entry was invisible to already-running agent shells. The durable fix was reinstalling from the stable source checkout already on disk (found via the running MCP server's command line, which pointed at its built `dist/cli.js`) and adding the npm prefix bin to User PATH.
+- **DO NOT**: Trust "added N packages" as proof a global git install works; assume the global link target is durable; assume a User PATH change is visible to the current session's shells.
+- **INSTEAD DO**: After any global install from git, run `<bin> --version` in a new shell; on a dist-missing MODULE_NOT_FOUND, locate a stable built checkout (the running `serve` process command line names one) and `npm install -g <stable-dir>`. Persist the npm prefix bin to User PATH for future shells and prepend it per-command (`$env:PATH += ...`) inside long-lived sessions.
+
 ### [2026-10-09] Bulk spec import: every not-yet-written slug claims the same NNNN prefix
 - **Layer**: `Workflow / specs pipeline`
 - **Module**: `ws-spec-organizer/scripts/resolve_spec_path.cjs`, `ws-spec-provider-github/scripts/github-issue-to-spec.cjs` (`--output`), `ws-spec-from-provider` bulk import`
@@ -23,6 +32,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **Scenario / Context**: `resolve_spec_path.cjs` numbers a new spec of record as `max(existing NNNN) + 1`, scanning `{specsDir}` plus its `pending/`, `completed/`, and `archived/` subfolders. During a five-issue bulk import every slug resolved to the **same** `0171`, because the number is computed from files already on disk and none had been written yet; resolving all five up front and then writing them would have collided them onto one number. Separately, `github-issue-to-spec.cjs --output` uses the supplied path **verbatim** with no basename sanitisation (its default destination comes from `resolve_spec_path.cjs --slug {unprefixedSlug}`), so a malformed or empty prefix segment is written straight to disk.
 - **DO NOT**: Resolve `SPEC_PATH` for several not-yet-written specs in one batch and then write them all; do not assume the issue converter validates or repairs the `--output` basename; do not treat a per-slug resolve as independent state.
 - **INSTEAD DO**: Give each import its own number and pass it explicitly as `--output {specsDir}/pending/NNNN-{slug}.spec.md` — either resolve per spec immediately before its own write, or pre-assign `max+1, max+2, …` when nothing else can write specs concurrently — then confirm the written basename matches the resolved slug before registering or tracking it.
+
+### [2026-10-09] Backslash-escaped quotes break PowerShell commands sent through the agent shell tool
+- **Layer**: `Tooling / agent shell invocation`
+- **Module**: `any `muse.powershell` command composing quoted PowerShell (`Write-Output ("x=" + $var)`, `node -e "..."`)`
+- **Severity**: `Medium`
+- **PathPattern**: `agent-composed shell commands (not committed scripts)`
+- **Scenario / Context**: Two probes in one session failed before passing: `Write-Output (\"EXIT1=\" + $LASTEXITCODE)` died with `The term '\EXIT1=\' is not recognized`, and a `node -e` one-liner with `\'` escapes misparsed, because the tool passes the command string literally to PowerShell — a `\"` arrives as backslash-quote, which PowerShell does not treat as an escaped quote. JSON string encoding already handles the quoting, so the extra backslashes are both unnecessary and harmful.
+- **DO NOT**: Add C-style `\"` or `\'` escapes inside a `muse.powershell` command, or build a `Write-Output ("label=" + $var)` probe with escaped quotes; do not retry the same failing composition with different escaping.
+- **INSTEAD DO**: Write plain PowerShell quoting (`Write-Output "label=$var"`, single-quoted literals where possible) and prefer `node -e` with single-quoted JS strings for text processing; verify a new composition with one cheap read-only run before chaining it into an edit pipeline.
 
 ### [2026-10-08] Windows host: full-suite runner flake and sabotage/injection alias constraint
 - **Layer**: `devops`
