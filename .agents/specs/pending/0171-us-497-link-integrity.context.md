@@ -1,6 +1,6 @@
-# Companion — us-493-496-link-integrity (link integrity across install scopes)
+# Companion — us-497-link-integrity (link integrity across install scopes)
 
-Decision record for `.agents/specs/pending/0171-us-493-496-link-integrity.spec.md`. Read it when implementing or reviewing AC1–AC24; it holds the product choices that the acceptance criteria encode but cannot justify on their own, and it records how the two consolidated defects are kept apart.
+Decision record for `.agents/specs/pending/0171-us-497-link-integrity.spec.md`. Read it when implementing or reviewing AC1–AC24; it holds the product choices that the acceptance criteria encode but cannot justify on their own, and it records how the two consolidated defects are kept apart.
 
 ## Feature Boundary
 
