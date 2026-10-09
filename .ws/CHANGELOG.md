@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-09 19:32] Agent: agent
+- **Prompt**: check if the spec-memo MCP integration works after the DSH restart
+- **Done**: Found the restart did not enable it and traced the cause: the profile patch entry was composed as a bare id/name/config patch, which the DSH loader treats as an id-targeted override, so the unknown id was warned and skipped (patch: entry mcp-spec-memo not found) with no GUI-visible signal. Verified the spawn path separately (cross-spawn handshake returns 11 tools) and the packaged plugin dependency (@modelcontextprotocol/client bundled in app.asar)
+- **Result**: Rewrote the entry as an insert: patch and validated it against the real loader with dsh --profile web --patch <file> --dump-config, which now composes mcp-spec-memo with no warning. Corrected jpolvora/spec-memo#94, whose proposed snippet had the same defect, and recorded the insert-wrapper trap.
+
 ### [2026-10-09 17:11] Agent: agent
 - **Prompt**: /ws-spec-memo - repair and verify the external vault bridge
 - **Done**: Diagnosed the spec-memo bridge end to end: memo CLI installed but absent from the agent host env snapshot while the persisted user PATH already had it; vault reads verified working (510 records for this project); hybrid remote leg returns HTTP 401 for want of SPEC_MEMO_AUTH_TOKEN; no spec-memo MCP server registered in DSH, which is not a memo setup host target

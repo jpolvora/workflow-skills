@@ -42,6 +42,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **DO NOT**: Trust "added N packages" as proof a global git install works; assume the global link target is durable; assume a User PATH change is visible to the current session's shells.
 - **INSTEAD DO**: After any global install from git, run `<bin> --version` in a new shell; on a dist-missing MODULE_NOT_FOUND, locate a stable built checkout (the running `serve` process command line names one) and `npm install -g <stable-dir>`. Persist the npm prefix bin to User PATH for future shells and prepend it per-command (`$env:PATH += ...`) inside long-lived sessions.
 
+### [2026-10-09] DSH profile patch entries need an `insert:` wrapper; unknown-id patches are skipped silently
+- **Layer**: `Tooling / host integration`
+- **Module**: `$DSH_HOME/profiles/<profile>/cordis.patch.yml` (DSH loader patch list), `ws-spec-memo` host wiring for the `spec-memo` MCP server`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-memo/**`, host profile patch files (`~/.dsh/profiles/*/cordis.patch.yml`)`
+- **Scenario / Context**: Adding a new plugin instance to a DSH profile with a bare `- id: <new-id>` / `name:` / `config:` entry composes nothing. The loader reads a patch without `insert` as an id-targeted override of an existing entry, and an unknown id is *"warned and skipped"*. The only signal is `dsh: patch: entry "<id>" not found` on the stderr of a `--dump-config` run that a GUI user never performs, so the profile file looks correct, the app reports nothing, and the plugin's tools never appear. The working form wraps the entry in `insert:` (schema: *"an insert appends entries, optionally inside the group identified by id"*). This is why `spec-memo` never loaded even though `command: memo` was provably spawnable: the MCP client plugin was dropped before any spawn was attempted.
+- **DO NOT**: Add a new plugin to a DSH profile as a bare `id`/`name`/`config` patch entry, and never treat "the file is on disk and YAML-valid" as proof the host loaded it — a structural or YAML check passes on an entry the loader discards.
+- **INSTEAD DO**: Wrap new plugin instances in `insert:` and verify against the real loader before declaring success: `dsh --profile <p> --patch <file> --dump-config` must list the entry in the composed tree with no `not found` warning. App-managed profiles (`desktop`) refuse `--dump-config` ("managed exclusively by the Electron application"), so validate the same file against another profile such as `web`. Also confirm the plugin's own dependencies resolve where the host loads them from, and remember the harness scrubs `/KEY|PASSWORD|SECRET|TOKEN/i` names from every child environment, so any token must be forwarded through the entry's explicit `env`/`headers` layer.
+
 ### [2026-10-09] Bulk spec import: every not-yet-written slug claims the same NNNN prefix
 - **Layer**: `Workflow / specs pipeline`
 - **Module**: `ws-spec-organizer/scripts/resolve_spec_path.cjs`, `ws-spec-provider-github/scripts/github-issue-to-spec.cjs` (`--output`), `ws-spec-from-provider` bulk import`
