@@ -6,6 +6,24 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-10-09] Ordered dictionary with integer keys silently returns null for every lookup
+- **Layer**: `Tooling / PowerShell runtime`
+- **Module**: `bulk spec-import path composition (`ws-spec-from-provider` flow); any `[ordered]@{}` literal with bare numeric keys`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/specs/pending/*`, ad-hoc PowerShell loops composing output paths for skill scripts`
+- **Scenario / Context**: A bulk import loop built `$map = [ordered]@{ 496='0171'; 495='0172' }` and composed output filenames as `"$num-us-$id.spec.md"`. `$map[$id]` returned `$null` for **every** lookup form tested — by the `.Keys` element, by the `496` literal, and by `'496'` — so `$num` was empty and the converter silently wrote five files named `-us-49x.spec.md` instead of `017N-us-49x.spec.md`. PowerShell raises no error for the failed lookup, and the composed string looked plausible. The decisive tell is serialization: `ConvertTo-Json` on that dictionary fails with `Keys must be strings`, proving the keys are `Int32` rather than `String`.
+- **DO NOT**: Build a PowerShell lookup table with bare numeric keys (`[ordered]@{ 496='0171' }`), assume `$dict[$key]` throws when the key type does not match, or blame string interpolation when a composed path comes out short.
+- **INSTEAD DO**: Quote the keys (`[ordered]@{ '496'='0171' }`) or use an array of pairs, and print the fully composed path **before** handing it to any script that writes, moves, or deletes. If a batch already produced wrong names, resolve the containing folder first, match the bad names explicitly, delete them individually (never a wildcard), and re-run with explicit concatenation.
+
+### [2026-10-09] Bulk spec import: every not-yet-written slug claims the same NNNN prefix
+- **Layer**: `Workflow / specs pipeline`
+- **Module**: `ws-spec-organizer/scripts/resolve_spec_path.cjs`, `ws-spec-provider-github/scripts/github-issue-to-spec.cjs` (`--output`), `ws-spec-from-provider` bulk import`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-organizer/scripts/resolve_spec_path.cjs`, `.agents/skills/ws-spec-provider-github/scripts/github-issue-to-spec.cjs`, `.agents/specs/pending/`
+- **Scenario / Context**: `resolve_spec_path.cjs` numbers a new spec of record as `max(existing NNNN) + 1`, scanning `{specsDir}` plus its `pending/`, `completed/`, and `archived/` subfolders. During a five-issue bulk import every slug resolved to the **same** `0171`, because the number is computed from files already on disk and none had been written yet; resolving all five up front and then writing them would have collided them onto one number. Separately, `github-issue-to-spec.cjs --output` uses the supplied path **verbatim** with no basename sanitisation (its default destination comes from `resolve_spec_path.cjs --slug {unprefixedSlug}`), so a malformed or empty prefix segment is written straight to disk.
+- **DO NOT**: Resolve `SPEC_PATH` for several not-yet-written specs in one batch and then write them all; do not assume the issue converter validates or repairs the `--output` basename; do not treat a per-slug resolve as independent state.
+- **INSTEAD DO**: Give each import its own number and pass it explicitly as `--output {specsDir}/pending/NNNN-{slug}.spec.md` — either resolve per spec immediately before its own write, or pre-assign `max+1, max+2, …` when nothing else can write specs concurrently — then confirm the written basename matches the resolved slug before registering or tracking it.
+
 ### [2026-10-08] Windows host: full-suite runner flake and sabotage/injection alias constraint
 - **Layer**: `devops`
 - **Module**: `test-runner / ws-testing / ws-fresh-verify`

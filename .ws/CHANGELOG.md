@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-09 16:09] Agent: agent
+- **Prompt**: /ws-spec-from-provider: bulk-import open GitHub issues, consolidate overlapping specs, mirror them to new tracker issues, update index.PRD
+- **Done**: Imported 5 open issues (#492-#496) as agentic specs, merged #493+#496 into us-497-link-integrity and #494+#495 into us-498-install-mode-reporting, renumbered us-492 from 0175 to 0173, created issues #497 and #498 from the merged specs, closed #493-#496 as superseded, registered step-00 copies and tracked all three specs in index.PRD
+- **Result**: 3 final pending specs (24/29/10 ACs, authoring validation exit 0), index rows 179-181 tracked, #497/#498 open with mirrored bodies, #493-#496 closed with supersede pointers
+
 ### [2026-10-08 13:23] Agent: agent
 - **Prompt**: ws-spec-multi batch ms-20261008T154414Z item us-490 (retro skill: session retrospective)
 - **Done**: Shipped us-490: new ws-retro skill package (SKILL.md + retro_hook/validate_candidates scripts), opt-in retro.enabled hook in standard+lite orchestrators, config trio (schema/example/PS editor), manifests, docs/site/wiki, test-ws-retro.js; verify 10/10, fresh-verify 0 defects, testing PASS, harness 0 findings. Merge held on agentic-review upstream 401; refreshed repo OPENCODE_API_KEY from the freshly updated OS value and reran: review + CI tests green. PR #491 merged (34903639); issue #490 closed; develop synced with main.
