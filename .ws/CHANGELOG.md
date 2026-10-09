@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-09 17:11] Agent: agent
+- **Prompt**: /ws-spec-memo - repair and verify the external vault bridge
+- **Done**: Diagnosed the spec-memo bridge end to end: memo CLI installed but absent from the agent host env snapshot while the persisted user PATH already had it; vault reads verified working (510 records for this project); hybrid remote leg returns HTTP 401 for want of SPEC_MEMO_AUTH_TOKEN; no spec-memo MCP server registered in DSH, which is not a memo setup host target
+- **Result**: Filed jpolvora/spec-memo#94 requesting --host dsh (profile patch entry mounting the bundled @deepseek-ai/dsh-mcp-client). Recorded two memory traps: host env snapshot hides a persisted PATH entry, and hybrid-mode pollution findings must not trigger cleanup of tracked in-tree memory. No workflow-skills files changed.
+
 ### [2026-10-09 16:35] Agent: agent
 - **Prompt**: make always enabled spec-memo skill integration
 - **Done**: Persisted dual-mode specMemo flags (files+vault, hybrid) via configure_spec_memo.cjs; installed memo CLI 0.37.9 globally from stable checkout; added npm prefix bin to User PATH

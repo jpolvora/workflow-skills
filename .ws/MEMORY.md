@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-10-09] spec-memo "pollution" findings are expected in hybrid mode; never clean up tracked in-tree memory
+- **Layer**: `Tooling / memory backends`
+- **Module**: `ws-spec-memo` check+setup gate, `memo doctor`, `.ws/MEMORY.md` + `.ws/memory/*`
+- **Severity**: `High`
+- **PathPattern**: `.ws/MEMORY.md`, `.ws/memory/*`, `.agents/plans/*`, `.ws/config.json` (`specMemo.mode`, `specMemo.enableMemoryFiles`)`
+- **Scenario / Context**: With `specMemo.mode: "hybrid"` and both `enableMemoryFiles` and `enableSpecMemoIntegration` true, the preflight deterministically reports `pollution` entries for `.ws/MEMORY.md` ("compiled traps"), `.ws/memory` (238 entries) and `.agents/plans` (52 entries). These are the *active in-repo half* of hybrid mode, not residue — and in this repo `.ws/MEMORY.md` is **git-tracked**. The `ws-spec-memo` check step pairs any pollution finding with a `user-gate` that recommends `/ws-cleanup` (or `memo doctor --fix`), so following the skill literally would delete a tracked memory backend that hybrid mode still falls back to when the vault or its remote leg is unavailable.
+- **DO NOT**: Treat a non-empty `pollution` array as a defect while `enableMemoryFiles` is true, and never run `/ws-cleanup` / `memo doctor --fix` against `.ws/MEMORY.md` or `.ws/memory/` in this repo.
+- **INSTEAD DO**: Read `specMemo.mode` and both backend flags first (`memo status --json`, `.ws/config.json`), report the findings as expected in hybrid mode, and only consider cleanup once `enableMemoryFiles` is explicitly false (vault-only). Before any destructive cleanup, check ownership with `git ls-files --error-unmatch <path>`; a tracked path is never cleanup residue.
+
 ### [2026-10-09] Ordered dictionary with integer keys silently returns null for every lookup
 - **Layer**: `Tooling / PowerShell runtime`
 - **Module**: `bulk spec-import path composition (`ws-spec-from-provider` flow); any `[ordered]@{}` literal with bare numeric keys`
@@ -14,6 +23,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **Scenario / Context**: A bulk import loop built `$map = [ordered]@{ 496='0171'; 495='0172' }` and composed output filenames as `"$num-us-$id.spec.md"`. `$map[$id]` returned `$null` for **every** lookup form tested — by the `.Keys` element, by the `496` literal, and by `'496'` — so `$num` was empty and the converter silently wrote five files named `-us-49x.spec.md` instead of `017N-us-49x.spec.md`. PowerShell raises no error for the failed lookup, and the composed string looked plausible. The decisive tell is serialization: `ConvertTo-Json` on that dictionary fails with `Keys must be strings`, proving the keys are `Int32` rather than `String`.
 - **DO NOT**: Build a PowerShell lookup table with bare numeric keys (`[ordered]@{ 496='0171' }`), assume `$dict[$key]` throws when the key type does not match, or blame string interpolation when a composed path comes out short.
 - **INSTEAD DO**: Quote the keys (`[ordered]@{ '496'='0171' }`) or use an array of pairs, and print the fully composed path **before** handing it to any script that writes, moves, or deletes. If a batch already produced wrong names, resolve the containing folder first, match the bad names explicitly, delete them individually (never a wildcard), and re-run with explicit concatenation.
+
+### [2026-10-09] Host process env snapshot hides a PATH entry the persisted user PATH already has
+- **Layer**: `Environment / tooling`
+- **Module**: `ws-spec-memo` bridge preflight (`check_spec_memo.cjs`), `.ws/config.json` → `specMemo.cli`, any harness-invoked CLI alias`
+- **Severity**: `Medium`
+- **PathPattern**: `.ws/config.json` (`specMemo.cli`), `{skillsRoot}/ws-spec-memo/scripts/check_spec_memo.cjs`
+- **Scenario / Context**: Preflight returned `cli.available: false` (`helpExit: 1`) for `specMemo.cli: "memo"` although `spec-memo@0.37.9` was installed with shims at `D:\packages\npm`. The persisted user PATH already ended with `D:\packages\npm`, but the running agent host had captured its environment before that entry existed, so the host's `$env:PATH` — and every shell it spawns — lacked it. `Get-Command memo` resolved nothing while `& 'D:\packages\npm\memo.cmd' --version` returned `0.37.9` with exit 0. Prepending the directory for one command flipped the same preflight to `cli.available: true, helpExit: 0`. Same root cause class as the env-var snapshot trap (see `2026-10-08-stale-process-env-secret-refresh.md`), different symptom: a missing PATH entry rather than a stale value.
+- **DO NOT**: Conclude a CLI is uninstalled, or rewrite `specMemo.cli` to a machine-absolute path, from an in-host lookup failure alone — and do not append a PATH entry that the persisted user PATH already contains, which only reorders a stale snapshot.
+- **INSTEAD DO**: Separate the three states before acting: live env (`$env:PATH`), persisted scope (`[Environment]::GetEnvironmentVariable('Path','User')` or `Get-Item HKCU:\Environment`), and the binary itself (run it by absolute path). When the persisted scope is already correct, the fix is a host restart and `specMemo.cli` stays portable; to exercise the flow before restarting, prepend the directory for that single command (`$env:PATH = 'D:\packages\npm;' + $env:PATH`).
 
 ### [2026-10-09] Global npm install from git can link into prunable cache tmp; reinstall CLI from a stable checkout
 - **Layer**: `Tooling / spec-memo setup`
