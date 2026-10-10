@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-09 22:49] Agent: agent
+- **Prompt**: restarted - verify the spec-memo MCP integration
+- **Done**: Confirmed the insert-patch fix worked: the plugin loaded, the app spawned node spec-memo/dist/cli.js serve as a child, all 11 mcp__spec-memo__ tools are registered, and check_version plus bootstrap answered live. Found one silent defect: the server inherited the app cwd, so the vault bound to the empty fallback project local-desktop-4151651c with 0 traps instead of the workspace project with 510 records
+- **Result**: Pinned cwd: L:\source\workflow-skills in the DSH profile entry and validated it through the real loader (composed tree shows the path, no warnings). Extended jpolvora/spec-memo#94 with the project-binding requirement and recorded the cwd-binding trap.
+
 ### [2026-10-09 19:32] Agent: agent
 - **Prompt**: check if the spec-memo MCP integration works after the DSH restart
 - **Done**: Found the restart did not enable it and traced the cause: the profile patch entry was composed as a bare id/name/config patch, which the DSH loader treats as an id-targeted override, so the unknown id was warned and skipped (patch: entry mcp-spec-memo not found) with no GUI-visible signal. Verified the spawn path separately (cross-spawn handshake returns 11 tools) and the packaged plugin dependency (@modelcontextprotocol/client bundled in app.asar)

@@ -69,6 +69,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **DO NOT**: Add C-style `\"` or `\'` escapes inside a `muse.powershell` command, or build a `Write-Output ("label=" + $var)` probe with escaped quotes; do not retry the same failing composition with different escaping.
 - **INSTEAD DO**: Write plain PowerShell quoting (`Write-Output "label=$var"`, single-quoted literals where possible) and prefer `node -e` with single-quoted JS strings for text processing; verify a new composition with one cheap read-only run before chaining it into an edit pipeline.
 
+### [2026-10-09] A registered spec-memo MCP server binds the vault project from its cwd, so an app-spawned server silently reads an empty fallback project
+- **Layer**: `Tooling / memory backends`
+- **Module**: `ws-spec-memo` bridge, `.ws/config.json` (`enableSpecMemoIntegration`), host MCP server config (`@deepseek-ai/dsh-mcp-client` entry `cwd`)`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-memo/**`, `.ws/config.json`, host profile patch files (`~/.dsh/profiles/*/cordis.patch.yml`)`
+- **Scenario / Context**: With the MCP server finally registered, `mcp__spec-memo__bootstrap` returned `projectId: local-desktop-4151651c`, `gitRemote: null` and `totalTrapsCount: 0`, while the same vault holds 510 records and 161 traps for the workspace's real project id. `memo serve` derives project identity from its **working directory** (git remote detection), exposes no project flag (`--help` lists only `--sse`, `--port`, `--host`, `--status`, `--status-port`, `--no-status`, `--auth-token`, `--vaultRoot`, `--json`) and has no project-identity environment override (`SPEC_MEMO_ROOT` selects the vault, not the project). A host that spawns MCP servers once per application composition hands the child its own cwd, so every session binds the fallback project. Because the harness prefers MCP over the CLI for `read-memory` as soon as the server is registered, the anti-regression memory silently answers "no traps" instead of the real set. Pinning `cwd:` in the host's server entry fixes it; the binding is per server process, so one instance serves exactly one project identity.
+- **DO NOT**: Treat an MCP `bootstrap`/`search` result of zero traps as evidence that a project has no memory, and never assume a registered MCP server reads the same project as a CLI call made from the repo root.
+- **INSTEAD DO**: Compare identities before trusting either path: read `projectId`/`gitRemote`/`totalTrapsCount` from the MCP result and cross-check against `memo status --json` run from the repo root. When they differ, set the server's working directory in the host config (DSH: `cwd:` inside the `@deepseek-ai/dsh-mcp-client` entry) and re-verify after a host reload, since the child inherits the app's cwd until then.
+
 ### [2026-10-08] Windows host: full-suite runner flake and sabotage/injection alias constraint
 - **Layer**: `devops`
 - **Module**: `test-runner / ws-testing / ws-fresh-verify`
