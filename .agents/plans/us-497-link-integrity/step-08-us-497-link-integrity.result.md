@@ -5,7 +5,7 @@ workflowId: us-497-link-integrity-20261010T042722Z
 status: completed
 startedAt: "2026-10-10T05:15:00Z"
 endedAt: "2026-10-10T05:30:00Z"
-acRefs: ["AC1", "AC2", "AC3", "AC4", "AC5", "AC6", "AC7", "AC8", "AC9", "AC10", "AC11", "AC12", "AC13", "AC14", "AC15", "AC16", "AC17", "AC18", "AC19", "AC20", "AC21", "AC22", "AC23", "AC24"]
+acRefs: []
 ---
 # us-497-link-integrity — Delivery Result
 
