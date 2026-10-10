@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 22,
-  "generatedAt": "2026-10-08T17:04:15Z",
+  "revision": 19,
+  "generatedAt": "2026-10-10T13:49:17Z",
   "workflows": [
     {
       "workflowId": "benchmark-publish-fixed-models-20260930T114235Z",
@@ -288,6 +288,39 @@
       "currentStep": 9,
       "updatedAt": "2026-10-08T17:04:15Z",
       "runPath": ".agents/plans/us-490/us-490-20261008T155141Z.state.json"
+    },
+    {
+      "workflowId": "us-492-20261010T025900Z",
+      "slug": "us-492",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/us-492/us-492-20261010T025900Z.state.md",
+      "stateSha256": "70fa185cd106c18fa1cd06efaa7cfcc67670b7fda05c26a0d8f68d360be28b75",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-10-10T03:40:00Z",
+      "runPath": ".agents/plans/us-492/us-492-20261010T025900Z.state.json"
+    },
+    {
+      "workflowId": "us-497-link-integrity-20261010T042722Z",
+      "slug": "us-497-link-integrity",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/us-497-link-integrity/us-497-link-integrity-20261010T042722Z.state.md",
+      "stateSha256": "7668ff2a2cf94b03460febcf6487e980b672bb1fc4c245f8eb425cbc5f5d44de",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-10-10T05:28:22Z",
+      "runPath": ".agents/plans/us-497-link-integrity/us-497-link-integrity-20261010T042722Z.state.json"
+    },
+    {
+      "workflowId": "us-498-install-mode-reporting-20261010T070620Z",
+      "slug": "us-498-install-mode-reporting",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/us-498-install-mode-reporting/us-498-install-mode-reporting-20261010T070620Z.state.md",
+      "stateSha256": "c88fcc7ff0fb9909ab0dec5fd0335f7765c24f5b57a7a7c1ca1789c55a7d843a",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-10-10T13:49:17Z",
+      "runPath": ".agents/plans/us-498-install-mode-reporting/us-498-install-mode-reporting-20261010T070620Z.state.json"
     },
     {
       "workflowId": "wf-us-459",
