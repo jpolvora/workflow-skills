@@ -295,17 +295,22 @@ function main() {
   const report = analyze(path.resolve(repoRoot));
   if (json) {
     process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
-  } else if (report.ok) {
+  } else {
+    // Install-layout diagnostics are emitted on the human path in every outcome:
+    // they are never gate failures, but they stay observable next to real
+    // findings so a tolerated literal is never mistaken for a clean link.
     for (const row of report.installLayoutNotes || []) {
       process.stdout.write(`installLayoutNote: ${row.file} ${row.target} (hub binding literal; ${row.remediation})\n`);
     }
     for (const row of report.warnings || []) {
       process.stdout.write(`warning: ${row.code} ${row.message}\n`);
     }
-    process.stdout.write('OK: harness links, paths, shorthand, and routing are clean\n');
-  } else {
-    for (const [kind, rows] of Object.entries(report.findings)) {
-      for (const row of rows) process.stdout.write(`${kind}: ${row.file}${row.line ? `:${row.line}` : ''} ${row.target}\n`);
+    if (report.ok) {
+      process.stdout.write('OK: harness links, paths, shorthand, and routing are clean\n');
+    } else {
+      for (const [kind, rows] of Object.entries(report.findings)) {
+        for (const row of rows) process.stdout.write(`${kind}: ${row.file}${row.line ? `:${row.line}` : ''} ${row.target}\n`);
+      }
     }
   }
   process.exitCode = report.ok ? 0 : 1;

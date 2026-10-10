@@ -346,6 +346,41 @@ function testHybridLayoutValidatesHubTargets() {
   assert((report && report.installLayoutNotes ? report.installLayoutNotes.length : 0) === 0, 'AC12: the tolerance is inactive while the project hub is present');
 }
 
+function testHumanPathEmitsInstallLayoutDiagnostics() {
+  console.log('\n--- testHumanPathEmitsInstallLayoutDiagnostics ---');
+  const { sandbox, globalRoot, skillDir } = mkGlobalOnlySandbox();
+  fs.writeFileSync(
+    path.join(skillDir, 'SKILL.md'),
+    '# ws-demo\n\n- [hub entry](../../../.ws/AGENTS.md)\n',
+    'utf8',
+  );
+  const passRun = cp.spawnSync(
+    process.execPath,
+    [path.join(globalRoot, 'ws-check-harness', 'scripts', 'check_harness_links.cjs'), '--repo-root', sandbox],
+    { cwd: sandbox, encoding: 'utf8', env: { ...process.env, WORKFLOW_SKILLS_GLOBAL_DIR: globalRoot, WORKFLOW_SKILLS_SHARED_DIR: '', FORCE_COLOR: '0' } },
+  );
+  assert(passRun.status === 0, `AC14: notes-only human run exits 0 (${passRun.stderr || ''})`);
+  assert(/installLayoutNote: .*\.ws\/AGENTS\.md/.test(passRun.stdout), 'AC14: the note is printed on the passing human path');
+  assert(/warning: project-hub-absent/.test(passRun.stdout), 'AC17: the absent-hub warning is printed on the passing human path');
+  assert(/^OK: harness links/m.test(passRun.stdout), 'AC13: a notes-only human run still reports the clean summary line');
+
+  // Same layout with one genuine break: the diagnostics stay visible next to the finding.
+  fs.writeFileSync(
+    path.join(skillDir, 'SKILL.md'),
+    '# ws-demo\n\n- [hub entry](../../../.ws/AGENTS.md)\n- [unrelated](does-not-exist.md)\n',
+    'utf8',
+  );
+  const failRun = cp.spawnSync(
+    process.execPath,
+    [path.join(globalRoot, 'ws-check-harness', 'scripts', 'check_harness_links.cjs'), '--repo-root', sandbox],
+    { cwd: sandbox, encoding: 'utf8', env: { ...process.env, WORKFLOW_SKILLS_GLOBAL_DIR: globalRoot, WORKFLOW_SKILLS_SHARED_DIR: '', FORCE_COLOR: '0' } },
+  );
+  assert(failRun.status === 1, `AC16: a genuine break still exits 1 on the human path (${failRun.stderr || ''})`);
+  assert(/brokenLinks: .*does-not-exist\.md/.test(failRun.stdout), 'AC16: the genuine break is printed on the human path');
+  assert(/installLayoutNote: .*\.ws\/AGENTS\.md/.test(failRun.stdout), 'AC14: install-layout notes stay observable next to a real finding');
+  assert(/warning: project-hub-absent/.test(failRun.stdout), 'AC17: the absent-hub warning stays observable next to a real finding');
+}
+
 function testUnknownArgumentAndNoOwnScopeDetection() {
   console.log('\n--- testUnknownArgumentAndNoOwnScopeDetection ---');
   const fixture = mkTmp('ws-chk-links-args-');
@@ -373,6 +408,7 @@ function main() {
   testGlobalOnlyUnrewrittenRuntimeSiblingStaysBroken();
   testProjectScopeHubTargetsValidated();
   testHybridLayoutValidatesHubTargets();
+  testHumanPathEmitsInstallLayoutDiagnostics();
   testUnknownArgumentAndNoOwnScopeDetection();
   cleanup();
   if (failures > 0) {
