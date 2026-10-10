@@ -1,5 +1,40 @@
 # Changelog
 
+### [2026-10-09 23:37] Agent: ws-spec-to-pr (worker)
+- **Prompt**: us-492 (GitHub issue #492): update installs the ws-shared hub twice per run, so config.json.bak is written twice and the pre-update snapshot is destroyed (backup ends byte-identical to the live config).
+- **Done**: Added a run-scoped latch so ensureSharedHubInstalled runs at most once per install/update run (project and global scope, ws-self-learning seed path preserved) and replaced the unconditional config snapshot write with a preserving writeConfigBackup; added regression coverage in test/test-install.js and test/test-ws-shared-layout.js; bumped 0.5.36.
+- **Result**: Verify score 10/10; invariant scan 0; install suite green with 8 us-492 assertions; 159/159 remaining suite entries green individually; test-harness-clean 0 findings; integrity verified at 0.5.36. Product commit df3a7559.
+
+### [2026-10-09 22:49] Agent: agent
+- **Prompt**: restarted - verify the spec-memo MCP integration
+- **Done**: Confirmed the insert-patch fix worked: the plugin loaded, the app spawned node spec-memo/dist/cli.js serve as a child, all 11 mcp__spec-memo__ tools are registered, and check_version plus bootstrap answered live. Found one silent defect: the server inherited the app cwd, so the vault bound to the empty fallback project local-desktop-4151651c with 0 traps instead of the workspace project with 510 records
+- **Result**: Pinned cwd: L:\source\workflow-skills in the DSH profile entry and validated it through the real loader (composed tree shows the path, no warnings). Extended jpolvora/spec-memo#94 with the project-binding requirement and recorded the cwd-binding trap.
+
+### [2026-10-09 19:32] Agent: agent
+- **Prompt**: check if the spec-memo MCP integration works after the DSH restart
+- **Done**: Found the restart did not enable it and traced the cause: the profile patch entry was composed as a bare id/name/config patch, which the DSH loader treats as an id-targeted override, so the unknown id was warned and skipped (patch: entry mcp-spec-memo not found) with no GUI-visible signal. Verified the spawn path separately (cross-spawn handshake returns 11 tools) and the packaged plugin dependency (@modelcontextprotocol/client bundled in app.asar)
+- **Result**: Rewrote the entry as an insert: patch and validated it against the real loader with dsh --profile web --patch <file> --dump-config, which now composes mcp-spec-memo with no warning. Corrected jpolvora/spec-memo#94, whose proposed snippet had the same defect, and recorded the insert-wrapper trap.
+
+### [2026-10-09 17:11] Agent: agent
+- **Prompt**: /ws-spec-memo - repair and verify the external vault bridge
+- **Done**: Diagnosed the spec-memo bridge end to end: memo CLI installed but absent from the agent host env snapshot while the persisted user PATH already had it; vault reads verified working (510 records for this project); hybrid remote leg returns HTTP 401 for want of SPEC_MEMO_AUTH_TOKEN; no spec-memo MCP server registered in DSH, which is not a memo setup host target
+- **Result**: Filed jpolvora/spec-memo#94 requesting --host dsh (profile patch entry mounting the bundled @deepseek-ai/dsh-mcp-client). Recorded two memory traps: host env snapshot hides a persisted PATH entry, and hybrid-mode pollution findings must not trigger cleanup of tracked in-tree memory. No workflow-skills files changed.
+
+### [2026-10-09 16:35] Agent: agent
+- **Prompt**: make always enabled spec-memo skill integration
+- **Done**: Persisted dual-mode specMemo flags (files+vault, hybrid) via configure_spec_memo.cjs; installed memo CLI 0.37.9 globally from stable checkout; added npm prefix bin to User PATH
+- **Result**: Preflight cli.available true, MCP bootstrap live (160 traps), vault write verified; doctor unhealthy is pre-existing vault-remote/token state
+
+### [2026-10-09 16:09] Agent: agent
+- **Prompt**: /ws-spec-from-provider: bulk-import open GitHub issues, consolidate overlapping specs, mirror them to new tracker issues, update index.PRD
+- **Done**: Imported 5 open issues (#492-#496) as agentic specs, merged #493+#496 into us-497-link-integrity and #494+#495 into us-498-install-mode-reporting, renumbered us-492 from 0175 to 0173, created issues #497 and #498 from the merged specs, closed #493-#496 as superseded, registered step-00 copies and tracked all three specs in index.PRD
+- **Result**: 3 final pending specs (24/29/10 ACs, authoring validation exit 0), index rows 179-181 tracked, #497/#498 open with mirrored bodies, #493-#496 closed with supersede pointers
+
+### [2026-10-08 13:23] Agent: agent
+- **Prompt**: ws-spec-multi batch ms-20261008T154414Z item us-490 (retro skill: session retrospective)
+- **Done**: Shipped us-490: new ws-retro skill package (SKILL.md + retro_hook/validate_candidates scripts), opt-in retro.enabled hook in standard+lite orchestrators, config trio (schema/example/PS editor), manifests, docs/site/wiki, test-ws-retro.js; verify 10/10, fresh-verify 0 defects, testing PASS, harness 0 findings. Merge held on agentic-review upstream 401; refreshed repo OPENCODE_API_KEY from the freshly updated OS value and reran: review + CI tests green. PR #491 merged (34903639); issue #490 closed; develop synced with main.
+- **Result**: Batch completed 1/1 shipped (standard flow); cleanup CLEAN (8 uswf tags removed); spec filed to completed/ with index.PRD synced; v0.5.35.
+
 ### [2026-10-08 12:55] Agent: agent
 - **Prompt**: US us-490: add optional ws-retro retrospective skill (issue #490)
 - **Done**: New ws-retro package (SKILL.md, retro_hook.cjs, validate_candidates.cjs); opt-in retro.enabled post-convergence hook wired into standard+lite orchs, gates/artifacts; config schema/example/PS editor; both dependency manifests; test-v1-v16 suite + adequacy T01-T08; docs/site/integrity sync.

@@ -6,6 +6,87 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-10-10] Install suite local mode needs a fresh pack and git-bash first on PATH
+- **Layer**: `Tests`
+- **Module**: `test/test-install.js` (`--local` mode) / local verification recipes`
+- **Severity**: `Medium`
+- **PathPattern**: `test/test-install.js`, `workflow-skills-*.tgz`, `bin/skill-integrity.json`
+- **Scenario / Context**: On this Windows host, `node test/test-install.js --local` resolves the newest `workflow-skills-*.tgz` in the repo root and installs it into `test/node_modules`. Two host traps then produce failures that look like product defects: (a) if no `npm pack` ran for the current tree, the suite picks a stale tarball and the installer aborts with `Integrity: source package mismatch vs bin/skill-integrity.json` — for example `hub/runtime/scripts/workflow_state.cjs (digest-mismatch)` against a 0.5.17 tarball; (b) if `bash` resolves to `C:\WINDOWS\system32\bash.exe` (WSL), the secrets-hook phase fails with `[secrets-leak] node not on PATH — commit NOT scanned` plus `wsl: Failed to translate 'G:\packages\npm'`, even though the same phase passes in CI. A third, separate case is `npm run test` stopping at `test/test-subagent-dispatch.js` (`child started before the kill`).
+- **DO NOT**: Treat the stale-tarball integrity abort, the WSL `node not on PATH` hook failure, or the `test-subagent-dispatch.js` flake as regressions from the change under test; run the suite standalone without first packing the current tree.
+- **INSTEAD DO**: `npm pack` immediately before a direct `--local` run, and prepend git-bash to PATH for that shell (`$env:PATH = "C:\Program Files\Git\bin;" + $env:PATH`) so the hook phase finds `node`; then read the `us-492`/slug-specific assertion lines out of the output as evidence. For the runner flake, run the entry standalone and execute the remaining `test/test-suites.json` entries individually, linking the configured alias as `exitCode: 1` / `skipReason: baseline-dirty` with the failing path. To prove a red baseline for a deleted-template style assertion, reach the branch with `update --force-integrity` (the perturbed package otherwise aborts in source-integrity pre-verify before touching the code under test).
+
+### [2026-10-09] spec-memo "pollution" findings are expected in hybrid mode; never clean up tracked in-tree memory
+- **Layer**: `Tooling / memory backends`
+- **Module**: `ws-spec-memo` check+setup gate, `memo doctor`, `.ws/MEMORY.md` + `.ws/memory/*`
+- **Severity**: `High`
+- **PathPattern**: `.ws/MEMORY.md`, `.ws/memory/*`, `.agents/plans/*`, `.ws/config.json` (`specMemo.mode`, `specMemo.enableMemoryFiles`)`
+- **Scenario / Context**: With `specMemo.mode: "hybrid"` and both `enableMemoryFiles` and `enableSpecMemoIntegration` true, the preflight deterministically reports `pollution` entries for `.ws/MEMORY.md` ("compiled traps"), `.ws/memory` (238 entries) and `.agents/plans` (52 entries). These are the *active in-repo half* of hybrid mode, not residue — and in this repo `.ws/MEMORY.md` is **git-tracked**. The `ws-spec-memo` check step pairs any pollution finding with a `user-gate` that recommends `/ws-cleanup` (or `memo doctor --fix`), so following the skill literally would delete a tracked memory backend that hybrid mode still falls back to when the vault or its remote leg is unavailable.
+- **DO NOT**: Treat a non-empty `pollution` array as a defect while `enableMemoryFiles` is true, and never run `/ws-cleanup` / `memo doctor --fix` against `.ws/MEMORY.md` or `.ws/memory/` in this repo.
+- **INSTEAD DO**: Read `specMemo.mode` and both backend flags first (`memo status --json`, `.ws/config.json`), report the findings as expected in hybrid mode, and only consider cleanup once `enableMemoryFiles` is explicitly false (vault-only). Before any destructive cleanup, check ownership with `git ls-files --error-unmatch <path>`; a tracked path is never cleanup residue.
+
+### [2026-10-09] Ordered dictionary with integer keys silently returns null for every lookup
+- **Layer**: `Tooling / PowerShell runtime`
+- **Module**: `bulk spec-import path composition (`ws-spec-from-provider` flow); any `[ordered]@{}` literal with bare numeric keys`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/specs/pending/*`, ad-hoc PowerShell loops composing output paths for skill scripts`
+- **Scenario / Context**: A bulk import loop built `$map = [ordered]@{ 496='0171'; 495='0172' }` and composed output filenames as `"$num-us-$id.spec.md"`. `$map[$id]` returned `$null` for **every** lookup form tested — by the `.Keys` element, by the `496` literal, and by `'496'` — so `$num` was empty and the converter silently wrote five files named `-us-49x.spec.md` instead of `017N-us-49x.spec.md`. PowerShell raises no error for the failed lookup, and the composed string looked plausible. The decisive tell is serialization: `ConvertTo-Json` on that dictionary fails with `Keys must be strings`, proving the keys are `Int32` rather than `String`.
+- **DO NOT**: Build a PowerShell lookup table with bare numeric keys (`[ordered]@{ 496='0171' }`), assume `$dict[$key]` throws when the key type does not match, or blame string interpolation when a composed path comes out short.
+- **INSTEAD DO**: Quote the keys (`[ordered]@{ '496'='0171' }`) or use an array of pairs, and print the fully composed path **before** handing it to any script that writes, moves, or deletes. If a batch already produced wrong names, resolve the containing folder first, match the bad names explicitly, delete them individually (never a wildcard), and re-run with explicit concatenation.
+
+### [2026-10-09] Host process env snapshot hides a PATH entry the persisted user PATH already has
+- **Layer**: `Environment / tooling`
+- **Module**: `ws-spec-memo` bridge preflight (`check_spec_memo.cjs`), `.ws/config.json` → `specMemo.cli`, any harness-invoked CLI alias`
+- **Severity**: `Medium`
+- **PathPattern**: `.ws/config.json` (`specMemo.cli`), `{skillsRoot}/ws-spec-memo/scripts/check_spec_memo.cjs`
+- **Scenario / Context**: Preflight returned `cli.available: false` (`helpExit: 1`) for `specMemo.cli: "memo"` although `spec-memo@0.37.9` was installed with shims at `D:\packages\npm`. The persisted user PATH already ended with `D:\packages\npm`, but the running agent host had captured its environment before that entry existed, so the host's `$env:PATH` — and every shell it spawns — lacked it. `Get-Command memo` resolved nothing while `& 'D:\packages\npm\memo.cmd' --version` returned `0.37.9` with exit 0. Prepending the directory for one command flipped the same preflight to `cli.available: true, helpExit: 0`. Same root cause class as the env-var snapshot trap (see `2026-10-08-stale-process-env-secret-refresh.md`), different symptom: a missing PATH entry rather than a stale value.
+- **DO NOT**: Conclude a CLI is uninstalled, or rewrite `specMemo.cli` to a machine-absolute path, from an in-host lookup failure alone — and do not append a PATH entry that the persisted user PATH already contains, which only reorders a stale snapshot.
+- **INSTEAD DO**: Separate the three states before acting: live env (`$env:PATH`), persisted scope (`[Environment]::GetEnvironmentVariable('Path','User')` or `Get-Item HKCU:\Environment`), and the binary itself (run it by absolute path). When the persisted scope is already correct, the fix is a host restart and `specMemo.cli` stays portable; to exercise the flow before restarting, prepend the directory for that single command (`$env:PATH = 'D:\packages\npm;' + $env:PATH`).
+
+### [2026-10-09] Global npm install from git can link into prunable cache tmp; reinstall CLI from a stable checkout
+- **Layer**: `Tooling / spec-memo setup`
+- **Module**: `ws-spec-memo` setup (`memo` CLI availability gate in `configure_spec_memo.cjs`); global npm installs from git URLs`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-spec-memo/**`, agent-composed global-install commands`
+- **Scenario / Context**: `npm install -g github:<org>/<pkg>` succeeded ("added 115 packages") but the global `node_modules/<pkg>` was a junction into the npm cache tmp git-clone dir, whose tracked files were later pruned — leaving only `node_modules/` behind and a shim pointing at a missing `dist/cli.js`. Separately, the npm prefix bin dir was absent from PATH (a stale entry for a different drive letter was present instead), and a freshly persisted User PATH entry was invisible to already-running agent shells. The durable fix was reinstalling from the stable source checkout already on disk (found via the running MCP server's command line, which pointed at its built `dist/cli.js`) and adding the npm prefix bin to User PATH.
+- **DO NOT**: Trust "added N packages" as proof a global git install works; assume the global link target is durable; assume a User PATH change is visible to the current session's shells.
+- **INSTEAD DO**: After any global install from git, run `<bin> --version` in a new shell; on a dist-missing MODULE_NOT_FOUND, locate a stable built checkout (the running `serve` process command line names one) and `npm install -g <stable-dir>`. Persist the npm prefix bin to User PATH for future shells and prepend it per-command (`$env:PATH += ...`) inside long-lived sessions.
+
+### [2026-10-09] DSH profile patch entries need an `insert:` wrapper; unknown-id patches are skipped silently
+- **Layer**: `Tooling / host integration`
+- **Module**: `$DSH_HOME/profiles/<profile>/cordis.patch.yml` (DSH loader patch list), `ws-spec-memo` host wiring for the `spec-memo` MCP server`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-memo/**`, host profile patch files (`~/.dsh/profiles/*/cordis.patch.yml`)`
+- **Scenario / Context**: Adding a new plugin instance to a DSH profile with a bare `- id: <new-id>` / `name:` / `config:` entry composes nothing. The loader reads a patch without `insert` as an id-targeted override of an existing entry, and an unknown id is *"warned and skipped"*. The only signal is `dsh: patch: entry "<id>" not found` on the stderr of a `--dump-config` run that a GUI user never performs, so the profile file looks correct, the app reports nothing, and the plugin's tools never appear. The working form wraps the entry in `insert:` (schema: *"an insert appends entries, optionally inside the group identified by id"*). This is why `spec-memo` never loaded even though `command: memo` was provably spawnable: the MCP client plugin was dropped before any spawn was attempted.
+- **DO NOT**: Add a new plugin to a DSH profile as a bare `id`/`name`/`config` patch entry, and never treat "the file is on disk and YAML-valid" as proof the host loaded it — a structural or YAML check passes on an entry the loader discards.
+- **INSTEAD DO**: Wrap new plugin instances in `insert:` and verify against the real loader before declaring success: `dsh --profile <p> --patch <file> --dump-config` must list the entry in the composed tree with no `not found` warning. App-managed profiles (`desktop`) refuse `--dump-config` ("managed exclusively by the Electron application"), so validate the same file against another profile such as `web`. Also confirm the plugin's own dependencies resolve where the host loads them from, and remember the harness scrubs `/KEY|PASSWORD|SECRET|TOKEN/i` names from every child environment, so any token must be forwarded through the entry's explicit `env`/`headers` layer.
+
+### [2026-10-09] Bulk spec import: every not-yet-written slug claims the same NNNN prefix
+- **Layer**: `Workflow / specs pipeline`
+- **Module**: `ws-spec-organizer/scripts/resolve_spec_path.cjs`, `ws-spec-provider-github/scripts/github-issue-to-spec.cjs` (`--output`), `ws-spec-from-provider` bulk import`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-organizer/scripts/resolve_spec_path.cjs`, `.agents/skills/ws-spec-provider-github/scripts/github-issue-to-spec.cjs`, `.agents/specs/pending/`
+- **Scenario / Context**: `resolve_spec_path.cjs` numbers a new spec of record as `max(existing NNNN) + 1`, scanning `{specsDir}` plus its `pending/`, `completed/`, and `archived/` subfolders. During a five-issue bulk import every slug resolved to the **same** `0171`, because the number is computed from files already on disk and none had been written yet; resolving all five up front and then writing them would have collided them onto one number. Separately, `github-issue-to-spec.cjs --output` uses the supplied path **verbatim** with no basename sanitisation (its default destination comes from `resolve_spec_path.cjs --slug {unprefixedSlug}`), so a malformed or empty prefix segment is written straight to disk.
+- **DO NOT**: Resolve `SPEC_PATH` for several not-yet-written specs in one batch and then write them all; do not assume the issue converter validates or repairs the `--output` basename; do not treat a per-slug resolve as independent state.
+- **INSTEAD DO**: Give each import its own number and pass it explicitly as `--output {specsDir}/pending/NNNN-{slug}.spec.md` — either resolve per spec immediately before its own write, or pre-assign `max+1, max+2, …` when nothing else can write specs concurrently — then confirm the written basename matches the resolved slug before registering or tracking it.
+
+### [2026-10-09] Backslash-escaped quotes break PowerShell commands sent through the agent shell tool
+- **Layer**: `Tooling / agent shell invocation`
+- **Module**: `any `muse.powershell` command composing quoted PowerShell (`Write-Output ("x=" + $var)`, `node -e "..."`)`
+- **Severity**: `Medium`
+- **PathPattern**: `agent-composed shell commands (not committed scripts)`
+- **Scenario / Context**: Two probes in one session failed before passing: `Write-Output (\"EXIT1=\" + $LASTEXITCODE)` died with `The term '\EXIT1=\' is not recognized`, and a `node -e` one-liner with `\'` escapes misparsed, because the tool passes the command string literally to PowerShell — a `\"` arrives as backslash-quote, which PowerShell does not treat as an escaped quote. JSON string encoding already handles the quoting, so the extra backslashes are both unnecessary and harmful.
+- **DO NOT**: Add C-style `\"` or `\'` escapes inside a `muse.powershell` command, or build a `Write-Output ("label=" + $var)` probe with escaped quotes; do not retry the same failing composition with different escaping.
+- **INSTEAD DO**: Write plain PowerShell quoting (`Write-Output "label=$var"`, single-quoted literals where possible) and prefer `node -e` with single-quoted JS strings for text processing; verify a new composition with one cheap read-only run before chaining it into an edit pipeline.
+
+### [2026-10-09] A registered spec-memo MCP server binds the vault project from its cwd, so an app-spawned server silently reads an empty fallback project
+- **Layer**: `Tooling / memory backends`
+- **Module**: `ws-spec-memo` bridge, `.ws/config.json` (`enableSpecMemoIntegration`), host MCP server config (`@deepseek-ai/dsh-mcp-client` entry `cwd`)`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-spec-memo/**`, `.ws/config.json`, host profile patch files (`~/.dsh/profiles/*/cordis.patch.yml`)`
+- **Scenario / Context**: With the MCP server finally registered, `mcp__spec-memo__bootstrap` returned `projectId: local-desktop-4151651c`, `gitRemote: null` and `totalTrapsCount: 0`, while the same vault holds 510 records and 161 traps for the workspace's real project id. `memo serve` derives project identity from its **working directory** (git remote detection), exposes no project flag (`--help` lists only `--sse`, `--port`, `--host`, `--status`, `--status-port`, `--no-status`, `--auth-token`, `--vaultRoot`, `--json`) and has no project-identity environment override (`SPEC_MEMO_ROOT` selects the vault, not the project). A host that spawns MCP servers once per application composition hands the child its own cwd, so every session binds the fallback project. Because the harness prefers MCP over the CLI for `read-memory` as soon as the server is registered, the anti-regression memory silently answers "no traps" instead of the real set. Pinning `cwd:` in the host's server entry fixes it; the binding is per server process, so one instance serves exactly one project identity.
+- **DO NOT**: Treat an MCP `bootstrap`/`search` result of zero traps as evidence that a project has no memory, and never assume a registered MCP server reads the same project as a CLI call made from the repo root.
+- **INSTEAD DO**: Compare identities before trusting either path: read `projectId`/`gitRemote`/`totalTrapsCount` from the MCP result and cross-check against `memo status --json` run from the repo root. When they differ, set the server's working directory in the host config (DSH: `cwd:` inside the `@deepseek-ai/dsh-mcp-client` entry) and re-verify after a host reload, since the child inherits the app's cwd until then.
+
 ### [2026-10-08] Windows host: full-suite runner flake and sabotage/injection alias constraint
 - **Layer**: `devops`
 - **Module**: `test-runner / ws-testing / ws-fresh-verify`
@@ -14,6 +95,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **Scenario / Context**: On this Windows host, `npm run test` reaches 43/160 and then `test/test-subagent-dispatch.js` fails with `AssertionError: child started before the kill` (the timeout case gives the spawned child only a 400 ms window to write its alive marker; cold Node start under full-suite load exceeds it). The suite passes standalone repeatedly and is untouched by workflow changes. `run_sabotage.cjs` / `run_fresh_injection.cjs` only accept the configured `verification.*Test` alias (here `npm run test`), so a forced run records the flake as the "red" signal before ever reaching the injected assertion.
 - **DO NOT**: Treat the full-runner failure as a regression from the change under test; force equivalent sabotage/injection runs through the full-suite alias and attribute the mid-run flake as the fault-injection red signal.
 - **INSTEAD DO**: Run the affected suite standalone, run the remaining suite list individually (read `test/test-suites.json`), link the alias as `exitCode: 1` with `skipReason: "baseline-dirty"` + `failingPaths` for the untouched flaky path, and record inline wrong-code inversions (edit -> targeted suite -> byte-identical restore, green re-run) as the equivalent red-signal evidence with the deviation documented in the report and step-output.
+
+### [2026-10-08] Stale process env hides fresh OS env vars; read the registry scope
+- **Layer**: `Environment / CI credentials`
+- **Module**: `.github/workflows/agentic-code-review.yml` (`OPENCODE_API_KEY`), host-agent process env`
+- **Severity**: `Medium`
+- **PathPattern**: `.github/workflows/agentic-code-review.yml`, `.ws/config.json` (`preview.dryRunCommand`)`
+- **Scenario / Context**: The Agentic Code Review job failed with upstream `401 Invalid credential` (`opencode.ai/zen/go/v1/responses`) while the OS-level `OPENCODE_API_KEY` had already been updated outside the running agent host. Shells spawned by the host inherit the stale process env, so `$env:OPENCODE_API_KEY` keeps the old value even in a fresh terminal.
+- **DO NOT**: Trust `$env:OPENCODE_API_KEY` (or any env var updated after the host started) to reflect the current OS value, and do not conclude the credential is still invalid from the process env alone.
+- **INSTEAD DO**: Read the persisted scope directly (`[Environment]::GetEnvironmentVariable('OPENCODE_API_KEY','User')`, fall back to `'Machine'`), compare fingerprints (length + SHA-256 prefix) instead of printing values, refresh the consumer (e.g. `gh secret set OPENCODE_API_KEY --body $value.Trim()`), then rerun the failed workflow job (`gh run rerun <run-id> --failed`) instead of pushing a new commit.
 
 ### [2026-10-08] `npm test` blocked by npm cache path on this host
 - **Layer**: `devops`

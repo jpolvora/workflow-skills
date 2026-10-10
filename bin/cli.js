@@ -969,6 +969,30 @@ function relocateLegacyHub() {
   }
 }
 
+/**
+ * Write the pre-change config snapshot, preserving a usable rollback point (us-492).
+ * A backup whose bytes differ from the live config is the only record of the
+ * pre-update state, so it is kept as-is; an absent or byte-identical backup is
+ * (re)written from the raw pre-change bytes. Never throws on an unreadable backup.
+ */
+function writeConfigBackup(configBakPath, rawConfig, configDisplay) {
+  if (fs.existsSync(configBakPath)) {
+    let priorBackup = null;
+    try {
+      priorBackup = fs.readFileSync(configBakPath, 'utf8');
+    } catch {
+      priorBackup = null;
+    }
+    if (priorBackup !== null && priorBackup !== rawConfig) {
+      console.log(`    Preserved existing ${configDisplay}.bak (pre-change snapshot retained)`);
+      return false;
+    }
+  }
+  fs.writeFileSync(configBakPath, rawConfig);
+  console.log(`    Backed up ${configDisplay} → ${configDisplay}.bak`);
+  return true;
+}
+
 function ensureSharedConsumerArtifacts(mode = 'install') {
   const destShared = consumerHubDir();
   ensureWriteableDir(destShared);
@@ -997,8 +1021,7 @@ function ensureSharedConsumerArtifacts(mode = 'install') {
     }
 
     if (rawConfig) {
-      fs.writeFileSync(configBakPath, rawConfig);
-      console.log(`    Backed up ${configDisplay} → ${configDisplay}.bak`);
+      writeConfigBackup(configBakPath, rawConfig, configDisplay);
     }
 
     let templateConfig = null;
@@ -1279,6 +1302,16 @@ function migrateLegacyFlatHub(destShared) {
   }
 }
 
+// Runs at most once per install/update run (us-492): afterSkillCopy seeds the hub
+// for ws-self-learning inside the skill loop and the drivers also ensure it after
+// the loop, so without this latch ensureSharedConsumerArtifacts would write
+// config.json.bak twice and destroy the pre-change snapshot.
+let hubEnsuredForRun = false;
+
+function resetHubEnsureLatch() {
+  hubEnsuredForRun = false;
+}
+
 /**
  * Install/update the consumer hub (templates/docs). Preserves consumer-owned hub files.
  * Seeds config.json + STACK.md when missing; preserves legacy MEMORY.md / CHANGELOG.md.
@@ -1286,11 +1319,13 @@ function migrateLegacyFlatHub(destShared) {
  * Never writes outside `.agents/skills/` (no consumer root AGENTS.md / host pointers).
  */
 function ensureSharedHubInstalled(mode = 'install') {
+  if (hubEnsuredForRun) return false;
+  hubEnsuredForRun = true;
   const srcShared = path.join(packageSkillsDir, HUB_DIR);
   relocateLegacyHub();
   const destShared = consumerHubDir();
   const destManaged = managedHubDir();
-  if (!fs.existsSync(srcShared)) return;
+  if (!fs.existsSync(srcShared)) return false;
 
   fs.mkdirSync(destShared, { recursive: true });
   fs.mkdirSync(destManaged, { recursive: true });
@@ -1447,6 +1482,7 @@ function ensureSharedHubInstalled(mode = 'install') {
   console.log(
     `  ${hubDisplay()} hub ${mode === 'update' ? 'updated' : 'installed'} (consumer config/MEMORY/stack/CHANGELOG preserved)`
   );
+  return true;
 }
 
 /**
@@ -2037,6 +2073,7 @@ function installSelectedSkills(
 ) {
   let installedCount = 0;
   let hubEnsured = false;
+  resetHubEnsureLatch();
   const includeHub = willIncludeHub(selectedNames);
   const manifest = preVerifySourceIntegrity(selectedNames, {
     includeHub,
@@ -2685,6 +2722,7 @@ async function runUpdate(skills, includeNew, forceIntegrity = false, updateOpts 
   }
 
   let hubEnsured = false;
+  resetHubEnsureLatch();
   const skillsToCopy = [
     ...existingSkills,
     ...(includeNew ? missingNew : []),

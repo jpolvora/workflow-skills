@@ -54,9 +54,7 @@
       "i18n": {
         "framework": "none",
         "localesDir": "",
-        "locales": [
-          
-        ]
+        "locales": []
       }
     },
     "database": {
@@ -219,7 +217,7 @@
       "agentPrefix": "ws",
       "directory": "userLevel"
     },
-    "_comment_specializedSubagents": "Opt-in host projections. enabled true compiles .cursor/agents/ws-step-*.md. directory can be \u0027userLevel\u0027 ($HOME/.cursor/agents, etc) or \u0027projectLevel\u0027 (dynamically loaded from project relative). Step 5 is product-tree readonly in the prompt; never host Ask-mode readonly."
+    "_comment_specializedSubagents": "Opt-in host projections. enabled true compiles .cursor/agents/ws-step-*.md. directory can be 'userLevel' ($HOME/.cursor/agents, etc) or 'projectLevel' (dynamically loaded from project relative). Step 5 is product-tree readonly in the prompt; never host Ask-mode readonly."
   },
   "plans": {
     "dir": ".agents/plans",
@@ -270,9 +268,7 @@
     "_comment": "Upstream package keeps FEATURES.md inventory. Set featuresMdEnabled false in consumer hubs that do not use FEATURES.md.",
     "featuresMdEnabled": true,
     "autoTrackSpecWrite": true,
-    "canonicalFiles": [
-      
-    ]
+    "canonicalFiles": []
   },
   "specMemo": {
     "enabled": true,
@@ -283,7 +279,7 @@
     "vaultRoot": "",
     "bootstrapOnSession": true,
     "writeBlockHook": false,
-    "importOnEnable": true,
+    "importOnEnable": false,
     "mcpServerName": "spec-memo"
   },
   "monitor": {

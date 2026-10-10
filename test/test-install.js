@@ -878,6 +878,18 @@ child.on('close', async (code) => {
   }
   ok('config.json preserved across update and .ws/config.json backed up to config.json.bak');
 
+  // us-492 AC1/AC2: the selected update set contains ws-self-learning plus a workflow
+  // skill (ws-spec-to-pr), so the hub must be ensured exactly once for the run.
+  {
+    const hubStatusLines = `${updateResult.stdout || ''}${updateResult.stderr || ''}`
+      .split('\n')
+      .filter((line) => /hub (?:updated|installed) \(consumer config\/MEMORY\/stack\/CHANGELOG preserved\)/.test(line));
+    if (hubStatusLines.length !== 1) {
+      fail(`us-492 AC2: expected exactly 1 hub status block for a workflow update set, saw ${hubStatusLines.length}`);
+    }
+    ok('us-492 AC2: ws-self-learning + workflow update prints exactly one hub status block');
+  }
+
   if (removedForIncludeNew) {
     if (!fs.existsSync(path.join(testSkillsDir, removedForIncludeNew))) {
       fail(`update --include-new did not restore skill '${removedForIncludeNew}'`);
@@ -2539,6 +2551,8 @@ child.on('close', async (code) => {
     }
 
     // 2. Global update
+    const globalCfgPath = path.join(globalTestDir, 'ws-shared', 'config.json');
+    const globalCfgBefore = fs.existsSync(globalCfgPath) ? fs.readFileSync(globalCfgPath) : null;
     const gUpd = cp.spawnSync(
       process.execPath,
       [cliPath, 'update', '--global'],
@@ -2554,6 +2568,29 @@ child.on('close', async (code) => {
       fail('global update exited non-zero');
     }
     ok('global skill update succeeds');
+
+    // us-492 AC9: global scope keeps the once-per-run hub guarantee and a usable
+    // pre-change snapshot whenever that run changed the live config bytes.
+    {
+      const globalHubLines = `${gUpd.stdout || ''}${gUpd.stderr || ''}`
+        .split('\n')
+        .filter((line) => /hub (?:updated|installed) \(consumer config\/MEMORY\/stack\/CHANGELOG preserved\)/.test(line));
+      if (globalHubLines.length !== 1) {
+        fail(`us-492 AC9: expected exactly 1 hub status block for a global update, saw ${globalHubLines.length}`);
+      }
+      const globalBakPath = `${globalCfgPath}.bak`;
+      if (!fs.existsSync(globalBakPath)) {
+        fail('us-492 AC9: global update did not create ws-shared/config.json.bak');
+      } else {
+        const globalCfgAfter = fs.readFileSync(globalCfgPath, 'utf8');
+        const globalBakAfter = fs.readFileSync(globalBakPath, 'utf8');
+        if (globalCfgBefore !== null && globalCfgAfter !== globalCfgBefore.toString('utf8')
+          && globalBakAfter === globalCfgAfter) {
+          fail('us-492 AC9/AC4: global config.json.bak is byte-identical to the changed live config');
+        }
+      }
+      ok('us-492 AC9: global update ensures one hub install and retains a pre-change backup');
+    }
 
     // 2b. Stale generated global hub entrypoint refreshes to the canonical
     // pointer (issue #427 finding 3). Authored files without generated markers
@@ -3582,6 +3619,147 @@ child.on('close', async (code) => {
     fs.rmSync(fileHome, { recursive: true, force: true });
     fs.rmSync(rootOnlyHome, { recursive: true, force: true });
     fs.rmSync(blockedHome, { recursive: true, force: true });
+  }
+
+  // --- us-492: hub installed at most once per run; config.json.bak stays a rollback point ---
+  {
+    const us492Root = path.join(__dirname, '.us492-consumer');
+    fs.rmSync(us492Root, { recursive: true, force: true });
+    fs.mkdirSync(path.join(us492Root, '.ws'), { recursive: true });
+    const us492CliPath = path.join(parentDir, 'bin', 'cli.js');
+    const us492Run = (args) =>
+      cp.spawnSync(process.execPath, [us492CliPath, ...args], {
+        cwd: us492Root,
+        encoding: 'utf8',
+        timeout: 120000,
+        env: { ...process.env, FORCE_COLOR: '0' },
+      });
+    const us492RunText = (result) => `${result.stdout || ''}${result.stderr || ''}`;
+    const HUB_STATUS_RE = /hub (?:updated|installed) \(consumer config\/MEMORY\/stack\/CHANGELOG preserved\)/g;
+    const liveConfigPath = path.join(us492Root, '.ws', 'config.json');
+    const backupConfigPath = `${liveConfigPath}.bak`;
+    const readBytes = (file) => fs.readFileSync(file);
+    const sameBytes = (a, b) => Buffer.compare(a, b) === 0;
+
+    const seed = us492Run(['install', '--skills', 'ws-self-learning', '--yes']);
+    if (seed.status !== 0) {
+      console.error(us492RunText(seed));
+      fail('us-492: seed install of ws-self-learning exited non-zero');
+    }
+
+    // A legacy-shaped consumer config makes the next update migrate (change) its bytes.
+    const legacyConfigBytes = Buffer.from(`${JSON.stringify({
+      $schema: '../.agents/skills/ws-shared/config.schema.json',
+      toolsFile: '../.agents/skills/ws-shared/tools.md',
+      project: { name: 'us-492-fixture', baseBranch: 'main' },
+    }, null, 2)}\n`);
+    fs.writeFileSync(liveConfigPath, legacyConfigBytes);
+    fs.rmSync(backupConfigPath, { force: true });
+
+    // AC1/AC2: ws-self-learning alone already reaches the hub through afterSkillCopy,
+    // so a full update must still print exactly one hub status block.
+    const updateOnce = us492Run(['update']);
+    if (updateOnce.status !== 0) {
+      console.error(us492RunText(updateOnce));
+      fail('us-492: update exited non-zero');
+    }
+    const hubBlocks = (us492RunText(updateOnce).match(HUB_STATUS_RE) || []).length;
+    if (hubBlocks !== 1) {
+      fail(`us-492 AC1/AC2: expected exactly 1 hub status block per update run, saw ${hubBlocks}`);
+    } else {
+      ok('us-492 AC1/AC2: update ensures the shared hub exactly once per run');
+    }
+
+    // AC3/AC4: the backup holds the pre-change bytes and never matches the migrated live config.
+    if (!fs.existsSync(backupConfigPath)) {
+      fail('us-492 AC3: update did not create config.json.bak');
+    } else if (!sameBytes(readBytes(backupConfigPath), legacyConfigBytes)) {
+      fail('us-492 AC3: config.json.bak is not the pre-change config');
+    } else if (sameBytes(readBytes(backupConfigPath), readBytes(liveConfigPath))) {
+      fail('us-492 AC4: config.json.bak is byte-identical to the live config');
+    } else {
+      ok('us-492 AC3/AC4: backup holds the pre-change bytes and differs from the migrated live config');
+    }
+
+    // AC5/AC6: an idempotent re-run preserves the differing backup instead of clobbering it.
+    const backupBefore = fs.existsSync(backupConfigPath) ? readBytes(backupConfigPath) : null;
+    const updateAgain = us492Run(['update']);
+    if (updateAgain.status !== 0) {
+      console.error(us492RunText(updateAgain));
+      fail('us-492: second update exited non-zero');
+    }
+    if (backupBefore === null || !fs.existsSync(backupConfigPath)) {
+      fail('us-492 AC6: the re-run removed config.json.bak');
+    } else if (!sameBytes(readBytes(backupConfigPath), backupBefore)) {
+      fail('us-492 AC5: the re-run overwrote the differing backup');
+    } else {
+      ok('us-492 AC5/AC6: an idempotent re-run preserves the differing backup untouched');
+    }
+
+    // AC7: an unparseable live config is backed up from its raw bytes and never rewritten.
+    fs.rmSync(backupConfigPath, { force: true });
+    const invalidConfigBytes = Buffer.from('{ "project": { "name": "us-492", }\n');
+    fs.writeFileSync(liveConfigPath, invalidConfigBytes);
+    const updateInvalid = us492Run(['update']);
+    if (updateInvalid.status !== 0) {
+      console.error(us492RunText(updateInvalid));
+      fail('us-492: update with an invalid live config exited non-zero');
+    }
+    if (!sameBytes(readBytes(liveConfigPath), invalidConfigBytes)) {
+      fail('us-492 AC7: the invalid live config was rewritten');
+    } else if (!fs.existsSync(backupConfigPath) || !sameBytes(readBytes(backupConfigPath), invalidConfigBytes)) {
+      fail('us-492 AC7: the invalid raw bytes were not backed up');
+    } else {
+      ok('us-492 AC7: an invalid live config is backed up raw and left unmodified');
+    }
+
+    // AC5 precedence: a usable rollback point outranks re-snapshotting unparseable bytes.
+    const keepBytes = Buffer.from('{ "project": { "name": "us-492-rollback" } }\n');
+    fs.writeFileSync(backupConfigPath, keepBytes);
+    const updateKeep = us492Run(['update']);
+    if (updateKeep.status !== 0) {
+      console.error(us492RunText(updateKeep));
+      fail('us-492: update with an invalid config plus a differing backup exited non-zero');
+    }
+    if (!sameBytes(readBytes(backupConfigPath), keepBytes)) {
+      fail('us-492 AC5: the differing backup was overwritten on an invalid-config run');
+    } else if (!sameBytes(readBytes(liveConfigPath), invalidConfigBytes)) {
+      fail('us-492 AC7: the live config was rewritten on an invalid-config run');
+    } else {
+      ok('us-492 AC5/AC7: a differing backup survives even when the live config is unparseable');
+    }
+
+    // AC10: an unreadable packaged config.json.example leaves the live config alone.
+    // Removing the template fails the source-integrity pre-verify, so --force-integrity
+    // is required to reach the template-read branch; the template is restored in finally.
+    {
+      const templatePath = path.join(parentDir, '.agents', 'skills', 'ws-shared', 'templates', 'config.json.example');
+      const templateHoldPath = `${templatePath}.us492-hold`;
+      if (fs.existsSync(templatePath)) {
+        const healthyBytes = Buffer.from('{ "project": { "name": "us-492-healthy", "baseBranch": "main" } }\n');
+        fs.writeFileSync(liveConfigPath, healthyBytes);
+        fs.rmSync(backupConfigPath, { force: true });
+        fs.renameSync(templatePath, templateHoldPath);
+        try {
+          const updateNoTemplate = us492Run(['update', '--force-integrity']);
+          if (updateNoTemplate.status !== 0) {
+            console.error(us492RunText(updateNoTemplate));
+            fail('us-492: update with an unreadable template exited non-zero');
+          }
+          if (!sameBytes(readBytes(liveConfigPath), healthyBytes)) {
+            fail('us-492 AC10: the live config was modified when the template could not be read');
+          } else {
+            ok('us-492 AC10: an unreadable config.json.example leaves the live config unmodified');
+          }
+        } finally {
+          fs.renameSync(templateHoldPath, templatePath);
+        }
+      } else {
+        fail('us-492 AC10: packaged config.json.example template is missing from the fixture tree');
+      }
+    }
+
+    fs.rmSync(us492Root, { recursive: true, force: true });
   }
 
   console.log('\n✅ Success! Install, canonicity, self-overwrite, update+config preserve, packages, deps, non-interactive --yes, MEMORY isolation, uninstall, and integrity all passed.');
