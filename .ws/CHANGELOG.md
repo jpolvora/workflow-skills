@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-09 23:37] Agent: ws-spec-to-pr (worker)
+- **Prompt**: us-492 (GitHub issue #492): update installs the ws-shared hub twice per run, so config.json.bak is written twice and the pre-update snapshot is destroyed (backup ends byte-identical to the live config).
+- **Done**: Added a run-scoped latch so ensureSharedHubInstalled runs at most once per install/update run (project and global scope, ws-self-learning seed path preserved) and replaced the unconditional config snapshot write with a preserving writeConfigBackup; added regression coverage in test/test-install.js and test/test-ws-shared-layout.js; bumped 0.5.36.
+- **Result**: Verify score 10/10; invariant scan 0; install suite green with 8 us-492 assertions; 159/159 remaining suite entries green individually; test-harness-clean 0 findings; integrity verified at 0.5.36. Product commit df3a7559.
+
 ### [2026-10-09 22:49] Agent: agent
 - **Prompt**: restarted - verify the spec-memo MCP integration
 - **Done**: Confirmed the insert-patch fix worked: the plugin loaded, the app spawned node spec-memo/dist/cli.js serve as a child, all 11 mcp__spec-memo__ tools are registered, and check_version plus bootstrap answered live. Found one silent defect: the server inherited the app cwd, so the vault bound to the empty fallback project local-desktop-4151651c with 0 traps instead of the workspace project with 510 records

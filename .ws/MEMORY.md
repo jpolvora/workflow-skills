@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-10-10] Install suite local mode needs a fresh pack and git-bash first on PATH
+- **Layer**: `Tests`
+- **Module**: `test/test-install.js` (`--local` mode) / local verification recipes`
+- **Severity**: `Medium`
+- **PathPattern**: `test/test-install.js`, `workflow-skills-*.tgz`, `bin/skill-integrity.json`
+- **Scenario / Context**: On this Windows host, `node test/test-install.js --local` resolves the newest `workflow-skills-*.tgz` in the repo root and installs it into `test/node_modules`. Two host traps then produce failures that look like product defects: (a) if no `npm pack` ran for the current tree, the suite picks a stale tarball and the installer aborts with `Integrity: source package mismatch vs bin/skill-integrity.json` — for example `hub/runtime/scripts/workflow_state.cjs (digest-mismatch)` against a 0.5.17 tarball; (b) if `bash` resolves to `C:\WINDOWS\system32\bash.exe` (WSL), the secrets-hook phase fails with `[secrets-leak] node not on PATH — commit NOT scanned` plus `wsl: Failed to translate 'G:\packages\npm'`, even though the same phase passes in CI. A third, separate case is `npm run test` stopping at `test/test-subagent-dispatch.js` (`child started before the kill`).
+- **DO NOT**: Treat the stale-tarball integrity abort, the WSL `node not on PATH` hook failure, or the `test-subagent-dispatch.js` flake as regressions from the change under test; run the suite standalone without first packing the current tree.
+- **INSTEAD DO**: `npm pack` immediately before a direct `--local` run, and prepend git-bash to PATH for that shell (`$env:PATH = "C:\Program Files\Git\bin;" + $env:PATH`) so the hook phase finds `node`; then read the `us-492`/slug-specific assertion lines out of the output as evidence. For the runner flake, run the entry standalone and execute the remaining `test/test-suites.json` entries individually, linking the configured alias as `exitCode: 1` / `skipReason: baseline-dirty` with the failing path. To prove a red baseline for a deleted-template style assertion, reach the branch with `update --force-integrity` (the perturbed package otherwise aborts in source-integrity pre-verify before touching the code under test).
+
 ### [2026-10-09] spec-memo "pollution" findings are expected in hybrid mode; never clean up tracked in-tree memory
 - **Layer**: `Tooling / memory backends`
 - **Module**: `ws-spec-memo` check+setup gate, `memo doctor`, `.ws/MEMORY.md` + `.ws/memory/*`
