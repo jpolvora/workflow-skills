@@ -226,7 +226,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Truthful install-mode reporting: coincident local and global skills roots must report scope global (never hybrid), and globalVersion must come from the canonical ws-shared/version.json (`spec: completed/0172-us-498-install-mode-reporting.spec.md`)
 - [x] Global vs Project Skill Installation Choice (`spec: completed/global-vs-project-skill-installation.spec.md`)
 - [x] Post-workflow worktree and tag cleanup (`spec: completed/post-workflow-worktree-tag-cleanup.spec.md`)
-- [ ] Skill Loading Banner Instruction in Primary SKILL.md Files (`spec: pending/skill-loaded-banner-instruction.spec.md`)
+- [x] Skill Loading Banner Instruction in Primary SKILL.md Files (`spec: completed/skill-loaded-banner-instruction.spec.md`)
 
 
 
@@ -615,7 +615,7 @@ All Next-specs closed.
 
 | 183 | `post-workflow-worktree-tag-cleanup` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Post-workflow worktree and tag cleanup |
 
-| 184 | `skill-loaded-banner-instruction` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Skill Loading Banner Instruction in Primary SKILL.md Files |
+| 184 | `skill-loaded-banner-instruction` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Skill Loading Banner Instruction in Primary SKILL.md Files |
 
 ## 9. Inbox
 
@@ -806,6 +806,7 @@ All Next-specs closed.
 | 2026-10-10 | `us-498-install-mode-reporting` | Truthful install-mode reporting: coincident local and global skills roots must report scope global (never hybrid), and globalVersion must come from the canonical ws-shared/version.json | 1d8a1e02 |
 | 2026-10-10 | `global-vs-project-skill-installation` | Global vs Project Skill Installation Choice | 56c58963 |
 | 2026-10-10 | `post-workflow-worktree-tag-cleanup` | Post-workflow worktree and tag cleanup | 0dae660a |
+| 2026-10-10 | `skill-loaded-banner-instruction` | Skill Loading Banner Instruction in Primary SKILL.md Files | 6be11209 |
 
 ## 11. Maintenance checklist
 

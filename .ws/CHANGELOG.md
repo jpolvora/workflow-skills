@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-10 12:41] Agent: agent
+- **Prompt**: check specs/pending folder, mark pending or completed accordingly
+- **Done**: triaged pending + 5 legacy root specs: all implemented; cleared 3 classify dupes; tracked + synced 3 legacy specs to completed with delivery evidence
+- **Result**: index.PRD rows 182-184 [x] with Done-log entries; specs filed to completed/; close-filing verified
+
 ### [2026-10-10 12:02] Agent: agent
 - **Prompt**: update readme, website (new skills/descriptions/features, FAQ, navigation), wiki; full doc work
 - **Done**: README features/catalog refresh; FEATURES evolution 0.5.15-0.5.38 + roadmap/catalog fixes; CATALOG anchor fixes; site feature cards, hero sync, 7 new FAQs, scrollspy, FAQ permalinks; wiki us-498 delta; integrity regen
