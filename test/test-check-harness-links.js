@@ -254,6 +254,7 @@ function testGlobalOnlyNonBindingTargetsStayBroken() {
       '# ws-demo',
       '',
       '- [hub subtree](../ws-shared/runtime/missing.md)',
+      '- [hub subtree binding name](../ws-shared/runtime/config.json)',
       '- [absent hub target](../../../.ws/missing.md)',
       '- [traversal](../../../.ws/../../outside.md)',
       '- [encoded traversal](..%2F..%2Foutside.md)',
@@ -267,6 +268,7 @@ function testGlobalOnlyNonBindingTargetsStayBroken() {
   assert(result.status === 1, `global-only non-binding targets exit 1 (${result.stderr || ''})`);
   const targets = brokenTargets(report);
   assert(targets.includes('../ws-shared/runtime/missing.md'), 'AC20/NS5: a hub-subtree target below the binding level stays broken');
+  assert(targets.includes('../ws-shared/runtime/config.json'), 'AC20/AC21: a binding filename below the hub binding level is refused by the depth-1 level check (basename match alone is not enough)');
   assert(targets.includes('../../../.ws/missing.md'), 'AC21: a non-binding .ws target stays broken (no prefix exemption)');
   assert(targets.includes('../../../.ws/../../outside.md'), 'AC21/NS3: a traversal target is refused containment and stays broken');
   assert(targets.includes('..%2F..%2Foutside.md'), 'NS3: a percent-encoded traversal target is decoded and stays broken');
@@ -305,7 +307,7 @@ function testProjectScopeHubTargetsValidated() {
   fs.writeFileSync(path.join(fixture, 'AGENTS.md'), '# root hub\n\nRoutes `ws-demo`.\n', 'utf8');
   fs.writeFileSync(
     path.join(skillDir, 'SKILL.md'),
-    '# ws-demo\n\n- [hub config](../../../.ws/config.json)\n- [missing hub target](../../../.ws/missing.md)\n',
+    '# ws-demo\n\n- [hub config](../../../.ws/config.json)\n- [missing hub target](../../../.ws/missing.md)\n- [missing hub binding target](../../../.ws/STACK.md)\n',
     'utf8',
   );
 
@@ -322,6 +324,10 @@ function testProjectScopeHubTargetsValidated() {
   }
   assert(result.status === 1, `AC15/NS2: a missing target inside a present project hub exits 1 (${result.stderr || ''})`);
   assert(brokenTargets(report).includes('../../../.ws/missing.md'), 'AC15/NS2: the missing hub target is reported under findings.brokenLinks');
+  assert(
+    brokenTargets(report).includes('../../../.ws/STACK.md'),
+    'AC15/AC21: a missing depth-1 hub binding literal is still reported while the project hub is present (the tolerance window is closed)',
+  );
   assert(!brokenTargets(report).includes('../../../.ws/config.json'), 'AC15: a target that resolves inside the present hub validates normally');
   assert((report && report.installLayoutNotes ? report.installLayoutNotes.length : 0) === 0, 'AC12: no install-layout note outside the global-only window');
 }

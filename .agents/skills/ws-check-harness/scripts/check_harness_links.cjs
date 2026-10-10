@@ -154,8 +154,11 @@ function hubBindingClass(candidates, hubs) {
     for (const hub of hubs) {
       if (!inside(candidate, hub)) continue;
       const relative = path.relative(hub, candidate);
+      // Depth 1 only (AC20/AC21): a target below the hub binding level is never an
+      // install-layout literal, even when its basename matches a binding file, so a
+      // nested target such as `<hub>/runtime/config.json` still fails the gate.
       if (!relative || relative.includes(path.sep) || relative.includes('/')) continue;
-      if (!HUB_BINDING_FILES.has(relative)) continue;
+      if (!HUB_BINDING_FILES.has(path.basename(candidate))) continue;
       return hub;
     }
   }
