@@ -224,7 +224,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] update: hub installed twice per run clobbers config.json.bak (backup ends up identical to live config) (`spec: completed/0173-us-492.spec.md`)
 - [x] Link integrity across install scopes: scope-aware gate classification and complete installer autoload link rewriting (`spec: completed/0171-us-497-link-integrity.spec.md`)
 - [x] Truthful install-mode reporting: coincident local and global skills roots must report scope global (never hybrid), and globalVersion must come from the canonical ws-shared/version.json (`spec: completed/0172-us-498-install-mode-reporting.spec.md`)
-- [ ] Global vs Project Skill Installation Choice (`spec: pending/global-vs-project-skill-installation.spec.md`)
+- [x] Global vs Project Skill Installation Choice (`spec: completed/global-vs-project-skill-installation.spec.md`)
 - [ ] Post-workflow worktree and tag cleanup (`spec: pending/post-workflow-worktree-tag-cleanup.spec.md`)
 - [ ] Skill Loading Banner Instruction in Primary SKILL.md Files (`spec: pending/skill-loaded-banner-instruction.spec.md`)
 
@@ -611,7 +611,7 @@ All Next-specs closed.
 
 | 181 | `us-498-install-mode-reporting` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Truthful install-mode reporting: coincident local and global skills roots must report scope global (never hybrid), and globalVersion must come from the canonical ws-shared/version.json |
 
-| 182 | `global-vs-project-skill-installation` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Global vs Project Skill Installation Choice |
+| 182 | `global-vs-project-skill-installation` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Global vs Project Skill Installation Choice |
 
 | 183 | `post-workflow-worktree-tag-cleanup` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Post-workflow worktree and tag cleanup |
 
@@ -804,6 +804,7 @@ All Next-specs closed.
 | 2026-10-10 | `us-492` | update: hub installed twice per run clobbers config.json.bak (backup ends up identical to live config) | df3a75590fcadb6da49f5c7ce6b7960be8fd706a |
 | 2026-10-10 | `us-497-link-integrity` | Link integrity across install scopes: scope-aware gate classification and complete installer autoload link rewriting | e9bb9785755638de9d3155c13ed9f7b5fee4805e |
 | 2026-10-10 | `us-498-install-mode-reporting` | Truthful install-mode reporting: coincident local and global skills roots must report scope global (never hybrid), and globalVersion must come from the canonical ws-shared/version.json | 1d8a1e02 |
+| 2026-10-10 | `global-vs-project-skill-installation` | Global vs Project Skill Installation Choice | 56c58963 |
 
 ## 11. Maintenance checklist
 
