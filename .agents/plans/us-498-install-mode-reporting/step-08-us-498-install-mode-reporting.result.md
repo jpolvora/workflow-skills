@@ -63,7 +63,7 @@ From the spec (`.agents/skills/../specs/pending/0172-us-498-install-mode-reporti
 | Field | Value |
 |-------|-------|
 | PR | **#501** — https://github.com/jpolvora/workflow-skills/pull/501 (`develop` → `main`) |
-| Head SHA | `7c16f68664c778df17714777546ff444504443cf` |
+| Head SHA at PR open | `7c16f68664c778df17714777546ff444504443cf` (the live PR tip advances with each evidence commit; read `gh pr view 501 --json headRefOid`) |
 | Ship action | `create-pr` (`fullMode`, `workflowMode: true`, `stopBeforeFixPr: true`) |
 | Close loop | `comment-issue` posted on #498 with the PR URL; PR body carries `Closes #498` (`ensure_pr_closer.cjs`) |
 | `shipStatus` | `pr-open` |
