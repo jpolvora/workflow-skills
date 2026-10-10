@@ -366,7 +366,7 @@ const efficiencyFeatureBlock = `  <!-- efficiency-verifiability:start -->
         <div class="role-card-icon">KB</div>
         <h4 class="role-card-title">Context budgets and progressive disclosure</h4>
       </div>
-      <p class="role-card-desc">Dispatches use bounded subagent contracts and indexed plan slices: an 18 KB fixed preamble, a 4 KB matched MEMORY slice, and a configurable 32 KB total context budget. Every dispatch persists a durable prompt audit pair beside the step artifacts, linked from dispatch provenance and verified by pre-advance gates.</p>
+      <p class="role-card-desc">Dispatches use bounded subagent contracts and indexed plan slices: an 18 KB fixed preamble, a 4 KB matched MEMORY slice, and a configurable 32 KB total context budget, with optional per-step overrides via <code>defaults.stepContextBudgets</code> (step-override-else-global, 18 KB floor). Every dispatch persists a durable prompt audit pair beside the step artifacts, linked from dispatch provenance and verified by pre-advance gates.</p>
     </div>
     <div class="role-matrix-card">
       <div class="role-card-header">
@@ -450,7 +450,35 @@ const efficiencyFeatureBlock = `  <!-- efficiency-verifiability:start -->
         <div class="role-card-icon">VS</div>
         <h4 class="role-card-title">Install snapshot and global fallback</h4>
       </div>
-      <p class="role-card-desc"><code>ws-version</code> prints install scope (<code>global</code> vs <code>project-local</code>), the loaded skill directory, and the package semver. A repo-relative skill path missing on disk falls through to the same path under the global install instead of creating a junction, symlink, or copy. <a href="wiki/harness/install-and-hub.html">Install &amp; hub &rarr;</a></p>
+      <p class="role-card-desc"><code>ws-version</code> prints install scope (<code>global</code> vs <code>project-local</code>), the loaded skill directory, and the package semver. A repo-relative skill path missing on disk falls through to the same path under the global install instead of creating a junction, symlink, or copy. The install-mode detector compares roots as canonical paths, so a coincident tree reports <code>global</code> (never <code>hybrid</code>), and the global version resolves from canonical <code>ws-shared/version.json</code>. <a href="wiki/harness/install-and-hub.html">Install &amp; hub &rarr;</a></p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">MW</div>
+        <h4 class="role-card-title">Live monitor watch for long runs</h4>
+      </div>
+      <p class="role-card-desc"><code>ws-monitor --watch --until-terminal</code> polls an active run until it leaves active state, tracks a stall stopwatch that defers to the workflow state/telemetry clock, follows the correlated session transcript, and proposes an enriched, anonymized defect issue through the configured provider <code>create-issue</code> intent. Read-only: it classifies drift without editing the run. <a href="wiki/harness/diagnostics-and-benchmarks.html">Diagnostics &rarr;</a></p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">RT</div>
+        <h4 class="role-card-title">Session retrospective that writes back</h4>
+      </div>
+      <p class="role-card-desc"><code>ws-retro</code> reviews one completed run and proposes ranked, evidence-linked environment improvements (memory, directives, standards, checks, pointers, no-op deletions). Propose-only with approval; opt-in auto-run via <code>retro.enabled</code> after ship; never blocks close. <a href="wiki/engineering/practices-and-tooling.html">Practices &amp; tooling &rarr;</a></p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">KN</div>
+        <h4 class="role-card-title">Local kanban board for specs</h4>
+      </div>
+      <p class="role-card-desc"><code>ws-kanvas</code> (<code>npm run kanvas</code>) serves a six-column board of spec and workflow state with phase color coding, drag-and-drop moves, and a modal that renders the full spec markdown. <a href="wiki/specs/kanvas-board.html">Kanvas board &rarr;</a></p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">WK</div>
+        <h4 class="role-card-title">Living wiki with pre-ship doc-sync</h4>
+      </div>
+      <p class="role-card-desc"><code>ws-wiki</code> keeps a domain-partitioned feature wiki in sync with shipped code (init, from-code genesis, sweep, verify, apply), bounded by a Sync Baseline watermark. The pre-ship gate files wiki, spec-index, and changelog updates before the PR opens. <a href="wiki/documentation/ws-wiki.html">Wiki manager &rarr;</a></p>
     </div>
   <!-- efficiency-verifiability:end -->
 `;
@@ -628,6 +656,16 @@ html = html.replace(
 const layerCount = sorted.filter(([k]) => k).length;
 html = html.replace(
   /(<span class="badge">)\d+( layers<\/span>)/,
+  `$1${layerCount}$2`
+);
+
+// Sync hero metrics with the generated catalog (never hardcode counts)
+html = html.replace(
+  /(<div class="metric-val cyan">)\d+ Skills(<\/div>)/,
+  `$1${totalSkills} Skills$2`
+);
+html = html.replace(
+  /(Shipped across )\d+( architectural tiers)/,
   `$1${layerCount}$2`
 );
 

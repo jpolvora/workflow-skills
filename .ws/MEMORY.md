@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-10-10] PowerShell text cmdlets corrupt UTF-8 docs
+- **Layer**: `harness`
+- **Module**: `docs / repo tooling`
+- **Severity**: `High`
+- **PathPattern**: `**/*.md;docs/**;bin/**`
+- **Scenario / Context**: A `Get-Content | Where-Object | Set-Content -Encoding utf8` roundtrip on FEATURES.md added a BOM and mojibake'd every non-ASCII char (em-dash, arrows), forcing a full revert and redo; a separate CRLF-blind `indexOf('}\n')` slice in a strip script doubled style.css. Both happened during a docs-only change.
+- **DO NOT**: Rewrite repo text files through PowerShell `Get-Content`/`Set-Content`/`Out-File` pipelines, or hand-roll multi-line string surgery with assumed `\n` endings on CRLF files.
+- **INSTEAD DO**: Edit docs with the file-edit tools (single-line anchors on CRLF files), and do whole-file transforms with `node -e` / `.cjs` scripts using explicit `utf8` read/write plus `s.replace(/\r\n/g,'\n').replace(/\n/g,'\r\n')` normalization; verify with `git diff --stat` (small, focused) before continuing.
+
 ### [2026-10-10] Pipeline scratch inside `{us-dir}/.runtime` blocks every state write
 - **Layer**: `Harness`
 - **Module**: `update_state.cjs` / `validate_state.cjs` `.runtime` residue check, long-running suite logging`

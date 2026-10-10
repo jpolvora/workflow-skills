@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "87ab363d1a490e38e7bb86459fa3a50960a53aa79554c055fb0d2e0aa9723287",
+  "fullPackageDigest": "602a829ea55ecb7c233942bcc43a4cc417249136c8e45237b3b3bddbc5c598ec",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -72,7 +72,7 @@
   },
   "package": {
     "files": {
-      "bin/build-site.js": "0bcfcb9b0713ba0469d9f23a670709e509aa4c3c3e863901f42aaf39b39c2b2e",
+      "bin/build-site.js": "c810b2e04bdcae5af5a071aa7182cebfa724012688269b8b35d0a3c37eda5f78",
       "bin/build-wiki-site.js": "e8263272e9985e70ba776036ac09fc85f4c6acfd13c4d62f7f9860c475cc5e5a",
       "bin/canonical-version.js": "32b6cb957f5380393b751af92df57ea38e3d6019341f4f6d1f3670008a7fff3d",
       "bin/cli.js": "2c3d9ab629db2af7d8bfde6086cdb03683766acd39c59b93e23274b3febac94d",
@@ -86,7 +86,7 @@
       "bin/skill-integrity-lib.js": "4475fdf7152bf4d8b0fdb64dbe18514d070ff29b264f79e6f5daf1ef0eda5152",
       "bin/validate-evals.cjs": "f95d4ccdc70335fa1c5857bd56a9367daf16ba6404f9dac5117bd51a1251a15e"
     },
-    "packageDigest": "6ec4a82b8f00397dcdcea1e0ab2bdec7e6961d25f630c25d111b1b93f16adcd4"
+    "packageDigest": "3fda6f0d09a6ed06d01eff74ab6c18ba9e8146d1cfc4eefa3f5f76df0efd8bad"
   },
   "packageVersion": "0.5.38",
   "skills": {

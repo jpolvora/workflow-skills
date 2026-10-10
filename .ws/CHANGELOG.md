@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-10 12:02] Agent: agent
+- **Prompt**: update readme, website (new skills/descriptions/features, FAQ, navigation), wiki; full doc work
+- **Done**: README features/catalog refresh; FEATURES evolution 0.5.15-0.5.38 + roadmap/catalog fixes; CATALOG anchor fixes; site feature cards, hero sync, 7 new FAQs, scrollspy, FAQ permalinks; wiki us-498 delta; integrity regen
+- **Result**: build-site --check current; test-doc-sync ok; harness-clean 0 findings; verify-integrity ok; full suite green except pre-existing test-subagent-dispatch failure (fails identically on HEAD)
+
 ### [2026-10-10 09:47] Agent: agent
 - **Prompt**: US 498 (batch item 3): truthful install-mode reporting — coincident local/global skills roots must report scope global (never hybrid), and globalVersion must come from the canonical ws-shared/version.json (issues #494 + #495)
 - **Done**: Fixed ws-check-harness Phase 0 detect_install_mode.cjs: added resolved-root directory identity before the consumer scope matrix (canonicalized, case-insensitive on win32, resolved-path fallback) so a coincident tree reports global with a single {globalSkillsRoot} scan root and a same-directory note; replaced the frontmatter modal globalVersion with the precedence ws-shared/version.json -> runtime/skill-dependencies.json packageVersion -> package-owned ws-* frontmatter (representative probe first, externalSkills excluded) -> null, all semver-validated, drift informational only. Added 11 fixtures/68 assertions (29 ACs, NS1-NS12), per-task adequacy records, updated ws-check-harness SKILL.md/PHASES.md, bumped to 0.5.38 and regenerated integrity/site.

@@ -91,6 +91,7 @@
   <a href="#install-packages" class="dot-nav-item"><span class="tooltip">Packages</span></a>
   <a href="#install" class="dot-nav-item"><span class="tooltip">Install</span></a>
   <a href="#faq" class="dot-nav-item"><span class="tooltip">FAQ</span></a>
+  <a href="#contribute" class="dot-nav-item"><span class="tooltip">Contribute</span></a>
 </aside>
 
 <nav id="site-header" aria-label="Primary">
@@ -210,8 +211,8 @@
       <div class="metric-lbl">Ledger-derived verify score gate (fail-closed)</div>
     </div>
     <div class="metric-card">
-      <div class="metric-val cyan">50 Skills</div>
-      <div class="metric-lbl">Shipped across 6 architectural tiers</div>
+      <div class="metric-val cyan">62 Skills</div>
+      <div class="metric-lbl">Shipped across 5 architectural tiers</div>
     </div>
     <div class="metric-card">
       <div class="metric-val purple">2 Speeds</div>
@@ -243,7 +244,7 @@
         <div class="role-card-icon">KB</div>
         <h4 class="role-card-title">Context budgets and progressive disclosure</h4>
       </div>
-      <p class="role-card-desc">Dispatches use bounded subagent contracts and indexed plan slices: an 18 KB fixed preamble, a 4 KB matched MEMORY slice, and a configurable 32 KB total context budget. Every dispatch persists a durable prompt audit pair beside the step artifacts, linked from dispatch provenance and verified by pre-advance gates.</p>
+      <p class="role-card-desc">Dispatches use bounded subagent contracts and indexed plan slices: an 18 KB fixed preamble, a 4 KB matched MEMORY slice, and a configurable 32 KB total context budget, with optional per-step overrides via <code>defaults.stepContextBudgets</code> (step-override-else-global, 18 KB floor). Every dispatch persists a durable prompt audit pair beside the step artifacts, linked from dispatch provenance and verified by pre-advance gates.</p>
     </div>
     <div class="role-matrix-card">
       <div class="role-card-header">
@@ -327,7 +328,35 @@
         <div class="role-card-icon">VS</div>
         <h4 class="role-card-title">Install snapshot and global fallback</h4>
       </div>
-      <p class="role-card-desc"><code>ws-version</code> prints install scope (<code>global</code> vs <code>project-local</code>), the loaded skill directory, and the package semver. A repo-relative skill path missing on disk falls through to the same path under the global install instead of creating a junction, symlink, or copy. <a href="wiki/harness/install-and-hub.html">Install &amp; hub &rarr;</a></p>
+      <p class="role-card-desc"><code>ws-version</code> prints install scope (<code>global</code> vs <code>project-local</code>), the loaded skill directory, and the package semver. A repo-relative skill path missing on disk falls through to the same path under the global install instead of creating a junction, symlink, or copy. The install-mode detector compares roots as canonical paths, so a coincident tree reports <code>global</code> (never <code>hybrid</code>), and the global version resolves from canonical <code>ws-shared/version.json</code>. <a href="wiki/harness/install-and-hub.html">Install &amp; hub &rarr;</a></p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">MW</div>
+        <h4 class="role-card-title">Live monitor watch for long runs</h4>
+      </div>
+      <p class="role-card-desc"><code>ws-monitor --watch --until-terminal</code> polls an active run until it leaves active state, tracks a stall stopwatch that defers to the workflow state/telemetry clock, follows the correlated session transcript, and proposes an enriched, anonymized defect issue through the configured provider <code>create-issue</code> intent. Read-only: it classifies drift without editing the run. <a href="wiki/harness/diagnostics-and-benchmarks.html">Diagnostics &rarr;</a></p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">RT</div>
+        <h4 class="role-card-title">Session retrospective that writes back</h4>
+      </div>
+      <p class="role-card-desc"><code>ws-retro</code> reviews one completed run and proposes ranked, evidence-linked environment improvements (memory, directives, standards, checks, pointers, no-op deletions). Propose-only with approval; opt-in auto-run via <code>retro.enabled</code> after ship; never blocks close. <a href="wiki/engineering/practices-and-tooling.html">Practices &amp; tooling &rarr;</a></p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">KN</div>
+        <h4 class="role-card-title">Local kanban board for specs</h4>
+      </div>
+      <p class="role-card-desc"><code>ws-kanvas</code> (<code>npm run kanvas</code>) serves a six-column board of spec and workflow state with phase color coding, drag-and-drop moves, and a modal that renders the full spec markdown. <a href="wiki/specs/kanvas-board.html">Kanvas board &rarr;</a></p>
+    </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">WK</div>
+        <h4 class="role-card-title">Living wiki with pre-ship doc-sync</h4>
+      </div>
+      <p class="role-card-desc"><code>ws-wiki</code> keeps a domain-partitioned feature wiki in sync with shipped code (init, from-code genesis, sweep, verify, apply), bounded by a Sync Baseline watermark. The pre-ship gate files wiki, spec-index, and changelog updates before the PR opens. <a href="wiki/documentation/ws-wiki.html">Wiki manager &rarr;</a></p>
     </div>
   <!-- efficiency-verifiability:end -->
     <div class="role-matrix-card">
@@ -2528,6 +2557,7 @@ npx --yes github:jpolvora/workflow-skills --global
       <button type="button" class="faq-cat-pill" data-faq-cat="quality">Quality & Safety</button>
       <button type="button" class="faq-cat-pill" data-faq-cat="config">Configuration</button>
       <button type="button" class="faq-cat-pill" data-faq-cat="compatibility">Compatibility</button>
+      <button type="button" class="faq-cat-pill" data-faq-cat="architecture">Architecture</button>
     </div>
   </div>
 
@@ -2663,7 +2693,7 @@ npx --yes github:jpolvora/workflow-skills --global
       <div class="faq-answer">
         <div class="faq-answer-content">
           <p><code>ws-spec-multi</code> is a sequential smart multi-spec batch orchestrator. A blank scan lists only pending and unfinished specifications under <code>{specsDir}</code>, runs <code>ws-classify-complexity</code> on each selected spec to dynamically select between Standard or Lite pipeline execution, and processes them one by one.</p>
-          <p>It maintains state persistence under <code>{plansDir}/ws-spec-multi/</code> (allowing safe session pauses/resumes), skips specs with already-merged PRs, and presents structured <code>user-gate</code> choices if a spec encounters an issue.</p>
+          <p>It maintains state persistence under per-run <code>{plansDir}/{runId}/</code> directories (legacy flat <code>{plansDir}/ws-spec-multi/*.state.md</code> files still resume), allowing safe session pauses/resumes. It skips specs with already-merged PRs and presents structured <code>user-gate</code> choices if a spec encounters an issue.</p>
         </div>
       </div>
     </div>
@@ -2918,6 +2948,158 @@ npx --yes github:jpolvora/workflow-skills --global
         </div>
       </div>
     </div>
+
+    <!-- Q-first-reqs -->
+    <div class="faq-item" data-faq-cat="getting-started" data-search="requirements prerequisites node 22 npx gh cli azure devops pat install before start">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Getting Started</span>
+          <span>What do I need installed before I start?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p>Three things:</p>
+          <ul>
+            <li><strong>Node 22+</strong> — the only required runtime. Install, update, skills, and scripts all run on <code>npx</code>/Node. No Python, no shell toolchain.</li>
+            <li><strong>A coding agent that can load <code>SKILL.md</code></strong> — any host works; there is no required IDE.</li>
+            <li><strong>Your SCM CLI</strong> — <code>gh</code> for GitHub or an ADO PAT for Azure DevOps, only if you want issue/PR operations. Local-spec runs need neither.</li>
+          </ul>
+          <p>After install, ask your agent to run <code>ws-check-harness</code> once, then <code>/ws-configure-project</code> to fill <code>.ws/config.json</code> (or use the desktop GUI via <code>npm run config:gui</code> on Windows).</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q-first-run -->
+    <div class="faq-item" data-faq-cat="getting-started" data-search="first run first delivery getting started steps install configure spec orchestrate beginner tutorial">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Getting Started</span>
+          <span>How do I run my first delivery?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p>Five steps, in order:</p>
+          <ul>
+            <li><strong>1. Install</strong> — <code>npx --yes github:jpolvora/workflow-skills install --full --yes</code> in your repo.</li>
+            <li><strong>2. Configure</strong> — <code>/ws-configure-project</code> (interview) so builds, tests, and the SCM provider match your repo.</li>
+            <li><strong>3. Write a spec</strong> — describe the feature; the agent drafts a testable <code>*.spec.md</code> with acceptance criteria.</li>
+            <li><strong>4. Run the pipeline</strong> — <code>ws-spec-to-pr-lite</code> for a fast first run, <code>ws-spec-to-pr</code> for the full gated path.</li>
+            <li><strong>5. Review the PR</strong> — code is committed before review and shipped only after close; fix-PR rounds converge review threads.</li>
+          </ul>
+          <p>Unsure which pipeline fits? <code>ws-classify-complexity</code> recommends lite vs standard from your spec.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q-scope -->
+    <div class="faq-item" data-faq-cat="config" data-search="global vs project install scope hybrid local skills root targets canonical claude codex gemini">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Configuration</span>
+          <span>Should I install global or project-local?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <ul>
+            <li><strong>Project-local</strong> (<code>.agents/skills/</code>) — best for teams and CI: the skills travel with the repo and every run uses the same version.</li>
+            <li><strong>Global</strong> (<code>~/.agents/skills</code>) — best for solo work across many repos: install once, use everywhere. Global runs still read and write <strong>project</strong> config from the open repo, never from the global hub.</li>
+            <li><strong>Hybrid</strong> — both installed: project-local skill bodies win, global fills gaps, and project <code>.ws/config.json</code> always wins over global defaults.</li>
+          </ul>
+          <p>Global installs can also project into companion host targets (Claude Code, Codex, Gemini/Antigravity) via <code>--targets</code>. <code>ws-version</code> shows which scope a session actually loaded.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q-stuck -->
+    <div class="faq-item" data-faq-cat="workflows" data-search="stuck paused pause resume blocked fail closed scoreAndRefine max rounds what happens failure">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Workflows &amp; FSM</span>
+          <span>What happens when the agent gets stuck or paused?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p>The pipeline fails closed and tells you how to resume — it never auto-approves a weak state:</p>
+          <ul>
+            <li><strong>Below the verify bar</strong> — <code>scoreAndRefine</code> re-implements and re-scores up to 3 rounds, then Pauses with the deficiencies listed.</li>
+            <li><strong>Review loops</strong> — fix → re-review runs max 3 rounds, then Pause.</li>
+            <li><strong>Resume</strong> — re-invoke the orchestrator on the same slug; atomic state plus <code>telemetry.jsonl</code> restore the exact step. <code>ws-monitor</code> shows which step and gate a run is waiting on.</li>
+          </ul>
+          <p>Genuine blockers (missing credentials, ambiguous scope, failing base branch) surface through a <code>user-gate</code> choice instead of a guess.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q-watch -->
+    <div class="faq-item" data-faq-cat="workflows" data-search="watch long run unattended autoMode monitor watch until-terminal stall stopwatch kanban kanvas progress">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Workflows &amp; FSM</span>
+          <span>How do I watch a long unattended run?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p>Two read-only views, no interference with the run:</p>
+          <ul>
+            <li><strong><code>ws-monitor --watch --until-terminal</code></strong> — polls until the run leaves active state, tracks a stall stopwatch, follows the session transcript, and can file an anonymized defect issue when something hangs.</li>
+            <li><strong><code>ws-kanvas</code></strong> (<code>npm run kanvas</code>) — a six-column board of spec and workflow state with drag-and-drop moves.</li>
+          </ul>
+          <p>In <code>autoMode</code> the orchestrator chains steps 0→9 without yielding at internal checkpoints; mid-step progress survives host turn ends via <code>checkpoint</code> / turn-boundary pause records.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q-organize -->
+    <div class="faq-item" data-faq-cat="workflows" data-search="organize specs index.PRD track sync pending completed archived status subfolders spec-manager">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Workflows &amp; FSM</span>
+          <span>How do specs stay organized across runs?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <ul>
+            <li><strong><code>index.PRD</code></strong> — the project spec board. Specs are tracked as pending on write/import and flipped to done with a Done-log row when delivery evidence (commit or PR URL) exists.</li>
+            <li><strong>Status subfolders</strong> — opt in with <code>plans.statusSubfolders</code> to file specs under <code>pending/</code>, <code>completed/</code>, <code>archived/</code>; sync moves shipped specs automatically and a close verifier fails if a done row still points at <code>pending/</code>.</li>
+            <li><strong><code>ws-spec-manager</code></strong> — one front door for create/list/update/sync/organize/archive/validate/import/run, so agents stop guessing which skill owns the task.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q-docsync -->
+    <div class="faq-item" data-faq-cat="quality" data-search="pre-ship doc sync wiki spec-index changelog trio requirePreShipDocSync documentation gate close">
+      <button type="button" class="faq-question" aria-expanded="false">
+        <div class="faq-question-text">
+          <span class="faq-cat-tag">Quality &amp; Safety</span>
+          <span>What is the pre-ship doc-sync gate?</span>
+        </div>
+        <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div class="faq-answer">
+        <div class="faq-answer-content">
+          <p>Before the ship phase opens a PR, the close step files a documentation trio so docs reflect shipped code:</p>
+          <ul>
+            <li><strong><code>ws-wiki sync</code></strong> — living feature wiki pages for the shipped behavior (warn-skips when no wiki is configured).</li>
+            <li><strong><code>ws-spec-index sync</code></strong> — flips the spec row to done and files the spec into <code>completed/</code>.</li>
+            <li><strong>Changelog entry</strong> — append-only record of prompt, done, and result.</li>
+          </ul>
+          <p>Governed by <code>defaults.requirePreShipDocSync</code> (default <code>true</code>; omitted or invalid also means <code>true</code>). Set <code>false</code> to restore the previous offered-wiki behavior.</p>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -2936,6 +3118,9 @@ npx --yes github:jpolvora/workflow-skills --global
     <p style="margin-top: 12px;">
       Agents: see <a href="https://github.com/jpolvora/workflow-skills/blob/main/AGENTS.md" target="_blank" rel="noopener">AGENTS.md</a> for the full routing contract.<br>
       Humans: see <a href="https://github.com/jpolvora/workflow-skills/blob/main/README.md" target="_blank" rel="noopener">README.md</a> for install and contribution guidelines.
+    </p>
+    <p style="margin-top: 12px;">
+      Docs map: <a href="wiki/">Wiki</a> · <a href="https://github.com/jpolvora/workflow-skills/blob/main/docs/flow.md" target="_blank" rel="noopener">Flow diagram</a> · <a href="#faq">FAQ</a> · <a href="https://github.com/jpolvora/workflow-skills/blob/main/FEATURES.md" target="_blank" rel="noopener">FEATURES.md</a> · <a href="https://github.com/jpolvora/workflow-skills/blob/main/CATALOG.md" target="_blank" rel="noopener">CATALOG.md</a>
     </p>
     <div class="hero-cta-row" style="margin-top: 24px; margin-bottom: 0;">
       <a href="#install" class="offer-cta-fill">
@@ -3002,6 +3187,7 @@ npx --yes github:jpolvora/workflow-skills --global
 
 <!-- Toast Container -->
 <div id="toast-container" class="toast-container"></div>
+
 
 <script>
 (function() {
@@ -3442,6 +3628,104 @@ npx --yes github:jpolvora/workflow-skills --global
   }
 
   /* ─── Sidebar drawer (mobile docs navigation) ─── */
+  /* Scrollspy: highlight the current section across sidebar, TOC, dot-nav, header */
+  (function initScrollspy() {
+    var navRoots = [
+      document.getElementById('site-sidebar'),
+      document.getElementById('page-toc'),
+      document.getElementById('site-header'),
+      document.querySelector('.dot-nav')
+    ].filter(Boolean);
+    var byHash = {};
+    navRoots.forEach(function(root) {
+      root.querySelectorAll('a[href^="#"]').forEach(function(a) {
+        var h = a.getAttribute('href');
+        if (h && h.length > 1 && h.indexOf('faq-') !== 1) {
+          (byHash[h] = byHash[h] || []).push(a);
+        }
+      });
+    });
+    function setActive(id) {
+      Object.keys(byHash).forEach(function(h) {
+        var on = (h === '#' + id);
+        byHash[h].forEach(function(a) { a.classList.toggle('active', on); });
+      });
+    }
+    var sections = Object.keys(byHash)
+      .map(function(h) { return document.getElementById(h.slice(1)); })
+      .filter(Boolean);
+    if (!sections.length || !('IntersectionObserver' in window)) return;
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) setActive(e.target.id);
+      });
+    }, { rootMargin: '-25% 0px -65% 0px', threshold: 0 });
+    sections.forEach(function(s) { observer.observe(s); });
+  })();
+
+  /* FAQ permalinks: stable #faq-N anchors, copy-link affordance, deep-link open */
+  (function initFaqPermalinks() {
+    var items = document.querySelectorAll('.faq-item');
+    items.forEach(function(item, i) {
+      if (!item.id) item.id = 'faq-' + (i + 1);
+      var q = item.querySelector('.faq-question-text');
+      if (!q || q.querySelector('.faq-permalink')) return;
+      var a = document.createElement('span');
+      a.className = 'faq-permalink';
+      a.title = 'Copy link to this question';
+      a.setAttribute('role', 'button');
+      a.setAttribute('tabindex', '0');
+      a.setAttribute('aria-label', 'Copy link to this question');
+      a.textContent = '#';
+      a.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (!item.classList.contains('open')) {
+          var btn = item.querySelector('.faq-question');
+          if (btn) btn.click();
+        }
+        try {
+          history.replaceState(null, '', '#' + item.id);
+        } catch (err) { /* ignore */ }
+        var url = window.location.href.split('#')[0] + '#' + item.id;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(function() {
+            showToast('FAQ link copied!');
+          }, function() { /* clipboard unavailable */ });
+        }
+      });
+      a.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          e.stopPropagation();
+          a.click();
+        }
+      });
+      q.appendChild(a);
+    });
+    function openFromHash() {
+      var id = (window.location.hash || '').slice(1);
+      if (!id || id.indexOf('faq-') !== 0) return;
+      var item = document.getElementById(id);
+      if (!item || !item.classList.contains('faq-item')) return;
+      if (faqSearchInput) faqSearchInput.value = '';
+      faqSearchQuery = '';
+      activeFaqCat = 'all';
+      faqCatPills.forEach(function(p) {
+        p.classList.toggle('active', p.getAttribute('data-faq-cat') === 'all');
+      });
+      filterFaq();
+      if (!item.classList.contains('open')) {
+        var btn = item.querySelector('.faq-question');
+        if (btn) btn.click();
+      }
+      setTimeout(function() {
+        item.scrollIntoView({ block: 'start' });
+      }, 50);
+    }
+    window.addEventListener('hashchange', openFromHash);
+    openFromHash();
+  })();
+
   (function initSidebarDrawer() {
     var toggle = document.getElementById('sidebar-toggle');
     var overlay = document.getElementById('sidebar-overlay');

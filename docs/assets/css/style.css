@@ -4150,6 +4150,48 @@ nav.toc-nav {
   border-left-color: var(--accent-cyan);
 }
 
+/* Scrollspy active section, anchor offset, FAQ permalinks */
+main#content > section[id],
+.faq-item {
+  scroll-margin-top: 76px;
+}
+
+.sidebar-group a.active {
+  color: var(--text-heading);
+  background: var(--surface-tint);
+  border-left-color: var(--accent-cyan);
+}
+
+.toc-nav a.active {
+  color: var(--accent-cyan);
+  border-left-color: var(--accent-cyan);
+}
+
+.nav-links a.active {
+  color: var(--text-heading);
+}
+
+.faq-permalink {
+  margin-left: 8px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+}
+
+.faq-item:hover .faq-permalink,
+.faq-question:focus-visible .faq-permalink,
+.faq-permalink:focus-visible {
+  opacity: 1;
+}
+
+.faq-permalink:hover {
+  color: var(--accent-cyan);
+}
+
 #site-sidebar a:focus-visible,
 #page-toc a:focus-visible,
 .sidebar-toggle:focus-visible,

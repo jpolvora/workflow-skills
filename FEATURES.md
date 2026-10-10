@@ -4,7 +4,7 @@
 
 This package is **spec-driven software delivery**. Canonical `*.spec.md` files under `{specsDir}` are the contract of record. Plan folders are run artifacts. Standard verify derives its score from an AC ledger and advances only at `defaults.minVerifyScore` (default 9). Extra/harness skills sit beside that pipeline; they do not replace the spec.
 
-Package version: **0.5.14** · 62 skills (54 Workflows + 8 Extra) + the `ws-shared` consumer hub.
+Package version: **0.5.38** · 62 skills (54 Workflows + 8 Extra) + the `ws-shared` consumer hub.
 
 ### ws-shared hybrid configuration boundary
 
@@ -301,12 +301,27 @@ Consumer-owned files never overwritten by an update: `config.json`, `STACK.md`, 
 
 ---
 
-## 12. Recent evolution (0.3.22 → 0.5.26)
+## 12. Recent evolution (0.3.22 → 0.5.38)
 
-Derived from recent commits on `develop` (2026-08-16 → 2026-09-30).
+Derived from recent commits on `develop` (2026-08-16 → 2026-10-10).
 
 | Version | Date | Headline change |
 |---------|------|-----------------|
+| **0.5.38** | Oct 10 | **Truthful install-mode reporting (`us-498`):** the install-mode detector compares local vs global skills roots as absolute canonical paths (separator- and case-insensitive), so a coincident tree reports `global` — never `hybrid` — with a single scan root and no cross-tree duplicate guidance; upstream still wins when package markers are present. `globalVersion` now resolves from canonical `{globalSkillsRoot}/ws-shared/version.json`, then the projection manifest `packageVersion`, then package-owned frontmatter only (external/consumer ids excluded), else null instead of a guessed value; drift stays informational at exit 0 |
+| **0.5.37** | Oct 10 | **Link integrity across install scopes (`us-497`):** scope-aware Phase 5a link gate classifies install-layout links against the failing human path, and the relocated-hub `autoload.md` rewrite covers every runtime sibling (`runtime/<file>` in skills scope, hub-relative in project scope) through the shared `MANAGED_RUNTIME_SIBLING_FILES` registry with a wiring guard and a fail-closed `{globalSkillsRoot}` token for missing targets |
+| **0.5.36** | Oct 9 | **Hub once per run + pre-change backup (`us-492`):** a run-scoped latch ensures the shared hub a single time per install/update run (one status block, one backup line); `config.json.bak` keeps pre-change bytes as the rollback point and is rewritten only when no differing backup exists |
+| **0.5.35** | Oct 8 | **`ws-retro` session retrospective (`us-490`):** new Workflows skill reviews one completed run and proposes ranked, evidence-linked environment improvements across six destination categories, validated by `validate_candidates.cjs`; propose-only with `user-gate` approval, opt-in auto-run via `retro.enabled` after ship, never blocking close/ship |
+| **0.5.34** | Oct 1 | **Antigravity physical copy on Windows (`us-488`):** the `gemini` secondary target projects every `ws-*` skill as a real directory copy under `~/.gemini/config/skills/` on Windows (host scanner skips reparse points), reconciles `skills.json` to the single `^ws-.*` regex filter, and keeps legacy cleanup links-only so deliberate copies survive |
+| **0.5.33** | Oct 1 | **Wiki sync from 10 merged PRs:** living-wiki sweep advances the Sync Baseline over the monitor-hardening wave, the kanvas phases, and the dispatch-audit/fresh-verify pipeline additions |
+| **0.5.27–0.5.32** | Sep 30 | **Monitor hardening wave + unattended autoMode:** slug-scoped discovery keeps runId-foldered `ws-spec-multi` batch state (`us-464`); `context-mismatch` severity scopes to non-terminal runs (`us-473`); `worker-session-stall` defers to the state/telemetry clock (`us-477`); a time-bound grace covers the child-close to parent-propagate window (`us-476`); issue proposals are sanitized by construction with truthful counts (`us-478`); doctor path errors cite hub-style and skip prose (`us-469`); `autoMode` stops yielding at internal checkpoints (`us-458`) |
+| **0.5.24** | Sep 30 | **Explicit knowledge chain (0160):** research guidance makes the evidence chain explicit — codebase → project docs → MCP sources → web — with `UNCERTAIN` marking for ungrounded claims instead of presented-as-fact inference |
+| **0.5.23** | Sep 30 | **Per-step dispatch context budgets (0159):** `defaults.stepContextBudgets` adds per-step byte caps over the global `contextBudget` (step-override-else-global, 18000 floor), with the effective budget and source recorded per dispatch in the prompt-audit manifest |
+| **0.5.22** | Sep 30 | **Fixed-model benchmark publishing (0158):** comparison benchmarks publish against fixed model ids so version-over-version evolution results stay comparable across releases |
+| **0.5.21** | Sep 30 | **Spec closure strengthening (0157):** EARS-shaped acceptance criteria plus a closure finder that maps every stated requirement to an AC or an explicit out-of-scope entry |
+| **0.5.20** | Sep 30 | **Per-task test adequacy review (0156):** each planned task is reviewed for test adequacy against its acceptance criteria before verify runs, catching thin tests at plan time |
+| **0.5.19** | Sep 30 | **Fresh-worker verifier step (0155):** new `ws-fresh-verify` stage re-derives every AC verdict from the spec on a scratch worktree, injects one fault per AC, and scores evidence-or-zero with a fix plus re-verify loop (max 3 rounds) |
+| **0.5.18** | Sep 30 | **Dispatch prompt audit trail (0154):** every dispatch persists a durable audit pair (`step-{NN}-{slug}.prompt.md` plus a `.prompt.json` budget/refs/sha manifest) beside the step artifacts, linked from dispatch provenance and verified by pre-advance gates |
+| **0.5.15–0.5.17** | Sep 29 | **Kanvas polish + docs refresh:** phase color coding replaces hardcoded grey/transparent styling (`us-459`), the card modal renders full spec markdown (`us-461`); site, catalog, and wiki refreshed for the `us-439`/`us-440`/`us-446`/`us-448`/`us-455`/`us-457` wave |
 | **0.5.26** | Sep 30 | **Executable foreign-commit guard for shared-head batches:** `ws-spec-multi/scripts/foreign_commit_guard.cjs` records a per-dispatch baseline of the local + `origin` run-branch tips (`{plansDir}/{runId}/foreign-commits.json`), pauses (Resume / Skip / Abort) and names the new commits on an unexpected advance, refuses a convergence merge whose PR head differs from the local tip, and lists foreign commits that ride a PR range for the PR body and audit notes. Git-read-only (only `rev-parse` / `log`); the quiet path adds no gate. Wired in `ws-spec-multi` `PROTOCOL.md` / `STATE.md` / `SKILL.md` and the shared `git-ownership.md` contract |
 | **0.5.13–0.5.14** | Sep 29 | **`ws-version` (`us-455`, PR #456):** read-only install snapshot — `installScope` (`global` vs `project-local`), absolute loaded skill directory, `packageVersion` from `.agents/skills/ws-shared/version.json`, stored `.ws/config.json` path tokens. **Global fallback without junctions (`us-457`):** `resolve_skill_path.cjs` reads a missing repo-relative skill path from `{globalSkillsRoot}` instead of creating a junction, symlink, or copy in the consumer repo; local real files win, both-missing or traversal/absolute paths fail closed. **autoMode same-turn Step 5→6:** Step 5 exit in `autoMode` skips Pass 1 and Reach-10 and dispatches Step 6 in the same turn; `ws-check-workflows` covers `autoMode` ON (unattended internal checkpoints + canonical stop list) and OFF (per-step / `gateGranularity`). `us-458` (fully unattended `autoMode`, no yield at internal checkpoints) remains in flight |
 | **0.5.10–0.5.12** | Sep 28–29 | **Skip empty verification aliases (`us-446`):** `ws-ship-pr/scripts/verify.cjs` skips configured aliases with an empty command instead of executing them. **Per-run batch state (`us-448`):** `ws-spec-multi` writes `{plansDir}/{runId}/{runId}.state.md`, drops the `RESERVED_PLAN_DIRS` guards, and resumes legacy flat `{plansDir}/ws-spec-multi/*.state.md` files. **`ws-kanvas` drag-and-drop (0131, #452):** `POST /api/move` with atomic writes and byte-limited body; abandoning a tracked runless spec files it as Abandoned. **Pre-ship doc-sync delivery records** plus `plans.autoOrganizeByStatus` by-status filing; agentic code review runs the `high` variant (PRs #449–#451, #453–#454) |
@@ -373,26 +388,25 @@ Derived from recent commits on `develop` (2026-08-16 → 2026-09-30).
 
 ---
 
-## 13. Roadmap (not in the current package)
+## 13. Roadmap (all tracked items shipped)
 
-These items remain todo or partial on [`index.PRD`](.agents/specs/index.PRD). They are **not** shipped in **0.4.38**.
+Every tracked roadmap item on [`index.PRD`](.agents/specs/index.PRD) is **done and shipped in 0.5.38**. Only inbox ideas remain open.
 
 | Item | Status | Notes |
 |------|--------|-------|
 | `harness-spec-benchmark` | done | Upstream harness fixture benchmark + snapshot compare; live runner skill `ws-run-benchmark` |
-| `skill-family-naming` | todo | Regroup packaged skill ids as `ws-{family}-{verb}` |
-| `unique-skill-script-runtime` | todo | Node-only runtime for all packaged helper scripts |
-| `us-235` | todo | Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, `.runtime` allowlist |
+| `skill-family-naming` | done | Regrouped packaged skill ids as `ws-{family}-{verb}` (0.3.56, PR #266) |
+| `unique-skill-script-runtime` | done | Node-only runtime for all packaged helper scripts (PR #370) |
+| `us-235` | done | Step 5 to 6 deadlock: comment aliases, missing-alias hard stop, state hash, `.runtime` allowlist (PR #237) |
 | `spec-prefix-ordering` | done | Optional chronological `NNNN-` spec filename prefixes via `plans.enforceSpecPrefixOrdering` (default false) and `ws-spec-organizer` (`resolve_spec_path.cjs`, `organize_specs.cjs`) |
 | Inbox | idea | Multi-repository orchestrator; CI/CD workflow generator skill |
 
-Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.github.io/workflow-skills#roadmap).
 
 ---
 
 ## 14. Full skill catalog
 
-54 skills. Package membership: **W** = Workflows, **E** = Extra. Everything is in Full.
+62 skills. Package membership: **W** = Workflows, **E** = Extra. Everything is in Full.
 
 ### Orchestrators
 
@@ -400,6 +414,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 |-------|-----|------|
 | [`ws-spec-to-pr`](.agents/skills/ws-spec-to-pr/SKILL.md) | W | Standard end-to-end pipeline, FSM steps 0–9 |
 | [`ws-spec-to-pr-lite`](.agents/skills/ws-spec-to-pr-lite/SKILL.md) | W | Fast pipeline, steps 0–5 |
+| [`ws-spec-to-pr-distributed`](.agents/skills/ws-spec-to-pr-distributed/SKILL.md) | W | Opt-in multi-CLI run of the standard 0–9 step set via the state-file baton |
 | [`ws-spec-multi`](.agents/skills/ws-spec-multi/SKILL.md) | W | Sequential batch queue with isolated per-run state, legacy resume, and per-spec flow auto-detection |
 | [`ws-fable-method`](.agents/skills/ws-fable-method/SKILL.md) | W | 7-step structured problem-solving loop |
 
@@ -467,6 +482,7 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-check-workflows`](.agents/skills/ws-check-workflows/SKILL.md) | W | Workflow FSM simulation runner |
 | [`ws-doctor`](.agents/skills/ws-doctor/SKILL.md) | W | Read-only install and runtime diagnosis |
 | [`ws-version`](.agents/skills/ws-version/SKILL.md) | W | Read-only install scope and package version snapshot |
+| [`ws-monitor`](.agents/skills/ws-monitor/SKILL.md) | W | Read-only live observer; watch profile polls to terminal with stall detection and defect-issue proposals |
 | [`ws-show-harness`](.agents/skills/ws-show-harness/SKILL.md) | E | Session harness snapshot |
 | [`ws-write-a-skill`](.agents/skills/ws-write-a-skill/SKILL.md) | E | Skill authoring and optimization protocol |
 | [`ws-run-benchmark`](.agents/skills/ws-run-benchmark/SKILL.md) | E | Upstream live/static harness benchmark runner (package root only; never spec-to-pr) |
@@ -490,7 +506,6 @@ Public site: [jpolvora.github.io/workflow-skills#roadmap](https://jpolvora.githu
 | [`ws-pre-daily`](.agents/skills/ws-pre-daily/SKILL.md) | W | 36-hour standup briefing |
 | [`ws-megabrain`](.agents/skills/ws-megabrain/SKILL.md) | W | Vibe-coding implementer + specialists; consumes fable |
 | [`ws-spec-explain`](.agents/skills/ws-spec-explain/SKILL.md) | W | Spec/US status & delivery panorama |
-| [`ws-spec-archive`](.agents/skills/ws-spec-archive/SKILL.md) | W | Archive plan history into `index.PRD`; propose plan-dir cleanup |
 | [`ws-cleanup`](.agents/skills/ws-cleanup/SKILL.md) | W | Workflow leftover cleanup with confirm gate |
 | [`ws-retro`](.agents/skills/ws-retro/SKILL.md) | W | Session retrospective → curated, evidence-linked environment proposals (propose-only; opt-in auto-run; never blocks close/ship) |
 | [`ws-patterns-generator`](.agents/skills/ws-patterns-generator/SKILL.md) | W | Consumer project-patterns skill generator + seed script |
