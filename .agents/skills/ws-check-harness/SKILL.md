@@ -76,7 +76,7 @@ Run the read-only detector in Phase 0 and record its fields: `node {skillsRoot}/
 |--------------|---------------|-------------------------|-------------|---------------------|
 | **upstream** | `upstream` | Package markers (`bin/skill-dependencies.json` + `bin/cli.js`) **and** SoT evidence (≥1 `.agents/skills/ws-*/SKILL.md`) | Root `AGENTS.md` (+ dual-hub drift vs `{sharedDir}/AGENTS.md`) | `.agents/skills` |
 | **consumer** | `project` | No upstream evidence; `{skillsRoot}` has ws-* skills; `{globalSkillsRoot}` has none | `{sharedDir}/AGENTS.md` | `{skillsRoot}` |
-| **consumer** | `hybrid` | No upstream evidence; both `{skillsRoot}` and `{globalSkillsRoot}` have ws-* skills (local bodies override) | `{sharedDir}/AGENTS.md` | `{skillsRoot}`, then `{globalSkillsRoot}` fallback |
+| **consumer** | `hybrid` | No upstream evidence; `{skillsRoot}` and `{globalSkillsRoot}` are **different** directories that both have ws-* skills (local bodies override) | `{sharedDir}/AGENTS.md` | `{skillsRoot}`, then `{globalSkillsRoot}` fallback |
 | **consumer** | `global` | No upstream evidence; `{skillsRoot}` has no ws-* skills; `{globalSkillsRoot}` has ws-* skills | Project `{sharedDir}/AGENTS.md` when present, else `{globalSkillsRoot}/ws-shared/AGENTS.md` | `{globalSkillsRoot}` |
 | **none** | `none` | No ws-* `SKILL.md` in either tree | — | stop; guidance to install or run from a package root |
 
@@ -84,6 +84,8 @@ Run the read-only detector in Phase 0 and record its fields: `node {skillsRoot}/
 - Upstream requires **both** package markers **and** SoT under `.agents/skills/`. Markers without SoT ⇒ hard **Install mode: consumer**; the detector emits a warning (markers present, SoT absent).
 - Detect global presence from `WORKFLOW_SKILLS_GLOBAL_DIR` or `~/.agents/skills`. Consumer must **not** invent inventory from a stray `src/skills` folder when Install mode is consumer.
 - Detector `coexistence` fields are evidence, not problems: global version drift and global-only ids are informational.
+- **Hybrid scope requires two distinct roots:** `hybrid` is reported only when the resolved `{skillsRoot}` and `{globalSkillsRoot}` are different directories. When they resolve to the same directory (for example `--repo-root` = the user home for a global-only install) the tree is one install: scope is `global`, the scan root is `{globalSkillsRoot}` only, and the detector emits a "same directory" note instead of the hybrid override guidance.
+- **Global version source:** the global install version is read from `{globalSkillsRoot}/ws-shared/version.json`, then the `packageVersion` projection in `{globalSkillsRoot}/ws-shared/runtime/skill-dependencies.json`, and only then from package-owned `ws-*` frontmatter; an unresolved version is reported as `null` with no drift direction.
 - **Upstream + machine-global coexistence:** when SoT and a global install both exist, upstream wins; scan **only** `.agents/skills`; never merge inventories or flag duplicate `name:` across the two trees as collisions. Report the global tree under `coexistence` (count, version, drift, ids outside the package) and keep the invoke-vs-edit rule for reading bodies.
 - **Global-only consumer:** hub routing tables may still cite `.agents/skills/...` literals; resolve existence under `{globalSkillsRoot}`. Project hub `config.json` still wins when present; missing project hub → detector warning (`ws-configure-project`).
 - Hub resolution alone is not sufficient for skills SoT; Install mode drives the scan root.

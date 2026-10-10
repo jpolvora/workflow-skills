@@ -14,7 +14,7 @@ Run `node {skillsRoot}/ws-check-harness/scripts/detect_install_mode.cjs --json -
 |--------------|---------------|------------------------------|-------------|---------------------|----------------|
 | **upstream** | `upstream` | `bin/skill-dependencies.json` **and** `bin/cli.js` **and** at least one `.agents/skills/ws-*/SKILL.md` | Root `AGENTS.md` (+ dual-hub drift vs `{sharedDir}/AGENTS.md`) | `.agents/skills` | Required (Phase 3 item 7) |
 | **consumer** | `project` | Upstream evidence incomplete (markers and/or SoT absent); `{skillsRoot}` has ws-* skills; `{globalSkillsRoot}` has none | `{sharedDir}/AGENTS.md` (`.ws/AGENTS.md`) | `{skillsRoot}` | Skip / not required |
-| **consumer** | `hybrid` | Upstream evidence incomplete; `{skillsRoot}` **and** `{globalSkillsRoot}` both have ws-* skills (local override wins) | `{sharedDir}/AGENTS.md` | `{skillsRoot}`, then `{globalSkillsRoot}` fallback | Skip / not required |
+| **consumer** | `hybrid` | Upstream evidence incomplete; `{skillsRoot}` and `{globalSkillsRoot}` are **different** directories that both have ws-* skills (local override wins). Equal directories resolve to `global`, never `hybrid` | `{sharedDir}/AGENTS.md` | `{skillsRoot}`, then `{globalSkillsRoot}` fallback | Skip / not required |
 | **consumer** | `global` | Upstream evidence incomplete; `{skillsRoot}` has no ws-* skills; `{globalSkillsRoot}` has ws-* skills | Project `{sharedDir}/AGENTS.md` when present, else `{globalSkillsRoot}/ws-shared/AGENTS.md` | `{globalSkillsRoot}` | Skip / not required |
 | **none** | `none` | No ws-* `SKILL.md` in either tree | — | — | Skip / not required |
 
@@ -25,7 +25,7 @@ Run `node {skillsRoot}/ws-check-harness/scripts/detect_install_mode.cjs --json -
 
 **Consumer ignores stray `src/skills`:** When Install mode is consumer, do not scan a folder named `src/skills` for Phase 4 inventory even if it exists.
 
-**Verification (Install mode):** At an upstream package root → report `Install mode: upstream` + `Install scope: upstream` + skills scan root `.agents/skills` (plus `coexistence` when a global install exists). In a consumer tree with only `{skillsRoot}` / global install → `Install mode: consumer` with `Install scope: project` (local only), `hybrid` (local + global), or `global` (global only) + scan root under `.agents/skills` and/or `{globalSkillsRoot}`. No skills found → `Install mode: none` and stop with guidance.
+**Verification (Install mode):** At an upstream package root → report `Install mode: upstream` + `Install scope: upstream` + skills scan root `.agents/skills` (plus `coexistence` when a global install exists). In a consumer tree with only `{skillsRoot}` / global install → `Install mode: consumer` with `Install scope: project` (local only), `hybrid` (local + global in **different** directories), or `global` (global only, and also when the two roots resolve to the same directory) + scan root under `.agents/skills` and/or `{globalSkillsRoot}`. No skills found → `Install mode: none` and stop with guidance.
 
 **Consumer rules:**
 
