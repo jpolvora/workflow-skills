@@ -377,6 +377,18 @@ function dropExternalCompanionMembers(membership, repoRoot, { globalSkillsRoot =
   });
 }
 
+/**
+ * Bare link targets that name a runtime sibling shipped beside the relocated
+ * autoload source. The relocation rewrite stays deliberately bounded to this
+ * registry: after relocation only the managed runtime directory exists, so
+ * every listed name must resolve there. Keep this list in sync with
+ * `MANAGED_RUNTIME_SIBLING_FILES` in `bin/cli.js` (the installer writes the
+ * skills-install-scope hub-root autoload; this module writes the project-hub
+ * autoload, so a one-sided edit leaves the other scope broken); the pair is
+ * pinned by a test.
+ */
+const MANAGED_RUNTIME_SIBLING_FILES = ['AGENTS.md', 'CROSS-PLATFORM.md', 'config-resolution.md', 'gates.md', 'host-capability-tokens.md', 'host-dispatch.md', 'scm-provider-contract.md', 'setup.md', 'tools.md'];
+
 function renderConsumerAutoload(text, { repoRoot = null } = {}) {
   // Managed runtime/skills resolve project-local per file: a partial local
   // runtime (directory present, sibling missing) must keep the
@@ -418,7 +430,7 @@ function renderConsumerAutoload(text, { repoRoot = null } = {}) {
     (match, rel) => `](${runtimePrefixFor(rel)}${rel})`,
   );
   text = text.replace(/\]\(\{globalSkillsRoot\}\/(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
-  for (const f of ['AGENTS.md', 'CROSS-PLATFORM.md', 'config-resolution.md', 'gates.md', 'host-dispatch.md', 'scm-provider-contract.md', 'setup.md', 'tools.md']) {
+  for (const f of MANAGED_RUNTIME_SIBLING_FILES) {
     text = text.split(`](${f})`).join(`](${runtimePrefixFor(f)}${f})`);
   }
   return text.replace(/\]\((?:\.\.\/)+(ws-[^)]+)\)/g, (match, rel) => `](${skillTarget(rel)})`);
@@ -804,6 +816,7 @@ function main() {
 
 if (require.main === module) main();
 module.exports = {
+  MANAGED_RUNTIME_SIBLING_FILES,
   checkAutoload,
   ensureAutoloadMd,
   writeRootAgents,
