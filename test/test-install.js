@@ -2592,6 +2592,80 @@ child.on('close', async (code) => {
       ok('us-492 AC9: global update ensures one hub install and retains a pre-change backup');
     }
 
+    // us-497 AC2/AC4/AC6/AC7/AC11: the relocated hub-root autoload rewrites every
+    // bare runtime-sibling target (issue #493), so a fresh global install ships no
+    // broken link and a stale body converges on the same prefix rule.
+    {
+      const installedAutoloadPath = path.join(globalTestDir, 'ws-shared', 'autoload.md');
+      if (!fs.existsSync(installedAutoloadPath)) {
+        fail('us-497: global install did not write ws-shared/autoload.md');
+      } else {
+        const installedAutoload = fs.readFileSync(installedAutoloadPath, 'utf8');
+        if (installedAutoload.includes('](host-capability-tokens.md)')) {
+          fail('us-497 AC2/NS10: installed global autoload still carries the bare ](host-capability-tokens.md) target');
+        }
+        if (!installedAutoload.includes('](runtime/host-capability-tokens.md)')) {
+          fail('us-497 AC2: installed global autoload does not link runtime/host-capability-tokens.md');
+        }
+        // AC4/AC11/NS11: every bare runtime-sibling target of the shipped autoload
+        // source is rewritten to a runtime-qualified target that exists in the
+        // installed hub tree. Skill links are deliberately not asserted here: a
+        // selective global install legitimately lists package members it did not install.
+        const shippedAutoload = fs.readFileSync(
+          path.join(parentDir, '.agents', 'skills', 'ws-shared', 'runtime', 'autoload.md'),
+          'utf8',
+        );
+        const sourceRuntimeDir = path.join(parentDir, '.agents', 'skills', 'ws-shared', 'runtime');
+        const installedHubRoot = path.dirname(installedAutoloadPath);
+        const missingSiblingTargets = [];
+        for (const match of shippedAutoload.matchAll(/\]\(([^)\s/]+)\)/g)) {
+          const bare = match[1];
+          if (!fs.existsSync(path.join(sourceRuntimeDir, bare))) continue;
+          if (installedAutoload.includes(`](${bare})`)) missingSiblingTargets.push(`bare ${bare}`);
+          if (!installedAutoload.includes(`](runtime/${bare})`)) missingSiblingTargets.push(`unqualified ${bare}`);
+          if (!fs.existsSync(path.join(installedHubRoot, 'runtime', bare))) missingSiblingTargets.push(`absent runtime/${bare}`);
+        }
+        if (missingSiblingTargets.length) {
+          fail(`us-497 AC4/NS11: installed global autoload runtime-sibling targets are not rewritten/resolvable: ${[...new Set(missingSiblingTargets)].join(', ')}`);
+        }
+        // AC7: an update over a body that still carries the bare sibling target
+        // rewrites it with the same prefix rule as a fresh install.
+        fs.writeFileSync(
+          installedAutoloadPath,
+          installedAutoload.replace('](runtime/host-capability-tokens.md)', '](host-capability-tokens.md)'),
+          'utf8',
+        );
+        const staleRefresh = cp.spawnSync(
+          process.execPath,
+          [cliPath, 'update', '--global'],
+          { cwd: projectTestDir, encoding: 'utf8', env: globalEnv, timeout: 60000 },
+        );
+        if (staleRefresh.status !== 0) {
+          console.error(`${staleRefresh.stdout || ''}${staleRefresh.stderr || ''}`);
+          fail('us-497 AC7: global update over a stale bare autoload target exited non-zero');
+        }
+        const refreshedAutoload = fs.readFileSync(installedAutoloadPath, 'utf8');
+        if (refreshedAutoload.includes('](host-capability-tokens.md)')
+          || !refreshedAutoload.includes('](runtime/host-capability-tokens.md)')) {
+          fail('us-497 AC7: update did not rewrite the stale bare runtime-sibling target');
+        }
+        // AC6/NS15: the refresh is idempotent.
+        const idempotent = cp.spawnSync(
+          process.execPath,
+          [cliPath, 'update', '--global'],
+          { cwd: projectTestDir, encoding: 'utf8', env: globalEnv, timeout: 60000 },
+        );
+        if (idempotent.status !== 0) {
+          console.error(`${idempotent.stdout || ''}${idempotent.stderr || ''}`);
+          fail('us-497 AC6: second global update exited non-zero');
+        }
+        if (fs.readFileSync(installedAutoloadPath, 'utf8') !== refreshedAutoload) {
+          fail('us-497 AC6/NS15: a second update changed the installed autoload bytes');
+        }
+        ok('us-497 AC2/AC4/AC6/AC7/AC11: installed autoload rewrites the runtime sibling, ships zero unresolved targets, and is idempotent');
+      }
+    }
+
     // 2b. Stale generated global hub entrypoint refreshes to the canonical
     // pointer (issue #427 finding 3). Authored files without generated markers
     // keep the pre-existing legacy-migration contract (removed once

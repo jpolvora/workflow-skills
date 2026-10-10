@@ -910,6 +910,111 @@ function seedConfigExample(root) {
   }
 }
 
+// --- us-497: autoload runtime-sibling rewrite across install scopes ---
+
+{
+  // AC1/AC3/AC5/AC8: the project-hub renderer rewrites every shipped runtime
+  // sibling to a hub-relative link, keeps the fail-closed global token for a
+  // runtime file that is absent locally, and never touches a non-runtime target.
+  const root = mkTmp('ws-autoload-us497-project-');
+  seedConsumerTree(root, { withLocalSkills: true });
+  const runtimeDir = path.join(root, '.agents', 'skills', 'ws-shared', 'runtime');
+  for (const name of ['host-capability-tokens.md', 'tools.md']) {
+    fs.writeFileSync(path.join(runtimeDir, name), `# ${name}\n`, 'utf8');
+  }
+  const sourceAutoload = fs.readFileSync(
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/autoload.md'),
+    'utf8',
+  );
+  assert(
+    sourceAutoload.includes('](host-capability-tokens.md)'),
+    'us-497 AC10: shipped source runtime/autoload.md keeps its bare same-directory sibling link',
+  );
+  fs.writeFileSync(
+    path.join(root, '.ws/autoload.md'),
+    `${sourceAutoload}\n\n## Fixture extras\n\n- [project patterns](ws-project-patterns/SKILL.md)\n`,
+    'utf8',
+  );
+  fs.mkdirSync(path.join(root, '.ws/ws-project-patterns'), { recursive: true });
+  fs.writeFileSync(path.join(root, '.ws/ws-project-patterns/SKILL.md'), '# ws-project-patterns\n', 'utf8');
+  const result = runNode(['--repo-root', root, '--write-autoload', '--json']);
+  const data = parseJsonOut(result);
+  if (data) {
+    const autoText = fs.readFileSync(path.join(root, '.ws/autoload.md'), 'utf8');
+    assert(
+      autoText.includes('](../.agents/skills/ws-shared/runtime/host-capability-tokens.md)'),
+      'us-497 AC1/AC3: project-hub autoload rewrites host-capability-tokens.md to a hub-relative runtime link',
+    );
+    assert(
+      !autoText.includes('](host-capability-tokens.md)'),
+      'us-497 AC1: no bare runtime-sibling target survives the project-hub render',
+    );
+    assert(
+      autoText.includes('{globalSkillsRoot}/ws-shared/runtime/gates.md'),
+      'us-497 AC5/NS13: a runtime sibling absent locally keeps the fail-closed global token',
+    );
+    assert(
+      autoText.includes('](ws-project-patterns/SKILL.md)'),
+      'us-497 AC8/NS14: a bare non-runtime target is left untouched',
+    );
+    const renderedTargets = new Set(
+      [...autoText.matchAll(/\]\(([^)\s]+)\)/g)]
+        .map((match) => match[1])
+        .filter((target) => !/^(https?:|mailto:|#)/i.test(target) && !target.includes('{')),
+    );
+    for (const target of renderedTargets) {
+      const resolved = path.resolve(path.dirname(path.join(root, '.ws/autoload.md')), target);
+      assert(
+        fs.existsSync(resolved),
+        `us-497 AC4: rendered project-hub target resolves (${target})`,
+      );
+    }
+  }
+}
+
+{
+  // AC9/NS12: the installer renderer (bin/cli.js) and the project-hub configurator
+  // must rewrite the same runtime-filename set; editing only one list is a defect.
+  const cliText = fs.readFileSync(path.join(REPO_ROOT, 'bin', 'cli.js'), 'utf8');
+  const cliMatch = cliText.match(/const MANAGED_RUNTIME_SIBLING_FILES = \[([^\]]*)\];/);
+  const cliList = cliMatch
+    ? cliMatch[1].split(',').map((entry) => entry.trim().replace(/^'|'$/g, '')).filter(Boolean)
+    : null;
+  const configurator = await import(
+    pathToFileURL(path.join(REPO_ROOT, '.agents/skills/ws-configure-project/scripts/configure_autoload.cjs')).href
+  );
+  const configuratorList = configurator.default?.MANAGED_RUNTIME_SIBLING_FILES
+    || configurator.MANAGED_RUNTIME_SIBLING_FILES;
+  assert(Array.isArray(cliList) && cliList.length > 0, 'us-497 AC9: the installer runtime-filename list is extractable');
+  assert(
+    Array.isArray(configuratorList) && JSON.stringify(cliList) === JSON.stringify(configuratorList),
+    'us-497 AC9/NS12: both renderers rewrite the same runtime-filename set',
+  );
+  assert(
+    Array.isArray(cliList) && cliList.includes('host-capability-tokens.md'),
+    'us-497 AC1: the rewrite set names host-capability-tokens.md',
+  );
+  // AC1 completeness: every bare target in the shipped autoload source that names a
+  // real runtime sibling must be in the rewrite set, so a future runtime-sibling
+  // link cannot silently regress the installer again.
+  const sourceAutoload = fs.readFileSync(
+    path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime/autoload.md'),
+    'utf8',
+  );
+  const runtimeDir = path.join(REPO_ROOT, '.agents/skills/ws-shared/runtime');
+  const missing = [];
+  for (const match of sourceAutoload.matchAll(/\]\(([^)\s/]+)\)/g)) {
+    const target = match[1];
+    if (/^(https?:|mailto:|tel:|#)/i.test(target) || target.includes('{')) continue;
+    if (!fs.existsSync(path.join(runtimeDir, target))) continue;
+    if (!cliList.includes(target)) missing.push(target);
+  }
+  assert(
+    missing.length === 0,
+    `us-497 AC1: every bare runtime-sibling target in the shipped autoload source is in the rewrite set (missing: ${missing.join(', ') || 'none'})`,
+  );
+}
+
 cleanup();
 
 if (failures > 0) {

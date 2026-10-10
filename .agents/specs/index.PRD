@@ -222,7 +222,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] fix(installer): use physical folder copy for Antigravity IDE on Windows and fix regex filter in skills.json (`spec: completed/0169-us-488.spec.md`)
 - [x] Add optional retro skill (session retrospective to curated agent/harness/memory improvements) (`spec: completed/0170-us-490.spec.md`)
 - [x] update: hub installed twice per run clobbers config.json.bak (backup ends up identical to live config) (`spec: completed/0173-us-492.spec.md`)
-- [ ] Link integrity across install scopes: scope-aware gate classification and complete installer autoload link rewriting (`spec: pending/0171-us-497-link-integrity.spec.md`)
+- [x] Link integrity across install scopes: scope-aware gate classification and complete installer autoload link rewriting (`spec: completed/0171-us-497-link-integrity.spec.md`)
 - [ ] Truthful install-mode reporting: coincident local and global skills roots must report scope global (never hybrid), and globalVersion must come from the canonical ws-shared/version.json (`spec: pending/0172-us-498-install-mode-reporting.spec.md`)
 
 
@@ -601,7 +601,7 @@ All Next-specs closed.
 
 | 179 | `us-492` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | update: hub installed twice per run clobbers config.json.bak (backup ends up identical to live config) |
 
-| 180 | `us-497-link-integrity` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Link integrity across install scopes: scope-aware gate classification and complete installer autoload link rewriting |
+| 180 | `us-497-link-integrity` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Link integrity across install scopes: scope-aware gate classification and complete installer autoload link rewriting |
 
 | 181 | `us-498-install-mode-reporting` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Truthful install-mode reporting: coincident local and global skills roots must report scope global (never hybrid), and globalVersion must come from the canonical ws-shared/version.json |
 
@@ -790,6 +790,7 @@ All Next-specs closed.
 | 2026-09-25 | `us-412-418-monitor-accuracy` | Monitor accuracy: step-membership artifact expectations, legacy terminal tolerance, transcript correlation windows, discovery budget | [PR #423](https://github.com/jpolvora/workflow-skills/pull/423) MERGED |
 | 2026-10-08 | `us-490` | Add optional retro skill (session retrospective to curated agent/harness/memory improvements) | 2694c3aa |
 | 2026-10-10 | `us-492` | update: hub installed twice per run clobbers config.json.bak (backup ends up identical to live config) | df3a75590fcadb6da49f5c7ce6b7960be8fd706a |
+| 2026-10-10 | `us-497-link-integrity` | Link integrity across install scopes: scope-aware gate classification and complete installer autoload link rewriting | e9bb9785755638de9d3155c13ed9f7b5fee4805e |
 
 ## 11. Maintenance checklist
 

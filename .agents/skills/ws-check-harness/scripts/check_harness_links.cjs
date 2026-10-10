@@ -34,9 +34,19 @@ const HUB_SCRIPTS_DIR = (() => {
   }
   return packaged;
 })();
-const { resolveConsumerContext } = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
+const {
+  resolveConsumerContext,
+  inside,
+  consumerHubExists,
+} = require(path.join(HUB_SCRIPTS_DIR, 'resolve_consumer_root.cjs'));
 
 const TOP_LEVEL = new Set(['.agents', '.github', 'bin', 'docs', 'scripts', 'specs', 'test']);
+// Hub-root binding/routing files, per the hub layout manifest
+// ({skillsRoot}/ws-shared/runtime/hub-layout.json -> consumerOwned + generatedLocal
+// hub-root paths). Only these can ever be classified as an install-layout note:
+// a managed runtime contract file (for example host-capability-tokens.md) is not a
+// hub binding file, so an unrewritten runtime sibling always stays a broken link.
+const HUB_BINDING_FILES = new Set(['AGENTS.md', 'autoload.md', 'config.json', 'STACK.md']);
 const TOKENS = {
   '{skillsRoot}': '.agents/skills',
   '{sharedDir}': '.ws',
@@ -134,6 +144,27 @@ function hasDeclaredToken(target, tokens) {
   return Object.keys(tokens).some((token) => target.includes(token));
 }
 
+// Depth-1 hub binding literal: the resolved target is contained in one of the
+// resolved hub directories, sits directly inside it, and names a hub binding
+// file. Classification never inspects link text, so a `.ws/...` or
+// `ws-shared/...` prefix earns nothing on its own.
+function hubBindingClass(candidates, hubs) {
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    for (const hub of hubs) {
+      if (!inside(candidate, hub)) continue;
+      const relative = path.relative(hub, candidate);
+      // Depth 1 only (AC20/AC21): a target below the hub binding level is never an
+      // install-layout literal, even when its basename matches a binding file, so a
+      // nested target such as `<hub>/runtime/config.json` still fails the gate.
+      if (!relative || relative.includes(path.sep) || relative.includes('/')) continue;
+      if (!HUB_BINDING_FILES.has(path.basename(candidate))) continue;
+      return hub;
+    }
+  }
+  return null;
+}
+
 function analyze(repoRoot) {
   const context = resolveConsumerContext({ repoRoot, scriptFile: __filename });
   const skillsRoot = context.skillsRoot && path.isAbsolute(String(context.skillsRoot))
@@ -141,6 +172,24 @@ function analyze(repoRoot) {
     : path.resolve(repoRoot, '.agents', 'skills');
   const tokens = tokenTargets(repoRoot, skillsRoot);
   const skillsRel = tokens['{skillsRoot}'];
+  // Resolved hub directories (contract: PHASES.md § Hub resolution details). Both
+  // are derived from the resolved consumer context; the project hub is never
+  // assumed to be the literal `.ws` path.
+  const projectHub = path.resolve(String(context.sharedDir || path.join(repoRoot, '.ws')));
+  const skillsHub = path.join(skillsRoot, 'ws-shared');
+  const hubDirs = [...new Set([projectHub, skillsHub])];
+  const projectHubPresent = consumerHubExists(repoRoot);
+  // Tolerance window (AC12/AC24): global install scope with the project hub absent.
+  // The value is consumed as published; this gate adds no scope detection of its own.
+  const tolerateHubLiterals = String(context.executionScope || '') === 'global' && !projectHubPresent;
+  const installLayoutNotes = [];
+  const warnings = [];
+  if (!projectHubPresent) {
+    warnings.push({
+      code: 'project-hub-absent',
+      message: `${path.relative(repoRoot, projectHub).replace(/\\/g, '/') || '.'} is absent; run ws-configure-project to create the consumer hub (install-layout only, not a broken link)`,
+    });
+  }
   const brokenLinks = [];
   const absolutePaths = [];
   const tokenInLinkTargets = [];
@@ -182,7 +231,18 @@ function analyze(repoRoot) {
       const firstSegment = decoded.split(/[\\/]/)[0];
       const fromRoot = TOP_LEVEL.has(firstSegment) ? path.join(repoRoot, decoded) : null;
       if (!fs.existsSync(fromDir) && !(fromRoot && fs.existsSync(fromRoot))) {
-        brokenLinks.push({ file: rel, target, how: fromRoot ? 'root-anchored+relative' : 'relative' });
+        const hub = tolerateHubLiterals ? hubBindingClass([fromRoot, fromDir], hubDirs) : null;
+        if (hub) {
+          installLayoutNotes.push({
+            file: rel,
+            target,
+            hub: path.relative(repoRoot, hub).replace(/\\/g, '/') || '.',
+            how: 'hub-binding-literal',
+            remediation: 'ws-configure-project',
+          });
+        } else {
+          brokenLinks.push({ file: rel, target, how: fromRoot ? 'root-anchored+relative' : 'relative' });
+        }
       }
     }
 
@@ -220,8 +280,10 @@ function analyze(repoRoot) {
   const unrouted = diskSkills.filter((id) => !new RegExp(`\\b${id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`).test(hubText));
 
   const findings = { brokenLinks, absolutePaths, tokenInLinkTargets, shorthand, unrouted };
+  // installLayoutNotes and warnings stay outside `findings`: they never count
+  // toward total/ok (they are install-layout diagnostics, not gate failures).
   const total = Object.values(findings).reduce((sum, rows) => sum + rows.length, 0);
-  return { ok: total === 0, total, findings };
+  return { ok: total === 0, total, findings, installLayoutNotes, warnings };
 }
 
 function main() {
@@ -236,11 +298,22 @@ function main() {
   const report = analyze(path.resolve(repoRoot));
   if (json) {
     process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
-  } else if (report.ok) {
-    process.stdout.write('OK: harness links, paths, shorthand, and routing are clean\n');
   } else {
-    for (const [kind, rows] of Object.entries(report.findings)) {
-      for (const row of rows) process.stdout.write(`${kind}: ${row.file}${row.line ? `:${row.line}` : ''} ${row.target}\n`);
+    // Install-layout diagnostics are emitted on the human path in every outcome:
+    // they are never gate failures, but they stay observable next to real
+    // findings so a tolerated literal is never mistaken for a clean link.
+    for (const row of report.installLayoutNotes || []) {
+      process.stdout.write(`installLayoutNote: ${row.file} ${row.target} (hub binding literal; ${row.remediation})\n`);
+    }
+    for (const row of report.warnings || []) {
+      process.stdout.write(`warning: ${row.code} ${row.message}\n`);
+    }
+    if (report.ok) {
+      process.stdout.write('OK: harness links, paths, shorthand, and routing are clean\n');
+    } else {
+      for (const [kind, rows] of Object.entries(report.findings)) {
+        for (const row of rows) process.stdout.write(`${kind}: ${row.file}${row.line ? `:${row.line}` : ''} ${row.target}\n`);
+      }
     }
   }
   process.exitCode = report.ok ? 0 : 1;

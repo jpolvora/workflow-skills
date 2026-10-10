@@ -272,6 +272,18 @@ function managedSkillLink(rel) {
     ? `${hubUpPrefix()}.agents/skills/${rel}`
     : `{globalSkillsRoot}/${rel}`;
 }
+/**
+ * Bare link targets that name a runtime sibling shipped beside the relocated
+ * autoload source. The relocation rewrite stays deliberately bounded to this
+ * registry: after relocation only `runtime/<file>` exists, so every listed name
+ * must resolve in the resolved managed runtime directory. Keep this list in sync
+ * with `MANAGED_RUNTIME_SIBLING_FILES` in
+ * `.agents/skills/ws-configure-project/scripts/configure_autoload.cjs` (the two
+ * renderers write hub-root autoload files for different install scopes, so a
+ * one-sided edit leaves the other scope broken); the pair is pinned by a test.
+ */
+const MANAGED_RUNTIME_SIBLING_FILES = ['AGENTS.md', 'CROSS-PLATFORM.md', 'config-resolution.md', 'gates.md', 'host-capability-tokens.md', 'host-dispatch.md', 'scm-provider-contract.md', 'setup.md', 'tools.md'];
+
 function renderConsumerAutoloadText(text) {
   // Normalize previously rendered prefixes so refreshes converge. Accept any
   // `../` depth so nested configured hubs (`config/hub`) converge to their own
@@ -293,16 +305,7 @@ function renderConsumerAutoloadText(text) {
     );
     text = text.replace(/\]\(\{globalSkillsRoot\}\/(ws-[^)]+)\)/g, (match, rel) => `](${managedSkillLink(rel)})`);
   }
-  for (const runtimeFile of [
-    'AGENTS.md',
-    'CROSS-PLATFORM.md',
-    'config-resolution.md',
-    'gates.md',
-    'host-dispatch.md',
-    'scm-provider-contract.md',
-    'setup.md',
-    'tools.md',
-  ]) {
+  for (const runtimeFile of MANAGED_RUNTIME_SIBLING_FILES) {
     text = text.split(`](${runtimeFile})`).join(`](${managedRuntimeLinkPrefixFor(runtimeFile)}${runtimeFile})`);
   }
   return text.replace(/\]\((?:\.\.\/){2,}(ws-[^)]+)\)/g, (match, rel) => `](${managedSkillLink(rel)})`);

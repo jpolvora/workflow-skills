@@ -75,8 +75,11 @@ const runtimeAutoload = fs.readFileSync(path.join(repoRoot, '.agents/skills/ws-s
 const mirrorAutoload = fs.readFileSync(path.join(repoRoot, '.ws/autoload.md'), 'utf8');
 assert.match(runtimeAutoload, /\{skillsRoot\}\/ws-shared\/runtime\/scm-provider-contract\.md/, 'runtime autoload keyword-map prose uses the managed runtime token');
 assert.doesNotMatch(runtimeAutoload, /\{sharedDir\}\/runtime\//, 'runtime autoload never resolves through {sharedDir}/runtime');
+// us-497 AC10: the shipped source keeps its bare same-directory sibling link because
+// that target resolves at the source path; only install-time rendering rewrites it.
+assert.match(runtimeAutoload, /\]\(host-capability-tokens\.md\)/, 'us-497 AC10: source runtime autoload keeps its bare runtime-sibling link');
 assert.match(mirrorAutoload, /\{skillsRoot\}\/ws-shared\/runtime\/scm-provider-contract\.md/, 'mirror autoload keyword-map prose uses the managed runtime token');
-for (const bare of ['](tools.md)', '](AGENTS.md)', '](scm-provider-contract.md)', '](gates.md)']) {
+for (const bare of ['](tools.md)', '](AGENTS.md)', '](scm-provider-contract.md)', '](gates.md)', '](host-capability-tokens.md)']) {
   assert.ok(!mirrorAutoload.includes(bare), `mirror autoload has no bare ${bare}`);
 }
 assert.ok(!mirrorAutoload.includes('](runtime/'), 'mirror autoload never links a .ws/runtime copy');
