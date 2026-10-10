@@ -292,5 +292,9 @@
     "autoAudit": true,
     "autoDetectDomain": true,
     "auditVerdictsBlockShip": "refuted"
+  },
+  "retro": {
+    "_comment": "Opt-in post-convergence ws-retro run: explicit true dispatches ws-retro once after the ship phase (standard after Step 9, lite after Step 5). Advisory and propose-only; never blocks close, ship, merge, or fix-PR convergence.",
+    "enabled": true
   }
 }
