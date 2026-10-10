@@ -302,6 +302,20 @@ try {
     { cwd: legacyRoot, encoding: 'utf8', env: { ...process.env, FORCE_COLOR: '0' } },
   );
   assert(secondInstall.status === 0, `${secondInstall.stdout || ''}${secondInstall.stderr || ''}`);
+  // us-492 AC4/AC5: the pre-change snapshot stays usable across an idempotent
+  // re-run — it must keep the original bytes and never collapse onto the live config.
+  {
+    const migratedConfig = fs.readFileSync(path.join(newShared, 'config.json'), 'utf8');
+    const backupConfig = fs.readFileSync(path.join(newShared, 'config.json.bak'), 'utf8');
+    assert(
+      backupConfig === preserved['config.json'],
+      'us-492 AC5: an idempotent update preserves the pre-change config.json.bak bytes',
+    );
+    assert(
+      backupConfig !== migratedConfig,
+      'us-492 AC4: config.json.bak never becomes byte-identical to the live config',
+    );
+  }
   assert(
     !fs.existsSync(path.join(legacyShared, 'templates', 'hub.gitignore')),
     'migration does not retain alias source',
