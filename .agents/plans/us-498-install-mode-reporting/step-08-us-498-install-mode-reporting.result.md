@@ -58,6 +58,22 @@ From the spec (`.agents/skills/../specs/pending/0172-us-498-install-mode-reporti
 | Baseline LOC | 0 (the tracked `src/` / `web/` / `tests/` globs do not exist in this package) |
 | Final LOC | 0 (same reason; the product delta is the 4-file diff above) |
 
+## Ship
+
+| Field | Value |
+|-------|-------|
+| PR | **#501** — https://github.com/jpolvora/workflow-skills/pull/501 (`develop` → `main`) |
+| Head SHA | `7c16f68664c778df17714777546ff444504443cf` |
+| Ship action | `create-pr` (`fullMode`, `workflowMode: true`, `stopBeforeFixPr: true`) |
+| Close loop | `comment-issue` posted on #498 with the PR URL; PR body carries `Closes #498` (`ensure_pr_closer.cjs`) |
+| `shipStatus` | `pr-open` |
+| Active review threads | 0 (`fetch_threads.cjs 501 --json` → `activeThreads: []`) |
+| Required checks | pending at handoff (`review` + 2 × `test` GitHub Actions jobs) |
+| Merge | **not performed** — the batch orchestrator owns `ws-goal-fix-pr` convergence and the merge |
+| Phase A git cleanup | not run (shipping is not terminal: `pr-open`) |
+| Post-convergence retro | `retro | started:.agents/plans/us-498-install-mode-reporting/us-498-install-mode-reporting-20261010T070620Z.retro.md` (auto mode: 3 validated proposals C1-C3, zero prompts, zero writes; artifacts not committed) |
+| Telemetry aggregate | `bin/generate-telemetry-aggregate.cjs` → `.agents/plans/telemetry/aggregate.json` (39 workflows) |
+
 ### Step breakdown
 
 | Step | Label | Model | Elapsed | Tokens (est.) | Files changed |
