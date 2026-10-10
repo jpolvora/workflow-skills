@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-10 01:23] Agent: agent
+- **Prompt**: us-497 link integrity across install scopes (#493 + #496): make the Phase 5a link gate scope-aware and complete the installer autoload runtime-sibling rewrite
+- **Done**: check_harness_links.cjs classifies depth-1 hub binding literals as install-layout notes only while the resolved scope is global and the project hub is absent, with an installLayoutNotes bucket and a project-hub-absent warning excluded from total/ok and printed on the human path in both outcomes; bin/cli.js and configure_autoload.cjs rewrite host-capability-tokens.md through the shared MANAGED_RUNTIME_SIBLING_FILES registry pinned by a wiring guard; regression suites cover global-only, project-scope and hybrid layouts, the genuine-break boundary, depth-1 level refusal, traversal, idempotency and refresh
+- **Result**: Ledger score 10/10 (240/240 units, no deficiencies); stack invariant scan 0; npm run test 160/160 entries green; test-harness-clean 0 findings; all ws-check-harness phases 0-5c green; integrity regenerated and verified at 0.5.37; wiki pages harness/install-and-hub.md and harness/diagnostics-and-benchmarks.md synced and validated; PR opened with no merge from this worker
+
 ### [2026-10-09 23:37] Agent: ws-spec-to-pr (worker)
 - **Prompt**: us-492 (GitHub issue #492): update installs the ws-shared hub twice per run, so config.json.bak is written twice and the pre-update snapshot is destroyed (backup ends byte-identical to the live config).
 - **Done**: Added a run-scoped latch so ensureSharedHubInstalled runs at most once per install/update run (project and global scope, ws-self-learning seed path preserved) and replaced the unconditional config snapshot write with a preserving writeConfigBackup; added regression coverage in test/test-install.js and test/test-ws-shared-layout.js; bumped 0.5.36.
