@@ -26,7 +26,7 @@ Living synthesis of specs 0001–0150. The delta since adds empty-alias verify s
 
 ## Domain: delivery
 
-- [Spec-to-PR Delivery Pipeline](delivery/spec-to-pr-pipeline.md): Standard/lite orchestrators, verify bar, commit-before-review, close-before-ship, fix-PR discipline.
+- [Spec-to-PR Delivery Pipeline](delivery/spec-to-pr-pipeline.md): Standard/lite orchestrators, verify bar, commit-before-review, close-before-ship, worker liveness watchdog, fix-PR discipline.
 
 ## Domain: providers
 
