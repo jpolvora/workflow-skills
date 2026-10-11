@@ -89,9 +89,13 @@ Worker obligations stay in force: the first worker response includes the verbose
 - Record the branch taken with measured ages (dispatch baseline, marker age,
   elapsed window) in the round artifact.
 - The dispatch baseline is correlated per step while `{batch}` names the
-  marker, and the telemetry stream carries no batch or round field: a
-  step-scoped baseline can only delay a wedge verdict, never authorize a
-  takeover. A wedge verdict therefore presumes a frozen run.
+  marker, and the telemetry stream carries no batch or round field, so a
+  later dispatch for the same step also moves the baseline and makes an
+  earlier batch's marker read as stale. On a `wedged` record with
+  `markerPresent` true, compare `markerMtime` with the evaluated batch's
+  own dispatch before taking over: only a marker that predates that
+  dispatch, or no marker at all, authorizes the branch. A wedge verdict
+  presumes a frozen run.
 
 ### Posture exemption
 

@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "63c38a3b221d0dc35668d19da242463c2845aea2102fa612364619d0ef590195",
+  "fullPackageDigest": "32aa30eacb56c49c3e40f0c220bb7c635ebdf245e5879e588494b46486f8e493",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -591,7 +591,7 @@
         "README.md": "5440b572d91cd0f0e6e6f5d9e005f85b66e9eb7fd20f046242c52f608e7c705a",
         "SKILL.md": "143e87776eed1f66aa62f6e5d6045183c16c2d3ec4f7ddd4c654e479e6734b44",
         "STEP-DISPATCH.md": "4ff86437da09233466143df996c7acedb1a68b3a9ac5644d2537f07c746fd714",
-        "WORKER-TURN-RULES.md": "783f6b98b51b708b8f5102e5e63f61477b37d075431c2c1147fc4883c9a51231",
+        "WORKER-TURN-RULES.md": "d50ce66294aa68cdabfa33a9b795d2f4127fb8ea2d55c7876929e9a5956c9bb0",
         "docs/faq.md": "bede927231afb15f08b2122b36131f7403aeecb0b030fafe86280729fe255521",
         "evals/evals.json": "e696da923c1994e6aa9a380d0bc76b4fb9560ca5eacf1c4a278712ef710dbbde",
         "protocols/artifact-cleanup.md": "6035fb6e97aa8a220c586baf3a4cea13b299e90f3701fc23640d8de1866c40b4",
@@ -614,7 +614,7 @@
         "scripts/search_plan_history.cjs": "4f3edf90a51bca49bb3128df71b6c49e77717213c90ea20309e3ed57f397a8f4",
         "scripts/update_state.cjs": "357f11251af68bf123275cf4dcc8002363d68030230863b435440d295115eaa9",
         "scripts/validate_state.cjs": "1920062b553fe255c28e452af9538f38db3592b4b121d7aaadc4b6e6fab65c10",
-        "scripts/worker_liveness_check.cjs": "e344fbc0446626bbe2cbd48225fff95d5e996d5e9da3076868e00fb22395ef1e",
+        "scripts/worker_liveness_check.cjs": "8fa59eaf74ad82f0ef441615bc4efc620d7d4f4b540835f9855ca373503bcb5c",
         "scripts/worker_turn_guard.cjs": "4c226a810a0bbc9b486b05e4c20df6f1fc349f6d85bf21cf04c1fb4dd07f5e8d",
         "scripts/write_dispatch_prompt_audit.cjs": "61b7d2c3400279042c1d95d8c09c352953c3fbbb38485281ea746e881d69b641",
         "scripts/write_sequential_dag.cjs": "6fca831c4c26d7844f73001183bbff2a89017ec966e11227fff99e7db1bd0d25",
@@ -622,7 +622,7 @@
         "scripts/write_verification_manifest.cjs": "d2c2420752e063b604e438ce5a4b4398fb456ba4e5be71f45b00e20523b7c89d",
         "ws-spec-to-pr-run-test.md": "417b103bc5ea94cd83dbaaa71aa973cbf23e29f73d7ca567667b2870be914560"
       },
-      "skillDigest": "ac3dd70d5716b01e450bafd18184b8a24fb96a239040d078da1630b2093a2056"
+      "skillDigest": "f3f95f1e9cd4ba1a900b26ed81349f33b4e5f972c970334b6c6bc7432007beb2"
     },
     "ws-spec-to-pr-distributed": {
       "files": {

@@ -154,6 +154,15 @@ function writeMarker(run, { fileBatch = BATCH, step = STEP, dispatchedAt = iso(n
   return file;
 }
 
+// CR-002: `.runtime` immutability is asserted on contents, not just entry names.
+function runtimeSnapshot(dir) {
+  return fs.readdirSync(dir).sort().map((name) => {
+    const file = path.join(dir, name);
+    const stat = fs.statSync(file);
+    return `${name}:${stat.size}:${stat.mtimeMs}:${fs.readFileSync(file, 'utf8')}`;
+  });
+}
+
 function evaluate(run, { batch = BATCH, step = STEP, extra = [] } = {}) {
   const result = cp.spawnSync(
     process.execPath,
@@ -500,14 +509,55 @@ try {
         && stateAfterMarker === stateBefore,
       'AC3 marker write leaves state revision unchanged',
     );
-    const runtimeBefore = fs.readdirSync(path.join(run.usDir, '.runtime')).sort();
+    const runtimeBefore = runtimeSnapshot(path.join(run.usDir, '.runtime'));
     const out = evaluate(run);
-    const runtimeAfter = fs.readdirSync(path.join(run.usDir, '.runtime')).sort();
+    const runtimeAfter = runtimeSnapshot(path.join(run.usDir, '.runtime'));
     assert(
       out.record?.verdict === 'alive'
         && fs.readFileSync(stateFile, 'utf8') === stateBefore
-        && runtimeAfter.join(',') === runtimeBefore.join(','),
+        && runtimeAfter.join('|') === runtimeBefore.join('|'),
       'AC3 evaluation leaves state bytes and .runtime contents unchanged',
+    );
+  }
+
+  // V23 / CR-003 — the documented `--window-sec` override takes effect.
+  {
+    const run = newRun('window-sec-override');
+    writeState(run, { revision: 4 }, agoSec(7200));
+    writeTelemetry(run, [telemetryLine('dispatch', STEP, iso(agoSec(60)))], agoSec(7200));
+    const tightened = evaluate(run, { extra: ['--window-sec', '10'] });
+    assert(
+      tightened.status === 2 && tightened.record?.verdict === 'wedged' && tightened.record?.windowSec === 10,
+      'V23 window override tightens the window below the configured default',
+    );
+    const configured = evaluate(run);
+    assert(
+      configured.record?.verdict === 'pending' && configured.record?.windowSec === WINDOW_SEC,
+      'V23 same fixture stays pending on the configured 600 s window',
+    );
+  }
+
+  // V24 / CR-003 — the documented `--telemetry` override takes effect.
+  {
+    const run = newRun('telemetry-override');
+    const baseline = agoSec(30);
+    writeState(run, { revision: 4 }, agoSec(3600));
+    const altTelemetry = path.join(run.root, 'alt-telemetry.jsonl');
+    writeFileAt(altTelemetry, `${telemetryLine('dispatch', STEP, iso(baseline))}\n`, agoSec(3600));
+    const out = evaluate(run, { extra: ['--telemetry', altTelemetry] });
+    assert(
+      out.record?.verdict === 'pending'
+        && Math.abs(Date.parse(out.record?.dispatchedAt) - baseline.getTime()) <= 1000,
+      'V24 telemetry override resolves the baseline from the named stream',
+    );
+  }
+
+  // V25 / CR-003 — `--help` exits 0 with the usage line.
+  {
+    const result = cp.spawnSync(process.execPath, [EVALUATOR, '--help'], { encoding: 'utf8' });
+    assert(
+      result.status === 0 && /Usage: node worker_liveness_check\.cjs/.test(result.stdout || ''),
+      'V25 help flag exits 0 with usage on stdout',
     );
   }
 } finally {

@@ -356,7 +356,12 @@ function main() {
   const records = readTelemetryRecords(telemetryFile);
   const baseline = selectDispatchBaseline(records, step);
   const marker = readMarker(markerFile);
-  const ageSec = baseline ? Math.round((Date.now() - baseline.dispatchedAtMs) / 1000) : null;
+  const nowMs = Date.now();
+  const ageSec = baseline ? Math.round((nowMs - baseline.dispatchedAtMs) / 1000) : null;
+  // Marker age is evidence for the parent cross-check: a marker older than the
+  // resolved baseline but newer than this batch's own dispatch means a sibling
+  // dispatch moved the baseline, not that the worker is gone.
+  const markerAgeSec = marker.mtimeMs === null ? null : Math.round((nowMs - marker.mtimeMs) / 1000);
   const markerFresh = Boolean(
     baseline && marker.valid && marker.mtimeMs >= baseline.dispatchedAtMs - MARKER_TOLERANCE_MS,
   );
@@ -383,6 +388,8 @@ function main() {
     markerPath: toRelative(repoRoot, markerFile),
     markerPresent: marker.present,
     markerFresh,
+    markerMtime: marker.mtimeMs === null ? null : new Date(marker.mtimeMs).toISOString(),
+    markerAgeSec,
     progressEvidence,
     reason: `${outcome.reason}${describeMarker({ marker, markerFresh, baselinePresent: Boolean(baseline) })}`,
     exitCode: EXIT_CODES[outcome.verdict],
