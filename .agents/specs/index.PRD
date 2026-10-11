@@ -227,6 +227,8 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Global vs Project Skill Installation Choice (`spec: completed/global-vs-project-skill-installation.spec.md`)
 - [x] Post-workflow worktree and tag cleanup (`spec: completed/post-workflow-worktree-tag-cleanup.spec.md`)
 - [x] Skill Loading Banner Instruction in Primary SKILL.md Files (`spec: completed/skill-loaded-banner-instruction.spec.md`)
+- [ ] Batch worker wedge: dispatched fix/review worker runs with zero output until interrupted (`spec: pending/0174-us-502.spec.md`)
+
 
 
 
@@ -616,6 +618,8 @@ All Next-specs closed.
 | 183 | `post-workflow-worktree-tag-cleanup` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Post-workflow worktree and tag cleanup |
 
 | 184 | `skill-loaded-banner-instruction` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Skill Loading Banner Instruction in Primary SKILL.md Files |
+
+| 185 | `us-502` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | Batch worker wedge: dispatched fix/review worker runs with zero output until interrupted |
 
 ## 9. Inbox
 
