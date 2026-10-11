@@ -559,6 +559,9 @@
       "test/test-worker-turn-guard.js"
     ],
     [
+      "test/test-worker-liveness-check.js"
+    ],
+    [
       "test/test-check-workflows-distributed.js"
     ],
     [

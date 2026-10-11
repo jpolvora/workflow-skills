@@ -480,6 +480,13 @@ const efficiencyFeatureBlock = `  <!-- efficiency-verifiability:start -->
       </div>
       <p class="role-card-desc"><code>ws-wiki</code> keeps a domain-partitioned feature wiki in sync with shipped code (init, from-code genesis, sweep, verify, apply), bounded by a Sync Baseline watermark. The pre-ship gate files wiki, spec-index, and changelog updates before the PR opens. <a href="wiki/documentation/ws-wiki.html">Wiki manager &rarr;</a></p>
     </div>
+    <div class="role-matrix-card">
+      <div class="role-card-header">
+        <div class="role-card-icon">LW</div>
+        <h4 class="role-card-title">Worker liveness verdict for dispatched batches</h4>
+      </div>
+      <p class="role-card-desc">Every dispatched batch worker writes a <code>.runtime/worker-started-{step}-{batch}.md</code> marker, so the parent resolves exactly one read-only verdict from the recorded dispatch baseline, that marker, and durable progress after dispatch: <code>no-baseline</code> &rarr; <code>alive</code> &rarr; <code>pending</code> &rarr; <code>wedged</code> (exit 2 only for <code>wedged</code>). Durable progress outranks marker absence, only a proven wedge authorizes takeover, and the window resolves from <code>defaults.workerLivenessWindowSec</code> (default 600 s). Inline, lite, and Tier 3 postures carry no marker obligation. <a href="wiki/delivery/spec-to-pr-pipeline.html">Pipeline details &rarr;</a></p>
+    </div>
   <!-- efficiency-verifiability:end -->
 `;
 html = html.replace(

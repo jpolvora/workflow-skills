@@ -44,6 +44,62 @@ Worker obligations stay in force: the first worker response includes the verbose
 - On a zero-tool-call turn, re-dispatch once with this rule attached; the
   retry recovers instead of the parent waiting out a full timeout.
 
+## Worker liveness contract (batch workers)
+
+### Worker marker obligation
+
+- A dispatched batch worker writes a liveness marker under the run runtime
+  directory as `worker-started-{step}-{batch}.md`, where `{step}` is the
+  dispatched step and `{batch}` is the round id or DAG node id of that
+  dispatch.
+- The marker carries non-empty `step`, `batch`, and `dispatchedAt` fields. A
+  marker missing any of them never counts as evidence.
+- Write the marker within the effective worker liveness window after
+  dispatch, for this dispatch. A marker counts as evidence only for the
+  dispatch whose baseline it is at or after: the runtime directory survives
+  resumes, so a stale same-name marker from a superseded dispatch is never
+  read as current.
+- The marker is a plain runtime file written directly by the worker, never
+  through a workflow-state write. It adds no state mutation and must not bump
+  the workflow state revision.
+
+### Parent watchdog contract
+
+- The parent evaluates liveness read-only with
+  `node worker_liveness_check.cjs --us-dir <us-dir> --step <N> --batch <id>`,
+  which resolves one verdict in this order: `no-baseline` (no dispatch record
+  for the step, never a wedge), `alive` (a fresh marker or durable progress
+  after the baseline), `pending` (window not elapsed yet), then `wedged`
+  (window elapsed with neither a fresh marker nor durable progress).
+- Durable progress outranks marker absence: while the run advances after the
+  baseline, a missing marker is never proof that the worker died.
+- No dispatch record means `no-baseline`, and the parent never reads that as a
+  wedge: the check fails open, so an in-flight run resumed from older state is
+  not reported wedged.
+- Only a `wedged` verdict authorizes takeover. Never dispatch a second worker
+  for a batch that is not proven wedged.
+- A ping is never a progress signal. When one is sent anyway, record its
+  outcome as watchdog evidence instead of leaving silence.
+
+### Sanctioned no-output takeover branches
+
+- When a batch is proven wedged and no output exists, take one of two
+  branches: cancel-then-redispatch, or re-execute the batch inline on the
+  parent when re-dispatch is unavailable.
+- Record the branch taken with measured ages (dispatch baseline, marker age,
+  elapsed window) in the round artifact.
+- The dispatch baseline is correlated per step while `{batch}` names the
+  marker, and the telemetry stream carries no batch or round field: a
+  step-scoped baseline can only delay a wedge verdict, never authorize a
+  takeover. A wedge verdict therefore presumes a frozen run.
+
+### Posture exemption
+
+- The marker obligation binds dispatched batch workers only. The exemption
+  covers lite and inline runs, the Inline legacy loop, and Tier 3
+  inline-isolated execution: no batch worker is dispatched, so there is no
+  marker obligation and no watchdog takeover branch.
+
 ## Continuation contract
 
 - A continuation worker recovering an interrupted turn reuses the intact
