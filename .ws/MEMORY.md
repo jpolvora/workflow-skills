@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-10-12] Verify repo convention before rebutting reviewers (us-504 follow-up)
+- **Layer**: `orchestration`
+- **Module**: `ws-fix-pr, git`
+- **Severity**: `High`
+- **PathPattern**: `.ws/memory/**`, `.ws/.gitignore`
+- **Scenario / Context**: On PR #512 I rebutted three review threads claiming memory trap sources are local-only by design (citing a `git check-ignore` match), resolved them, and the re-run reviewer proved me wrong: `git ls-files .ws/memory` shows 212 tracked source files, so my 3 traps truly lacked backing files. Fixed by force-adding the sources (`memory/**` is gitignored, `-f` required) in commit `91e7e70a`.
+- **DO NOT**: Rebut a reviewer with a design claim verified only by ignore rules or local-disk state; `check-ignore` matches do not describe tracking status, and local disk is not the CI/fresh-clone ground truth.
+- **INSTEAD DO**: Run `git ls-files <dir>` to establish the tracked convention first; when the reviewer is right, resolve with an explicit correction naming the mistaken rebuttal; force-add (`-f`) files the design tracks despite gitignore, recompile to prove stability, and push the fix to the same PR branch.
+
 ### [2026-10-12] PowerShell text tools and integrity-before-suite
 - **Layer**: `tooling`
 - **Module**: `ws-check-workflows, test runner`
@@ -14,6 +23,24 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **Scenario / Context**: During us-504 delivery, three shell calls failed because `head`/`tail` do not exist on PowerShell, and the first full `npm run test` stopped at 1/162 on a stale `bin/skill-integrity.json` after editing hashed skill content.
 - **DO NOT**: Pipe through `head`/`tail`/`grep` on PowerShell, or run `npm run test` right after editing hashed skill content without regenerating integrity.
 - **INSTEAD DO**: Use `Select-Object -First` / `Select-String` on pwsh; after any edit under `.agents/skills/` or `bin/`, run `npm run generate-integrity` + `npm run verify-integrity` before `npm run test`.
+
+### [2026-10-12] Orchestrator coordination: subagent liveness, claim-after-evidence, no post-merge pushes
+- **Layer**: `orchestration`
+- **Module**: `ws-spec-to-pr dispatch, ship phase`
+- **Severity**: `High`
+- **PathPattern**: `.agents/plans/*/`, `*.state.json`, `telemetry.jsonl`
+- **Scenario / Context**: During us-504 full-auto delivery, two background subagents produced zero disk artifacts across 6 and 4 rounds (status messages only); the step-05 report asserted a green suite before the background suite job finished; a memory-index commit was pushed to `develop` after PR #505 had already merged, bypassing PR review; no `.state.*`, `telemetry.jsonl`, checkpoint tags, or `plans/index.json` entry were ever created, leaving the workflow invisible to `ws-monitor`/resume.
+- **DO NOT**: Dispatch mega-prompt background subagents without a concrete first artifact; assert verification results (suite green, PASS counts) before the job output confirms them; push follow-up commits to the integration branch after its PR merged; run a full-auto pipeline without state files and call it complete.
+- **INSTEAD DO**: Give each dispatch one scoped artifact plus an explicit liveness bar (disk write or evidence-backed status within 2 rounds; foreground for short tasks); write reports only from collected job output; include trailing commits before merge or open a follow-up PR; when bypassing state machinery, record the deviation and still produce `verification-manifest.json`, checkpoint tags, and the `plans/index.json` entry (or file the run as state-less by explicit decision).
+
+### [2026-10-12] Fable audit: report timing and ship-window discipline (us-504)
+- **Layer**: `orchestration`
+- **Module**: `ws-fable-judge, ws-ship-pr`
+- **Severity**: `High`
+- **PathPattern**: `.agents/plans/*/step-05-*.plan.report.md`, `.agents/plans/*/pr-body.md`
+- **Scenario / Context**: Post-hoc `ws-fable-judge` audit of us-504 returned VERIFIED WITH CAVEATS: the step-05 report cited a still-running suite job as green (B1), and a 9-line memory-index commit was pushed to `develop` after PR #505 merged (B2). No weakened checks, no scope creep, completion itself verified.
+- **DO NOT**: Write PASS counts or green verdicts into report files while the backing job is still running; push any commit to the integration branch after its PR merged, however small.
+- **INSTEAD DO**: Write reports only from collected job output with job id + exit code cited; hold trailing commits for a follow-up PR (which also gives the bypassed change retroactive review); run the fable audit before merge whenever `fable.autoAudit` is true so caveats land pre-ship, not post-hoc.
 
 ### [2026-10-11] Step 0-4 orchestration traps: residue allowlist, state-file dialect, ignored plan artifacts, stale plan index
 - **Layer**: `Workflow / harness runtime`
