@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-12 18:01] Agent: agent
+- **Prompt**: ws-spec-multi batch ms-20261012T211904Z item us-506/spec 0176: full-auto run reaches ship with no workflow state
+- **Done**: Added packaged create-only state bootstrap (init) to the shared workflow-state runtime; absent-state remediation + HS-5 label; contract docs; new test-state-bootstrap suite; version 0.5.41 + integrity.
+- **Result**: PR #513 open (develop->main), all checks green, 0 unresolved threads
+
 ### [2026-10-12 17:14] Agent: agent
 - **Prompt**: /ws-spec-from-provider (import the 6 open issues as specs, update ws-spec-index pending+completed, commit the specs)
 - **Done**: Imported GitHub issues 506-511 as specs of record .agents/specs/pending/0176..0181-us-{506..511}.spec.md (agentic reformulation, 100 EARS ACs total: 18/19/13/15/21/14), with a .context.md companion per spec for the genuine gray areas; prior-work sweep per issue found no open PR; registered the workflow copies .agents/plans/us-{506..511}/step-00-us-{id}.spec.md (source: github) and tracked us-506..511 in index.PRD (Feature map pending rows 232-237, Next-specs rows 187-192).
