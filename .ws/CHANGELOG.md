@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-12 16:25] Agent: agent
+- **Prompt**: Fix check_workflows global-tree findRepoRoot mis-resolution (issue 504)
+- **Done**: Skills-dir-first resolver, --repo-root parity, cwd fallback, regression test + suite, integrity regen, bump 0.5.40; verify 10/10, suite 162/162
+- **Result**: G2 c9b47ecf; ready to ship PR develop->main
+
 ### [2026-10-11 19:47] Agent: agent
 - **Prompt**: /ws-spec-to-pr .agents/specs/pending/0174-us-502.spec.md (autoMode entered at the step 0->1 boundary)
 - **Done**: Delivered the batch-worker liveness hardening end to end: read-only evaluator worker_liveness_check.cjs (verdicts no-baseline/alive/pending/wedged, exit 0/0/0/2, per-dispatch marker freshness), canonical Worker liveness contract section plus ws-goal-fix-pr watchdog wiring and a budget-safe STEP-DISPATCH pointer, defaults.workerLivenessWindowSec across schema/example/GUI/editor core set with a 600 s fallback, a red-first 34-assertion suite with additive residue assertions, the five-surface docs sweep, one bump to 0.5.39, and regenerated integrity.
