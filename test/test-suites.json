@@ -198,6 +198,9 @@
       "test/test-check-workflows-automode.js"
     ],
     [
+      "test/test-check-workflows-global-root.js"
+    ],
+    [
       "test/test-dispatch-prompt-audit.js"
     ],
     [

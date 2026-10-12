@@ -16,7 +16,20 @@ const { spawnSync } = require('child_process');
 
 const SCRIPT_DIR = __dirname;
 
-function findRepoRoot(startDir) {
+function findSkillsDirFromScript(startDir) {
+  let curr = path.resolve(startDir);
+  while (true) {
+    if (fs.existsSync(path.join(curr, 'ws-shared', 'runtime', 'tools.md'))) return curr;
+    const parent = path.dirname(curr);
+    if (parent === curr) return null;
+    curr = parent;
+  }
+}
+
+const SCRIPT_SKILLS_DIR = findSkillsDirFromScript(SCRIPT_DIR);
+
+function findRepoRoot(startDir, explicitRoot) {
+  if (explicitRoot) return path.resolve(explicitRoot);
   let curr = path.resolve(startDir);
   const roots = [curr];
   let p = curr;
@@ -25,14 +38,16 @@ function findRepoRoot(startDir) {
     roots.push(p);
   }
   for (const c of roots) {
+    if (fs.existsSync(path.join(c, '.agents', 'skills', 'ws-shared'))) return c;
+  }
+  for (const c of roots) {
     if (fs.existsSync(path.join(c, '.git')) || fs.existsSync(path.join(c, 'package.json')) || fs.existsSync(path.join(c, '.agents'))) return c;
   }
+  if (process.cwd() && process.cwd() !== roots[0]) return path.resolve(process.cwd());
   return roots[Math.min(2, roots.length - 1)] || '/';
 }
-
-const REPO_ROOT = findRepoRoot(SCRIPT_DIR);
-
-function resolveSkillsDir(repoRoot) {
+function resolveSkillsDir(repoRoot, scriptSkillsDir) {
+  if (scriptSkillsDir && fs.existsSync(scriptSkillsDir)) return scriptSkillsDir;
   let configPath = path.join(repoRoot, '.ws', 'config.json');
   if (!fs.existsSync(configPath)) configPath = path.join(repoRoot, '.agents', 'skills', 'ws-shared', 'config.json');
   if (fs.existsSync(configPath)) {
@@ -49,7 +64,25 @@ function resolveSkillsDir(repoRoot) {
   return fs.existsSync(fallback) ? fallback : repoRoot;
 }
 
-const SKILLS_DIR = resolveSkillsDir(REPO_ROOT);
+function preParseRepoRoot(argv) {
+  for (let i = 0; i < argv.length; i += 1) {
+    const a = argv[i];
+    if (a === '--repo-root') {
+      const v = argv[i + 1];
+      if (!v || v.startsWith('--')) { console.error('missing value for --repo-root'); process.exit(2); }
+      return v;
+    }
+    if (a.startsWith('--repo-root=')) {
+      const v = a.slice('--repo-root='.length);
+      if (!v) { console.error('missing value for --repo-root'); process.exit(2); }
+      return v;
+    }
+  }
+  return null;
+}
+
+const REPO_ROOT = findRepoRoot(SCRIPT_DIR, preParseRepoRoot(process.argv.slice(2)));
+const SKILLS_DIR = resolveSkillsDir(REPO_ROOT, SCRIPT_SKILLS_DIR);
 const SHARED_DEPS_PATH = path.join(SKILLS_DIR, 'ws-shared', 'runtime', 'skill-dependencies.json');
 const BIN_DEPS_PATH = path.join(REPO_ROOT, 'bin', 'skill-dependencies.json');
 
@@ -571,12 +604,12 @@ class WorkflowChecker {
 }
 
 function printHelp() {
-  console.log('Usage: node check_workflows.cjs [--workflow <id>] [--report] [--json] [--fix] [--yes|-y]');
+  console.log('Usage: node check_workflows.cjs [--workflow <id>] [--report] [--json] [--fix] [--yes|-y] [--repo-root <dir>]');
   console.log(`Supported workflow ids: ${Object.keys(WORKFLOW_REGISTRY).join(', ')}`);
 }
 
 function parseArgs(argv) {
-  const o = { report: false, json: false, fix: false, yes: false, workflow: null };
+  const o = { report: false, json: false, fix: false, yes: false, workflow: null, repoRoot: null };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
     if (a === '--help' || a === '-h') { printHelp(); process.exit(0); }
@@ -586,6 +619,16 @@ function parseArgs(argv) {
     else if (a === '--yes' || a === '-y') o.yes = true;
     else if (a === '--workflow') { o.workflow = argv[i + 1] || null; i += 1; }
     else if (a.startsWith('--workflow=')) o.workflow = a.slice('--workflow='.length) || null;
+    else if (a === '--repo-root') {
+      const v = argv[i + 1];
+      if (!v || v.startsWith('--')) { console.error('missing value for --repo-root'); process.exit(2); }
+      o.repoRoot = v; i += 1;
+    }
+    else if (a.startsWith('--repo-root=')) {
+      const v = a.slice('--repo-root='.length) || null;
+      if (!v) { console.error('missing value for --repo-root'); process.exit(2); }
+      o.repoRoot = v;
+    }
     else { console.error(`unknown argument: ${a}`); process.exit(2); }
   }
   return o;
