@@ -526,6 +526,9 @@
       "test/test-ws-monitor-us478.js"
     ],
     [
+      "test/test-ws-monitor-us507.js"
+    ],
+    [
       "test/test-verify-child-artifacts-us388.js"
     ],
     [

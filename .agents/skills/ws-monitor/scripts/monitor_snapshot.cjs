@@ -473,6 +473,78 @@ function listStateFiles(plansDir) {
   return files;
 }
 
+// us-507: canonical top-level step-artifact naming — the same `step-NN-{slug}.`
+// prefix `expectedArtifacts()` emits. Only this file class is run-activity
+// evidence; state-less detection reuses the existing artifact model instead of
+// adding a parallel detector (mirrors the us-388 precedent).
+const STEP_ARTIFACT_RE = /^step-\d{2}[a-z]?-/;
+function isStepArtifactName(name) {
+  return STEP_ARTIFACT_RE.test(String(name));
+}
+
+// us-507: state-less freshness uses the liveness stopwatch boundary rule — only
+// `idleMs > thresholdMs` is stale, so an age equal to the window is fresh.
+function statelessFreshness(ageMs, thresholdMs) {
+  return ageMs <= thresholdMs;
+}
+
+// us-507: a plan directory with step artifacts and no state file is an in-flight
+// run that lost (or never wrote) its machine state. `listStateFiles()` treats
+// "no state file in this directory" as "not a run", so such a directory never
+// reaches finding classification and the observer reports nothing is running.
+// Detect it from the top-level step artifacts only (never descend into nested
+// directories such as plan worktrees or `.runtime`), treat state presence — not
+// parse success — as the discriminator, and never write anything.
+function listStatelessRuns(plansDir, repoRoot = '.') {
+  if (!fs.existsSync(plansDir)) return [];
+  let entries;
+  try {
+    entries = fs.readdirSync(plansDir, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+  const runs = [];
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue; // `{plansDir}/index.json` and other files are not runs
+    const dir = path.join(plansDir, entry.name);
+    let children;
+    try {
+      children = fs.readdirSync(dir, { withFileTypes: true });
+    } catch {
+      continue; // unreadable / permission-denied directory: skip, never fail the snapshot
+    }
+    const files = children.filter((child) => child.isFile());
+    if (files.some((child) => child.name.endsWith('.state.json') || child.name.endsWith('.state.md'))) {
+      continue; // state present: the existing state path owns this directory
+    }
+    const artifacts = [];
+    for (const file of files) {
+      if (!isStepArtifactName(file.name)) continue;
+      const absolute = path.join(dir, file.name);
+      let mtimeMs;
+      try {
+        mtimeMs = fs.statSync(absolute).mtimeMs;
+      } catch {
+        continue;
+      }
+      artifacts.push({ name: file.name, mtimeMs, path: toRepoRelative(repoRoot, absolute, { allowOutside: true }) });
+    }
+    if (artifacts.length === 0) continue; // no evidence of activity: not a run
+    artifacts.sort((a, b) => (b.mtimeMs - a.mtimeMs) || (a.name < b.name ? 1 : -1));
+    const newest = artifacts[0];
+    runs.push({
+      slug: entry.name,
+      newestArtifact: newest.path,
+      newestArtifactName: newest.name,
+      newestMtimeMs: newest.mtimeMs,
+      artifacts: [...artifacts]
+        .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
+        .map((artifact) => ({ path: artifact.path, name: artifact.name, present: true })),
+    });
+  }
+  return runs;
+}
+
 function readTelemetry(file) {
   if (!fs.existsSync(file)) return { events: [], errors: [] };
   const events = [];
@@ -1617,6 +1689,7 @@ function resolveScmProvider(config) {
 // (failure class plus where to fix), not a bare alert.
 const DEFECT_CONTRACTS = {
   'missing-artifact': { area: 'workflow artifact contract', contract: 'expectedArtifacts / step artifact naming (monitor_snapshot.cjs)' },
+  'run-without-state': { area: 'workflow discovery', contract: 'monitor_snapshot.cjs listStateFiles / canonical step-NN-{slug} artifact naming (expectedArtifacts)' },
   'missing-exec-artifact': { area: 'Step 3 exec artifact', contract: 'ws-plan-to-tasks / write_sequential_dag.cjs' },
   'step-drift': { area: 'verify gate', contract: 'ws-plan-verify / gates.md minVerifyScore' },
   'empty-files-touched': { area: 'telemetry handoff', contract: 'update_state.cjs finish / step dispatch filesTouched' },
@@ -1891,6 +1964,65 @@ function snapshot(options) {
     return Number.isInteger(raw) && raw > 0 ? raw * 1000 : TRANSCRIPT_LIMITS.stallWindowMs;
   })();
 
+  // us-507: state-less run discovery. A plan directory with step artifacts and
+  // no state file is invisible to state-file enumeration; surface it from the
+  // artifacts it does have. `--workflow-id` never selects a state-less run (it
+  // records no identity); `--slug` matches the plan directory name.
+  const statelessNow = Date.now();
+  const statelessRuns = listStatelessRuns(plansDir, context.repoRoot).filter((run) => {
+    if (options.workflowId) return false;
+    if (options.slug) return run.slug === String(options.slug);
+    return true;
+  });
+  for (const run of statelessRuns) {
+    const ageMs = statelessNow - run.newestMtimeMs;
+    const fresh = statelessFreshness(ageMs, stallWindowMs);
+    const findings = [];
+    addFinding(
+      findings,
+      fresh ? 'warning' : 'info',
+      'run-without-state',
+      `plan directory "${run.slug}" has step artifacts but no workflow state file (newest artifact ${formatAgeMs(ageMs)} old); the run is unobservable and unresumable`,
+      [run.newestArtifact],
+    );
+    workflows.push({
+      workflowId: run.slug,
+      slug: run.slug,
+      pipeline: 'stateless',
+      stateless: true,
+      status: fresh ? 'active' : 'stale',
+      currentStep: null,
+      completedSteps: [],
+      stepStatus: {},
+      verificationScore: null,
+      minVerifyScore,
+      currentModel: null,
+      configuredModel: null,
+      statePath: null,
+      telemetry: { path: null, eventCount: 0, parseErrors: [], lastEvent: null },
+      expectedArtifacts: run.artifacts,
+      stateAgentTranscripts: null,
+      turnPause: null,
+      transcriptSource: null,
+      sessionRef: null,
+      statelessInfo: {
+        newestArtifact: run.newestArtifact,
+        newestArtifactName: run.newestArtifactName,
+        ageMs,
+        thresholdMs: stallWindowMs,
+        fresh,
+      },
+      stopwatch: {
+        lastActivityAt: new Date(run.newestMtimeMs).toISOString(),
+        idleMs: ageMs,
+        thresholdMs: stallWindowMs,
+        stalled: !fresh,
+        source: 'artifact-mtime',
+      },
+      findings,
+    });
+  }
+
   // us-395: cross-workflow stale-parent-row detection needs the full set.
   for (const workflow of workflows) {
     if (!workflow.multiSpec) continue;
@@ -1930,6 +2062,9 @@ function snapshot(options) {
       workflow.stopwatch = null;
       continue;
     }
+    // us-507: a state-less run has no state/telemetry/session to watch; its
+    // stopwatch is the artifact-mtime clock set at discovery.
+    if (workflow.stateless) continue;
     // us-419 fix-pr: only an AVAILABLE state marker short-circuits host
     // discovery. A transcript-unavailable marker stays informational (report
     // line + watch message); live discovery still resolves, so a
@@ -2167,6 +2302,26 @@ function markdownReport(report) {
       continue;
     }
 
+    if (workflow.stateless) {
+      const info = workflow.statelessInfo || {};
+      lines.push(
+        `### ${workflow.workflowId} (state-less run)`,
+        '',
+        `- Status: ${workflow.status}`,
+        `- Pipeline: ${workflow.pipeline}`,
+        `- Newest evidence: \`${info.newestArtifact}\` (${formatAgeMs(info.ageMs)} old / ${Math.max(1, Math.round((info.thresholdMs || 0) / 60000))}m window)`,
+        '- State: none (no workflow state file)',
+        '- Telemetry events: 0',
+        '',
+        'Step artifacts on disk:',
+      );
+      for (const artifact of workflow.expectedArtifacts) {
+        lines.push(`- [x] \`${artifact.path}\``);
+      }
+      lines.push('');
+      continue;
+    }
+
     lines.push(
       `### ${workflow.workflowId}`,
       '',
@@ -2317,6 +2472,9 @@ module.exports = {
   stateFileMatchesSlug,
   expectedArtifacts,
   expectedChildArtifacts,
+  isStepArtifactName,
+  statelessFreshness,
+  listStatelessRuns,
   classifyWorkflow,
   classifyMultiSpecWorkflow,
   terminalShape,
