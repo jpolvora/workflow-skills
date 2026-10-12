@@ -104,8 +104,9 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
    Write this block immediately after flag parsing, before auto-resume. Applies in all modes (normal, auto, dry-run). In `dryRun`, prefix with `[DRY-RUN]`.
 4. **Auto resume** or **Active Resume** (see [Resume / reset](#resume--reset)).
 5. **Identity**: `workflow-id`, `slug`, `us-dir`.
-   - **[ws-spec-to-pr]**: Inject `workflowType: standard` into the initialized frontmatter of `{us-dir}/{workflow-id}.state.md`.
-   - **[ws-spec-to-pr-lite]**: Inject `workflowType: lite`.
+   - **State bootstrap (mandatory before any other state write):** run the create-only bootstrap once per new run. `[ws-spec-to-pr]`: `node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs init "{us-dir}/{workflow-id}.state.md" --slug {slug} --workflow-id {workflow-id}`. `[ws-spec-to-pr-lite]`: the same `init` through `{skillsRoot}/ws-spec-to-pr-lite/scripts/update_state.cjs`. The wrapper resolves `workflowType` from the calling orchestrator.
+   - `init` creates `{us-dir}/{workflow-id}.state.json` plus the rendered `{us-dir}/{workflow-id}.state.md` from the run arguments and the registered `step-00-{slug}.spec.md`, folds an existing `ac-ledger.json`, and refreshes the `{plansDir}/index.json` row. It is create-only: an existing state (or an unresolvable required input) fails closed and leaves no partial files. **Never hand-write or hand-edit the initial state files** — `init` is the sanctioned writer for the first write, `update_state.cjs` for every later mutation, and the gates fail closed naming that remediation.
+   - Advancing past Step 0 requires the bootstrapped state: run `node {skillsRoot}/ws-spec-to-pr/scripts/validate_state.cjs "{us-dir}/{workflow-id}.state.md" --pre-advance 1` (see [`gates.md`](gates.md) § Golden-path state commands). A non-zero exit is **HS-5**; under `autoMode` that is a hard stop with no product-file edits, no step dispatch, and no ship.
 5b. **Feature branch gate (new workflow only)** — runs after Identity when this is a **new** start (not resume). Resume paths skip 5b entirely (see [Resume / reset](#resume--reset) § branch resume). Do not stage or commit at bootstrap (`git add -A` forbidden).
 
    **Resolve `{baseBranch}`** (before the gate): read `config.json` → `project.baseBranch` when set; else `Shell` `node {skillsRoot}/ws-ship-pr/scripts/detect-base-branch.cjs`. Gate copy uses `{baseBranch}` — never treat `master` as the sole hardcoded base example.
@@ -159,7 +160,7 @@ Standalone `/spec-write` writes `{specsDir}/{slug}.spec.md` only (`plans.specsDi
    - **Proceed on the new branch with `preExistingDirty` recorded** — only when every dirty path is this session's own edit; foreign dirty paths still stay untouched. Whole-tree `git stash` / `stash pop` is forbidden here (as is `git reset --hard`).
    Dismiss → Cancel (HS-1).
 
-   **State write (mandatory before step 6):** persist in `{us-dir}/{workflow-id}.state.md` frontmatter:
+   **State write (mandatory before step 6):** the state file already exists from the Step 5 `init` bootstrap; persist these fields through the sanctioned writer (`update_state.cjs`), never by hand, in `{us-dir}/{workflow-id}.state.md` frontmatter:
    - `branch` — final branch name (created, checked-out existing, or current HEAD name for stay)
    - `branchStrategy` — `from-current` | `from-base` | `stay` | `checkout-existing`
    - `baseBranch` — resolved `{baseBranch}`

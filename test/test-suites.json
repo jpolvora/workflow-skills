@@ -165,6 +165,9 @@
       "test/test-workflow-state-contract.js"
     ],
     [
+      "test/test-state-bootstrap.js"
+    ],
+    [
       "test/test-git-ownership-contract.js"
     ],
     [
