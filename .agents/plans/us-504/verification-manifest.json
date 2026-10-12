@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-10-12T20:43:03.490Z",
+  "filesTouched": {
+    "created": [],
+    "modified": [],
+    "deleted": []
+  },
+  "filesHash": "d310e6c227e02782af6b1bac05d58f80baa72ed929d657d77079263bb3447db1",
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "sabotage": "not-required",
+  "reuse": "Steps 5/6/7 re-run alias/stack/sabotage commands only if files_touched changed; AC scoring, review, and tests still run. Compare current workflowManifest sorted hash to filesHash; match means reuse aliasResults/sabotage, mismatch means re-run."
+}
