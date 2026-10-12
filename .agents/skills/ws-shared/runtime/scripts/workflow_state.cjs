@@ -1688,7 +1688,10 @@ function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, opti
     // AC9: absent state names the bootstrap command as the remediation so a
     // create-on-demand escape hatch can never mask a skipped bootstrap.
     if (/^state file not found/.test(String(error && error.message))) {
-      throw new Error(`${error.message}; bootstrap the run state first: node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs init ${stateFile} --slug <slug> --workflow-id <id>`);
+      const wrapper = isNonEmptyModel(options.scriptFile)
+        ? toRepoRelative(context.repoRoot, options.scriptFile, { allowOutside: true })
+        : '{skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs';
+      throw new Error(`${error.message}; bootstrap the run state first: node ${wrapper} init ${stateFile} --slug <slug> --workflow-id <id>`);
     }
     throw error;
   }
