@@ -1589,13 +1589,109 @@ function resolveStepAgentType(step, options, context, state) {
   return `generic:${subagentTool}`;
 }
 
+// us-506: deterministic state bootstrap. The packaged runtime historically
+// exposed only operations that mutate an existing state file, so the very
+// first state write had no supported command and an unattended autoMode run
+// could skip it silently. `init` creates the initial .state.json plus the
+// rendered .state.md from the run arguments and the registered spec, then
+// refreshes the plans index row so the recorded state hash stays coherent.
+// Create-only and fail-closed: an existing state or an unresolvable required
+// input aborts without leaving a partial state file (AC6, AC7).
+function performInit({ pipeline, maxStep, labels }, stateFile, options) {
+  const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: options.scriptFile });
+  if (!stateFile) throw new Error('state path is required');
+  const absoluteInput = path.resolve(context.repoRoot, stateFile);
+  const mdPath = markdownStatePath(absoluteInput);
+  const jsonPath = jsonStatePath(mdPath);
+  const usDir = path.dirname(mdPath);
+  // AC6: create-only guard. Fail closed without touching the existing files.
+  if (fs.existsSync(jsonPath) || fs.existsSync(mdPath)) {
+    const existing = fs.existsSync(mdPath) ? mdPath : jsonPath;
+    throw new Error(`state already exists: ${toRepoRelative(context.repoRoot, existing, { allowOutside: true })}; init is create-only (a resumed run never re-bootstraps)`);
+  }
+  // AC2/AC3: identity is derived from the run arguments and the registered
+  // spec. No agent-authored state content is read or required.
+  const workflowId = isNonEmptyModel(options.workflowId)
+    ? String(options.workflowId).trim()
+    : path.basename(mdPath, '.state.md');
+  const slug = isNonEmptyModel(options.slug)
+    ? String(options.slug).trim()
+    : (isNonEmptyModel(options.us) ? String(options.us).trim() : path.basename(usDir));
+  if (!isNonEmptyModel(workflowId)) throw new Error('init requires a resolvable workflow id: pass --workflow-id or a state file name');
+  if (!isNonEmptyModel(slug)) throw new Error('init requires a resolvable slug: pass --slug or a run directory named for the slug');
+  const specPath = path.join(usDir, `step-00-${slug}.spec.md`);
+  if (!fs.existsSync(specPath)) {
+    throw new Error(`init requires the registered spec (--slug ${slug}): ${toRepoRelative(context.repoRoot, specPath, { allowOutside: true })} not found`);
+  }
+  const dryRun = options.dryRun === true || String(options.dryRun) === 'true' || context.config?.defaults?.dryRun === true;
+  const statePath = toRepoRelative(context.repoRoot, mdPath);
+  if (dryRun) {
+    return { ok: true, operation: 'init', dryRun: true, workflowId, slug, revision: 0, state: statePath, runPath: toRepoRelative(context.repoRoot, jsonPath) };
+  }
+  const state = {
+    stateVersion: STATE_VERSION,
+    revision: 0,
+    workflowId,
+    slug,
+    workflowType: pipeline,
+    status: 'active',
+    currentStep: 0,
+    completedSteps: [],
+    skippedSteps: [],
+    stepStatus: {},
+    statePath,
+  };
+  // Order-tolerant relative to ac_ledger.cjs init: the ledger is folded when it
+  // already exists, but bootstrap never depends on it (the next update
+  // operation re-derives AC counts from the ledger).
+  const ledgerPath = path.join(usDir, 'ac-ledger.json');
+  if (fs.existsSync(ledgerPath)) {
+    try {
+      state.acLedger = JSON.parse(fs.readFileSync(ledgerPath, 'utf8'));
+    } catch {
+      // A not-yet-parseable ledger is simply not folded; no partial writes.
+    }
+  }
+  const body = `# Workflow State — ${slug}\n`;
+  const written = syncStateDualWrite(mdPath, state, { body });
+  const index = refreshPlansIndexForState(context, state, {
+    pipeline,
+    maxStep,
+    stateFile: mdPath,
+    timestamp: String(options.timestamp || nowIso()),
+  });
+  // AC4/AC5: the bootstrapped state must satisfy the canonical validator
+  // immediately, with an index row whose state hash matches the written state.
+  validateSnapshot({ stateFile: mdPath, indexFile: index.file, context, maxStep, pipeline });
+  return {
+    ok: true,
+    operation: 'init',
+    workflowId,
+    slug,
+    revision: state.revision,
+    stateSha256: written.stateSha256,
+    state: statePath,
+    runPath: toRepoRelative(context.repoRoot, jsonPath),
+  };
+}
+
 function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, options) {
   const operations = ['dispatch', 'finish', 'bypass', 'checkpoint', 'pause-turn'];
   if (!operations.includes(operation)) throw new Error(`operation must be one of: ${operations.join(', ')}`);
   if (options.elapsed !== undefined) throw new Error('--elapsed is not accepted; elapsedSec is derived from timestamps');
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: options.scriptFile });
   const absoluteInput = path.resolve(context.repoRoot, stateFile);
-  const loaded = loadPersistedState(absoluteInput);
+  let loaded;
+  try {
+    loaded = loadPersistedState(absoluteInput);
+  } catch (error) {
+    // AC9: absent state names the bootstrap command as the remediation so a
+    // create-on-demand escape hatch can never mask a skipped bootstrap.
+    if (/^state file not found/.test(String(error && error.message))) {
+      throw new Error(`${error.message}; bootstrap the run state first: node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs init ${stateFile} --slug <slug> --workflow-id <id>`);
+    }
+    throw error;
+  }
   const absoluteState = loaded.mdPath;
   const priorJsonText = loaded.jsonText;
   const state = loaded.state;
@@ -2452,6 +2548,13 @@ function validateSnapshot({ stateFile, indexFile, context, maxStep, preAdvance, 
 
 function updateHelpText(operation) {
   switch (operation) {
+    case 'init':
+      return 'Usage: update_state.cjs init <state> --slug <slug> [--workflow-id <id>] [--dry-run]\n'
+        + 'Bootstrap the run state: create the initial .state.json plus the rendered .state.md from the run\n'
+        + 'arguments and the registered step-00-{slug}.spec.md, then refresh the plans index row. Create-only:\n'
+        + 'an existing state file fails closed without modification. This is the sanctioned writer for the very\n'
+        + 'first state write; hand-editing machine state is unsupported.\n'
+        + 'Example: node update_state.cjs init .agents/plans/slug/wf.state.md --slug slug --workflow-id wf\n';
     case 'dispatch':
       return 'Usage: update_state.cjs dispatch <state> --step N [--model <id>] [--agent-type <type>] [--subagent-id <id>] [--step-output <json>] [--transcript-paths <csv>] [--prompt-path <path>] [--prompt-sha256 <sha>]\n'
         + 'Open step execution (records dispatch telemetry, advances currentStep). <state> is the .state.md path or workflow id.\n'
@@ -2486,7 +2589,8 @@ function updateHelpText(operation) {
         + 'Record a turn-boundary pause marker so the next turn resumes deterministically.\n'
         + 'Example: node update_state.cjs pause-turn .agents/plans/slug/wf.state.md --step 4 --reason "turn budget" --next-action "resume implement"\n';
     default:
-      return 'Usage: update_state.cjs dispatch|finish|finish-batch|bypass|checkpoint|pause-turn <state> --step N [options]\n'
+      return 'Usage: update_state.cjs init|dispatch|finish|finish-batch|bypass|checkpoint|pause-turn <state> [options]\n'
+        + '  init <state> --slug <slug> [--workflow-id <id>] (create-only state bootstrap for a new run)\n'
         + '  finish-batch <state> --steps "2:skipped:interview-not-required,3:skipped:dag-disabled"\n'
         + '  finish <state> --step 4 --noop "<reason>" (explicit no-op when a completed mutating step touched nothing)\n'
         + '  checkpoint <state> --step N --progress \'<json>\' | --progress-file <path>\n'
@@ -2503,11 +2607,15 @@ function runUpdateCli(config) {
       return;
     }
     const [operation, stateFile] = positional;
-    if (!['dispatch', 'finish', 'finish-batch', 'bypass', 'checkpoint', 'pause-turn'].includes(operation)) {
-      throw new Error('operation must be dispatch, finish, finish-batch, bypass, checkpoint, or pause-turn');
+    if (!['init', 'dispatch', 'finish', 'finish-batch', 'bypass', 'checkpoint', 'pause-turn'].includes(operation)) {
+      throw new Error('operation must be init, dispatch, finish, finish-batch, bypass, checkpoint, or pause-turn');
     }
     if (!stateFile) throw new Error('state path or workflow id is required');
     options.scriptFile = config.scriptFile;
+    if (operation === 'init') {
+      process.stdout.write(`${JSON.stringify(performInit(config, stateFile, options), null, 2)}\n`);
+      return;
+    }
     if (operation === 'finish-batch') {
       const spec = String(options.steps || '');
       if (!spec.trim()) throw new Error('finish-batch requires --steps "N:status:reason,..."');
@@ -2633,7 +2741,12 @@ function runValidateCli(config) {
     }
     if (!positional[0]) throw new Error('state path or workflow id is required');
     const stateFile = resolveStateFile(positional[0], context);
-    if (!fs.existsSync(stateFile)) throw new Error(`state file not found: ${positional[0]}`);
+    if (!fs.existsSync(stateFile)) {
+      // AC8: name the resolved missing state path so a workflow-id input still
+      // reports where the state was expected.
+      const resolved = toRepoRelative(context.repoRoot, stateFile, { allowOutside: true });
+      throw new Error(`state file not found: ${resolved}`);
+    }
     const result = validateSnapshot({
       stateFile,
       indexFile: plansIndexPath(context),
@@ -2651,7 +2764,12 @@ function runValidateCli(config) {
     } catch {
       preAdvanceStep = null;
     }
-    if (preAdvanceStep === 4 && config.pipeline === 'standard' && !message.includes('HS-5')) {
+    // us-506 AC8: a standard-pipeline pre-advance check whose state file is
+    // absent is an HS-5 hard stop; label it so the orchestrator treats the
+    // missing bootstrap as fail-closed. Pre-advance 4 keeps its HS-5 label.
+    const absentState = /state file not found/.test(String(message));
+    if (config.pipeline === 'standard' && preAdvanceStep !== null && !message.includes('HS-5')
+      && (preAdvanceStep === 4 || absentState)) {
       message = `${message}; HS-5`;
     }
     process.stderr.write(`ERROR: ${message}\n`);
@@ -2700,6 +2818,7 @@ module.exports = {
   resolveStepAgentType,
   assertKnownPreset,
   performUpdate,
+  performInit,
   resolvePhaseModel,
   resolveFixPrDispatchMode,
   validateSnapshot,
