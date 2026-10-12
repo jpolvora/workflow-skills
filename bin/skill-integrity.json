@@ -6,7 +6,7 @@
     "paths": "sorted relative paths ascending (posix `/`)",
     "skills": "sorted skill ids ascending"
   },
-  "fullPackageDigest": "f25a0845b71269456f50a014bd2d84ded1bbe2b216cd979bf049374705cbbf8a",
+  "fullPackageDigest": "53659cc52fbd5bc2f186bc1ac610a0146b143a903739ddc2b7c869a7fe4f3041",
   "hub": {
     "files": {
       ".gitignore": "bfec94311c3a4905463656742b91b670826acf9d8fe1c00e343f93383ee7f9d0",
@@ -18,7 +18,7 @@
       "runtime/config-resolution.md": "f2c9f85072cd28912b1bbc252d282acdc7a61e3b245b818a8da128ed1d0c1e91",
       "runtime/config.schema.json": "e2010f25ecab157743105cc6564b60d9aa29a2063f20713b9799fc286ef5aca9",
       "runtime/evals.schema.json": "1dcb5ca415d00378a313de56ff38235d0f3f89d7a1a375cefc5a3784de8a3626",
-      "runtime/gates.md": "b511dcadf3f6a2ccba870b75cc2b82797c863b0f7acb3636f3e13f803157044c",
+      "runtime/gates.md": "d097a1d6b9a11dd421f04cf39c369390f8bbe3323f32d32dd7bee0e52c1e71c8",
       "runtime/git-ownership.md": "fb75d0a1e49cca75f778f4ccf5d2e5f4dec67d65cca08f319931026db0cce5a7",
       "runtime/host-capability-tokens.md": "a2dcad9b4adff9eaab004fc0d762146dd76874c78b4df192b0363826ff0aac24",
       "runtime/host-dispatch.md": "bf756780f5bc4784d996c13c8e0083312eab078a19f22bcbf8de2dfc92aafd15",
@@ -51,7 +51,7 @@
       "runtime/scripts/scan_stack_invariants.cjs": "f186e197040142066fa7e78b563b11a171c8dc5a62c8026a135457fa82faf5e7",
       "runtime/scripts/step_baton.cjs": "d18f4bd9cf4720c6bf5d3322c8a143a64c94593cce480f4577341f294645d071",
       "runtime/scripts/validate_json_schema.cjs": "c6901a6ad2ed4fde4e5a6fcd85ebaa8b4c31f5707924f2928d25392d502dbbd9",
-      "runtime/scripts/workflow_state.cjs": "e1efcd7acbf18977ddc6cd6c9a8f2e830ac48b6ba9de958e508108b1bbb6aee0",
+      "runtime/scripts/workflow_state.cjs": "2b173b8a5200533841374173ac3fb81ea5ec223d7b7a9dae026f9148344c1c2c",
       "runtime/setup.md": "89128f9322cfd106b1b0aa871b11849d81cab2177f9cc5ca019206262b3bf635",
       "runtime/skill-dependencies.json": "4bff3ef2953b6969aaee7cc3e10c4e9550037977340e1dbde92b32b7525b1146",
       "runtime/stacks/abp-angular.md": "fc728fb3d39373b91f7bb4e0a719a24abc995a643fd55c856603a2a1f7bfd742",
@@ -68,7 +68,7 @@
       "templates/config.json.example": "1405b992f64e072f38641b759a242eb35a0a49e19fefd1b8af27f5b33ea462a8",
       "version.json": "ffea9d4ec2910f6a994344f28b30627a3dc7e57f088176db6e4d209afaa08496"
     },
-    "skillDigest": "4121e271c04c2eb0d5e597383e2cdc7690b83aea3d28f02ea07d6fedd19a1751"
+    "skillDigest": "1d70db5ba0d7f24f3fd995fbdef5e19252f2e006938d8d83b9339ad2825cfab7"
   },
   "package": {
     "files": {

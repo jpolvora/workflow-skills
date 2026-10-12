@@ -133,6 +133,22 @@ ${slug}.
   assert.match(result.stderr, /HS-5/, 'AC8 HS-5 hard stop');
 }
 
+// AC7 (hardening, review-fix): crafted identity values must fail closed.
+{
+  const root = makeRoot('ws-state-bootstrap-identity-');
+  const slug = 'demo';
+  writeSpec(root, slug);
+  for (const [label, args] of [
+    ['slug', ['--slug', '../escape', '--workflow-id', 'wf']],
+    ['workflow-id', ['--slug', slug, '--workflow-id', 'a/b']],
+  ]) {
+    const result = run(update, ['init', `.agents/plans/${slug}/wf.state.md`, ...args, '--repo-root', root]);
+    assert.notStrictEqual(result.status, 0, `unsafe ${label} rejected`);
+    assert.match(result.stderr, new RegExp(`init ${label === 'slug' ? 'slug' : 'workflow id'}`), `error names the ${label} input`);
+  }
+  assert.ok(!fs.existsSync(path.join(root, `.agents/plans/${slug}/wf.state.json`)), 'no state written for unsafe identity');
+}
+
 // AC13: the lite wrapper accepts the bootstrap with workflowType lite.
 {
   const root = makeRoot('ws-state-bootstrap-lite-');

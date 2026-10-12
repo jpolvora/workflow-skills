@@ -1619,6 +1619,15 @@ function performInit({ pipeline, maxStep, labels }, stateFile, options) {
     : (isNonEmptyModel(options.us) ? String(options.us).trim() : path.basename(usDir));
   if (!isNonEmptyModel(workflowId)) throw new Error('init requires a resolvable workflow id: pass --workflow-id or a state file name');
   if (!isNonEmptyModel(slug)) throw new Error('init requires a resolvable slug: pass --slug or a run directory named for the slug');
+  // AC7: reject identity values that are not plain names so a crafted id/slug
+  // cannot redirect the derived spec path or persist a malformed identity.
+  const assertSafeIdentity = (value, label) => {
+    if (!/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(value) || value.includes('..')) {
+      throw new Error(`init ${label} must be a plain name (letters, digits, dot, underscore, dash; no path separators or ".."): ${value}`);
+    }
+  };
+  assertSafeIdentity(workflowId, 'workflow id');
+  assertSafeIdentity(slug, 'slug');
   const specPath = path.join(usDir, `step-00-${slug}.spec.md`);
   if (!fs.existsSync(specPath)) {
     throw new Error(`init requires the registered spec (--slug ${slug}): ${toRepoRelative(context.repoRoot, specPath, { allowOutside: true })} not found`);
