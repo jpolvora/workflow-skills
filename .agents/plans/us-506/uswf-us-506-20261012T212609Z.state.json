@@ -1,0 +1,1734 @@
+{
+  "acImplemented": 18,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "88b659558dc5b621d2e5ab7caba9635c54416696",
+            "step": 5
+          },
+          {
+            "sha": "db2b60c9043e1afd58ea75b430f715519ecbe475",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L2693"
+        ],
+        "files": [
+          {
+            "lineEnd": 2693,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "274165c2b8f6428731f37b096a6442825eeeb3ec2c3f6ddbd6255fc92d910c98"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "g2-commits-506",
+          "impl-AC1"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:43.255Z"
+          }
+        ],
+        "text": "The packaged state runtime shall expose a bootstrap operation that creates the initial `{workflow-id}.state.json` and its rendered `{workflow-id}.state.md` for a new run.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "88b659558dc5b621d2e5ab7caba9635c54416696",
+            "step": 5
+          },
+          {
+            "sha": "db2b60c9043e1afd58ea75b430f715519ecbe475",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L2693"
+        ],
+        "files": [
+          {
+            "lineEnd": 2693,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "274165c2b8f6428731f37b096a6442825eeeb3ec2c3f6ddbd6255fc92d910c98"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "g2-commits-506",
+          "impl-AC2"
+        ],
+        "planSections": [
+          "section-001"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:43.307Z"
+          }
+        ],
+        "text": "When the bootstrap runs, the bootstrapper shall derive the state identity from the run arguments and the registered spec, and shall require no agent-authored state content.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "88b659558dc5b621d2e5ab7caba9635c54416696",
+            "step": 5
+          },
+          {
+            "sha": "db2b60c9043e1afd58ea75b430f715519ecbe475",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L2693"
+        ],
+        "files": [
+          {
+            "lineEnd": 2693,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "274165c2b8f6428731f37b096a6442825eeeb3ec2c3f6ddbd6255fc92d910c98"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "g2-commits-506",
+          "impl-AC3"
+        ],
+        "planSections": [
+          "section-001"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:43.362Z"
+          }
+        ],
+        "text": "When the bootstrap completes, the written state shall carry `stateVersion: 3`, an integer `revision`, `workflowId`, `slug`, `workflowType`, `status: active`, `currentStep: 0`, and empty `completedSteps` and `skippedSteps`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "88b659558dc5b621d2e5ab7caba9635c54416696",
+            "step": 5
+          },
+          {
+            "sha": "db2b60c9043e1afd58ea75b430f715519ecbe475",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L2693"
+        ],
+        "files": [
+          {
+            "lineEnd": 2693,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "274165c2b8f6428731f37b096a6442825eeeb3ec2c3f6ddbd6255fc92d910c98"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "g2-commits-506",
+          "impl-AC4"
+        ],
+        "planSections": [
+          "section-001"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:43.418Z"
+          }
+        ],
+        "text": "When the bootstrap completes, the state validator shall exit zero for the bootstrapped state (`validate_state.cjs`).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "88b659558dc5b621d2e5ab7caba9635c54416696",
+            "step": 5
+          },
+          {
+            "sha": "db2b60c9043e1afd58ea75b430f715519ecbe475",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L2693"
+        ],
+        "files": [
+          {
+            "lineEnd": 2693,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "274165c2b8f6428731f37b096a6442825eeeb3ec2c3f6ddbd6255fc92d910c98"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "g2-commits-506",
+          "impl-AC5"
+        ],
+        "planSections": [
+          "section-001"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:43.473Z"
+          }
+        ],
+        "text": "When the bootstrap writes the state files, the bootstrapper shall refresh the plans index row so its recorded state hash matches the written state and lists that `workflowId` at `currentStep: 0`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "88b659558dc5b621d2e5ab7caba9635c54416696",
+            "step": 5
+          },
+          {
+            "sha": "db2b60c9043e1afd58ea75b430f715519ecbe475",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L2693"
+        ],
+        "files": [
+          {
+            "lineEnd": 2693,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "274165c2b8f6428731f37b096a6442825eeeb3ec2c3f6ddbd6255fc92d910c98"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "g2-commits-506",
+          "impl-AC6"
+        ],
+        "planSections": [
+          "section-001"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:43.525Z"
+          }
+        ],
+        "text": "If the state file already exists, then the bootstrapper shall exit non-zero without modifying the existing state or index files.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "88b659558dc5b621d2e5ab7caba9635c54416696",
+            "step": 5
+          },
+          {
+            "sha": "db2b60c9043e1afd58ea75b430f715519ecbe475",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L2693"
+        ],
+        "files": [
+          {
+            "lineEnd": 2693,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "274165c2b8f6428731f37b096a6442825eeeb3ec2c3f6ddbd6255fc92d910c98"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [
+          "g2-commits-506",
+          "impl-AC7"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:43.580Z"
+          }
+        ],
+        "text": "If a required input is missing or unresolvable, then the bootstrapper shall exit non-zero naming that input and shall leave no partial state file behind.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "88b659558dc5b621d2e5ab7caba9635c54416696",
+            "step": 5
+          },
+          {
+            "sha": "db2b60c9043e1afd58ea75b430f715519ecbe475",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L2693"
+        ],
+        "files": [
+          {
+            "lineEnd": 2693,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "274165c2b8f6428731f37b096a6442825eeeb3ec2c3f6ddbd6255fc92d910c98"
+          }
+        ],
+        "findings": [],
+        "id": "AC8",
+        "linkEventIds": [
+          "g2-commits-506",
+          "impl-AC8"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002",
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:43.632Z"
+          }
+        ],
+        "text": "When a standard-pipeline pre-advance check runs while the state file is absent, the state validator shall exit non-zero with a message naming the missing state path and the HS-5 hard stop (`validate_state.cjs`).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "88b659558dc5b621d2e5ab7caba9635c54416696",
+            "step": 5
+          },
+          {
+            "sha": "db2b60c9043e1afd58ea75b430f715519ecbe475",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L2693"
+        ],
+        "files": [
+          {
+            "lineEnd": 2693,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "274165c2b8f6428731f37b096a6442825eeeb3ec2c3f6ddbd6255fc92d910c98"
+          }
+        ],
+        "findings": [],
+        "id": "AC9",
+        "linkEventIds": [
+          "g2-commits-506",
+          "impl-AC9"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002",
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:43.689Z"
+          }
+        ],
+        "text": "If the state file is absent when a state-mutating operation runs, then the state updater shall exit non-zero and name the bootstrap command as the remediation (`update_state.cjs`).",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "88b659558dc5b621d2e5ab7caba9635c54416696",
+            "step": 5
+          },
+          {
+            "sha": "db2b60c9043e1afd58ea75b430f715519ecbe475",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L2693"
+        ],
+        "files": [
+          {
+            "lineEnd": 2693,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "274165c2b8f6428731f37b096a6442825eeeb3ec2c3f6ddbd6255fc92d910c98"
+          }
+        ],
+        "findings": [],
+        "id": "AC10",
+        "linkEventIds": [
+          "g2-commits-506",
+          "impl-AC10"
+        ],
+        "planSections": [
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:43.754Z"
+          }
+        ],
+        "text": "While `autoMode` is active, the orchestrator shall treat a non-zero pre-advance exit as a hard stop, with no product-file edits, no step dispatch, and no ship phase.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "88b659558dc5b621d2e5ab7caba9635c54416696",
+            "step": 5
+          },
+          {
+            "sha": "db2b60c9043e1afd58ea75b430f715519ecbe475",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L2693"
+        ],
+        "files": [
+          {
+            "lineEnd": 2693,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "274165c2b8f6428731f37b096a6442825eeeb3ec2c3f6ddbd6255fc92d910c98"
+          }
+        ],
+        "findings": [],
+        "id": "AC11",
+        "linkEventIds": [
+          "g2-commits-506",
+          "impl-AC11"
+        ],
+        "planSections": [
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:43.812Z"
+          }
+        ],
+        "text": "Where `skipQualityGates` is active, the orchestrator shall omit the pre-advance check only with the recorded `gate-bypass | pre-advance` log line, and shall never omit the state bootstrap.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "88b659558dc5b621d2e5ab7caba9635c54416696",
+            "step": 5
+          },
+          {
+            "sha": "db2b60c9043e1afd58ea75b430f715519ecbe475",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L2693"
+        ],
+        "files": [
+          {
+            "lineEnd": 2693,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "274165c2b8f6428731f37b096a6442825eeeb3ec2c3f6ddbd6255fc92d910c98"
+          }
+        ],
+        "findings": [],
+        "id": "AC12",
+        "linkEventIds": [
+          "g2-commits-506",
+          "impl-AC12"
+        ],
+        "planSections": [
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:43.869Z"
+          }
+        ],
+        "text": "The Step 0 to Step 1 transition shall be documented in the golden-path state command list with the bootstrap command preceding the pre-advance 1 check.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "88b659558dc5b621d2e5ab7caba9635c54416696",
+            "step": 5
+          },
+          {
+            "sha": "db2b60c9043e1afd58ea75b430f715519ecbe475",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L2693"
+        ],
+        "files": [
+          {
+            "lineEnd": 2693,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "274165c2b8f6428731f37b096a6442825eeeb3ec2c3f6ddbd6255fc92d910c98"
+          }
+        ],
+        "findings": [],
+        "id": "AC13",
+        "linkEventIds": [
+          "g2-commits-506",
+          "impl-AC13"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:43.923Z"
+          }
+        ],
+        "text": "The bootstrap operation shall be available through both the standard and lite orchestrator wrappers, resolving the pipeline value from the calling orchestrator.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "88b659558dc5b621d2e5ab7caba9635c54416696",
+            "step": 5
+          },
+          {
+            "sha": "db2b60c9043e1afd58ea75b430f715519ecbe475",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L2693"
+        ],
+        "files": [
+          {
+            "lineEnd": 2693,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "274165c2b8f6428731f37b096a6442825eeeb3ec2c3f6ddbd6255fc92d910c98"
+          }
+        ],
+        "findings": [],
+        "id": "AC14",
+        "linkEventIds": [
+          "g2-commits-506",
+          "impl-AC14"
+        ],
+        "planSections": [
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:43.977Z"
+          }
+        ],
+        "text": "The bootstrapper shall be a Node 22 CommonJS `.cjs` helper inside the packaged skill runtime, with no Python interpreter and no new third-party dependency.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "88b659558dc5b621d2e5ab7caba9635c54416696",
+            "step": 5
+          },
+          {
+            "sha": "db2b60c9043e1afd58ea75b430f715519ecbe475",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L2693"
+        ],
+        "files": [
+          {
+            "lineEnd": 2693,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "274165c2b8f6428731f37b096a6442825eeeb3ec2c3f6ddbd6255fc92d910c98"
+          }
+        ],
+        "findings": [],
+        "id": "AC15",
+        "linkEventIds": [
+          "g2-commits-506",
+          "impl-AC15"
+        ],
+        "planSections": [
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:44.036Z"
+          }
+        ],
+        "text": "Where the bootstrapper writes a file under the run runtime directory, the file name shall match the tolerated `RUNTIME_NAMES` allowlist.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "88b659558dc5b621d2e5ab7caba9635c54416696",
+            "step": 5
+          },
+          {
+            "sha": "db2b60c9043e1afd58ea75b430f715519ecbe475",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L2693"
+        ],
+        "files": [
+          {
+            "lineEnd": 2693,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "274165c2b8f6428731f37b096a6442825eeeb3ec2c3f6ddbd6255fc92d910c98"
+          }
+        ],
+        "findings": [],
+        "id": "AC16",
+        "linkEventIds": [
+          "g2-commits-506",
+          "impl-AC16"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:44.094Z"
+          }
+        ],
+        "text": "When a fresh run bootstraps state and then finishes Step 0, the run's `telemetry.jsonl` shall carry a Step 0 record with a numeric `elapsedSec`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "88b659558dc5b621d2e5ab7caba9635c54416696",
+            "step": 5
+          },
+          {
+            "sha": "db2b60c9043e1afd58ea75b430f715519ecbe475",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L2693"
+        ],
+        "files": [
+          {
+            "lineEnd": 2693,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "274165c2b8f6428731f37b096a6442825eeeb3ec2c3f6ddbd6255fc92d910c98"
+          }
+        ],
+        "findings": [],
+        "id": "AC17",
+        "linkEventIds": [
+          "g2-commits-506",
+          "impl-AC17"
+        ],
+        "planSections": [
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:44.151Z"
+          }
+        ],
+        "text": "The repository test suite registered in `test/test-suites.json` shall assert the bootstrap creation path, the index-row refresh, and both fail-closed cases.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "88b659558dc5b621d2e5ab7caba9635c54416696",
+            "step": 5
+          },
+          {
+            "sha": "db2b60c9043e1afd58ea75b430f715519ecbe475",
+            "step": 6
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1-L2693"
+        ],
+        "files": [
+          {
+            "lineEnd": 2693,
+            "lineStart": 1,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "274165c2b8f6428731f37b096a6442825eeeb3ec2c3f6ddbd6255fc92d910c98"
+          }
+        ],
+        "findings": [],
+        "id": "AC18",
+        "linkEventIds": [
+          "g2-commits-506",
+          "impl-AC18"
+        ],
+        "planSections": [
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:44.205Z"
+          }
+        ],
+        "text": "The canonical setup and golden-path documents shall state the bootstrap contract once and shall no longer instruct an agent to hand-write the initial state files.",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      }
+    ],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "neg-NS1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:44.266Z"
+          }
+        ],
+        "text": "Red test: run `update_state.cjs init` on a fixture before the change and assert exit 0 — today it fails with `operation must be dispatch, finish, finish-batch, bypass, checkpoint, or pause-turn`, proving no create path exists."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "neg-NS2"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:44.322Z"
+          }
+        ],
+        "text": "Red test: run `validate_state.cjs <state> --pre-advance 1` in a fixture that has `step-00-{slug}.spec.md` and `ac-ledger.json` but no state, and assert the stderr names both the missing state path and `HS-5` — today the message carries the path but not the HS-5 label."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "neg-NS3"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:44.376Z"
+          }
+        ],
+        "text": "Red test: bootstrap once, mutate the state by hand (or call the dual write directly without the index refresh), and assert the next `validate_state.cjs` fails with `plans index state hash mismatch` — pinning the index-refresh obligation the bootstrap must honor."
+      },
+      {
+        "id": "NS4",
+        "linkEventIds": [
+          "neg-NS4"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:44.431Z"
+          }
+        ],
+        "text": "Red test: run the bootstrap twice in the same run directory and assert the second run exits non-zero while the `.state.json` byte content and `revision` are unchanged from after the first run."
+      },
+      {
+        "id": "NS5",
+        "linkEventIds": [
+          "neg-NS5"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:44.485Z"
+          }
+        ],
+        "text": "Red test: run the bootstrap with a missing or unresolvable spec/slug/workflow id and assert a non-zero exit naming that input plus the absence of any newly created `.state.json`, `.state.md`, or index row (no partial write)."
+      },
+      {
+        "id": "NS6",
+        "linkEventIds": [
+          "neg-NS6"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:44.540Z"
+          }
+        ],
+        "text": "Red test: after the bootstrap, run `update_state.cjs finish <state> --step 0 --status completed` and assert `{us-dir}/telemetry.jsonl` exists with a numeric `elapsedSec` for Step 0 — before the change the finish itself aborts with `state file not found`."
+      },
+      {
+        "id": "NS7",
+        "linkEventIds": [
+          "neg-NS7"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:44.597Z"
+          }
+        ],
+        "text": "Red test: run a non-init state operation against a directory with no state file and assert the stderr names the bootstrap command as the remediation instead of only `state file not found` — pinning AC9 against a create-on-demand escape hatch."
+      },
+      {
+        "id": "NS8",
+        "linkEventIds": [
+          "neg-NS8"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:44.655Z"
+          }
+        ],
+        "text": "Red test: delete the state file, run a documented pre-advance check, and assert a contract test fails when the canonical `autoMode` prose no longer states the HS-5 hard stop adjacent to the pre-advance command list (no product-file edits, no dispatch, no ship)."
+      },
+      {
+        "id": "NS9",
+        "linkEventIds": [
+          "neg-NS9"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:44.708Z"
+          }
+        ],
+        "text": "Red test: attempt `skipQualityGates` behavior without the `gate-bypass | pre-advance` log line and assert the contract test fails; then assert the bootstrap precondition is still present with the bypass active."
+      },
+      {
+        "id": "NS10",
+        "linkEventIds": [
+          "neg-NS10"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:44.765Z"
+          }
+        ],
+        "text": "Red test: assert no Python dependency is introduced — a scan for `*.py`/`*.pyc`/`__pycache__` under `.agents/skills/**` and `bin/` stays zero-hit, and `package.json` gains no new dependency after the change."
+      },
+      {
+        "id": "NS11",
+        "linkEventIds": [
+          "neg-NS11"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:44.826Z"
+          }
+        ],
+        "text": "Red test: assert no host-product coupling — the bootstrap script's changed bytes name no host-specific tool id, product name, machine-absolute path, or consumer project name, and the fixture runs with `node` alone from a temp repo root."
+      },
+      {
+        "id": "NS12",
+        "linkEventIds": [
+          "neg-NS12"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:44.879Z"
+          }
+        ],
+        "text": "Red test: write a residue file under `{us-dir}/.runtime/` whose name is outside `RUNTIME_NAMES`, then assert the next `update_state.cjs dispatch` fails with `unknown .runtime residue` and applies nothing — pinning the naming rule any bootstrap residue must satisfy."
+      },
+      {
+        "id": "NS13",
+        "linkEventIds": [
+          "neg-NS13"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:44.939Z"
+          }
+        ],
+        "text": "Boundary case: with a state file present and a genuinely missing pre-advance artifact, `validate_state.cjs --pre-advance 4` still exits non-zero and names the artifact, proving the generalized missing-state labeling did not weaken the artifact gate."
+      },
+      {
+        "id": "NS14",
+        "linkEventIds": [
+          "neg-NS14"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:44.994Z"
+          }
+        ],
+        "text": "Regression assertion: the lite wrapper accepts the bootstrap operation with `workflowType: lite` and the standard wrapper with `workflowType: standard`, and both leave the other pipeline's fixtures untouched."
+      },
+      {
+        "id": "NS15",
+        "linkEventIds": [
+          "neg-NS15"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-12T21:32:45.050Z"
+          }
+        ],
+        "text": "Concurrency failure case: two bootstraps launched against the same run directory produce exactly one state pair; the loser exits non-zero and neither run leaves a `.tmp-*` file behind."
+      }
+    ],
+    "planIndexPath": ".agents/plans/us-506/.runtime/plan.index.json",
+    "revision": 40,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "ship",
+      "computedAt": "2026-10-12T21:44:51.106Z",
+      "deficiencies": [],
+      "earnedUnits": 180,
+      "errors": [],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "ledgerHash": "ba343def8d5d15d3177d57e31b1102be83d4df4acdc416eed65a35a014d7887c",
+      "missingEvidence": false,
+      "score": 10,
+      "totalUnits": 180,
+      "writer": "ac_ledger.cjs score"
+    },
+    "slug": "us-506",
+    "specPath": ".agents/plans/us-506/step-00-us-506.spec.md",
+    "testingSkip": null,
+    "workflowId": "uswf-us-506-20261012T212609Z"
+  },
+  "acTotal": 18,
+  "agentTranscripts": {
+    "reason": "no-matching-session",
+    "recordedAt": "2026-10-12T21:26:23Z",
+    "status": "transcript-unavailable"
+  },
+  "commits": [
+    {
+      "sha": "88b659558dc5b621d2e5ab7caba9635c54416696",
+      "step": 5
+    },
+    {
+      "sha": "db2b60c9043e1afd58ea75b430f715519ecbe475",
+      "step": 6
+    }
+  ],
+  "completedSteps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "currentModel": "unknown",
+  "currentStep": 9,
+  "endedAt": "2026-10-12T21:45:20Z",
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-506/step-00-us-506.spec.md",
+        ".agents/plans/us-506/ac-ledger.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "us-506",
+      "status": "completed",
+      "step": 0,
+      "summary": "Finished step 0",
+      "workflowId": "uswf-us-506-20261012T212609Z",
+      "workflowType": "standard"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-506/step-01-us-506.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "us-506",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "uswf-us-506-20261012T212609Z",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-506/step-02-us-506.plan-interview.md",
+        ".agents/plans/us-506/step-02-us-506.plan.refined.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "us-506",
+      "status": "completed",
+      "step": 2,
+      "summary": "Finished step 2",
+      "workflowId": "uswf-us-506-20261012T212609Z",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-506/step-03-us-506.plan.exec.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "us-506",
+      "status": "completed",
+      "step": 3,
+      "summary": "Finished step 3",
+      "workflowId": "uswf-us-506-20261012T212609Z",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [
+        "test/test-state-bootstrap.js",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+        ".agents/skills/ws-shared/runtime/setup.md",
+        ".agents/skills/ws-shared/runtime/gates.md",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+        "test/test-suites.json",
+        "README.md",
+        "FEATURES.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "us-506",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "uswf-us-506-20261012T212609Z",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-506/step-05-us-506.plan.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "us-506",
+      "status": "completed",
+      "step": 5,
+      "summary": "Finished step 5",
+      "workflowId": "uswf-us-506-20261012T212609Z",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-506/step-06-us-506.review.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "us-506",
+      "status": "completed",
+      "step": 6,
+      "summary": "Finished step 6",
+      "workflowId": "uswf-us-506-20261012T212609Z",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-506/step-07-us-506.testing.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "us-506",
+      "status": "completed",
+      "step": 7,
+      "summary": "Finished step 7",
+      "workflowId": "uswf-us-506-20261012T212609Z",
+      "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-506/step-08-us-506.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-506",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "uswf-us-506-20261012T212609Z",
+      "workflowType": "standard"
+    }
+  },
+  "nextAction": "Run step 9",
+  "revision": 18,
+  "shipStatus": "pending",
+  "skippedSteps": [],
+  "slug": "us-506",
+  "statePath": ".agents/plans/us-506/uswf-us-506-20261012T212609Z.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-12T21:26:23Z",
+      "model": "unknown",
+      "step": 0
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-12T21:26:51Z",
+      "model": "unknown",
+      "step": 1
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-12T21:27:10Z",
+      "model": "unknown",
+      "step": 2
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-12T21:27:23Z",
+      "model": "unknown",
+      "step": 3
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-12T21:27:56Z",
+      "model": "unknown",
+      "step": 4,
+      "substep": "dag"
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-12T21:28:50Z",
+      "model": "unknown",
+      "step": 5
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-12T21:32:23Z",
+      "model": "unknown",
+      "step": 6
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-12T21:44:44Z",
+      "model": "unknown",
+      "step": 7
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-12T21:45:20Z",
+      "model": "unknown",
+      "step": 8
+    }
+  ],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "completed",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed"
+  },
+  "telemetry": {
+    "steps": [
+      {
+        "N": 0,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-12T21:26:23Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-506/step-00-us-506.spec.md",
+            ".agents/plans/us-506/ac-ledger.json"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-12T21:26:23Z",
+        "label": "Spec",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 1,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-12T21:26:51Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-506/step-01-us-506.plan.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-12T21:26:51Z",
+        "label": "Planning",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-12T21:27:10Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-506/step-02-us-506.plan-interview.md",
+            ".agents/plans/us-506/step-02-us-506.plan.refined.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-12T21:27:10Z",
+        "label": "Interview",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-12T21:27:23Z",
+        "elapsedSec": 25,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-506/step-03-us-506.plan.exec.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-12T21:27:48Z",
+        "label": "Plan to tasks",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-12T21:27:56Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            "test/test-state-bootstrap.js"
+          ],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            ".agents/skills/ws-shared/runtime/setup.md",
+            ".agents/skills/ws-shared/runtime/gates.md",
+            ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+            "test/test-suites.json",
+            "README.md",
+            "FEATURES.md"
+          ]
+        },
+        "finishedAt": "2026-10-12T21:27:56Z",
+        "label": "Implement",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-12T21:28:50Z",
+        "elapsedSec": 126,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-506/step-05-us-506.plan.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-12T21:30:56Z",
+        "label": "Verify",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 6,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-12T21:32:23Z",
+        "elapsedSec": 29,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-506/step-06-us-506.review.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-12T21:32:52Z",
+        "label": "Code review",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 7,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-12T21:44:44Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-506/step-07-us-506.testing.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-12T21:44:44Z",
+        "label": "Testing",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-12T21:45:20Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-506/step-08-us-506.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-12T21:45:20Z",
+        "label": "Ship",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 180,
+    "totalTokens": 0
+  },
+  "verificationScore": 10,
+  "workflowId": "uswf-us-506-20261012T212609Z",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/us-506/ac-ledger.json",
+      ".agents/plans/us-506/step-00-us-506.spec.md",
+      ".agents/plans/us-506/step-01-us-506.plan.md",
+      ".agents/plans/us-506/step-02-us-506.plan-interview.md",
+      ".agents/plans/us-506/step-02-us-506.plan.refined.md",
+      ".agents/plans/us-506/step-03-us-506.plan.exec.md",
+      ".agents/plans/us-506/step-05-us-506.plan.report.md",
+      ".agents/plans/us-506/step-06-us-506.review.md",
+      ".agents/plans/us-506/step-07-us-506.testing.report.md",
+      ".agents/plans/us-506/step-08-us-506.result.md",
+      "test/test-state-bootstrap.js"
+    ],
+    "deleted": [],
+    "modified": [
+      ".agents/skills/ws-shared/runtime/gates.md",
+      ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+      ".agents/skills/ws-shared/runtime/setup.md",
+      ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+      "FEATURES.md",
+      "README.md",
+      "test/test-suites.json"
+    ]
+  },
+  "workflowType": "standard"
+}
