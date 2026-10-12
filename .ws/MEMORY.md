@@ -15,6 +15,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **DO NOT**: Rebut a reviewer with a design claim verified only by ignore rules or local-disk state; `check-ignore` matches do not describe tracking status, and local disk is not the CI/fresh-clone ground truth.
 - **INSTEAD DO**: Run `git ls-files <dir>` to establish the tracked convention first; when the reviewer is right, resolve with an explicit correction naming the mistaken rebuttal; force-add (`-f`) files the design tracks despite gitignore, recompile to prove stability, and push the fix to the same PR branch.
 
+### [2026-10-12] Spec ACs: EARS trigger comma must be followed by "the <system>"
+- **Layer**: `tooling`
+- **Module**: `ws-spec-format validator, spec authoring`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/specs/**/*.spec.md`, `.agents/skills/ws-spec-format/scripts/validate_spec.cjs`
+- **Scenario / Context**: While authoring six issue-derived specs, one spec failed `validate_spec.cjs --mode=authoring` on three ACs with `code: ac-ears`. The ACs read like `When the run reaches ship, \`workflow_state.cjs\` shall exit 0`: the token after the trigger comma was a backticked script name instead of a system subject. `EARS_PATTERNS` (validate_spec.cjs:56-61) hard-requires the literal shape `<trigger>,\s*the\s+.+\s+shall\s+.+` for the event/state/optional/unwanted variants and `^the\s+.+\s+shall\s+.+` for ubiquitous, so any non-`the` subject (backticked artifact, bare script name, "it") is rejected even though the sentence is otherwise valid EARS.
+- **DO NOT**: Write an AC whose post-comma subject is a backticked file/script name, a bare artifact, or a pronoun; do not "fix" a rejected AC by deleting the script reference from the sentence.
+- **INSTEAD DO**: Name a system subject (`the state validator`, `the monitor`) right after the comma, keep the backticked path as a trailing detail (`… shall report a finding, as implemented in \`monitor_snapshot.cjs\``), then re-run `node .agents/skills/ws-spec-format/scripts/validate_spec.cjs --mode=authoring <spec>` until exit 0.
+
 ### [2026-10-12] PowerShell text tools and integrity-before-suite
 - **Layer**: `tooling`
 - **Module**: `ws-check-workflows, test runner`

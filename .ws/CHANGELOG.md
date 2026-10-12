@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-12 17:14] Agent: agent
+- **Prompt**: /ws-spec-from-provider (import the 6 open issues as specs, update ws-spec-index pending+completed, commit the specs)
+- **Done**: Imported GitHub issues 506-511 as specs of record .agents/specs/pending/0176..0181-us-{506..511}.spec.md (agentic reformulation, 100 EARS ACs total: 18/19/13/15/21/14), with a .context.md companion per spec for the genuine gray areas; prior-work sweep per issue found no open PR; registered the workflow copies .agents/plans/us-{506..511}/step-00-us-{id}.spec.md (source: github) and tracked us-506..511 in index.PRD (Feature map pending rows 232-237, Next-specs rows 187-192).
+- **Result**: PASS authoring validation for all 6 specs; register exit 0 x6; track status tracked x6; filed the pre-existing untracked completed/0175-us-504.spec.md; committed and pushed to origin/develop. No product files changed; no version bump (no shipped package change).
+
 ### [2026-10-12 16:25] Agent: agent
 - **Prompt**: Fix check_workflows global-tree findRepoRoot mis-resolution (issue 504)
 - **Done**: Skills-dir-first resolver, --repo-root parity, cwd fallback, regression test + suite, integrity regen, bump 0.5.40; verify 10/10, suite 162/162
