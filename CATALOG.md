@@ -106,7 +106,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 
 | Intent | Load |
 |--------|------|
-| Write a spec | This file § [6. Write a spec](#6-write-a-spec-on-demand) (live `ws-spec-write` only when authoring that skill) |
+| Write a spec | [`AGENTS.md`](AGENTS.md) § [5. Write a spec](AGENTS.md#5-write-a-spec-on-demand) (live `ws-spec-write` only when authoring that skill) |
 | Classify spec pipeline complexity | `ws-classify-complexity` |
 | Plan implementation | `ws-plan-write` → `ws-plan-interview` → `ws-plan-to-tasks` |
 | Implement | `ws-implement-tasks` |
@@ -117,7 +117,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | Fresh-worker re-verification / fault injection | `ws-fresh-verify` |
 | Secrets / leaks | `ws-secrets-leak-review` |
 | Adversarial audit / fraud scan | `ws-fable-judge` |
-| Fable Method 7-step loop | This file § [3. Investigate loop](#3-investigate-loop-ws-fable-method) (live `ws-fable-method` only when authoring that skill) |
+| Fable Method 7-step loop | [`AGENTS.md`](AGENTS.md) § [2. Investigate loop](AGENTS.md#2-investigate-loop-ws-fable-method) (live `ws-fable-method` only when authoring that skill) |
 | Domain adapters (DevOps/Data/Research) | `ws-fable-domain` (Extra) |
 | Standup briefing (last 36 hours) | `ws-pre-daily` |
 | What next / vibe-coding implement / megabrain | `ws-megabrain` |
@@ -138,7 +138,7 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | View specs as a local kanban board | `ws-kanvas` |
 | Bulk-import GH issues / ADO US → local specs | `ws-spec-from-provider` |
 | Idea → tracker item | `ws-spec-to-issue` |
-| Session autoload set (which skills load every prompt) | This repo: § [Upstream session contract (this repo only)](#upstream-session-contract-this-repo-only). Consumers: [`{skillsRoot}/ws-shared/runtime/autoload.md`](.agents/skills/ws-shared/runtime/autoload.md) § Always-applied |
+| Session autoload set (which skills load every prompt) | This repo: [`AGENTS.md`](AGENTS.md) § [Upstream session contract](AGENTS.md#upstream-session-contract-this-repo-only). Consumers: [`{skillsRoot}/ws-shared/runtime/autoload.md`](.agents/skills/ws-shared/runtime/autoload.md) § Always-applied |
 | Specs keywords / which skill to invoke | [`{skillsRoot}/ws-shared/runtime/autoload.md`](.agents/skills/ws-shared/runtime/autoload.md) § Specs skill router |
 | Dev commands (deps, tests, local install, integrity, site) | § [Development commands](#development-commands-this-repo) |
 | Local code review / audits | § [Review & audit commands](#review--audit-commands) |
@@ -166,9 +166,9 @@ Path tokens: see `.agents/skills/ws-shared/runtime/tools.md`.
 | Run a session retrospective on a completed run | `ws-retro` |
 | Show install scope / package version | `ws-version` |
 | Grill plan vs docs | `grill-with-docs` |
-| Record learning | § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) |
+| Record learning | [`AGENTS.md`](AGENTS.md) § [4. Memory + changelog](AGENTS.md#4-memory--changelog-ws-self-learning-ws-changelog) |
 | Convergence loop | `ws-goal-loop` |
-| Record ws-changelog | This file § [5. Memory + changelog](#5-memory--changelog-ws-self-learning-ws-changelog) (live `ws-changelog` only when authoring that skill) |
+| Record ws-changelog | [`AGENTS.md`](AGENTS.md) § [4. Memory + changelog](AGENTS.md#4-memory--changelog-ws-self-learning-ws-changelog) (live `ws-changelog` only when authoring that skill) |
 | Fill / update `config.json` | `ws-configure-project` (wizard) · `npm run config:gui` / `Edit-Config.bat` (GUI editor). Hub root is relocatable via `pathTokens.sharedDir` (repo-relative, contained); bootstrap `.ws/config.json` stays fixed as the discovery point |
 | Discover/install skills | `find-skills` or `using-superpowers` |
 | Consumer project-patterns generator (harvest + refresh) | `ws-patterns-generator` |

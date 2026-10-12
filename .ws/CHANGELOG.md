@@ -1,5 +1,25 @@
 # Changelog
 
+### [2026-10-11 19:47] Agent: agent
+- **Prompt**: /ws-spec-to-pr .agents/specs/pending/0174-us-502.spec.md (autoMode entered at the step 0->1 boundary)
+- **Done**: Delivered the batch-worker liveness hardening end to end: read-only evaluator worker_liveness_check.cjs (verdicts no-baseline/alive/pending/wedged, exit 0/0/0/2, per-dispatch marker freshness), canonical Worker liveness contract section plus ws-goal-fix-pr watchdog wiring and a budget-safe STEP-DISPATCH pointer, defaults.workerLivenessWindowSec across schema/example/GUI/editor core set with a 600 s fallback, a red-first 34-assertion suite with additive residue assertions, the five-surface docs sweep, one bump to 0.5.39, and regenerated integrity.
+- **Result**: Verify 10/10 (13 ACs + 10 NS mapped); two-round adversarial review fixed and closed 3 Warnings (1 non-blocking Suggestion open); Step 6b fresh-worker verify 13/13 verdicts with 13/13 fault injections red; testing green across alias (161/161), new suite, four frozen anchors, budgets, doc-sync, harness self-audit (0 findings) and integrity; product commits ebe82a78 + ea3d23c5 (24 files, +1201/-87). Shipping skipped by the documented autoMode non-fullMode Step 8 auto-gate (no push, no PR); status completed, shipStatus skipped.
+
+### [2026-10-11 16:54] Agent: agent
+- **Prompt**: /ws-spec-from-provider (no flags)
+- **Done**: Imported GitHub issue #502 as spec of record .agents/specs/pending/0174-us-502.spec.md (agentic reformulation, 13 EARS ACs), registered the workflow copy .agents/plans/us-502/step-00-us-502.spec.md (source: github), and auto-tracked us-502 in index.PRD (Feature map pending + Next-specs row 185). No product files changed.
+- **Result**: PASS authoring validation (13 ACs); register exit 0; track status tracked. Tracker resolved to github from the enabled issueTrackers.github fallback while providers.active stays local.
+
+### [2026-10-10 12:41] Agent: agent
+- **Prompt**: check specs/pending folder, mark pending or completed accordingly
+- **Done**: triaged pending + 5 legacy root specs: all implemented; cleared 3 classify dupes; tracked + synced 3 legacy specs to completed with delivery evidence
+- **Result**: index.PRD rows 182-184 [x] with Done-log entries; specs filed to completed/; close-filing verified
+
+### [2026-10-10 12:02] Agent: agent
+- **Prompt**: update readme, website (new skills/descriptions/features, FAQ, navigation), wiki; full doc work
+- **Done**: README features/catalog refresh; FEATURES evolution 0.5.15-0.5.38 + roadmap/catalog fixes; CATALOG anchor fixes; site feature cards, hero sync, 7 new FAQs, scrollspy, FAQ permalinks; wiki us-498 delta; integrity regen
+- **Result**: build-site --check current; test-doc-sync ok; harness-clean 0 findings; verify-integrity ok; full suite green except pre-existing test-subagent-dispatch failure (fails identically on HEAD)
+
 ### [2026-10-10 09:47] Agent: agent
 - **Prompt**: US 498 (batch item 3): truthful install-mode reporting — coincident local/global skills roots must report scope global (never hybrid), and globalVersion must come from the canonical ws-shared/version.json (issues #494 + #495)
 - **Done**: Fixed ws-check-harness Phase 0 detect_install_mode.cjs: added resolved-root directory identity before the consumer scope matrix (canonicalized, case-insensitive on win32, resolved-path fallback) so a coincident tree reports global with a single {globalSkillsRoot} scan root and a same-directory note; replaced the frontmatter modal globalVersion with the precedence ws-shared/version.json -> runtime/skill-dependencies.json packageVersion -> package-owned ws-* frontmatter (representative probe first, externalSkills excluded) -> null, all semver-validated, drift informational only. Added 11 fixtures/68 assertions (29 ACs, NS1-NS12), per-task adequacy records, updated ws-check-harness SKILL.md/PHASES.md, bumped to 0.5.38 and regenerated integrity/site.

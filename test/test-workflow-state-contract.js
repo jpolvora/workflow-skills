@@ -315,10 +315,26 @@ acImplemented: 0
   // .runtime/baton.lock for the critical section, and a concurrent
   // coordinator can hold it while this run's worker validates.
   fs.rmSync(path.join(runtimeDir, 'helper.txt'), { force: true });
+  // us-502 NS5: the worker liveness marker name (`worker-started-{step}-{batch}.md`)
+  // stays inside the residue allowlist (RUNTIME_NAMES tolerates `.md`), so the
+  // fail-closed residue check never aborts a healthy run.
+  write(path.join(runtimeDir, 'worker-started-9-r1.md'), '---\nstep: 9\nbatch: r1\ndispatchedAt: 2026-08-21T20:00:00.000Z\n---\n');
+  assert.ok(
+    fs.existsSync(path.join(runtimeDir, 'worker-started-9-r1.md'))
+      && run(validate, [runtimeStateRel, '--repo-root', runtimeRoot]).status === 0,
+    'NS5 marker-shaped .md file is tolerated by .runtime residue validation',
+  );
   fs.mkdirSync(path.join(runtimeDir, 'baton.lock'), { recursive: true });
   write(path.join(runtimeDir, 'baton.lock', 'lock.json'), JSON.stringify({ pid: process.pid, at: '2026-09-19T00:00:00.000Z' }));
   assert.strictEqual(run(validate, [runtimeStateRel, '--repo-root', runtimeRoot]).status, 0, 'validate passes with a held baton.lock');
   assert.strictEqual(run(update, ['finish', runtimeStateRel, '--step', '0', '--timestamp', '2026-08-21T20:00:05.000Z', ...rtCommon]).status, 0, 'finish passes with a held baton.lock');
+  // us-502 NS5: a non-`.md` marker sibling is outside the allowlist, so the same
+  // fail-closed check keeps rejecting it (pins the marker naming rule).
+  write(path.join(runtimeDir, 'worker-started-9-r1.log'), 'bad\n');
+  const badMarkerSibling = run(validate, [runtimeStateRel, '--repo-root', runtimeRoot]);
+  assert.notStrictEqual(badMarkerSibling.status, 0);
+  assert.match(`${badMarkerSibling.stdout}${badMarkerSibling.stderr}`, /unknown .runtime residue: worker-started-9-r1\.log/, 'NS5 non-md marker sibling fails validate with unknown .runtime residue');
+  fs.rmSync(path.join(runtimeDir, 'worker-started-9-r1.log'), { force: true });
 }
 
 // AC10 / AC11 — frontmatter-only state hash; gate history append stable

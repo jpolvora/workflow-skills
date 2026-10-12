@@ -469,7 +469,7 @@ for (const prop of previewProps) {
 }
 
 // 3. Verify core defaults properties
-const coreDefaults = ['minVerifyScore', 'enableDag', 'verboseMode', 'branchStrategy', 'enableOptionalProofOfWork', 'enableAutomaticEvidenceCollectForProofOfWork'];
+const coreDefaults = ['minVerifyScore', 'enableDag', 'verboseMode', 'branchStrategy', 'enableOptionalProofOfWork', 'enableAutomaticEvidenceCollectForProofOfWork', 'workerLivenessWindowSec'];
 for (const prop of coreDefaults) {
   assert(guiKeys.has(`defaults.${prop}`), `Missing schema property defaults.${prop} in Edit-WorkflowSkillsConfig.ps1`);
 }

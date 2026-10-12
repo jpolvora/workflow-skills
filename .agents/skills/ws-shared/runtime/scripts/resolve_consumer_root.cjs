@@ -164,6 +164,15 @@ function resolveRequirePreShipDocSync(config) {
   return typeof value === 'boolean' ? value : true;
 }
 
+// Worker liveness watchdog window (Step 9 batch dispatch). Absent, non-integer,
+// or below-1 values resolve to the effective schema default 600 seconds, so an
+// invalid window never wedges a batch immediately.
+function resolveWorkerLivenessWindowSec(config) {
+  const n = config?.defaults?.workerLivenessWindowSec;
+  if (typeof n !== 'number' || !Number.isInteger(n) || n < 1) return 600;
+  return n;
+}
+
 // us-365: opt-in execution observer. Omitted or any non-true value resolves
 // to false (zero watcher dispatches); only explicit true enables the watcher.
 function resolveAutoStartObserver(config) {
@@ -626,6 +635,7 @@ module.exports = {
   normalizeConfig,
   resolveMinVerifyScore,
   resolveRequirePreShipDocSync,
+  resolveWorkerLivenessWindowSec,
   resolveAutoStartObserver,
   resolveMemoryRouting,
   DEFAULT_CHANGELOG_FILE,

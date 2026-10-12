@@ -22,4 +22,6 @@ Batch workflow state from `ws-spec-multi` uses the configured plans root at
 `{plansDir}/{runId}/{runId}.state.md`; legacy flat state files under
 `{plansDir}/ws-spec-multi/` remain readable during resume.
 
+Dispatched batch workers write a liveness marker under the run runtime directory and the parent resolves one deterministic verdict (`no-baseline` / `alive` / `pending` / `wedged`); the effective window resolves from `defaults.workerLivenessWindowSec` (default 600 seconds), and inline, lite, and Tier 3 postures carry no marker obligation.
+
 Source control: track non-secret `config.json` and a maintained `STACK.md`; ignore generated memory/history and installer metadata. The installed hub `.gitignore` reflects this default.

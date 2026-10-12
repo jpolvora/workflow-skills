@@ -7,7 +7,6 @@ startedAt: "2026-10-10T03:34:00Z"
 endedAt: "2026-10-10T03:36:00Z"
 acRefs: ["AC1", "AC2", "AC3", "AC4", "AC5", "AC6", "AC7", "AC8", "AC9", "AC10"]
 ---
-
 # us-492 — Delivery Result
 
 ## Expected
