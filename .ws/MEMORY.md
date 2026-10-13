@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-10-13] State-bootstrap contract changes ripple into wiki/site, byte budgets, and fixture tarball refs (us-510)
+- **Layer**: `harness`
+- **Module**: `ws-shared/runtime workflow_state.cjs init, ws-wiki, test-context-budget, test/package.json`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/scripts/workflow_state.cjs`, `.agents/skills/ws-spec-to-pr/STEP-DISPATCH.md`, `.agents/specs/wiki/**`, `docs/wiki/**`, `test/package.json`, `test/test-subagent-dispatch.js`
+- **Scenario / Context**: While refining `update_state.cjs init` into the us-510 single-agent bootstrap contract, four non-obvious gates fired after the code itself was already correct. (1) Editing `.agents/specs/wiki/delivery/spec-to-pr-pipeline.md` and advancing the wiki `Sync Baseline` left `docs/wiki/**` stale, and CI `test` failed in 7 s at `node bin/build-site.js --check` with `docs/wiki stale delivery/spec-to-pr-pipeline.html`. (2) `STEP-DISPATCH.md` sat only 18 B below its locked 24064 B budget, so adding the new `--branch`/`--baseline` flags to its Step 0 row tripped `test/test-context-budget.js` (`STEP-DISPATCH.md exceeds 24064 B`). (3) `test/test-code-review-round-2.js` failed with `fixture tarball ref tracks package.json version` (`file:../workflow-skills-0.5.44.tgz` vs `0.5.45`) after the version bump. (4) `test/test-subagent-dispatch.js` case 8 failed twice with `AssertionError: child started before the kill` under suite load but passed in isolation and on a pristine worktree at the merge base.
+- **DO NOT**: Do not edit a page under `.agents/specs/wiki/**` (or its `Sync Baseline`) and ship without regenerating the site; do not add prose to `STEP-DISPATCH.md` (or `ws-spec-to-pr/SKILL.md` / `PROTOCOLS.md` / lite `SKILL.md`) without checking the byte budget first; do not run the suite while `test/package.json` points at a tarball ref that differs from `package.json`'s version; do not treat the `test-subagent-dispatch.js` child-startup assertion as a regression of unrelated work.
+- **INSTEAD DO**: After any wiki page edit run `npm run build-site` and commit `docs/wiki/**` (verify with `node bin/build-site.js --check`); keep contract detail in unbudgeted surfaces (`setup.md`, `gates.md`, `state-hygiene.md`) and make budgeted-file edits net-negative, then confirm with `node test/test-context-budget.js`; after `npm run build-site:bump` confirm `test/package.json` still carries `file:../workflow-skills-<version>.tgz` before `npm run tests`; when `test-subagent-dispatch.js` case 8 fails under load, re-run it isolated and on a pristine `HEAD` worktree before reporting a defect.
+
 ### [2026-10-13] Full AC marks still cap at 8 until every spec negative scenario is linked (us-509)
 - **Layer**: `orchestration`
 - **Module**: `ws-spec-to-pr / ac_ledger.cjs link --negative, ws-plan-verify`

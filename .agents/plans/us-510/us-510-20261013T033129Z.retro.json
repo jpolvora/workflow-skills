@@ -1,0 +1,50 @@
+{
+  "workflowId": "us-510-20261013T033129Z",
+  "candidates": [
+    {
+      "id": "C1",
+      "title": "Run the site generator check as part of the pre-ship doc-sync trio",
+      "severity": "high",
+      "category": "automated-check",
+      "evidence": {
+        "artifact": ".agents/plans/us-510/step-09-us-510.fix-pr.md",
+        "ref": "## One CI failure found and fixed inside this PR",
+        "quote": "docs/wiki stale delivery/spec-to-pr-pipeline.html"
+      },
+      "proposedChange": {
+        "target": ".agents/skills/ws-shared/runtime/gates.md",
+        "change": "In the pre-ship doc-sync trio, add `node bin/build-site.js --check` as an explicit local step after `ws-wiki sync` so a wiki page edit cannot ship with a stale docs/wiki render (the CI site check fails closed otherwise)."
+      }
+    },
+    {
+      "id": "C2",
+      "title": "Widen or load-adjust the subagent-dispatch child-startup window",
+      "severity": "medium",
+      "category": "automated-check",
+      "evidence": {
+        "artifact": ".agents/plans/us-510/step-07-us-510.testing.report.md",
+        "ref": "## Documented flake",
+        "quote": "AssertionError: child started before the kill"
+      },
+      "proposedChange": {
+        "target": "test/test-subagent-dispatch.js",
+        "change": "Make the case-8 assertion tolerate machine load: either raise the 400 ms kill window or poll for the alive mark briefly before asserting, so a green suite is not reported red by a Node boot race."
+      }
+    },
+    {
+      "id": "C3",
+      "title": "Re-sync the fixture tarball ref before a suite run after any version bump",
+      "severity": "low",
+      "category": "memory",
+      "evidence": {
+        "artifact": ".agents/plans/us-510/step-08-us-510.result.md",
+        "ref": "## Verification",
+        "quote": "test/package.json carries the release tarball ref asserted by test-code-review-round-2.js"
+      },
+      "proposedChange": {
+        "target": ".ws/MEMORY.md",
+        "change": "Record the trap: after `npm run build-site:bump`, `test/package.json` must still point at the bumped tarball before `npm run tests`; if anything restores it, `test-code-review-round-2.js` fails with 'fixture tarball ref tracks package.json version'."
+      }
+    }
+  ]
+}

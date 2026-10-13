@@ -1,0 +1,2874 @@
+{
+  "acImplemented": 21,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1601-L1798",
+          ".agents/skills/ws-shared/runtime/setup.md:L107-L113",
+          ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L9-L21",
+          "test/test-state-bootstrap-init.js:L1-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 1798,
+            "lineStart": 1601,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "3af0eaa6bc8655fb7f8c7dc1243e1d1b96cf8578078d32f7623d4ef5d72b7aef"
+          },
+          {
+            "lineEnd": 113,
+            "lineStart": 107,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "e2023384a10d09ab796cfe334f7a43aa8c1f9ce8a2f19ff4c58ba993f95347cc"
+          },
+          {
+            "lineEnd": 21,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "sha256": "c3d82c27f58a40921511d703f7aaadcd388b645a966939e34799516248b8b3be"
+          },
+          {
+            "lineEnd": 260,
+            "lineStart": 1,
+            "path": "test/test-state-bootstrap-init.js",
+            "sha256": "d9a0f8c9da696f2ea3ddbf0246ea5e66fe696057513de7e82122d4f04b50bfb8"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "g2-commit-f7284f01e6fff68249fea97f29fa6fdee760acc2",
+          "impl-bootstrap",
+          "impl-bootstrap-plan"
+        ],
+        "planSections": [
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-10-13T03:35:45.208Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-harness-clean",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-10-13T03:35:45.208Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:35:45.208Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:35:45.207Z"
+          }
+        ],
+        "text": "The state runtime shall expose exactly one documented bootstrap entrypoint that creates the initial `{workflow-id}.state.md` and `{workflow-id}.state.json` pair for a new run.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1601-L1798",
+          ".agents/skills/ws-shared/runtime/setup.md:L107-L113",
+          ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L9-L21",
+          "test/test-state-bootstrap-init.js:L1-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 1798,
+            "lineStart": 1601,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "3af0eaa6bc8655fb7f8c7dc1243e1d1b96cf8578078d32f7623d4ef5d72b7aef"
+          },
+          {
+            "lineEnd": 113,
+            "lineStart": 107,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "e2023384a10d09ab796cfe334f7a43aa8c1f9ce8a2f19ff4c58ba993f95347cc"
+          },
+          {
+            "lineEnd": 21,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "sha256": "c3d82c27f58a40921511d703f7aaadcd388b645a966939e34799516248b8b3be"
+          },
+          {
+            "lineEnd": 260,
+            "lineStart": 1,
+            "path": "test/test-state-bootstrap-init.js",
+            "sha256": "d9a0f8c9da696f2ea3ddbf0246ea5e66fe696057513de7e82122d4f04b50bfb8"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "g2-commit-f7284f01e6fff68249fea97f29fa6fdee760acc2",
+          "impl-bootstrap",
+          "impl-bootstrap-plan"
+        ],
+        "planSections": [
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-10-13T03:35:45.210Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-harness-clean",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-10-13T03:35:45.210Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:35:45.210Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:35:45.210Z"
+          }
+        ],
+        "text": "When the bootstrap entrypoint runs, the state runtime shall require a workflow id, a slug, a branch, and a baseline commit, and shall reject a branch value of `HEAD`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1601-L1798",
+          ".agents/skills/ws-shared/runtime/setup.md:L107-L113",
+          ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L9-L21",
+          "test/test-state-bootstrap-init.js:L1-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 1798,
+            "lineStart": 1601,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "3af0eaa6bc8655fb7f8c7dc1243e1d1b96cf8578078d32f7623d4ef5d72b7aef"
+          },
+          {
+            "lineEnd": 113,
+            "lineStart": 107,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "e2023384a10d09ab796cfe334f7a43aa8c1f9ce8a2f19ff4c58ba993f95347cc"
+          },
+          {
+            "lineEnd": 21,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "sha256": "c3d82c27f58a40921511d703f7aaadcd388b645a966939e34799516248b8b3be"
+          },
+          {
+            "lineEnd": 260,
+            "lineStart": 1,
+            "path": "test/test-state-bootstrap-init.js",
+            "sha256": "d9a0f8c9da696f2ea3ddbf0246ea5e66fe696057513de7e82122d4f04b50bfb8"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "g2-commit-f7284f01e6fff68249fea97f29fa6fdee760acc2",
+          "impl-bootstrap",
+          "impl-bootstrap-plan"
+        ],
+        "planSections": [
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-10-13T03:35:45.212Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-harness-clean",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-10-13T03:35:45.212Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:35:45.212Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:35:45.212Z"
+          }
+        ],
+        "text": "The bootstrap entrypoint shall write the JSON member of the pair as machine source of truth and the Markdown member as its render, both inside `{us-dir}` under the configured plans directory.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1601-L1798",
+          ".agents/skills/ws-shared/runtime/setup.md:L107-L113",
+          ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L9-L21",
+          "test/test-state-bootstrap-init.js:L1-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 1798,
+            "lineStart": 1601,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "3af0eaa6bc8655fb7f8c7dc1243e1d1b96cf8578078d32f7623d4ef5d72b7aef"
+          },
+          {
+            "lineEnd": 113,
+            "lineStart": 107,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "e2023384a10d09ab796cfe334f7a43aa8c1f9ce8a2f19ff4c58ba993f95347cc"
+          },
+          {
+            "lineEnd": 21,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "sha256": "c3d82c27f58a40921511d703f7aaadcd388b645a966939e34799516248b8b3be"
+          },
+          {
+            "lineEnd": 260,
+            "lineStart": 1,
+            "path": "test/test-state-bootstrap-init.js",
+            "sha256": "d9a0f8c9da696f2ea3ddbf0246ea5e66fe696057513de7e82122d4f04b50bfb8"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "g2-commit-f7284f01e6fff68249fea97f29fa6fdee760acc2",
+          "impl-bootstrap",
+          "impl-bootstrap-plan"
+        ],
+        "planSections": [
+          "section-002",
+          "section-005",
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-10-13T03:35:45.213Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-harness-clean",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-10-13T03:35:45.213Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:35:45.213Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:35:45.213Z"
+          }
+        ],
+        "text": "The bootstrap entrypoint shall write `stateVersion` 3, `revision` 0, `workflowType` for the invoked pipeline, `status` `active`, and `currentStep` 0, with the workflow id, slug, branch, and baseline recorded in the same record.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1601-L1798",
+          ".agents/skills/ws-shared/runtime/setup.md:L107-L113",
+          ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L9-L21",
+          "test/test-state-bootstrap-init.js:L1-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 1798,
+            "lineStart": 1601,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "3af0eaa6bc8655fb7f8c7dc1243e1d1b96cf8578078d32f7623d4ef5d72b7aef"
+          },
+          {
+            "lineEnd": 113,
+            "lineStart": 107,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "e2023384a10d09ab796cfe334f7a43aa8c1f9ce8a2f19ff4c58ba993f95347cc"
+          },
+          {
+            "lineEnd": 21,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "sha256": "c3d82c27f58a40921511d703f7aaadcd388b645a966939e34799516248b8b3be"
+          },
+          {
+            "lineEnd": 260,
+            "lineStart": 1,
+            "path": "test/test-state-bootstrap-init.js",
+            "sha256": "d9a0f8c9da696f2ea3ddbf0246ea5e66fe696057513de7e82122d4f04b50bfb8"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "g2-commit-f7284f01e6fff68249fea97f29fa6fdee760acc2",
+          "impl-bootstrap",
+          "impl-bootstrap-plan"
+        ],
+        "planSections": [
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-10-13T03:35:45.215Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-harness-clean",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-10-13T03:35:45.215Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:35:45.215Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:35:45.215Z"
+          }
+        ],
+        "text": "When the bootstrap entrypoint completes, the written record shall satisfy `validateSnapshot` without any further write or recovery command.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1601-L1798",
+          ".agents/skills/ws-shared/runtime/setup.md:L107-L113",
+          ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L9-L21",
+          "test/test-state-bootstrap-init.js:L1-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 1798,
+            "lineStart": 1601,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "3af0eaa6bc8655fb7f8c7dc1243e1d1b96cf8578078d32f7623d4ef5d72b7aef"
+          },
+          {
+            "lineEnd": 113,
+            "lineStart": 107,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "e2023384a10d09ab796cfe334f7a43aa8c1f9ce8a2f19ff4c58ba993f95347cc"
+          },
+          {
+            "lineEnd": 21,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "sha256": "c3d82c27f58a40921511d703f7aaadcd388b645a966939e34799516248b8b3be"
+          },
+          {
+            "lineEnd": 260,
+            "lineStart": 1,
+            "path": "test/test-state-bootstrap-init.js",
+            "sha256": "d9a0f8c9da696f2ea3ddbf0246ea5e66fe696057513de7e82122d4f04b50bfb8"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "g2-commit-f7284f01e6fff68249fea97f29fa6fdee760acc2",
+          "impl-bootstrap",
+          "impl-bootstrap-plan"
+        ],
+        "planSections": [
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-10-13T03:35:45.216Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-harness-clean",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-10-13T03:35:45.216Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:35:45.216Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:35:45.216Z"
+          }
+        ],
+        "text": "When the bootstrap gives the entrypoint an empty or absent plans index, the entrypoint shall create the index and its workflow row so the row `stateSha256` matches the written pair.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1601-L1798",
+          ".agents/skills/ws-shared/runtime/setup.md:L107-L113",
+          ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L9-L21",
+          "test/test-state-bootstrap-init.js:L1-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 1798,
+            "lineStart": 1601,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "3af0eaa6bc8655fb7f8c7dc1243e1d1b96cf8578078d32f7623d4ef5d72b7aef"
+          },
+          {
+            "lineEnd": 113,
+            "lineStart": 107,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "e2023384a10d09ab796cfe334f7a43aa8c1f9ce8a2f19ff4c58ba993f95347cc"
+          },
+          {
+            "lineEnd": 21,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "sha256": "c3d82c27f58a40921511d703f7aaadcd388b645a966939e34799516248b8b3be"
+          },
+          {
+            "lineEnd": 260,
+            "lineStart": 1,
+            "path": "test/test-state-bootstrap-init.js",
+            "sha256": "d9a0f8c9da696f2ea3ddbf0246ea5e66fe696057513de7e82122d4f04b50bfb8"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [
+          "g2-commit-f7284f01e6fff68249fea97f29fa6fdee760acc2",
+          "impl-bootstrap",
+          "impl-bootstrap-plan"
+        ],
+        "planSections": [
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-10-13T03:35:45.218Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-harness-clean",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-10-13T03:35:45.218Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:35:45.218Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:35:45.218Z"
+          }
+        ],
+        "text": "The bootstrap entrypoint shall record a machine-readable result naming the workflow id, both written paths, and the resolved plans index.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1601-L1798",
+          ".agents/skills/ws-shared/runtime/setup.md:L107-L113",
+          ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L9-L21",
+          "test/test-state-bootstrap-init.js:L1-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 1798,
+            "lineStart": 1601,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "3af0eaa6bc8655fb7f8c7dc1243e1d1b96cf8578078d32f7623d4ef5d72b7aef"
+          },
+          {
+            "lineEnd": 113,
+            "lineStart": 107,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "e2023384a10d09ab796cfe334f7a43aa8c1f9ce8a2f19ff4c58ba993f95347cc"
+          },
+          {
+            "lineEnd": 21,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "sha256": "c3d82c27f58a40921511d703f7aaadcd388b645a966939e34799516248b8b3be"
+          },
+          {
+            "lineEnd": 260,
+            "lineStart": 1,
+            "path": "test/test-state-bootstrap-init.js",
+            "sha256": "d9a0f8c9da696f2ea3ddbf0246ea5e66fe696057513de7e82122d4f04b50bfb8"
+          }
+        ],
+        "findings": [],
+        "id": "AC8",
+        "linkEventIds": [
+          "g2-commit-f7284f01e6fff68249fea97f29fa6fdee760acc2",
+          "impl-bootstrap",
+          "impl-bootstrap-plan"
+        ],
+        "planSections": [
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-10-13T03:35:45.219Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-harness-clean",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-10-13T03:35:45.219Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:35:45.219Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:35:45.219Z"
+          }
+        ],
+        "text": "While a bootstrapped state pair at revision 0 has no dispatch, the bootstrap entrypoint shall leave both files byte-identical on a repeated run and report the replay as idempotent with a zero exit code.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1601-L1798",
+          ".agents/skills/ws-shared/runtime/setup.md:L107-L113",
+          ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L9-L21",
+          "test/test-state-bootstrap-init.js:L1-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 1798,
+            "lineStart": 1601,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "3af0eaa6bc8655fb7f8c7dc1243e1d1b96cf8578078d32f7623d4ef5d72b7aef"
+          },
+          {
+            "lineEnd": 113,
+            "lineStart": 107,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "e2023384a10d09ab796cfe334f7a43aa8c1f9ce8a2f19ff4c58ba993f95347cc"
+          },
+          {
+            "lineEnd": 21,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "sha256": "c3d82c27f58a40921511d703f7aaadcd388b645a966939e34799516248b8b3be"
+          },
+          {
+            "lineEnd": 260,
+            "lineStart": 1,
+            "path": "test/test-state-bootstrap-init.js",
+            "sha256": "d9a0f8c9da696f2ea3ddbf0246ea5e66fe696057513de7e82122d4f04b50bfb8"
+          }
+        ],
+        "findings": [],
+        "id": "AC9",
+        "linkEventIds": [
+          "g2-commit-f7284f01e6fff68249fea97f29fa6fdee760acc2",
+          "impl-bootstrap",
+          "impl-bootstrap-plan"
+        ],
+        "planSections": [
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-10-13T03:35:45.221Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-harness-clean",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-10-13T03:35:45.221Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:35:45.221Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:35:45.221Z"
+          }
+        ],
+        "text": "If the target state path already holds a record at revision greater than 0, then the bootstrap entrypoint shall refuse with a non-zero exit code and leave every file unchanged.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1601-L1798",
+          ".agents/skills/ws-shared/runtime/setup.md:L107-L113",
+          ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L9-L21",
+          "test/test-state-bootstrap-init.js:L1-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 1798,
+            "lineStart": 1601,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "3af0eaa6bc8655fb7f8c7dc1243e1d1b96cf8578078d32f7623d4ef5d72b7aef"
+          },
+          {
+            "lineEnd": 113,
+            "lineStart": 107,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "e2023384a10d09ab796cfe334f7a43aa8c1f9ce8a2f19ff4c58ba993f95347cc"
+          },
+          {
+            "lineEnd": 21,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "sha256": "c3d82c27f58a40921511d703f7aaadcd388b645a966939e34799516248b8b3be"
+          },
+          {
+            "lineEnd": 260,
+            "lineStart": 1,
+            "path": "test/test-state-bootstrap-init.js",
+            "sha256": "d9a0f8c9da696f2ea3ddbf0246ea5e66fe696057513de7e82122d4f04b50bfb8"
+          }
+        ],
+        "findings": [],
+        "id": "AC10",
+        "linkEventIds": [
+          "g2-commit-f7284f01e6fff68249fea97f29fa6fdee760acc2",
+          "impl-bootstrap",
+          "impl-bootstrap-plan"
+        ],
+        "planSections": [
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-10-13T03:35:45.222Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-harness-clean",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-10-13T03:35:45.222Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:35:45.222Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:35:45.222Z"
+          }
+        ],
+        "text": "If the target state path already holds a record whose `completedSteps` is non-empty, then the bootstrap entrypoint shall refuse with a non-zero exit code and leave every file unchanged.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1601-L1798",
+          ".agents/skills/ws-shared/runtime/setup.md:L107-L113",
+          ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L9-L21",
+          "test/test-state-bootstrap-init.js:L1-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 1798,
+            "lineStart": 1601,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "3af0eaa6bc8655fb7f8c7dc1243e1d1b96cf8578078d32f7623d4ef5d72b7aef"
+          },
+          {
+            "lineEnd": 113,
+            "lineStart": 107,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "e2023384a10d09ab796cfe334f7a43aa8c1f9ce8a2f19ff4c58ba993f95347cc"
+          },
+          {
+            "lineEnd": 21,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "sha256": "c3d82c27f58a40921511d703f7aaadcd388b645a966939e34799516248b8b3be"
+          },
+          {
+            "lineEnd": 260,
+            "lineStart": 1,
+            "path": "test/test-state-bootstrap-init.js",
+            "sha256": "d9a0f8c9da696f2ea3ddbf0246ea5e66fe696057513de7e82122d4f04b50bfb8"
+          }
+        ],
+        "findings": [],
+        "id": "AC11",
+        "linkEventIds": [
+          "g2-commit-f7284f01e6fff68249fea97f29fa6fdee760acc2",
+          "impl-bootstrap",
+          "impl-bootstrap-plan"
+        ],
+        "planSections": [
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-10-13T03:35:45.224Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-harness-clean",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-10-13T03:35:45.224Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:35:45.224Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:35:45.224Z"
+          }
+        ],
+        "text": "If the target state path already holds a record whose `status` is terminal, then the bootstrap entrypoint shall refuse with a non-zero exit code and leave every file unchanged.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1601-L1798",
+          ".agents/skills/ws-shared/runtime/setup.md:L107-L113",
+          ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L9-L21",
+          "test/test-state-bootstrap-init.js:L1-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 1798,
+            "lineStart": 1601,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "3af0eaa6bc8655fb7f8c7dc1243e1d1b96cf8578078d32f7623d4ef5d72b7aef"
+          },
+          {
+            "lineEnd": 113,
+            "lineStart": 107,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "e2023384a10d09ab796cfe334f7a43aa8c1f9ce8a2f19ff4c58ba993f95347cc"
+          },
+          {
+            "lineEnd": 21,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "sha256": "c3d82c27f58a40921511d703f7aaadcd388b645a966939e34799516248b8b3be"
+          },
+          {
+            "lineEnd": 260,
+            "lineStart": 1,
+            "path": "test/test-state-bootstrap-init.js",
+            "sha256": "d9a0f8c9da696f2ea3ddbf0246ea5e66fe696057513de7e82122d4f04b50bfb8"
+          }
+        ],
+        "findings": [],
+        "id": "AC12",
+        "linkEventIds": [
+          "g2-commit-f7284f01e6fff68249fea97f29fa6fdee760acc2",
+          "impl-bootstrap",
+          "impl-bootstrap-plan"
+        ],
+        "planSections": [
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-10-13T03:35:45.225Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-harness-clean",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-10-13T03:35:45.225Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:35:45.225Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:35:45.225Z"
+          }
+        ],
+        "text": "If exactly one member of the state pair is present at the target path, then the bootstrap entrypoint shall fail closed with a non-zero exit code and name the missing member.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1601-L1798",
+          ".agents/skills/ws-shared/runtime/setup.md:L107-L113",
+          ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L9-L21",
+          "test/test-state-bootstrap-init.js:L1-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 1798,
+            "lineStart": 1601,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "3af0eaa6bc8655fb7f8c7dc1243e1d1b96cf8578078d32f7623d4ef5d72b7aef"
+          },
+          {
+            "lineEnd": 113,
+            "lineStart": 107,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "e2023384a10d09ab796cfe334f7a43aa8c1f9ce8a2f19ff4c58ba993f95347cc"
+          },
+          {
+            "lineEnd": 21,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "sha256": "c3d82c27f58a40921511d703f7aaadcd388b645a966939e34799516248b8b3be"
+          },
+          {
+            "lineEnd": 260,
+            "lineStart": 1,
+            "path": "test/test-state-bootstrap-init.js",
+            "sha256": "d9a0f8c9da696f2ea3ddbf0246ea5e66fe696057513de7e82122d4f04b50bfb8"
+          }
+        ],
+        "findings": [],
+        "id": "AC13",
+        "linkEventIds": [
+          "g2-commit-f7284f01e6fff68249fea97f29fa6fdee760acc2",
+          "impl-bootstrap",
+          "impl-bootstrap-plan"
+        ],
+        "planSections": [
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-10-13T03:35:45.227Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-harness-clean",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-10-13T03:35:45.227Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:35:45.227Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:35:45.226Z"
+          }
+        ],
+        "text": "If a required flag value is empty, or the baseline is not a commit-shaped hexadecimal string, then the bootstrap entrypoint shall reject the invocation with a usage error.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1601-L1798",
+          ".agents/skills/ws-shared/runtime/setup.md:L107-L113",
+          ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L9-L21",
+          "test/test-state-bootstrap-init.js:L1-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 1798,
+            "lineStart": 1601,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "3af0eaa6bc8655fb7f8c7dc1243e1d1b96cf8578078d32f7623d4ef5d72b7aef"
+          },
+          {
+            "lineEnd": 113,
+            "lineStart": 107,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "e2023384a10d09ab796cfe334f7a43aa8c1f9ce8a2f19ff4c58ba993f95347cc"
+          },
+          {
+            "lineEnd": 21,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "sha256": "c3d82c27f58a40921511d703f7aaadcd388b645a966939e34799516248b8b3be"
+          },
+          {
+            "lineEnd": 260,
+            "lineStart": 1,
+            "path": "test/test-state-bootstrap-init.js",
+            "sha256": "d9a0f8c9da696f2ea3ddbf0246ea5e66fe696057513de7e82122d4f04b50bfb8"
+          }
+        ],
+        "findings": [],
+        "id": "AC14",
+        "linkEventIds": [
+          "g2-commit-f7284f01e6fff68249fea97f29fa6fdee760acc2",
+          "impl-bootstrap",
+          "impl-bootstrap-plan"
+        ],
+        "planSections": [
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-10-13T03:35:45.228Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-harness-clean",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-10-13T03:35:45.228Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:35:45.228Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:35:45.228Z"
+          }
+        ],
+        "text": "If the slug fails to match the plan directory name, then the bootstrap entrypoint shall refuse the write and name the mismatch.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1601-L1798",
+          ".agents/skills/ws-shared/runtime/setup.md:L107-L113",
+          ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L9-L21",
+          "test/test-state-bootstrap-init.js:L1-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 1798,
+            "lineStart": 1601,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "3af0eaa6bc8655fb7f8c7dc1243e1d1b96cf8578078d32f7623d4ef5d72b7aef"
+          },
+          {
+            "lineEnd": 113,
+            "lineStart": 107,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "e2023384a10d09ab796cfe334f7a43aa8c1f9ce8a2f19ff4c58ba993f95347cc"
+          },
+          {
+            "lineEnd": 21,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "sha256": "c3d82c27f58a40921511d703f7aaadcd388b645a966939e34799516248b8b3be"
+          },
+          {
+            "lineEnd": 260,
+            "lineStart": 1,
+            "path": "test/test-state-bootstrap-init.js",
+            "sha256": "d9a0f8c9da696f2ea3ddbf0246ea5e66fe696057513de7e82122d4f04b50bfb8"
+          }
+        ],
+        "findings": [],
+        "id": "AC15",
+        "linkEventIds": [
+          "g2-commit-f7284f01e6fff68249fea97f29fa6fdee760acc2",
+          "impl-bootstrap",
+          "impl-bootstrap-plan"
+        ],
+        "planSections": [
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-10-13T03:35:45.229Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-harness-clean",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-10-13T03:35:45.229Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:35:45.229Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:35:45.229Z"
+          }
+        ],
+        "text": "If the workflow id departs from the documented `{slug}-{ISO8601}` shape, then the bootstrap entrypoint shall refuse the write and quote the expected shape.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1601-L1798",
+          ".agents/skills/ws-shared/runtime/setup.md:L107-L113",
+          ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L9-L21",
+          "test/test-state-bootstrap-init.js:L1-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 1798,
+            "lineStart": 1601,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "3af0eaa6bc8655fb7f8c7dc1243e1d1b96cf8578078d32f7623d4ef5d72b7aef"
+          },
+          {
+            "lineEnd": 113,
+            "lineStart": 107,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "e2023384a10d09ab796cfe334f7a43aa8c1f9ce8a2f19ff4c58ba993f95347cc"
+          },
+          {
+            "lineEnd": 21,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "sha256": "c3d82c27f58a40921511d703f7aaadcd388b645a966939e34799516248b8b3be"
+          },
+          {
+            "lineEnd": 260,
+            "lineStart": 1,
+            "path": "test/test-state-bootstrap-init.js",
+            "sha256": "d9a0f8c9da696f2ea3ddbf0246ea5e66fe696057513de7e82122d4f04b50bfb8"
+          }
+        ],
+        "findings": [],
+        "id": "AC16",
+        "linkEventIds": [
+          "g2-commit-f7284f01e6fff68249fea97f29fa6fdee760acc2",
+          "impl-bootstrap",
+          "impl-bootstrap-plan"
+        ],
+        "planSections": [
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-10-13T03:35:45.231Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-harness-clean",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-10-13T03:35:45.231Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:35:45.231Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:35:45.231Z"
+          }
+        ],
+        "text": "The bootstrap entrypoint shall leave no partial pair and no index row behind when it fails, so a failed invocation leaves any pre-existing state byte-identical.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1601-L1798",
+          ".agents/skills/ws-shared/runtime/setup.md:L107-L113",
+          ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L9-L21",
+          "test/test-state-bootstrap-init.js:L1-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 1798,
+            "lineStart": 1601,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "3af0eaa6bc8655fb7f8c7dc1243e1d1b96cf8578078d32f7623d4ef5d72b7aef"
+          },
+          {
+            "lineEnd": 113,
+            "lineStart": 107,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "e2023384a10d09ab796cfe334f7a43aa8c1f9ce8a2f19ff4c58ba993f95347cc"
+          },
+          {
+            "lineEnd": 21,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "sha256": "c3d82c27f58a40921511d703f7aaadcd388b645a966939e34799516248b8b3be"
+          },
+          {
+            "lineEnd": 260,
+            "lineStart": 1,
+            "path": "test/test-state-bootstrap-init.js",
+            "sha256": "d9a0f8c9da696f2ea3ddbf0246ea5e66fe696057513de7e82122d4f04b50bfb8"
+          }
+        ],
+        "findings": [],
+        "id": "AC17",
+        "linkEventIds": [
+          "g2-commit-f7284f01e6fff68249fea97f29fa6fdee760acc2",
+          "impl-bootstrap",
+          "impl-bootstrap-plan"
+        ],
+        "planSections": [
+          "section-002",
+          "section-004",
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-10-13T03:35:45.233Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-harness-clean",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-10-13T03:35:45.233Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:35:45.233Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:35:45.233Z"
+          }
+        ],
+        "text": "When the state runtime is invoked with `--help`, the help output shall list the bootstrap usage line with a sample invocation.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1601-L1798",
+          ".agents/skills/ws-shared/runtime/setup.md:L107-L113",
+          ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L9-L21",
+          "test/test-state-bootstrap-init.js:L1-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 1798,
+            "lineStart": 1601,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "3af0eaa6bc8655fb7f8c7dc1243e1d1b96cf8578078d32f7623d4ef5d72b7aef"
+          },
+          {
+            "lineEnd": 113,
+            "lineStart": 107,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "e2023384a10d09ab796cfe334f7a43aa8c1f9ce8a2f19ff4c58ba993f95347cc"
+          },
+          {
+            "lineEnd": 21,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "sha256": "c3d82c27f58a40921511d703f7aaadcd388b645a966939e34799516248b8b3be"
+          },
+          {
+            "lineEnd": 260,
+            "lineStart": 1,
+            "path": "test/test-state-bootstrap-init.js",
+            "sha256": "d9a0f8c9da696f2ea3ddbf0246ea5e66fe696057513de7e82122d4f04b50bfb8"
+          }
+        ],
+        "findings": [],
+        "id": "AC18",
+        "linkEventIds": [
+          "g2-commit-f7284f01e6fff68249fea97f29fa6fdee760acc2",
+          "impl-bootstrap",
+          "impl-bootstrap-plan"
+        ],
+        "planSections": [
+          "section-002",
+          "section-006",
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-10-13T03:35:45.234Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-harness-clean",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-10-13T03:35:45.234Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:35:45.234Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:35:45.234Z"
+          }
+        ],
+        "text": "Where the bootstrap path is documented, the contract text shall state the bootstrap command, the pair invariant, the idempotent replay rule, and the refusal rules in one canonical section.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1601-L1798",
+          ".agents/skills/ws-shared/runtime/setup.md:L107-L113",
+          ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L9-L21",
+          "test/test-state-bootstrap-init.js:L1-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 1798,
+            "lineStart": 1601,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "3af0eaa6bc8655fb7f8c7dc1243e1d1b96cf8578078d32f7623d4ef5d72b7aef"
+          },
+          {
+            "lineEnd": 113,
+            "lineStart": 107,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "e2023384a10d09ab796cfe334f7a43aa8c1f9ce8a2f19ff4c58ba993f95347cc"
+          },
+          {
+            "lineEnd": 21,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "sha256": "c3d82c27f58a40921511d703f7aaadcd388b645a966939e34799516248b8b3be"
+          },
+          {
+            "lineEnd": 260,
+            "lineStart": 1,
+            "path": "test/test-state-bootstrap-init.js",
+            "sha256": "d9a0f8c9da696f2ea3ddbf0246ea5e66fe696057513de7e82122d4f04b50bfb8"
+          }
+        ],
+        "findings": [],
+        "id": "AC19",
+        "linkEventIds": [
+          "g2-commit-f7284f01e6fff68249fea97f29fa6fdee760acc2",
+          "impl-bootstrap",
+          "impl-bootstrap-plan"
+        ],
+        "planSections": [
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-10-13T03:35:45.236Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-harness-clean",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-10-13T03:35:45.236Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:35:45.236Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:35:45.236Z"
+          }
+        ],
+        "text": "The bootstrap path shall execute on Node 22 with CommonJS `.cjs` modules, and the repository shall require no Python interpreter for it.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1601-L1798",
+          ".agents/skills/ws-shared/runtime/setup.md:L107-L113",
+          ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L9-L21",
+          "test/test-state-bootstrap-init.js:L1-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 1798,
+            "lineStart": 1601,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "3af0eaa6bc8655fb7f8c7dc1243e1d1b96cf8578078d32f7623d4ef5d72b7aef"
+          },
+          {
+            "lineEnd": 113,
+            "lineStart": 107,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "e2023384a10d09ab796cfe334f7a43aa8c1f9ce8a2f19ff4c58ba993f95347cc"
+          },
+          {
+            "lineEnd": 21,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "sha256": "c3d82c27f58a40921511d703f7aaadcd388b645a966939e34799516248b8b3be"
+          },
+          {
+            "lineEnd": 260,
+            "lineStart": 1,
+            "path": "test/test-state-bootstrap-init.js",
+            "sha256": "d9a0f8c9da696f2ea3ddbf0246ea5e66fe696057513de7e82122d4f04b50bfb8"
+          }
+        ],
+        "findings": [],
+        "id": "AC20",
+        "linkEventIds": [
+          "g2-commit-f7284f01e6fff68249fea97f29fa6fdee760acc2",
+          "impl-bootstrap",
+          "impl-bootstrap-plan"
+        ],
+        "planSections": [
+          "section-002",
+          "section-007",
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-10-13T03:35:45.237Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-harness-clean",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-10-13T03:35:45.237Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:35:45.237Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:35:45.237Z"
+          }
+        ],
+        "text": "The verification command set shall include the bootstrap path and its refusal behaviors as an automated test module registered in `test/test-suites.json`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs:L1601-L1798",
+          ".agents/skills/ws-shared/runtime/setup.md:L107-L113",
+          ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md:L9-L21",
+          "test/test-state-bootstrap-init.js:L1-L260"
+        ],
+        "files": [
+          {
+            "lineEnd": 1798,
+            "lineStart": 1601,
+            "path": ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            "sha256": "3af0eaa6bc8655fb7f8c7dc1243e1d1b96cf8578078d32f7623d4ef5d72b7aef"
+          },
+          {
+            "lineEnd": 113,
+            "lineStart": 107,
+            "path": ".agents/skills/ws-shared/runtime/setup.md",
+            "sha256": "e2023384a10d09ab796cfe334f7a43aa8c1f9ce8a2f19ff4c58ba993f95347cc"
+          },
+          {
+            "lineEnd": 21,
+            "lineStart": 9,
+            "path": ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "sha256": "c3d82c27f58a40921511d703f7aaadcd388b645a966939e34799516248b8b3be"
+          },
+          {
+            "lineEnd": 260,
+            "lineStart": 1,
+            "path": "test/test-state-bootstrap-init.js",
+            "sha256": "d9a0f8c9da696f2ea3ddbf0246ea5e66fe696057513de7e82122d4f04b50bfb8"
+          }
+        ],
+        "findings": [],
+        "id": "AC21",
+        "linkEventIds": [
+          "g2-commit-f7284f01e6fff68249fea97f29fa6fdee760acc2",
+          "impl-bootstrap",
+          "impl-bootstrap-plan"
+        ],
+        "planSections": [
+          "section-008"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-context-budget",
+            "phase": "observed",
+            "sourceFile": "test/test-context-budget.js",
+            "timestamp": "2026-10-13T03:35:45.239Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-harness-clean",
+            "phase": "observed",
+            "sourceFile": "test/test-harness-clean.js",
+            "timestamp": "2026-10-13T03:35:45.239Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:35:45.239Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:35:45.239Z"
+          }
+        ],
+        "text": "The bootstrap entrypoint shall write only repo-relative paths into the state record and shall emit no absolute machine path.",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "faf5a0b7d3731bacbf19e9d4c832813d4d7b88c10632cfe20d070260ccd2fbd3",
+        "endedAt": "2026-10-13T03:50:00Z",
+        "exitCode": 0,
+        "startedAt": "2026-10-13T03:20:00Z"
+      }
+    ],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "impl-bootstrap-neg"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:36:39.921Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:36:39.921Z"
+          }
+        ],
+        "text": "Red test: bootstrap over a state whose `revision` is 3 and assert a non-zero exit with both members byte-identical afterwards; before this contract the same invocation is impossible (the operation is rejected) and the hand-edit remains the only path."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "impl-bootstrap-neg"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:36:39.928Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:36:39.928Z"
+          }
+        ],
+        "text": "Red test: bootstrap over a state with a non-empty `completedSteps` and assert refusal, so an already-running or finished run is never re-initialized."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "impl-bootstrap-neg"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:36:39.929Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:36:39.929Z"
+          }
+        ],
+        "text": "Red test: bootstrap with only `{workflow-id}.state.md` on disk and assert a fail-closed error naming the missing JSON member, with no file created."
+      },
+      {
+        "id": "NS4",
+        "linkEventIds": [
+          "impl-bootstrap-neg"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:36:39.929Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:36:39.929Z"
+          }
+        ],
+        "text": "Red test: bootstrap with an empty slug and assert a usage error and no write; repeat with `--branch HEAD` and with a baseline that is not a hexadecimal commit string."
+      },
+      {
+        "id": "NS5",
+        "linkEventIds": [
+          "impl-bootstrap-neg"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:36:39.929Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:36:39.929Z"
+          }
+        ],
+        "text": "Red test: bootstrap with a slug whose value differs from the plan directory name and assert refusal naming the mismatch."
+      },
+      {
+        "id": "NS6",
+        "linkEventIds": [
+          "impl-bootstrap-neg"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:36:39.929Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:36:39.929Z"
+          }
+        ],
+        "text": "Red test: bootstrap with a workflow id outside the `{slug}-{ISO8601}` shape and assert refusal quoting the expected shape."
+      },
+      {
+        "id": "NS7",
+        "linkEventIds": [
+          "impl-bootstrap-neg"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:36:39.930Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:36:39.929Z"
+          }
+        ],
+        "text": "Red test: bootstrap with the plans directory absent and assert the command still creates the index row, so `validate_state.cjs` resolves the workflow instead of failing on a missing index entry."
+      },
+      {
+        "id": "NS8",
+        "linkEventIds": [
+          "impl-bootstrap-neg"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:36:39.930Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:36:39.930Z"
+          }
+        ],
+        "text": "Red test: bootstrap, dispatch Step 0 through `update_state.cjs`, then re-run bootstrap and assert refusal (the run has progressed), proving the idempotent window is genuinely limited to the untouched revision-0 pair."
+      },
+      {
+        "id": "NS9",
+        "linkEventIds": [
+          "impl-bootstrap-neg"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:36:39.930Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:36:39.930Z"
+          }
+        ],
+        "text": "Red test: simulate a failed write (unwritable plans directory) and assert no partial pair and no index row remain, and that a pre-existing state is byte-identical afterwards."
+      },
+      {
+        "id": "NS10",
+        "linkEventIds": [
+          "impl-bootstrap-neg"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:36:39.930Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:36:39.930Z"
+          }
+        ],
+        "text": "Stack invariant negative test: run the bootstrap and its test module under `node` with no Python on the path and assert both pass, proving the Node 22 CommonJS-only invariant; a `.py` helper introduced anywhere under `.agents/skills/` or `bin/` must fail `ws-check-harness`."
+      },
+      {
+        "id": "NS11",
+        "linkEventIds": [
+          "impl-bootstrap-neg"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:36:39.930Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:36:39.930Z"
+          }
+        ],
+        "text": "Regression assertion: re-run the existing state suites and assert the dispatch/finish/checkpoint semantics, the telemetry event schema, and the plans-index hash comparison behave exactly as before."
+      },
+      {
+        "id": "NS12",
+        "linkEventIds": [
+          "impl-bootstrap-neg"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap.js",
+            "timestamp": "2026-10-13T03:36:39.930Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "test-state-bootstrap-init",
+            "phase": "observed",
+            "sourceFile": "test/test-state-bootstrap-init.js",
+            "timestamp": "2026-10-13T03:36:39.930Z"
+          }
+        ],
+        "text": "Contract assertion: assert the canonical bootstrap section states the pair invariant, the replay rule, and the refusal rules, and that the runtime `--help` output lists the bootstrap usage line."
+      }
+    ],
+    "planIndexPath": ".agents/plans/us-510/.runtime/plan.index.json",
+    "revision": 10,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "step5",
+      "computedAt": "2026-10-13T03:39:39.847Z",
+      "deficiencies": [],
+      "earnedUnits": 210,
+      "errors": [],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "ledgerHash": "61d80fdcc660719f2f17c2d4d0523c694ef1ba4605cbcc42edcafbd3424f35aa",
+      "missingEvidence": false,
+      "score": 10,
+      "totalUnits": 210,
+      "writer": "ac_ledger.cjs score"
+    },
+    "slug": "us-510",
+    "specPath": ".agents/plans/us-510/step-00-us-510.spec.md",
+    "testingSkip": null,
+    "workflowId": "us-510-20261013T033129Z"
+  },
+  "acTotal": 21,
+  "agentTranscripts": {
+    "reason": "no-matching-session",
+    "recordedAt": "2026-10-13T03:34:32Z",
+    "status": "transcript-unavailable"
+  },
+  "baselineCommit": "66175d9c51cd93c2c13599eca1fa080b50e05ab3",
+  "branch": "develop",
+  "commits": [
+    {
+      "sha": "f7284f01e6fff68249fea97f29fa6fdee760acc2",
+      "step": 5
+    }
+  ],
+  "completedSteps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "currentModel": "opencode-go/deepseek-v4.1-flash",
+  "currentStep": 9,
+  "endedAt": "2026-10-13T03:44:00Z",
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-510/step-00-us-510.spec.md",
+        ".agents/plans/us-510/ac-ledger.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "us-510",
+      "status": "completed",
+      "step": 0,
+      "summary": "Finished step 0",
+      "workflowId": "us-510-20261013T033129Z",
+      "workflowType": "standard"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-510/step-01-us-510.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "us-510",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "us-510-20261013T033129Z",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-510/step-02-us-510.plan-interview.md",
+        ".agents/plans/us-510/step-02-us-510.plan.refined.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "us-510",
+      "status": "completed",
+      "step": 2,
+      "summary": "Finished step 2",
+      "workflowId": "us-510-20261013T033129Z",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-510/step-03-us-510.plan.exec.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "us-510",
+      "status": "completed",
+      "step": 3,
+      "summary": "Finished step 3",
+      "workflowId": "us-510-20261013T033129Z",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [
+        "test/test-state-bootstrap-init.js",
+        ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+        ".agents/skills/ws-shared/runtime/workflow-state.schema.json",
+        ".agents/skills/ws-shared/runtime/setup.md",
+        ".agents/skills/ws-shared/runtime/gates.md",
+        ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+        ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+        "test/test-state-bootstrap.js",
+        "test/test-suites.json",
+        "FEATURES.md",
+        "README.md",
+        "package.json",
+        "bin/skill-dependencies.json",
+        "bin/skill-integrity.json",
+        ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+        ".agents/skills/ws-shared/version.json",
+        "docs/index.html",
+        "test/package.json"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "us-510",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "us-510-20261013T033129Z",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-510/step-05-us-510.plan.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "us-510",
+      "status": "completed",
+      "step": 5,
+      "summary": "Finished step 5",
+      "workflowId": "us-510-20261013T033129Z",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-510/step-06-us-510.review.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "us-510",
+      "status": "completed",
+      "step": 6,
+      "summary": "Finished step 6",
+      "workflowId": "us-510-20261013T033129Z",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-510/step-07-us-510.testing.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "us-510",
+      "status": "completed",
+      "step": 7,
+      "summary": "Finished step 7",
+      "workflowId": "us-510-20261013T033129Z",
+      "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-510/step-08-us-510.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-510",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "us-510-20261013T033129Z",
+      "workflowType": "standard"
+    },
+    "9": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-510",
+      "status": "completed",
+      "step": 9,
+      "summary": "Finished step 9",
+      "workflowId": "us-510-20261013T033129Z",
+      "workflowType": "standard"
+    }
+  },
+  "nextAction": "Run step 9",
+  "prNumber": "517",
+  "prUrl": "https://github.com/jpolvora/workflow-skills/pull/517",
+  "revision": 19,
+  "shipStatus": "pr-open",
+  "skippedSteps": [],
+  "slug": "us-510",
+  "statePath": ".agents/plans/us-510/us-510-20261013T033129Z.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-13T03:34:32Z",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "step": 0
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-13T03:34:33Z",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "step": 1
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-13T03:34:33Z",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "step": 2
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-13T03:34:33Z",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "step": 3
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-13T03:39:27Z",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "step": 6
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-13T03:40:03Z",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "step": 7
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-13T03:42:28Z",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "step": 8
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-13T03:52:22Z",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "step": 9
+    }
+  ],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "completed",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed",
+    "9": "completed"
+  },
+  "telemetry": {
+    "steps": [
+      {
+        "N": 0,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T03:34:32Z",
+        "elapsedSec": 1,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-510/step-00-us-510.spec.md",
+            ".agents/plans/us-510/ac-ledger.json"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T03:34:33Z",
+        "label": "Spec",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 1,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T03:34:33Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-510/step-01-us-510.plan.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T03:34:33Z",
+        "label": "Planning",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T03:34:33Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-510/step-02-us-510.plan-interview.md",
+            ".agents/plans/us-510/step-02-us-510.plan.refined.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T03:34:33Z",
+        "label": "Interview",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T03:34:33Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-510/step-03-us-510.plan.exec.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T03:34:33Z",
+        "label": "Plan to tasks",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            "test/test-state-bootstrap-init.js"
+          ],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+            ".agents/skills/ws-shared/runtime/workflow-state.schema.json",
+            ".agents/skills/ws-shared/runtime/setup.md",
+            ".agents/skills/ws-shared/runtime/gates.md",
+            ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+            ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+            "test/test-state-bootstrap.js",
+            "test/test-suites.json",
+            "FEATURES.md",
+            "README.md",
+            "package.json",
+            "bin/skill-dependencies.json",
+            "bin/skill-integrity.json",
+            ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+            ".agents/skills/ws-shared/version.json",
+            "docs/index.html",
+            "test/package.json"
+          ]
+        },
+        "finishedAt": "2026-10-13T03:35:32Z",
+        "label": "Implement",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-510/step-05-us-510.plan.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T03:37:16Z",
+        "label": "Verify",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 6,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T03:39:27Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-510/step-06-us-510.review.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T03:39:27Z",
+        "label": "Code review",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 7,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T03:40:03Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-510/step-07-us-510.testing.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T03:40:03Z",
+        "label": "Testing",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T03:42:28Z",
+        "elapsedSec": 92,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-510/step-08-us-510.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T03:44:00Z",
+        "label": "Ship",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 9,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T03:52:22Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T03:52:22Z",
+        "label": "Fix PR",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 93,
+    "totalTokens": 0
+  },
+  "verificationScore": 10,
+  "workflowId": "us-510-20261013T033129Z",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/us-510/ac-ledger.json",
+      ".agents/plans/us-510/step-00-us-510.spec.md",
+      ".agents/plans/us-510/step-01-us-510.plan.md",
+      ".agents/plans/us-510/step-02-us-510.plan-interview.md",
+      ".agents/plans/us-510/step-02-us-510.plan.refined.md",
+      ".agents/plans/us-510/step-03-us-510.plan.exec.md",
+      ".agents/plans/us-510/step-05-us-510.plan.report.md",
+      ".agents/plans/us-510/step-06-us-510.review.md",
+      ".agents/plans/us-510/step-07-us-510.testing.report.md",
+      ".agents/plans/us-510/step-08-us-510.result.md",
+      "test/test-state-bootstrap-init.js"
+    ],
+    "deleted": [],
+    "modified": [
+      ".agents/skills/ws-shared/runtime/gates.md",
+      ".agents/skills/ws-shared/runtime/scripts/workflow_state.cjs",
+      ".agents/skills/ws-shared/runtime/setup.md",
+      ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+      ".agents/skills/ws-shared/runtime/workflow-state.schema.json",
+      ".agents/skills/ws-shared/version.json",
+      ".agents/skills/ws-spec-to-pr/STEP-DISPATCH.md",
+      ".agents/skills/ws-spec-to-pr/protocols/state-hygiene.md",
+      "FEATURES.md",
+      "README.md",
+      "bin/skill-dependencies.json",
+      "bin/skill-integrity.json",
+      "docs/index.html",
+      "package.json",
+      "test/package.json",
+      "test/test-state-bootstrap.js",
+      "test/test-suites.json"
+    ]
+  },
+  "workflowType": "standard"
+}

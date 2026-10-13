@@ -373,6 +373,9 @@
       "test/test-run-state-integrity.js"
     ],
     [
+      "test/test-state-bootstrap-init.js"
+    ],
+    [
       "test/test-artifact-economy.js"
     ],
     [
