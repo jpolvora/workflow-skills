@@ -2322,7 +2322,8 @@
     5,
     6,
     7,
-    8
+    8,
+    9
   ],
   "currentModel": "opencode-go/deepseek-v4.1-flash",
   "currentStep": 9,
@@ -2517,12 +2518,29 @@
       "summary": "Finished step 8",
       "workflowId": "us-510-20261013T033129Z",
       "workflowType": "standard"
+    },
+    "9": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-510",
+      "status": "completed",
+      "step": 9,
+      "summary": "Finished step 9",
+      "workflowId": "us-510-20261013T033129Z",
+      "workflowType": "standard"
     }
   },
   "nextAction": "Run step 9",
   "prNumber": "517",
   "prUrl": "https://github.com/jpolvora/workflow-skills/pull/517",
-  "revision": 17,
+  "revision": 19,
   "shipStatus": "pr-open",
   "skippedSteps": [],
   "slug": "us-510",
@@ -2571,6 +2589,12 @@
       "dispatchedAt": "2026-10-13T03:42:28Z",
       "model": "opencode-go/deepseek-v4.1-flash",
       "step": 8
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-13T03:52:22Z",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "step": 9
     }
   ],
   "stepStatus": {
@@ -2582,7 +2606,8 @@
     "5": "completed",
     "6": "completed",
     "7": "completed",
-    "8": "completed"
+    "8": "completed",
+    "9": "completed"
   },
   "telemetry": {
     "steps": [
@@ -2782,6 +2807,24 @@
         },
         "finishedAt": "2026-10-13T03:44:00Z",
         "label": "Ship",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 9,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T03:52:22Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T03:52:22Z",
+        "label": "Fix PR",
         "model": "opencode-go/deepseek-v4.1-flash",
         "promptTokens": 0,
         "subagentId": null
