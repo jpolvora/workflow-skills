@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": 23,
-  "generatedAt": "2026-10-13T01:43:22Z",
+  "revision": 9,
+  "generatedAt": "2026-10-13T02:29:40Z",
   "workflows": [
     {
       "workflowId": "benchmark-publish-fixed-models-20260930T114235Z",
@@ -376,6 +376,17 @@
       "currentStep": 9,
       "updatedAt": "2026-10-13T01:43:22Z",
       "runPath": ".agents/plans/us-508/us-508-20261013T005850Z.state.json"
+    },
+    {
+      "workflowId": "us-509-20261013T015209Z",
+      "slug": "us-509",
+      "pipeline": "standard",
+      "statePath": ".agents/plans/us-509/us-509-20261013T015209Z.state.md",
+      "stateSha256": "7a43e117c10eb50bf9ac37cabfc179033d2820129ee125eb08ab9925bdd33043",
+      "status": "completed",
+      "currentStep": 9,
+      "updatedAt": "2026-10-13T02:29:40Z",
+      "runPath": ".agents/plans/us-509/us-509-20261013T015209Z.state.json"
     },
     {
       "workflowId": "uswf-us-506-20261012T212609Z",

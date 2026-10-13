@@ -1,0 +1,1550 @@
+{
+  "acImplemented": 15,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L74-L110",
+          "test/test-ac-ledger.js:L660-L766"
+        ],
+        "files": [
+          {
+            "lineEnd": 110,
+            "lineStart": 74,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+            "sha256": "cd9d3f0218c73c66cbd8dc0360b235e14b6a207fae63fd70f83b433dc846643f"
+          },
+          {
+            "lineEnd": 766,
+            "lineStart": 660,
+            "path": "test/test-ac-ledger.js",
+            "sha256": "55d008b33e0a7700963094ac72fd84e6cbfe3a87d5672b8c7c1fac1b3b783440"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "g2-commit-f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+          "impl-AC1",
+          "impl2-AC1",
+          "verify-alias-step5"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1: single --ac accepts a space-separated id list",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:07.893Z"
+          }
+        ],
+        "text": "The `ac_ledger.cjs link` subcommand shall accept two or more AC ids after a single `--ac` flag as space-separated values.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L74-L110",
+          "test/test-ac-ledger.js:L660-L766"
+        ],
+        "files": [
+          {
+            "lineEnd": 110,
+            "lineStart": 74,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+            "sha256": "cd9d3f0218c73c66cbd8dc0360b235e14b6a207fae63fd70f83b433dc846643f"
+          },
+          {
+            "lineEnd": 766,
+            "lineStart": 660,
+            "path": "test/test-ac-ledger.js",
+            "sha256": "55d008b33e0a7700963094ac72fd84e6cbfe3a87d5672b8c7c1fac1b3b783440"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "g2-commit-f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+          "impl-AC2",
+          "impl2-AC2"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2: multi-target link attaches commit and event id to every named AC",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:07.975Z"
+          }
+        ],
+        "text": "When `link` receives `--ac AC1 AC2 AC3` together with a `--commit` payload, the helper shall attach that commit and the event id to every named AC in one ledger write.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L74-L110",
+          "test/test-ac-ledger.js:L660-L766"
+        ],
+        "files": [
+          {
+            "lineEnd": 110,
+            "lineStart": 74,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+            "sha256": "cd9d3f0218c73c66cbd8dc0360b235e14b6a207fae63fd70f83b433dc846643f"
+          },
+          {
+            "lineEnd": 766,
+            "lineStart": 660,
+            "path": "test/test-ac-ledger.js",
+            "sha256": "55d008b33e0a7700963094ac72fd84e6cbfe3a87d5672b8c7c1fac1b3b783440"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "g2-commit-f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+          "impl-AC3",
+          "impl2-AC3"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC3: repeated and space-separated ids resolve to a deduplicated union",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:08.049Z"
+          }
+        ],
+        "text": "While one invocation uses both `--ac AC1 --ac AC2` and `--ac AC1 AC2`, the helper shall resolve the target list as the deduplicated union of the named ids.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L74-L110",
+          "test/test-ac-ledger.js:L660-L766"
+        ],
+        "files": [
+          {
+            "lineEnd": 110,
+            "lineStart": 74,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+            "sha256": "cd9d3f0218c73c66cbd8dc0360b235e14b6a207fae63fd70f83b433dc846643f"
+          },
+          {
+            "lineEnd": 766,
+            "lineStart": 660,
+            "path": "test/test-ac-ledger.js",
+            "sha256": "55d008b33e0a7700963094ac72fd84e6cbfe3a87d5672b8c7c1fac1b3b783440"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "g2-commit-f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+          "impl-AC4",
+          "impl2-AC4"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC4: target list stops at the next --prefixed token",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:08.125Z"
+          }
+        ],
+        "text": "When the value list after `--ac` reaches a token that starts with `--`, the helper shall stop consuming ids and treat the preceding values as the complete target list.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L74-L110",
+          "test/test-ac-ledger.js:L660-L766"
+        ],
+        "files": [
+          {
+            "lineEnd": 110,
+            "lineStart": 74,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+            "sha256": "cd9d3f0218c73c66cbd8dc0360b235e14b6a207fae63fd70f83b433dc846643f"
+          },
+          {
+            "lineEnd": 766,
+            "lineStart": 660,
+            "path": "test/test-ac-ledger.js",
+            "sha256": "55d008b33e0a7700963094ac72fd84e6cbfe3a87d5672b8c7c1fac1b3b783440"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "g2-commit-f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+          "impl-AC5",
+          "impl2-AC5"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC5: every named target is validated before any evidence is applied",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:08.201Z"
+          }
+        ],
+        "text": "The helper shall validate every named target id against the ledger before applying any evidence, so each `link` invocation is all-or-nothing.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L74-L110",
+          "test/test-ac-ledger.js:L660-L766"
+        ],
+        "files": [
+          {
+            "lineEnd": 110,
+            "lineStart": 74,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+            "sha256": "cd9d3f0218c73c66cbd8dc0360b235e14b6a207fae63fd70f83b433dc846643f"
+          },
+          {
+            "lineEnd": 766,
+            "lineStart": 660,
+            "path": "test/test-ac-ledger.js",
+            "sha256": "55d008b33e0a7700963094ac72fd84e6cbfe3a87d5672b8c7c1fac1b3b783440"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "g2-commit-f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+          "impl-AC6",
+          "impl2-AC6"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC6: an unknown target id exits non-zero and leaves the ledger byte-identical",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:08.280Z"
+          }
+        ],
+        "text": "If a named target id is absent from the ledger, then the helper shall exit non-zero naming that id and shall leave the ledger file byte-identical.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L74-L110",
+          "test/test-ac-ledger.js:L660-L766"
+        ],
+        "files": [
+          {
+            "lineEnd": 110,
+            "lineStart": 74,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+            "sha256": "cd9d3f0218c73c66cbd8dc0360b235e14b6a207fae63fd70f83b433dc846643f"
+          },
+          {
+            "lineEnd": 766,
+            "lineStart": 660,
+            "path": "test/test-ac-ledger.js",
+            "sha256": "55d008b33e0a7700963094ac72fd84e6cbfe3a87d5672b8c7c1fac1b3b783440"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [
+          "g2-commit-f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+          "impl-AC7",
+          "impl2-AC7"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC7: a token no flag consumed exits non-zero naming the first unconsumed token",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:08.360Z"
+          }
+        ],
+        "text": "If `link` receives non-flag tokens that no flag consumed, then the helper shall exit non-zero naming the first unconsumed token instead of ignoring it.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L74-L110",
+          "test/test-ac-ledger.js:L660-L766"
+        ],
+        "files": [
+          {
+            "lineEnd": 110,
+            "lineStart": 74,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+            "sha256": "cd9d3f0218c73c66cbd8dc0360b235e14b6a207fae63fd70f83b433dc846643f"
+          },
+          {
+            "lineEnd": 766,
+            "lineStart": 660,
+            "path": "test/test-ac-ledger.js",
+            "sha256": "55d008b33e0a7700963094ac72fd84e6cbfe3a87d5672b8c7c1fac1b3b783440"
+          }
+        ],
+        "findings": [],
+        "id": "AC8",
+        "linkEventIds": [
+          "g2-commit-f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+          "impl-AC8",
+          "impl2-AC8"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC8: --negative applies the same multi-value union semantics",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:08.447Z"
+          }
+        ],
+        "text": "The helper shall apply the same multi-value, union, and all-or-nothing semantics to `--negative` target ids that it applies to `--ac`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L74-L110",
+          "test/test-ac-ledger.js:L660-L766"
+        ],
+        "files": [
+          {
+            "lineEnd": 110,
+            "lineStart": 74,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+            "sha256": "cd9d3f0218c73c66cbd8dc0360b235e14b6a207fae63fd70f83b433dc846643f"
+          },
+          {
+            "lineEnd": 766,
+            "lineStart": 660,
+            "path": "test/test-ac-ledger.js",
+            "sha256": "55d008b33e0a7700963094ac72fd84e6cbfe3a87d5672b8c7c1fac1b3b783440"
+          }
+        ],
+        "findings": [],
+        "id": "AC9",
+        "linkEventIds": [
+          "g2-commit-f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+          "impl-AC9",
+          "impl2-AC9"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC9: link usage documents both --ac forms (space-separated)",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:08.521Z"
+          }
+        ],
+        "text": "The `link` usage text shall name both the space-separated `--ac AC1 AC2` form and the repeated `--ac AC1 --ac AC2` form.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L74-L110",
+          "test/test-ac-ledger.js:L660-L766"
+        ],
+        "files": [
+          {
+            "lineEnd": 110,
+            "lineStart": 74,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+            "sha256": "cd9d3f0218c73c66cbd8dc0360b235e14b6a207fae63fd70f83b433dc846643f"
+          },
+          {
+            "lineEnd": 766,
+            "lineStart": 660,
+            "path": "test/test-ac-ledger.js",
+            "sha256": "55d008b33e0a7700963094ac72fd84e6cbfe3a87d5672b8c7c1fac1b3b783440"
+          }
+        ],
+        "findings": [],
+        "id": "AC10",
+        "linkEventIds": [
+          "g2-commit-f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+          "impl-AC10",
+          "impl2-AC10"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC10: a successful multi-target link increments the revision exactly once",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:08.608Z"
+          }
+        ],
+        "text": "When a multi-target `link` succeeds, the helper shall record the commit and the event id on every named AC and increment the ledger revision exactly once.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L74-L110",
+          "test/test-ac-ledger.js:L660-L766"
+        ],
+        "files": [
+          {
+            "lineEnd": 110,
+            "lineStart": 74,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+            "sha256": "cd9d3f0218c73c66cbd8dc0360b235e14b6a207fae63fd70f83b433dc846643f"
+          },
+          {
+            "lineEnd": 766,
+            "lineStart": 660,
+            "path": "test/test-ac-ledger.js",
+            "sha256": "55d008b33e0a7700963094ac72fd84e6cbfe3a87d5672b8c7c1fac1b3b783440"
+          }
+        ],
+        "findings": [],
+        "id": "AC11",
+        "linkEventIds": [
+          "g2-commit-f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+          "impl-AC11",
+          "impl2-AC11"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC11: a replayed event id prints NOTICE and skips the payload",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:08.684Z"
+          }
+        ],
+        "text": "While the same event id is already applied to every named target, the helper shall skip the payload, print the existing `NOTICE` line on stderr, and exit 0.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L74-L110",
+          "test/test-ac-ledger.js:L660-L766"
+        ],
+        "files": [
+          {
+            "lineEnd": 110,
+            "lineStart": 74,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+            "sha256": "cd9d3f0218c73c66cbd8dc0360b235e14b6a207fae63fd70f83b433dc846643f"
+          },
+          {
+            "lineEnd": 766,
+            "lineStart": 660,
+            "path": "test/test-ac-ledger.js",
+            "sha256": "55d008b33e0a7700963094ac72fd84e6cbfe3a87d5672b8c7c1fac1b3b783440"
+          }
+        ],
+        "findings": [],
+        "id": "AC12",
+        "linkEventIds": [
+          "g2-commit-f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+          "impl-AC12",
+          "impl2-AC12"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC12: multi-AC commit link at pre-step6 derives no linkage error",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:08.758Z"
+          }
+        ],
+        "text": "When a multi-AC `link --commit` call completes with `--score-boundary pre-step6`, the helper shall derive a `scoreState.errors` list without a `product commit linkage required before step 6` entry for any named AC.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L74-L110",
+          "test/test-ac-ledger.js:L660-L766"
+        ],
+        "files": [
+          {
+            "lineEnd": 110,
+            "lineStart": 74,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+            "sha256": "cd9d3f0218c73c66cbd8dc0360b235e14b6a207fae63fd70f83b433dc846643f"
+          },
+          {
+            "lineEnd": 766,
+            "lineStart": 660,
+            "path": "test/test-ac-ledger.js",
+            "sha256": "55d008b33e0a7700963094ac72fd84e6cbfe3a87d5672b8c7c1fac1b3b783440"
+          }
+        ],
+        "findings": [],
+        "id": "AC13",
+        "linkEventIds": [
+          "g2-commit-f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+          "impl-AC13",
+          "impl2-AC13"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC13: --ac with no value names --ac and not undefined",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:08.833Z"
+          }
+        ],
+        "text": "If `--ac` is supplied with no value, then the helper shall exit non-zero with a message naming `--ac` instead of the token `undefined`.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L74-L110",
+          "test/test-ac-ledger.js:L660-L766"
+        ],
+        "files": [
+          {
+            "lineEnd": 110,
+            "lineStart": 74,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+            "sha256": "cd9d3f0218c73c66cbd8dc0360b235e14b6a207fae63fd70f83b433dc846643f"
+          },
+          {
+            "lineEnd": 766,
+            "lineStart": 660,
+            "path": "test/test-ac-ledger.js",
+            "sha256": "55d008b33e0a7700963094ac72fd84e6cbfe3a87d5672b8c7c1fac1b3b783440"
+          }
+        ],
+        "findings": [],
+        "id": "AC14",
+        "linkEventIds": [
+          "g2-commit-f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+          "impl-AC14",
+          "impl2-AC14"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC14: bare --productFailure parses true without consuming the next token",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:08.907Z"
+          }
+        ],
+        "text": "When the bare `--productFailure` flag is passed with no value, the helper shall parse it as `true` without consuming the following token.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs:L74-L110",
+          "test/test-ac-ledger.js:L660-L766"
+        ],
+        "files": [
+          {
+            "lineEnd": 110,
+            "lineStart": 74,
+            "path": ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+            "sha256": "cd9d3f0218c73c66cbd8dc0360b235e14b6a207fae63fd70f83b433dc846643f"
+          },
+          {
+            "lineEnd": 766,
+            "lineStart": 660,
+            "path": "test/test-ac-ledger.js",
+            "sha256": "55d008b33e0a7700963094ac72fd84e6cbfe3a87d5672b8c7c1fac1b3b783440"
+          }
+        ],
+        "findings": [],
+        "id": "AC15",
+        "linkEventIds": [
+          "g2-commit-f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+          "impl-AC15",
+          "impl2-AC15"
+        ],
+        "planSections": [
+          "section-001",
+          "section-002"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC15: an invalid boundary label names all three accepted labels",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:08.987Z"
+          }
+        ],
+        "text": "If the `--boundary` label is not `step5`, `pre-step6`, or `ship`, then the helper shall exit non-zero with a message naming all three accepted labels.",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      }
+    ],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "ns-NS1"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS1: three-AC commit link derives no linkage error at pre-step6",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:09.063Z"
+          }
+        ],
+        "text": "Red test: a three-AC ledger plus `link --event-id <id> --commit sha=<sha>,step=5 --ac AC1 AC2 AC3` must link all three rows and derive no linkage error at `--boundary pre-step6`. On the pre-fix baseline the same command exits 0 with `commits` on AC1 only and two linkage errors, so the test fails before the change and passes after it."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "ns-NS2"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS2: an unknown target alongside a valid one is named",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:09.136Z"
+          }
+        ],
+        "text": "Red test: an unknown target alongside a valid one (`--ac AC1 --ac AC99`) must exit non-zero with `unknown AC: AC99` and leave the ledger byte-identical — SHA256 and `revision` unchanged, and AC1 must not receive the commit, status, or event id from the rejected call (all-or-nothing)."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "ns-NS3"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS3: a leftover token for a non-target flag is named",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:09.219Z"
+          }
+        ],
+        "text": "Red test: a leftover token for a non-target flag (`--commit sha=<a>,step=5 sha=<b>,step=5`) must exit non-zero naming the second token and persist nothing; on the baseline the first commit is linked silently and the second vanishes."
+      },
+      {
+        "id": "NS4",
+        "linkEventIds": [
+          "ns-NS4"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS4: --ac with no value never prints the token undefined",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:09.302Z"
+          }
+        ],
+        "text": "Red test: `--ac` with no value must exit non-zero with a message naming `--ac`, and stderr must not contain the bare token `undefined` (today's `unknown AC: undefined`)."
+      },
+      {
+        "id": "NS5",
+        "linkEventIds": [
+          "ns-NS5"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS5: --negative NS1 NS2 links both rows",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:09.381Z"
+          }
+        ],
+        "text": "Red test: `--negative NS1 NS2` on a two-scenario ledger must attach the payload to both rows; on the baseline only `NS1` is linked and `NS2` keeps the `no observed passing test` deficiency."
+      },
+      {
+        "id": "NS6",
+        "linkEventIds": [
+          "ns-NS6"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS6: a duplicated id resolves to one deduplicated target set",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:09.447Z"
+          }
+        ],
+        "text": "Red test: a duplicated id (`--ac AC1 --ac AC1 AC2`) must resolve to one target set with exactly one commit entry per row, no duplicated `linkEventIds` values, and a single revision bump."
+      },
+      {
+        "id": "NS7",
+        "linkEventIds": [
+          "ns-NS7"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS7: an unknown second id leaves the first id untouched",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:09.514Z"
+          }
+        ],
+        "text": "Red test: a multi-target call whose second id is unknown must leave the first id's `commits`, `status`, `files`, and `linkEventIds` untouched, proving no partial payload is persisted before validation completes."
+      },
+      {
+        "id": "NS8",
+        "linkEventIds": [
+          "ns-NS8"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS8: bare --productFailure consumes no following token",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:09.582Z"
+          }
+        ],
+        "text": "Regression assertion: the bare `--productFailure` flag still parses as `true` and consumes no following token, and alias-result fail-closed behavior is unchanged (`test/test-per-task-adequacy.js`, `test/test-ac-ledger.js`)."
+      },
+      {
+        "id": "NS9",
+        "linkEventIds": [
+          "ns-NS9"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "link help documents the space-separated --ac target list",
+            "phase": "observed",
+            "sourceFile": "test/test-script-ux-golden-path.js",
+            "timestamp": "2026-10-13T02:20:09.651Z"
+          }
+        ],
+        "text": "Regression assertion: `link --help` still documents `--ac`, `--commit`, and `--score-boundary` with an `Example:` line, and every other subcommand help keeps its flag list (`test/test-script-ux-golden-path.js:52-72`)."
+      },
+      {
+        "id": "NS10",
+        "linkEventIds": [
+          "ns-NS10"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS10: an unsupported boundary label still exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:09.717Z"
+          }
+        ],
+        "text": "Contract assertion: an unsupported `--boundary` label still exits non-zero naming `step5`, `pre-step6`, and `ship`, while a valid boundary that finds a linkage error still exits 0 and reports it in `scoreState.errors[]` — the fix must not \"repair\" the gate by changing exit codes."
+      },
+      {
+        "id": "NS11",
+        "linkEventIds": [
+          "ns-NS11"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS11: no Python file or invocation under the skill tree",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:09.786Z"
+          }
+        ],
+        "text": "Stack invariant test: the helper remains a Node 22 CommonJS module with no new dependency and no Python file or invocation; `node --check` passes and the harness detectors (`ws-check-harness` Phase 0 for `.py`/`__pycache__` and Phase 5a) report 0 findings for the edited skill."
+      },
+      {
+        "id": "NS12",
+        "linkEventIds": [
+          "ns-NS12"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "NS12: no ac-ledger.json.tmp-* residue after failing and successful links",
+            "phase": "observed",
+            "sourceFile": "test/test-ac-ledger.js",
+            "timestamp": "2026-10-13T02:20:09.855Z"
+          }
+        ],
+        "text": "Durability test: force a failing link and a successful link against the same fixture and assert no `ac-ledger.json.tmp-*` residue remains, proving the temp-file-plus-rename write survived the new validation path."
+      }
+    ],
+    "planIndexPath": ".agents/plans/us-509/.runtime/plan.index.json",
+    "revision": 49,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "step5",
+      "computedAt": "2026-10-13T02:25:27.878Z",
+      "deficiencies": [],
+      "earnedUnits": 150,
+      "errors": [],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "ledgerHash": "b24eda36f2239886f488d4d2fdd5b4c47f66c219e2ca00f79d237e16b836e687",
+      "missingEvidence": false,
+      "score": 10,
+      "totalUnits": 150,
+      "writer": "ac_ledger.cjs score"
+    },
+    "slug": "us-509",
+    "specPath": ".agents/plans/us-509/step-00-us-509.spec.md",
+    "testingSkip": null,
+    "workflowId": "us-509-20261013T015209Z"
+  },
+  "acTotal": 15,
+  "commits": [
+    {
+      "sha": "f08e3ce34f99dba58936df12f5e5f065be94d9d7",
+      "step": 5
+    }
+  ],
+  "completedSteps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "currentModel": "unknown",
+  "currentStep": 9,
+  "endedAt": "2026-10-13T02:29:40Z",
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-509/step-00-us-509.spec.md",
+        ".agents/plans/us-509/ac-ledger.json",
+        ".agents/plans/us-509/step-00-us-509.classify.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "us-509",
+      "status": "completed",
+      "step": 0,
+      "summary": "Finished step 0",
+      "workflowId": "us-509-20261013T015209Z",
+      "workflowType": "standard"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-509/step-01-us-509.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "us-509",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "us-509-20261013T015209Z",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-509/step-02-us-509.plan-interview.md",
+        ".agents/plans/us-509/step-02-us-509.plan.refined.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "us-509",
+      "status": "completed",
+      "step": 2,
+      "summary": "Finished step 2",
+      "workflowId": "us-509-20261013T015209Z",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-509/step-03-us-509.plan.exec.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "us-509",
+      "status": "completed",
+      "step": 3,
+      "summary": "Finished step 3",
+      "workflowId": "us-509-20261013T015209Z",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+        "test/test-ac-ledger.js",
+        "test/test-script-ux-golden-path.js",
+        "FEATURES.md",
+        "package.json",
+        "bin/skill-dependencies.json",
+        "bin/skill-integrity.json",
+        ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+        ".agents/skills/ws-shared/version.json",
+        "test/package.json",
+        "docs/index.html"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "us-509",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "us-509-20261013T015209Z",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-509/step-05-us-509.plan.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "us-509",
+      "status": "completed",
+      "step": 5,
+      "summary": "Finished step 5",
+      "workflowId": "us-509-20261013T015209Z",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-509/step-06-us-509.review.md",
+        ".agents/plans/us-509/step-05b-us-509.fresh-verify.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "us-509",
+      "status": "completed",
+      "step": 6,
+      "summary": "Finished step 6",
+      "workflowId": "us-509-20261013T015209Z",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-509/step-07-us-509.testing.plan.md",
+        ".agents/plans/us-509/step-07-us-509.testing.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "us-509",
+      "status": "completed",
+      "step": 7,
+      "summary": "Finished step 7",
+      "workflowId": "us-509-20261013T015209Z",
+      "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-509/step-08-us-509.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-509",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "us-509-20261013T015209Z",
+      "workflowType": "standard"
+    }
+  },
+  "nextAction": "Run step 9",
+  "revision": 9,
+  "shipStatus": "pending",
+  "skippedSteps": [],
+  "slug": "us-509",
+  "statePath": ".agents/plans/us-509/us-509-20261013T015209Z.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "completed",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed"
+  },
+  "telemetry": {
+    "steps": [
+      {
+        "N": 0,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-509/step-00-us-509.spec.md",
+            ".agents/plans/us-509/ac-ledger.json",
+            ".agents/plans/us-509/step-00-us-509.classify.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T01:53:00Z",
+        "label": "Spec",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 1,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-509/step-01-us-509.plan.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T01:54:12Z",
+        "label": "Planning",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-509/step-02-us-509.plan-interview.md",
+            ".agents/plans/us-509/step-02-us-509.plan.refined.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T01:55:11Z",
+        "label": "Interview",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-509/step-03-us-509.plan.exec.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T01:55:37Z",
+        "label": "Plan to tasks",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+            "test/test-ac-ledger.js",
+            "test/test-script-ux-golden-path.js",
+            "FEATURES.md",
+            "package.json",
+            "bin/skill-dependencies.json",
+            "bin/skill-integrity.json",
+            ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+            ".agents/skills/ws-shared/version.json",
+            "test/package.json",
+            "docs/index.html"
+          ]
+        },
+        "finishedAt": "2026-10-13T02:17:00Z",
+        "label": "Implement",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-509/step-05-us-509.plan.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T02:20:39Z",
+        "label": "Verify",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 6,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-509/step-06-us-509.review.md",
+            ".agents/plans/us-509/step-05b-us-509.fresh-verify.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T02:25:27Z",
+        "label": "Code review",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 7,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-509/step-07-us-509.testing.plan.md",
+            ".agents/plans/us-509/step-07-us-509.testing.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T02:26:45Z",
+        "label": "Testing",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-509/step-08-us-509.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T02:29:40Z",
+        "label": "Ship",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 0,
+    "totalTokens": 0
+  },
+  "verificationScore": 10,
+  "workflowId": "us-509-20261013T015209Z",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/us-509/ac-ledger.json",
+      ".agents/plans/us-509/step-00-us-509.classify.md",
+      ".agents/plans/us-509/step-00-us-509.spec.md",
+      ".agents/plans/us-509/step-01-us-509.plan.md",
+      ".agents/plans/us-509/step-02-us-509.plan-interview.md",
+      ".agents/plans/us-509/step-02-us-509.plan.refined.md",
+      ".agents/plans/us-509/step-03-us-509.plan.exec.md",
+      ".agents/plans/us-509/step-05-us-509.plan.report.md",
+      ".agents/plans/us-509/step-05b-us-509.fresh-verify.md",
+      ".agents/plans/us-509/step-06-us-509.review.md",
+      ".agents/plans/us-509/step-07-us-509.testing.plan.md",
+      ".agents/plans/us-509/step-07-us-509.testing.report.md",
+      ".agents/plans/us-509/step-08-us-509.result.md"
+    ],
+    "deleted": [],
+    "modified": [
+      ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+      ".agents/skills/ws-shared/version.json",
+      ".agents/skills/ws-spec-to-pr/scripts/ac_ledger.cjs",
+      "FEATURES.md",
+      "bin/skill-dependencies.json",
+      "bin/skill-integrity.json",
+      "docs/index.html",
+      "package.json",
+      "test/package.json",
+      "test/test-ac-ledger.js",
+      "test/test-script-ux-golden-path.js"
+    ]
+  },
+  "workflowType": "standard"
+}

@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-10-13] Full AC marks still cap at 8 until every spec negative scenario is linked (us-509)
+- **Layer**: `orchestration`
+- **Module**: `ws-spec-to-pr / ac_ledger.cjs link --negative, ws-plan-verify`
+- **Severity**: `High`
+- **PathPattern**: `.agents/plans/*/ac-ledger.json`, `.agents/plans/*/step-05-*.plan.report.md`, `.agents/specs/**/*.spec.md`
+- **Scenario / Context**: During us-509, every one of the 15 AC rows reached full units (`earnedUnits 150 / totalUnits 150`, status Implemented, linked files, mapped observed test, plan sections) and the configured `backendTest` alias was observed passing, yet `ac_ledger.cjs score --boundary step5` returned **score 8** with `knownDefect: true` and 12 `NSn: no observed passing test (caps score at 8)` deficiencies: the spec's `### Negative & Failing Test Scenarios` bullets are ingested by `init` as `negativeScenarios` rows, and each must carry its own observed passing test or the derived score is capped at 8 (below `minVerifyScore` 9). A second trap in the same run: `update_state.cjs finish --step 1 --created {us-dir}/.runtime/plan.index.json` was rejected as a phantom (`filesTouched path(s) not in git`) because `.agents/plans/**/.runtime/` is gitignored, and a stray `{us-dir}/.runtime/mem-conflict.json` from `check_memory_conflict.cjs --json > file` made the next `finish` abort with `unknown .runtime residue`.
+- **DO NOT**: Finish Step 5 believing a passing `npm run test` is enough when every AC row shows full units; do not link spec negative scenarios with a generic or placeholder test name; do not pass `.runtime/plan.index.json` (or any `.agents/plans/**/.runtime/**` path) to `finish --created/--modified`; do not leave ad-hoc `*.json` dumps in `{us-dir}/.runtime/` (only `RUNTIME_NAMES`-allowed names survive the residue check).
+- **INSTEAD DO**: After linking AC evidence, run `ac_ledger.cjs score --ledger <ledger> --boundary step5` and read `deficiencies[]` before finishing Step 5; link each `negativeScenarios` row with `ac_ledger.cjs link --ledger <ledger> --event-id ns-<id> --negative NS<n> --test '{"name":"<literal assertion text present in the test file>","sourceFile":"test/<suite>.js","phase":"observed","exitCode":0}'`, then re-score until the deficiency list is empty; when a mutating step only produced gitignored plan/runtime artifacts, finish with `--noop "<reason>"` and keep the paths out of `filesTouched`; write transient gate JSON with `--json` to stdout and consume it in-process (or write it as an allowed `.md`) instead of dropping a stray `.json` under `.runtime/`.
+
 ### [2026-10-13] Fresh-verify fault injection against a watch-capable suite must be timeout-bounded
 - **Layer**: `tests`
 - **Module**: `ws-fresh-verify (run_fresh_injection), ws-monitor watch loop`

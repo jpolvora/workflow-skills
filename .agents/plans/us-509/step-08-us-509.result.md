@@ -5,7 +5,7 @@ workflowId: us-509-20261013T015209Z
 status: completed
 startedAt: "2026-10-13T01:52:09Z"
 endedAt: "2026-10-13T02:27:02Z"
-acRefs: [AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15]
+acRefs: []
 ---
 # Delivery result — us-509
 
