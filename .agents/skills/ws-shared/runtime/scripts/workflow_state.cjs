@@ -574,10 +574,19 @@ function atomicWrite(file, content) {
     } catch (error) {
       if (!error || !['EPERM', 'EINVAL'].includes(error.code)) throw error;
     }
-  } finally {
-    fs.closeSync(handle);
+  } catch (error) {
+    // us-510 AC16: never leave a partial temp file behind on a failed write.
+    try { fs.closeSync(handle); } catch { /* already closed */ }
+    try { fs.rmSync(temporary, { force: true }); } catch { /* best-effort cleanup */ }
+    throw error;
   }
-  fs.renameSync(temporary, file);
+  fs.closeSync(handle);
+  try {
+    fs.renameSync(temporary, file);
+  } catch (error) {
+    try { fs.rmSync(temporary, { force: true }); } catch { /* best-effort cleanup */ }
+    throw error;
+  }
 }
 
 function syncStateDualWrite(stateFile, state, { body = null, jsonText = null } = {}) {
@@ -1589,14 +1598,23 @@ function resolveStepAgentType(step, options, context, state) {
   return `generic:${subagentTool}`;
 }
 
-// us-506: deterministic state bootstrap. The packaged runtime historically
-// exposed only operations that mutate an existing state file, so the very
-// first state write had no supported command and an unattended autoMode run
-// could skip it silently. `init` creates the initial .state.json plus the
-// rendered .state.md from the run arguments and the registered spec, then
-// refreshes the plans index row so the recorded state hash stays coherent.
-// Create-only and fail-closed: an existing state or an unresolvable required
-// input aborts without leaving a partial state file (AC6, AC7).
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// us-510: the single-agent bootstrap contract. us-506 added the create-only
+// `init` operation; this pins it as the documented contract a lone agent can run
+// before any step is dispatched: explicit identity inputs (no inference), a
+// recorded branch + baseline, an idempotent replay window at revision 0, and
+// fail-closed refusals for every progressed, partial, or malformed target. The
+// pair writer and the index refresh stay the canonical ones
+// (syncStateDualWrite + refreshPlansIndexForState); no second state writer exists.
+function assertInitIdentity(value, label) {
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(value) || value.includes('..')) {
+    throw new Error(`init ${label} must be a plain name (letters, digits, dot, underscore, dash; no path separators or ".."): ${value}`);
+  }
+}
+
 function performInit({ pipeline, maxStep, labels }, stateFile, options) {
   const context = resolveConsumerContext({ repoRoot: options.repoRoot, scriptFile: options.scriptFile });
   if (!stateFile) throw new Error('state path is required');
@@ -1604,38 +1622,101 @@ function performInit({ pipeline, maxStep, labels }, stateFile, options) {
   const mdPath = markdownStatePath(absoluteInput);
   const jsonPath = jsonStatePath(mdPath);
   const usDir = path.dirname(mdPath);
-  // AC6: create-only guard. Fail closed without touching the existing files.
-  if (fs.existsSync(jsonPath) || fs.existsSync(mdPath)) {
-    const existing = fs.existsSync(mdPath) ? mdPath : jsonPath;
-    throw new Error(`state already exists: ${toRepoRelative(context.repoRoot, existing, { allowOutside: true })}; init is create-only (a resumed run never re-bootstraps)`);
-  }
-  // AC2/AC3: identity is derived from the run arguments and the registered
-  // spec. No agent-authored state content is read or required.
-  const workflowId = isNonEmptyModel(options.workflowId)
-    ? String(options.workflowId).trim()
-    : path.basename(mdPath, '.state.md');
-  const slug = isNonEmptyModel(options.slug)
-    ? String(options.slug).trim()
-    : (isNonEmptyModel(options.us) ? String(options.us).trim() : path.basename(usDir));
-  if (!isNonEmptyModel(workflowId)) throw new Error('init requires a resolvable workflow id: pass --workflow-id or a state file name');
-  if (!isNonEmptyModel(slug)) throw new Error('init requires a resolvable slug: pass --slug or a run directory named for the slug');
-  // AC7: reject identity values that are not plain names so a crafted id/slug
-  // cannot redirect the derived spec path or persist a malformed identity.
-  const assertSafeIdentity = (value, label) => {
-    if (!/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(value) || value.includes('..')) {
-      throw new Error(`init ${label} must be a plain name (letters, digits, dot, underscore, dash; no path separators or ".."): ${value}`);
+  // AC2/AC13: every identity input is explicit. Inference is out of scope, so an
+  // absent or empty flag is a usage error rather than a guess.
+  const requireFlag = (value, flag) => {
+    if (value === undefined || value === null || String(value).trim() === '') {
+      throw new Error(`init requires ${flag}; usage: update_state.cjs init <state> --slug <slug> --workflow-id <id> --branch <branch> --baseline <sha>`);
     }
+    return String(value).trim();
   };
-  assertSafeIdentity(workflowId, 'workflow id');
-  assertSafeIdentity(slug, 'slug');
+  const workflowId = requireFlag(options.workflowId, '--workflow-id');
+  const slug = requireFlag(options.slug, '--slug');
+  const branch = requireFlag(options.branch, '--branch');
+  const baseline = requireFlag(options.baseline, '--baseline');
+  // AC7 (us-506): reject identity values that are not plain names so a crafted
+  // id/slug cannot redirect the derived spec path or persist a malformed identity.
+  assertInitIdentity(workflowId, 'workflow id');
+  assertInitIdentity(slug, 'slug');
+  // AC2: HEAD is a detached marker, never a run branch identity.
+  if (branch.toUpperCase() === 'HEAD') {
+    throw new Error('init rejects branch HEAD; pass the resolved named branch (detached HEAD is not a run identity)');
+  }
+  // AC13: the baseline must be a commit-shaped hexadecimal string.
+  if (!/^[0-9a-fA-F]{7,40}$/.test(baseline)) {
+    throw new Error(`init requires --baseline to be a commit-shaped hexadecimal string: ${baseline}`);
+  }
+  // AC14: the run directory is derived from the slug; a mismatch would write the
+  // state under one plan directory while claiming another identity.
+  const dirName = path.basename(usDir);
+  if (dirName !== slug) {
+    throw new Error(`init slug/directory mismatch: --slug ${slug} but the state directory is ${dirName}`);
+  }
+  // AC15: the run identity shape documented in ARTIFACTS.md is enforced so every
+  // downstream consumer (monitor, resume, observer, cleanup) resolves the run.
+  const workflowIdShape = `${slug}-{YYYYMMDDTHHMMSSZ}[-suffix]`;
+  const workflowIdPattern = new RegExp(`^${escapeRegExp(slug)}-\\d{8}T\\d{6}Z?(?:-[A-Za-z0-9._-]+)?$`);
+  if (!workflowIdPattern.test(workflowId)) {
+    throw new Error(`init workflow id must match {slug}-{ISO8601}[-suffix] (e.g. ${workflowIdShape}): ${workflowId}`);
+  }
   const specPath = path.join(usDir, `step-00-${slug}.spec.md`);
   if (!fs.existsSync(specPath)) {
     throw new Error(`init requires the registered spec (--slug ${slug}): ${toRepoRelative(context.repoRoot, specPath, { allowOutside: true })} not found`);
   }
-  const dryRun = options.dryRun === true || String(options.dryRun) === 'true' || context.config?.defaults?.dryRun === true;
   const statePath = toRepoRelative(context.repoRoot, mdPath);
-  if (dryRun) {
-    return { ok: true, operation: 'init', dryRun: true, workflowId, slug, revision: 0, state: statePath, runPath: toRepoRelative(context.repoRoot, jsonPath) };
+  const jsonRel = toRepoRelative(context.repoRoot, jsonPath);
+  const indexFile = plansIndexPath(context);
+  const indexRel = toRepoRelative(context.repoRoot, indexFile);
+  const dryRun = options.dryRun === true || String(options.dryRun) === 'true' || context.config?.defaults?.dryRun === true;
+  const mdExists = fs.existsSync(mdPath);
+  const jsonExists = fs.existsSync(jsonPath);
+  // AC12/AC16: a lone member means an interrupted or foreign write. Refuse and
+  // name the missing member instead of completing (and adopting) the pair.
+  if (mdExists !== jsonExists) {
+    const present = mdExists ? statePath : jsonRel;
+    const missing = mdExists ? jsonRel : statePath;
+    throw new Error(`init partial state pair: ${present} is present without ${missing}; refusing to complete a foreign or interrupted pair`);
+  }
+  if (mdExists && jsonExists) {
+    // AC8/AC9/AC10/AC11: the replay window is exactly "bootstrapped, nothing ran
+    // yet" — revision 0, empty completedSteps, non-terminal status. Anything else
+    // is a progressed run that must never be re-initialized.
+    const existing = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+    const revision = Number(existing.revision);
+    const completed = Array.isArray(existing.completedSteps) ? existing.completedSteps : [];
+    const terminal = ['completed', 'cancelled', 'failed'].includes(String(existing.status));
+    if (revision !== 0 || completed.length || terminal) {
+      const why = revision !== 0
+        ? `revision ${existing.revision}`
+        : completed.length
+          ? `completedSteps [${completed.join(', ')}]`
+          : `terminal status ${existing.status}`;
+      throw new Error(`init refuses to re-bootstrap a progressed run (${why}): ${statePath}`);
+    }
+    // AC8: an untouched revision-0 pair replays as a true no-op. Only the plans
+    // index is reconciled when it is missing or stale; the pair stays byte-identical.
+    if (dryRun) {
+      return { ok: true, operation: 'init', dryRun: true, idempotentReplay: true, workflowId, slug, branch, baselineCommit: baseline, revision: 0, state: statePath, runPath: jsonRel, index: indexRel };
+    }
+    const replayIndex = refreshPlansIndexForState(context, existing, {
+      pipeline,
+      maxStep,
+      stateFile: mdPath,
+      timestamp: String(options.timestamp || nowIso()),
+    });
+    return {
+      ok: true,
+      operation: 'init',
+      idempotentReplay: true,
+      workflowId,
+      slug,
+      branch,
+      baselineCommit: baseline,
+      revision: 0,
+      state: statePath,
+      runPath: jsonRel,
+      index: toRepoRelative(context.repoRoot, replayIndex.file),
+    };
   }
   const state = {
     stateVersion: STATE_VERSION,
@@ -1648,11 +1729,16 @@ function performInit({ pipeline, maxStep, labels }, stateFile, options) {
     completedSteps: [],
     skippedSteps: [],
     stepStatus: {},
+    branch,
+    baselineCommit: baseline,
     statePath,
   };
+  if (dryRun) {
+    return { ok: true, operation: 'init', dryRun: true, idempotentReplay: false, workflowId, slug, branch, baselineCommit: baseline, revision: 0, state: statePath, runPath: jsonRel, index: indexRel };
+  }
   // Order-tolerant relative to ac_ledger.cjs init: the ledger is folded when it
-  // already exists, but bootstrap never depends on it (the next update
-  // operation re-derives AC counts from the ledger).
+  // already exists, but bootstrap never depends on it (the next update operation
+  // re-derives AC counts from the ledger).
   const ledgerPath = path.join(usDir, 'ac-ledger.json');
   if (fs.existsSync(ledgerPath)) {
     try {
@@ -1662,26 +1748,52 @@ function performInit({ pipeline, maxStep, labels }, stateFile, options) {
     }
   }
   const body = `# Workflow State — ${slug}\n`;
-  const written = syncStateDualWrite(mdPath, state, { body });
-  const index = refreshPlansIndexForState(context, state, {
-    pipeline,
-    maxStep,
-    stateFile: mdPath,
-    timestamp: String(options.timestamp || nowIso()),
-  });
-  // AC4/AC5: the bootstrapped state must satisfy the canonical validator
-  // immediately, with an index row whose state hash matches the written state.
-  validateSnapshot({ stateFile: mdPath, indexFile: index.file, context, maxStep, pipeline });
-  return {
-    ok: true,
-    operation: 'init',
-    workflowId,
-    slug,
-    revision: state.revision,
-    stateSha256: written.stateSha256,
-    state: statePath,
-    runPath: toRepoRelative(context.repoRoot, jsonPath),
-  };
+  // AC6: an absent or empty plans index is created together with the workflow row.
+  let priorIndex = null;
+  if (fs.existsSync(indexFile)) {
+    try { priorIndex = fs.readFileSync(indexFile, 'utf8'); } catch { priorIndex = null; }
+  }
+  try {
+    fs.mkdirSync(path.dirname(indexFile), { recursive: true });
+    const written = syncStateDualWrite(mdPath, state, { body });
+    const index = refreshPlansIndexForState(context, state, {
+      pipeline,
+      maxStep,
+      stateFile: mdPath,
+      timestamp: String(options.timestamp || nowIso()),
+    });
+    // AC5: the bootstrapped state must satisfy the canonical validator
+    // immediately, with an index row whose state hash matches the written state.
+    validateSnapshot({ stateFile: mdPath, indexFile: index.file, context, maxStep, pipeline });
+    return {
+      ok: true,
+      operation: 'init',
+      idempotentReplay: false,
+      workflowId,
+      slug,
+      branch,
+      baselineCommit: baseline,
+      revision: state.revision,
+      stateSha256: written.stateSha256,
+      state: statePath,
+      runPath: jsonRel,
+      index: toRepoRelative(context.repoRoot, index.file),
+    };
+  } catch (error) {
+    // AC16: a failed write leaves no partial pair and no index row behind, and a
+    // pre-existing index is restored byte-identical.
+    for (const file of new Set([jsonPath, mdPath])) {
+      try { fs.rmSync(file, { force: true }); } catch { /* best-effort rollback */ }
+    }
+    try {
+      if (priorIndex === null) {
+        if (fs.existsSync(indexFile)) fs.rmSync(indexFile, { force: true });
+      } else {
+        fs.writeFileSync(indexFile, priorIndex, 'utf8');
+      }
+    } catch { /* best-effort rollback */ }
+    throw error;
+  }
 }
 
 function performUpdate({ pipeline, maxStep, labels }, operation, stateFile, options) {
@@ -2561,12 +2673,16 @@ function validateSnapshot({ stateFile, indexFile, context, maxStep, preAdvance, 
 function updateHelpText(operation) {
   switch (operation) {
     case 'init':
-      return 'Usage: update_state.cjs init <state> --slug <slug> [--workflow-id <id>] [--dry-run]\n'
+      return 'Usage: update_state.cjs init <state> --slug <slug> --workflow-id <id> --branch <branch> --baseline <sha> [--dry-run]\n'
         + 'Bootstrap the run state: create the initial .state.json plus the rendered .state.md from the run\n'
-        + 'arguments and the registered step-00-{slug}.spec.md, then refresh the plans index row. Create-only:\n'
-        + 'an existing state file fails closed without modification. This is the sanctioned writer for the very\n'
-        + 'first state write; hand-editing machine state is unsupported.\n'
-        + 'Example: node update_state.cjs init .agents/plans/slug/wf.state.md --slug slug --workflow-id wf\n';
+        + 'arguments and the registered step-00-{slug}.spec.md, then refresh the plans index row. The pair is\n'
+        + 'write-once: a repeated init over an untouched revision-0 pair is an idempotent no-op (exit 0, both\n'
+        + 'files byte-identical, idempotentReplay: true). It refuses, with a non-zero exit and nothing touched,\n'
+        + 'a progressed run (revision > 0, non-empty completedSteps, or terminal status), a partial pair (one\n'
+        + 'member only), a slug/directory mismatch, a workflow id outside {slug}-{YYYYMMDDTHHMMSSZ}[-suffix],\n'
+        + 'an empty identity flag, a non-hex baseline, or branch HEAD. This is the sanctioned writer for the\n'
+        + 'very first state write; hand-editing machine state is unsupported.\n'
+        + 'Example: node update_state.cjs init .agents/plans/slug/slug-20260101T000000Z.state.md --slug slug --workflow-id slug-20260101T000000Z --branch develop --baseline 66175d9c\n';
     case 'dispatch':
       return 'Usage: update_state.cjs dispatch <state> --step N [--model <id>] [--agent-type <type>] [--subagent-id <id>] [--step-output <json>] [--transcript-paths <csv>] [--prompt-path <path>] [--prompt-sha256 <sha>]\n'
         + 'Open step execution (records dispatch telemetry, advances currentStep). <state> is the .state.md path or workflow id.\n'
@@ -2602,7 +2718,7 @@ function updateHelpText(operation) {
         + 'Example: node update_state.cjs pause-turn .agents/plans/slug/wf.state.md --step 4 --reason "turn budget" --next-action "resume implement"\n';
     default:
       return 'Usage: update_state.cjs init|dispatch|finish|finish-batch|bypass|checkpoint|pause-turn <state> [options]\n'
-        + '  init <state> --slug <slug> [--workflow-id <id>] (create-only state bootstrap for a new run)\n'
+        + '  init <state> --slug <slug> --workflow-id <id> --branch <branch> --baseline <sha> (state bootstrap; idempotent replay at revision 0)\n'
         + '  finish-batch <state> --steps "2:skipped:interview-not-required,3:skipped:dag-disabled"\n'
         + '  finish <state> --step 4 --noop "<reason>" (explicit no-op when a completed mutating step touched nothing)\n'
         + '  checkpoint <state> --step N --progress \'<json>\' | --progress-file <path>\n'

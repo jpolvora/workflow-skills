@@ -6,6 +6,17 @@ After step N, before the progress board, the orchestrator MUST execute State Hyg
 
 ## Automated update
 
+**Bootstrap (once per new run, before any dispatch):** create the state pair through the sanctioned writer after the branch (5b) and baseline are resolved. Canonical contract: [`setup.md`](../../ws-shared/runtime/setup.md) § bootstrap step 5 — required flags, pair invariant, idempotent replay at revision 0, and the refusal rules.
+
+```bash
+node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs init \
+  {plansDir}/{slug}/{workflow-id}.state.md \
+  --slug {slug} \
+  --workflow-id {workflow-id} \
+  --branch {branch} \
+  --baseline {baselineCommit}
+```
+
 ```bash
 node {skillsRoot}/ws-spec-to-pr/scripts/update_state.cjs dispatch \
   {plansDir}/{slug}/{workflow-id}.state.md \
