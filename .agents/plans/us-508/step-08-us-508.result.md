@@ -1,3 +1,12 @@
+---
+step: 8
+slug: us-508
+workflowId: us-508-20261013T005850Z
+status: completed
+startedAt: "2026-10-13T01:36:18.289Z"
+endedAt: "2026-10-13T01:36:18.289Z"
+acRefs: []
+---
 # us-508 — Delivery Result
 
 ## Expected

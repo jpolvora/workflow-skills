@@ -922,10 +922,12 @@
     4,
     5,
     6,
-    7
+    7,
+    8
   ],
   "currentModel": "opencode-go/deepseek-v4-flash",
-  "currentStep": 8,
+  "currentStep": 9,
+  "endedAt": "2026-10-13T01:36:18Z",
   "handoffs": {
     "0": {
       "acRefs": [],
@@ -1089,15 +1091,35 @@
       "summary": "Finished step 7",
       "workflowId": "us-508-20261013T005850Z",
       "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-508/step-08-us-508.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-508",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "us-508-20261013T005850Z",
+      "workflowType": "standard"
     }
   },
-  "nextAction": "Run step 8",
-  "revision": 19,
+  "nextAction": "Run step 9",
+  "revision": 20,
+  "shipStatus": "pending",
   "skippedSteps": [],
   "slug": "us-508",
   "statePath": ".agents/plans/us-508/us-508-20261013T005850Z.state.md",
   "stateVersion": 3,
-  "status": "active",
+  "status": "completed",
   "stepDispatches": [
     {
       "agentType": "generic:Task",
@@ -1156,7 +1178,8 @@
     "4": "completed",
     "5": "completed",
     "6": "completed",
-    "7": "completed"
+    "7": "completed",
+    "8": "completed"
   },
   "telemetry": {
     "steps": [
@@ -1330,6 +1353,26 @@
         "model": "opencode-go/deepseek-v4-flash",
         "promptTokens": 0,
         "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-508/step-08-us-508.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T01:36:18Z",
+        "label": "Ship",
+        "model": "opencode-go/deepseek-v4-flash",
+        "promptTokens": 0,
+        "subagentId": null
       }
     ],
     "totalElapsedSec": 860,
@@ -1347,7 +1390,8 @@
       ".agents/plans/us-508/step-05-us-508.plan.report.md",
       ".agents/plans/us-508/step-06-us-508.review.md",
       ".agents/plans/us-508/step-07-us-508.testing.plan.md",
-      ".agents/plans/us-508/step-07-us-508.testing.report.md"
+      ".agents/plans/us-508/step-07-us-508.testing.report.md",
+      ".agents/plans/us-508/step-08-us-508.result.md"
     ],
     "deleted": [],
     "modified": [
