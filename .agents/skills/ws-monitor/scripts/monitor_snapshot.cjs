@@ -1967,13 +1967,13 @@ function snapshot(options) {
   // us-507: state-less run discovery. A plan directory with step artifacts and
   // no state file is invisible to state-file enumeration; surface it from the
   // artifacts it does have. `--workflow-id` never selects a state-less run (it
-  // records no identity); `--slug` matches the plan directory name.
+  // records no identity), so skip the scan entirely for it; `--slug` matches the
+  // plan directory name.
   const statelessNow = Date.now();
-  const statelessRuns = listStatelessRuns(plansDir, context.repoRoot).filter((run) => {
-    if (options.workflowId) return false;
-    if (options.slug) return run.slug === String(options.slug);
-    return true;
-  });
+  const statelessRuns = options.workflowId
+    ? []
+    : listStatelessRuns(plansDir, context.repoRoot)
+      .filter((run) => !options.slug || run.slug === String(options.slug));
   for (const run of statelessRuns) {
     const ageMs = statelessNow - run.newestMtimeMs;
     const fresh = statelessFreshness(ageMs, stallWindowMs);
