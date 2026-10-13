@@ -16,6 +16,12 @@ const { spawnSync } = require('child_process');
 
 const SCRIPT_DIR = __dirname;
 
+// Provenance vocabulary surfaced in the --json payload (AC1).
+const RESOLUTION_SOURCES = ['explicit-flag', 'consumer-checkout', 'install-root', 'cwd-fallback'];
+// Consumer-checkout markers, checked ONLY at the working directory (context D4):
+// a parent walk would reintroduce the ancestor heuristic that caused the defect.
+const CONSUMER_MARKERS = ['.git', path.join('.ws', 'config.json'), 'package.json'];
+
 function findSkillsDirFromScript(startDir) {
   let curr = path.resolve(startDir);
   while (true) {
@@ -28,23 +34,52 @@ function findSkillsDirFromScript(startDir) {
 
 const SCRIPT_SKILLS_DIR = findSkillsDirFromScript(SCRIPT_DIR);
 
-function findRepoRoot(startDir, explicitRoot) {
-  if (explicitRoot) return path.resolve(explicitRoot);
-  let curr = path.resolve(startDir);
-  const roots = [curr];
-  let p = curr;
-  while (p !== path.dirname(p)) {
-    p = path.dirname(p);
-    roots.push(p);
+// Best-effort reuse of the shared contract (spec D2): `inside()` comes from
+// resolve_consumer_root.cjs when reachable, so repo-root containment has one
+// source. A partial tree (fixture / corrupt install) degrades to a local
+// fallback instead of crashing. The AC2 marker set stays local because the
+// shared resolveRepoRoot() keys consumer detection on `.ws/config.json` only
+// (context D4), and redefining the shared module is out of scope.
+function loadSharedResolver() {
+  if (!SCRIPT_SKILLS_DIR) return null;
+  try {
+    return require(path.join(SCRIPT_SKILLS_DIR, 'ws-shared', 'runtime', 'scripts', 'resolve_consumer_root.cjs'));
+  } catch {
+    return null;
   }
-  for (const c of roots) {
-    if (fs.existsSync(path.join(c, '.agents', 'skills', 'ws-shared'))) return c;
+}
+const SHARED_RESOLVER = loadSharedResolver();
+
+function inside(child, parent) {
+  if (SHARED_RESOLVER && typeof SHARED_RESOLVER.inside === 'function') return SHARED_RESOLVER.inside(child, parent);
+  const relative = path.relative(path.resolve(parent), path.resolve(child));
+  return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
+}
+
+function isConsumerCheckout(dir) {
+  try {
+    return CONSUMER_MARKERS.some((marker) => fs.existsSync(path.join(dir, marker)));
+  } catch {
+    return false;
   }
-  for (const c of roots) {
-    if (fs.existsSync(path.join(c, '.git')) || fs.existsSync(path.join(c, 'package.json')) || fs.existsSync(path.join(c, '.agents'))) return c;
+}
+
+// Resolve a meaningful repository root plus the provenance of that decision.
+// Order (spec expected contract): explicit flag > consumer checkout at cwd >
+// global install root > no-marker cwd fallback. The install PARENT is never a
+// candidate (AC4): for `<home>/.agents/skills/ws-*` the install root is
+// `<home>/.agents` and the forbidden value is `<home>`.
+function resolveRepoRootInfo({ explicitRoot } = {}) {
+  if (explicitRoot) return { root: path.resolve(explicitRoot), source: 'explicit-flag' };
+  const cwd = path.resolve(process.cwd());
+  if (isConsumerCheckout(cwd)) return { root: cwd, source: 'consumer-checkout' };
+  const installRoot = SCRIPT_SKILLS_DIR ? path.dirname(SCRIPT_SKILLS_DIR) : null;
+  const installParent = installRoot ? path.dirname(installRoot) : null;
+  const isInstallParent = (candidate) => installParent !== null && path.resolve(candidate) === path.resolve(installParent);
+  if (installRoot && fs.existsSync(installRoot) && !isInstallParent(installRoot)) {
+    return { root: installRoot, source: 'install-root' };
   }
-  if (process.cwd() && process.cwd() !== roots[0]) return path.resolve(process.cwd());
-  return roots[Math.min(2, roots.length - 1)] || '/';
+  return { root: cwd, source: 'cwd-fallback' };
 }
 function resolveSkillsDir(repoRoot, scriptSkillsDir) {
   if (scriptSkillsDir && fs.existsSync(scriptSkillsDir)) return scriptSkillsDir;
@@ -81,7 +116,7 @@ function preParseRepoRoot(argv) {
   return null;
 }
 
-const REPO_ROOT = findRepoRoot(SCRIPT_DIR, preParseRepoRoot(process.argv.slice(2)));
+const { root: REPO_ROOT, source: RESOLUTION_SOURCE } = resolveRepoRootInfo({ explicitRoot: preParseRepoRoot(process.argv.slice(2)) });
 const SKILLS_DIR = resolveSkillsDir(REPO_ROOT, SCRIPT_SKILLS_DIR);
 const SHARED_DEPS_PATH = path.join(SKILLS_DIR, 'ws-shared', 'runtime', 'skill-dependencies.json');
 const BIN_DEPS_PATH = path.join(REPO_ROOT, 'bin', 'skill-dependencies.json');
@@ -119,6 +154,11 @@ class WorkflowChecker {
     this.depsMap = {};
     this.depsLoaded = false;
     this.depsLocation = 'skill-dependencies.json';
+    this.repoChecks = {
+      resolvedRoot: REPO_ROOT,
+      resolutionSource: RESOLUTION_SOURCE,
+      dependencyParity: { status: 'unknown', reason: null, missingPath: null },
+    };
     this.loadDependencies();
   }
 
@@ -149,7 +189,20 @@ class WorkflowChecker {
         this.issues.push(new Issue('WARNING', 'Dependency Graph', this.depsLocation, `Failed to parse skill-dependencies.json: ${e.message}`, `Verify JSON syntax in ${this.depsLocation}.`));
       }
     }
-    if (fs.existsSync(SHARED_DEPS_PATH) && fs.existsSync(BIN_DEPS_PATH)) {
+    this.checkDependencyParity();
+  }
+
+  // Shared-vs-bin dependency parity. The comparison runs only when BOTH
+  // manifests exist. An unevaluable check must not vanish (the reported defect,
+  // AC5/AC6): it is reported as `skipped` naming the missing manifest — unless
+  // the resolved root is a real package root that carries bin/, where a missing
+  // manifest is a genuine defect and fails closed with a CRITICAL (AC7).
+  checkDependencyParity() {
+    const sharedExists = fs.existsSync(SHARED_DEPS_PATH);
+    const binExists = fs.existsSync(BIN_DEPS_PATH);
+    const parity = { status: 'unknown', reason: null, missingPath: null };
+    if (sharedExists && binExists) {
+      parity.status = 'checked';
       try {
         const sharedData = JSON.parse(fs.readFileSync(SHARED_DEPS_PATH, 'utf8'));
         const binData = JSON.parse(fs.readFileSync(BIN_DEPS_PATH, 'utf8'));
@@ -162,9 +215,33 @@ class WorkflowChecker {
           if (missing.length) msg += ` Missing in ws-shared: ${JSON.stringify(missing.sort())}.`;
           if (extra.length) msg += ` Extra in ws-shared: ${JSON.stringify(extra.sort())}.`;
           this.issues.push(new Issue('CRITICAL', 'Dependency Graph Sync', 'ws-shared/runtime/skill-dependencies.json', msg, 'Sync .agents/skills/ws-shared/runtime/skill-dependencies.json with bin/skill-dependencies.json.'));
+          parity.status = 'failed';
         }
-      } catch { /* ignore */ }
+      } catch (e) {
+        parity.status = 'failed';
+        parity.reason = `failed to parse dependency manifests: ${e.message}`;
+      }
+    } else {
+      const missingPath = !sharedExists ? SHARED_DEPS_PATH : BIN_DEPS_PATH;
+      const rootIsPackageRoot = fs.existsSync(path.join(REPO_ROOT, 'bin', 'skill-dependencies.json')) || fs.existsSync(path.join(REPO_ROOT, 'bin', 'cli.js'));
+      if (rootIsPackageRoot) {
+        this.issues.push(new Issue(
+          'CRITICAL',
+          'Dependency Graph Sync',
+          missingPath,
+          `Dependency parity check cannot run: required manifest is missing on a package root that carries bin/ (missing: ${missingPath}).`,
+          'Ship bin/skill-dependencies.json together with ws-shared/runtime/skill-dependencies.json, or fix the resolved root.',
+        ));
+        parity.status = 'failed';
+        parity.missingPath = missingPath;
+        parity.reason = `missing manifest on package root: ${missingPath}`;
+      } else {
+        parity.status = 'skipped';
+        parity.missingPath = missingPath;
+        parity.reason = `missing manifest: ${missingPath} (resolved root ${REPO_ROOT} carries no bin/ package root)`;
+      }
     }
+    this.repoChecks.dependencyParity = parity;
   }
 
   addIssue(severity, category, location, message, fixSuggestion) {
@@ -554,6 +631,16 @@ class WorkflowChecker {
   }
 
   runAll() {
+    if (RESOLUTION_SOURCE === 'cwd-fallback') {
+      // AC8: neither a repository marker nor a global install root was found.
+      this.addIssue(
+        'WARNING',
+        'Resolution',
+        RESOLUTION_SOURCE,
+        `Could not identify a repository marker at the working directory nor a global install root; using ${REPO_ROOT} (resolution source: ${RESOLUTION_SOURCE}).`,
+        'Run from a consumer checkout or a global install tree, or pass --repo-root <dir>.',
+      );
+    }
     this.validateRequestedWorkflow();
     this.simulateStandardWorkflow();
     this.simulateLiteWorkflow();
@@ -586,6 +673,13 @@ class WorkflowChecker {
       }
       lines.push('');
     }
+    lines.push('## 🧭 Resolved Root & Repo-level Checks');
+    lines.push('');
+    lines.push(`**Resolved root**: \`${this.repoChecks.resolvedRoot}\``);
+    lines.push(`**Resolution source**: \`${this.repoChecks.resolutionSource}\``);
+    const parity = this.repoChecks.dependencyParity;
+    lines.push(`**Dependency parity**: \`${parity.status}\`${parity.reason ? ` — ${parity.reason}` : ''}`);
+    lines.push('');
     lines.push('## 🚨 Issues & Suggested Fixes');
     lines.push('');
     if (!this.issues.length) {
@@ -642,6 +736,9 @@ function main() {
   if (args.json) {
     console.log(JSON.stringify({
       status: checker.issues.some((i) => i.severity === 'CRITICAL') ? 'FAIL' : 'PASS',
+      resolvedRoot: REPO_ROOT,
+      resolutionSource: RESOLUTION_SOURCE,
+      checks: checker.repoChecks,
       issues: checker.issues.map((i) => i.toDict()),
       simulations: checker.simulationResults,
     }, null, 2));
@@ -672,4 +769,4 @@ function main() {
 }
 
 if (require.main === module) main();
-module.exports = { WorkflowChecker };
+module.exports = { WorkflowChecker, resolveRepoRootInfo, RESOLUTION_SOURCES };
