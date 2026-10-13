@@ -107,6 +107,21 @@ ${slug}.
   assert.strictEqual(fs.readFileSync(jsonPath, 'utf8'), beforeJson, 'AC8 replay leaves .state.json byte-identical');
   assert.strictEqual(fs.readFileSync(mdPath, 'utf8'), beforeMd, 'AC8 replay leaves .state.md byte-identical');
 
+  // CR-001 (#519): a replay carrying a different identity is not the same
+  // bootstrap. It must refuse instead of reporting the requested branch,
+  // baseline, or workflow id as the persisted identity.
+  const wrongBranch = run(update, ['init', stateRel, '--slug', slug, '--workflow-id', workflowId, '--branch', 'feature-other', '--baseline', BASELINE, '--repo-root', root]);
+  assert.notStrictEqual(wrongBranch.status, 0, 'CR-001 mismatched branch replay exits non-zero');
+  assert.match(wrongBranch.stderr, /identity mismatch/, 'CR-001 refusal names the identity mismatch');
+  const wrongBaseline = run(update, ['init', stateRel, '--slug', slug, '--workflow-id', workflowId, '--branch', 'develop', '--baseline', '1111111def567890abc1234def567890abc12345', '--repo-root', root]);
+  assert.notStrictEqual(wrongBaseline.status, 0, 'CR-001 mismatched baseline replay exits non-zero');
+  assert.match(wrongBaseline.stderr, /identity mismatch/, 'CR-001 baseline refusal names the identity mismatch');
+  const wrongId = run(update, ['init', stateRel, '--slug', slug, '--workflow-id', 'demo-20270202T000000Z', '--branch', 'develop', '--baseline', BASELINE, '--repo-root', root]);
+  assert.notStrictEqual(wrongId.status, 0, 'CR-001 mismatched workflow-id replay exits non-zero');
+  assert.match(wrongId.stderr, /identity mismatch/, 'CR-001 workflow-id refusal names the identity mismatch');
+  assert.strictEqual(fs.readFileSync(jsonPath, 'utf8'), beforeJson, 'CR-001 refused replays leave .state.json byte-identical');
+  assert.strictEqual(fs.readFileSync(mdPath, 'utf8'), beforeMd, 'CR-001 refused replays leave .state.md byte-identical');
+
   // us-510 AC9: once the run has dispatched, re-bootstrap refuses.
   const common = ['--repo-root', root];
   assert.strictEqual(run(update, ['dispatch', stateRel, '--step', '0', '--timestamp', '2026-10-12T20:00:00.000Z', ...common]).status, 0);
