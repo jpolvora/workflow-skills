@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "revision": 7,
+  "revision": 8,
   "workflowId": "us-511-20261013T040003Z",
   "slug": "us-511",
   "specPath": ".agents/plans/us-511/step-00-us-511.spec.md",
@@ -2720,7 +2720,7 @@
   ],
   "invariantViolations": [],
   "scoreState": {
-    "boundary": "step5",
+    "boundary": "ship",
     "score": 10,
     "earnedUnits": 140,
     "totalUnits": 140,
@@ -2729,8 +2729,8 @@
     "deficiencies": [],
     "errors": [],
     "invariantViolations": [],
-    "computedAt": "2026-10-13T04:22:26.782Z",
+    "computedAt": "2026-10-13T04:26:47.702Z",
     "writer": "ac_ledger.cjs score",
-    "ledgerHash": "7fdbf52b86a1375cf070bc46ba7e9088fe4007d2b0307f3ac783f053c3871172"
+    "ledgerHash": "0b1e57d04be25620fe31931a3f600c0f7088b09f35609eefb090b986bb15c47e"
   }
 }
