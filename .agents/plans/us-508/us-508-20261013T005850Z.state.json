@@ -923,11 +923,12 @@
     5,
     6,
     7,
-    8
+    8,
+    9
   ],
   "currentModel": "opencode-go/deepseek-v4-flash",
   "currentStep": 9,
-  "endedAt": "2026-10-13T01:36:18Z",
+  "endedAt": "2026-10-13T01:38:24Z",
   "handoffs": {
     "0": {
       "acRefs": [],
@@ -1110,11 +1111,30 @@
       "summary": "Finished step 8",
       "workflowId": "us-508-20261013T005850Z",
       "workflowType": "standard"
+    },
+    "9": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-508",
+      "status": "completed",
+      "step": 9,
+      "summary": "Finished step 9",
+      "workflowId": "us-508-20261013T005850Z",
+      "workflowType": "standard"
     }
   },
   "nextAction": "Run step 9",
-  "revision": 20,
-  "shipStatus": "pending",
+  "prNumber": "515",
+  "prUrl": "https://github.com/jpolvora/workflow-skills/pull/515",
+  "revision": 23,
+  "shipStatus": "pr-open",
   "skippedSteps": [],
   "slug": "us-508",
   "statePath": ".agents/plans/us-508/us-508-20261013T005850Z.state.md",
@@ -1168,6 +1188,12 @@
       "dispatchedAt": "2026-10-13T01:33:02Z",
       "model": "opencode-go/deepseek-v4-flash",
       "step": 7
+    },
+    {
+      "agentType": "generic:Task",
+      "dispatchedAt": "2026-10-13T01:43:22Z",
+      "model": "opencode-go/deepseek-v4-flash",
+      "step": 9
     }
   ],
   "stepStatus": {
@@ -1179,7 +1205,8 @@
     "5": "completed",
     "6": "completed",
     "7": "completed",
-    "8": "completed"
+    "8": "completed",
+    "9": "completed"
   },
   "telemetry": {
     "steps": [
@@ -1368,8 +1395,26 @@
           "deleted": [],
           "modified": []
         },
-        "finishedAt": "2026-10-13T01:36:18Z",
+        "finishedAt": "2026-10-13T01:38:24Z",
         "label": "Ship",
+        "model": "opencode-go/deepseek-v4-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 9,
+        "agentType": "generic:Task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T01:43:22Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T01:43:22Z",
+        "label": "Fix PR",
         "model": "opencode-go/deepseek-v4-flash",
         "promptTokens": 0,
         "subagentId": null
