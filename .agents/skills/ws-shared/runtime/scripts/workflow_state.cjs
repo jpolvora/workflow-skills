@@ -1693,6 +1693,18 @@ function performInit({ pipeline, maxStep, labels }, stateFile, options) {
           : `terminal status ${existing.status}`;
       throw new Error(`init refuses to re-bootstrap a progressed run (${why}): ${statePath}`);
     }
+    // CR-001 (#519): a replay is the same bootstrap only when every requested
+    // identity matches the persisted record. Reporting the requested branch,
+    // baseline, or workflow id for a pair that holds different values would
+    // let a caller gate later steps against the wrong baseline, so refuse.
+    const identityMismatches = [];
+    if (String(existing.workflowId || '') !== workflowId) identityMismatches.push(`workflowId persisted=${existing.workflowId || '(missing)'} requested=${workflowId}`);
+    if (String(existing.slug || '') !== slug) identityMismatches.push(`slug persisted=${existing.slug || '(missing)'} requested=${slug}`);
+    if (String(existing.branch || '') !== branch) identityMismatches.push(`branch persisted=${existing.branch || '(missing)'} requested=${branch}`);
+    if (String(existing.baselineCommit || '').toLowerCase() !== baseline.toLowerCase()) identityMismatches.push(`baselineCommit persisted=${existing.baselineCommit || '(missing)'} requested=${baseline}`);
+    if (identityMismatches.length) {
+      throw new Error(`init replay identity mismatch (${identityMismatches.join('; ')}); refusing to report a replay for a different identity: ${statePath}`);
+    }
     // AC8: an untouched revision-0 pair replays as a true no-op. Only the plans
     // index is reconciled when it is missing or stale; the pair stays byte-identical.
     if (dryRun) {
@@ -2676,9 +2688,9 @@ function updateHelpText(operation) {
       return 'Usage: update_state.cjs init <state> --slug <slug> --workflow-id <id> --branch <branch> --baseline <sha> [--dry-run]\n'
         + 'Bootstrap the run state: create the initial .state.json plus the rendered .state.md from the run\n'
         + 'arguments and the registered step-00-{slug}.spec.md, then refresh the plans index row. The pair is\n'
-        + 'write-once: a repeated init over an untouched revision-0 pair is an idempotent no-op (exit 0, both\n'
+        + 'write-once: a repeated init over an untouched revision-0 pair with matching identity inputs is an idempotent no-op (exit 0, both\n'
         + 'files byte-identical, idempotentReplay: true). It refuses, with a non-zero exit and nothing touched,\n'
-        + 'a progressed run (revision > 0, non-empty completedSteps, or terminal status), a partial pair (one\n'
+        + 'a progressed run (revision > 0, non-empty completedSteps, or terminal status), a replay identity mismatch, a partial pair (one\n'
         + 'member only), a slug/directory mismatch, a workflow id outside {slug}-{YYYYMMDDTHHMMSSZ}[-suffix],\n'
         + 'an empty identity flag, a non-hex baseline, or branch HEAD. This is the sanctioned writer for the\n'
         + 'very first state write; hand-editing machine state is unsupported.\n'
