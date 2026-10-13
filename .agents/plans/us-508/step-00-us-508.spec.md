@@ -1,0 +1,214 @@
+---
+id: 508
+slug: us-508
+title: "check_workflows.cjs: resolver returns the parent of the global install (home directory) and silently skips the dependency parity check"
+source: github
+specDate: 2026-10-12
+issueState: open
+issueUrl: "https://github.com/jpolvora/workflow-skills/issues/508"
+labels:
+  - bug
+step: 0
+workflowId: us-508-20261013T005850Z
+status: completed
+startedAt: "2026-10-13T00:58:50.641Z"
+endedAt: "2026-10-13T00:58:50.641Z"
+acRefs: []
+---
+# Specification — check_workflows.cjs: resolver returns the parent of the global install (home directory) and silently skips the dependency parity check
+
+**State:** open
+**Labels:** bug
+
+## Description
+
+Finish the repo-root resolution defect in `.agents/skills/ws-check-workflows/scripts/check_workflows.cjs` that survived the #504 fix, and make the dependency-parity check that the defect silences report itself instead of disappearing. The earlier fix (commit `c9b47ecf`, spec `0175-us-504.spec.md`) cured the false-finding cascade; the residual gap is a different wrong root plus an unreported skip, and this spec scopes only that residual.
+
+Terms used below:
+
+- **skills tree**: the directory containing `ws-shared/` and the `ws-*` skill folders that the running script belongs to. Resolved from the script location (`findSkillsDirFromScript()`, `check_workflows.cjs:19-29`).
+- **global install root**: the directory that contains the active skills tree at `<root>/.agents/skills`. For the documented global layout `$HOME/.agents/skills/ws-*` it is `<home>/.agents`.
+- **install parent**: `path.dirname(global install root)` — `<home>` in that layout. The issue forbids returning it.
+- **consumer checkout**: the directory passed as the process working directory that carries a repository marker (`.git`, `.ws/config.json`, or `package.json`).
+
+### Delta against the delivered #504 fix (`c9b47ecf`)
+
+| Behavior | Status after `c9b47ecf` | Evidence |
+|---|---|---|
+| Skills tree resolved from the script location instead of `<repoRoot>/.agents/skills` | Fixed | `findSkillsDirFromScript()` `:19-29`, `SCRIPT_SKILLS_DIR` `:29`, first branch of `resolveSkillsDir()` `:50`, wiring `:85` |
+| 19 false CRITICALs on a global install | Fixed | Probe run: skills tree copied to `<home>/.agents/skills`, script run from a consumer checkout reports `status: PASS`, `issues: 0`, exit 0 |
+| Explicit `--repo-root <dir>` and `--repo-root=<dir>`, loud exit 2 on a missing value | Fixed | `preParseRepoRoot()` `:67-82`, `parseArgs()` `:622-631`; probe run with `--repo-root <consumer>` wrote the report into `<consumer>` |
+| `REPO_ROOT` for the `<home>/.agents/skills/ws-*` layout | **Broken** — returns `<home>`, the install parent | `findRepoRoot()` `:31-48`; probe run: `--report` created `<home>/ws-check-workflows-report.md` |
+| Consumer checkout consulted when the working directory is a real repository | **Broken** — unreachable: the ancestor scan at `:41-42` matches `<home>` before the `cwd` branch at `:46` | Probe run: cwd held `.git` and `package.json`, resolved root stayed `<home>` |
+| Shared-vs-bin dependency parity check | **Broken by omission** — guarded by `if (fs.existsSync(SHARED_DEPS_PATH) && fs.existsSync(BIN_DEPS_PATH))` `:152`; with no `bin/` under the mis-resolved root the check never runs and nothing is reported | Probe runs without `<home>/bin/`: `PASS`, `issues: 0`, exit 0, no skip record; adding a mismatched `<home>/bin/skill-dependencies.json` produced the CRITICAL (`issues: 1`, exit 1), proving reachability depends on the wrong root |
+| `--json` diagnostics | **Broken** — payload is `{status, issues, simulations}` `:642-647`: no resolved root, no per-check status, so an unrelated root reads as a clean run | Probe payloads from the global fixture |
+| `--report` write location | **Broken** — written to `path.join(REPO_ROOT, 'ws-check-workflows-report.md')` `:652`, i.e. into an unrelated directory | Probe run: `<home>/ws-check-workflows-report.md` |
+| Regression coverage of the resolved root | **Broken** — `test/test-check-workflows-global-root.js` asserts only exit code, `status`, and `issues.length`; its fixture copies the tree to `<home>/skills` (`:45`) and seeds `<home>/.git` (`:44`), so it never exercises the documented `<home>/.agents/skills` shape and never reads the resolved root | Test body `:42-57` |
+
+The `.git` marker is irrelevant to the observed outcome: the probe fixture carried no `.git` anywhere inside the global tree and still resolved to `<home>`, because the first ancestor whose `.agents/skills/ws-shared` exists is the install parent.
+
+### Required behavior in scope
+
+1. Resolve a meaningful root: the consumer checkout root when the working directory is one, otherwise the global install root, and never the install parent.
+2. Make the no-marker `cwd` fallback reachable, and keep the already-delivered explicit `--repo-root` precedence ahead of every heuristic.
+3. Expose the resolved root and its provenance in `--json` so a mis-resolution is observable without side channels.
+4. Never pass silently when a check cannot resolve its target: either report an explicit, machine-readable skip naming what is missing, or fail loudly when the missing input is a real defect.
+5. Bound the `--report` write to the resolved root.
+6. Strengthen the regression test to assert the resolved root and the skip record for the `<home>/.agents/skills` shape without depending on a `.git` marker.
+
+### System boundaries
+
+- Behavior owner: `.agents/skills/ws-check-workflows/scripts/check_workflows.cjs` (resolution, `--json`/report diagnostics, parity-check reporting).
+- Regression owner: `test/test-check-workflows-global-root.js` (registered in `test/test-suites.json`), which extends the #504 assertions rather than replacing them.
+- Shared resolver available but not currently required: `.agents/skills/ws-shared/runtime/scripts/resolve_consumer_root.cjs` exports `resolveRepoRoot()`, `consumerHubExists()`, `resolveGlobalSkillsRoot()`, and `inside()`; `ws-check-harness` gates consume it, `check_workflows.cjs` does not (`:13-15` requires only `fs`, `path`, `child_process`). Reuse versus in-place repair is an implementation decision recorded in the companion `0178-us-508.context.md`.
+- Reporting surfaces in scope: the `--json` payload, the markdown report body, and the file written by `--report`.
+- Stack: `node-skills-package` — Node 22, CommonJS `.cjs`, no Python anywhere in the packaged runtime.
+
+## Acceptance Criteria
+
+- AC1: The script shall expose the resolved root and its resolution source (`explicit-flag`, `consumer-checkout`, `install-root`, or `cwd-fallback`) in the `--json` payload.
+- AC2: When the process working directory is a consumer checkout carrying a repository marker (`.git`, `.ws/config.json`, or `package.json`), the resolver shall return that checkout root.
+- AC3: Where no consumer checkout is detectable at the working directory, the resolver shall return the global install root that contains the active skills tree.
+- AC4: If a candidate ancestor is the install parent, then the resolver shall discard that candidate and evaluate the remaining candidates.
+- AC5: When the shared-vs-bin dependency parity check cannot read both manifests, the script shall emit an explicit skip record naming the missing manifest path.
+- AC6: While the dependency parity check is skipped, the script shall report that check as `skipped` with its reason in both the `--json` payload and the markdown report.
+- AC7: If the resolved root carries `bin/skill-dependencies.json` or `bin/cli.js` and either manifest is missing, then the script shall report a CRITICAL finding and exit 1 instead of skipping.
+- AC8: If the resolver identifies neither a repository marker nor the global install root, then the script shall report a WARNING naming the resolved root and its resolution source.
+- AC9: When `--report` is passed, the script shall write the report file inside the resolved root.
+- AC10: The regression test shall assert the reported resolved root and resolution source for a `<home>/.agents/skills` fixture, not only the exit code, status, and issue count.
+- AC11: The regression fixture shall carry no `.git` marker inside the global install tree and shall still assert the expected resolved root.
+- AC12: When the global-only fixture runs, the regression test shall assert an explicit skip record for the dependency parity check naming the missing manifest path.
+- AC13: When the fixture runs with the consumer checkout as the working directory, the regression test shall assert that the resolved root equals that checkout and that no file is written into the install parent.
+
+## Original Issue Context
+
+## Follow-up to #504 (fixed by #505)
+
+The skills-dir-first resolver removed the 19 false CRITICALs, but the resolved repo root is still wrong in the default global-install layout, and the regression test cannot detect it. This is **not a regression** against the pre-fix behaviour (which was also wrong, differently) — it is a residual correctness gap in the same failure class.
+
+## Evidence (before/after fixture, identical layout)
+
+Fixture: global install at `<home>/.agents/skills/...` (the documented global default), consumer checkout as cwd.
+
+| Variant | Resolved repo root | Result |
+|---|---|---|
+| pre-fix (baseline) | `<home>/.agents` — the global install directory | FAIL, 19 issues, exit 1 |
+| post-fix (HEAD) | `<home>` — the parent of the global install | PASS, 0 issues, exit 0 |
+
+Reproduced twice, including a fixture with **no `.git` anywhere in the global tree**, so the `.git` marker is irrelevant to the post-fix outcome: the first ancestor of the script directory that contains `.agents/skills/ws-shared` wins, and for `<home>/.agents/skills/...` that ancestor is `<home>`.
+
+Consequences of resolving to `<home>`:
+
+- `BIN_DEPS_PATH = path.join(REPO_ROOT, 'bin', 'skill-dependencies.json')` does not exist, and the shared-vs-bin dependency parity check runs only when **both** paths exist (`check_workflows.cjs:152`). The parity check is therefore **silently skipped**, not reported.
+- Any other repo-level check is evaluated against a tree with no repo markers, so it passes vacuously instead of being checked against the intended root.
+- The consumer checkout (cwd) is ignored even though it is a real repo; the `cwd` fallback added for that case is unreachable in exactly this layout, because the ancestor scan matches first.
+
+## Test strength
+
+`test/test-check-workflows-global-root.js` asserts only the exit code, `status === 'PASS'` and `issues.length === 0`. It never asserts the resolved root, so a run that resolves to an unrelated directory still passes the suite. The fixture also relies on a `.git` marker, which the post-fix logic does not consult.
+
+## Expected contract
+
+- The resolver must return a meaningful root for a global install — the global install root itself, or the consumer checkout root when invoked from one — and never the install root's parent.
+- Order the candidate checks so an explicit or consumer root beats the ancestor heuristic, and make the no-marker `cwd` fallback reachable.
+- The regression test must assert the resolved root (for example by exposing it through `--json` or an explicit diagnostic) rather than only the exit code, and must cover the `<home>/.agents/skills` shape without depending on `.git`.
+
+## Repro sketch
+
+1. Copy `.agents/skills` to `<home>/.agents/skills`; create a consumer directory containing `package.json`.
+2. Run the copied `ws-check-workflows/scripts/check_workflows.cjs --json` with the consumer directory as cwd.
+3. Observe the resolved repo root is `<home>`, `status: PASS`, `issues: 0`.
+
+### Prior Work Sweep
+
+- Provider sweep for issue 508 (keywords `check_workflows`, `dependency parity`, `global install`) returned `status: ok` with **no open or merged PR for tracker id 508**; the single pull-request hit is a numeric-substring match, and there is no in-flight branch work for this defect.
+- `https://github.com/jpolvora/workflow-skills/pull/239` (MERGED, "0.3.37: memory compile fail-closed, verboseMode, orch dispatch wiring") was returned by the `#508` search text only; it touches no resolution path and is unrelated to this failure class.
+- `c9b47ecf` "feat(us-504): verified implementation" — the immediate predecessor fix to the same script and the delta baseline for this spec; it added `findSkillsDirFromScript()`, the explicit `--repo-root` parsing, the skills-tree ancestor loop, and the (currently unreachable) `cwd` fallback.
+- `8b449b9d` "chore: update version to 0.5.14 and implement autoMode enhancements" — the last functional change to the script before the fix; it does not touch resolution.
+- `12d03cd1` "fix(0106): resolve consumer config and managed runtime through portable tokens" — adjacent resolution work through the shared token/hub contract; it did not change `findRepoRoot()`.
+- `7c2929d2` "feat(0042): unique Node-22 skill script runtime" — pins the Node-only CommonJS runtime contract this spec must preserve.
+- Duplicate-risk note: `test/test-check-workflows-global-root.js` is the only regression anchor for the #504 fix, so this spec extends that suite instead of adding a parallel one.
+
+### Design Intent
+
+- Modification task, not greenfield: `git log -p -S "findRepoRoot" -- .agents/skills/ws-check-workflows/scripts/check_workflows.cjs` shows the function was introduced as a best-effort root locator (walk up from `SCRIPT_DIR` to the first ancestor holding `.git`, `package.json`, or `.agents`) and then amended by `c9b47ecf` with a skills-tree-aware loop and a `cwd` fallback.
+- **Accidental gap 1:** the skills-tree-aware loop (`:41-42`) was written to find the repository that *contains* a skills tree. It was never intended to select the parent of the very installation the script is executing from, yet for `<home>/.agents/skills/ws-*` it does exactly that and outranks the `cwd` branch added in the same commit. The delivered heuristic is correct when invoked from outside the install tree and wrong inside it; only the inside case is in scope here.
+- **Accidental gap 2:** the delivered `cwd` fallback (`:46`) is dead code in this layout because the ancestor scan returns first; making it reachable is the explicit intent of the issue's expected contract, not a new feature.
+- **Intentional constraint preserved:** the parity guard `if (fs.existsSync(SHARED_DEPS_PATH) && fs.existsSync(BIN_DEPS_PATH))` (`:152`) was written to avoid false mismatch noise when an install ships only one manifest. Its intent stays; only its observability changes, because an unevaluable check must not be indistinguishable from a passing one.
+- **Intentional constraint preserved:** no new runtime dependency and no Python helper — packaged helpers are Node 22 CommonJS `.cjs` (root hub § Skill script runtime). The resolver may reuse the shared `resolve_consumer_root.cjs` precedence; reusing it does not license changing its semantics, which other gates depend on.
+- **Delta discipline:** behavior delivered by `c9b47ecf` (script-location skills resolution, the 19-false-CRITICAL cure, `--repo-root` precedence and its loud exit 2) is out of scope for new requirements and appears here only as regression-locked anchors in the negative scenarios and the Definition of Ready.
+
+## Notes
+
+- Evidence chain for the remaining gap: `findRepoRoot()` `:31-48` (ancestor loop `:40-42` matches the install parent; `cwd` branch `:46` unreachable; `roots[2]` fallback `:47`) → `REPO_ROOT`/`SKILLS_DIR` wiring `:84-85` → `BIN_DEPS_PATH` `:87` → parity guard `:152-167` → `--json` payload `:642-647` → `--report` path `:652` → test assertions `test/test-check-workflows-global-root.js:42-57`.
+- Probe method used for this spec (reproducible, no instrumentation): copy `.agents/skills` to `<tmp>/home/.agents/skills`, create `<tmp>/consumer` with `package.json` and `.git`, then run the copied script from that cwd with `--json --report`. The script's own report path (`path.join(REPO_ROOT, 'ws-check-workflows-report.md')`) is the observable side channel for the resolved root, because `--json` still omits it. Runs: plain global fixture → `PASS`, `0 issues`, report written to `<home>`; `--repo-root <consumer>` → report written into `<consumer>`; mismatched `<home>/bin/skill-dependencies.json` added → `FAIL`, `1` CRITICAL (parity mismatch), proving the parity branch only fires when the mis-resolved root happens to carry `bin/`; `bin/` present only in the consumer checkout → `PASS`, `0 issues`, root still `<home>` (cwd never consulted).
+- Current manifest state: `bin/skill-dependencies.json` and `.agents/skills/ws-shared/runtime/skill-dependencies.json` both list 54 workflow skills and agree today, so the parity check is silent-by-omission only through the wrong root, not through a genuine mismatch.
+- `check_workflows.cjs` is integrity-hashed (`bin/skill-integrity.json`), so the implementation must run `npm run generate-integrity` and `npm run verify-integrity` in the same change.
+- Gray area: this spec pins one posture for a check whose target cannot be resolved (explicit skip, exit 0 preserved) and one resolver route; the alternatives and their consequences are recorded in the companion `.agents/specs/pending/0178-us-508.context.md`.
+- Anonymization: the issue text is public and pasted verbatim; this spec and its fixtures use `<home>`, `<tmp>`, and `<consumer>` placeholders and repo-relative paths only, with no host paths, hostnames, or consumer project names.
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Re-delivering the #504 fix (script-location skills resolution, `--repo-root` parsing, the 19-false-CRITICAL cure) | Delivered by `c9b47ecf` and specified in `0175-us-504.spec.md`; this spec only regression-locks those anchors |
+| Shipping `bin/skill-dependencies.json` inside global installs so both parity sides always exist | The install payload is owned by the installer; the reported defect is the unreported skip, not the manifest's absence |
+| Changing the non-resolution checks (workflow simulation, step continuity, script syntax, state isolation, G2 and autoMode contracts) | Outside this failure class; only resolution inputs and the reporting of an unevaluable check change |
+| Redefining `resolve_consumer_root.cjs`, `detect_install_mode.cjs`, or the hub precedence matrix | Sibling contracts are shipped and consumed by other gates; reuse is permitted, redefinition is not |
+| Reworking `--fix` / `--yes` auto-fix behavior or the interactive confirmation path | Unrelated to resolution, unasserted by the issue, and governed by the existing non-interactive posture |
+| Adding a non-Node helper or a new runtime dependency (Python, shell business logic) | Packaged runtime is Node 22 CommonJS only; `ws-check-harness` treats any `.py` under `.agents/skills/` as critical |
+| Recording the resolved root in workflow state or telemetry | The checker is a standalone gate with no workflow run context to record into |
+
+## Assumptions & Open Questions
+
+| Assumption | Chosen default | Rationale | Confirmed |
+|------------|----------------|-----------|-----------|
+| Posture when a check cannot resolve its target in a global-only install | Explicit skip record (`skipped` plus the missing manifest path), exit 0 preserved | The parity invariant compares two package manifests; a global install ships no `bin/`, so a CRITICAL would be a false failure, while silence is the reported defect. The fail-closed alternative is recorded in `0178-us-508.context.md` | n |
+| Resolved root when no consumer checkout is detectable | The global install root that contains the active `.agents/skills` tree | The issue's expected contract allows the install root itself and forbids only its parent; this keeps repo-relative report labels and `resolveSkillsDir()` coherent | n |
+| Consumer checkout detection markers at the working directory | `.git` directory, or `.ws/config.json`, or `package.json`, checked only at cwd (no parent walk) | Matches the issue's repro sketch (a consumer directory containing `package.json`) and the hub's repo markers; a parent walk would reintroduce the ancestor heuristic that caused this defect | n |
+| `--json` diagnostic shape | Additive keys on the existing payload: resolved root, resolution source, and a dependency-parity entry with `checked` or `skipped` plus reason | Additive keys keep every existing consumer of `{status, issues, simulations}` working while making an unevaluable check observable | n |
+| Implementation route for the resolver | Reuse the precedence already single-sourced in `resolve_consumer_root.cjs` (explicit override, then consumer hub or cwd) instead of adding a third heuristic | Repo-root resolution is a recorded anti-regression area; the script is dependency-free today, so adopting or adapting the shared resolver is a deliberate decision carried by the context companion | n |
+| Rate limits, auth boundaries, data lifecycle and TTL, external service failure, concurrency | N/A because the change is a synchronous local filesystem resolution and reporting path with no network call, no authentication surface, no persisted data, and a single CLI process | FORMAT.md implicit-dimension collapse for the dimensions this change does not touch | n |
+
+## Definition of Ready (DoR)
+
+| Readiness Item | Requirement | Verification Method |
+|----------------|-------------|---------------------|
+| Bounded scope | Only `check_workflows.cjs` (resolution, parity reporting, `--json` diagnostics, report write) and `test/test-check-workflows-global-root.js` change behavior, plus generated integrity artifacts | `git diff --name-only` lists only those paths |
+| Atomic criteria | Each of AC1 through AC13 maps to one fixture assertion or one observable payload field | AC-to-test map recorded before implementation |
+| Delta discipline | No requirement restates behavior delivered by `c9b47ecf`; delivered anchors are regression-locked only | Cross-check against `0175-us-504.spec.md` and this spec's Design Intent delta table |
+| Stack invariants (`node-skills-package`) | Node 22 CommonJS `.cjs` only; no `.py` file or `python` invocation; explicit `node` launcher; no new runtime dependency | `node --check .agents/skills/ws-check-workflows/scripts/check_workflows.cjs` plus `node test/test-harness-clean.js` |
+| Failure modes | Install-parent resolution, silent parity skip, degraded fallback, and report-write escape each own a negative scenario | Negative and failing scenarios executed red-first |
+| Observation telemetry | `--json` exposes the resolved root, the resolution source, and each repo-level check status with a skip reason | `node .agents/skills/ws-check-workflows/scripts/check_workflows.cjs --json` against each fixture |
+| Existing anchors preserved | Both `--repo-root` forms still take effect, a missing value still exits 2, the `<globalRoot>/skills` fixture still reports PASS, and a real manifest mismatch still reports CRITICAL | `node test/test-check-workflows-global-root.js` |
+| Integrity regenerated | The script is hashed in `bin/skill-integrity.json`; regenerate and verify in the same change | `npm run generate-integrity` then `npm run verify-integrity` |
+| Anonymization | Spec text, fixtures, and report examples use placeholders (`<home>`, `<tmp>`, `<consumer>`) and repo-relative paths only | Grep the spec and the extended test for absolute host paths |
+| Zero open blockers | The sweep reports no open PR for issue 508 and the reporting posture is decided in the context companion | Prior Work Sweep above plus `.agents/specs/pending/0178-us-508.context.md` |
+
+## Validation & Observation Notes
+
+### Telemetry & Observable Signals
+
+- Global-shape fixture: copy `.agents/skills` to `<tmp>/home/.agents/skills`, create `<tmp>/consumer` with `package.json` and `.git`, then run `node <tmp>/home/.agents/skills/ws-check-workflows/scripts/check_workflows.cjs --json` with `<tmp>/consumer` as cwd and assert the reported resolved root equals the consumer checkout.
+- Install-root fixture: repeat with a consumer directory that carries no repository marker and assert the resolved root equals `<tmp>/home/.agents`, never `<tmp>/home`.
+- Skip signal: the same runs must carry a dependency-parity entry with `skipped` and the missing manifest path (`<repoRoot>/bin/skill-dependencies.json`).
+- Write-scope signal: run with `--report` and assert the created `ws-check-workflows-report.md` is inside the resolved root and absent from the install parent.
+- Explicit-override regression: `node .agents/skills/ws-check-workflows/scripts/check_workflows.cjs --json --repo-root .` and `--repo-root=.` both exit 0 with resolution source `explicit-flag`.
+- Package-root signal: from the package root, the parity entry reads `checked` and the payload reports no skip.
+- Suite anchor: `node test/test-check-workflows-global-root.js` (registered in `test/test-suites.json`) exits 0 and prints its PASS line with the extended assertions.
+- Install-scope cross-check: `node .agents/skills/ws-check-harness/scripts/detect_install_mode.cjs --json --repo-root <fixture>` names the install scope for each fixture.
+- Runtime and hygiene gates: `node --check .agents/skills/ws-check-workflows/scripts/check_workflows.cjs`, `node test/test-harness-clean.js`, `npm run generate-integrity`, `npm run verify-integrity`.
+- Spec gate: `node .agents/skills/ws-spec-format/scripts/validate_spec.cjs --mode=authoring .agents/specs/pending/0178-us-508.spec.md` exits 0.
+
+### Negative & Failing Test Scenarios
+
+- Red test: the `<home>/.agents/skills` fixture with a consumer checkout as cwd asserts the resolved root equals the checkout. Before the change the payload has no resolved root at all and the report lands in `<home>`, so the assertion cannot pass.
+- Red test: the same fixture with a non-repository cwd asserts the resolved root equals the global install root and never the install parent.
+- Red test: the global-only fixture (no `bin/` anywhere) asserts an explicit skip record naming `<repoRoot>/bin/skill-dependencies.json`; before the change the payload carries only `status`, `issues`, and `simulations`, so the assertion fails while the run reports `PASS` with `0 issues`.
+- Red test: a package-root fixture with `bin/skill-dependencies.json` present and `ws-shared/runtime/skill-dependencies.json` absent asserts a CRITICAL finding and exit 1 — an unevaluable check on a real package root must fail loudly, never skip.
+- Red test: a fixture where the resolved root carries no repository marker and is not the install root asserts a WARNING naming the resolved root instead of an unqualified PASS.
+- Red test: `--report` in the global fixture asserts no `ws-check-workflows-report.md` appears in the install parent; before the change it is created there.
+- Regression assertion: both `--repo-root` forms still take effect, `--repo-root` without a value still exits 2 with `missing value for --repo-root`, an unknown flag still exits 2, and the `<globalRoot>/skills` fixture from #504 still reports PASS with exit 0.
+- Regression assertion: with both manifests present and mismatched, the script still reports the CRITICAL package-skills mismatch and exits 1.
+- Stack invariant violation: adding a `.py` helper under `.agents/skills/` or invoking `python` from the script must fail `node test/test-harness-clean.js`; requiring an ESM-only module from the CommonJS script must fail at runtime.
+- Contract violation: a resolved root outside both the consumer checkout and the install root must produce the degraded-resolution WARNING naming that root, so the run reports `status: PASS` with a non-empty issue list instead of `0 issues`.

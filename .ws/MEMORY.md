@@ -60,6 +60,14 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **DO NOT**: Write PASS counts or green verdicts into report files while the backing job is still running; push any commit to the integration branch after its PR merged, however small.
 - **INSTEAD DO**: Write reports only from collected job output with job id + exit code cited; hold trailing commits for a follow-up PR (which also gives the bypassed change retroactive review); run the fable audit before merge whenever `fable.autoAudit` is true so caveats land pre-ship, not post-hoc.
 
+### [2026-10-12] check_workflows resolver + regression-test harness traps (us-508)
+- **Layer**: `Harness`
+- **Module**: `ws-check-workflows / test harness`
+- **Severity**: `Medium`
+- **PathPattern**: `.agents/skills/ws-check-workflows/scripts/check_workflows.cjs`, `test/test-check-workflows-global-root.js`
+- **DO NOT**: `JSON.parse` the whole stdout of a `--json --report` run; build git revision args containing `^` through a shell (`execSync`/`cmd /c`); add more than one full-tree `fs.cpSync` of `.agents/skills` to a regression test without need.
+- **INSTEAD DO**: Parse the JSON slice between the first `{` and last `}` (or run `--json` and `--report` separately); call `spawnSync('git', ['show', 'REV^:path'])` so the caret reaches git unescaped; reuse a single copied fixture tree and build extra fixtures minimally (only the files a check touches).
+
 ### [2026-10-11] Step 0-4 orchestration traps: residue allowlist, state-file dialect, ignored plan artifacts, stale plan index
 - **Layer**: `Workflow / harness runtime`
 - **Module**: `ws-spec-to-pr` dispatch audit + state hygiene (`workflow_state.cjs` RUNTIME_NAMES, `update_state.cjs`, `plan_index.cjs`, `build_dispatch_context.cjs`)`

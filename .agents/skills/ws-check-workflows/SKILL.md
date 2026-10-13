@@ -27,8 +27,14 @@ node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs
 # Validate a specific registered workflow id (fail-closed on unknown ids)
 node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs --workflow ws-spec-to-pr-distributed
 
-# Save Markdown report to ws-check-workflows-report.md
+# Save Markdown report to ws-check-workflows-report.md (written inside the resolved root)
 node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs --report
+
+# Machine-readable payload: status, resolvedRoot, resolutionSource, checks, issues, simulations
+node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs --json
+
+# Target an explicit consumer checkout (wins over every heuristic)
+node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs --json --repo-root <dir>
 
 # Auto-fix mode (applies safe fixes; never prompts, even on a TTY)
 node {skillsRoot}/ws-check-workflows/scripts/check_workflows.cjs --fix --yes
@@ -73,6 +79,12 @@ The validation process performs end-to-end simulation across both orchestrators:
 - **`autoMode: true`** — asserts the canonical `gates.md` § autoMode stop conditions section exists with the no-yield rule at **internal checkpoints** and the four valid stops; both orch SKILLs reference that section and do not duplicate the list.
 - **`autoMode: false`** — asserts normal-mode gating: `defaults.gateGranularity` is documented, `step` runs a `user-gate` at each step boundary, and `phase` runs at most five blocking gates in a standard run.
 - A missing no-yield clause, a duplicated stop list, or an undocumented OFF-mode gate is a **CRITICAL** finding.
+
+### 7. Repo-root resolution & dependency-parity reporting
+- Resolves a meaningful repo root with a recorded provenance (`resolutionSource`): explicit `--repo-root`, then a consumer checkout at the working directory (markers `.git`, `.ws/config.json`, `package.json`), then the global **install root** (the directory containing the active skills tree, e.g. `<home>/.agents` for `<home>/.agents/skills/ws-*`), then a no-marker cwd fallback. The install **parent** is never returned.
+- A degraded (`cwd-fallback`) resolution emits a WARNING naming the resolved root and its source.
+- The shared-vs-bin dependency parity check reports itself: when both manifests are present it compares and reports `checked`; when one is missing it emits a `skipped` record naming the missing manifest path — unless the resolved root is a real package root carrying `bin/`, where a missing manifest is a CRITICAL.
+- `--json` exposes `resolvedRoot`, `resolutionSource`, and `checks` (with the dependency-parity status/reason); the Markdown report carries the same in its "Resolved Root & Repo-level Checks" section. `--report` writes inside the resolved root.
 
 ---
 

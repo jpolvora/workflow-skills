@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-10-13T01:36:03.968Z",
+  "filesTouched": {
+    "created": [
+      ".agents/plans/us-508/step-00-us-508.spec.md",
+      ".agents/plans/us-508/step-01-us-508.plan.md",
+      ".agents/plans/us-508/step-02-us-508.plan-interview.md",
+      ".agents/plans/us-508/step-02-us-508.plan.refined.md",
+      ".agents/plans/us-508/step-03-us-508.plan.exec.md",
+      ".agents/plans/us-508/step-05-us-508.plan.report.md",
+      ".agents/plans/us-508/step-06-us-508.review.md",
+      ".agents/plans/us-508/step-07-us-508.testing.plan.md",
+      ".agents/plans/us-508/step-07-us-508.testing.report.md"
+    ],
+    "modified": [
+      ".agents/skills/ws-check-workflows/SKILL.md",
+      ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs",
+      ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+      ".agents/skills/ws-shared/version.json",
+      "bin/skill-dependencies.json",
+      "bin/skill-integrity.json",
+      "docs/index.html",
+      "package.json",
+      "test/package.json",
+      "test/test-check-workflows-global-root.js"
+    ],
+    "deleted": []
+  },
+  "filesHash": "02f1bcddcde463f0ce28692240a0537bce9e9f54e5eca8feae94d5769e7fd2a4",
+  "aliasResults": [
+    {
+      "alias": "backendTest",
+      "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+      "startedAt": null,
+      "endedAt": null,
+      "exitCode": 0
+    }
+  ],
+  "sabotage": "not-required",
+  "reuse": "Steps 5/6/7 re-run alias/stack/sabotage commands only if files_touched changed; AC scoring, review, and tests still run. Compare current workflowManifest sorted hash to filesHash; match means reuse aliasResults/sabotage, mismatch means re-run."
+}
