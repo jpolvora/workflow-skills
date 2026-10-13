@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-13 00:24] Agent: agent
+- **Prompt**: Implement us-511: fetch_threads.cjs should fall back to gh auth token
+- **Done**: Added the gh auth token CLI fallback to the canonical token chain, loud actionable failure, docs parity, and a network-free test module
+- **Result**: Product commit dbd9a655; npm run test 166/166 green; harness clean; integrity verified; version 0.5.46
+
 ### [2026-10-12 23:43] Agent: agent
 - **Prompt**: No sanctioned single-agent state bootstrap for ws-spec-to-pr (spec 0180-us-510)
 - **Done**: Pinned the sanctioned single-agent state bootstrap contract on the packaged state runtime: required --slug/--workflow-id/--branch/--baseline inputs, recorded branch+baseline, index row refresh, idempotent replay at revision 0, fail-closed refusals for progressed/partial/mismatched targets, rollback with no residue, canonical help + docs, and a new harnessEfficiency test module.
