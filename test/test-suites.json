@@ -223,6 +223,9 @@
     ],
     [
       "test/test-ws-retro.js"
+    ],
+    [
+      "test/test-fetch-threads-token-fallback.js"
     ]
   ],
   "remote": [
@@ -354,6 +357,9 @@
     ],
     [
       "test/test-harness-clean.js"
+    ],
+    [
+      "test/test-fetch-threads-token-fallback.js"
     ]
   ],
   "harnessEfficiency": [
