@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-13 00:46] Agent: agent
+- **Prompt**: ws-spec-multi batch run ms-20261012T211904Z (us-506..us-511)
+- **Done**: Ran the 6-spec shared-head batch on develop: each spec classified (all standard), dispatched to ws-spec-to-pr, converged (0 threads) and merged into main via per-spec PRs #513-#518; then filed us-506 into completed/ and synced index.PRD (the only spec whose filing was missed by its own worker).
+- **Result**: Shipped 6/6: PR #513 us-506, #514 us-507, #515 us-508, #516 us-509, #517 us-510, #518 us-511; all merged, activeThreads 0, checks green; versions 0.5.41 -> 0.5.46; specs pending count 0.
+
 ### [2026-10-13 00:24] Agent: agent
 - **Prompt**: Implement us-511: fetch_threads.cjs should fall back to gh auth token
 - **Done**: Added the gh auth token CLI fallback to the canonical token chain, loud actionable failure, docs parity, and a network-free test module

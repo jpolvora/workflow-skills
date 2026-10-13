@@ -229,7 +229,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] Skill Loading Banner Instruction in Primary SKILL.md Files (`spec: completed/skill-loaded-banner-instruction.spec.md`)
 - [x] Batch worker wedge: dispatched fix/review worker runs with zero output until interrupted (`spec: completed/0174-us-502.spec.md`)
 - [x] check_workflows.cjs: findRepoRoot() mis-resolves repo root to ~/.agents when the global install dir is a git repo (19 false CRITICALs) (`spec: completed/0175-us-504.spec.md`)
-- [ ] ws-spec-to-pr: full-auto run reaches ship with no workflow state (no state bootstrap; HS-5 pre-advance gate unsatisfiable) (`spec: pending/0176-us-506.spec.md`)
+- [x] ws-spec-to-pr: full-auto run reaches ship with no workflow state (no state bootstrap; HS-5 pre-advance gate unsatisfiable) (`spec: completed/0176-us-506.spec.md`)
 - [x] ws-monitor: a plan directory with fresh step artifacts and no state file is invisible (reports 0 workflows) (`spec: completed/0177-us-507.spec.md`)
 - [x] check_workflows.cjs: resolver returns the parent of the global install (home directory) and silently skips the dependency parity check (`spec: completed/0178-us-508.spec.md`)
 - [x] ac_ledger link --commit with multiple --ac attaches only to the first AC (`spec: completed/0179-us-509.spec.md`)
@@ -637,7 +637,7 @@ All Next-specs closed.
 
 | 186 | `us-504` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | check_workflows.cjs: findRepoRoot() mis-resolves repo root to ~/.agents when the global install dir is a git repo (19 false CRITICALs) |
 
-| 187 | `us-506` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-to-pr: full-auto run reaches ship with no workflow state (no state bootstrap; HS-5 pre-advance gate unsatisfiable) |
+| 187 | `us-506` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-spec-to-pr: full-auto run reaches ship with no workflow state (no state bootstrap; HS-5 pre-advance gate unsatisfiable) |
 
 | 188 | `us-507` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ws-monitor: a plan directory with fresh step artifacts and no state file is invisible (reports 0 workflows) |
 
@@ -846,6 +846,7 @@ All Next-specs closed.
 | 2026-10-13 | `us-509` | ac_ledger link --commit with multiple --ac attaches only to the first AC | f08e3ce3 |
 | 2026-10-13 | `us-510` | No sanctioned single-agent state bootstrap for ws-spec-to-pr | https://github.com/jpolvora/workflow-skills/pull/517 |
 | 2026-10-13 | `us-511` | fetch_threads.cjs should fall back to gh auth token | dbd9a655397fe390e86ef2fc78454813e229c29b |
+| 2026-10-13 | `us-506` | ws-spec-to-pr: full-auto run reaches ship with no workflow state (no state bootstrap; HS-5 pre-advance gate unsatisfiable) | https://github.com/jpolvora/workflow-skills/pull/513 |
 
 ## 11. Maintenance checklist
 
