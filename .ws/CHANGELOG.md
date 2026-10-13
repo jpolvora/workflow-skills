@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-12 23:43] Agent: agent
+- **Prompt**: No sanctioned single-agent state bootstrap for ws-spec-to-pr (spec 0180-us-510)
+- **Done**: Pinned the sanctioned single-agent state bootstrap contract on the packaged state runtime: required --slug/--workflow-id/--branch/--baseline inputs, recorded branch+baseline, index row refresh, idempotent replay at revision 0, fail-closed refusals for progressed/partial/mismatched targets, rollback with no residue, canonical help + docs, and a new harnessEfficiency test module.
+- **Result**: Product commit f7284f01 (v0.5.45); 165/165 local suite; harness clean 0 findings; verify-integrity OK.
+
 ### [2026-10-12 22:27] Agent: agent
 - **Prompt**: us-509: fix ac_ledger link --commit with multiple --ac attaching only to the first AC
 - **Done**: ac_ledger.cjs parseArgs now consumes --ac/--negative space-separated target lists, link validates every id before mutating and applies the payload to every named target in one write, and leftover/missing-value tokens fail closed; tests + integrity + version 0.5.44

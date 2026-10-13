@@ -56,7 +56,7 @@ Living synthesis of specs 0001–0150. The delta since adds empty-alias verify s
 
 ## Sync Baseline
 
-- Commit: `0b3e832875e48653a36b1cd534558a15268f5c80`
-- Synced: 2026-10-10
+- Commit: `f7284f01e6fff68249fea97f29fa6fdee760acc2`
+- Synced: 2026-10-13
 
 Next wiki update: diff this commit against `HEAD` (`git diff --name-status <commit>..HEAD`) and sweep only the changed specs and code areas. A full-tree sweep is only needed when this block is missing or the commit is unreachable. Contract: `ws-wiki` SKILL.md § Incremental baseline.
