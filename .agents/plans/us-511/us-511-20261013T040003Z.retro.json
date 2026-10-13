@@ -1,0 +1,49 @@
+{
+  "candidates": [
+    {
+      "id": "C1",
+      "title": "Spec text should quote user-visible strings from source verbatim",
+      "severity": "medium",
+      "category": "reviewer-standard",
+      "evidence": {
+        "artifact": ".agents/specs/completed/0181-us-511.spec.md",
+        "ref": "Description / Failure contract (zero-thread message paraphrase)",
+        "quote": "That path prints `No active unresolved threads found.` and exits 0"
+      },
+      "proposedChange": {
+        "target": ".agents/skills/ws-spec-write/SKILL.md",
+        "change": "When a spec references a user-visible string, require the draft to quote it verbatim from source (or explicitly mark it as a paraphrase); the shipped script prints `No active unresolved review threads found.`"
+      }
+    },
+    {
+      "id": "C2",
+      "title": "Spec registration should not silently flip `source` to local",
+      "severity": "medium",
+      "category": "automated-check",
+      "evidence": {
+        "artifact": ".agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs",
+        "ref": "argsOf: source defaults to 'local'",
+        "quote": "const args = { source: 'local', force: false, json: false };"
+      },
+      "proposedChange": {
+        "target": ".agents/skills/ws-spec-provider-local/scripts/register_local_spec.cjs",
+        "change": "Preserve a non-empty frontmatter `source` when --source is not explicitly passed, instead of overwriting a GitHub/ADO-sourced spec with `local`."
+      }
+    },
+    {
+      "id": "C3",
+      "title": "Document NODE_OPTIONS backslash stripping for Windows preload paths",
+      "severity": "low",
+      "category": "memory",
+      "evidence": {
+        "artifact": "test/test-fetch-threads-token-fallback.js",
+        "ref": "baseEnv fetch-shim propagation",
+        "quote": "Forward slashes keep Node's NODE_OPTIONS tokenizer from eating Windows backslashes."
+      },
+      "proposedChange": {
+        "target": ".agents/skills/ws-shared/runtime/CROSS-PLATFORM.md",
+        "change": "Note that NODE_OPTIONS drops backslashes, so Windows `--require`/preload paths must use forward slashes."
+      }
+    }
+  ]
+}

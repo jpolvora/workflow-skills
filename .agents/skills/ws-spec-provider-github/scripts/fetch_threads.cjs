@@ -52,12 +52,35 @@ function loadDotEnv() {
   }
 }
 
+// Token precedence (documented in ws-spec-provider-github/SKILL.md): an explicit
+// environment token always outranks the CLI fallback, and the three variables keep
+// their ranking. Only a total miss reaches `gh auth token`, which reads existing CLI
+// state on stdout; its stderr is discarded and the value is never echoed or persisted.
 function resolveToken() {
-  return (
+  const envToken =
     process.env.AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN ||
     process.env.GITHUB_TOKEN ||
-    process.env.GH_TOKEN
-  );
+    process.env.GH_TOKEN;
+  if (envToken) {
+    const source = process.env.AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN
+      ? 'AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN'
+      : process.env.GITHUB_TOKEN
+        ? 'GITHUB_TOKEN'
+        : 'GH_TOKEN';
+    return { token: envToken, source };
+  }
+
+  try {
+    const token = execSync('gh auth token', {
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'ignore'],
+    }).trim();
+    if (token) return { token, source: 'gh auth token' };
+  } catch {
+    // gh CLI token retrieval unavailable (binary absent or not authenticated).
+  }
+
+  return { token: null, source: null };
 }
 
 function summarizeThread(comments) {
@@ -111,12 +134,15 @@ async function main() {
   const owner = match[1];
   const repo = match[2];
 
-  const token = resolveToken();
+  const { token, source: tokenSource } = resolveToken();
   if (!token) {
     console.error(
-      'Error: Set AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN, GITHUB_TOKEN, or GH_TOKEN.',
+      'Error: Set AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN, GITHUB_TOKEN, or GH_TOKEN, or authenticate the GitHub CLI with `gh auth login`.',
     );
     process.exit(1);
+  }
+  if (tokenSource === 'gh auth token') {
+    console.error('Note: resolved GitHub token from `gh auth token` (CLI fallback).');
   }
 
   const query = `

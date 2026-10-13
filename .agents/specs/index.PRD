@@ -234,7 +234,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [x] check_workflows.cjs: resolver returns the parent of the global install (home directory) and silently skips the dependency parity check (`spec: completed/0178-us-508.spec.md`)
 - [x] ac_ledger link --commit with multiple --ac attaches only to the first AC (`spec: completed/0179-us-509.spec.md`)
 - [x] No sanctioned single-agent state bootstrap for ws-spec-to-pr (`spec: completed/0180-us-510.spec.md`)
-- [ ] fetch_threads.cjs should fall back to gh auth token (`spec: pending/0181-us-511.spec.md`)
+- [x] fetch_threads.cjs should fall back to gh auth token (`spec: completed/0181-us-511.spec.md`)
 
 
 
@@ -647,7 +647,7 @@ All Next-specs closed.
 
 | 191 | `us-510` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | No sanctioned single-agent state bootstrap for ws-spec-to-pr |
 
-| 192 | `us-511` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | fetch_threads.cjs should fall back to gh auth token |
+| 192 | `us-511` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | fetch_threads.cjs should fall back to gh auth token |
 
 ## 9. Inbox
 
@@ -845,6 +845,7 @@ All Next-specs closed.
 | 2026-10-13 | `us-508` | check_workflows.cjs: resolver returns the parent of the global install (home directory) and silently skips the dependency parity check | 39cf18f8 |
 | 2026-10-13 | `us-509` | ac_ledger link --commit with multiple --ac attaches only to the first AC | f08e3ce3 |
 | 2026-10-13 | `us-510` | No sanctioned single-agent state bootstrap for ws-spec-to-pr | https://github.com/jpolvora/workflow-skills/pull/517 |
+| 2026-10-13 | `us-511` | fetch_threads.cjs should fall back to gh auth token | dbd9a655397fe390e86ef2fc78454813e229c29b |
 
 ## 11. Maintenance checklist
 

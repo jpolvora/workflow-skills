@@ -1,6 +1,6 @@
 # SCM Providers (`providers`)
 
-> Provenance: `.agents/skills/ws-shared/runtime/scm-provider-contract.md`, `.agents/skills/ws-spec-provider-github/SKILL.md`, `.agents/skills/ws-spec-provider-azure-devops/SKILL.md`, `.agents/skills/ws-spec-provider-local/SKILL.md`, `test/test-provider-parity.js`, living synthesis of specs 0001, 0006, 0060, 0084.
+> Provenance: `.agents/skills/ws-shared/runtime/scm-provider-contract.md`, `.agents/skills/ws-spec-provider-github/SKILL.md`, `.agents/skills/ws-spec-provider-azure-devops/SKILL.md`, `.agents/skills/ws-spec-provider-local/SKILL.md`, `test/test-provider-parity.js`, living synthesis of specs 0001, 0006, 0060, 0084, 0181.
 
 ## Feature
 
@@ -13,6 +13,8 @@ GitHub and Azure DevOps must implement the same required intents: `validate-auth
 Attachment ingestion tolerates per-file 404, 403, timeout, size caps, and disallowed hosts or MIME types without aborting the entire fetch, but authentication failures STOP the run. Files land in `{specStem}.assets/` with a `manifest.json`, patch a `## Visual References` section into the spec, and copy the sidecar to `{us-dir}/attachments/` at register time.
 
 Thread resolution is explicit: posting a fix reply never marks a thread resolved. The `resolveReviewThread` GraphQL mutation (GitHub) or equivalent ADO procedure must run after reply and commit verification using the `threadId` from structured thread listings. Dry-run callers skip remote mutation. Resolution comments must describe the correction, not hash-only or filler text.
+
+GitHub review-thread reads resolve their credential through one documented chain: `AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN` → `GITHUB_TOKEN` → `GH_TOKEN` → the `gh auth token` CLI fallback. The CLI link is a strict last resort (an explicit environment token never spawns the subprocess), it captures the CLI's standard output and discards its standard error, and the value is never printed, logged, or persisted. When no source yields a token the read fails closed before any API call with a remediation naming `gh auth login` and the three variables, and never degrades into the empty-thread success path (`No active unresolved review threads found.`) that `ws-fix-pr` / `ws-goal-fix-pr` would read as "nothing to fix".
 
 Local provider delegates PR intents to `providers.scm`; `scm: "local"` is rejected for PR, thread, and merge operations. Step skills hold no provider resolution tables of their own: `ws-fix-pr`, `ws-goal-fix-pr`, and `ws-ship-pr` call intents by name and point at `config-resolution.md` plus this contract, and raw `gh` or `az` command literals are banned from skill bodies.
 

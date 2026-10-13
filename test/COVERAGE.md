@@ -55,7 +55,11 @@ accepted and must not be "fixed" with live-network tests:
 - Provider network paths (`fetch_threads`, `github-issue-to-spec`,
   `ado-workitem-to-spec`, `sweep_prior_work`, `list_my_user_stories`,
   `list_open_issues` live branches): live `gh`/ADO calls forbidden in tests;
-  arg parsing, `--help`, and pre-network error paths are covered.
+  arg parsing, `--help`, and pre-network error paths are covered. The
+  `fetch_threads` token chain (`AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN` → `GITHUB_TOKEN`
+  → `GH_TOKEN` → `gh auth token`) is covered network-free by
+  `test/test-fetch-threads-token-fallback.js` using a `PATH` `gh` stub, a scrubbed
+  environment, and a `--require` `fetch` shim.
 - `bin/cli.js` installer branches (download/extract failures, platform shims):
   covered for help, version, and local flows; destructive/remote branches excluded.
 - `resolve_consumer_root.cjs` global-install fallbacks: exercised for the

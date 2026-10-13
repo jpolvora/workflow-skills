@@ -10,7 +10,7 @@ gh auth status
 
 - Exit 0 → pass for CLI issue/PR flows.
 - Non-zero → instruct `gh auth login` (or fix `GH_TOKEN` / host); **STOP**.
-- For `list-threads` / `resolve-thread`, also require a token in `AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN`, `GITHUB_TOKEN`, or `GH_TOKEN`. If missing, print the scripts’ token hint and **STOP**.
+- For `list-threads` / `resolve-thread`, resolve the token in the documented order `AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN` → `GITHUB_TOKEN` → `GH_TOKEN` → `gh auth token` fallback (the same chain as the provider prerequisites). If no source yields a token, print the scripts’ token hint and **STOP**.
 
 ## `fetch-to-spec`
 

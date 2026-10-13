@@ -1,0 +1,3221 @@
+{
+  "acImplemented": 14,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "dbd9a655397fe390e86ef2fc78454813e229c29b",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-fix-pr/README.md:L28-L28",
+          ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md:L197-L197",
+          ".agents/skills/ws-spec-provider-github/INTENTS.md:L13-L13",
+          ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs:L55-L146",
+          "test/test-fetch-threads-token-fallback.js:L1-L336"
+        ],
+        "files": [
+          {
+            "lineEnd": 28,
+            "lineStart": 28,
+            "path": ".agents/skills/ws-fix-pr/README.md",
+            "sha256": "081f30949ec1b3cd39ff8acd16035b9c83a5eb2e901f4657ceb656b8d72deaa2"
+          },
+          {
+            "lineEnd": 197,
+            "lineStart": 197,
+            "path": ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md",
+            "sha256": "a4772fe835f5a62f5b4e8f6e606127d6d0de3af79281d5c086ef8a25563bcf41"
+          },
+          {
+            "lineEnd": 13,
+            "lineStart": 13,
+            "path": ".agents/skills/ws-spec-provider-github/INTENTS.md",
+            "sha256": "a9455d52c2872bf54638c2dd819de83189772e29c3ee1a99a4b4a92a26a6d1e2"
+          },
+          {
+            "lineEnd": 146,
+            "lineStart": 55,
+            "path": ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs",
+            "sha256": "a90999c7f3ba92799deb9b72c2cdb14b528fbd3c7005cb26163fbb4d42960c05"
+          },
+          {
+            "lineEnd": 336,
+            "lineStart": 1,
+            "path": "test/test-fetch-threads-token-fallback.js",
+            "sha256": "812e076d0f865ba42088a44164c4f471b56c03d7cb3db6a13def2a85b3872cf1"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "g2-commit-dbd9a655397fe390e86ef2fc78454813e229c29b",
+          "impl-us511-ac"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1/AC2 env-token run exits 0",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.524Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC11 provider docs state the four-link chain",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.526Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC14 --json payload keeps key",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.526Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2 env token short-circuits before",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.525Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC4 Authorization header carries the CLI token",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.526Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "CLI stderr is discarded",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.526Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "env token never printed on stdout/stderr",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.526Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "invoked after env miss",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.525Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.526Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim does not duplicate token logic",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.526Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim propagates the canonical non-zero exit",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.526Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "stderr names the selected source",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.526Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread message preserved",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.526Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread text absent on failure",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.526Z"
+          }
+        ],
+        "text": "The canonical thread-fetch script shall resolve its GitHub token from `AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN`, then `GITHUB_TOKEN`, then `GH_TOKEN`, then the `gh auth token` CLI fallback, in that order.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "dbd9a655397fe390e86ef2fc78454813e229c29b",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-fix-pr/README.md:L28-L28",
+          ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md:L197-L197",
+          ".agents/skills/ws-spec-provider-github/INTENTS.md:L13-L13",
+          ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs:L55-L146",
+          "test/test-fetch-threads-token-fallback.js:L1-L336"
+        ],
+        "files": [
+          {
+            "lineEnd": 28,
+            "lineStart": 28,
+            "path": ".agents/skills/ws-fix-pr/README.md",
+            "sha256": "081f30949ec1b3cd39ff8acd16035b9c83a5eb2e901f4657ceb656b8d72deaa2"
+          },
+          {
+            "lineEnd": 197,
+            "lineStart": 197,
+            "path": ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md",
+            "sha256": "a4772fe835f5a62f5b4e8f6e606127d6d0de3af79281d5c086ef8a25563bcf41"
+          },
+          {
+            "lineEnd": 13,
+            "lineStart": 13,
+            "path": ".agents/skills/ws-spec-provider-github/INTENTS.md",
+            "sha256": "a9455d52c2872bf54638c2dd819de83189772e29c3ee1a99a4b4a92a26a6d1e2"
+          },
+          {
+            "lineEnd": 146,
+            "lineStart": 55,
+            "path": ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs",
+            "sha256": "a90999c7f3ba92799deb9b72c2cdb14b528fbd3c7005cb26163fbb4d42960c05"
+          },
+          {
+            "lineEnd": 336,
+            "lineStart": 1,
+            "path": "test/test-fetch-threads-token-fallback.js",
+            "sha256": "812e076d0f865ba42088a44164c4f471b56c03d7cb3db6a13def2a85b3872cf1"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "g2-commit-dbd9a655397fe390e86ef2fc78454813e229c29b",
+          "impl-us511-ac"
+        ],
+        "planSections": [
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1/AC2 env-token run exits 0",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.527Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC11 provider docs state the four-link chain",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.527Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC14 --json payload keeps key",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.527Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2 env token short-circuits before",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.527Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC4 Authorization header carries the CLI token",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.527Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "CLI stderr is discarded",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.527Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "env token never printed on stdout/stderr",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.527Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "invoked after env miss",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.527Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.527Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim does not duplicate token logic",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.527Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim propagates the canonical non-zero exit",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.527Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "stderr names the selected source",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.527Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread message preserved",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.527Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread text absent on failure",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.527Z"
+          }
+        ],
+        "text": "When an explicit environment token is present in any of the three variables, the script shall use it and shall not invoke the `gh auth token` fallback.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "dbd9a655397fe390e86ef2fc78454813e229c29b",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-fix-pr/README.md:L28-L28",
+          ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md:L197-L197",
+          ".agents/skills/ws-spec-provider-github/INTENTS.md:L13-L13",
+          ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs:L55-L146",
+          "test/test-fetch-threads-token-fallback.js:L1-L336"
+        ],
+        "files": [
+          {
+            "lineEnd": 28,
+            "lineStart": 28,
+            "path": ".agents/skills/ws-fix-pr/README.md",
+            "sha256": "081f30949ec1b3cd39ff8acd16035b9c83a5eb2e901f4657ceb656b8d72deaa2"
+          },
+          {
+            "lineEnd": 197,
+            "lineStart": 197,
+            "path": ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md",
+            "sha256": "a4772fe835f5a62f5b4e8f6e606127d6d0de3af79281d5c086ef8a25563bcf41"
+          },
+          {
+            "lineEnd": 13,
+            "lineStart": 13,
+            "path": ".agents/skills/ws-spec-provider-github/INTENTS.md",
+            "sha256": "a9455d52c2872bf54638c2dd819de83189772e29c3ee1a99a4b4a92a26a6d1e2"
+          },
+          {
+            "lineEnd": 146,
+            "lineStart": 55,
+            "path": ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs",
+            "sha256": "a90999c7f3ba92799deb9b72c2cdb14b528fbd3c7005cb26163fbb4d42960c05"
+          },
+          {
+            "lineEnd": 336,
+            "lineStart": 1,
+            "path": "test/test-fetch-threads-token-fallback.js",
+            "sha256": "812e076d0f865ba42088a44164c4f471b56c03d7cb3db6a13def2a85b3872cf1"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "g2-commit-dbd9a655397fe390e86ef2fc78454813e229c29b",
+          "impl-us511-ac"
+        ],
+        "planSections": [
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1/AC2 env-token run exits 0",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.528Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC11 provider docs state the four-link chain",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.529Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC14 --json payload keeps key",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.529Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2 env token short-circuits before",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.528Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC4 Authorization header carries the CLI token",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.528Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "CLI stderr is discarded",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.528Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "env token never printed on stdout/stderr",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.528Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "invoked after env miss",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.528Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.528Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim does not duplicate token logic",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.529Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim propagates the canonical non-zero exit",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.529Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "stderr names the selected source",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.529Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread message preserved",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.529Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread text absent on failure",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.528Z"
+          }
+        ],
+        "text": "When all three environment token variables are absent or empty, the script shall attempt the `gh auth token` CLI fallback before failing.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "dbd9a655397fe390e86ef2fc78454813e229c29b",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-fix-pr/README.md:L28-L28",
+          ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md:L197-L197",
+          ".agents/skills/ws-spec-provider-github/INTENTS.md:L13-L13",
+          ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs:L55-L146",
+          "test/test-fetch-threads-token-fallback.js:L1-L336"
+        ],
+        "files": [
+          {
+            "lineEnd": 28,
+            "lineStart": 28,
+            "path": ".agents/skills/ws-fix-pr/README.md",
+            "sha256": "081f30949ec1b3cd39ff8acd16035b9c83a5eb2e901f4657ceb656b8d72deaa2"
+          },
+          {
+            "lineEnd": 197,
+            "lineStart": 197,
+            "path": ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md",
+            "sha256": "a4772fe835f5a62f5b4e8f6e606127d6d0de3af79281d5c086ef8a25563bcf41"
+          },
+          {
+            "lineEnd": 13,
+            "lineStart": 13,
+            "path": ".agents/skills/ws-spec-provider-github/INTENTS.md",
+            "sha256": "a9455d52c2872bf54638c2dd819de83189772e29c3ee1a99a4b4a92a26a6d1e2"
+          },
+          {
+            "lineEnd": 146,
+            "lineStart": 55,
+            "path": ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs",
+            "sha256": "a90999c7f3ba92799deb9b72c2cdb14b528fbd3c7005cb26163fbb4d42960c05"
+          },
+          {
+            "lineEnd": 336,
+            "lineStart": 1,
+            "path": "test/test-fetch-threads-token-fallback.js",
+            "sha256": "812e076d0f865ba42088a44164c4f471b56c03d7cb3db6a13def2a85b3872cf1"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "g2-commit-dbd9a655397fe390e86ef2fc78454813e229c29b",
+          "impl-us511-ac"
+        ],
+        "planSections": [
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1/AC2 env-token run exits 0",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.529Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC11 provider docs state the four-link chain",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.530Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC14 --json payload keeps key",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.530Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2 env token short-circuits before",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.529Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC4 Authorization header carries the CLI token",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.529Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "CLI stderr is discarded",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.530Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "env token never printed on stdout/stderr",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.530Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "invoked after env miss",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.529Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.530Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim does not duplicate token logic",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.530Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim propagates the canonical non-zero exit",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.530Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "stderr names the selected source",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.530Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread message preserved",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.530Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread text absent on failure",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.530Z"
+          }
+        ],
+        "text": "When the CLI fallback returns a non-empty token, the script shall send that token in the `Authorization` header of the GraphQL request.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "dbd9a655397fe390e86ef2fc78454813e229c29b",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-fix-pr/README.md:L28-L28",
+          ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md:L197-L197",
+          ".agents/skills/ws-spec-provider-github/INTENTS.md:L13-L13",
+          ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs:L55-L146",
+          "test/test-fetch-threads-token-fallback.js:L1-L336"
+        ],
+        "files": [
+          {
+            "lineEnd": 28,
+            "lineStart": 28,
+            "path": ".agents/skills/ws-fix-pr/README.md",
+            "sha256": "081f30949ec1b3cd39ff8acd16035b9c83a5eb2e901f4657ceb656b8d72deaa2"
+          },
+          {
+            "lineEnd": 197,
+            "lineStart": 197,
+            "path": ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md",
+            "sha256": "a4772fe835f5a62f5b4e8f6e606127d6d0de3af79281d5c086ef8a25563bcf41"
+          },
+          {
+            "lineEnd": 13,
+            "lineStart": 13,
+            "path": ".agents/skills/ws-spec-provider-github/INTENTS.md",
+            "sha256": "a9455d52c2872bf54638c2dd819de83189772e29c3ee1a99a4b4a92a26a6d1e2"
+          },
+          {
+            "lineEnd": 146,
+            "lineStart": 55,
+            "path": ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs",
+            "sha256": "a90999c7f3ba92799deb9b72c2cdb14b528fbd3c7005cb26163fbb4d42960c05"
+          },
+          {
+            "lineEnd": 336,
+            "lineStart": 1,
+            "path": "test/test-fetch-threads-token-fallback.js",
+            "sha256": "812e076d0f865ba42088a44164c4f471b56c03d7cb3db6a13def2a85b3872cf1"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "g2-commit-dbd9a655397fe390e86ef2fc78454813e229c29b",
+          "impl-us511-ac"
+        ],
+        "planSections": [
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1/AC2 env-token run exits 0",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.531Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC11 provider docs state the four-link chain",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.531Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC14 --json payload keeps key",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.531Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2 env token short-circuits before",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.531Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC4 Authorization header carries the CLI token",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.531Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "CLI stderr is discarded",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.531Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "env token never printed on stdout/stderr",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.531Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "invoked after env miss",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.531Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.531Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim does not duplicate token logic",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.531Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim propagates the canonical non-zero exit",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.531Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "stderr names the selected source",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.531Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread message preserved",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.531Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread text absent on failure",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.531Z"
+          }
+        ],
+        "text": "If no environment token exists and the CLI fallback is unavailable, exits non-zero, or returns an empty value, then the script shall exit non-zero with a remediation message naming `gh auth login` and the three token environment variables.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "dbd9a655397fe390e86ef2fc78454813e229c29b",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-fix-pr/README.md:L28-L28",
+          ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md:L197-L197",
+          ".agents/skills/ws-spec-provider-github/INTENTS.md:L13-L13",
+          ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs:L55-L146",
+          "test/test-fetch-threads-token-fallback.js:L1-L336"
+        ],
+        "files": [
+          {
+            "lineEnd": 28,
+            "lineStart": 28,
+            "path": ".agents/skills/ws-fix-pr/README.md",
+            "sha256": "081f30949ec1b3cd39ff8acd16035b9c83a5eb2e901f4657ceb656b8d72deaa2"
+          },
+          {
+            "lineEnd": 197,
+            "lineStart": 197,
+            "path": ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md",
+            "sha256": "a4772fe835f5a62f5b4e8f6e606127d6d0de3af79281d5c086ef8a25563bcf41"
+          },
+          {
+            "lineEnd": 13,
+            "lineStart": 13,
+            "path": ".agents/skills/ws-spec-provider-github/INTENTS.md",
+            "sha256": "a9455d52c2872bf54638c2dd819de83189772e29c3ee1a99a4b4a92a26a6d1e2"
+          },
+          {
+            "lineEnd": 146,
+            "lineStart": 55,
+            "path": ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs",
+            "sha256": "a90999c7f3ba92799deb9b72c2cdb14b528fbd3c7005cb26163fbb4d42960c05"
+          },
+          {
+            "lineEnd": 336,
+            "lineStart": 1,
+            "path": "test/test-fetch-threads-token-fallback.js",
+            "sha256": "812e076d0f865ba42088a44164c4f471b56c03d7cb3db6a13def2a85b3872cf1"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "g2-commit-dbd9a655397fe390e86ef2fc78454813e229c29b",
+          "impl-us511-ac"
+        ],
+        "planSections": [
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1/AC2 env-token run exits 0",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.532Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC11 provider docs state the four-link chain",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.532Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC14 --json payload keeps key",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.532Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2 env token short-circuits before",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.532Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC4 Authorization header carries the CLI token",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.532Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "CLI stderr is discarded",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.532Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "env token never printed on stdout/stderr",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.532Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "invoked after env miss",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.532Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.532Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim does not duplicate token logic",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.532Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim propagates the canonical non-zero exit",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.532Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "stderr names the selected source",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.532Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread message preserved",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.532Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread text absent on failure",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.532Z"
+          }
+        ],
+        "text": "If token resolution fails, then the script shall not print the zero-thread success output and shall not exit 0.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "dbd9a655397fe390e86ef2fc78454813e229c29b",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-fix-pr/README.md:L28-L28",
+          ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md:L197-L197",
+          ".agents/skills/ws-spec-provider-github/INTENTS.md:L13-L13",
+          ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs:L55-L146",
+          "test/test-fetch-threads-token-fallback.js:L1-L336"
+        ],
+        "files": [
+          {
+            "lineEnd": 28,
+            "lineStart": 28,
+            "path": ".agents/skills/ws-fix-pr/README.md",
+            "sha256": "081f30949ec1b3cd39ff8acd16035b9c83a5eb2e901f4657ceb656b8d72deaa2"
+          },
+          {
+            "lineEnd": 197,
+            "lineStart": 197,
+            "path": ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md",
+            "sha256": "a4772fe835f5a62f5b4e8f6e606127d6d0de3af79281d5c086ef8a25563bcf41"
+          },
+          {
+            "lineEnd": 13,
+            "lineStart": 13,
+            "path": ".agents/skills/ws-spec-provider-github/INTENTS.md",
+            "sha256": "a9455d52c2872bf54638c2dd819de83189772e29c3ee1a99a4b4a92a26a6d1e2"
+          },
+          {
+            "lineEnd": 146,
+            "lineStart": 55,
+            "path": ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs",
+            "sha256": "a90999c7f3ba92799deb9b72c2cdb14b528fbd3c7005cb26163fbb4d42960c05"
+          },
+          {
+            "lineEnd": 336,
+            "lineStart": 1,
+            "path": "test/test-fetch-threads-token-fallback.js",
+            "sha256": "812e076d0f865ba42088a44164c4f471b56c03d7cb3db6a13def2a85b3872cf1"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [
+          "g2-commit-dbd9a655397fe390e86ef2fc78454813e229c29b",
+          "impl-us511-ac"
+        ],
+        "planSections": [
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1/AC2 env-token run exits 0",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.533Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC11 provider docs state the four-link chain",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.534Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC14 --json payload keeps key",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.534Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2 env token short-circuits before",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.533Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC4 Authorization header carries the CLI token",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.533Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "CLI stderr is discarded",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.533Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "env token never printed on stdout/stderr",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.533Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "invoked after env miss",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.533Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.533Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim does not duplicate token logic",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.533Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim propagates the canonical non-zero exit",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.533Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "stderr names the selected source",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.534Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread message preserved",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.534Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread text absent on failure",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.533Z"
+          }
+        ],
+        "text": "The CLI fallback shall capture the command's standard output and discard its standard error stream instead of forwarding CLI output to the caller.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "dbd9a655397fe390e86ef2fc78454813e229c29b",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-fix-pr/README.md:L28-L28",
+          ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md:L197-L197",
+          ".agents/skills/ws-spec-provider-github/INTENTS.md:L13-L13",
+          ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs:L55-L146",
+          "test/test-fetch-threads-token-fallback.js:L1-L336"
+        ],
+        "files": [
+          {
+            "lineEnd": 28,
+            "lineStart": 28,
+            "path": ".agents/skills/ws-fix-pr/README.md",
+            "sha256": "081f30949ec1b3cd39ff8acd16035b9c83a5eb2e901f4657ceb656b8d72deaa2"
+          },
+          {
+            "lineEnd": 197,
+            "lineStart": 197,
+            "path": ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md",
+            "sha256": "a4772fe835f5a62f5b4e8f6e606127d6d0de3af79281d5c086ef8a25563bcf41"
+          },
+          {
+            "lineEnd": 13,
+            "lineStart": 13,
+            "path": ".agents/skills/ws-spec-provider-github/INTENTS.md",
+            "sha256": "a9455d52c2872bf54638c2dd819de83189772e29c3ee1a99a4b4a92a26a6d1e2"
+          },
+          {
+            "lineEnd": 146,
+            "lineStart": 55,
+            "path": ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs",
+            "sha256": "a90999c7f3ba92799deb9b72c2cdb14b528fbd3c7005cb26163fbb4d42960c05"
+          },
+          {
+            "lineEnd": 336,
+            "lineStart": 1,
+            "path": "test/test-fetch-threads-token-fallback.js",
+            "sha256": "812e076d0f865ba42088a44164c4f471b56c03d7cb3db6a13def2a85b3872cf1"
+          }
+        ],
+        "findings": [],
+        "id": "AC8",
+        "linkEventIds": [
+          "g2-commit-dbd9a655397fe390e86ef2fc78454813e229c29b",
+          "impl-us511-ac"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1/AC2 env-token run exits 0",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.534Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC11 provider docs state the four-link chain",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.535Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC14 --json payload keeps key",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.535Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2 env token short-circuits before",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.534Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC4 Authorization header carries the CLI token",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.534Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "CLI stderr is discarded",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.535Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "env token never printed on stdout/stderr",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.535Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "invoked after env miss",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.534Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.534Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim does not duplicate token logic",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.535Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim propagates the canonical non-zero exit",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.535Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "stderr names the selected source",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.535Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread message preserved",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.535Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread text absent on failure",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.534Z"
+          }
+        ],
+        "text": "The script shall never print, log, or persist the resolved token value, and the fallback shall not write credentials to disk.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "dbd9a655397fe390e86ef2fc78454813e229c29b",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-fix-pr/README.md:L28-L28",
+          ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md:L197-L197",
+          ".agents/skills/ws-spec-provider-github/INTENTS.md:L13-L13",
+          ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs:L55-L146",
+          "test/test-fetch-threads-token-fallback.js:L1-L336"
+        ],
+        "files": [
+          {
+            "lineEnd": 28,
+            "lineStart": 28,
+            "path": ".agents/skills/ws-fix-pr/README.md",
+            "sha256": "081f30949ec1b3cd39ff8acd16035b9c83a5eb2e901f4657ceb656b8d72deaa2"
+          },
+          {
+            "lineEnd": 197,
+            "lineStart": 197,
+            "path": ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md",
+            "sha256": "a4772fe835f5a62f5b4e8f6e606127d6d0de3af79281d5c086ef8a25563bcf41"
+          },
+          {
+            "lineEnd": 13,
+            "lineStart": 13,
+            "path": ".agents/skills/ws-spec-provider-github/INTENTS.md",
+            "sha256": "a9455d52c2872bf54638c2dd819de83189772e29c3ee1a99a4b4a92a26a6d1e2"
+          },
+          {
+            "lineEnd": 146,
+            "lineStart": 55,
+            "path": ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs",
+            "sha256": "a90999c7f3ba92799deb9b72c2cdb14b528fbd3c7005cb26163fbb4d42960c05"
+          },
+          {
+            "lineEnd": 336,
+            "lineStart": 1,
+            "path": "test/test-fetch-threads-token-fallback.js",
+            "sha256": "812e076d0f865ba42088a44164c4f471b56c03d7cb3db6a13def2a85b3872cf1"
+          }
+        ],
+        "findings": [],
+        "id": "AC9",
+        "linkEventIds": [
+          "g2-commit-dbd9a655397fe390e86ef2fc78454813e229c29b",
+          "impl-us511-ac"
+        ],
+        "planSections": [
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1/AC2 env-token run exits 0",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.535Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC11 provider docs state the four-link chain",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.536Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC14 --json payload keeps key",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.536Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2 env token short-circuits before",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.535Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC4 Authorization header carries the CLI token",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.536Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "CLI stderr is discarded",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.536Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "env token never printed on stdout/stderr",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.536Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "invoked after env miss",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.536Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.536Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim does not duplicate token logic",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.536Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim propagates the canonical non-zero exit",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.536Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "stderr names the selected source",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.536Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread message preserved",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.536Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread text absent on failure",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.536Z"
+          }
+        ],
+        "text": "While the `ws-fix-pr` thread script remains a forwarding shim, the shim shall obtain token resolution and failure behavior from the canonical script only, without duplicating token logic.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "dbd9a655397fe390e86ef2fc78454813e229c29b",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-fix-pr/README.md:L28-L28",
+          ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md:L197-L197",
+          ".agents/skills/ws-spec-provider-github/INTENTS.md:L13-L13",
+          ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs:L55-L146",
+          "test/test-fetch-threads-token-fallback.js:L1-L336"
+        ],
+        "files": [
+          {
+            "lineEnd": 28,
+            "lineStart": 28,
+            "path": ".agents/skills/ws-fix-pr/README.md",
+            "sha256": "081f30949ec1b3cd39ff8acd16035b9c83a5eb2e901f4657ceb656b8d72deaa2"
+          },
+          {
+            "lineEnd": 197,
+            "lineStart": 197,
+            "path": ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md",
+            "sha256": "a4772fe835f5a62f5b4e8f6e606127d6d0de3af79281d5c086ef8a25563bcf41"
+          },
+          {
+            "lineEnd": 13,
+            "lineStart": 13,
+            "path": ".agents/skills/ws-spec-provider-github/INTENTS.md",
+            "sha256": "a9455d52c2872bf54638c2dd819de83189772e29c3ee1a99a4b4a92a26a6d1e2"
+          },
+          {
+            "lineEnd": 146,
+            "lineStart": 55,
+            "path": ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs",
+            "sha256": "a90999c7f3ba92799deb9b72c2cdb14b528fbd3c7005cb26163fbb4d42960c05"
+          },
+          {
+            "lineEnd": 336,
+            "lineStart": 1,
+            "path": "test/test-fetch-threads-token-fallback.js",
+            "sha256": "812e076d0f865ba42088a44164c4f471b56c03d7cb3db6a13def2a85b3872cf1"
+          }
+        ],
+        "findings": [],
+        "id": "AC10",
+        "linkEventIds": [
+          "g2-commit-dbd9a655397fe390e86ef2fc78454813e229c29b",
+          "impl-us511-ac"
+        ],
+        "planSections": [
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1/AC2 env-token run exits 0",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.537Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC11 provider docs state the four-link chain",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.538Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC14 --json payload keeps key",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.538Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2 env token short-circuits before",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.537Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC4 Authorization header carries the CLI token",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.537Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "CLI stderr is discarded",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.537Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "env token never printed on stdout/stderr",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.537Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "invoked after env miss",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.537Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.537Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim does not duplicate token logic",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.537Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim propagates the canonical non-zero exit",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.537Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "stderr names the selected source",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.538Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread message preserved",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.538Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread text absent on failure",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.537Z"
+          }
+        ],
+        "text": "When the canonical script exits non-zero, the shim shall propagate the same non-zero exit status and its error output to the caller.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "dbd9a655397fe390e86ef2fc78454813e229c29b",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-fix-pr/README.md:L28-L28",
+          ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md:L197-L197",
+          ".agents/skills/ws-spec-provider-github/INTENTS.md:L13-L13",
+          ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs:L55-L146",
+          "test/test-fetch-threads-token-fallback.js:L1-L336"
+        ],
+        "files": [
+          {
+            "lineEnd": 28,
+            "lineStart": 28,
+            "path": ".agents/skills/ws-fix-pr/README.md",
+            "sha256": "081f30949ec1b3cd39ff8acd16035b9c83a5eb2e901f4657ceb656b8d72deaa2"
+          },
+          {
+            "lineEnd": 197,
+            "lineStart": 197,
+            "path": ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md",
+            "sha256": "a4772fe835f5a62f5b4e8f6e606127d6d0de3af79281d5c086ef8a25563bcf41"
+          },
+          {
+            "lineEnd": 13,
+            "lineStart": 13,
+            "path": ".agents/skills/ws-spec-provider-github/INTENTS.md",
+            "sha256": "a9455d52c2872bf54638c2dd819de83189772e29c3ee1a99a4b4a92a26a6d1e2"
+          },
+          {
+            "lineEnd": 146,
+            "lineStart": 55,
+            "path": ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs",
+            "sha256": "a90999c7f3ba92799deb9b72c2cdb14b528fbd3c7005cb26163fbb4d42960c05"
+          },
+          {
+            "lineEnd": 336,
+            "lineStart": 1,
+            "path": "test/test-fetch-threads-token-fallback.js",
+            "sha256": "812e076d0f865ba42088a44164c4f471b56c03d7cb3db6a13def2a85b3872cf1"
+          }
+        ],
+        "findings": [],
+        "id": "AC11",
+        "linkEventIds": [
+          "g2-commit-dbd9a655397fe390e86ef2fc78454813e229c29b",
+          "impl-us511-ac"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1/AC2 env-token run exits 0",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.538Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC11 provider docs state the four-link chain",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.539Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC14 --json payload keeps key",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.539Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2 env token short-circuits before",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.538Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC4 Authorization header carries the CLI token",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.539Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "CLI stderr is discarded",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.539Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "env token never printed on stdout/stderr",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.539Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "invoked after env miss",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.539Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.539Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim does not duplicate token logic",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.539Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim propagates the canonical non-zero exit",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.539Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "stderr names the selected source",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.539Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread message preserved",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.539Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread text absent on failure",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.539Z"
+          }
+        ],
+        "text": "The provider `validate-auth` intent procedure shall document the same token precedence chain, including the CLI fallback, as the provider prerequisites.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "dbd9a655397fe390e86ef2fc78454813e229c29b",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-fix-pr/README.md:L28-L28",
+          ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md:L197-L197",
+          ".agents/skills/ws-spec-provider-github/INTENTS.md:L13-L13",
+          ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs:L55-L146",
+          "test/test-fetch-threads-token-fallback.js:L1-L336"
+        ],
+        "files": [
+          {
+            "lineEnd": 28,
+            "lineStart": 28,
+            "path": ".agents/skills/ws-fix-pr/README.md",
+            "sha256": "081f30949ec1b3cd39ff8acd16035b9c83a5eb2e901f4657ceb656b8d72deaa2"
+          },
+          {
+            "lineEnd": 197,
+            "lineStart": 197,
+            "path": ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md",
+            "sha256": "a4772fe835f5a62f5b4e8f6e606127d6d0de3af79281d5c086ef8a25563bcf41"
+          },
+          {
+            "lineEnd": 13,
+            "lineStart": 13,
+            "path": ".agents/skills/ws-spec-provider-github/INTENTS.md",
+            "sha256": "a9455d52c2872bf54638c2dd819de83189772e29c3ee1a99a4b4a92a26a6d1e2"
+          },
+          {
+            "lineEnd": 146,
+            "lineStart": 55,
+            "path": ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs",
+            "sha256": "a90999c7f3ba92799deb9b72c2cdb14b528fbd3c7005cb26163fbb4d42960c05"
+          },
+          {
+            "lineEnd": 336,
+            "lineStart": 1,
+            "path": "test/test-fetch-threads-token-fallback.js",
+            "sha256": "812e076d0f865ba42088a44164c4f471b56c03d7cb3db6a13def2a85b3872cf1"
+          }
+        ],
+        "findings": [],
+        "id": "AC12",
+        "linkEventIds": [
+          "g2-commit-dbd9a655397fe390e86ef2fc78454813e229c29b",
+          "impl-us511-ac"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1/AC2 env-token run exits 0",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.540Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC11 provider docs state the four-link chain",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.540Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC14 --json payload keeps key",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.540Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2 env token short-circuits before",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.540Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC4 Authorization header carries the CLI token",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.540Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "CLI stderr is discarded",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.540Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "env token never printed on stdout/stderr",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.540Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "invoked after env miss",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.540Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.540Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim does not duplicate token logic",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.540Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim propagates the canonical non-zero exit",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.540Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "stderr names the selected source",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.540Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread message preserved",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.540Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread text absent on failure",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.540Z"
+          }
+        ],
+        "text": "When the CLI fallback supplies the token, the script shall emit a non-secret diagnostic naming the selected token source and never the token value.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "dbd9a655397fe390e86ef2fc78454813e229c29b",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-fix-pr/README.md:L28-L28",
+          ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md:L197-L197",
+          ".agents/skills/ws-spec-provider-github/INTENTS.md:L13-L13",
+          ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs:L55-L146",
+          "test/test-fetch-threads-token-fallback.js:L1-L336"
+        ],
+        "files": [
+          {
+            "lineEnd": 28,
+            "lineStart": 28,
+            "path": ".agents/skills/ws-fix-pr/README.md",
+            "sha256": "081f30949ec1b3cd39ff8acd16035b9c83a5eb2e901f4657ceb656b8d72deaa2"
+          },
+          {
+            "lineEnd": 197,
+            "lineStart": 197,
+            "path": ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md",
+            "sha256": "a4772fe835f5a62f5b4e8f6e606127d6d0de3af79281d5c086ef8a25563bcf41"
+          },
+          {
+            "lineEnd": 13,
+            "lineStart": 13,
+            "path": ".agents/skills/ws-spec-provider-github/INTENTS.md",
+            "sha256": "a9455d52c2872bf54638c2dd819de83189772e29c3ee1a99a4b4a92a26a6d1e2"
+          },
+          {
+            "lineEnd": 146,
+            "lineStart": 55,
+            "path": ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs",
+            "sha256": "a90999c7f3ba92799deb9b72c2cdb14b528fbd3c7005cb26163fbb4d42960c05"
+          },
+          {
+            "lineEnd": 336,
+            "lineStart": 1,
+            "path": "test/test-fetch-threads-token-fallback.js",
+            "sha256": "812e076d0f865ba42088a44164c4f471b56c03d7cb3db6a13def2a85b3872cf1"
+          }
+        ],
+        "findings": [],
+        "id": "AC13",
+        "linkEventIds": [
+          "g2-commit-dbd9a655397fe390e86ef2fc78454813e229c29b",
+          "impl-us511-ac"
+        ],
+        "planSections": [
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1/AC2 env-token run exits 0",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.541Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC11 provider docs state the four-link chain",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.541Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC14 --json payload keeps key",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.541Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2 env token short-circuits before",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.541Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC4 Authorization header carries the CLI token",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.541Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "CLI stderr is discarded",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.541Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "env token never printed on stdout/stderr",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.541Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "invoked after env miss",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.541Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.541Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim does not duplicate token logic",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.541Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim propagates the canonical non-zero exit",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.541Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "stderr names the selected source",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.541Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread message preserved",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.541Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread text absent on failure",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.541Z"
+          }
+        ],
+        "text": "When a token resolves and the pull request has no unresolved review threads, the script shall exit 0 and print the documented zero-thread message.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "dbd9a655397fe390e86ef2fc78454813e229c29b",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-fix-pr/README.md:L28-L28",
+          ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md:L197-L197",
+          ".agents/skills/ws-spec-provider-github/INTENTS.md:L13-L13",
+          ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs:L55-L146",
+          "test/test-fetch-threads-token-fallback.js:L1-L336"
+        ],
+        "files": [
+          {
+            "lineEnd": 28,
+            "lineStart": 28,
+            "path": ".agents/skills/ws-fix-pr/README.md",
+            "sha256": "081f30949ec1b3cd39ff8acd16035b9c83a5eb2e901f4657ceb656b8d72deaa2"
+          },
+          {
+            "lineEnd": 197,
+            "lineStart": 197,
+            "path": ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md",
+            "sha256": "a4772fe835f5a62f5b4e8f6e606127d6d0de3af79281d5c086ef8a25563bcf41"
+          },
+          {
+            "lineEnd": 13,
+            "lineStart": 13,
+            "path": ".agents/skills/ws-spec-provider-github/INTENTS.md",
+            "sha256": "a9455d52c2872bf54638c2dd819de83189772e29c3ee1a99a4b4a92a26a6d1e2"
+          },
+          {
+            "lineEnd": 146,
+            "lineStart": 55,
+            "path": ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs",
+            "sha256": "a90999c7f3ba92799deb9b72c2cdb14b528fbd3c7005cb26163fbb4d42960c05"
+          },
+          {
+            "lineEnd": 336,
+            "lineStart": 1,
+            "path": "test/test-fetch-threads-token-fallback.js",
+            "sha256": "812e076d0f865ba42088a44164c4f471b56c03d7cb3db6a13def2a85b3872cf1"
+          }
+        ],
+        "findings": [],
+        "id": "AC14",
+        "linkEventIds": [
+          "g2-commit-dbd9a655397fe390e86ef2fc78454813e229c29b",
+          "impl-us511-ac"
+        ],
+        "planSections": [
+          "section-002",
+          "section-003"
+        ],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC1/AC2 env-token run exits 0",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.542Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC11 provider docs state the four-link chain",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.543Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC14 --json payload keeps key",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.543Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC2 env token short-circuits before",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.542Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "AC4 Authorization header carries the CLI token",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.542Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "CLI stderr is discarded",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.542Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "env token never printed on stdout/stderr",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.542Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "invoked after env miss",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.542Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.542Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim does not duplicate token logic",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.542Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "shim propagates the canonical non-zero exit",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.543Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "stderr names the selected source",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.543Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread message preserved",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.543Z"
+          },
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "zero-thread text absent on failure",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:18:57.542Z"
+          }
+        ],
+        "text": "Where a caller requests JSON output, the script shall keep emitting the documented `activeThreads` payload shape with owner, repository, and pull request number.",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      }
+    ],
+    "declaredGaps": [],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "impl-us511-ns"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:19:06.748Z"
+          }
+        ],
+        "text": "Red test (no token anywhere): unset all three variables, remove `gh` from `PATH`, and run the script on a valid pull request id. Assert a non-zero exit and a message naming `gh auth login` and the three variables. Before the change the message names only the three variables, so a host with healthy CLI auth gets no actionable next step."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "impl-us511-ns"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:19:06.748Z"
+          }
+        ],
+        "text": "Red test (silent-empty regression guard): on the same no-token fixture, assert the script never prints `No active unresolved threads found.` and never exits 0. This is the highest-severity failure mode: an authentication miss that exits 0 with an empty list is indistinguishable to `ws-fix-pr` and `ws-goal-fix-pr` from a pull request with nothing to fix."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "impl-us511-ns"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:19:06.748Z"
+          }
+        ],
+        "text": "Red test (CLI not authenticated): provide a `PATH` stub for `gh` that exits non-zero with an authentication error on stderr and prints nothing on stdout. Assert the script exits non-zero with the actionable remediation message and that the stub's stderr text is not forwarded verbatim to the caller."
+      },
+      {
+        "id": "NS4",
+        "linkEventIds": [
+          "impl-us511-ns"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:19:06.748Z"
+          }
+        ],
+        "text": "Red test (CLI returns empty output): provide a stub that exits 0 and prints nothing (or only whitespace). Assert the empty value is treated as fallback failure and the script fails closed rather than sending an `Authorization: Bearer ` header with an empty credential."
+      },
+      {
+        "id": "NS5",
+        "linkEventIds": [
+          "impl-us511-ns"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:19:06.748Z"
+          }
+        ],
+        "text": "Red test (secret leakage): run every fixture above with sentinel tokens in the environment and in the stub's stdout, then assert no sentinel string appears in the process's stdout, stderr, or any file the run creates. This covers the security invariant that a token is never printed or logged."
+      },
+      {
+        "id": "NS6",
+        "linkEventIds": [
+          "impl-us511-ns"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:19:06.749Z"
+          }
+        ],
+        "text": "Red test (precedence inversion): export `GH_TOKEN` with a sentinel while the `gh` stub would print a different sentinel, and assert the environment value is used and the stub is never invoked. Prevents a regression where the fallback is consulted first and silently replaces an explicit reviewer credential."
+      },
+      {
+        "id": "NS7",
+        "linkEventIds": [
+          "impl-us511-ns"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:19:06.749Z"
+          }
+        ],
+        "text": "Red test (no credential written to disk): run the fallback path and assert the filesystem gains no token cache, credential file, or dotfile — the fallback reads existing CLI state only."
+      },
+      {
+        "id": "NS8",
+        "linkEventIds": [
+          "impl-us511-ns"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:19:06.749Z"
+          }
+        ],
+        "text": "Red test (shim exit-code drift): make the canonical script fail on the no-token fixture and assert the `ws-fix-pr` shim exits with the same non-zero code, proving the shim forwards the fallback failure instead of swallowing it."
+      },
+      {
+        "id": "NS9",
+        "linkEventIds": [
+          "impl-us511-ns"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:19:06.749Z"
+          }
+        ],
+        "text": "Regression assertion: run the parity, runtime-resolution, and install suites and assert the `activeThreads` literal, the shim paths, and the managed-runtime candidate chain still pass unchanged."
+      },
+      {
+        "id": "NS10",
+        "linkEventIds": [
+          "impl-us511-ns"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:19:06.749Z"
+          }
+        ],
+        "text": "Contract assertion: grep the provider `validate-auth` procedure and the prerequisites for the identical four-link chain, so the code and its documented contract cannot drift apart again."
+      },
+      {
+        "id": "NS11",
+        "linkEventIds": [
+          "impl-us511-ns"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "no-source run exits non-zero",
+            "phase": "observed",
+            "sourceFile": "test/test-fetch-threads-token-fallback.js",
+            "timestamp": "2026-10-13T04:19:06.749Z"
+          }
+        ],
+        "text": "Stack assertion: assert no new dependency, no `package.json` change, and no `.py`/`.pyc`/`.pyo` file under `.agents/skills/` or `bin/`, keeping the change inside the Node 22 CommonJS skill-runtime contract."
+      }
+    ],
+    "planIndexPath": ".agents/plans/us-511/.runtime/plan.index.json",
+    "revision": 8,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "ship",
+      "computedAt": "2026-10-13T04:26:47.702Z",
+      "deficiencies": [],
+      "earnedUnits": 140,
+      "errors": [],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "ledgerHash": "0b1e57d04be25620fe31931a3f600c0f7088b09f35609eefb090b986bb15c47e",
+      "missingEvidence": false,
+      "score": 10,
+      "totalUnits": 140,
+      "writer": "ac_ledger.cjs score"
+    },
+    "slug": "us-511",
+    "specPath": ".agents/plans/us-511/step-00-us-511.spec.md",
+    "testingSkip": null,
+    "workflowId": "us-511-20261013T040003Z"
+  },
+  "acTotal": 14,
+  "agentTranscripts": {
+    "reason": "no-matching-session",
+    "recordedAt": "2026-10-13T04:01:24Z",
+    "status": "transcript-unavailable"
+  },
+  "baselineCommit": "625493850f23cf1df25856b2c5a1e964b5772a6f",
+  "branch": "develop",
+  "completedSteps": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "currentModel": "unknown",
+  "currentStep": 9,
+  "endedAt": "2026-10-13T04:26:36Z",
+  "handoffs": {
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-511/step-01-us-511.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "us-511",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "us-511-20261013T040003Z",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-511/step-02-us-511.plan-interview.md",
+        ".agents/plans/us-511/step-02-us-511.plan.refined.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "us-511",
+      "status": "completed",
+      "step": 2,
+      "summary": "Finished step 2",
+      "workflowId": "us-511-20261013T040003Z",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-511/step-03-us-511.plan.exec.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "us-511",
+      "status": "completed",
+      "step": 3,
+      "summary": "Finished step 3",
+      "workflowId": "us-511-20261013T040003Z",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [
+        "test/test-fetch-threads-token-fallback.js",
+        ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs",
+        ".agents/skills/ws-spec-provider-github/INTENTS.md",
+        ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md",
+        ".agents/skills/ws-fix-pr/README.md",
+        "test/test-suites.json",
+        "test/COVERAGE.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "us-511",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "us-511-20261013T040003Z",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-511/step-05-us-511.plan.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "us-511",
+      "status": "completed",
+      "step": 5,
+      "summary": "Finished step 5",
+      "workflowId": "us-511-20261013T040003Z",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-511/step-06-us-511.review.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "us-511",
+      "status": "completed",
+      "step": 6,
+      "summary": "Finished step 6",
+      "workflowId": "us-511-20261013T040003Z",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-511/step-07-us-511.testing.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "us-511",
+      "status": "completed",
+      "step": 7,
+      "summary": "Finished step 7",
+      "workflowId": "us-511-20261013T040003Z",
+      "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-511/step-08-us-511.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-511",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "us-511-20261013T040003Z",
+      "workflowType": "standard"
+    },
+    "9": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-511",
+      "status": "completed",
+      "step": 9,
+      "summary": "Finished step 9",
+      "workflowId": "us-511-20261013T040003Z",
+      "workflowType": "standard"
+    }
+  },
+  "nextAction": "Run step 9",
+  "prNumber": "518",
+  "prUrl": "https://github.com/jpolvora/workflow-skills/pull/518",
+  "revision": 16,
+  "shipStatus": "pr-open",
+  "skippedSteps": [],
+  "slug": "us-511",
+  "statePath": ".agents/plans/us-511/us-511-20261013T040003Z.state.md",
+  "stateVersion": 3,
+  "status": "completed",
+  "stepDispatches": [
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-13T04:01:24Z",
+      "model": "unknown",
+      "step": 1
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-13T04:02:05Z",
+      "model": "unknown",
+      "step": 2
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-13T04:02:25Z",
+      "model": "unknown",
+      "step": 3
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-13T04:06:17Z",
+      "model": "unknown",
+      "step": 4
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-13T04:19:56Z",
+      "model": "unknown",
+      "step": 6
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-13T04:22:14Z",
+      "model": "unknown",
+      "step": 7
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-13T04:26:58Z",
+      "model": "unknown",
+      "step": 9
+    }
+  ],
+  "stepStatus": {
+    "1": "completed",
+    "2": "completed",
+    "3": "completed",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed",
+    "8": "completed",
+    "9": "completed"
+  },
+  "telemetry": {
+    "steps": [
+      {
+        "N": 1,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T04:01:24Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-511/step-01-us-511.plan.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T04:01:24Z",
+        "label": "Planning",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T04:02:05Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/plans/us-511/step-02-us-511.plan-interview.md",
+            ".agents/plans/us-511/step-02-us-511.plan.refined.md"
+          ]
+        },
+        "finishedAt": "2026-10-13T04:02:05Z",
+        "label": "Interview",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T04:02:25Z",
+        "elapsedSec": 7,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-511/step-03-us-511.plan.exec.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T04:02:32Z",
+        "label": "Plan to tasks",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T04:06:17Z",
+        "elapsedSec": 14,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            "test/test-fetch-threads-token-fallback.js"
+          ],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs",
+            ".agents/skills/ws-spec-provider-github/INTENTS.md",
+            ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md",
+            ".agents/skills/ws-fix-pr/README.md",
+            "test/test-suites.json",
+            "test/COVERAGE.md"
+          ]
+        },
+        "finishedAt": "2026-10-13T04:06:31Z",
+        "label": "Implement",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-511/step-05-us-511.plan.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T04:19:36Z",
+        "label": "Verify",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 6,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T04:19:56Z",
+        "elapsedSec": 39,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-511/step-06-us-511.review.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T04:20:35Z",
+        "label": "Code review",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 7,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T04:22:14Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-511/step-07-us-511.testing.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T04:22:14Z",
+        "label": "Testing",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-511/step-08-us-511.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T04:26:36Z",
+        "label": "Ship",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 9,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T04:26:58Z",
+        "elapsedSec": 211,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T04:30:29Z",
+        "label": "Fix PR",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 271,
+    "totalTokens": 0
+  },
+  "verificationScore": 10,
+  "workflowId": "us-511-20261013T040003Z",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/us-511/step-01-us-511.plan.md",
+      ".agents/plans/us-511/step-03-us-511.plan.exec.md",
+      ".agents/plans/us-511/step-05-us-511.plan.report.md",
+      ".agents/plans/us-511/step-06-us-511.review.md",
+      ".agents/plans/us-511/step-07-us-511.testing.report.md",
+      ".agents/plans/us-511/step-08-us-511.result.md",
+      "test/test-fetch-threads-token-fallback.js"
+    ],
+    "deleted": [],
+    "modified": [
+      ".agents/plans/us-511/step-02-us-511.plan-interview.md",
+      ".agents/plans/us-511/step-02-us-511.plan.refined.md",
+      ".agents/skills/ws-fix-pr/README.md",
+      ".agents/skills/ws-fix-pr/scripts/COOPERATIVE_FIX.md",
+      ".agents/skills/ws-spec-provider-github/INTENTS.md",
+      ".agents/skills/ws-spec-provider-github/scripts/fetch_threads.cjs",
+      "test/COVERAGE.md",
+      "test/test-suites.json"
+    ]
+  },
+  "workflowType": "standard"
+}

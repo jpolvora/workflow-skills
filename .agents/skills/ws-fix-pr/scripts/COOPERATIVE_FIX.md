@@ -194,6 +194,6 @@ JSON (see `AUTO_FIX.md`):
 
 ## GitHub Token
 
-`AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN` → `GITHUB_TOKEN` → `GH_TOKEN`
+`AGENTIC_CODE_REVIEWERS_GITHUB_TOKEN` → `GITHUB_TOKEN` → `GH_TOKEN` → `gh auth token` (CLI fallback, used only when the three variables are unset)
 
 PAT recommended for `resolveReviewThread`.
