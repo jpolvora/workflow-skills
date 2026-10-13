@@ -1,0 +1,29 @@
+{
+  "workflowId": "uswf-us-507-20261012T235108Z",
+  "slug": "us-507",
+  "round": 1,
+  "candidates": [
+    {
+      "id": "retro-injection-timeout",
+      "title": "ws-fresh-verify injection must be spawn-timeout bounded",
+      "severity": "high",
+      "category": "automated-check",
+      "evidence": { "artifact": ".agents/plans/us-507/step-05b-us-507.fresh-verify.md", "ref": "Method Note / AC9 injection" },
+      "proposedChange": {
+        "target": ".agents/skills/ws-fresh-verify/scripts/run_fresh_injection.cjs",
+        "change": "Bound the injected test spawn with an explicit timeout (a killed child counts as a red signal) so a mutation that pins a monitor run active cannot hang the stage, and prefer assertion-failing mutations for counting ACs over ones that only change loop termination."
+      }
+    },
+    {
+      "id": "retro-ledger-boundary-rescore",
+      "title": "Re-score the AC ledger boundary before each pre-advance after a post-Step-5 edit",
+      "severity": "medium",
+      "category": "memory",
+      "evidence": { "artifact": ".agents/plans/us-507/ac-ledger.json", "ref": "scoreState.boundary pre-step6 -> step5" },
+      "proposedChange": {
+        "target": "{memoryDir}/MEMORY.md",
+        "change": "Record that the expected ac_ledger boundary alternates (pre-step6 before step 6, step5 before steps 7-8, ship before step 9) and that any product edit after Step 5 requires regenerate-integrity + re-link + re-score at the boundary the next pre-advance expects, or validate_state fails closed."
+      }
+    }
+  ]
+}
