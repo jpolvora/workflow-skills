@@ -1099,11 +1099,12 @@
     5,
     6,
     7,
-    8
+    8,
+    9
   ],
   "currentModel": "unknown",
   "currentStep": 9,
-  "endedAt": "2026-10-13T02:29:40Z",
+  "endedAt": "2026-10-13T02:31:54Z",
   "handoffs": {
     "0": {
       "acRefs": [],
@@ -1290,11 +1291,32 @@
       "summary": "Finished step 8",
       "workflowId": "us-509-20261013T015209Z",
       "workflowType": "standard"
+    },
+    "9": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-509/step-09-us-509.fix-pr.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-509",
+      "status": "completed",
+      "step": 9,
+      "summary": "Finished step 9",
+      "workflowId": "us-509-20261013T015209Z",
+      "workflowType": "standard"
     }
   },
   "nextAction": "Run step 9",
-  "revision": 9,
-  "shipStatus": "pending",
+  "prNumber": "516",
+  "prUrl": "https://github.com/jpolvora/workflow-skills/pull/516",
+  "revision": 11,
+  "shipStatus": "pr-open",
   "skippedSteps": [],
   "slug": "us-509",
   "statePath": ".agents/plans/us-509/us-509-20261013T015209Z.state.md",
@@ -1310,7 +1332,8 @@
     "5": "completed",
     "6": "completed",
     "7": "completed",
-    "8": "completed"
+    "8": "completed",
+    "9": "completed"
   },
   "telemetry": {
     "steps": [
@@ -1503,8 +1526,28 @@
           "deleted": [],
           "modified": []
         },
-        "finishedAt": "2026-10-13T02:29:40Z",
+        "finishedAt": "2026-10-13T02:31:54Z",
         "label": "Ship",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 9,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-509/step-09-us-509.fix-pr.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T02:37:44Z",
+        "label": "Fix PR",
         "model": "unknown",
         "promptTokens": 0,
         "subagentId": null
@@ -1529,7 +1572,8 @@
       ".agents/plans/us-509/step-06-us-509.review.md",
       ".agents/plans/us-509/step-07-us-509.testing.plan.md",
       ".agents/plans/us-509/step-07-us-509.testing.report.md",
-      ".agents/plans/us-509/step-08-us-509.result.md"
+      ".agents/plans/us-509/step-08-us-509.result.md",
+      ".agents/plans/us-509/step-09-us-509.fix-pr.md"
     ],
     "deleted": [],
     "modified": [
