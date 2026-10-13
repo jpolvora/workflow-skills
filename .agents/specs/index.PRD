@@ -232,7 +232,7 @@ Provide agent- and IDE-neutral workflow skills, orchestrators, and utility skill
 - [ ] ws-spec-to-pr: full-auto run reaches ship with no workflow state (no state bootstrap; HS-5 pre-advance gate unsatisfiable) (`spec: pending/0176-us-506.spec.md`)
 - [x] ws-monitor: a plan directory with fresh step artifacts and no state file is invisible (reports 0 workflows) (`spec: completed/0177-us-507.spec.md`)
 - [x] check_workflows.cjs: resolver returns the parent of the global install (home directory) and silently skips the dependency parity check (`spec: completed/0178-us-508.spec.md`)
-- [ ] ac_ledger link --commit with multiple --ac attaches only to the first AC (`spec: pending/0179-us-509.spec.md`)
+- [x] ac_ledger link --commit with multiple --ac attaches only to the first AC (`spec: completed/0179-us-509.spec.md`)
 - [ ] No sanctioned single-agent state bootstrap for ws-spec-to-pr (`spec: pending/0180-us-510.spec.md`)
 - [ ] fetch_threads.cjs should fall back to gh auth token (`spec: pending/0181-us-511.spec.md`)
 
@@ -643,7 +643,7 @@ All Next-specs closed.
 
 | 189 | `us-508` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | check_workflows.cjs: resolver returns the parent of the global install (home directory) and silently skips the dependency parity check |
 
-| 190 | `us-509` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ac_ledger link --commit with multiple --ac attaches only to the first AC |
+| 190 | `us-509` | `[x]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | ac_ledger link --commit with multiple --ac attaches only to the first AC |
 
 | 191 | `us-510` | `[ ]` todo | Phase 4: Runtime diagnostics, audit, timing, and bootstrap | No sanctioned single-agent state bootstrap for ws-spec-to-pr |
 
@@ -843,6 +843,7 @@ All Next-specs closed.
 | 2026-10-12 | `us-504` | check_workflows.cjs: findRepoRoot() mis-resolves repo root to ~/.agents when the global install dir is a git repo (19 false CRITICALs) | c9b47ecf10bd5336296e20b5ccf4295409b1d0ee |
 | 2026-10-13 | `us-507` | ws-monitor: a plan directory with fresh step artifacts and no state file is invisible (reports 0 workflows) | e62277d7 |
 | 2026-10-13 | `us-508` | check_workflows.cjs: resolver returns the parent of the global install (home directory) and silently skips the dependency parity check | 39cf18f8 |
+| 2026-10-13 | `us-509` | ac_ledger link --commit with multiple --ac attaches only to the first AC | f08e3ce3 |
 
 ## 11. Maintenance checklist
 

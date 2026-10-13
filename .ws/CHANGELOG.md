@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-12 22:27] Agent: agent
+- **Prompt**: us-509: fix ac_ledger link --commit with multiple --ac attaching only to the first AC
+- **Done**: ac_ledger.cjs parseArgs now consumes --ac/--negative space-separated target lists, link validates every id before mutating and applies the payload to every named target in one write, and leftover/missing-value tokens fail closed; tests + integrity + version 0.5.44
+- **Result**: verify 10/10, npm run test 164/164 green, harness 0 findings, PR develop->main
+
 ### [2026-10-12 21:34] Agent: opencode/deepseek-v4.1-flash
 - **Prompt**: us-508: fix check_workflows.cjs repo-root resolution (install-parent bug) and report the dependency parity skip
 - **Done**: resolveRepoRootInfo (explicit/consumer-checkout/install-root/cwd-fallback), checkDependencyParity skip record + package-root CRITICAL, --json resolvedRoot/resolutionSource/checks, extended global-root regression test, ws-check-workflows SKILL.md §7, integrity regen + 0.5.43 bump
