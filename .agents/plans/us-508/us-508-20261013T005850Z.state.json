@@ -1,0 +1,1367 @@
+{
+  "acImplemented": 13,
+  "acLedger": {
+    "acceptanceCriteria": [
+      {
+        "commits": [
+          {
+            "sha": "39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs:L19-L120",
+          "test/test-check-workflows-global-root.js:L1-L223"
+        ],
+        "files": [
+          {
+            "lineEnd": 120,
+            "lineStart": 19,
+            "path": ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs",
+            "sha256": "5d7011beca9c1ceef7c89a72b658473102dd0dad49efc9c5f685ae1a8f3dc410"
+          },
+          {
+            "lineEnd": 223,
+            "lineStart": 1,
+            "path": "test/test-check-workflows-global-root.js",
+            "sha256": "5b32fbd5c10eae943ae73decbdc2d0aeece90925542c8862ca96e41a32bc7b8e"
+          }
+        ],
+        "findings": [],
+        "id": "AC1",
+        "linkEventIds": [
+          "g2-commit-39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+          "impl-us-508"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.565Z"
+          }
+        ],
+        "text": "The script shall expose the resolved root and its resolution source (`explicit-flag`, `consumer-checkout`, `install-root`, or `cwd-fallback`) in the `--json` payload.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs:L19-L120",
+          "test/test-check-workflows-global-root.js:L1-L223"
+        ],
+        "files": [
+          {
+            "lineEnd": 120,
+            "lineStart": 19,
+            "path": ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs",
+            "sha256": "5d7011beca9c1ceef7c89a72b658473102dd0dad49efc9c5f685ae1a8f3dc410"
+          },
+          {
+            "lineEnd": 223,
+            "lineStart": 1,
+            "path": "test/test-check-workflows-global-root.js",
+            "sha256": "5b32fbd5c10eae943ae73decbdc2d0aeece90925542c8862ca96e41a32bc7b8e"
+          }
+        ],
+        "findings": [],
+        "id": "AC2",
+        "linkEventIds": [
+          "g2-commit-39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+          "impl-us-508"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.566Z"
+          }
+        ],
+        "text": "When the process working directory is a consumer checkout carrying a repository marker (`.git`, `.ws/config.json`, or `package.json`), the resolver shall return that checkout root.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs:L19-L120",
+          "test/test-check-workflows-global-root.js:L1-L223"
+        ],
+        "files": [
+          {
+            "lineEnd": 120,
+            "lineStart": 19,
+            "path": ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs",
+            "sha256": "5d7011beca9c1ceef7c89a72b658473102dd0dad49efc9c5f685ae1a8f3dc410"
+          },
+          {
+            "lineEnd": 223,
+            "lineStart": 1,
+            "path": "test/test-check-workflows-global-root.js",
+            "sha256": "5b32fbd5c10eae943ae73decbdc2d0aeece90925542c8862ca96e41a32bc7b8e"
+          }
+        ],
+        "findings": [],
+        "id": "AC3",
+        "linkEventIds": [
+          "g2-commit-39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+          "impl-us-508"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.566Z"
+          }
+        ],
+        "text": "Where no consumer checkout is detectable at the working directory, the resolver shall return the global install root that contains the active skills tree.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs:L19-L120",
+          "test/test-check-workflows-global-root.js:L1-L223"
+        ],
+        "files": [
+          {
+            "lineEnd": 120,
+            "lineStart": 19,
+            "path": ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs",
+            "sha256": "5d7011beca9c1ceef7c89a72b658473102dd0dad49efc9c5f685ae1a8f3dc410"
+          },
+          {
+            "lineEnd": 223,
+            "lineStart": 1,
+            "path": "test/test-check-workflows-global-root.js",
+            "sha256": "5b32fbd5c10eae943ae73decbdc2d0aeece90925542c8862ca96e41a32bc7b8e"
+          }
+        ],
+        "findings": [],
+        "id": "AC4",
+        "linkEventIds": [
+          "g2-commit-39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+          "impl-us-508"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.567Z"
+          }
+        ],
+        "text": "If a candidate ancestor is the install parent, then the resolver shall discard that candidate and evaluate the remaining candidates.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs:L19-L120",
+          "test/test-check-workflows-global-root.js:L1-L223"
+        ],
+        "files": [
+          {
+            "lineEnd": 120,
+            "lineStart": 19,
+            "path": ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs",
+            "sha256": "5d7011beca9c1ceef7c89a72b658473102dd0dad49efc9c5f685ae1a8f3dc410"
+          },
+          {
+            "lineEnd": 223,
+            "lineStart": 1,
+            "path": "test/test-check-workflows-global-root.js",
+            "sha256": "5b32fbd5c10eae943ae73decbdc2d0aeece90925542c8862ca96e41a32bc7b8e"
+          }
+        ],
+        "findings": [],
+        "id": "AC5",
+        "linkEventIds": [
+          "g2-commit-39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+          "impl-us-508"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.568Z"
+          }
+        ],
+        "text": "When the shared-vs-bin dependency parity check cannot read both manifests, the script shall emit an explicit skip record naming the missing manifest path.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs:L19-L120",
+          "test/test-check-workflows-global-root.js:L1-L223"
+        ],
+        "files": [
+          {
+            "lineEnd": 120,
+            "lineStart": 19,
+            "path": ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs",
+            "sha256": "5d7011beca9c1ceef7c89a72b658473102dd0dad49efc9c5f685ae1a8f3dc410"
+          },
+          {
+            "lineEnd": 223,
+            "lineStart": 1,
+            "path": "test/test-check-workflows-global-root.js",
+            "sha256": "5b32fbd5c10eae943ae73decbdc2d0aeece90925542c8862ca96e41a32bc7b8e"
+          }
+        ],
+        "findings": [],
+        "id": "AC6",
+        "linkEventIds": [
+          "g2-commit-39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+          "impl-us-508"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.568Z"
+          }
+        ],
+        "text": "While the dependency parity check is skipped, the script shall report that check as `skipped` with its reason in both the `--json` payload and the markdown report.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs:L19-L120",
+          "test/test-check-workflows-global-root.js:L1-L223"
+        ],
+        "files": [
+          {
+            "lineEnd": 120,
+            "lineStart": 19,
+            "path": ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs",
+            "sha256": "5d7011beca9c1ceef7c89a72b658473102dd0dad49efc9c5f685ae1a8f3dc410"
+          },
+          {
+            "lineEnd": 223,
+            "lineStart": 1,
+            "path": "test/test-check-workflows-global-root.js",
+            "sha256": "5b32fbd5c10eae943ae73decbdc2d0aeece90925542c8862ca96e41a32bc7b8e"
+          }
+        ],
+        "findings": [],
+        "id": "AC7",
+        "linkEventIds": [
+          "g2-commit-39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+          "impl-us-508"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.569Z"
+          }
+        ],
+        "text": "If the resolved root carries `bin/skill-dependencies.json` or `bin/cli.js` and either manifest is missing, then the script shall report a CRITICAL finding and exit 1 instead of skipping.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs:L19-L120",
+          "test/test-check-workflows-global-root.js:L1-L223"
+        ],
+        "files": [
+          {
+            "lineEnd": 120,
+            "lineStart": 19,
+            "path": ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs",
+            "sha256": "5d7011beca9c1ceef7c89a72b658473102dd0dad49efc9c5f685ae1a8f3dc410"
+          },
+          {
+            "lineEnd": 223,
+            "lineStart": 1,
+            "path": "test/test-check-workflows-global-root.js",
+            "sha256": "5b32fbd5c10eae943ae73decbdc2d0aeece90925542c8862ca96e41a32bc7b8e"
+          }
+        ],
+        "findings": [],
+        "id": "AC8",
+        "linkEventIds": [
+          "g2-commit-39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+          "impl-us-508"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.569Z"
+          }
+        ],
+        "text": "If the resolver identifies neither a repository marker nor the global install root, then the script shall report a WARNING naming the resolved root and its resolution source.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs:L19-L120",
+          "test/test-check-workflows-global-root.js:L1-L223"
+        ],
+        "files": [
+          {
+            "lineEnd": 120,
+            "lineStart": 19,
+            "path": ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs",
+            "sha256": "5d7011beca9c1ceef7c89a72b658473102dd0dad49efc9c5f685ae1a8f3dc410"
+          },
+          {
+            "lineEnd": 223,
+            "lineStart": 1,
+            "path": "test/test-check-workflows-global-root.js",
+            "sha256": "5b32fbd5c10eae943ae73decbdc2d0aeece90925542c8862ca96e41a32bc7b8e"
+          }
+        ],
+        "findings": [],
+        "id": "AC9",
+        "linkEventIds": [
+          "g2-commit-39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+          "impl-us-508"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.570Z"
+          }
+        ],
+        "text": "When `--report` is passed, the script shall write the report file inside the resolved root.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs:L19-L120",
+          "test/test-check-workflows-global-root.js:L1-L223"
+        ],
+        "files": [
+          {
+            "lineEnd": 120,
+            "lineStart": 19,
+            "path": ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs",
+            "sha256": "5d7011beca9c1ceef7c89a72b658473102dd0dad49efc9c5f685ae1a8f3dc410"
+          },
+          {
+            "lineEnd": 223,
+            "lineStart": 1,
+            "path": "test/test-check-workflows-global-root.js",
+            "sha256": "5b32fbd5c10eae943ae73decbdc2d0aeece90925542c8862ca96e41a32bc7b8e"
+          }
+        ],
+        "findings": [],
+        "id": "AC10",
+        "linkEventIds": [
+          "g2-commit-39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+          "impl-us-508"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.570Z"
+          }
+        ],
+        "text": "The regression test shall assert the reported resolved root and resolution source for a `<home>/.agents/skills` fixture, not only the exit code, status, and issue count.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs:L19-L120",
+          "test/test-check-workflows-global-root.js:L1-L223"
+        ],
+        "files": [
+          {
+            "lineEnd": 120,
+            "lineStart": 19,
+            "path": ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs",
+            "sha256": "5d7011beca9c1ceef7c89a72b658473102dd0dad49efc9c5f685ae1a8f3dc410"
+          },
+          {
+            "lineEnd": 223,
+            "lineStart": 1,
+            "path": "test/test-check-workflows-global-root.js",
+            "sha256": "5b32fbd5c10eae943ae73decbdc2d0aeece90925542c8862ca96e41a32bc7b8e"
+          }
+        ],
+        "findings": [],
+        "id": "AC11",
+        "linkEventIds": [
+          "g2-commit-39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+          "impl-us-508"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.571Z"
+          }
+        ],
+        "text": "The regression fixture shall carry no `.git` marker inside the global install tree and shall still assert the expected resolved root.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs:L19-L120",
+          "test/test-check-workflows-global-root.js:L1-L223"
+        ],
+        "files": [
+          {
+            "lineEnd": 120,
+            "lineStart": 19,
+            "path": ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs",
+            "sha256": "5d7011beca9c1ceef7c89a72b658473102dd0dad49efc9c5f685ae1a8f3dc410"
+          },
+          {
+            "lineEnd": 223,
+            "lineStart": 1,
+            "path": "test/test-check-workflows-global-root.js",
+            "sha256": "5b32fbd5c10eae943ae73decbdc2d0aeece90925542c8862ca96e41a32bc7b8e"
+          }
+        ],
+        "findings": [],
+        "id": "AC12",
+        "linkEventIds": [
+          "g2-commit-39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+          "impl-us-508"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.571Z"
+          }
+        ],
+        "text": "When the global-only fixture runs, the regression test shall assert an explicit skip record for the dependency parity check naming the missing manifest path.",
+        "verdicts": []
+      },
+      {
+        "commits": [
+          {
+            "sha": "39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+            "step": 5
+          }
+        ],
+        "evidence": [
+          ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs:L19-L120",
+          "test/test-check-workflows-global-root.js:L1-L223"
+        ],
+        "files": [
+          {
+            "lineEnd": 120,
+            "lineStart": 19,
+            "path": ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs",
+            "sha256": "5d7011beca9c1ceef7c89a72b658473102dd0dad49efc9c5f685ae1a8f3dc410"
+          },
+          {
+            "lineEnd": 223,
+            "lineStart": 1,
+            "path": "test/test-check-workflows-global-root.js",
+            "sha256": "5b32fbd5c10eae943ae73decbdc2d0aeece90925542c8862ca96e41a32bc7b8e"
+          }
+        ],
+        "findings": [],
+        "id": "AC13",
+        "linkEventIds": [
+          "g2-commit-39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+          "impl-us-508"
+        ],
+        "planSections": [],
+        "sabotage": {
+          "exitCode": null,
+          "required": false,
+          "status": "not-required"
+        },
+        "status": "Implemented",
+        "tasks": [],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.572Z"
+          }
+        ],
+        "text": "When the fixture runs with the consumer checkout as the working directory, the regression test shall assert that the resolved root equals that checkout and that no file is written into the install parent.",
+        "verdicts": []
+      }
+    ],
+    "aliasResults": [
+      {
+        "alias": "backendTest",
+        "commandHash": "0c7ec4aac044044cc5b274b09866dbba6c2eedca7ca0198dae0fa3b38e59513b",
+        "endedAt": null,
+        "exitCode": 0,
+        "startedAt": null
+      }
+    ],
+    "declaredGaps": [],
+    "filesTouched": [
+      ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs",
+      "test/test-check-workflows-global-root.js"
+    ],
+    "invariantViolations": [],
+    "negativeScenarios": [
+      {
+        "id": "NS1",
+        "linkEventIds": [
+          "impl-us-508"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.572Z"
+          }
+        ],
+        "text": "Red test: the `<home>/.agents/skills` fixture with a consumer checkout as cwd asserts the resolved root equals the checkout. Before the change the payload has no resolved root at all and the report lands in `<home>`, so the assertion cannot pass."
+      },
+      {
+        "id": "NS2",
+        "linkEventIds": [
+          "impl-us-508"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.572Z"
+          }
+        ],
+        "text": "Red test: the same fixture with a non-repository cwd asserts the resolved root equals the global install root and never the install parent."
+      },
+      {
+        "id": "NS3",
+        "linkEventIds": [
+          "impl-us-508"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.572Z"
+          }
+        ],
+        "text": "Red test: the global-only fixture (no `bin/` anywhere) asserts an explicit skip record naming `<repoRoot>/bin/skill-dependencies.json`; before the change the payload carries only `status`, `issues`, and `simulations`, so the assertion fails while the run reports `PASS` with `0 issues`."
+      },
+      {
+        "id": "NS4",
+        "linkEventIds": [
+          "impl-us-508"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.572Z"
+          }
+        ],
+        "text": "Red test: a package-root fixture with `bin/skill-dependencies.json` present and `ws-shared/runtime/skill-dependencies.json` absent asserts a CRITICAL finding and exit 1 — an unevaluable check on a real package root must fail loudly, never skip."
+      },
+      {
+        "id": "NS5",
+        "linkEventIds": [
+          "impl-us-508"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.572Z"
+          }
+        ],
+        "text": "Red test: a fixture where the resolved root carries no repository marker and is not the install root asserts a WARNING naming the resolved root instead of an unqualified PASS."
+      },
+      {
+        "id": "NS6",
+        "linkEventIds": [
+          "impl-us-508"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.572Z"
+          }
+        ],
+        "text": "Red test: `--report` in the global fixture asserts no `ws-check-workflows-report.md` appears in the install parent; before the change it is created there."
+      },
+      {
+        "id": "NS7",
+        "linkEventIds": [
+          "impl-us-508"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.572Z"
+          }
+        ],
+        "text": "Regression assertion: both `--repo-root` forms still take effect, `--repo-root` without a value still exits 2 with `missing value for --repo-root`, an unknown flag still exits 2, and the `<globalRoot>/skills` fixture from #504 still reports PASS with exit 0."
+      },
+      {
+        "id": "NS8",
+        "linkEventIds": [
+          "impl-us-508"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.572Z"
+          }
+        ],
+        "text": "Regression assertion: with both manifests present and mismatched, the script still reports the CRITICAL package-skills mismatch and exits 1."
+      },
+      {
+        "id": "NS9",
+        "linkEventIds": [
+          "impl-us-508"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.572Z"
+          }
+        ],
+        "text": "Stack invariant violation: adding a `.py` helper under `.agents/skills/` or invoking `python` from the script must fail `node test/test-harness-clean.js`; requiring an ESM-only module from the CommonJS script must fail at runtime."
+      },
+      {
+        "id": "NS10",
+        "linkEventIds": [
+          "impl-us-508"
+        ],
+        "tests": [
+          {
+            "alias": null,
+            "exitCode": 0,
+            "name": "check-workflows-global-root",
+            "phase": "observed",
+            "sourceFile": "test/test-check-workflows-global-root.js",
+            "timestamp": "2026-10-13T01:18:26.572Z"
+          }
+        ],
+        "text": "Contract violation: a resolved root outside both the consumer checkout and the install root must produce the degraded-resolution WARNING naming that root, so the run reports `status: PASS` with a non-empty issue list instead of `0 issues`."
+      }
+    ],
+    "planIndexPath": null,
+    "revision": 7,
+    "schemaVersion": 1,
+    "scoreState": {
+      "boundary": "step5",
+      "computedAt": "2026-10-13T01:32:52.769Z",
+      "deficiencies": [
+        "AC1: no tasks or planSections",
+        "AC2: no tasks or planSections",
+        "AC3: no tasks or planSections",
+        "AC4: no tasks or planSections",
+        "AC5: no tasks or planSections",
+        "AC6: no tasks or planSections",
+        "AC7: no tasks or planSections",
+        "AC8: no tasks or planSections",
+        "AC9: no tasks or planSections",
+        "AC10: no tasks or planSections",
+        "AC11: no tasks or planSections",
+        "AC12: no tasks or planSections",
+        "AC13: no tasks or planSections"
+      ],
+      "earnedUnits": 117,
+      "errors": [],
+      "invariantViolations": [],
+      "knownDefect": false,
+      "ledgerHash": "c80515a334a6fd246efaedb5c219be851e999df49a9973b8da9b3aecbb4f0f58",
+      "missingEvidence": false,
+      "score": 9,
+      "totalUnits": 130,
+      "writer": "ac_ledger.cjs score"
+    },
+    "slug": "us-508",
+    "specPath": ".agents/plans/us-508/step-00-us-508.spec.md",
+    "testingSkip": null,
+    "workflowId": "us-508-20261013T005850Z"
+  },
+  "acTotal": 13,
+  "agentTranscripts": {
+    "reason": "no-matching-session",
+    "recordedAt": "2026-10-13T00:59:14Z",
+    "status": "transcript-unavailable"
+  },
+  "commits": [
+    {
+      "sha": "39cf18f84b935a3bf19e69b837ecfe9316bab2ee",
+      "step": 5
+    }
+  ],
+  "completedSteps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "currentModel": "opencode-go/deepseek-v4-flash",
+  "currentStep": 8,
+  "handoffs": {
+    "0": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-508/step-00-us-508.spec.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 1",
+      "slug": "us-508",
+      "status": "completed",
+      "step": 0,
+      "summary": "Finished step 0",
+      "workflowId": "us-508-20261013T005850Z",
+      "workflowType": "standard"
+    },
+    "1": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-508/step-01-us-508.plan.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 2",
+      "slug": "us-508",
+      "status": "completed",
+      "step": 1,
+      "summary": "Finished step 1",
+      "workflowId": "us-508-20261013T005850Z",
+      "workflowType": "standard"
+    },
+    "2": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-508/step-02-us-508.plan-interview.md",
+        ".agents/plans/us-508/step-02-us-508.plan.refined.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 3",
+      "slug": "us-508",
+      "status": "completed",
+      "step": 2,
+      "summary": "Finished step 2",
+      "workflowId": "us-508-20261013T005850Z",
+      "workflowType": "standard"
+    },
+    "3": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-508/step-03-us-508.plan.exec.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 4",
+      "slug": "us-508",
+      "status": "completed",
+      "step": 3,
+      "summary": "Finished step 3",
+      "workflowId": "us-508-20261013T005850Z",
+      "workflowType": "standard"
+    },
+    "4": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs",
+        ".agents/skills/ws-check-workflows/SKILL.md",
+        ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+        ".agents/skills/ws-shared/version.json",
+        "bin/skill-dependencies.json",
+        "bin/skill-integrity.json",
+        "docs/index.html",
+        "package.json",
+        "test/package.json",
+        "test/test-check-workflows-global-root.js"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 5",
+      "slug": "us-508",
+      "status": "completed",
+      "step": 4,
+      "summary": "Finished step 4",
+      "workflowId": "us-508-20261013T005850Z",
+      "workflowType": "standard"
+    },
+    "5": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-508/step-05-us-508.plan.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 6",
+      "slug": "us-508",
+      "status": "completed",
+      "step": 5,
+      "summary": "Finished step 5",
+      "workflowId": "us-508-20261013T005850Z",
+      "workflowType": "standard"
+    },
+    "6": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-508/step-06-us-508.review.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 7",
+      "slug": "us-508",
+      "status": "completed",
+      "step": 6,
+      "summary": "Finished step 6",
+      "workflowId": "us-508-20261013T005850Z",
+      "workflowType": "standard"
+    },
+    "7": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-508/step-07-us-508.testing.plan.md",
+        ".agents/plans/us-508/step-07-us-508.testing.report.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 8",
+      "slug": "us-508",
+      "status": "completed",
+      "step": 7,
+      "summary": "Finished step 7",
+      "workflowId": "us-508-20261013T005850Z",
+      "workflowType": "standard"
+    }
+  },
+  "nextAction": "Run step 8",
+  "revision": 19,
+  "skippedSteps": [],
+  "slug": "us-508",
+  "statePath": ".agents/plans/us-508/us-508-20261013T005850Z.state.md",
+  "stateVersion": 3,
+  "status": "active",
+  "stepDispatches": [
+    {
+      "agentType": "generic:Task",
+      "dispatchedAt": "2026-10-13T00:59:14Z",
+      "model": "opencode-go/deepseek-v4-flash",
+      "step": 0
+    },
+    {
+      "agentType": "generic:Task",
+      "dispatchedAt": "2026-10-13T01:01:26Z",
+      "model": "opencode-go/deepseek-v4-flash",
+      "step": 1
+    },
+    {
+      "agentType": "generic:Task",
+      "dispatchedAt": "2026-10-13T01:01:54Z",
+      "model": "opencode-go/deepseek-v4-flash",
+      "step": 2
+    },
+    {
+      "agentType": "generic:Task",
+      "dispatchedAt": "2026-10-13T01:02:22Z",
+      "model": "opencode-go/deepseek-v4-flash",
+      "step": 3
+    },
+    {
+      "agentType": "generic:Task",
+      "dispatchedAt": "2026-10-13T01:09:09Z",
+      "model": "opencode-go/deepseek-v4-flash",
+      "step": 4
+    },
+    {
+      "agentType": "generic:Task",
+      "dispatchedAt": "2026-10-13T01:17:41Z",
+      "model": "opencode-go/deepseek-v4-pro",
+      "step": 5
+    },
+    {
+      "agentType": "generic:Task",
+      "dispatchedAt": "2026-10-13T01:30:54Z",
+      "model": "opencode-go/deepseek-v4-pro",
+      "step": 6
+    },
+    {
+      "agentType": "generic:Task",
+      "dispatchedAt": "2026-10-13T01:33:02Z",
+      "model": "opencode-go/deepseek-v4-flash",
+      "step": 7
+    }
+  ],
+  "stepStatus": {
+    "0": "completed",
+    "1": "completed",
+    "2": "completed",
+    "3": "completed",
+    "4": "completed",
+    "5": "completed",
+    "6": "completed",
+    "7": "completed"
+  },
+  "telemetry": {
+    "steps": [
+      {
+        "N": 0,
+        "agentType": "generic:Task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T00:59:14Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-508/step-00-us-508.spec.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T00:59:14Z",
+        "label": "Spec",
+        "model": "opencode-go/deepseek-v4-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 1,
+        "agentType": "generic:Task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T01:01:26Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-508/step-01-us-508.plan.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T01:01:26Z",
+        "label": "Planning",
+        "model": "opencode-go/deepseek-v4-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 2,
+        "agentType": "generic:Task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T01:01:54Z",
+        "elapsedSec": 1,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-508/step-02-us-508.plan-interview.md",
+            ".agents/plans/us-508/step-02-us-508.plan.refined.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T01:01:55Z",
+        "label": "Interview",
+        "model": "opencode-go/deepseek-v4-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 3,
+        "agentType": "generic:Task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T01:02:22Z",
+        "elapsedSec": 23,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-508/step-03-us-508.plan.exec.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T01:02:45Z",
+        "label": "Plan to tasks",
+        "model": "opencode-go/deepseek-v4-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 4,
+        "agentType": "generic:Task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T01:09:09Z",
+        "elapsedSec": 720,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": [
+            ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs",
+            ".agents/skills/ws-check-workflows/SKILL.md",
+            ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+            ".agents/skills/ws-shared/version.json",
+            "bin/skill-dependencies.json",
+            "bin/skill-integrity.json",
+            "docs/index.html",
+            "package.json",
+            "test/package.json",
+            "test/test-check-workflows-global-root.js"
+          ]
+        },
+        "finishedAt": "2026-10-13T01:21:09Z",
+        "label": "Implement",
+        "model": "opencode-go/deepseek-v4-pro",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 5,
+        "agentType": "generic:Task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T01:17:41Z",
+        "elapsedSec": 86,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-508/step-05-us-508.plan.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T01:19:07Z",
+        "label": "Verify",
+        "model": "opencode-go/deepseek-v4-pro",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 6,
+        "agentType": "generic:Task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T01:30:54Z",
+        "elapsedSec": 0,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-508/step-06-us-508.review.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T01:30:54Z",
+        "label": "Code review",
+        "model": "opencode-go/deepseek-v4-pro",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 7,
+        "agentType": "generic:Task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T01:33:02Z",
+        "elapsedSec": 30,
+        "estimated": false,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-508/step-07-us-508.testing.plan.md",
+            ".agents/plans/us-508/step-07-us-508.testing.report.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T01:33:32Z",
+        "label": "Testing",
+        "model": "opencode-go/deepseek-v4-flash",
+        "promptTokens": 0,
+        "subagentId": null
+      }
+    ],
+    "totalElapsedSec": 860,
+    "totalTokens": 0
+  },
+  "verificationScore": 9,
+  "workflowId": "us-508-20261013T005850Z",
+  "workflowManifest": {
+    "created": [
+      ".agents/plans/us-508/step-00-us-508.spec.md",
+      ".agents/plans/us-508/step-01-us-508.plan.md",
+      ".agents/plans/us-508/step-02-us-508.plan-interview.md",
+      ".agents/plans/us-508/step-02-us-508.plan.refined.md",
+      ".agents/plans/us-508/step-03-us-508.plan.exec.md",
+      ".agents/plans/us-508/step-05-us-508.plan.report.md",
+      ".agents/plans/us-508/step-06-us-508.review.md",
+      ".agents/plans/us-508/step-07-us-508.testing.plan.md",
+      ".agents/plans/us-508/step-07-us-508.testing.report.md"
+    ],
+    "deleted": [],
+    "modified": [
+      ".agents/skills/ws-check-workflows/SKILL.md",
+      ".agents/skills/ws-check-workflows/scripts/check_workflows.cjs",
+      ".agents/skills/ws-shared/runtime/skill-dependencies.json",
+      ".agents/skills/ws-shared/version.json",
+      "bin/skill-dependencies.json",
+      "bin/skill-integrity.json",
+      "docs/index.html",
+      "package.json",
+      "test/package.json",
+      "test/test-check-workflows-global-root.js"
+    ]
+  },
+  "workflowType": "standard"
+}

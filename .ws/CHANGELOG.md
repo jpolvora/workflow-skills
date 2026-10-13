@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-12 21:34] Agent: opencode/deepseek-v4.1-flash
+- **Prompt**: us-508: fix check_workflows.cjs repo-root resolution (install-parent bug) and report the dependency parity skip
+- **Done**: resolveRepoRootInfo (explicit/consumer-checkout/install-root/cwd-fallback), checkDependencyParity skip record + package-root CRITICAL, --json resolvedRoot/resolutionSource/checks, extended global-root regression test, ws-check-workflows SKILL.md §7, integrity regen + 0.5.43 bump
+- **Result**: G2 commit 39cf18f8; 164/164 tests green; harness-clean 0 findings; fresh-verify all ACs VERIFIED
+
 ### [2026-10-12 20:40] Agent: agent
 - **Prompt**: us-507: ws-monitor reports 0 workflows for a plan directory with fresh step artifacts and no state file
 - **Done**: ws-monitor now discovers state-less runs from canonical top-level step-NN-{slug}. artifacts and reports run-without-state (warning while inside the effective stall window, info when older) naming the newest artifact as repo-relative evidence; fresh runs join workflowCount/activeCount and suppress the empty-discovery line, stale runs stay visible without holding --until-terminal; DEFECT_CONTRACTS and ws-monitor/SKILL.md updated; new test/test-ws-monitor-us507.js registered; version 0.5.42 + integrity regenerated
