@@ -2715,17 +2715,17 @@
       }
     ],
     "planIndexPath": ".agents/plans/us-511/.runtime/plan.index.json",
-    "revision": 6,
+    "revision": 8,
     "schemaVersion": 1,
     "scoreState": {
-      "boundary": "pre-step6",
-      "computedAt": "2026-10-13T04:19:56.652Z",
+      "boundary": "ship",
+      "computedAt": "2026-10-13T04:26:47.702Z",
       "deficiencies": [],
       "earnedUnits": 140,
       "errors": [],
       "invariantViolations": [],
       "knownDefect": false,
-      "ledgerHash": "534b7ff66f2cf29962486253a8e1a59b442042c7dd25ea5f5fe1103189ceed5f",
+      "ledgerHash": "0b1e57d04be25620fe31931a3f600c0f7088b09f35609eefb090b986bb15c47e",
       "missingEvidence": false,
       "score": 10,
       "totalUnits": 140,
@@ -2751,10 +2751,13 @@
     4,
     5,
     6,
-    7
+    7,
+    8,
+    9
   ],
   "currentModel": "unknown",
-  "currentStep": 8,
+  "currentStep": 9,
+  "endedAt": "2026-10-13T04:26:36Z",
   "handoffs": {
     "1": {
       "acRefs": [],
@@ -2895,15 +2898,54 @@
       "summary": "Finished step 7",
       "workflowId": "us-511-20261013T040003Z",
       "workflowType": "standard"
+    },
+    "8": {
+      "acRefs": [],
+      "artifactPaths": [
+        ".agents/plans/us-511/step-08-us-511.result.md"
+      ],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-511",
+      "status": "completed",
+      "step": 8,
+      "summary": "Finished step 8",
+      "workflowId": "us-511-20261013T040003Z",
+      "workflowType": "standard"
+    },
+    "9": {
+      "acRefs": [],
+      "artifactPaths": [],
+      "findings": {
+        "critical": 0,
+        "info": 0,
+        "suggestion": 0,
+        "warning": 0
+      },
+      "nextAction": "Run step 9",
+      "slug": "us-511",
+      "status": "completed",
+      "step": 9,
+      "summary": "Finished step 9",
+      "workflowId": "us-511-20261013T040003Z",
+      "workflowType": "standard"
     }
   },
-  "nextAction": "Run step 8",
-  "revision": 13,
+  "nextAction": "Run step 9",
+  "prNumber": "518",
+  "prUrl": "https://github.com/jpolvora/workflow-skills/pull/518",
+  "revision": 16,
+  "shipStatus": "pr-open",
   "skippedSteps": [],
   "slug": "us-511",
   "statePath": ".agents/plans/us-511/us-511-20261013T040003Z.state.md",
   "stateVersion": 3,
-  "status": "active",
+  "status": "completed",
   "stepDispatches": [
     {
       "agentType": "generic:task",
@@ -2940,6 +2982,12 @@
       "dispatchedAt": "2026-10-13T04:22:14Z",
       "model": "unknown",
       "step": 7
+    },
+    {
+      "agentType": "generic:task",
+      "dispatchedAt": "2026-10-13T04:26:58Z",
+      "model": "unknown",
+      "step": 9
     }
   ],
   "stepStatus": {
@@ -2949,7 +2997,9 @@
     "4": "completed",
     "5": "completed",
     "6": "completed",
-    "7": "completed"
+    "7": "completed",
+    "8": "completed",
+    "9": "completed"
   },
   "telemetry": {
     "steps": [
@@ -3100,9 +3150,47 @@
         "model": "unknown",
         "promptTokens": 0,
         "subagentId": null
+      },
+      {
+        "N": 8,
+        "agentType": null,
+        "completionTokens": 0,
+        "dispatchedAt": null,
+        "elapsedSec": 0,
+        "estimated": true,
+        "filesTouched": {
+          "created": [
+            ".agents/plans/us-511/step-08-us-511.result.md"
+          ],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T04:26:36Z",
+        "label": "Ship",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
+      },
+      {
+        "N": 9,
+        "agentType": "generic:task",
+        "completionTokens": 0,
+        "dispatchedAt": "2026-10-13T04:26:58Z",
+        "elapsedSec": 211,
+        "estimated": false,
+        "filesTouched": {
+          "created": [],
+          "deleted": [],
+          "modified": []
+        },
+        "finishedAt": "2026-10-13T04:30:29Z",
+        "label": "Fix PR",
+        "model": "unknown",
+        "promptTokens": 0,
+        "subagentId": null
       }
     ],
-    "totalElapsedSec": 60,
+    "totalElapsedSec": 271,
     "totalTokens": 0
   },
   "verificationScore": 10,
@@ -3114,6 +3202,7 @@
       ".agents/plans/us-511/step-05-us-511.plan.report.md",
       ".agents/plans/us-511/step-06-us-511.review.md",
       ".agents/plans/us-511/step-07-us-511.testing.report.md",
+      ".agents/plans/us-511/step-08-us-511.result.md",
       "test/test-fetch-threads-token-fallback.js"
     ],
     "deleted": [],

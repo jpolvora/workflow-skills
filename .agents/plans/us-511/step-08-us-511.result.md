@@ -5,6 +5,8 @@ workflowId: us-511-20261013T040003Z
 status: completed
 shipStatus: pending
 startedAt: "2026-10-13T04:25:00.000Z"
+endedAt: "2026-10-13T04:26:36.894Z"
+acRefs: []
 ---
 # Delivery Result — us-511
 
@@ -57,4 +59,5 @@ yields a token, keep the credential secret, and keep the `ws-fix-pr` shim a shim
 ## PR
 
 - Branch: `develop` → **base:** `main`
-- PR: _(recorded at ship; see state `shipStatus`/`prNumber`)_
+- PR: **#518** — https://github.com/jpolvora/workflow-skills/pull/518 (`shipStatus: pr-open`)
+- Checks: `review` pass, `test` pass ×2; `activeThreads: 0` (Clean-immediate convergence).
