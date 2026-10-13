@@ -657,4 +657,124 @@ function findPythonFiles(dir) {
 findPythonFiles(path.join(repoRoot, '.agents/skills'));
 assert.strictEqual(pythonFiles.length, 0, `V8:node-only-runtime: python files found: ${pythonFiles.join(', ')}`);
 
+// us-509: ac_ledger link target-list semantics (AC1-AC15)
+const us509Root = temp('ws-ac-ledger-us509-');
+write(path.join(us509Root, '.ws/config.json'), JSON.stringify({ verification: {}, plans: { dir: '.agents/plans' } }));
+write(path.join(us509Root, 'us509.spec.md'), [
+  '## Acceptance Criteria',
+  '- AC1: First behavior.',
+  '- AC2: Second behavior.',
+  '- AC3: Third behavior.',
+  '',
+  '## Validation & Observation Notes',
+  '',
+  '### Negative & Failing Test Scenarios',
+  '- NS1: First negative scenario.',
+  '- NS2: Second negative scenario.',
+  '',
+].join('\n'));
+function us509Invoke(args) {
+  return run(ledgerScript, [...args, '--repo-root', us509Root]);
+}
+const us509LedgerPath = path.join(us509Root, 'ac-ledger.json');
+function us509Ledger() {
+  return JSON.parse(fs.readFileSync(us509LedgerPath, 'utf8'));
+}
+function us509Row(id) {
+  return us509Ledger().acceptanceCriteria.find((item) => item.id === id);
+}
+assert.strictEqual(us509Invoke(['init', '--spec', 'us509.spec.md', '--output', 'ac-ledger.json', '--workflow-id', 'wf', '--slug', 'us509']).status, 0);
+
+// AC1 + AC2 + AC10 + AC12: one space-separated target list links every named AC in one write
+const multiLink = us509Invoke([
+  'link', '--ledger', 'ac-ledger.json', '--event-id', 'g2-multi', '--ac', 'AC1', 'AC2', 'AC3',
+  '--commit', 'sha=abcdef1,step=5', '--score-boundary', 'pre-step6',
+]);
+assert.strictEqual(multiLink.status, 0, multiLink.stderr);
+for (const id of ['AC1', 'AC2', 'AC3']) {
+  const target = us509Row(id);
+  assert.strictEqual(target.commits.length, 1, `AC2: multi-target link attaches commit and event id to every named AC (${id})`);
+  assert.strictEqual(target.commits[0].sha, 'abcdef1', `AC2: ${id} carries the linked commit`);
+  assert.ok(target.linkEventIds.includes('g2-multi'), `AC2: ${id} carries the linked event id`);
+}
+assert.strictEqual(us509Ledger().revision, 2, 'AC10: a successful multi-target link increments the revision exactly once');
+assert.ok(['AC1', 'AC2', 'AC3'].every((id) => us509Row(id).commits.length === 1), 'AC1: single --ac accepts a space-separated id list');
+const multiScore = JSON.parse(us509Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'pre-step6']).stdout);
+assert.ok(!multiScore.errors.some((error) => error.includes('product commit linkage required')), 'AC12: multi-AC commit link at pre-step6 derives no linkage error');
+
+// AC3: repeated + space-separated ids resolve to the deduplicated union
+assert.strictEqual(us509Invoke(['link', '--ledger', 'ac-ledger.json', '--event-id', 'union-evt', '--ac', 'AC1', 'AC2', '--ac', 'AC1', '--ac', 'AC3']).status, 0);
+for (const id of ['AC1', 'AC2', 'AC3']) {
+  const hits = us509Row(id).linkEventIds.filter((eventId) => eventId === 'union-evt').length;
+  assert.strictEqual(hits, 1, `AC3: repeated and space-separated ids resolve to a deduplicated union (${id})`);
+}
+
+// AC4: the value list stops at the next --prefixed token
+assert.strictEqual(us509Invoke(['link', '--ledger', 'ac-ledger.json', '--event-id', 'boundary-evt', '--ac', 'AC1', 'AC2', '--score-boundary', 'step5']).status, 0);
+assert.strictEqual(us509Ledger().scoreState.boundary, 'step5', 'AC4: target list stops at the next --prefixed token');
+
+// AC5 + AC6: unknown id fails non-zero, names it, and leaves the ledger byte-identical
+const beforeUnknown = fs.readFileSync(us509LedgerPath, 'utf8');
+const unknown = us509Invoke(['link', '--ledger', 'ac-ledger.json', '--event-id', 'bad-evt', '--ac', 'AC1', 'AC99', '--commit', 'sha=beef123,step=5', '--status', 'Implemented']);
+assert.notStrictEqual(unknown.status, 0, 'AC6: an unknown target id exits non-zero and leaves the ledger byte-identical');
+assert.match(unknown.stderr, /unknown AC: AC99/, 'AC6: the unknown id is named');
+assert.strictEqual(fs.readFileSync(us509LedgerPath, 'utf8'), beforeUnknown, 'AC6: the ledger file is byte-identical after the rejected call');
+assert.ok(!us509Row('AC1').commits.some((commit) => commit.sha === 'beef123') && us509Row('AC1').status !== 'Implemented', 'AC5: every named target is validated before any evidence is applied');
+
+// AC7: a token no flag consumed is an error naming the first unconsumed token
+const beforeLeftover = fs.readFileSync(us509LedgerPath, 'utf8');
+const leftover = us509Invoke(['link', '--ledger', 'ac-ledger.json', '--event-id', 'leftover-evt', '--ac', 'AC1', '--commit', 'sha=1111111,step=5', 'sha=2222222,step=5']);
+assert.notStrictEqual(leftover.status, 0, 'AC7: a token no flag consumed exits non-zero naming the first unconsumed token');
+assert.match(leftover.stderr, /unexpected token: sha=2222222,step=5/, 'AC7: the first unconsumed token is named');
+assert.strictEqual(fs.readFileSync(us509LedgerPath, 'utf8'), beforeLeftover, 'AC7: nothing is persisted on the rejected call');
+
+// AC8: --negative shares the multi-value union semantics
+assert.strictEqual(us509Invoke(['link', '--ledger', 'ac-ledger.json', '--event-id', 'neg-evt', '--negative', 'NS1', 'NS2']).status, 0, 'AC8: --negative applies the same multi-value union semantics');
+for (const id of ['NS1', 'NS2']) {
+  assert.ok(us509Ledger().negativeScenarios.find((item) => item.id === id).linkEventIds.includes('neg-evt'), `AC8: --negative links ${id} too`);
+}
+
+// AC9: link usage documents both --ac forms
+const us509LinkHelp = run(ledgerScript, ['link', '--help']).stdout;
+assert.match(us509LinkHelp, /--ac AC1 AC2/, 'AC9: link usage documents both --ac forms (space-separated)');
+assert.match(us509LinkHelp, /--ac AC1 --ac AC2/, 'AC9: link usage documents both --ac forms (repeated)');
+
+// AC11: a replayed event id prints NOTICE and skips the payload
+const us509Replay = us509Invoke(['link', '--ledger', 'ac-ledger.json', '--event-id', 'g2-multi', '--ac', 'AC1', 'AC2', 'AC3', '--commit', 'sha=9999999,step=5']);
+assert.strictEqual(us509Replay.status, 0, us509Replay.stderr);
+assert.match(us509Replay.stderr, /NOTICE: event-id "g2-multi" already applied/, 'AC11: a replayed event id prints NOTICE and skips the payload');
+assert.ok(!us509Row('AC1').commits.some((commit) => commit.sha === '9999999'), 'AC11: replayed payload is not applied');
+
+// AC13: --ac with no value names --ac, never undefined
+const us509NoValue = us509Invoke(['link', '--ledger', 'ac-ledger.json', '--event-id', 'novalue-evt', '--ac']);
+assert.notStrictEqual(us509NoValue.status, 0, 'AC13: --ac with no value names --ac and not undefined');
+assert.match(us509NoValue.stderr, /--ac requires at least one value/, 'AC13: the message names --ac');
+assert.ok(!/unknown AC: undefined/.test(us509NoValue.stderr), 'AC13: the bare token undefined never appears');
+
+// AC14: bare --productFailure parses true without consuming the next token
+assert.strictEqual(us509Invoke(['link', '--ledger', 'ac-ledger.json', '--event-id', 'bare-pf', '--ac', 'AC2', '--product-failure', '--status', 'Implemented']).status, 0, 'AC14: bare --productFailure parses true without consuming the next token');
+assert.strictEqual(us509Row('AC2').status, 'Implemented', 'AC14: the following --status flag is still parsed');
+
+// AC15: an invalid boundary label names all three accepted labels
+const us509BadBoundary = us509Invoke(['score', '--ledger', 'ac-ledger.json', '--boundary', 'nope']);
+assert.notStrictEqual(us509BadBoundary.status, 0, 'AC15: an invalid boundary label names all three accepted labels');
+assert.match(us509BadBoundary.stderr, /boundary must be one of: step5, pre-step6, ship/, 'AC15: all three accepted labels are named');
+
+// Spec Negative & Failing Test Scenarios (NS1-NS12): labelled assertions over the checks above.
+assert.ok(!multiScore.errors.some((error) => error.includes('product commit linkage required')), 'NS1: three-AC commit link derives no linkage error at pre-step6');
+assert.match(unknown.stderr, /unknown AC: AC99/, 'NS2: an unknown target alongside a valid one is named');
+assert.match(leftover.stderr, /unexpected token: sha=2222222,step=5/, 'NS3: a leftover token for a non-target flag is named');
+assert.ok(!/undefined/.test(us509NoValue.stderr), 'NS4: --ac with no value never prints the token undefined');
+assert.ok(us509Ledger().negativeScenarios.find((item) => item.id === 'NS1').linkEventIds.includes('neg-evt'), 'NS5: --negative NS1 NS2 links both rows');
+assert.strictEqual(us509Row('AC1').linkEventIds.filter((eventId) => eventId === 'union-evt').length, 1, 'NS6: a duplicated id resolves to one deduplicated target set');
+assert.ok(!us509Row('AC1').commits.some((commit) => commit.sha === 'beef123') && !us509Row('AC1').linkEventIds.includes('bad-evt'), 'NS7: an unknown second id leaves the first id untouched');
+assert.strictEqual(us509Row('AC2').status, 'Implemented', 'NS8: bare --productFailure consumes no following token');
+assert.match(us509LinkHelp, /Example:/, 'NS9: link --help keeps the Example line and flag list');
+assert.notStrictEqual(us509BadBoundary.status, 0, 'NS10: an unsupported boundary label still exits non-zero');
+assert.strictEqual(pythonFiles.length, 0, 'NS11: no Python file or invocation under the skill tree');
+assert.strictEqual(fs.readdirSync(us509Root).filter((name) => /ac-ledger\.json\.tmp-/.test(name)).length, 0, 'NS12: no ac-ledger.json.tmp-* residue after failing and successful links');
+
+// Durability: no temp-file residue after the successful and failing links above
+assert.strictEqual(fs.readdirSync(us509Root).filter((name) => /ac-ledger\.json\.tmp-/.test(name)).length, 0, 'durable write leaves no ac-ledger.json.tmp-* residue');
+
 console.log('test-ac-ledger: ok');

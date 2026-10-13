@@ -75,24 +75,38 @@ function parseArgs(argv) {
   const positional = [];
   const options = {};
   const repeatable = new Set(['ac', 'negative', 'file', 'test', 'commit', 'verdict', 'finding', 'aliasResult', 'invariantViolation', 'failingPath', 'failingPaths', 'filesTouched', 'fileTouched']);
+  // Target lists accept a space-separated id list terminated by the next
+  // `--`-prefixed token; every other repeatable flag keeps one value per
+  // occurrence. Tokens that no flag consumed are errors, never dropped.
+  const targetLists = new Set(['ac', 'negative']);
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
     if (token === '--help' || token === '-h') {
       options.help = true;
       continue;
     }
-    if (!token.startsWith('--')) positional.push(token);
-    else {
-      const key = token.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase());
-      const value = argv[++index];
-      if (repeatable.has(key)) (options[key] ||= []).push(value);
-      else if (key === 'productFailure' && (value === undefined || value.startsWith('--'))) {
-        if (value !== undefined) index -= 1;
-        options[key] = 'true';
-      }
-      else options[key] = value;
+    if (!token.startsWith('--')) {
+      positional.push(token);
+      continue;
     }
+    const key = token.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+    if (targetLists.has(key)) {
+      const values = [];
+      while (index + 1 < argv.length && !argv[index + 1].startsWith('--')) values.push(argv[++index]);
+      if (!values.length) throw new Error(`--${token.slice(2)} requires at least one value`);
+      (options[key] ||= []).push(...values);
+      continue;
+    }
+    const value = argv[++index];
+    if (repeatable.has(key)) (options[key] ||= []).push(value);
+    else if (key === 'productFailure' && (value === undefined || value.startsWith('--'))) {
+      if (value !== undefined) index -= 1;
+      options[key] = 'true';
+    }
+    else options[key] = value;
   }
+  // `positional[0]` is the subcommand; any further token was consumed by no flag.
+  if (positional.length > 1) throw new Error(`unexpected token: ${positional[1]}`);
   return { command: positional[0], options };
 }
 
@@ -270,14 +284,22 @@ function runAdequacyHelper(helperPath, recordPath, repoRoot) {
 
 function link(options, context) {
   if (!options.ledger || !options.eventId) throw new Error('link requires --ledger and --event-id');
-  const acIds = options.ac || [];
-  const nsIds = options.negative || [];
+  const acIds = [...new Set(options.ac || [])];
+  const nsIds = [...new Set(options.negative || [])];
   if (!acIds.length && !nsIds.length && !options.aliasResult && !options.testSurfaceSkip && !options.gap && !options.planIndex) {
     throw new Error('link requires at least one --ac, --negative, --alias-result, --test-surface-skip, --gap, or --plan-index');
   }
   const file = path.resolve(context.repoRoot, options.ledger);
   const ledger = readJson(file);
   ledger.negativeScenarios ||= [];
+  // All-or-nothing: validate every named target against the ledger before the
+  // first in-memory mutation so a rejected invocation writes nothing.
+  for (const id of acIds) {
+    if (!(ledger.acceptanceCriteria || []).some((row) => row.id === id)) throw new Error(`unknown AC: ${id}`);
+  }
+  for (const id of nsIds) {
+    if (!(ledger.negativeScenarios || []).some((row) => row.id === id)) throw new Error(`unknown negative scenario: ${id}`);
+  }
   if (options.planIndex) {
     const planIndex = readJson(path.resolve(context.repoRoot, options.planIndex));
     ledger.planIndexPath = toRepoRelative(context.repoRoot, path.resolve(context.repoRoot, options.planIndex));
@@ -823,7 +845,7 @@ function ledgerHelpText(command) {
         + '(link, sync-plan-index, verify, score, report) passes --ledger <ledger> instead.\n'
         + 'Example: node ac_ledger.cjs init --spec step-00-slug.spec.md --output ac-ledger.json --slug slug --workflow-id wf\n';
     case 'link':
-      return 'Usage: ac_ledger.cjs link --ledger <ledger> --event-id <id> [--ac ACn ...] [--negative NSn ...]\n'
+      return 'Usage: ac_ledger.cjs link --ledger <ledger> --event-id <id> [--ac AC1 AC2 ...] [--negative NS1 NS2 ...]\n'
         + '  [--status Implemented|ImplementedDifferently|NotImplemented|Pending] [--file <path:Lstart-Lend> ...]\n'
         + '  [--test <name=N,sourceFile=F,phase=planned|observed,exitCode=C> ...] [--commit <sha=S,step=N> ...]\n'
         + '  [--verdict ...] [--finding ...] [--sabotage-exit N] [--adequacy-file <path>] [--gap <text>] [--plan-index <index>]\n'
@@ -832,6 +854,9 @@ function ledgerHelpText(command) {
         + 'Attach evidence to AC rows. Requires --ledger and --event-id plus at least one target (--ac,\n'
         + '--negative, --alias-result, --test-surface-skip, --gap, or --plan-index). --file ranges use the\n'
         + 'path:Lstart-Lend shape. --plan-index backfills taskIds, planSectionIds, and expected test names.\n'
+        + '--ac and --negative accept a space-separated id list terminated by the next flag (--ac AC1 AC2)\n'
+        + 'or one value per occurrence (--ac AC1 --ac AC2); both forms combine as their deduplicated union,\n'
+        + 'and the payload applies to every named target or to none. A token no flag consumed is an error.\n'
         + '--files-touched persists modified paths for defect scoping. --adequacy-file attaches a validated per-task\n'
         + 'adequacy record to each --ac target (record must cover the AC; claimed status must match the helper verdict; inadequate status fails closed).\n'
         + 'provide CLI fallbacks for alias results.\n'

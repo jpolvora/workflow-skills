@@ -98,6 +98,8 @@ function seedState(root, stateRel, { currentStep = 0, completed = [], skipped = 
   assert.match(verifyHelp, /dry run/i, 'verify help states it is a dry run');
   const linkHelp = run(ledgerScript, ['link', '--help', '--repo-root', root]).stdout;
   assert.match(linkHelp, /--event-id/, 'link help documents evidence-linking flags');
+  assert.match(linkHelp, /--ac AC1 AC2/, 'link help documents the space-separated --ac target list');
+  assert.match(linkHelp, /--ac AC1 --ac AC2/, 'link help documents the repeated --ac target list');
 
   write(path.join(root, 'solo.spec.md'), '## Acceptance Criteria\n- AC1: Solo behavior.\n');
   const init = run(ledgerScript, ['init', '--spec', 'solo.spec.md', '--output', 'ac-ledger.json', '--workflow-id', 'wf', '--slug', 'solo', '--repo-root', root]);
