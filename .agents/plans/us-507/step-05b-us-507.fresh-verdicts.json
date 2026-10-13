@@ -1,0 +1,21 @@
+[
+  { "ac": "AC1", "verdict": "pass", "evidence": "test/test-ws-monitor-us507.js:L96-L120" },
+  { "ac": "AC2", "verdict": "pass", "evidence": "test/test-ws-monitor-us507.js:L196-L210" },
+  { "ac": "AC3", "verdict": "pass", "evidence": "test/test-ws-monitor-us507.js:L122-L132" },
+  { "ac": "AC4", "verdict": "pass", "evidence": "test/test-ws-monitor-us507.js:L120-L124" },
+  { "ac": "AC5", "verdict": "pass", "evidence": "test/test-ws-monitor-us507.js:L140-L151" },
+  { "ac": "AC6", "verdict": "pass", "evidence": "test/test-ws-monitor-us507.js:L155-L175" },
+  { "ac": "AC7", "verdict": "pass", "evidence": "test/test-ws-monitor-us507.js:L126-L132" },
+  { "ac": "AC8", "verdict": "pass", "evidence": "test/test-ws-monitor-us507.js:L180-L190" },
+  { "ac": "AC9", "verdict": "pass", "evidence": "test/test-ws-monitor-us507.js:L136-L151" },
+  { "ac": "AC10", "verdict": "pass", "evidence": "test/test-ws-monitor-us507.js:L231-L259" },
+  { "ac": "AC11", "verdict": "pass", "evidence": "test/test-ws-monitor-us507.js:L265-L275" },
+  { "ac": "AC12", "verdict": "pass", "evidence": "test/test-ws-monitor-us507.js:L106-L116" },
+  { "ac": "AC13", "verdict": "pass", "evidence": "test/test-ws-monitor-us507.js:L212-L215" },
+  { "ac": "AC14", "verdict": "pass", "evidence": "test/test-ws-monitor-us507.js:L200-L226" },
+  { "ac": "AC15", "verdict": "pass", "evidence": "test/test-ws-monitor-us507.js:L281-L298" },
+  { "ac": "AC16", "verdict": "pass", "evidence": "test/test-ws-monitor-us507.js:L307-L307" },
+  { "ac": "AC17", "verdict": "pass", "evidence": "test/test-ws-monitor-us507.js:L303-L317" },
+  { "ac": "AC18", "verdict": "pass", "evidence": "test/test-ws-monitor-us507.js:L322-L329" },
+  { "ac": "AC19", "verdict": "pass", "evidence": "test/test-ws-monitor-us507.js:L334-L340" }
+]

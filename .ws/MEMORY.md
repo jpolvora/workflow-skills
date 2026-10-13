@@ -6,6 +6,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 
 ---
 
+### [2026-10-13] Fresh-verify fault injection against a watch-capable suite must be timeout-bounded
+- **Layer**: `tests`
+- **Module**: `ws-fresh-verify (run_fresh_injection), ws-monitor watch loop`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-monitor/scripts/monitor_snapshot.cjs, test/test-ws-monitor-*.js, .agents/skills/ws-fresh-verify/scripts/*`
+- **Scenario / Context**: During us-507 fresh-verify, per-AC fault injection mutated `monitor_snapshot.cjs` so a state-less run's status was always `active`. The AC9 block runs `--watch --interval 1 --until-terminal` on a stale state-less fixture and expects the loop to terminate; with the mutation `report.activeCount` never reached 0, so the spawned suite never exited and the injection driver hung (10-minute tool timeout, mutated bytes left in place until a per-path restore).
+- **DO NOT**: Run an un-timeout-bounded fault injection against a suite that contains an until-terminal/watch assertion when the injected mutation can pin `activeCount` above zero; leave the mutated file in place by relying on a `finally` that a killed parent never reaches.
+- **INSTEAD DO**: Pass an explicit `timeout` to the injection/test spawn (a killed child is a legitimate red signal) and prefer a mutation that fails an assertion cleanly (for a counting AC, corrupt the reported status literal, not the active predicate); keep the original bytes in memory and rewrite them in the same process before any other command, then confirm with `git status` plus `npm run verify-integrity`.
+
 ### [2026-10-12] Verify repo convention before rebutting reviewers (us-504 follow-up)
 - **Layer**: `orchestration`
 - **Module**: `ws-fix-pr, git`
