@@ -1,0 +1,84 @@
+{
+  "specPath": ".agents/plans/us-507/step-00-us-507.spec.md",
+  "planOfRecordPath": ".agents/plans/us-507/step-02-us-507.plan.refined.md",
+  "productTreeRoot": "",
+  "acList": [
+    {
+      "id": "AC1",
+      "text": "When a plan directory holds at least one top-level step artifact and no `*.state.json` and no `*.state.md` file, the observer shall report that directory as a state-less run."
+    },
+    {
+      "id": "AC2",
+      "text": "If a plan directory holds neither a state file nor a step artifact, then the observer shall not report that directory as a run."
+    },
+    {
+      "id": "AC3",
+      "text": "The observer shall emit one `run-without-state` finding per state-less run, naming the newest step artifact in the finding evidence as a repo-relative path."
+    },
+    {
+      "id": "AC4",
+      "text": "While the newest step artifact of a state-less run is at most one effective stall window old, the observer shall report the `run-without-state` finding at `warning` severity."
+    },
+    {
+      "id": "AC5",
+      "text": "When the newest step artifact of a state-less run is older than the effective stall window, the observer shall report the `run-without-state` finding at `info` severity."
+    },
+    {
+      "id": "AC6",
+      "text": "The observer shall resolve the state-less freshness window from the same effective stall window as the liveness stopwatch, defaulting to 600 seconds when `--stall-window` is not supplied."
+    },
+    {
+      "id": "AC7",
+      "text": "The observer shall include every detected state-less run in `workflowCount` and shall suppress the line `No workflow state files found under the configured plans directory.` while at least one state-less run is reported."
+    },
+    {
+      "id": "AC8",
+      "text": "The observer shall count a state-less run whose newest step artifact is inside the effective stall window toward `activeCount`, so `--watch --until-terminal` does not stop while that run is fresh."
+    },
+    {
+      "id": "AC9",
+      "text": "While a state-less run is older than the effective stall window, the observer shall keep its finding visible and shall not count the run toward `activeCount`, so an unattended `--until-terminal` watch can still terminate."
+    },
+    {
+      "id": "AC10",
+      "text": "When a plan directory holds a state file, the observer shall classify it through the existing state path and shall not emit a `run-without-state` finding for it."
+    },
+    {
+      "id": "AC11",
+      "text": "When `--slug <slug>` scopes a snapshot and `{plansDir}/<slug>/` holds no state file, the observer shall resolve the state-less run by plan directory name and report it for that slug."
+    },
+    {
+      "id": "AC12",
+      "text": "The observer shall expose a state-less run record with `statePath` null, unknown step and verification fields, and the newest step artifact as repo-relative evidence."
+    },
+    {
+      "id": "AC13",
+      "text": "The observer shall derive state-less activity evidence from the canonical top-level `step-NN-{slug}.*` step-artifact naming already used by `expectedArtifacts()`, and shall treat no other file class as activity."
+    },
+    {
+      "id": "AC14",
+      "text": "The observer shall bound the state-less scan to the top-level entries of each plan directory and shall not descend into nested directories such as plan worktrees."
+    },
+    {
+      "id": "AC15",
+      "text": "If a plans-root entry is not a readable directory, then the observer shall skip it without failing the snapshot or suppressing findings for other runs."
+    },
+    {
+      "id": "AC16",
+      "text": "The observer shall keep the multi-spec `missing-child-state` signal unchanged in trigger, severity, and evidence, and shall not replace it with `run-without-state`."
+    },
+    {
+      "id": "AC17",
+      "text": "The observer shall add `run-without-state` to the `DEFECT_CONTRACTS` map so an `--open-issue` proposal names the discovery contract for that code, while dedupe and severity classification stay with the existing finding helper."
+    },
+    {
+      "id": "AC18",
+      "text": "The observer shall leave the configured plans directory unchanged, creating, modifying, and deleting no file during state-less detection."
+    },
+    {
+      "id": "AC19",
+      "text": "The ws-monitor skill documentation shall list `run-without-state` with its freshness-to-severity rule in the signal map and in the actionable-signals list."
+    }
+  ],
+  "createdAt": "2026-10-13T00:29:41.356Z"
+}

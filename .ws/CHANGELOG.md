@@ -1,5 +1,10 @@
 # Changelog
 
+### [2026-10-12 20:40] Agent: agent
+- **Prompt**: us-507: ws-monitor reports 0 workflows for a plan directory with fresh step artifacts and no state file
+- **Done**: ws-monitor now discovers state-less runs from canonical top-level step-NN-{slug}. artifacts and reports run-without-state (warning while inside the effective stall window, info when older) naming the newest artifact as repo-relative evidence; fresh runs join workflowCount/activeCount and suppress the empty-discovery line, stale runs stay visible without holding --until-terminal; DEFECT_CONTRACTS and ws-monitor/SKILL.md updated; new test/test-ws-monitor-us507.js registered; version 0.5.42 + integrity regenerated
+- **Result**: npm run test 164/164; test-harness-clean 0 findings; verify-integrity OK; fresh-verify 19/19 AC red signals, 0 defects; check score 10/10; product e1469ae8, release 74e3340d, review-fix 1925b9f9
+
 ### [2026-10-12 18:01] Agent: agent
 - **Prompt**: ws-spec-multi batch ms-20261012T211904Z item us-506/spec 0176: full-auto run reaches ship with no workflow state
 - **Done**: Added packaged create-only state bootstrap (init) to the shared workflow-state runtime; absent-state remediation + HS-5 label; contract docs; new test-state-bootstrap suite; version 0.5.41 + integrity.
