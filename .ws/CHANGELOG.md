@@ -1,5 +1,15 @@
 # Changelog
 
+### [2026-10-15 10:00] Agent: agent
+- **Prompt**: Create course/ video training course from wiki/docs/code/skills scan
+- **Done**: Created course/ with 16 YouTube narration chapters + recording guide + 2 appendices covering install, config, spec writing, standard/lite pipelines, gates, review/fresh-verify/testing, ship/fix-PR, spec management, memory/wiki, providers, advanced modes, harness health, capstone
+- **Result**: 20 files in course/, ~21k words, each chapter teleprompter-ready with usage examples and enumerated features
+
+### [2026-10-13 11:17] Agent: agent
+- **Prompt**: local dry run latest 20 NEW FEATURES (ws-code-review)
+- **Done**: Dry-run adversarial review of 142018a2^...HEAD (20 feat commits, 559 files): 1 Warning (bootstrap init replay misreports identity), 1 Suggestion (FEATURES version label), fable verdict VERIFIED WITH CAVEATS; 21 targeted suites + invariant scan + harness/site checks green; report in .agents/codereviews/step-06-latest-20-new-features.review.md
+- **Result**: CR-001 open (Warning) blocks workflow Advance until fixed; no code changed, no fixes applied (dry run)
+
 ### [2026-10-13 00:46] Agent: agent
 - **Prompt**: ws-spec-multi batch run ms-20261012T211904Z (us-506..us-511)
 - **Done**: Ran the 6-spec shared-head batch on develop: each spec classified (all standard), dispatched to ws-spec-to-pr, converged (0 threads) and merged into main via per-spec PRs #513-#518; then filed us-506 into completed/ and synced index.PRD (the only spec whose filing was missed by its own worker).

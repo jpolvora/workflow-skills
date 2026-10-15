@@ -33,6 +33,15 @@ To add new learnings, create a separate markdown file under `.ws/memory/` and ru
 - **DO NOT**: Run an un-timeout-bounded fault injection against a suite that contains an until-terminal/watch assertion when the injected mutation can pin `activeCount` above zero; leave the mutated file in place by relying on a `finally` that a killed parent never reaches.
 - **INSTEAD DO**: Pass an explicit `timeout` to the injection/test spawn (a killed child is a legitimate red signal) and prefer a mutation that fails an assertion cleanly (for a counting AC, corrupt the reported status literal, not the active predicate); keep the original bytes in memory and rewrite them in the same process before any other command, then confirm with `git status` plus `npm run verify-integrity`.
 
+### [2026-10-13] Bootstrap init replay echoes requested identity without comparing it to the persisted pair
+- **Layer**: `harness`
+- **Module**: `ws-shared/runtime workflow_state.cjs performInit replay, ws-spec-to-pr update_state.cjs init`
+- **Severity**: `High`
+- **PathPattern**: `.agents/skills/ws-shared/runtime/scripts/workflow_state.cjs`, `test/test-state-bootstrap.js`
+- **Scenario / Context**: During a dry-run review of the latest 20 features, a probe bootstrapped slug `demo` on branch `develop` at baseline `abc1234...`, then re-ran `init` over the untouched revision-0 pair with `--branch feature-other --baseline 1111111...` (and separately with a different `--workflow-id`). Both replays exited 0 with `idempotentReplay: true` and a result record claiming the requested branch/baseline/workflow-id, while the on-disk pair still recorded `develop` / `abc1234...` byte-identical. The replay branch parses `existing` but only refuses on revision/completedSteps/terminal status; it never compares `existing.workflowId/slug/branch/baselineCommit` to the requested flags, and the result echoes the request variables. The existing suite replays only with identical inputs, so the mismatch had no failing test.
+- **DO NOT**: Report an idempotent-replay or no-op success using caller-supplied identity values without first comparing them to the persisted record; do not treat a byte-identical pair as proof that the reported identity is the persisted one.
+- **INSTEAD DO**: In the replay window, compare every persisted identity field (`workflowId`, `slug`, `branch`, `baselineCommit`) against the requested flags and refuse with a non-zero exit and nothing touched on any mismatch (or return the persisted values verbatim); pin the mismatched-identity replay in `test/test-state-bootstrap.js` alongside the identical-input replay.
+
 ### [2026-10-12] Verify repo convention before rebutting reviewers (us-504 follow-up)
 - **Layer**: `orchestration`
 - **Module**: `ws-fix-pr, git`
